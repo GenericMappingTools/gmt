@@ -874,6 +874,44 @@ int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
+int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BCDF 3 1 Cumulative binomial probability distribution B_n,p(x), with p = A, n = B and x = C.  */
+{
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	uint64_t s, row;
+	double p, x, n;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument p to BCDF must be a 0 <= p <= 1!\n");
+		return -1;
+	}
+	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument n to BCDF must be a positive integer (n >= 0)!\n");
+		return -1;
+	}
+	if (S[last]->constant && S[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument x to BCDF must be a positive integer (x >= 0)!\n");
+		return -1;
+	}
+	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BCDF is given constant arguments */
+		double value;
+		p = S[prev2]->factor;
+		n = lrint (S[prev1]->factor);	x = lrint (S[last]->factor);
+		value = GMT_binom_cdf (GMT, x, n, p);
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		return 0;
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
+		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
+		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		T_prev2->segment[s]->coord[col][row] = GMT_binom_cdf (GMT, x, n, p);
+		
+	}
+	return 0;
+}
+
 int table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BEI 1 1 bei (A).  */
 {
@@ -898,40 +936,40 @@ int table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_BDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BDIST 3 1 binomial distribution B_n,p(x), with p = A, n = B and x = C.  */
+int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BPDF 3 1 binomial probability distribution B_n,p(x), with p = A, n = B and x = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row;
-	double p, q, x, n;
+	double p, x, n;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
 	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument p to BDIST must be a 0 <= p <= 1!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument p to BPDF must be a 0 <= p <= 1!\n");
 		return -1;
 	}
 	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument n to BDIST must be a positive integer (n >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument n to BPDF must be a positive integer (n >= 0)!\n");
 		return -1;
 	}
 	if (S[last]->constant && S[last]->factor < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument x to BDIST must be a positive integer (x >= 0)!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument x to BPDF must be a positive integer (x >= 0)!\n");
 		return -1;
 	}
-	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BDIST is given constant arguments */
+	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* BPDF is given constant arguments */
 		double value;
-		p = S[prev2]->factor;	q = 1.0 - p;
-		n = S[prev1]->factor;	x = S[last]->factor;
-		value = GMT_combination (GMT, irint (n), irint (x)) * pow (p, x) * pow (q, n-x);
+		p = S[prev2]->factor;
+		n = lrint (S[prev1]->factor);	x = lrint (S[last]->factor);
+		value = GMT_binom_pdf (GMT, x, n, p);
 		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
 		return 0;
 	}
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		p = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		n = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row];
-		x = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		q = 1.0 - p;
-		T_prev2->segment[s]->coord[col][row] = GMT_combination (GMT, irint (n), irint (x)) * pow (p, x) * pow (q, n-x);
+		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
+		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		T_prev2->segment[s]->coord[col][row] = GMT_binom_pdf (GMT, x, n, p);
+		
 	}
 	return 0;
 }
@@ -1198,22 +1236,41 @@ int table_CHICRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	return 0;
 }
 
-int table_CHIDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: CHIDIST 2 1 chi-squared-distribution P(chi2,n), with chi2 = A and n = B.  */
+int table_CHICDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: CHICDF 2 1 Cumulative chi-squared-distribution P(chi2,nu), with chi2 = A and nu = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
-	double a, b;
+	double a, b, q;
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHIDIST!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHIDIST!\n");
+	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for CHICDF!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CHICDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		GMT_chi2 (GMT, a, b, &T_prev->segment[s]->coord[col][row]);
+		GMT_chi2 (GMT, a, b, &q);
+		T_prev->segment[s]->coord[col][row] = 1.0 - q;
+	}
+	return 0;
+}
+
+int table_CHIPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: CHIPDF 2 1 Probability density function for Chi^2 for chi = A and nu = B.  */
+{
+	uint64_t s, row, nu;
+	unsigned int prev;
+	double c;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		c  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = GMT_chi2_pdf (GMT, c, nu);
 	}
 	return 0;
 }
@@ -1420,8 +1477,8 @@ int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_CPOISS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: CPOISS 2 1 Cumulative Poisson distribution F(x,lambda), with x = A and lambda = B.  */
+int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: PCDF 2 1 Cumulative Poisson distribution F(x,lambda), with x = A and lambda = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1430,11 +1487,11 @@ int table_CPOISS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
 
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for CPOISS!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
-		GMT_cumpoisson (GMT, a, b, &T_prev->segment[s]->coord[col][row]);
+		GMT_poisson_cdf (GMT, a, b, &T_prev->segment[s]->coord[col][row]);
 	}
 	return 0;
 }
@@ -1713,24 +1770,21 @@ int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_FDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: FDIST 3 1 F-distribution Q(F,n1,n2), with F = A, n1 = B, and n2 = C.  */
+int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: FCDF 3 1 Cumulative F-distribution Q(F,n1,n2), with F = A, n1 = B, and n2 = C.  */
 {
-	uint64_t s, row;
-	int nu1, nu2;
+	uint64_t s, row, nu1, nu2;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
-	double F, chisq1, chisq2 = 1.0;
+	double F;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FDIST!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FDIST!\n");
+	if (S[prev1]->constant && S[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCDF!\n");
+	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCDF!\n");
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
-		nu1 = irint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]));
-		nu2 = irint ((double)((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]));
-		/* Since GMT_f_q needs chisq1 and chisq2, we set chisq2 = 1 and solve for chisq1 */
-		chisq1 = F * nu1 / nu2;
-		(void) GMT_f_q (GMT, chisq1, nu1, chisq2, nu2, &T_prev2->segment[s]->coord[col][row]);
+		nu1 = lrint ((double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]));
+		nu2 = lrint ((double)((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]));
+		T_prev2->segment[s]->coord[col][row] = GMT_f_cdf (GMT, F, nu1, nu2);
 	}
 	return 0;
 }
@@ -1775,6 +1829,43 @@ int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
 		T_prev->segment[s]->coord[col][row] = fmod (a, b);
+	}
+	return 0;
+}
+
+int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: FPDF 3 1 Probability density function for F distribution, with F = A, nu1 = B and nu2 = C.  */
+{
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	uint64_t s, row, nu1, nu2;
+	double F;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument F to FPDF must be a >= 0!\n");
+		return -1;
+	}
+	if (S[prev1]->constant && S[prev1]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument nu1 to FPDF must be a positive integer (nu1 > 0)!\n");
+		return -1;
+	}
+	if (S[last]->constant && S[last]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument nu2 to FPDF must be a positive integer (nu2 > 0)!\n");
+		return -1;
+	}
+	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* FPDF is given constant arguments */
+		double value;
+		F = S[prev2]->factor;
+		nu1 = S[prev1]->factor;	nu2 = S[last]->factor;
+		value = GMT_f_pdf (GMT, F, nu1, nu2);
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		return 0;
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		F = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
+		nu1 = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
+		nu2 = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		T_prev2->segment[s]->coord[col][row] = GMT_f_pdf (GMT, F, nu1, nu2);
 	}
 	return 0;
 }
@@ -2896,6 +2987,24 @@ int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
+int table_PPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: PPDF 2 1 Probability density function for Poisson's distribution for x = A and lambda = B.  */
+{
+	uint64_t s, row;
+	unsigned int prev;
+	double x, lambda;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = GMT_poissonpdf (GMT, x, lambda);
+	}
+	return 0;
+}
+
 int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PQUANT 2 1 The B'th Quantile (0-100%) of A.  */
 {
@@ -3542,6 +3651,24 @@ int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
+int table_TCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: TCDF 2 1 Cumulative Student t probability density function for t = A and nu = B.  */
+{
+	uint64_t s, row, nu;
+	unsigned int prev;
+	double t;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		t  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = GMT_t_cdf (GMT, t, nu);
+	}
+	return 0;
+}
+
 int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TN 2 1 Chebyshev polynomial Tn(-1<A<+1) of degree B.  */
 {
@@ -3557,6 +3684,24 @@ int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 		n = irint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		GMT_chebyshev (GMT, a, n, &T_prev->segment[s]->coord[col][row]);
+	}
+	return 0;
+}
+
+int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: TPDF 2 1 Probability density function for Student t for t = A and nu = B.  */
+{
+	uint64_t s, row, nu;
+	unsigned int prev;
+	double t;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		nu = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		t  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = GMT_t_pdf (GMT, t, nu);
 	}
 	return 0;
 }
@@ -3577,27 +3722,6 @@ int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
 		T_prev->segment[s]->coord[col][row] = GMT_tcrit (GMT, a, b);
-	}
-	return 0;
-}
-
-int table_TDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: TDIST 2 1 Student's t-distribution A(t,n), with t = A, and n = B.  */
-{
-	uint64_t s, row;
-	int b;
-	unsigned int prev;
-	double a;
-	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
-
-	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
-
-	if (S[prev]->constant && S[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0 for TDIST!\n");
-	if (S[last]->constant && S[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TDIST!\n");
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
-		b = irint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
-		(void) GMT_student_t_a (GMT, a, b, &T_prev->segment[s]->coord[col][row]);
 	}
 	return 0;
 }
@@ -3717,8 +3841,8 @@ int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ZDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ZDIST 1 1 Cumulative normal-distribution C(x), with x = A.  */
+int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ZCDF 1 1 Cumulative normal-distribution C(x), with x = A.  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -3726,6 +3850,18 @@ int table_ZDIST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 
 	if (S[last]->constant) a = GMT_zdist (GMT, S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : GMT_zdist (GMT, T->segment[s]->coord[col][row]);
+	return 0;
+}
+
+int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ZPDF 1 1 Probability density function for normal distribution, with z = A.  */
+{
+	uint64_t s, row;
+	double z = 0.0, f = 1.0 / sqrt (TWO_PI);
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) z = f * exp (-0.5 * S[last]->factor * S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? z : f * exp (-0.5 * T->segment[s]->coord[col][row] * T->segment[s]->coord[col][row]);
 	return 0;
 }
 
@@ -3848,7 +3984,6 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	if (!strcmp (txt, "N")) return GMTMATH_ARG_IS_N;
 	if (!strcmp (txt, "TROW")) return GMTMATH_ARG_IS_J_MATRIX;
 	if (!(strcmp (txt, "T") && strcmp (txt, "t"))) return GMTMATH_ARG_IS_T_MATRIX;
-	if (!(strcmp (txt, "Tn") && strcmp (txt, "tn"))) return GMTMATH_ARG_IS_t_MATRIX;	/* Backwards compatible. Tn is now TNORM since there is a TN operator */
 	if (!strcmp (txt, "TNORM")) return GMTMATH_ARG_IS_t_MATRIX;
 	if (!strcmp (txt, "NaN")) {*value = GMT->session.d_NaN; return GMTMATH_ARG_IS_NUMBER;}
 
@@ -3892,6 +4027,21 @@ char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg)
 		return (NULL);
 	}
 	return (label);
+}
+
+void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
+{	/* Handle backwards compatible operator names */
+	char *t = NULL, old[GMT_LEN16] = {""};
+	if (!GMT_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
+	if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); free (*arg); *arg = t = strdup ("PCDF");   }
+	if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("FCDF");   }
+	if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("TCDF");   }
+	if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("ZCDF");   }
+	if (!strcmp (*arg, "CHIDIST")) {strcpy (old, *arg); free (*arg); *arg = t = strdup ("CHICDF"); }
+	if (!strcmp (*arg, "Tn"))      {strcpy (old, *arg); free (*arg); *arg = t = strdup ("TNORM");  }
+	
+	if (t)
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }
 
 int GMT_gmtmath (void *V_API, int mode, void *args)
@@ -3971,6 +4121,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	for (opt = list, got_t_from_file = 0; got_t_from_file == 0 && opt; opt = opt->next) {
 		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
+		gmtmath_backwards_fixing (GMT, &(opt->arg));	/* Possibly exchange obsolete operator name for new one unless compatibility is off */
 		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);	/* Determine what this is */
 		if (op == GMTMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
 		if (op != GMTMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
@@ -4182,6 +4333,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			continue;
 		}
 		if (opt->option == GMT_OPT_OUTFILE) continue;	/* We do output after the loop */
+
+		gmtmath_backwards_fixing (GMT, &(opt->arg));	/* Possibly exchange obsolete operator name for new one unless compatibility is off */
 
 		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);
 

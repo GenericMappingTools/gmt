@@ -1110,6 +1110,33 @@ double GMT_erfinv (struct GMT_CTRL *GMT, double y)
 	return (x);
 }
 
+double gmt_beta (struct GMT_CTRL *GMT, double z, double w) {
+	double g1, g2, g3;
+	gmt_ln_gamma_r (GMT, z,   &g1);
+	gmt_ln_gamma_r (GMT, w,   &g2);
+	gmt_ln_gamma_r (GMT, z+w, &g3);
+	return exp (g1 + g2 - g3);
+}
+
+double GMT_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
+{
+	/* Probability density distribution for F */
+	double y;
+	
+	y = sqrt (pow (nu1 * F, nu1) * pow (nu2, nu2) / pow (nu1 * F + nu2, nu1+nu2)) / (F * gmt_beta (GMT, 0.5*nu1, 0.5*nu2));
+	return (y);
+}
+
+double GMT_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
+{
+	/* Cumulative probability density distribution for F */
+	double y;
+	
+	gmt_inc_beta (GMT, 0.5*nu1, 0.5*nu2, F*nu1/(F*nu1+nu2), &y);
+	
+	return (y);
+}
+
 int GMT_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, double chisq2, uint64_t nu2, double *prob)
 {
 	/* Routine to compute Q(F, nu1, nu2) = 1 - P(F, nu1, nu2), where nu1
@@ -1164,6 +1191,17 @@ int GMT_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, double chisq2, u
 		return (-1);
 	}
 	return (0);
+}
+
+double GMT_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu)
+{
+	/* Probability density distribution for Student t */
+	double y, n = nu + 1.0, g1, g2;
+	
+	gmt_ln_gamma_r (GMT, 0.5*n, &g1);
+	gmt_ln_gamma_r (GMT, 0.5*nu, &g2);
+	y = exp (g1 - g2) * pow (1.0 + t*t/nu, -0.5*n) / sqrt (M_PI * nu);
+	return (y);
 }
 
 int GMT_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, double *prob)
@@ -1261,6 +1299,39 @@ int GMT_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, double *prob)
 	return (0);
 }
 
+double GMT_t_cdf (struct GMT_CTRL *GMT, double t, uint64_t nu)
+{
+	double p;
+	/* Cumulative Student t distribution */
+	GMT_UNUSED(GMT);
+	GMT_student_t_a (GMT, fabs (t), nu, &p);
+	p = 0.5 * p + 0.5;
+	if (t < 0.0)
+		p = 1.0 - p;
+	return (p);
+}
+
+double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
+{
+	double c;
+	/* Binomial distribution */
+	c = GMT_combination (GMT, n, x) * pow (p, x) * pow (1.0-p, n-x);
+	return (c);
+}
+
+double GMT_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
+{	/* Cumulative Binomial distribution */
+	double c = 0.0;
+	if (n > 12)	/* Use Numerical Recipes fast way for larger n */
+		gmt_inc_beta (GMT, x, n-x+1, p, &c);
+	else {	/* Do the sum instead */
+		uint64_t j;
+		for (j = 0; j <= x; j++)
+			c += GMT_binom_pdf (GMT, j, n, p);
+	}
+	return (c);
+}
+
 double GMT_zdist (struct GMT_CTRL *GMT, double x)
 {
 	/* Cumulative Normal (z) distribution */
@@ -1329,6 +1400,16 @@ double GMT_tcrit (struct GMT_CTRL *GMT, double alpha, double nu)
 		}
 	}
 	return (sign * t_mid);
+}
+
+double GMT_chi2_pdf (struct GMT_CTRL *GMT, double c, uint64_t nu)
+{
+	/* Probability density distribution for chi-squared */
+	double g, y;
+	
+	gmt_ln_gamma_r (GMT, 0.5*nu, &g);
+	y = pow (c, 0.5*nu - 1.0) * exp (-0.5 * c - g) / pow (2.0, 0.5 * nu);
+	return (y);
 }
 
 double GMT_chi2crit (struct GMT_CTRL *GMT, double alpha, double nu)
@@ -1505,10 +1586,15 @@ void GMT_chi2 (struct GMT_CTRL *GMT, double chi2, double nu, double *prob) {
 	*prob = gmt_gammq (GMT, 0.5 * nu, 0.5 * chi2);
 }
 
-void GMT_cumpoisson (struct GMT_CTRL *GMT, double k, double mu, double *prob) {
+double GMT_poissonpdf (struct GMT_CTRL *GMT, double k, double lambda)
+{	/* Evaluate PDF for Poisson Distribution */
+	return pow (lambda, k) * exp (-lambda) / GMT_factorial (GMT, irint (k));
+}
+
+void GMT_poisson_cdf (struct GMT_CTRL *GMT, double k, double mu, double *prob) {
 	/* evaluate Cumulative Poisson Distribution */
 
-	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (GMT, k, mu);
+	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (GMT, k+1.0, mu);
 }
 
 double GMT_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std)

@@ -582,8 +582,16 @@ EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVAT
 EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n);
 EXTERN_MSC int GMT_sig_f (struct GMT_CTRL *GMT, double chi1, uint64_t n1, double chi2, uint64_t n2, double level, double *prob);
 EXTERN_MSC int GMT_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, double *prob);
+EXTERN_MSC double GMT_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu);
+EXTERN_MSC double GMT_t_cdf (struct GMT_CTRL *GMT, double t, uint64_t nu);
+EXTERN_MSC double GMT_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2);
+EXTERN_MSC double GMT_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2);
+EXTERN_MSC double GMT_chi2_pdf (struct GMT_CTRL *GMT, double c, uint64_t nu);
+EXTERN_MSC double GMT_poissonpdf (struct GMT_CTRL *GMT, double k, double lambda);
 EXTERN_MSC void GMT_chi2 (struct GMT_CTRL *GMT, double chi2, double nu, double *prob);
-EXTERN_MSC void GMT_cumpoisson (struct GMT_CTRL *GMT, double k, double mu, double *prob);
+EXTERN_MSC void GMT_poisson_cdf (struct GMT_CTRL *GMT, double k, double mu, double *prob);
+EXTERN_MSC double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p);
+EXTERN_MSC double GMT_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p);
 EXTERN_MSC void GMT_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, double *scale);
 EXTERN_MSC void GMT_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, double *scale);
 EXTERN_MSC double GMT_psi (struct GMT_CTRL *GMT, double z[], double p[]);

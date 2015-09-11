@@ -380,7 +380,15 @@ changes to syntax will be backwards compatible:
    added a **-F** option to create line segments from an input data sets using
    a variety of connectivity modes.
 
-*  :doc:`gmtmath` adds the operator **BDIST** for binomial distribution and **ROLL** for cyclic shifts of the stack, as
+*  :doc:`gmtmath` adds the operator **BPDF** for binomial probability distribution and
+   **BCDF** for the cumulative binomial distribution function.  Due to confusion with
+   other probability distributions we have introduced a series of new operator names
+   (but accept backwards compatibility).  Listing the pdf and cdf for each distribution,
+   these are **TPDF** and **TCDF** for the Student t-distribution,
+   **FPDF** and **FCDF** for the F-distribution,
+   **CHIPDF** and **CHICDF** for the Chi-squared distribution,
+   **PPDF** and **PCDF** for the Poisson distribution, and
+   **ZPDF** and **ZCDF** for the Normal distribution. We added **ROLL** for cyclic shifts of the stack, as
    well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  Finally, we added
    operator **POINT** which reads a data table and places the mean x and mean y on the stack.
@@ -402,7 +410,15 @@ changes to syntax will be backwards compatible:
    grid's metadata in WKT format.
 
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
-   angular operators, **BDIST** for binomial distribution, **LDISTG** (for distances
+   angular operators, **BPDF** for binomial probability distribution and
+   **BCDF** for the cumulative binomial distribution function.  Due to confusion with
+   other probability distributions we have introduced a series of new operator names
+   (but accept backwards compatibility).  Listing the pdf and cdf for each distribution,
+   these are **TPDF** and **TCDF** for the Student t-distribution,
+   **FPDF** and **FCDF** for the F-distribution,
+   **CHIPDF** and **CHICDF** for the Chi-squared distribution,
+   **PPDF** and **PCDF** for the Poisson distribution, and
+   **ZPDF** and **ZCDF** for the Normal distribution.  We added **LDISTG** (for distances
    to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), and **ROLL** for cyclic shifts of the stack,
    while **LDIST1** has been renamed
