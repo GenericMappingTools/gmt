@@ -72,7 +72,7 @@ Optional Arguments
     **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 
-**-F**\ *flags*
+**-F**\ **f**\ |\ **m**\ |\ **n**\ |\ **s**\ |\ **c**
     Normally, **fitcircle** will write its results in the form of a text report, with
     the values intermingled with report sentences.  Use **-F** to only return data
     coordinates, and append *flags* to specify which coordinates you would like. You
