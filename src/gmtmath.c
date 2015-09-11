@@ -875,7 +875,7 @@ int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BCDF 3 1 Cumulative binomial probability distribution B_n,p(x), with p = A, n = B and x = C.  */
+/*OPERATOR: BCDF 3 1 Cumulative binomial probability distribution C_n,p(x), with p = A, n = B and x = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row;
@@ -3890,7 +3890,7 @@ int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ZCDF 1 1 Cumulative normal-distribution C(x), with x = A.  */
+/*OPERATOR: ZCDF 1 1 Cumulative normal-distribution, with z = A.  */
 {
 	uint64_t s, row;
 	double a = 0.0;

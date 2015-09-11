@@ -3736,7 +3736,7 @@ void grd_ZCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 }
 
 void grd_ZCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: ZCDF 1 1 Cumulative normal-distribution C(x), with x = A.  */
+/*OPERATOR: ZCDF 1 1 Cumulative normal-distribution, with z = A.  */
 {
 	uint64_t node;
 	double a = 0.0;
