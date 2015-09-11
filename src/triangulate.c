@@ -358,6 +358,11 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	yy = GMT_memory (GMT, yy, n, double);
 	if (triplets[GMT_IN]) zz = GMT_memory (GMT, zz, n, double);
 
+	if (n == 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
+		Return (EXIT_FAILURE);
+	}
+
 	if (map_them) {	/* Must make parallel arrays for projected x/y */
 		double *xxp = NULL, *yyp = NULL;
 

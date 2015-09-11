@@ -836,6 +836,11 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	y = GMT_memory (GMT, y, n, double);
 	z = GMT_memory (GMT, z, n, double);
 
+	if (n == 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
+		Return (EXIT_FAILURE);
+	}
+
 	if (make_plot && GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
 
 	/* Map transform */
