@@ -54,7 +54,7 @@ one or more output files (or stdout) and no plot is produced.
 Required Arguments
 ------------------
 
-**-C**\ [+]\ *cont\_int*
+**-C**\ [+]\ *cont_int*
     The contours to be drawn may be specified in one of three possible ways:
 
     (1) If *cont_int* has the suffix ".cpt" and can be opened as a
@@ -99,7 +99,7 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-**-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*]
+**-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
     *annot_int* is annotation interval in data units; it is ignored if
     contour levels are given in a file. [Default is no annotations]. Append
     **-** to disable all annotations implied by **-C**. Alternatively prepend
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-**-D**\ [*template*\ ]
+**-D**\ [*template*]
 
 .. include:: explain_contdump.rst_
 
