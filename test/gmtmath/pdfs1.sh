@@ -82,24 +82,8 @@ cat << EOF > ML.txt
 8	0.000210037817810
 EOF
 gmt math -T0/8/0.02 T 20 12 FPDF = p.d
-gmt psxy -R0/8/0/1 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
+gmt psxy -R0/8/0/1 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 echo "F(@~n@-1@-=20, n@-2@- = 12@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
-# Plot CHIDIST distribution
-cat << EOF > ML.txt
-0	                0
-1	0.151632664928158
-2	0.183939720585721
-3	0.167347620111322
-4	0.135335283236613
-5	0.102606248279873
-6	0.074680602551796
-7	0.052845420989057
-8	0.036631277777468
-EOF
-gmt math -T0/8/0.1 T 4 CHIPDF = p.d
-gmt psxy -R0/8/0/0.25 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
-gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "@~c@~@+2@+(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
 # Done
 gmt psxy -R -J -O -T >> $ps
