@@ -51,7 +51,7 @@ EOF
 gmt math -T-4/4/0.1 T ZPDF = p.d
 gmt psxy -R-4/4/0/0.4 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "N(0,1)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+echo "Normal P(z)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
 # Plot t distribution
 cat << EOF > ML.txt
 -4	0.006708203932499
@@ -68,7 +68,7 @@ gmt psxy -R-4/4/0/0.4 -J -O -K p.d -W1p,lightgray -BWS -Bxa1 -Byaf --MAP_FRAME_T
 gmt math -T-4/4/0.1 T 4 TPDF = p.d
 gmt psxy -R -J -O -K p.d -W1p >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "t(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
+echo "Student t(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
 # Plot FDIST distribution
 cat << EOF > ML.txt
 0	                0

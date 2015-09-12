@@ -3,7 +3,7 @@
 
 # Testing gmt math for BCDF PCDF ZCDF TCDF FCDF CHICDF
 # Red dots are output from MATLAB for comparison
-ps=cdfs.ps
+ps=cdfs1.ps
 # Plot binomial cumulative distribution
 gmt math -T0/8/1 0.25 8 T BCDF = p.d
 cat << EOF > ML.txt
@@ -17,9 +17,9 @@ cat << EOF > ML.txt
 7	0.999984741210938
 8	1.000000000000000
 EOF
-gmt psxy -R-0.6/8.6/0/1 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
+gmt psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph > $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Binomial P@-8,0.25@-" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+echo "Binomial C@-8,0.25@-" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
 # Plot Poisson cumulative distribution
 cat << EOF > ML.txt
 0	0.135335283236613
@@ -33,9 +33,9 @@ cat << EOF > ML.txt
 8	0.999762552671739
 EOF
 gmt math -T0/8/1 T 2 PCDF = p.d
-gmt psxy -R-0.6/8.6/0/1 -J -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
+gmt psxy -R-0.6/8.6/0/1.2 -J -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "Poisson P(@~l=2@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+echo "Poisson C(@~l=2@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
 # Plot normal cumulative distribution
 cat << EOF > ML.txt
 -4	0.000031671241833
@@ -49,9 +49,9 @@ cat << EOF > ML.txt
 4	0.999968328758167
 EOF
 gmt math -T-4/4/0.1 T ZCDF = p.d
-gmt psxy -R-4/4/0/1 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
+gmt psxy -R-4/4/0/1.2 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "N(0,1)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+echo "Normal C(0,1)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
 # Plot t cumulative distribution
 cat << EOF > ML.txt
 -4	0.008065044950046
@@ -64,11 +64,11 @@ cat << EOF > ML.txt
 3	0.980029015964141
 4	0.991934955049954
 EOF
-gmt psxy -R-4/4/0/1 -J -O -K p.d -W1p,lightgray -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
+gmt psxy -R-4/4/0/1.2 -J -O -K p.d -W1p,lightgray -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt math -T-4/4/0.1 T 4 TCDF = p.d
 gmt psxy -R -J -O -K p.d -W1p >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "t(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
+echo "Student t(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
 # Plot F cumulative distribution
 cat << EOF > ML.txt
 0	                0
@@ -82,24 +82,8 @@ cat << EOF > ML.txt
 8	0.999667605378123
 EOF
 gmt math -T0/8/0.02 T 20 12 FCDF = p.d
-gmt psxy -R0/8/0/1 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
+gmt psxy -R0/8/0/1.2 -J -O -K p.d -W1p -BWS+t"Cumulative Distribution Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 echo "F(@~n@-1@-=20, n@-2@- = 12@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
-# Plot Chi^2 cumulative distribution
-cat << EOF > ML.txt
-0	                0
-1	0.090204010431050
-2	0.264241117657115
-3	0.442174599628926
-4	0.593994150290162
-5	0.712702504816354
-6	0.800851726528544
-7	0.864111774599567
-8	0.908421805556329
-EOF
-gmt math -T0/8/0.1 T 4 CHICDF = p.d
-gmt psxy -R0/8/0/1 -J -O -K p.d -W1p -BWS+t"Cumulative Distribution Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
-gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-echo "@~c@~@+2@+(@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0 >> $ps
 # Done
 gmt psxy -R -J -O -T >> $ps

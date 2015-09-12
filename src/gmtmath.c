@@ -1651,6 +1651,60 @@ int table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
+int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ECDF 2 1 Cumulative probability density function for Exponential distribution for x = A and lambda = B.  */
+{
+	uint64_t s, row;
+	unsigned int prev;
+	double x, lambda;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = 1.0 - exp (-lambda * x);
+	}
+	return 0;
+}
+
+int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ECRIT 2 1 Critical values for Exponential distribution for alpha = A and lambda = B.  */
+{
+	uint64_t s, row;
+	unsigned int prev;
+	double alpha, lambda;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		alpha  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = -log (1.0 - alpha)/lambda;
+	}
+	return 0;
+}
+
+int table_EPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: EPDF 2 1 Probability density function for Exponential distribution for x = A and lambda = B.  */
+{
+	uint64_t s, row;
+	unsigned int prev;
+	double x, lambda;
+	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
+
+	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		lambda = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		x  = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = lambda * exp (-lambda * x);
+	}
+	return 0;
+}
+
 int table_ERF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ERF 1 1 Error function erf (A).  */
 {
@@ -3231,6 +3285,49 @@ int table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
+int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: RCDF 1 1 Cumulative probability density function for Rayleigh distribution for z = A.  */
+{
+	uint64_t s, row;
+	double z;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		T->segment[s]->coord[col][row] = 1.0 - exp (-0.5*z*z);
+	}
+	return 0;
+}
+
+int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: RCRIT 1 1 Critical values for Rayleigh distribution for alpha = A.  */
+{
+	uint64_t s, row;
+	double alpha;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		alpha = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		T->segment[s]->coord[col][row] = M_SQRT2 * sqrt (-log (1.0 - alpha));
+	}
+	return 0;
+}
+
+int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: RPDF 1 1 Probability density function for Rayleigh distribution for z = A.  */
+{
+	uint64_t s, row;
+	unsigned int prev;
+	double z;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
+		T->segment[s]->coord[col][row] = z * exp (-0.5 * z * z);
+	}
+	return 0;
+}
+
 int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
@@ -3797,6 +3894,81 @@ int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	}
 	if (info->local) return 0;	/* Done with local */
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) if (!GMT_is_dnan (T->segment[s]->coord[col][row])) T->segment[s]->coord[col][row] = high;
+	return 0;
+}
+
+int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: WCDF 3 1 Cumulative Weibull distribution C(x,a,b), with x = A, a = B, and b = C.  */
+{
+	uint64_t s, row;
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	double x, a, b;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <=0 for WCDF!\n");
+	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WCDF!\n");
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
+		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
+		b = (double)((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
+		T_prev2->segment[s]->coord[col][row] = GMT_weibull_cdf (GMT, x, a, b);
+	}
+	return 0;
+}
+
+int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: WCRIT 3 1 Critical values for the Weibull distribution W(x,a,b), with alpha = A, a = B, and b = C.  */
+{
+	uint64_t s, row;
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	double alpha, a, b;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev1]->constant && S[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <=0 for WCRIT!\n");
+	if (S[last]->constant && S[last]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WCRIT!\n");
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		alpha = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
+		a = (double)((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
+		b = (double)((S[last]->constant)  ? S[last]->factor  : T->segment[s]->coord[col][row]);
+		T_prev2->segment[s]->coord[col][row] = GMT_weibull_crit (GMT, alpha, a, b);
+	}
+	return 0;
+}
+
+int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: WPDF 3 1 Probability density function for Weibull distribution, with x = A, scale a = B and shape b = C.  */
+{
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	uint64_t s, row;
+	double x, a, b;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[prev2]->constant && S[prev2]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument x to WPDF must be x >= 0!\n");
+		return -1;
+	}
+	if (S[prev1]->constant && S[prev1]->factor <= 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument a to WPDF must be a positive (a > 0)!\n");
+		return -1;
+	}
+	if (S[last]->constant && S[last]->factor <= 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument b to WPDF must be a positive (b > 0)!\n");
+		return -1;
+	}
+	if (S[prev2]->constant && S[prev1]->constant && S[last]->constant) {	/* WPDF is given constant arguments */
+		double value;
+		x = S[prev2]->factor;
+		a = S[prev1]->factor;	b = S[last]->factor;
+		value = GMT_weibull_pdf (GMT, x, a, b);
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev2->segment[s]->coord[col][row] = value;
+		return 0;
+	}
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->coord[col][row];
+		a = (S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row];
+		b = (S[last]->constant)  ? S[last]->factor : T->segment[s]->coord[col][row];
+		T_prev2->segment[s]->coord[col][row] = GMT_weibull_pdf (GMT, x, a, b);
+	}
 	return 0;
 }
 

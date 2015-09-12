@@ -1331,6 +1331,51 @@ void grd_DUP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	GMT_memcpy (stack[next]->G->data, stack[last]->G->data, info->size, float);
 }
 
+void grd_ECDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ECDF 2 1 Cumulative Exponential distribution C(x,lambda), with x = A and lambda = B.  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1, row, col;
+	double a, b;
+
+	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PCDF!\n");
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+		stack[prev]->G->data[node] = 1.0f - (float)exp (-b * a);
+	}
+}
+
+void grd_ECRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ECRIT 2 1 Critical values for Exponential distribution for alpha = A and lambda = B.  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1, row, col;
+	double a, b;
+
+	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PCDF!\n");
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+		stack[prev]->G->data[node] = -(float)(log (1.0 - a)/b);
+	}
+}
+
+void grd_EPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: EPDF 2 1 Probability density function for Exponential distribution for x = A and lambda = B.  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1, row, col;
+	double a, b;
+
+	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for PCDF!\n");
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (float)(b * exp (-b * a));
+	}
+}
+
 void grd_ERF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ERF 1 1 Error function erf (A).  */
 {
@@ -2964,6 +3009,26 @@ void grd_RAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	}
 }
 
+void grd_RCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RCDF 1 1 Cumulative probability density function for Rayleigh distribution for z = A.  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = 1.0 - exp (-0.5*stack[last]->factor*stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 1.0 - expf (-0.5f*stack[last]->G->data[node]*stack[last]->G->data[node]));
+}
+
+void grd_RCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RCRIT 1 1 Critical values for Rayleigh distribution for alpha = A.  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = M_SQRT2 * sqrt (-log (1.0 - stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : M_SQRT2 * sqrtf (-logf (1.0f - stack[last]->G->data[node])));
+}
+
 void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
@@ -2974,6 +3039,16 @@ void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	if (stack[last]->constant) a = (float)rint (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : rintf (stack[last]->G->data[node]);
+}
+
+void grd_RPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RPDF 1 1 Probability density function for Rayleigh distribution for z = A.  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = stack[last]->factor * exp (-0.5 * stack[last]->factor * stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : stack[last]->G->data[node] * expf (-0.5f * stack[last]->G->data[node] * stack[last]->G->data[node]));
 }
 
 void assign_grdstack (struct GRDMATH_STACK *Sto, struct GRDMATH_STACK *Sfrom)
@@ -3571,6 +3646,63 @@ void grd_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	for (node = 0; node < info->size; node++) if (!GMT_is_fnan (stack[last]->G->data[node])) stack[last]->G->data[node] = high;
 }
 
+void grd_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: WCDF 3 1 Cumulative Weibull distribution C(x,a,b), with x = A, n1 = B, and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double x, a, b;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev1]->constant && stack[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <= 0 for WCDF!\n");
+	if (stack[last]->constant  && stack[last]->factor  <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WCDF!\n");
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		x = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		a = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
+		b = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
+		stack[prev2]->G->data[node] = (float)GMT_weibull_cdf (GMT, x, a, b);
+	}
+}
+
+void grd_WCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: WCRIT 3 1 Critical values for the Weibull distribution W(x,a,b), with alpha = A, a = B, and b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double alpha, a, b;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev1]->constant && stack[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <= 0 for WCRIT!\n");
+	if (stack[last]->constant  && stack[last]->factor  <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WCRIT!\n");
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		alpha = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		a = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
+		b = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
+		stack[prev2]->G->data[node] = (float)GMT_weibull_crit (GMT, alpha, a, b);
+	}
+}
+
+void grd_WPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: WPDF 3 1 Probability density function for Weibull distribution, with x = A, scale a = B and shape b = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double x, a, b;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev1]->constant && stack[prev1]->factor <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two <= 0 for WPDF!\n");
+	if (stack[last]->constant  && stack[last]->factor  <= 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three <= 0 for WPDF!\n");
+	GMT_grd_loop (GMT, info->G, row, col, node) {
+		x = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		a = lrint ((stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node]);
+		b = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
+		stack[prev2]->G->data[node] = (float)GMT_weibull_pdf (GMT, x, a, b);
+	}
+}
+
 void grd_WRAP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: WRAP 1 1 wrap (A). (A in radians). */
 /*
@@ -3743,6 +3875,16 @@ void grd_ZCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	if (stack[last]->constant) a = GMT_zdist (GMT, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_zdist (GMT, stack[last]->G->data[node]));
+}
+
+void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ZPDF 1 1 Probability density function for normal distribution, with z = A.  */
+{
+	uint64_t node;
+	double a = 0.0, f = 1.0 / sqrt (TWO_PI);
+
+	if (stack[last]->constant) a = f * exp (-0.5 * stack[last]->factor * stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : f * expf (-0.5f * stack[last]->G->data[node] * stack[last]->G->data[node]));
 }
 
 /* ---------------------- end operator functions --------------------- */

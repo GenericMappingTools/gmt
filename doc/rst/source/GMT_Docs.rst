@@ -387,8 +387,11 @@ changes to syntax will be backwards compatible:
    these are **TPDF** and **TCDF** for the Student t-distribution,
    **FPDF** and **FCDF** for the F-distribution,
    **CHIPDF** and **CHICDF** for the Chi-squared distribution,
+   **EPDF** and **ECDF** for the exponential distribution (as well as **ECRIT**),
    **PPDF** and **PCDF** for the Poisson distribution,
-   **LPDF** and **LCDF** for the Laplace distribution (as well as **LCRIT**), and
+   **LPDF** and **LCDF** for the Laplace distribution (as well as **LCRIT**),
+   **RPDF** and **RCDF** for the Rayleigh distribution (as well as **RCRIT**),
+   **WPDF** and **WCDF** for the Weibull distribution (as well as **WCRIT**), and
    **ZPDF** and **ZCDF** for the Normal distribution. We added **ROLL** for cyclic shifts of the stack, as
    well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  Finally, we added
@@ -418,8 +421,11 @@ changes to syntax will be backwards compatible:
    these are **TPDF** and **TCDF** for the Student t-distribution,
    **FPDF** and **FCDF** for the F-distribution,
    **CHIPDF** and **CHICDF** for the Chi-squared distribution,
+   **EPDF** and **ECDF** for the exponential distribution (as well as **ECRIT**),
    **PPDF** and **PCDF** for the Poisson distribution,
-   **LPDF** and **LCDF** for the Laplace distribution (as well as **LCRIT**), and
+   **LPDF** and **LCDF** for the Laplace distribution (as well as **LCRIT**),
+   **RPDF** and **RCDF** for the Rayleigh distribution (as well as **RCRIT**),
+   **WPDF** and **WCDF** for the Weibull distribution (as well as **WCRIT**), and
    **ZPDF** and **ZCDF** for the Normal distribution.  We added **LDISTG** (for distances
    to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), and **ROLL** for cyclic shifts of the stack,

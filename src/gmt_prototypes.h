@@ -592,6 +592,9 @@ EXTERN_MSC void GMT_chi2 (struct GMT_CTRL *GMT, double chi2, double nu, double *
 EXTERN_MSC void GMT_poisson_cdf (struct GMT_CTRL *GMT, double k, double mu, double *prob);
 EXTERN_MSC double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p);
 EXTERN_MSC double GMT_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p);
+EXTERN_MSC double GMT_weibull_pdf (struct GMT_CTRL *GMT, double x, double scale, double shape);
+EXTERN_MSC double GMT_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double shape);
+EXTERN_MSC double GMT_weibull_crit (struct GMT_CTRL *GMT, double p, double scale, double shape);
 EXTERN_MSC void GMT_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, double *scale);
 EXTERN_MSC void GMT_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, double *scale);
 EXTERN_MSC double GMT_psi (struct GMT_CTRL *GMT, double z[], double p[]);
