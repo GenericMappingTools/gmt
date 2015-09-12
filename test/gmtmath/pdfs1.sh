@@ -3,7 +3,7 @@
 
 # Testing gmt math for BPDF PPDF ZPDF TPDF FPDF CHIPDF
 # Red dots are output from MATLAB for comparison
-ps=pdfs.ps
+ps=pdfs1.ps
 # Plot binomial distribution
 gmt math -T0/8/1 0.25 8 T BPDF = p.d
 cat << EOF > ML.txt

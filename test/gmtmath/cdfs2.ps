@@ -666,38 +666,60 @@ O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 900 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -P -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph
-%%PROJ: xy -0.60000000 8.60000000 0.00000000 1.20000000 -0.600 8.600 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%GMT: psxy -R-4/4/0/1.2 -JX6i/1.2i -P -K p.d -W1p -BWS -Bxa1 -Byaf -Xc -Y0.75i --MAP_FRAME_TYPE=graph
+%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
-0 0 M
-7200 0 D
-0 1440 D
--7200 0 D
-PSL_clip N
-8 W
-V
-{0.565 0.933 0.565 C} FS
-O1
-120 626 157 0 Sb
-440 626 939 0 Sb
-814 626 1722 0 Sb
-1063 626 2504 0 Sb
-1167 626 3287 0 Sb
-1195 626 4070 0 Sb
-1200 626 4852 0 Sb
-1200 626 5635 0 Sb
-1200 626 6417 0 Sb
-U
-PSL_cliprestore
+17 W
+0 11 M
+450 7 D
+360 9 D
+360 13 D
+270 14 D
+270 19 D
+270 26 D
+180 22 D
+180 27 D
+180 33 D
+90 19 D
+90 21 D
+90 23 D
+90 26 D
+90 28 D
+90 31 D
+90 35 D
+90 38 D
+90 42 D
+90 47 D
+90 52 D
+180 114 D
+90 52 D
+90 47 D
+90 42 D
+90 38 D
+90 35 D
+90 31 D
+90 28 D
+90 26 D
+90 23 D
+90 21 D
+90 19 D
+180 33 D
+180 27 D
+180 22 D
+270 26 D
+270 19 D
+360 18 D
+450 14 D
+450 9 D
+180 2 D
+S
 25 W
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
-O0
 V 0 1440 T 90 R
 N 0 0 M -142 0 D S
 U
@@ -752,46 +774,46 @@ U
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
 8 W
-N 470 0 M 0 -83 D S
-N 1252 0 M 0 -83 D S
-N 2035 0 M 0 -83 D S
-N 2817 0 M 0 -83 D S
+N 0 0 M 0 -83 D S
+N 900 0 M 0 -83 D S
+N 1800 0 M 0 -83 D S
+N 2700 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
-N 4383 0 M 0 -83 D S
-N 5165 0 M 0 -83 D S
-N 5948 0 M 0 -83 D S
-N 6730 0 M 0 -83 D S
+N 4500 0 M 0 -83 D S
+N 5400 0 M 0 -83 D S
+N 6300 0 M 0 -83 D S
+N 7200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
+(-4) sh mx
+(-3) sh mx
+(-2) sh mx
+(-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 (4) sh mx
-(5) sh mx
-(6) sh mx
-(7) sh mx
-(8) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
-470 PSL_A0_y MM
-(0) bc Z
-1252 PSL_A0_y MM
-(1) bc Z
-2035 PSL_A0_y MM
-(2) bc Z
-2817 PSL_A0_y MM
-(3) bc Z
+0 PSL_A0_y MM
+(-4) bc Z
+900 PSL_A0_y MM
+(-3) bc Z
+1800 PSL_A0_y MM
+(-2) bc Z
+2700 PSL_A0_y MM
+(-1) bc Z
 3600 PSL_A0_y MM
+(0) bc Z
+4500 PSL_A0_y MM
+(1) bc Z
+5400 PSL_A0_y MM
+(2) bc Z
+6300 PSL_A0_y MM
+(3) bc Z
+7200 PSL_A0_y MM
 (4) bc Z
-4383 PSL_A0_y MM
-(5) bc Z
-5165 PSL_A0_y MM
-(6) bc Z
-5948 PSL_A0_y MM
-(7) bc Z
-6730 PSL_A0_y MM
-(8) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
 %%EndObject
@@ -801,35 +823,9 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
-%%PROJ: xy -0.60000000 8.60000000 0.00000000 1.20000000 -0.600 8.600 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%GMT: pstext -R-4/4/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
+%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-4 W
-V
-{1 0 0 C} FS
-47 470 120 Sc
-47 1252 440 Sc
-47 2035 814 Sc
-47 2817 1063 Sc
-47 3600 1167 Sc
-47 4383 1195 Sc
-47 5165 1200 Sc
-47 5948 1200 Sc
-47 6730 1200 Sc
-U
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%%GMT: pstext -R-0.6/8.6/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
-%%PROJ: xy -0.60000000 8.60000000 0.00000000 1.20000000 -0.600 8.600 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -841,10 +837,8 @@ clipsave
 PSL_clip N
 120 1440 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
 200 F6
-V MU 0 0 M (Binomial C) FP 0 -50 G 140 F6 (8,0.25) FP 0 50 G pathbbox N 4 1 roll pop pop pop U neg 0 exch G
-(Binomial C) Z
-0 -50 G 140 F6 (8,0.25) Z
-0 50 G PSL_cliprestore
+(Laplace C\(z\)) tl Z
+PSL_cliprestore
 %%EndObject
 0 A
 FQ
@@ -852,38 +846,42 @@ O0
 0 1980 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -O -K -Glightgreen p.d -Sb0.8u -W0.5p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph
-%%PROJ: xy -0.60000000 8.60000000 0.00000000 1.20000000 -0.600 8.600 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_4
+%%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K p.d -W1p -BWS -Bxa1 -Byaf -Y1.65i --MAP_FRAME_TYPE=graph
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-clipsave
+17 W
 0 0 M
-7200 0 D
-0 1440 D
--7200 0 D
-PSL_clip N
-8 W
-V
-{0.565 0.933 0.565 C} FS
-O1
-162 626 157 0 Sb
-487 626 939 0 Sb
-812 626 1722 0 Sb
-1029 626 2504 0 Sb
-1137 626 3287 0 Sb
-1180 626 4070 0 Sb
-1195 626 4852 0 Sb
-1199 626 5635 0 Sb
-1200 626 6417 0 Sb
-U
-PSL_cliprestore
+90 218 D
+90 178 D
+90 145 D
+90 120 D
+90 98 D
+90 80 D
+90 65 D
+90 54 D
+90 44 D
+90 36 D
+90 29 D
+90 24 D
+90 20 D
+90 16 D
+90 13 D
+90 11 D
+90 9 D
+180 13 D
+180 9 D
+270 8 D
+360 6 D
+720 3 D
+3960 1 D
+S
 25 W
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
-O0
 V 0 1440 T 90 R
 N 0 0 M -142 0 D S
 U
@@ -938,15 +936,15 @@ U
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
 8 W
-N 470 0 M 0 -83 D S
-N 1252 0 M 0 -83 D S
-N 2035 0 M 0 -83 D S
-N 2817 0 M 0 -83 D S
+N 0 0 M 0 -83 D S
+N 900 0 M 0 -83 D S
+N 1800 0 M 0 -83 D S
+N 2700 0 M 0 -83 D S
 N 3600 0 M 0 -83 D S
-N 4383 0 M 0 -83 D S
-N 5165 0 M 0 -83 D S
-N 5948 0 M 0 -83 D S
-N 6730 0 M 0 -83 D S
+N 4500 0 M 0 -83 D S
+N 5400 0 M 0 -83 D S
+N 6300 0 M 0 -83 D S
+N 7200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
 (0) sh mx
@@ -960,23 +958,23 @@ N 6730 0 M 0 -83 D S
 (8) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
-470 PSL_A0_y MM
+0 PSL_A0_y MM
 (0) bc Z
-1252 PSL_A0_y MM
+900 PSL_A0_y MM
 (1) bc Z
-2035 PSL_A0_y MM
+1800 PSL_A0_y MM
 (2) bc Z
-2817 PSL_A0_y MM
+2700 PSL_A0_y MM
 (3) bc Z
 3600 PSL_A0_y MM
 (4) bc Z
-4383 PSL_A0_y MM
+4500 PSL_A0_y MM
 (5) bc Z
-5165 PSL_A0_y MM
+5400 PSL_A0_y MM
 (6) bc Z
-5948 PSL_A0_y MM
+6300 PSL_A0_y MM
 (7) bc Z
-6730 PSL_A0_y MM
+7200 PSL_A0_y MM
 (8) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
@@ -987,24 +985,24 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-0.6/8.6/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
-%%PROJ: xy -0.60000000 8.60000000 0.00000000 1.20000000 -0.600 8.600 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_5
+%%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
 V
 {1 0 0 C} FS
-47 470 162 Sc
-47 1252 487 Sc
-47 2035 812 Sc
-47 2817 1029 Sc
-47 3600 1137 Sc
-47 4383 1180 Sc
-47 5165 1195 Sc
-47 5948 1199 Sc
-47 6730 1200 Sc
+47 0 0 Sc
+47 900 1038 Sc
+47 1800 1178 Sc
+47 2700 1197 Sc
+47 3600 1200 Sc
+47 4500 1200 Sc
+47 5400 1200 Sc
+47 6300 1200 Sc
+47 7200 1200 Sc
 U
 %%EndObject
 0 A
@@ -1013,9 +1011,9 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-0.6/8.6/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
-%%PROJ: xy -0.60000000 8.60000000 0.00000000 1.20000000 -0.600 8.600 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_6
+%%GMT: pstext -R0/8/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1027,8 +1025,8 @@ clipsave
 PSL_clip N
 120 1440 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
 200 F6
-V MU 0 0 M (Poisson C\() FP 200 F12 (l=2) FP 200 F6 (\)) FP pathbbox N 4 1 roll pop pop pop U neg 0 exch G
-(Poisson C\() Z
+V MU 0 0 M (Exponential C\() FP 200 F12 (l=2) FP 200 F6 (\)) FP pathbbox N 4 1 roll pop pop pop U neg 0 exch G
+(Exponential C\() Z
 200 F12 (l=2) Z
 200 F6 (\)) Z
 PSL_cliprestore
@@ -1039,55 +1037,45 @@ O0
 0 1980 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-4/4/0/1.2 -JX6i/1.2i -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_7
+%%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
 0 0 M
-810 1 D
-360 3 D
-180 3 D
-270 10 D
-90 4 D
-180 13 D
-180 19 D
-180 27 D
-90 17 D
-90 19 D
-90 22 D
-90 25 D
-90 27 D
-90 31 D
-90 33 D
-90 36 D
+90 6 D
+90 18 D
+90 29 D
 90 39 D
-90 41 D
-90 43 D
-270 139 D
-270 143 D
-180 92 D
-90 43 D
-90 41 D
-90 39 D
-90 36 D
-90 33 D
-90 31 D
-90 27 D
+90 49 D
+90 57 D
+90 63 D
+90 68 D
+180 143 D
+90 73 D
+90 71 D
+90 69 D
+90 65 D
+90 60 D
+90 56 D
+90 51 D
+90 46 D
+90 40 D
+90 35 D
+90 30 D
 90 25 D
 90 22 D
-90 19 D
-90 17 D
-180 27 D
-180 19 D
+90 18 D
+90 14 D
+90 12 D
+90 10 D
 180 13 D
-270 11 D
-90 3 D
-360 5 D
-810 2 D
-180 0 D
+90 5 D
+270 8 D
+450 4 D
+3780 1 D
 S
 25 W
 2 setlinecap
@@ -1158,35 +1146,35 @@ N 6300 0 M 0 -83 D S
 N 7200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-4) sh mx
-(-3) sh mx
-(-2) sh mx
-(-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 (4) sh mx
+(5) sh mx
+(6) sh mx
+(7) sh mx
+(8) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-4) bc Z
-900 PSL_A0_y MM
-(-3) bc Z
-1800 PSL_A0_y MM
-(-2) bc Z
-2700 PSL_A0_y MM
-(-1) bc Z
-3600 PSL_A0_y MM
 (0) bc Z
-4500 PSL_A0_y MM
+900 PSL_A0_y MM
 (1) bc Z
-5400 PSL_A0_y MM
+1800 PSL_A0_y MM
 (2) bc Z
-6300 PSL_A0_y MM
+2700 PSL_A0_y MM
 (3) bc Z
-7200 PSL_A0_y MM
+3600 PSL_A0_y MM
 (4) bc Z
+4500 PSL_A0_y MM
+(5) bc Z
+5400 PSL_A0_y MM
+(6) bc Z
+6300 PSL_A0_y MM
+(7) bc Z
+7200 PSL_A0_y MM
+(8) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
 %%EndObject
@@ -1196,9 +1184,9 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-4/4/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_8
+%%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1206,13 +1194,13 @@ O0
 V
 {1 0 0 C} FS
 47 0 0 Sc
-47 900 2 Sc
-47 1800 27 Sc
-47 2700 190 Sc
-47 3600 600 Sc
-47 4500 1010 Sc
-47 5400 1173 Sc
-47 6300 1198 Sc
+47 900 472 Sc
+47 1800 1038 Sc
+47 2700 1187 Sc
+47 3600 1200 Sc
+47 4500 1200 Sc
+47 5400 1200 Sc
+47 6300 1200 Sc
 47 7200 1200 Sc
 U
 %%EndObject
@@ -1222,9 +1210,9 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-4/4/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_9
+%%GMT: pstext -R0/8/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1236,7 +1224,7 @@ clipsave
 PSL_clip N
 120 1440 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
 200 F6
-(Normal C\(0,1\)) tl Z
+(Rayleigh C\(z\)) tl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1245,59 +1233,43 @@ O0
 0 1980 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-4/4/0/1.2 -JX6i/1.2i -O -K p.d -W1p,lightgray -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_10
+%%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
-0.827 A
 0 0 M
-810 1 D
-360 3 D
-180 3 D
-270 10 D
-90 4 D
-180 13 D
-180 19 D
-180 27 D
-90 17 D
-90 19 D
-90 22 D
-90 25 D
-90 27 D
-90 31 D
-90 33 D
-90 36 D
-90 39 D
-90 41 D
-90 43 D
-270 139 D
-270 143 D
-180 92 D
-90 43 D
-90 41 D
-90 39 D
-90 36 D
-90 33 D
-90 31 D
-90 27 D
-90 25 D
-90 22 D
-90 19 D
-90 17 D
-180 27 D
-180 19 D
-180 13 D
-270 11 D
-90 3 D
-360 5 D
-810 2 D
-180 0 D
+90 37 D
+90 66 D
+90 79 D
+90 86 D
+180 178 D
+90 86 D
+90 81 D
+90 76 D
+90 70 D
+90 62 D
+90 57 D
+90 49 D
+90 44 D
+90 38 D
+90 32 D
+90 28 D
+90 24 D
+90 20 D
+90 16 D
+90 14 D
+90 11 D
+180 17 D
+180 11 D
+180 7 D
+360 7 D
+450 3 D
+3870 1 D
 S
 25 W
-0 A
 2 setlinecap
 N 0 1440 M 0 -1440 D S
 {0 A} FS
@@ -1366,35 +1338,35 @@ N 6300 0 M 0 -83 D S
 N 7200 0 M 0 -83 D S
 /PSL_AH0 0
 /MM {neg M} def
-(-4) sh mx
-(-3) sh mx
-(-2) sh mx
-(-1) sh mx
 (0) sh mx
 (1) sh mx
 (2) sh mx
 (3) sh mx
 (4) sh mx
+(5) sh mx
+(6) sh mx
+(7) sh mx
+(8) sh mx
 def
 /PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
 0 PSL_A0_y MM
-(-4) bc Z
-900 PSL_A0_y MM
-(-3) bc Z
-1800 PSL_A0_y MM
-(-2) bc Z
-2700 PSL_A0_y MM
-(-1) bc Z
-3600 PSL_A0_y MM
 (0) bc Z
-4500 PSL_A0_y MM
+900 PSL_A0_y MM
 (1) bc Z
-5400 PSL_A0_y MM
+1800 PSL_A0_y MM
 (2) bc Z
-6300 PSL_A0_y MM
+2700 PSL_A0_y MM
 (3) bc Z
-7200 PSL_A0_y MM
+3600 PSL_A0_y MM
 (4) bc Z
+4500 PSL_A0_y MM
+(5) bc Z
+5400 PSL_A0_y MM
+(6) bc Z
+6300 PSL_A0_y MM
+(7) bc Z
+7200 PSL_A0_y MM
+(8) bc Z
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
 %%EndObject
@@ -1404,82 +1376,24 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R-4/4/0/1.2 -JX6i/1.2i -O -K p.d -W1p
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_11
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-17 W
-0 10 M
-180 1 D
-450 7 D
-450 11 D
-270 11 D
-270 16 D
-90 6 D
-180 16 D
-180 21 D
-90 12 D
-180 29 D
-90 18 D
-90 20 D
-90 22 D
-90 24 D
-90 27 D
-90 30 D
-90 33 D
-90 35 D
-90 37 D
-180 81 D
-270 133 D
-270 133 D
-180 81 D
-90 37 D
-90 35 D
-90 33 D
-90 30 D
-90 27 D
-90 24 D
-90 22 D
-90 20 D
-90 18 D
-180 29 D
-180 23 D
-90 10 D
-180 16 D
-270 17 D
-270 13 D
-270 8 D
-450 9 D
-270 4 D
-180 1 D
-S
-%%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%%GMT: psxy -R-4/4/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_12
+%%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
 V
 {1 0 0 C} FS
-47 0 10 Sc
-47 900 24 Sc
-47 1800 70 Sc
-47 2700 224 Sc
-47 3600 600 Sc
-47 4500 976 Sc
-47 5400 1130 Sc
-47 6300 1176 Sc
-47 7200 1190 Sc
+47 0 0 Sc
+47 900 759 Sc
+47 1800 1129 Sc
+47 2700 1193 Sc
+47 3600 1200 Sc
+47 4500 1200 Sc
+47 5400 1200 Sc
+47 6300 1200 Sc
+47 7200 1200 Sc
 U
 %%EndObject
 0 A
@@ -1488,9 +1402,9 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R-4/4/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
-%%PROJ: xy -4.00000000 4.00000000 0.00000000 1.20000000 -4.000 4.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_13
+%%GMT: pstext -R0/8/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
+%%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1502,10 +1416,7 @@ clipsave
 PSL_clip N
 120 1440 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
 200 F6
-V MU 0 0 M (Student t\() FP 200 F12 (n=4) FP 200 F6 (\)) FP pathbbox N 4 1 roll pop pop pop U neg 0 exch G
-(Student t\() Z
-200 F12 (n=4) Z
-200 F6 (\)) Z
+(Weibull C\(z,1,1.5\)) tl Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1516,50 +1427,34 @@ O0
 % PostScript produced by:
 %%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K p.d -W1p '-BWS+tCumulative Distribution Functions' -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i
 %%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_14
+%%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 17 W
 0 0 M
-180 1 D
-54 4 D
-36 5 D
-36 9 D
-36 13 D
-36 18 D
-36 22 D
-54 41 D
-54 50 D
-90 95 D
-180 206 D
-72 78 D
-72 73 D
-72 67 D
-54 46 D
-72 55 D
-54 38 D
-72 45 D
-90 49 D
-90 42 D
-54 22 D
-90 32 D
-108 32 D
-126 30 D
-90 17 D
-54 10 D
-126 18 D
-126 15 D
-198 17 D
-234 15 D
-306 12 D
-342 8 D
-270 4 D
-414 4 D
-342 2 D
-558 2 D
-1242 2 D
-1080 1 D
+90 1 D
+180 11 D
+90 9 D
+180 23 D
+90 14 D
+270 50 D
+270 58 D
+360 85 D
+810 197 D
+450 103 D
+450 94 D
+180 35 D
+270 49 D
+270 46 D
+360 55 D
+450 61 D
+360 42 D
+360 37 D
+270 25 D
+360 29 D
+540 37 D
+540 29 D
 S
 25 W
 2 setlinecap
@@ -1674,7 +1569,7 @@ O0
 % PostScript produced by:
 %%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -K ML.txt -Sc0.2c -Gred -N
 %%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_15
+%%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1682,14 +1577,14 @@ O0
 V
 {1 0 0 C} FS
 47 0 0 Sc
-47 900 579 Sc
-47 1800 1069 Sc
-47 2700 1167 Sc
-47 3600 1190 Sc
-47 4500 1196 Sc
-47 5400 1198 Sc
-47 6300 1199 Sc
-47 7200 1200 Sc
+47 900 108 Sc
+47 1800 317 Sc
+47 2700 531 Sc
+47 3600 713 Sc
+47 4500 855 Sc
+47 5400 961 Sc
+47 6300 1037 Sc
+47 7200 1090 Sc
 U
 %%EndObject
 0 A
@@ -1700,7 +1595,7 @@ O0
 % PostScript produced by:
 %%GMT: pstext -R0/8/0/1.2 -JX6i/1.2i -O -K -F+f12p,Times-Italic+cTL+jTL -Dj0.1i/0
 %%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_16
+%%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1712,13 +1607,11 @@ clipsave
 PSL_clip N
 120 1440 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
 200 F6
-V MU 0 0 M (F\() FP 200 F12 (n) FP 0 -50 G 140 F12 (1) FP 0 50 G 200 F12 (=20, n) FP 0 -50 G 140 F12 (2) FP 0 50 G 200 F12 ( = 12) FP 200 F6 (\)) FP pathbbox N 4 1 roll pop pop pop U neg 0 exch G
-(F\() Z
-200 F12 (n) Z
-0 -50 G 140 F12 (1) Z
-0 50 G 200 F12 (=20, n) Z
-0 -50 G 140 F12 (2) Z
-0 50 G 200 F12 ( = 12) Z
+V MU 0 0 M 200 F12 (c) FP 0 70 G 140 F6 (2) FP 0 -70 G 200 F6 (\(z,) FP 200 F12 (n=4) FP 200 F6 (\)) FP pathbbox N 4 1 roll pop pop pop U neg 0 exch G
+200 F12 (c) Z
+0 70 G 140 F6 (2) Z
+0 -70 G 200 F6 (\(z,) Z
+200 F12 (n=4) Z
 200 F6 (\)) Z
 PSL_cliprestore
 %%EndObject
@@ -1730,7 +1623,7 @@ O0
 % PostScript produced by:
 %%GMT: psxy -R0/8/0/1.2 -JX6i/1.2i -O -T
 %%PROJ: xy 0.00000000 8.00000000 0.00000000 1.20000000 0.000 8.000 0.000 1.200 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
-%%BeginObject PSL_Layer_17
+%%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
