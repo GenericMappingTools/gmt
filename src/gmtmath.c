@@ -875,7 +875,7 @@ int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BCDF 3 1 Cumulative binomial probability distribution C_n,p(x), with p = A, n = B and x = C.  */
+/*OPERATOR: BCDF 3 1 Binomial cumulative distribution function for p = A, n = B and x = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row;
@@ -937,7 +937,7 @@ int table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 }
 
 int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BPDF 3 1 binomial probability distribution B_n,p(x), with p = A, n = B and x = C.  */
+/*OPERATOR: BPDF 3 1 Binomial probability density function for p = A, n = B and x = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row;
@@ -1217,7 +1217,7 @@ int table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_CHICRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: CHICRIT 2 1 Critical value for chi-squared-distribution, with alpha = A and n = B.  */
+/*OPERATOR: CHICRIT 2 1 Chi-squared distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1237,7 +1237,7 @@ int table_CHICRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 }
 
 int table_CHICDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: CHICDF 2 1 Cumulative chi-squared-distribution P(chi2,nu), with chi2 = A and nu = B.  */
+/*OPERATOR: CHICDF 2 1 Chi-squared cumulative distribution function for chi2 = A and nu = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1258,7 +1258,7 @@ int table_CHICDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 }
 
 int table_CHIPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: CHIPDF 2 1 Probability density function for Chi^2 for chi = A and nu = B.  */
+/*OPERATOR: CHIPDF 2 1 Chi^2 probability density function for chi = A and nu = B.  */
 {
 	uint64_t s, row, nu;
 	unsigned int prev;
@@ -1478,7 +1478,7 @@ int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: PCDF 2 1 Cumulative Poisson distribution F(x,lambda), with x = A and lambda = B.  */
+/*OPERATOR: PCDF 2 1 Poisson cumulative distribution function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1652,7 +1652,7 @@ int table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 }
 
 int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ECDF 2 1 Cumulative probability density function for Exponential distribution for x = A and lambda = B.  */
+/*OPERATOR: ECDF 2 1 Exponential cumulative distribution function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1670,7 +1670,7 @@ int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ECRIT 2 1 Critical values for Exponential distribution for alpha = A and lambda = B.  */
+/*OPERATOR: ECRIT 2 1 Exponential distribution critical value for alpha = A and lambda = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1688,7 +1688,7 @@ int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_EPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: EPDF 2 1 Probability density function for Exponential distribution for x = A and lambda = B.  */
+/*OPERATOR: EPDF 2 1 Exponential probability density function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -1804,7 +1804,7 @@ int table_FACT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: FCRIT 3 1 Critical value for F-distribution, with alpha = A, n1 = B, and n2 = C.  */
+/*OPERATOR: FCRIT 3 1 F distribution critical value for alpha = A, nu1 = B, and nu2 = C.  */
 {
 	uint64_t s, row;
 	int nu1, nu2;
@@ -1825,7 +1825,7 @@ int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: FCDF 3 1 Cumulative F-distribution Q(F,n1,n2), with F = A, n1 = B, and n2 = C.  */
+/*OPERATOR: FCDF 3 1 F cumulative distribution function for F = A, nu1 = B, and nu2 = C.  */
 {
 	uint64_t s, row, nu1, nu2;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -1888,7 +1888,7 @@ int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: FPDF 3 1 Probability density function for F distribution, with F = A, nu1 = B and nu2 = C.  */
+/*OPERATOR: FPDF 3 1 F probability density distribution for F = A, nu1 = B and nu2 = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row, nu1, nu2;
@@ -2369,7 +2369,7 @@ int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 /* Laplace stuff based on https://en.wikipedia.org/wiki/Laplace_distribution */
 
 int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: LCDF 1 1 Cumulative Laplace distribution L(z), with z = A.  */
+/*OPERATOR: LCDF 1 1 Laplace cumulative distribution function for z = A.  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -2381,7 +2381,7 @@ int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: LCRIT 1 1 Critical value for the Laplace distribution, with alpha = A.  */
+/*OPERATOR: LCRIT 1 1 Laplace distribution critical value for alpha = A.  */
 {
 	uint64_t s, row;
 	double a = 0.0, p;
@@ -2554,7 +2554,7 @@ int table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: LPDF 1 1 Probability density function for Laplace distribution, with z = A.  */
+/*OPERATOR: LPDF 1 1 Laplace probability density function for z = A.  */
 {
 	uint64_t s, row;
 	double z = 0.0;
@@ -3090,7 +3090,7 @@ int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 }
 
 int table_PPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: PPDF 2 1 Probability density function for Poisson's distribution for x = A and lambda = B.  */
+/*OPERATOR: PPDF 2 1 Poisson probability density function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -3286,7 +3286,7 @@ int table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: RCDF 1 1 Cumulative probability density function for Rayleigh distribution for z = A.  */
+/*OPERATOR: RCDF 1 1 Rayleigh cumulative distribution function for z = A.  */
 {
 	uint64_t s, row;
 	double z;
@@ -3300,7 +3300,7 @@ int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: RCRIT 1 1 Critical values for Rayleigh distribution for alpha = A.  */
+/*OPERATOR: RCRIT 1 1 Rayleigh distribution critical value for alpha = A.  */
 {
 	uint64_t s, row;
 	double alpha;
@@ -3314,7 +3314,7 @@ int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: RPDF 1 1 Probability density function for Rayleigh distribution for z = A.  */
+/*OPERATOR: RPDF 1 1 Rayleigh probability density function for z = A.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -3797,7 +3797,7 @@ int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_TCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: TCDF 2 1 Cumulative Student t probability density function for t = A and nu = B.  */
+/*OPERATOR: TCDF 2 1 Student's t cumulative distribution function for t = A and nu = B.  */
 {
 	uint64_t s, row, nu;
 	unsigned int prev;
@@ -3834,7 +3834,7 @@ int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 }
 
 int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: TPDF 2 1 Probability density function for Student t for t = A and nu = B.  */
+/*OPERATOR: TPDF 2 1 Student's t probability density function for t = A and nu = B.  */
 {
 	uint64_t s, row, nu;
 	unsigned int prev;
@@ -3852,7 +3852,7 @@ int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: TCRIT 2 1 Critical value for Student's t-distribution, with alpha = A and n = B.  */
+/*OPERATOR: TCRIT 2 1 Student's t distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
@@ -3898,7 +3898,7 @@ int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: WCDF 3 1 Cumulative Weibull distribution C(x,a,b), with x = A, a = B, and b = C.  */
+/*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
 	uint64_t s, row;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -3917,7 +3917,7 @@ int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: WCRIT 3 1 Critical values for the Weibull distribution W(x,a,b), with alpha = A, a = B, and b = C.  */
+/*OPERATOR: WCRIT 3 1 Weibull distribution critical value for alpha = A, scale = B, and shape = C.  */
 {
 	uint64_t s, row;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -3936,7 +3936,7 @@ int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: WPDF 3 1 Probability density function for Weibull distribution, with x = A, scale a = B and shape b = C.  */
+/*OPERATOR: WPDF 3 1 Weibull probability density function for x = A, scale = B and shape = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
 	uint64_t s, row;
@@ -4050,7 +4050,7 @@ int table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 }
 
 int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ZCRIT 1 1 Critical value for the normal-distribution, with alpha = A.  */
+/*OPERATOR: ZCRIT 1 1 Normal distribution critical value for alpha = A.  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -4062,7 +4062,7 @@ int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 }
 
 int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ZCDF 1 1 Cumulative normal-distribution, with z = A.  */
+/*OPERATOR: ZCDF 1 1 Normal cumulative distribution function for z = A.  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -4074,7 +4074,7 @@ int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 }
 
 int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ZPDF 1 1 Probability density function for normal distribution, with z = A.  */
+/*OPERATOR: ZPDF 1 1 Normal probability density function for z = A.  */
 {
 	uint64_t s, row;
 	double z = 0.0, f = 1.0 / sqrt (TWO_PI);
