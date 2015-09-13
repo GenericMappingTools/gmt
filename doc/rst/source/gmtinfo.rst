@@ -125,6 +125,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
+.. include:: explain_-ocols.rst_
+
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
