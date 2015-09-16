@@ -3317,7 +3317,6 @@ int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 /*OPERATOR: RPDF 1 1 Rayleigh probability density function for z = A.  */
 {
 	uint64_t s, row;
-	unsigned int prev;
 	double z;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
