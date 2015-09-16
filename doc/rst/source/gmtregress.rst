@@ -34,11 +34,11 @@ Description
 and determines the best linear regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
-the model, or turn of evaluation completely.  Instead of determining the best fit we can
+the model, or turn off evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
 This is particularly useful when analyzing data with many outliers.  Note: If you
-actually need to work with log10 of *x* or *y* you can accomplish that transformation via **-i**.
+actually need to work with log10 of *x* or *y* you can accomplish that transformation during read by using the **-i** option.
 
 
 Required Arguments
@@ -78,14 +78,14 @@ Optional Arguments
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
     **c** (symmetrical confidence interval on the regression; see **-C**
-    for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1, for
+    for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
 
 **-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
     absolute residuals), **2** (Least-squares; the mean of the squared residuals), 
     **r** (LMS; The least median of the squared residuals), or **w** (RLS; reweighted least squares: the
-    mean of the squared residuals after outliers identify via LMS have been removed) [Default is **2**].
+    mean of the squared residuals after outliers identified via LMS have been removed) [Default is **2**].
     Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
     As alluded to, RLS implies an initial LMS regression which is then used to identify outliers in the data,
     assign these a zero weight, and then redo the regression using a L-2 norm.
