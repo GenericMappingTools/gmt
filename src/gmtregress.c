@@ -450,7 +450,7 @@ double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double
 	ee = GMT_memory (GMT, NULL, n, struct GMT_OBSERVATION);
 	for (k = 0; k < n; k++) {
 		ee[k].weight = (float)W[k];
-		ee[k].value  = (float)ey[k];
+		ee[k].value  = (float)fabs (ey[k]);
 	}
 	MAD = GMT_median_weighted (GMT, ee, n, 0.5);
 	GMT_free (GMT, ee);
