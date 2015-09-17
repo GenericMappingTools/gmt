@@ -316,7 +316,7 @@ int GMT_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
 		if (!GMT_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
-			if (GMT_z_input_is_nan_proxy (GMT, col_no, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
+			if (GMT_z_input_is_nan_proxy (GMT, (unsigned int)col_no, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
 			else	/* Still clean, so skip to next column */
 				continue;
@@ -340,7 +340,8 @@ int GMT_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	if (bad_record) {
 		GMT->current.io.n_bad_records++;
 		if (GMT->current.io.give_report && GMT->current.io.n_bad_records == 1) {	/* Report 1st occurrence */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid binary data record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			            "Encountered first invalid binary data record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs.\n");
 		}
@@ -349,7 +350,8 @@ int GMT_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	else if (GMT->current.io.skip_duplicates && GMT->current.io.pt_no) {	/* Test to determine if we should skip duplicate records with same x,y */
 		if (GMT->current.io.curr_rec[GMT_X] == GMT->current.io.prev_rec[GMT_X] && GMT->current.io.curr_rec[GMT_Y] == GMT->current.io.prev_rec[GMT_Y]) return (2);	/* Yes, duplicate */
 	}
-	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2) double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
+	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
+		double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmt_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
 	if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (GMT);	/* Must account for periodicity in 360 */
 
@@ -1587,7 +1589,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 			else				/* Default column order */
 				col_pos = col_no;
 			n_convert = GMT_scanf (GMT, token, GMT->current.io.col_type[GMT_IN][col_pos], &val);
-			if (n_convert != GMT_IS_NAN && GMT_z_input_is_nan_proxy (GMT, col_pos, val))	/* Input matched no-data setting, so change to NaN */
+			if (n_convert != GMT_IS_NAN && GMT_z_input_is_nan_proxy (GMT, (unsigned int)col_pos, val))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (GMT->current.setting.io_nan_records || !GMT->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */

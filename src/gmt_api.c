@@ -2534,7 +2534,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Write this segment's data records to the matrix */
 						for (col = 0; col < M_obj->n_columns; col++) {
 							ij = GMT_2D_to_index (row_out, col, M_obj->dim);
-							value = gmt_select_dataset_value (API->GMT, S, row, col);
+							value = gmt_select_dataset_value (API->GMT, S, (unsigned int)row, (unsigned int)col);
 							GMTAPI_put_val (&(M_obj->data), ij, value);
 						}
 					}
@@ -2564,7 +2564,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 					}
 					for (row = 0; row < S->n_rows; row++, row_out++) {	/* Copy the data records */
 						for (col = 0; col < V_obj->n_columns; col++) {
-							value = gmt_select_dataset_value (API->GMT, S, row, col);
+							value = gmt_select_dataset_value (API->GMT, S, (unsigned int)row, (unsigned int)col);
 							GMTAPI_put_val (&(V_obj->data[col]), row_out, value);
 						}
 					}
@@ -5487,7 +5487,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				d = record;	/* Cast the void record to a double pointer */
 				for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
 					ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
-					value = gmt_select_record_value (API->GMT, d, col, API->GMT->common.b.ncol[GMT_OUT]);
+					value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
 					GMTAPI_put_val (&(M_obj->data), ij, value);
 				}
 				M_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
@@ -5520,7 +5520,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
 				d = record;	/* Cast the void record to a double pointer */
 				for (col = 0; col < V_obj->n_columns; col++) {	/* Place the output items */
-					value = gmt_select_record_value (API->GMT, d, col, API->GMT->common.b.ncol[GMT_OUT]);
+					value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
 					GMTAPI_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], value);
 				}
 				V_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
