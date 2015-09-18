@@ -1123,6 +1123,7 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	if (mode & 1) GMT_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (GMT, "\t     +l to only draw left side of all specified vector heads [both sides].\n");
 	GMT_message (GMT, "\t     +m[f|r] to place vector head at mid-point of segment [Default expects +b|+e].\n");
+	GMT_message (GMT, "\t       Specify f or r for forward|reverse direction [forward].\n");
 	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
 	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
 	GMT_message (GMT, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
