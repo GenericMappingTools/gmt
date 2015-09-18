@@ -23,9 +23,11 @@ function [pass, d_path] = measure(out_path)
 	% Geographic centroid and area
 	answer = [0.5	0.500019038226	12308.3096995];
 	result = gmt('gmtspatial -Q -fg', area);	
-	pass = isequal(result, answer);
-	if (~pass)
+	pass2 = isequal(result, answer);
+	if (~pass2)
 		fid = fopen([out_path fname '_fail2.dat'], 'w');
 		fprintf(fid, 'Should be\n%s\nIt is\n%s', num2str(answer), num2str(result));
 		fclose(fid);
 	end
+	pass = pass && pass2;
+
