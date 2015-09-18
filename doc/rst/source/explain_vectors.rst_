@@ -26,6 +26,13 @@ end point of the segment:
 
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
 
+    **+m** places a vector head at the mid-point the vector path [none].
+    Append **f** or **r** for forward or reverse direction of the vector [forward].
+    Optionally, append **t** for a terminal line, **c** for a circle, or
+    **a** for arrow head [Default].
+    For arrows, further append **l**\|\ **r** to only draw the left or right
+    side of this head [both sides].  Cannot be combined with **+b** or **+e**.
+
     **+n**\ *norm* scales down vector attributes (pen thickness, head size)
     with decreasing length, where vectors shorter than *norm* will have
     their attributes scaled by length/\ *norm* [arrow attributes remains

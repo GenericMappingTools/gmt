@@ -1122,6 +1122,9 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	if (mode & 8) GMT_message (GMT, "\t     +g<fill> to set head fill or use - to turn off fill [default fill].\n");
 	if (mode & 1) GMT_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (GMT, "\t     +l to only draw left side of all specified vector heads [both sides].\n");
+	GMT_message (GMT, "\t     +m[f|r] to place vector head at mid-point of segment [Default expects +b|+e].\n");
+	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
+	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
 	GMT_message (GMT, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
 	GMT_message (GMT, "\t     +o[<plon/plat>] sets pole [north pole] for great or small circles; only give length via input.\n");
 	if (mode & 4) GMT_message (GMT, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
@@ -9602,7 +9605,7 @@ int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 /*! Parser for -Sv|V, -S=, and -Sm */
 int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_SYMBOL *S) {
 
-	unsigned int pos = 0, k, f, error = 0;
+	unsigned int pos = 0, k, f, end, error = 0;
 	size_t len;
 	bool p_opt = false, g_opt = false;
 	int j;
@@ -9680,12 +9683,25 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halfs at active heads */
 			case 'm':	/* Vector head at midpoint of segment */
 				switch (p[1]) {
-					case '\0': case'f':	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */	
-					case 'r':	S->v.status |= PSL_VEC_MID_BWD;	break;	/* Place forward-pointing arrow head at center of segment */	
+					case '\0':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */
+					case 'f':	f = 2;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */	
+					case 'r':	f = 2;	S->v.status |= PSL_VEC_MID_BWD;	break;	/* Place backward-pointing arrow head at center of segment */	
 					default:  /* Bad direction code */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +m<dir> modifier %c\n", p[1]);
 						error++;
 						break;
+				}
+				end = (S->v.status & PSL_VEC_MID_FWD) ? PSL_END : PSL_BEGIN;	/* Which head-type to use at center */
+				switch (p[f]) {	/* Optional types */
+					case 'a': S->v.v_kind[end] = GMT_VEC_ARROW;	/* Explicitly selected arrow head, must check for other modifiers */
+		  	  			if (p[f+1] == 'l') S->v.status |= GMT_VEC_END_L;	/* Only left  half of head requested */
+		  	  			else if (p[f+1] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
+						break;
+					case 'c': S->v.v_kind[end] = GMT_VEC_CIRCLE;	break;
+					case 't': S->v.v_kind[end] = GMT_VEC_TERMINAL;	break;
+			  	 	case 'l': S->v.v_kind[end] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
+			  	  	case 'r': S->v.v_kind[end] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */
+					default:  S->v.v_kind[end] = GMT_VEC_ARROW;	break;	/* Default is arrow */
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
@@ -9751,6 +9767,10 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				error++;
 				break;
 		}
+	}
+	if ((S->v.status & PSL_VEC_MID_FWD || S->v.status & PSL_VEC_MID_BWD) && (S->v.status & GMT_VEC_BEGIN || S->v.status & GMT_VEC_END)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot combine mid-point vector head (+m) with end-point heads (+b | +e)\n");
+		error++;
 	}
 	if (!g_opt) S->v.status |= GMT_VEC_FILL;	/* Default is to fill vector head with current fill unless (a) no fill given or (b) turned off with +g- */
 	if (!p_opt) S->v.status |= GMT_VEC_OUTLINE;	/* Default is to draw vector head outline with current pen unless explicitly turned off with +p- */

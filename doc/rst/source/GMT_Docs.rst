@@ -353,7 +353,9 @@ A few changes have affects across GMT; these are:
    and we added "dashed" and "dotted" as alternatives to "-" and ".".
 
 *  Added two alternative vector head choices (terminal and circle) in addition
-   to the default "arrow" style.
+   to the default "arrow" style. We have also added the option for trimming the
+   beginning and/or end point location of a vector, and you may now place the
+   vector head at the mid-point of the vector instead at the ends.
 
 *  All eight map embellishment features (map scale, color bar, direction rose, magnetic
    rose, GMT logo, raster images, map inserts, and map legends) now use a uniform
