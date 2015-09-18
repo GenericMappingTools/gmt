@@ -43,10 +43,10 @@ end point of the segment:
 
     **+r** draws half-arrows, using only the right side of specified heads [both sides].
 
-    **t**\ [**b**\ \|\ **e**\ ]*trim* will shift the beginning or end point (or both)
+    **t**\ [**b**\ \|\ **e**\ ]\ *trim* will shift the beginning or end point (or both)
     along the vector segment by the given *trim*; append suitable unit. If the modifiers
-    **b**\ \|\ **e** are not used the *trim* may be two values separated by a slash,
-    which can be used to specify different trims for the two points.  Positive trims
+    **b**\ \|\ **e** are not used then *trim* may be two values separated by a slash,
+    which is used to specify different trims for the two ends.  Positive trims
     will shorted the vector while negative trims will lengthen it [no trim].
 
 In addition, all but circular vectors may take these modifiers:
