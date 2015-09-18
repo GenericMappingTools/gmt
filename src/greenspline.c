@@ -562,9 +562,9 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, !(GMT->common.R.active || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 #ifdef DEBUG
-	n_errors += GMT_check_condition (GMT, !TEST && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
+	n_errors += GMT_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
 #else
-	n_errors += GMT_check_condition (GMT, Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && Ctrl->R3.dimension != dimension, "Syntax error: The -R and -D options disagree on the dimension\n");
 #endif
 	n_errors += GMT_check_binary_io (GMT, dimension + 1);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Syntax error -S option: Tension must be in range 0 <= t < 1\n");
@@ -1972,10 +1972,16 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT_free (GMT, A);
 
 	if (Ctrl->N.file) {	/* Specified nodes only */
+		unsigned int wmode = GMT_ADD_DEFAULT;
 		double out[4];
 
 		/* Must register Ctrl->G.file first since we are going to writing rec-by-rec */
-		if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET) {
+		if (Ctrl->G.active) {
+			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMT_NOTSET)
+				Return (API->error);
+			wmode = GMT_ADD_EXISTING;
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_OK) {	/* Establishes output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
