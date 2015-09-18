@@ -3133,7 +3133,7 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "P clip %s %s U\n", dump[fill], line[outline]);
 				break;
 			case PSL_VEC_CIRCLE:
-				PSL_command (PSL, "V\n");	/* Do this inside gsave/resore since we are clipping */
+				PSL_command (PSL, "V\n");	/* Do this inside gsave/restore since we are clipping */
 				if (side[i] == -1)	/* Need left side */
 					PSL_plotarc (PSL, xt, yt, circ_r, angle[i]+90.0, angle[i]+270.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
 				else if (side[i] == +1)	/* Need right side */
