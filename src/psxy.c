@@ -1202,6 +1202,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					dim[5] = GMT->current.setting.map_vector_shape;
 					dim[6] = (double)S.v.status;
 					dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
+					dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
 					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
@@ -1237,6 +1238,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					dim[6] = GMT->current.setting.map_vector_shape;
 					dim[7] = (double)S.v.status;
 					dim[8] = (double)S.v.v_kind[0];	dim[9] = (double)S.v.v_kind[1];
+					dim[10] = (double)S.v.v_trim[0];	dim[11] = (double)S.v.v_trim[1];
 					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_WEDGE:

@@ -97,7 +97,11 @@ enum PSL_enum_vecattr {
 	PSL_VEC_OUTLINE2	= 4096,		/* Draw vector head outline using supplied v_pen */
 	PSL_VEC_FILL		= 8192,		/* Fill vector head using default fill */
 	PSL_VEC_FILL2		= 16384,	/* Fill vector head using supplied v_fill) */
-	PSL_VEC_MARC90		= 32768};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+	PSL_VEC_MARC90		= 32768,	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+	PSL_VEC_OFF_BEGIN	= 65536,	/* Starting point of vector should be moved a distance along the line */
+	PSL_VEC_OFF_END		= 131072,	/* End point of vector should be moved a distance along the line */
+	PSL_VEC_MID_FWD		= 262144,	/* End point of vector should be moved a distance along the line */
+	PSL_VEC_MID_BWD		= 524288};	/* End point of vector should be moved a distance along the line */
 	
 #define PSL_vec_justify(status) ((status>>6)&3)			/* Return justification as 0-3 */
 #define PSL_vec_head(status) ((status)&3)			/* Return head selection as 0-3 */
@@ -126,7 +130,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_INV			= 1,
 	PSL_OUTLINE		= 1,
 	PSL_MAX_EPS_FONTS	= 6,
-	PSL_MAX_DIMS		= 10,		/* Max number of dim arguments to PSL_plot_symbol */
+	PSL_MAX_DIMS		= 12,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
 	PSL_BUFSIZ		= 4096U};
 

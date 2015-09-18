@@ -3153,15 +3153,16 @@ int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[])
 int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 {
 	/* Will make sure that arrow has a finite width in PS coordinates.
-	 * param must hold up to 9 values:
+	 * param must hold up to 11 values:
 	 * param[0] = xtip;		param[1] = ytip;
 	 * param[2] = tailwidth;	param[3] = headlength;	param[4] = headwidth;
 	 * param[5] = headshape;	param[6] = status bit flags
-	 * param[7] = begin head type;	param[8] = end head type)
+	 * param[7] = begin head type;	param[8] = end head type
+	 * param[9] = begin trim value;	param[10] = end trim value.
 	 */
 
 	double angle, xtip, ytip, r, tailwidth, headlength, headwidth, headshape, length_inch;
-	double xx[4], yy[4], off[2], yshift[2];
+	double xx[4], yy[4], off[2], yshift[2], trim[2];
 	int length, asymmetry[2], n, heads, outline, fill, status;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
@@ -3170,10 +3171,25 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	length_inch = hypot (x-xtip, y-ytip);					/* Vector length in inches */
 	length = psl_iz (PSL, length_inch);					/* Vector length in PS units */
 	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
-	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in radians */
+	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in degrees */
+	status = lrint (param[6]);
+	/* Make any adjustments caused by trim */
+	trim[0] = (status & PSL_VEC_OFF_BEGIN) ? param[9]  : 0.0;
+	trim[1] = (status & PSL_VEC_OFF_END)   ? param[10] : 0.0;
+	if (fabs (angle) == 90.0) {	/* Vertical segment; only adjust y coordinates */
+		y += copysign (trim[0], angle);	ytip -= copysign (trim[1], angle);
+	}
+	else {	/* General case, use trig */
+		double s, c, a = angle * D2R;
+		s = sin (a);		c = cos (a);
+		x += c * trim[0];	y += s * trim[0];
+		xtip -= c * trim[1];	ytip -= s * trim[1];
+	}
+	length_inch = hypot (x-xtip, y-ytip);					/* Recalculate vector length in inches */
+	length = psl_iz (PSL, length_inch);					/* Vector length in PS units */
+	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
 	tailwidth = param[2];
 	headlength = param[3];	headwidth = 0.5 * param[4];	headshape = param[5];
-	status = lrint (param[6]);
 	kind[0] = (unsigned int)lrint (param[7]);
 	kind[1] = (unsigned int)lrint (param[8]);
 	off[0] = (kind[0] == PSL_VEC_ARROW) ? 0.5 * (2.0 - headshape) * headlength : 0.0;
@@ -3185,9 +3201,9 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	asymmetry[0] = -PSL_vec_side (status, 0);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	asymmetry[1] = PSL_vec_side (status, 1);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	r = sqrt (headlength * headwidth / M_PI);	/* Same area as vector head */
-	
 	PSL_command (PSL, "V %d %d T ", psl_ix (PSL, x), psl_iy (PSL, y));	/* Temporarily set tail point the local origin (0, 0) */
 	if (angle != 0.0) PSL_command (PSL, "%g R\n", angle);			/* Rotate so vector is horizontal in local coordinate system */
+	/* Make any adjustments caused by trim */
 	xx[0] = (heads & 1) ? off[0] : 0.0;
 	xx[1] = (heads & 2) ? length_inch - off[1] : length_inch;
 	if (heads & 1 && asymmetry[0] && kind[0] == PSL_VEC_CIRCLE) xx[0] = -r;
@@ -3199,7 +3215,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 		return (PSL_NO_ERROR);
 	}
 
-	/* Must switch assymetry for start head since implemented backwards */
+	/* Must switch asymmetry for start head since implemented backwards */
 	yshift[0] = 0.5 * asymmetry[0] * tailwidth;
 	yshift[1] = 0.5 * asymmetry[1] * tailwidth;
 

@@ -131,8 +131,12 @@ enum GMT_enum_vecattr {
 	GMT_VEC_FILL		= 8192,		/* Fill vector head using default fill */
 	GMT_VEC_FILL2		= 16384,	/* Fill vector head using supplied v_fill) */
 	GMT_VEC_MARC90		= 32768,	/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_COMPONENTS	= 65536,	/* Not needed in postscriptlight: Got vector dx, dy Cartesian components */
-	GMT_VEC_SCALE		= 131072};	/* Not needed in postscriptlight: If not set we determine the required inch-to-degree scale */
+	GMT_VEC_OFF_BEGIN	= 65536,	/* Starting point of vector should be moved a distance along the line */
+	GMT_VEC_OFF_END		= 131072,	/* End point of vector should be moved a distance along the line */
+	GMT_VEC_MID_FWD		= 262144,	/* Place mid-point vector head facing forwards  */
+	GMT_VEC_MID_BWD		= 524288,	/* Place mid-point vector head facing backwards  */
+	GMT_VEC_COMPONENTS	= 1048576,	/* Not needed in postscriptlight: Got vector dx, dy Cartesian components */
+	GMT_VEC_SCALE		= 2097152};	/* Not needed in postscriptlight: If not set we determine the required inch-to-degree scale */
 
 /* Make sure the next three macros are in sync with any changes to GMT_enum_vecattr above! */
 
@@ -157,6 +161,7 @@ struct GMT_VECT_ATTR {
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
 	float comp_scale;	/* Converts hypot (dx, dy) to inches */
+	float v_trim[2];	/* Offsets from begin/end point in inches */
 	struct GMT_PEN pen;	/* Pen for outline of head */
 	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
 };

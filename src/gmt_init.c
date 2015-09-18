@@ -1128,6 +1128,7 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	GMT_message (GMT, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
 	GMT_message (GMT, "\t     +r to only draw right side of all specified vector heads [both sides].\n");
 	if (mode & 2) GMT_message (GMT, "\t     +s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.\n");
+	GMT_message (GMT, "\t     +t[b|e]<trim(s)>[unit] to shift begin or end position along vector by given amount [no shifting].\n");
 	if (mode & 16) GMT_message (GMT, "\t     +z if (dx,dy) vector components are given instead of (azimuth,length) on input.\n");
 	if (mode & 16) GMT_message (GMT, "\t       Append <scale>[unit] to convert components to length in given unit.\n");
 }
@@ -9601,12 +9602,12 @@ int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 /*! Parser for -Sv|V, -S=, and -Sm */
 int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_SYMBOL *S) {
 
-	unsigned int pos = 0, k, error = 0;
+	unsigned int pos = 0, k, f, error = 0;
 	size_t len;
 	bool p_opt = false, g_opt = false;
 	int j;
 	char p[GMT_BUFSIZ];
-	double pole[2];
+	double value[2];
 
 	S->v.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
@@ -9647,10 +9648,18 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					default:  S->v.v_kind[1] = GMT_VEC_ARROW;	break;
 				}
 				break;
-			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halfs at active heads */
-			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
-			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halfs at active heads */
-			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
+			case 'g':	/* Vector head fill +g[-|<fill>]*/
+				g_opt = true;	/* Marks that +g was used */
+				if (p[1] == '-') break; /* Do NOT turn on fill */
+				S->v.status |= GMT_VEC_FILL;
+				if (p[1]) {
+					if (GMT_getfill (GMT, &p[1], &S->v.fill)) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						error++;
+					}
+					S->v.status |= GMT_VEC_FILL2;
+				}
+				break;
 			case 'j':	/* Vector justification */
 				if (symbol == 'm') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sm does not accept +j<just> modifiers.\n");
@@ -9668,6 +9677,17 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 					}
 				}
 				break;
+			case 'l': S->v.status |= (GMT_VEC_BEGIN_L + GMT_VEC_END_L);	break;	/* Obsolete modifier for left halfs at active heads */
+			case 'm':	/* Vector head at midpoint of segment */
+				switch (p[1]) {
+					case '\0': case'f':	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */	
+					case 'r':	S->v.status |= PSL_VEC_MID_BWD;	break;	/* Place forward-pointing arrow head at center of segment */	
+					default:  /* Bad direction code */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +m<dir> modifier %c\n", p[1]);
+						error++;
+						break;
+				}
+				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
 				j = (symbol == 'v' || symbol == 'V') ? gmt_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
@@ -9675,29 +9695,17 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				S->v.v_norm = (float)atof (&p[1]);
 				if (symbol == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
-			case 'g':	/* Vector head fill +g[-|<fill>]*/
-				g_opt = true;	/* Marks that +g was used */
-				if (p[1] == '-') break; /* Do NOT turn on fill */
-				S->v.status |= GMT_VEC_FILL;
-				if (p[1]) {
-					if (GMT_getfill (GMT, &p[1], &S->v.fill)) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
-						error++;
-					}
-					S->v.status |= GMT_VEC_FILL2;
-				}
-				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= GMT_VEC_POLE;
 				if (!p[1]) {	/* Gave no pole, use North pole */
 					S->v.pole[GMT_X] = 0.0f;	S->v.pole[GMT_Y] = 90.0f;
 				}
-				else if ((j = GMT_Get_Value (GMT->parent, &p[1], pole)) != 2) {
+				else if ((j = GMT_Get_Value (GMT->parent, &p[1], value)) != 2) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] modifier %c\n", &p[1]);
 					error++;
 				}
 				else {	/* Successful parsing of pole */
-					S->v.pole[GMT_X] = (float)pole[GMT_X];	S->v.pole[GMT_Y] = (float)pole[GMT_Y];}
+					S->v.pole[GMT_X] = (float)value[GMT_X];	S->v.pole[GMT_Y] = (float)value[GMT_Y];}
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
@@ -9713,6 +9721,25 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 						error++;
 					}
 					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
+				}
+				break;
+			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
+			case 'r': S->v.status |= (GMT_VEC_BEGIN_R + GMT_VEC_END_R);	break;	/* Obsolete modifier for right halfs at active heads */
+			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
+			case 't':	/* Get endpoint trim(s) */
+				switch (p[1]) {
+					case 'b':	f = 2;	S->v.status |= PSL_VEC_OFF_BEGIN;	break;	/* Shift begin point by some trim amount */	
+					case 'e':	f = 2;	S->v.status |= PSL_VEC_OFF_END;		break;	/* Shift end point by some trim amount */	
+					default:  	f = 1;	S->v.status |= (PSL_VEC_OFF_BEGIN+PSL_VEC_OFF_END);	break;	/* Do both */
+				}
+				if ((j = GMT_Get_Value (GMT->parent, &p[f], value)) < 1) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +t <trim> values %c\n", &p[f]);
+					error++;
+				}
+				else {	/* Successful parsing of trim(s) */
+					if (j == 1) value[1] = value[0];	/* Same trim at either end, if requested */
+					if (S->v.status & PSL_VEC_OFF_BEGIN) S->v.v_trim[0] = (float)(value[0] * GMT->session.u2u[GMT_CM][GMT_INCH]);
+					if (S->v.status & PSL_VEC_OFF_END)   S->v.v_trim[1] = (float)(value[1] * GMT->session.u2u[GMT_CM][GMT_INCH]);
 				}
 				break;
 			case 'z':	/* Input (angle,length) are vector components (dx,dy) instead */
