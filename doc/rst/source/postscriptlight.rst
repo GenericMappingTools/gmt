@@ -531,10 +531,10 @@ Here are functions used to plot various geometric symbols or constructs.
     be passed via *size*. These are PSL_ELLIPSE (*size* is expected to
     contain the three parameter *angle*, *major*, and *minor* axes,
     which defines an ellipse with its major axis rotated by *angle*
-    degrees), PSL_MANGLE (*size* is expected to contain the 8
+    degrees), PSL_MANGLE (*size* is expected to contain the 10
     parameters *radius*, *angle1*, and *angle2* for the math angle
     specification, followed by *tailwidth*, *headlength*, *headwidth*,
-    *shape*, and *status* (see PSL_VECTOR below for explanation),
+    *shape*, *status*, *trim1* and *trim2* (see PSL_VECTOR below for explanation),
     PSL_WEDGE (*size* is expected to contain the three parameter
     *radius*, *angle1*, and *angle2* for the sector specification),
     PSL_RECT (*size* is expected to contain the two dimensions *width*
@@ -542,9 +542,10 @@ Here are functions used to plot various geometric symbols or constructs.
     dimensions *width* and *height* and the *radius* of the corners),
     PSL_ROTRECT (*size* is expected to contain the three parameter
     *angle*, *width*, and *height*, with rotation relative to the
-    horizontal), and PSL_VECTOR (*size* is expected to contain the 7
+    horizontal), and PSL_VECTOR (*size* is expected to contain the 9
     parameters *x_tip*, *y_tip*, *tailwidth*, *headlength*,
-    *headwidth*, *shape*, *status*, *head1*, and *head2*. Here (*x_tip*,\ *y_tip*) are
+    *headwidth*, *shape*, *status*, *head1*, *head2*, *trim1*, and *trim2*.
+    Here (*x_tip*,\ *y_tip*) are
     the coordinates to the head of the vector, while (*x*, *y*) are
     those of the tail. *shape* can take on values from 0-1 and specifies
     how far the intersection point between the base of a straight vector
@@ -564,9 +565,11 @@ Here are functions used to plot various geometric symbols or constructs.
     PSL_VEC_MARC90 (2048) = if angles subtend 90, draw straight angle
     symbol (PSL_MANGLE only). The symbol may be filled and its outline
     stroked depending on the current settings for fill and pen
-    attributes.  The final two parameters *head1* and *head2* determines
+    attributes.  The parameters *head1* and *head2* determines
     what kind of vector head will be plotted at the two ends (if selected).
     0 = normal vector head, 1 = circle, 2 = terminal crossbar.
+    Finally, *trim1* and *trim2* adjust the start and end location of
+    the vector.
 
 `Plotting Images <#toc9>`_
 --------------------------

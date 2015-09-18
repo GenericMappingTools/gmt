@@ -1114,18 +1114,18 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	GMT_message (GMT, "\t   [Left and right are defined by looking from start to end of vector]\n");
 	GMT_message (GMT, "\t     +a<angle> to set angle of the vector head apex [30]\n");
 	GMT_message (GMT, "\t     +b to place a vector head at the beginning of the vector [none].\n");
-	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
-	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
+	GMT_message (GMT, "\t       Append t for terminal, c for circle, s for square, or a for arrow [Default].\n");
+	GMT_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
 	GMT_message (GMT, "\t     +e to place a vector head at the end of the vector [none].\n");
 	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
-	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
+	GMT_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
 	if (mode & 8) GMT_message (GMT, "\t     +g<fill> to set head fill or use - to turn off fill [default fill].\n");
 	if (mode & 1) GMT_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (GMT, "\t     +l to only draw left side of all specified vector heads [both sides].\n");
 	GMT_message (GMT, "\t     +m[f|r] to place vector head at mid-point of segment [Default expects +b|+e].\n");
 	GMT_message (GMT, "\t       Specify f or r for forward|reverse direction [forward].\n");
-	GMT_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
-	GMT_message (GMT, "\t       For arrow, append l|r to only draw left or right side of this head [both sides].\n");
+	GMT_message (GMT, "\t       Append t for terminal, c for circle, s for square, or a for arrow [Default].\n");
+	GMT_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
 	GMT_message (GMT, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
 	GMT_message (GMT, "\t     +o[<plon/plat>] sets pole [north pole] for great or small circles; only give length via input.\n");
 	if (mode & 4) GMT_message (GMT, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
@@ -9627,29 +9627,33 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 'b':	/* Vector head at beginning point */
 				S->v.status |= GMT_VEC_BEGIN;
 				switch (p[1]) {
-					case 'a': S->v.v_kind[0] = GMT_VEC_ARROW;	/* Explicitly selected arrow head, must check for other modifiers */
-		  	  			if (p[2] == 'l') S->v.status |= GMT_VEC_BEGIN_L;	/* Only left  half of head requested */
-		  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_BEGIN_R;	/* Only right half of head requested */
-						break;
+					case 'a': S->v.v_kind[0] = GMT_VEC_ARROW;	break; /* Explicitly selected arrow head */
 					case 'c': S->v.v_kind[0] = GMT_VEC_CIRCLE;	break;
+					case 's': S->v.v_kind[0] = GMT_VEC_SQUARE;	break;
 					case 't': S->v.v_kind[0] = GMT_VEC_TERMINAL;	break;
 			  	 	case 'l': S->v.v_kind[0] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_BEGIN_L;	break;	/* Only left  half of head requested */
 			  	  	case 'r': S->v.v_kind[0] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_BEGIN_R;	break;	/* Only right half of head requested */
 					default:  S->v.v_kind[0] = GMT_VEC_ARROW;	break;
 				}
+				if (p[1] && p[2]) {
+					if (p[2] == 'l') S->v.status |= GMT_VEC_BEGIN_L;	/* Only left  half of head requested */
+	  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_BEGIN_R;	/* Only right half of head requested */
+				}
 				break;
 			case 'e':	/* Vector head at end point */
 				S->v.status |= GMT_VEC_END;
 				switch (p[1]) {
-					case 'a': S->v.v_kind[1] = GMT_VEC_ARROW;	/* Explicitly selected arrow head, must check for other modifiers */
-		  	  			if (p[2] == 'l') S->v.status |= GMT_VEC_END_L;		/* Only left  half of head requested */
-		  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
-						break;
+					case 'a': S->v.v_kind[1] = GMT_VEC_ARROW;	break;	/* Explicitly selected arrow head */
 					case 'c': S->v.v_kind[1] = GMT_VEC_CIRCLE;	break;
+					case 's': S->v.v_kind[0] = GMT_VEC_SQUARE;	break;
 					case 't': S->v.v_kind[1] = GMT_VEC_TERMINAL;	break;
 			  	 	case 'l': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
 			  	  	case 'r': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */
 					default:  S->v.v_kind[1] = GMT_VEC_ARROW;	break;
+				}
+				if (p[1] && p[2]) {
+					if (p[2] == 'l') S->v.status |= GMT_VEC_END_L;	/* Only left half of head requested */
+	  	  			else if (p[2] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
 				}
 				break;
 			case 'g':	/* Vector head fill +g[-|<fill>]*/
@@ -9686,7 +9690,8 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				switch (p[1]) {
 					case '\0':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */
 					case 'f':	f = 2;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */	
-					case 'r':	f = 2;	S->v.status |= PSL_VEC_MID_BWD;	break;	/* Place backward-pointing arrow head at center of segment */	
+					case 'r':	f = 2;	S->v.status |= PSL_VEC_MID_BWD;	break;	/* Place backward-pointing arrow head at center of segment */
+					case 'a': case 'c': case 's': case 't':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Handle these below */	
 					default:  /* Bad direction code */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +m<dir> modifier %c\n", p[1]);
 						error++;
@@ -9694,15 +9699,17 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				end = (S->v.status & PSL_VEC_MID_FWD) ? PSL_END : PSL_BEGIN;	/* Which head-type to use at center */
 				switch (p[f]) {	/* Optional types */
-					case 'a': S->v.v_kind[end] = GMT_VEC_ARROW;	/* Explicitly selected arrow head, must check for other modifiers */
-		  	  			if (p[f+1] == 'l') S->v.status |= GMT_VEC_END_L;	/* Only left  half of head requested */
-		  	  			else if (p[f+1] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
-						break;
+					case 'a': S->v.v_kind[end] = GMT_VEC_ARROW;	break;	/* Explicitly selected arrow head */
 					case 'c': S->v.v_kind[end] = GMT_VEC_CIRCLE;	break;
+					case 's': S->v.v_kind[end] = GMT_VEC_SQUARE;	break;
 					case 't': S->v.v_kind[end] = GMT_VEC_TERMINAL;	break;
 			  	 	case 'l': S->v.v_kind[end] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
 			  	  	case 'r': S->v.v_kind[end] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */
 					default:  S->v.v_kind[end] = GMT_VEC_ARROW;	break;	/* Default is arrow */
+				}
+				if (p[f] && p[f+1]) {
+	  	  			if (p[f+1] == 'l') S->v.status |= GMT_VEC_END_L;	/* Only left  half of head requested */
+	  	  			else if (p[f+1] == 'r') S->v.status |= GMT_VEC_END_R;	/* Only right half of head requested */
 				}
 				break;
 			case 'n':	/* Vector shrinking head */

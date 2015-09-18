@@ -12,13 +12,13 @@ end point of the segment:
     **+b** places a vector head at the beginning of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle, or
     **a** for arrow [Default].
-    For arrows, further append **l**\|\ **r** to only draw the left or right
+    Further append **l**\|\ **r** to only draw the left or right
     side of this head [both sides].
 
     **+e** places a vector head at the end of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle, or
     **a** for arrow [Default].
-    For arrows, further append **l**\|\ **r** to only draw the left or right
+    Further append **l**\|\ **r** to only draw the left or right
     side of this head [both sides].
 
     **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
@@ -30,7 +30,7 @@ end point of the segment:
     Append **f** or **r** for forward or reverse direction of the vector [forward].
     Optionally, append **t** for a terminal line, **c** for a circle, or
     **a** for arrow head [Default].
-    For arrows, further append **l**\|\ **r** to only draw the left or right
+    Further append **l**\|\ **r** to only draw the left or right
     side of this head [both sides].  Cannot be combined with **+b** or **+e**.
 
     **+n**\ *norm* scales down vector attributes (pen thickness, head size)

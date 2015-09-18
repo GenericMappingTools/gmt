@@ -80,6 +80,7 @@ enum PSL_enum_vecattr {
 	PSL_VEC_ARROW		= 0,		/* Default head symbol is arrow */
 	PSL_VEC_TERMINAL	= 1,		/* Cross-bar normal to vector */
 	PSL_VEC_CIRCLE		= 2,		/* Circle as vector head */
+	PSL_VEC_SQUARE		= 3,		/* Square as vector head */
 	PSL_VEC_BEGIN		= 1,		/* Place vector head at beginning of vector. Add PSL_VEC_BEGIN_L for left only, PSL_VEC_BEGIN_R for right only */
 	PSL_VEC_END		= 2,		/* Place vector head at end of vector.  Add PSL_VEC_END_L for left only, and PSL_VEC_END_R for right only */
 	PSL_VEC_HEADS		= 3,		/* Mask for either head end */
