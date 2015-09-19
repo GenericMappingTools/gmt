@@ -234,6 +234,7 @@ enum GMT_segmentation {
 	SEGM_SEGMENT = 0,	/* The segmentation method */
 	SEGM_TABLE,
 	SEGM_DATASET,
+	SEGM_RECORD,
 	SEGM_ORIGIN};		/* External reference point */
 
 /*! Various grid/image boundary conditions */

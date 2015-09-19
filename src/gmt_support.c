@@ -10761,6 +10761,10 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 					dim[GMT_SEG] = Din->n_tables;
 					dim[GMT_ROW] = 0;	/* Must do this per segment */
 					break;
+				case SEGM_RECORD:	/* Turn all points into individual points with segment headers */
+					dim[GMT_SEG] = Din->n_records;
+					dim[GMT_ROW] = 1;	/* Must do this per segment */
+					break;
 			}
 			break;
 		case SEGM_REFPOINT:
@@ -10775,12 +10779,15 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 					for (tbl = 0; tbl < Din->n_tables; tbl++)
 						dim[GMT_SEG] += (Din->table[tbl]->n_records - 1);
 					break;
+				case SEGM_RECORD:	/* Reset origin per point */
 				case SEGM_SEGMENT:	/* Reset origin to first point in each segment, so n_rows-1 points remains per segment */
 					for (tbl = 0; tbl < Din->n_tables; tbl++) {
 						Tin = Din->table[tbl];
 						for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
 							dim[GMT_SEG] += Tin->segment[seg]->n_rows - 1;
 					}
+					break;
+					dim[GMT_SEG] = Din->n_records;
 					break;
 			}
 			coord = GMT_memory (GMT, NULL, dim[GMT_COL], double);
@@ -10844,9 +10851,9 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 					for (seg2 = (same[0]) ? seg : 0; seg2 < Tin2->n_segments; seg2++) {	/* For each input segment to resample */
 						same[1] = (same[0] && seg == seg2);	/* So same[1] is only true for identical segments from same table */
 						if (S->level == SEGM_SEGMENT && !same[1] ) continue;	/* Not working across segments */
-						if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
 						for (row = 0; row < Tin->segment[seg]->n_rows; row++) {	/* For each end point in the new 2-point segments */
 							for (row2 = (same[1]) ? row+1 : 0; row2 < Tin2->segment[seg2]->n_rows; row2++, new_seg++) {	/* For each end point in the new 2-point segments */
+								if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
 								for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
 									Tout->segment[new_seg]->coord[col][0] = Tin->segment[seg]->coord[col][row];
 									Tout->segment[new_seg]->coord[col][1] = Tin2->segment[seg2]->coord[col][row2];
@@ -10943,16 +10950,17 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 				off = 1;
 			}
 			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
-				if (S->level == SEGM_SEGMENT) {	/* Initialize the origin as 1st point in segment */
+				if (S->level == SEGM_SEGMENT | S->level == SEGM_RECORD) {	/* Initialize the origin as 1st point in segment */
 					for (col = 0; col < Din->n_columns; col++) coord[col] = Tin->segment[seg]->coord[col][0];
-					if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
 					off = 1;
 				}
 				last_row = 0;
 				for (row = off; row < Tin->segment[seg]->n_rows; row++, new_seg++) {	/* For each end point in the new 2-point segments */
+					if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
 					for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
 						Tout->segment[new_seg]->coord[col][0] = coord[col];				/* 1st point */
 						Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];	/* 2nd point */
+						if (S->level == SEGM_RECORD) coord[col] = Tin->segment[seg]->coord[col][row];	/* Update 1st point again */
 					}
 					last_row = row;
 				}

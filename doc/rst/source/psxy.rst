@@ -19,7 +19,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
 [ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
-[ **-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\ \|\ *origin*] ]
+[ **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
 [ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
@@ -128,14 +128,23 @@ Optional Arguments
     in the median. Then a 5th extra data column is expected to contain the
     number of points in the distribution.
 
-**-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\ \|\ *origin*]
-    Segment the input data into a series of new line segments before plotting them, depending
-    on the given mode. Append *origin* to draw lines between each
-    input point and the specified origin.  Choose **d** to let the origin be
-    the first point in the dataset, **t** to reset the origin to the
-    first point in each table, or **s** to reset the origin to the
-    first point in each segment.  Choose **n** to connect each point with a line
-    to every other point to form a network [Default is **d**].
+**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*]
+    Segment the input data.  Append one of four segmentation methods:
+    **c**\ : Continuous line segments [Default].
+    **r**\ : Reference point line segments.
+    **n**\ : Network line segments.
+    Optionally, append the level of segmentation:
+    **a**\ : Ignore all input segment headers, and set the reference point
+    to the very first point of first file.
+    **f**\ : Consider all the data in each file to be separate segments, and
+    reset the reference point to the first point of each file.
+    **s**\ : Segment headers are honored; the reference point is reset to the
+    first point of each new segment [Default].
+    **r**\ : Segment headers are honored; the reference point is reset after
+    each record to the previous point (only available with **-Fr**).
+    Instead of the codes **a**\ \|\ **f** \|\ **s** \|\ **r** you may append
+    the coordinates of a *refpoint* which will serve as a fixed external
+    reference point.
 
 **-G**\ *fill*
     Select color or pattern for filling of symbols or polygons [Default is no fill].

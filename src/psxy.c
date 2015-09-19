@@ -1279,7 +1279,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			S.method = SEGM_REFPOINT;	S.level = SEGM_SEGMENT;
+			S.method = SEGM_REFPOINT;	S.level = SEGM_RECORD;
 			D = GMT_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the data */
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
 				Return (API->error);

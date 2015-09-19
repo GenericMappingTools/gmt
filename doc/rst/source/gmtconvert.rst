@@ -16,7 +16,7 @@ Synopsis
 **gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
 [ **-D**\ [*template*] ]
 [ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
-[ **-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\  \|\ **v**\ \|\ *origin*] ]
+[ **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
 [ **-I**\ [**tsr**] ] [ **-Q**\ [**~**]\ *selection*]
 [ **-S**\ [**~**]\ *"search string"* \| **-S**\ [**~**]/\ *regexp*/[**i**] ]
 [ **-T** ]
@@ -93,16 +93,24 @@ Optional Arguments
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
 
-**-F**\ [**d**\ \|\ **t**\ \|\ **s**\ \|\ **n**\  \|\ **v**\ \|\ *origin*]
-    Segment the input data into a series of new line segments, depending
-    on the given mode. Append *origin* to make line segments between each
-    input point and the specified origin.  Choose **d** to let the origin be
-    the first point in the dataset, **t** to reset the origin to the
-    first point in each table, or **s** to reset the origin to the
-    first point in each segment.  Choose **n** to connect every point with
-    other point to form a network, or choose **v** to produce a single segment
-    with records built from consecutive records, yielding input suitable
-    for plotting vectors in psxy with **-Sv+s** [Default is **d**].
+**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*]
+    Segmentize the input data.  Append one of four segmentation methods:
+    **c**\ : Continuous line segments [Default].
+    **r**\ : Reference point line segments.
+    **n**\ : Network line segments.
+    **v**\ : Vector line segment output suitable for psxy **-Sv+s**.
+    Optionally, append the level of segmentation:
+    **a**\ : Ignore all input segment headers, and set the reference point
+    to the very first point of first file.
+    **f**\ : Consider all the data in each file to be separate segments, and
+    reset the reference point to the first point of each file.
+    **s**\ : Segment headers are honored; the reference point is reset to the
+    first point of each new segment [Default].
+    **r**\ : Segment headers are honored; the reference point is reset after
+    each record to the previous point (only available with **-Fr**).
+    Instead of the codes **a**\ \|\ **f** \|\ **s** \|\ **r** you may append
+    the coordinates of a *refpoint* which will serve as a fixed external
+    reference point.
 
 **-I**\ [**tsr**]
     Invert the order of items, i.e., output the items in reverse order,

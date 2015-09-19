@@ -1149,6 +1149,8 @@ void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	GMT_message (GMT, "\t       a: Ignore all input segments, reference point is very first point of first file.\n");
 	GMT_message (GMT, "\t       f: Ignore input segments within tables, reference point is reset to first point of each file.\n");
 	GMT_message (GMT, "\t       s: Segments are kept as is; reference point is reset to first point of each segment [Default].\n");
+	GMT_message (GMT, "\t       r: Segments are kept as is; reference point is reset to each point of each segment.\n");
+	GMT_message (GMT, "\t          Only available with -%cr.\n", option);
 	GMT_message (GMT, "\t       <refpoint> : Specify a fixed external reference point instead.\n");
 }
 
@@ -3051,23 +3053,23 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 
 /*! . */
 unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S)
-{	/* Parse segmentizing options in gmt convert (mode == 0) or psxy[z] (mode == 1).
+{	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F[c|n|r|v][a|f|s] or -Fr<origin>
+	 * -F[c|n|r|v][a|f|s|p] or -Fr<origin>
 	 * where c = continuous [Defuult], n = network, r = reference point, and v = vectors.
-	 * a = all files, f = per file, s = per segment [Default]
+	 * a = all files, f = per file, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
 	 * 1) -Fc: Continuous lines.  By default, lines are drawn on a segment by segment basis.
 	 *    Thus, -F or -Fc or -Fcs or -Fs is the standard default.  However, if we use
 	 *    -Fcf or -Ff then we ignore segment headers WITHIN each file, except for the first header
 	 *   in each file.  In other words, all points in a file will be considered continuous.
-	 *   Finally, using -Fca or -Fa then all points in all fiels are considered continous and
-	 *   only the first segment header in the first file is considered.
+	 *   Finally, using -Fca or -Fa then all points in all fields are considered continous and
+	 *   only the first segment header in the first file is considered.  So only a|f|r is allowed.
 	 * 2) -Fn: Network.  For each group of points we connect each point with every other point.
 	 *   The modifiers a,f,s control what the "group" is.  With s, we construct a separate
 	 *   network for each segment, with f we group all segments in a file and construct a
 	 *   network for all those points, while with a with consider all points in the dataset
-	 *   to be one group.
+	 *   to be one group. So only a|f|s is allowed.
 	 * 3) -Fr: Ref point.  Here, we construct line segments from the given reference point to
 	 *   each of the points in the file.  If refpoint is given as two slash-separated coordinates
 	 *   then the refpoint is fixed throughout this construction.  However, refpoint may also be
@@ -3075,7 +3077,7 @@ unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   file, or the first point in each segment to update the actual reference point.
 	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
 	 *   by psxy -Sv+s or external applications.  Again, appending a|f|s controls if we should
-	 *   honor the segment headers [Default is -Fvs if -Fv is given].
+	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|f|s is allowed.
 	 */
 	
 	unsigned int k, errors = 0;
@@ -3084,13 +3086,14 @@ unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		case 'n': k = 1;	S->method  = SEGM_NETWORK;	break;
 		case 'r': k = 1;	S->method  = SEGM_REFPOINT;	break;
 		case 'v': k = 1;	S->method  = SEGM_VECTOR;	break;
-		default: k = 0;		S->method  = SEGM_CONTINUOUS;	break;
+		default:  k = 0;	S->method  = SEGM_CONTINUOUS;	break;
 	}
 		
 	switch (in_arg[k]) {	/* Now set level */
 		case 's': case '\0': S->level = SEGM_SEGMENT;	break;
 		case 'a': S->level = SEGM_DATASET;	break;
 		case 'f': S->level = SEGM_TABLE;	break;
+		case 'r': S->level = SEGM_RECORD;	break;
 		default:	/* Must be a reference point but only if method is refpoint */
 			if (S->method == SEGM_REFPOINT && strchr (in_arg, '/')) {	/* Gave arguments for an origin */
 				S->level = SEGM_ORIGIN;
@@ -3106,6 +3109,12 @@ unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Selecting -Fc, -Fs, or -Fcs yields no change\n", option);
 		errors++;
 	}
+	if (S->method != SEGM_REFPOINT && S->level == SEGM_RECORD) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Only -Fr may accept refpoint = r\n", option);
+		errors++;
+	}
+	if (mode == 1 && S->method == SEGM_VECTOR)	/* Only available for gmtconvert */
+		errors++;
 	return (errors);
 }
 
