@@ -5244,7 +5244,7 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 
 		case GMT_LABEL_IS_CONSTANT:
 		case GMT_LABEL_IS_HEADER:
-			if (G->label && G->label[0])
+			if (G->label[0])
 				strcpy (this_label, G->label);
 			else
 				label_OK = false;
@@ -5300,10 +5300,10 @@ void gmt_place_label (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *txt, stru
 {	/* Allocates needed space and copies in the label */
 	size_t n, m = 0;
 
-	if (use_unit && G->unit && G->unit[0])
+	if (use_unit && G->unit[0])
 		m = strlen (G->unit);
 	n = strlen (txt) + 1 + m + extra;
-	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
+	if (G->prefix[0]) {	/* Must prepend the prefix string */
 		n += strlen (G->prefix) + 1;
 		L->label = GMT_memory (GMT, NULL, n, char);
 		sprintf (L->label, "%s%s", G->prefix, txt);
@@ -5312,7 +5312,7 @@ void gmt_place_label (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *txt, stru
 		L->label = GMT_memory (GMT, NULL, n, char);
 		strcpy (L->label, txt);
 	}
-	if (use_unit && G->unit && G->unit[0]) {	/* Append a unit string */
+	if (use_unit && G->unit[0]) {	/* Append a unit string */
 		strcat (L->label, G->unit);
 	}
 	GMT_memcpy (L->rgb, G->font_label.fill.rgb, 4, double);	/* Remember color in case it varies */

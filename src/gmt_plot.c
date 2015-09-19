@@ -1810,7 +1810,7 @@ void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, d
 			PSL_plotsegment (PSL, min, zz, max, zz);
 		}
 
-		if (GMT->current.setting.map_grid_pen[k].style) PSL_setdash (PSL, NULL, 0);
+		PSL_setdash (PSL, NULL, 0);
 		GMT_free (GMT, z);
 	}
 }
@@ -1868,7 +1868,7 @@ void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 		else	/* Draw grid lines that go E to W */
 			gmt_lineary_grid (GMT, PSL, w, e, s, n, dy);
 
-		if (GMT->current.setting.map_grid_pen[k].style) PSL_setdash (PSL, NULL, 0);
+		PSL_setdash (PSL, NULL, 0);
 	}
 	reset = GMT_genper_reset (GMT, reset);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Exiting gmt_map_gridlines\n");
@@ -1946,7 +1946,7 @@ void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 		if (nx) GMT_free (GMT, x);
 		if (ny) GMT_free (GMT, y);
 
-		if (GMT->current.setting.map_grid_pen[k].style) PSL_setdash (PSL, NULL, 0);
+		PSL_setdash (PSL, NULL, 0);
 
 	}
 	GMT_map_clip_off (GMT);
@@ -2409,7 +2409,7 @@ void GMT_map_basemap (struct GMT_CTRL *GMT)
 	gmt_map_boundary (GMT, PSL, w, e, s, n);
 	if (clip_on) GMT_map_clip_off (GMT);
 
-	if (GMT->current.setting.map_frame_pen.style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 
 	PSL_comment (PSL, "End of basemap\n");
 

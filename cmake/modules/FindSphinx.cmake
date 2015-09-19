@@ -13,23 +13,25 @@
 #    SPHINX_EXECUTABLE - A variable pointing to sphinx-build
 
 if (DEFINED SPHINX_ROOT AND NOT SPHINX_ROOT)
-  set (SPHINX_EXECUTABLE "" CACHE INTERNAL "")
-  return()
-endif()
+	set (SPHINX_EXECUTABLE "" CACHE INTERNAL "")
+	return ()
+endif (DEFINED SPHINX_ROOT AND NOT SPHINX_ROOT)
 
 find_program (SPHINX_EXECUTABLE sphinx-build
-  HINTS
-  ${SPHINX_DIR}
-  ${SPHINX_ROOT}
-  $ENV{SPHINX_DIR}
-  $ENV{SPHINX_ROOT}
-  PATH_SUFFIXES bin
-  PATHS
-  /sw # Fink
-  /opt/local # DarwinPorts
-  /opt/csw # Blastwave
-  /opt
-  DOC "Sphinx documentation generator")
+	HINTS
+	${SPHINX_DIR}
+	${SPHINX_ROOT}
+	$ENV{SPHINX_DIR}
+	$ENV{SPHINX_ROOT}
+	PATH_SUFFIXES bin
+	PATHS
+	/sw # Fink
+	/opt/local # DarwinPorts
+	/opt/csw # Blastwave
+	/opt
+	/usr/local
+	DOC "Sphinx documentation generator"
+)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (Sphinx DEFAULT_MSG SPHINX_EXECUTABLE)

@@ -176,6 +176,11 @@ endif (NOT DEFINED CMAKE_VERBOSE_MAKEFILE)
 set (BUILD_SHARED_LIBS true)
 set (CMAKE_FIND_STATIC LAST)
 
+# look also for lib64 when building 64-bit binaries
+if (NOT DEFINED FIND_LIBRARY_USE_LIB64_PATHS)
+	set (FIND_LIBRARY_USE_LIB64_PATHS true)
+endif (NOT DEFINED FIND_LIBRARY_USE_LIB64_PATHS)
+
 # search order for find_*
 set (CMAKE_FIND_FRAMEWORK LAST)
 

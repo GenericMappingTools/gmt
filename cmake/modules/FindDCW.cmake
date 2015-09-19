@@ -27,7 +27,9 @@ find_path (DCW_PATH dcw-gmt.nc
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
-  DOC "Digital Chart of the World")
+	/usr/local
+	DOC "Digital Chart of the World"
+)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (DCW DEFAULT_MSG DCW_PATH)

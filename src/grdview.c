@@ -36,7 +36,7 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  */
- 
+
 #define THIS_MODULE_NAME	"grdview"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
@@ -301,7 +301,7 @@ void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PA
 
 void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVIEW_CTRL *C = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
@@ -315,11 +315,11 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_grdview_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
 	unsigned int i;
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->C.file) free (C->C.file);	
-	for (i = 0; i < 3; i++) if (C->G.file[i]) free (C->G.file[i]);	
-	if (C->I.file) free (C->I.file);	
-	GMT_free (GMT, C);	
+	if (C->In.file) free (C->In.file);
+	if (C->C.file) free (C->C.file);
+	for (i = 0; i < 3; i++) if (C->G.file[i]) free (C->G.file[i]);
+	if (C->I.file) free (C->I.file);
+	GMT_free (GMT, C);
 }
 
 int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
@@ -382,7 +382,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");
 	GMT_Option (API, "X,c,f,n,p,t,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -647,7 +647,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
 	int i_inc, j_inc, way, bin_inc[4], ij_inc[4], error = 0;
-		
+
 	uint64_t ij, sw, se, nw, ne, bin, n, pt;
 
 	size_t max_alloc;
@@ -689,7 +689,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
-	
+
 	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -720,7 +720,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Topo->header->wesn, 4, double);	/* No -R, use grid region */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
-	
+
 	if (GMT->common.R.wesn[ZLO] == 0.0 && GMT->common.R.wesn[ZHI] == 0.0) {
 		GMT->common.R.wesn[ZLO] = Topo->header->z_min;
 		GMT->common.R.wesn[ZHI] = Topo->header->z_max;
@@ -736,7 +736,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		nothing_inside = true;
 	else if (use_intensity_grid && !GMT_grd_setregion (GMT, Intens->header, wesn, BCR_BILINEAR))
 		nothing_inside = true;
-	
+
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
 		PSL = GMT_plotinit (GMT, options);
@@ -795,7 +795,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	j_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? 0 : Z->header->ny;
 	j_inc   = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? -1 : 1;
 	GMT_grd_set_ij_inc (GMT, Z->header->nx, bin_inc);	/* Offsets for bin (no pad) indices */
-	
+
 	x_inc[0] = x_inc[3] = 0.0;	x_inc[1] = x_inc[2] = Z->header->inc[GMT_X];
 	y_inc[0] = y_inc[1] = 0.0;	y_inc[2] = y_inc[3] = Z->header->inc[GMT_Y];
 
@@ -1022,7 +1022,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_free (GMT, xval);
 		GMT_free (GMT, yval);
 	}
-	
+
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
 		int nx_i, ny_i, ip, jp, min_i, max_i, min_j, max_j, dist;
 		int done, layers, last_i, last_j;
@@ -1154,7 +1154,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 						if (!pixel_inside (GMT, ip, jp, ix, iy, bin, bin_inc)) continue;
 						/* These pixels are part of the current tile */
 						if (!Ctrl->Q.mask) {	/* Update clip mask */
-							if (jp > top_jp[ip]) top_jp[ip] = jp; 
+							if (jp > top_jp[ip]) top_jp[ip] = jp;
 							if (jp < bottom_jp[ip]) bottom_jp[ip] = jp;
 						}
 
@@ -1176,7 +1176,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 							}
 							if (use_intensity_grid && GMT_is_fnan (Intens->data[d_node])) continue;	/* Skip NaNs in the intensity data*/
 							/* We don't want to blend in the (typically) gray NaN colors with the others. */
-							
+
 							good++;
 							dist = quick_idist (ip, jp, ix[node], iy[node]);
 							if (dist == 0) {	/* Only need this corner value */
@@ -1351,7 +1351,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_free (GMT, xval);
 		GMT_free (GMT, yval);
 	}
-	
+
 	else if (Ctrl->Q.mode == GRDVIEW_SURF) {	/* Plot surface using closed polygons */
 		int start_side, entry_side, exit_side, next_side, low, ncont, nw_se_diagonal, check;
 		int corner[2], bad_side[2][2], p, p1, p2, saddle_sign;
@@ -1380,7 +1380,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 			   we have no way of adjusting the node accordingly.  Consequently, it is safer to always take the average
 			   of the 4 nodes as the other 3 will pull the average into the middle somewhere.
 		*/
-			
+
 		xcont = GMT_memory (GMT, NULL, max_alloc, double);
 		ycont = GMT_memory (GMT, NULL, max_alloc, double);
 		zcont = GMT_memory (GMT, NULL, max_alloc, double);
@@ -1416,15 +1416,15 @@ int GMT_grdview (void *V_API, int mode, void *args)
 					else
 						this_intensity = Ctrl->I.value;
 				}
-	
+
 				/* Get mesh polygon */
 
 				X_vert[0] = X_vert[3] = x_left;		X_vert[1] = X_vert[2] = x_right;
 				Y_vert[0] = Y_vert[1] = y_bottom;	Y_vert[2] = Y_vert[3] = y_top;
-				
+
 				/* Also get z-values at the 4 nodes.  Because some nodes may have been adjusted by small during
 				 * the contouring stage we need to make the same adjustments below */
-				
+
 				for (k = 0; k < 4; k++) Z_vert[k] = Z->data[ij+ij_inc[k]];	/* First a straight copy */
 
 				if (get_contours && binij[bin].first_cont) {	/* Contours go thru here */
@@ -1708,7 +1708,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_free (GMT, vcont);
 	}
 
-	if (Ctrl->W.pen[1].style || Ctrl->W.pen[0].style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 
 	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_off (GMT);
 

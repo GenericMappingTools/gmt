@@ -829,7 +829,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 
