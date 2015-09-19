@@ -19,7 +19,7 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	5 API
- * 
+ *
  * Brief synopsis: psxy will read <x,y> points and plot symbols, lines,
  * or polygons on maps.
  */
@@ -534,7 +534,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	void *record = NULL;	/* Opaque pointer to either a text (buffer) or double (in) record */
-	
+
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -671,7 +671,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	}
 
 	if (S.G.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
-	
+
 	PSL = GMT_plotinit (GMT, options);
 	if (Ctrl->T.active) {
 		GMT_plotend (GMT);
@@ -716,7 +716,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	bcol = (S.read_size) ? ex2 : ex1;
 	if (S.symbol == GMT_SYMBOL_BARX && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_X];
 	if (S.symbol == GMT_SYMBOL_BARY && S.base_set == 2) GMT->current.io.col_type[GMT_IN][bcol] = GMT->current.io.col_type[GMT_IN][GMT_Y];
-	
+
 	if (penset_OK) GMT_setpen (GMT, &current_pen);
 
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
@@ -785,7 +785,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 			if (read_symbol) {	/* Must do special processing */
 				text_rec = (char *)record;
-				
+
 				/* First establish the symbol type given at the end of the record */
 				GMT_chop (text_rec);	/* Get rid of \n \r */
 				i = (unsigned int)strlen (text_rec) - 1;
@@ -872,7 +872,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				GMT_setfill (GMT, &current_fill, outline_active);
 				GMT_setpen (GMT, &current_pen);
 			}
-			
+
 			if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) {	/* Degenerate ellipses */
 				in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
 			}
@@ -1112,7 +1112,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		PSL_command (GMT->PSL, "U\n");
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
-		
+
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -1139,19 +1139,19 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
-				
+
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
 				change = GMT_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, L->ogr);
-				
+
 
 				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
 
 				duplicate = (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
 					L = GMT_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
-				
+
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
 					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front or quoted line */
@@ -1271,7 +1271,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (clip_set && !S.G.delay) GMT_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
 
-	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 

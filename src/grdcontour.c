@@ -109,7 +109,7 @@ enum grdcontour_contour_type {cont_is_not_closed = 0,	/* Not a closed contour of
 	cont_is_closed_around_north_pole = +3,		/* Closed contour in northern hemisphere that encloses the north pole */
 	cont_is_closed_straddles_equator_south = -4,	/* Closed contour crossing equator that encloses the south pole */
 	cont_is_closed_straddles_equator_north = +4};	/* Closed contour crossing equator that encloses the north pole */
-	
+
 struct SAVE {
 	double *x, *y;
 	double *xp, *yp;
@@ -238,7 +238,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
 	GMT_Option (API, "bo3,c,f,h,p,t,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -439,8 +439,8 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && 
-			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
+			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont),
 			"Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "Syntax error -L option: lower limit >= upper!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
@@ -460,7 +460,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	   1) First we exclude closed contours around a single node as too small.
 	   2) Next, we mark closed contours with other contours inside them as not "innermost"
 	   3) We then determine if the remaining closed polygons contain highs or lows.
-	
+
 	   Note on mode bitflags: mode = 1 (plot only), 2 (save labels only), 3 (both), add 4 for writing angles to labelfile
 	*/
 	int np, j, k, inside, col, row, stop, n_ticks, way, form;
@@ -482,7 +482,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			if (save[pol].y[j] > save[pol].y_max) save[pol].y_max = save[pol].y[j];
 		}
 	}
-	
+
 	for (pol = 0; pol < n; pol++) {	/* Mark polygons that have other polygons inside them */
 		np = save[pol].n;	/* Length of this polygon */
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
@@ -509,7 +509,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	for (pol = 0; pol < n; pol++) if (abs (save[pol].kind) == 2) save[pol].n--;	/* Chop off the extra duplicate point for split periodic contours */
 
 	/* Must make sure that for split periodic contour that if one fails to be innermost then both should fail */
-	
+
 	for (pol = 0; pol < n; pol++) {
 		if (abs (save[pol].kind) != 2) continue;	/* Not a split polygon */
 		for (pol2 = 0, found = false; !found && pol2 < n; pol2++) {
@@ -525,7 +525,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		}
 		if (!found) save[pol].do_it = false;	/* Probably was not a split closed contour */
 	}
-	
+
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = true */
 
 	for (pol = 0; pol < n; pol++) {
@@ -533,7 +533,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		np = save[pol].n;
 
 		/* Need to determine if this is a local high or low */
-		
+
 		if (abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
 			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->nx - 1;
@@ -581,7 +581,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
 		np = (int)GMT_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
-		
+
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
 		n_ticks = irint (floor (s[np-1] / tick_gap));
@@ -628,7 +628,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	/* Still not finished with labeling polar caps when the pole point plots as a line (e.g., -JN).
 	 * One idea would be to add help points to include the pole and used this polygon to compute where to
 	 * plot the label but then skip those points when drawing the line. */
-	
+
 	for (pol = 0; tick_label && pol < n; pol++) {	/* Finally, do labels */
 		if (!save[pol].do_it) continue;
 		if (abs (save[pol].kind) == 2 && GMT_IS_AZIMUTHAL (GMT)) {	/* Only plot once at mean location */
@@ -704,7 +704,7 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 	int k;
 	double small_x = 0.01 * G->header->inc[GMT_X], small_y = 0.01 * G->header->inc[GMT_Y];	/* Use 1% noise to find near-closed contours */
 	double y_min, y_max;
-	
+
 	if (fabs (x[0] - x[n-1]) < small_x && fabs (y[0] - y[n-1]) < small_y) {	/* Closed interior contour */
 		closed = cont_is_closed;
 		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
@@ -740,17 +740,17 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 int GMT_grdcontour (void *V_API, int mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	int error, c;
-	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false, use_t_offset = false; 
-	
+	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false, use_t_offset = false;
+
 	enum grdcontour_contour_type closed;
-	
+
 	unsigned int id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl, label_mode = 0;
 	unsigned int cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
-	
+
 	uint64_t ij, *n_seg = NULL;
 
 	size_t n_save = 0, n_alloc = 0, n_save_alloc = 0, n_tmp, *n_seg_alloc = NULL;
-	
+
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_LEN256] = {""}, format[GMT_LEN256] = {""};
 
@@ -954,7 +954,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 					break;
 			}
 			if (GMT_is_a_blank_line (record)) continue;	/* Nothing in this record */
-			
+
 			/* Data record to process */
 
 			if (n_contours == n_alloc) {
@@ -1235,8 +1235,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour))) Return (error);
 	}
 
-	if (make_plot && (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style)) PSL_setdash (PSL, NULL, 0.0);
-	
+	if (make_plot) PSL_setdash (PSL, NULL, 0.0);
+
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
 		save = GMT_memory (GMT, save, n_save, struct SAVE);
 
@@ -1252,7 +1252,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);	/* Must possibly adjust label angles so that label is readable when following contours */
 
 		GMT_contlabel_plot (GMT, &Ctrl->contour);
-		
+
 		if (!Ctrl->contour.delay) {
 			GMT_map_clip_off (GMT);
 			GMT_map_basemap (GMT);
@@ -1266,7 +1266,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
 		if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour))) Return (error);
 	}
-	
+
 	if (make_plot || Ctrl->contour.save_labels) GMT_contlabel_free (GMT, &Ctrl->contour);
 
 	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_OK) {

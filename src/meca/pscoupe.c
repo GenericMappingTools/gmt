@@ -302,7 +302,7 @@ void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar)
 		mecar->NP1.str += 180.0;
 		mecar->NP1.rake += 180.0;
 		mecar->NP1.str = zero_360 (mecar->NP1.str);
-		if (mecar->NP1.rake > 180.0) mecar->NP1.rake -= 360.0; 
+		if (mecar->NP1.rake > 180.0) mecar->NP1.rake -= 360.0;
 	}
 
 	mecar->magms = meca.magms;
@@ -399,7 +399,7 @@ void distaz (double lat1, double lon1, double lat2, double lon2, double *distkm,
 		sincos (lon1, &slon1, &clon1);
 		sincos (lat2, &slat2, &clat2);
 		sincos (lon2, &slon2, &clon2);
-  
+
 		a1 = clat1 * clon1;
 		b1 = clat1 * slon1;
 		g1 = slat1 * clon1;
@@ -646,7 +646,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 							n_errors++;
 						}
 						break;
-					
+
 				}
 				break;
 			case 'G':	/* Set color for compressive parts */
@@ -1145,7 +1145,7 @@ Definition of scalar moment.
 			i = (Ctrl->S.justify == PSL_BC ? 1 : -1);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
 			if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset + Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset));
-			PSL_plottext (PSL, plot_x, plot_y + i * (size * 0.5 + Ctrl->S.offset), Ctrl->S.fontsize, event_title, angle, 
+			PSL_plottext (PSL, plot_x, plot_y + i * (size * 0.5 + Ctrl->S.offset), Ctrl->S.fontsize, event_title, angle,
 				Ctrl->S.justify, form);
 		}
 	} while (true);
@@ -1160,7 +1160,7 @@ Definition of scalar moment.
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 

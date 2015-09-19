@@ -1171,7 +1171,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */
 
-	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 	GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;

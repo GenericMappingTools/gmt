@@ -485,7 +485,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 					dim[6] = (double)Ctrl->A.S.v.status;
 					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
 						GMT_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
-					else if (&Ctrl->G.active)
+					else if (Ctrl->G.active)
 						GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
@@ -536,7 +536,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
+	PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 
