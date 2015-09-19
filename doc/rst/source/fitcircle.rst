@@ -55,7 +55,7 @@ vectors. The eigenvectors of this matrix give the mean and pole
 locations. This method may be more subject to roundoff errors when there
 are thousands of data. The pole is given by the eigenvector
 corresponding to the smallest eigenvalue; it is the least-well
-represented factor in the data and is not easily estimated by either method. 
+represented factor in the data and is not easily estimated by either method.
 
 Required Arguments
 ------------------
@@ -72,7 +72,7 @@ Optional Arguments
     **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 
-**-F**\ **f**\ |\ **m**\ |\ **n**\ |\ **s**\ |\ **c**
+**-F**\ **f**\ \|\ **m**\ \|\ **n**\ \|\ **s**\ \|\ **c**
     Normally, **fitcircle** will write its results in the form of a text report, with
     the values intermingled with report sentences.  Use **-F** to only return data
     coordinates, and append *flags* to specify which coordinates you would like. You
@@ -85,12 +85,12 @@ Optional Arguments
     will be constrained to lie on the great circle connecting the pole
     of the best-fit great circle and the mean location of the data.
     Optionally append the desired fixed latitude of the small circle
-    [Default will determine the latitude]. 
+    [Default will determine the latitude].
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| replace:: [Default is 2 input columns]. 
+.. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code

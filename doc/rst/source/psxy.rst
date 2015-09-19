@@ -15,23 +15,23 @@ Synopsis
 
 **psxy** [ *table* ] **-J**\ *parameters*
 |SYN_OPT-Rz|
-[ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ] 
+[ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
 [ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
 [ **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
-[ **-G**\ *fill* ] [ **-I**\ *intens* ] 
+[ **-G**\ *fill* ] [ **-I**\ *intens* ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
-[ **-N**\ [**c**\ \|\ **r**] ] 
-[ **-O** ] [ **-P** ] 
+[ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
+[ **-N**\ [**c**\ \|\ **r**] ]
+[ **-O** ] [ **-P** ]
 [ **-S**\ [*symbol*][\ *size*\ [**u**] ] [ **-T** ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |SYN_OPT-a| ] 
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-di| ]
@@ -59,7 +59,7 @@ data points will be drawn instead. To explicitly close polygons, use
 **-L**. Select a fill with **-G**. If **-G** is set, **-W** will control
 whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
-respectively. The PostScript code is written to standard output. 
+respectively. The PostScript code is written to standard output.
 
 Required Arguments
 ------------------
@@ -92,7 +92,7 @@ Optional Arguments
 
 **-C**\ *cptfile*
     Give a color palette file or specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.  
+    to build a linear continuous cpt from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
@@ -128,21 +128,22 @@ Optional Arguments
     in the median. Then a 5th extra data column is expected to contain the
     number of points in the distribution.
 
-**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*]
-    Segment the input data.  Append one of four segmentation methods:
+**-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*]
+    Alter the way points are connected and the data is segmented.
+    Append one of three line connections:
     **c**\ : Continuous line segments [Default].
-    **r**\ : Reference point line segments.
-    **n**\ : Network line segments.
-    Optionally, append the level of segmentation:
-    **a**\ : Ignore all input segment headers, and set the reference point
+    **r**\ : Line segments draw from reference point.
+    **n**\ : Network of line segments draw between all points in a batch.
+    Optionally, append the one of four segmentation methods:
+    **a**\ : Ignore all input segment headers, treat all points as one segment, and set the reference point
     to the very first point of first file.
-    **f**\ : Consider all the data in each file to be separate segments, and
+    **f**\ : Consider all the data in each file to be a single separate segment, and
     reset the reference point to the first point of each file.
     **s**\ : Segment headers are honored; the reference point is reset to the
     first point of each new segment [Default].
     **r**\ : Segment headers are honored; the reference point is reset after
     each record to the previous point (only available with **-Fr**).
-    Instead of the codes **a**\ \|\ **f** \|\ **s** \|\ **r** you may append
+    Instead of the codes **a**\ \|\ **f**\ \|\ **s**\ \|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point.
 
@@ -153,9 +154,9 @@ Optional Arguments
 
 **-I**\ *intens*
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
-    modulate the fill color by simulating illumination [none]. 
+    modulate the fill color by simulating illumination [none].
 
-.. include:: explain_-Jz.rst_ 
+.. include:: explain_-Jz.rst_
 
 .. include:: explain_-K.rst_
 
@@ -191,7 +192,7 @@ Optional Arguments
     Use this to activate only the options that are not related to
     plotting of lines or symbols, such as **psxy** **-R** **-J** **-O**
     **-T** to terminate a sequence of GMT plotting commands without
-    producing any plotting output. 
+    producing any plotting output.
 
 .. include:: explain_-U.rst_
 
@@ -203,11 +204,11 @@ Optional Arguments
     width = default, color = black, style = solid]. A leading **+** will
     use the lookup color (via **-C**) for both symbol fill and outline
     pen color, while a leading **-** will set outline pen color and turn
-    off symbol fill. 
+    off symbol fill.
 
 .. include:: explain_-XY.rst_
 
-.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings]. 
+.. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
 
 .. include:: explain_-aspatial.rst_
@@ -220,7 +221,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set. 
+.. |Add_-g| replace:: The **-g** option is ignored if **-S** is set.
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -318,7 +319,7 @@ Segment header records may contain one of more of the following options:
     Turn outline off
 **-Z**\ *zval*
     Obtain fill via cpt lookup using z-value *zval*
-**-Z**\ *NaN* 
+**-Z**\ *NaN*
     Get the NaN color from the cpt file
 
 Custom Symbols
