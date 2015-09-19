@@ -10715,72 +10715,136 @@ void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, ui
 #endif
 
 /*! . */
-struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, double *origin) {
+struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, struct GMT_SEGMENTIZE *S) {
 	/* Din is a data set with any number of tables and segments and records.
 	 * On output we return a pointer to new dataset in which all points in Din are used to
 	 * form 2-point line segments.  So output will have lots of segments, all of length 2,
 	 * and all these segments are placed in the first (and only) output table.
-	 * There are two forms of segmentization:
-	 * mode == SEGM_ORIGIN_NOTUSED:
-	 *   We consider consequtive points a segment, hence pt1 -> pt2 is first segment,
-	 *   pt2 -> pt3 the second segment, etc. This gives n_rows-1 segments per data segment.
-	 * mode == SEGM_NETWORK:
-	 *   Create  output segments that connect every point with every other point, yielding
-	 *   n_records * (n_records - 1) / 2 segments.
-	 * mode == SEGM_FLOWVECTOR:
-	 *   Create flowvector format x0 y0 ... x1 y1 ..., yielding one segment with n_rows -1 records
-	 *   from each original segment.  This is the only mode that generates one segment only.
-	 * mode == SEGM_ORIGIN_FIXED:
-	 *   Here we generate n_rows segments.  Each segment starts at the origin and ends at the
-	 *   initial data point.  The origin is given in the call sequence.
-	 * mode == SEGM_ORIGIN_DATASET:
-	 *   Same as mode == SEGM_ORIGIN_FIXED except origin is set to the first point in the dataset.
-	 * mode == SEGM_ORIGIN_TABLE:
-	 *   Same as mode == SEGM_ORIGIN_FIXED except origin is set to the first point in each input table.
-	 * mode == SEGM_ORIGIN_SEGMENT:
-	 *   Same as mode == SEGM_ORIGIN_FIXED except origin is reset to the first point in each input segment.
-	 * Dout is the new data set with all the segmentized lines;  Note that when mode > 1 we
-	 * generate as many new segments as there are original data, else we are one less.
+	 * There are several forms of segmentization:
+	 * 1) -Fc: Continuous lines.  By default, lines are drawn on a segment by segment basis.
+	 *    Thus, -F or -Fc or -Fcs or -Fs is the same as the input and is not allowed.  However, if we use
+	 *    -Fcf or -Ff then we ignore segment headers WITHIN each file, except for the first header
+	 *   in each file.  In other words, all points in a file will be considered continuous.
+	 *   Finally, using -Fca or -Fa then all points in all fiels are considered continous and
+	 *   only the first segment header in the first file is considered.
+	 * 2) -Fn: Network.  For each group of points we connect each point with every other point.
+	 *   The modifiers a,f,s control what the "group" is.  With s, we construct a separate
+	 *   network for each segment, with f we group all segments in a file and construct a
+	 *   network for all those points, while with a with consider all points in the dataset
+	 *   to be one group.
+	 * 3) -Fr: Ref point.  Here, we construct line segments from the given reference point to
+	 *   each of the points in the file.  If refpoint is given as two slash-separated coordinates
+	 *   then the refpoint is fixed throughout this construction.  However, refpoint may also be
+	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
+	 *   file, or the first point in each segment to update the actual reference point.
+	 * 4) -Fv: Vectorize.  Here, consecutive points are turned into vector segments such as used
+	 *   by psxy -Sv+s or external applications.  Again, appending a|f|s controls if we should
+	 *   honor the segment headers [Default is -Fvs if -Fv is given].
 	 */
 	uint64_t dim[4] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
-	uint64_t tbl, seg, row, col, new_seg, last_row, off;
-	double coord[2];
+	uint64_t tbl, seg, row, col, new_seg, last_row;
+	double *coord = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
 
 	dim[GMT_COL] = Din->n_columns;	/* Same number of columns as input dataset */
-	if (mode == SEGM_FLOWVECTOR) dim[GMT_COL] *= 2;	/* Since we are putting two records on the same line */
+	dim[GMT_ROW] = 2;		/* Two per segment unless for continuous mode */
 	/* Determine how many total segments will be created */
-	if (mode == SEGM_NETWORK)
-		dim[GMT_SEG] = (Din->n_records * (Din->n_records - 1)) / 2;
-	else {
-		off = (mode < SEGM_NETWORK) ? 1 : 0;	/* With mode < SEGM_NETWORK we start at point 1 and consider prevous point, else we use all points */
-		for (tbl = 0; tbl < Din->n_tables; tbl++) {
-			Tin = Din->table[tbl];
-			for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
-				dim[GMT_SEG] += Tin->segment[seg]->n_rows - off;	/* That is how many segments will be derived from these n_rows points */
-		}
-		if (mode == SEGM_FLOWVECTOR) {
-			dim[GMT_ROW] = dim[GMT_SEG];	/* Use this many records instead */
-			dim[GMT_SEG] = 1;		/* in just one segment */
-		}
+	switch (S->method) {
+		case SEGM_CONTINUOUS:
+			switch (S->level) {
+				case SEGM_DATASET:	/* Everything is just one long segment */
+					dim[GMT_SEG] = 1;
+					dim[GMT_ROW] = Din->n_records;
+					break;
+				case SEGM_TABLE:	/* Turn all segments in a table into one */
+					dim[GMT_SEG] = Din->n_tables;
+					dim[GMT_ROW] = 0;	/* Must do this per segment */
+					break;
+			}
+			break;
+		case SEGM_REFPOINT:
+			switch (S->level) {
+				case SEGM_ORIGIN:	/* External origin, so n_records points remain */
+					dim[GMT_SEG] = Din->n_records;
+					break;
+				case SEGM_DATASET:	/* Reset origin to first point in dataset, so n_records-1 points remains */
+					dim[GMT_SEG] = Din->n_records - 1;
+					break;
+				case SEGM_TABLE:	/* Reset origin to first point in table, so n_records-1 points remains */
+					for (tbl = 0; tbl < Din->n_tables; tbl++)
+						dim[GMT_SEG] += (Din->table[tbl]->n_records - 1);
+					break;
+				case SEGM_SEGMENT:	/* Reset origin to first point in each segment, so n_rows-1 points remains per segment */
+					for (tbl = 0; tbl < Din->n_tables; tbl++) {
+						Tin = Din->table[tbl];
+						for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
+							dim[GMT_SEG] += Tin->segment[seg]->n_rows - 1;
+					}
+					break;
+			}
+			coord = GMT_memory (GMT, NULL, dim[GMT_COL], double);
+			break;
+		case SEGM_NETWORK:
+			switch (S->level) {
+				case SEGM_DATASET:	/* Make a single network */
+					dim[GMT_SEG] = (Din->n_records * (Din->n_records - 1)) / 2;
+					break;
+				case SEGM_TABLE:	/* Make a new network for each table */
+					for (tbl = 0; tbl < Din->n_tables; tbl++)
+						dim[GMT_SEG] += (Din->table[tbl]->n_records * (Din->table[tbl]->n_records - 1)) / 2;
+					break;
+				case SEGM_SEGMENT:	/* Make a new network for each segment */
+					for (tbl = 0; tbl < Din->n_tables; tbl++) {
+						Tin = Din->table[tbl];
+						for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
+							dim[GMT_SEG] += (Tin->segment[seg]->n_rows *(Tin->segment[seg]->n_rows - 1)) / 2;
+					}
+			}
+			break;
+		case SEGM_VECTOR:
+			dim[GMT_COL] *= 2;	/* Since we are putting two records on the same line */
+			switch (S->level) {
+				case SEGM_DATASET:	/* Ignore all headers, so n_records-1 pairs remains forming one segment */
+					dim[GMT_SEG] = 1;
+					dim[GMT_ROW] = Din->n_records - 1;	/* Must do this per segment */
+					break;
+				case SEGM_TABLE:	/* Ignore all but first header in table, so n_records-1 pairs per table remains */
+					dim[GMT_SEG] = Din->n_tables;
+					dim[GMT_ROW] = 0;	/* Must do this per segment */
+					break;
+				case SEGM_SEGMENT:	/* Process per segment segment, so n_rows-1 pairs remains per segment */
+					dim[GMT_SEG] = 	Din->n_segments;
+					dim[GMT_ROW] = 0;	/* Must do this per segment */
+					break;
+			}
+			coord = GMT_memory (GMT, NULL, dim[GMT_COL], double);
+			break;
 	}
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " 2-point segment lines\n", dim[GMT_SEG]);
+	if (S->method == SEGM_CONTINUOUS) 
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " variable-length segment lines\n", dim[GMT_SEG]);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " 2-point segment lines\n", dim[GMT_SEG]);
+		
 	/* Allocate the dataset with one large table */
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* Our new dataset */
 	Tout = D->table[0];	/* The only output table */
-	if (mode == SEGM_NETWORK) {	/* Make segments that connect every point with every other point */
+	
+	if (S->method == SEGM_NETWORK) {	/* Make segments that connect every point with every other point */
 		struct GMT_DATATABLE *Tin2 = NULL;
 		uint64_t tbl2, seg2, row2;
 		bool same[2] = {false, false};
 		for (tbl = new_seg = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* First input table */
 			for (tbl2 = tbl; tbl2 < Din->n_tables; tbl2++) {
+				if (S->level != SEGM_DATASET && tbl2 != tbl) continue;	/* Not working across tables */
 				Tin2 = Din->table[tbl2];	/* Second input table (but might be the same as Tin1) */
 				same[0] = (tbl == tbl2);
 				for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
 					for (seg2 = (same[0]) ? seg : 0; seg2 < Tin2->n_segments; seg2++) {	/* For each input segment to resample */
-						same[1] = (same[0] && seg == seg2);	/* So same is only true for identical segments from same table */
+						same[1] = (same[0] && seg == seg2);	/* So same[1] is only true for identical segments from same table */
+						if (S->level == SEGM_SEGMENT && !same[1] ) continue;	/* Not working across segments */
+						if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
 						for (row = 0; row < Tin->segment[seg]->n_rows; row++) {	/* For each end point in the new 2-point segments */
 							for (row2 = (same[1]) ? row+1 : 0; row2 < Tin2->segment[seg2]->n_rows; row2++, new_seg++) {	/* For each end point in the new 2-point segments */
 								for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
@@ -10794,48 +10858,108 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 			}
 		}
 	}
-	else if (mode == SEGM_FLOWVECTOR) {	/* Turn lines into a series of x0 y0 ... x1 y1 ... records, e.g., for psxy -Sv+s */
-		uint64_t new_row;
-		for (tbl = new_row = 0; tbl < Din->n_tables; tbl++) {
+	else if (S->method == SEGM_VECTOR) {	/* Turn lines into a series of x0 y0 ... x1 y1 ... records, e.g., for psxy -Sv+s */
+		uint64_t new_row, seg2, off = 0;
+		if (S->level == SEGM_DATASET) {	/* Duplicate very first segment header only */
+			if (Din->table[0]->segment[0]->header) Tout->segment[0]->header = strdup (Din->table[0]->segment[0]->header);
+		}
+		for (tbl = new_row = seg2 = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* Current input table */
+			if (S->level == SEGM_TABLE) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
+				GMT_alloc_segment (GMT, Tout->segment[seg2], Tin->n_records-1, Tout->n_columns, false);
+				if (Tin->segment[0]->header) Tout->segment[seg2]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
+			}
 			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
-				last_row = 0;
-				for (row = 1; row < Tin->segment[seg]->n_rows; row++, new_row++) {	/* For each end point in the new 2-point segments */
-					for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
-						Tout->segment[0]->coord[col][new_row] = Tin->segment[seg]->coord[col][last_row];
-						Tout->segment[0]->coord[Din->n_columns+col][new_row] = Tin->segment[seg]->coord[col][row];		/* 2nd point */
-					}
-					last_row = row;
+				off = 0;
+				if (new_row == 0) {	/* Update the first row */
+					for (col = 0; col < Tin->segment[seg]->n_columns; col++) coord[col] = Tin->segment[seg]->coord[col][0];
+					if (Tin->segment[seg]->header) Tout->segment[seg2]->header = strdup (Tin->segment[seg]->header);
+					off = 1;
 				}
+				if (S->level == SEGM_SEGMENT) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
+					GMT_alloc_segment (GMT, Tout->segment[seg2], Tin->segment[seg]->n_rows-1, Tout->n_columns, false);
+					if (Tin->segment[seg]->header) Tout->segment[seg2]->header = strdup (Tin->segment[seg]->header);	/* Duplicate each segment header in table */
+				}
+				for (row = off; row < Tin->segment[seg]->n_rows; row++, new_row++) {	/* For each end point in the new 2-point segments */
+					for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
+						Tout->segment[seg2]->coord[col][new_row] = coord[col];
+						coord[col] = Tout->segment[seg2]->coord[Din->n_columns+col][new_row] = Tin->segment[seg]->coord[col][row];		/* 2nd point */
+					}
+				}
+				if (S->level == SEGM_SEGMENT) {
+					Tout->segment[seg2]->n_rows = new_row;
+					seg2++;	/* Goto next output segment after each input segment */
+					new_row = 0;
+				}
+			}
+			if (S->level == SEGM_TABLE) {	/* Goto next output segment after each table */
+				Tout->segment[seg2]->n_rows = new_row;
+				seg2++;	/* Goto next output segment after each input segment */
+				new_row = 0;
+			}
+		}
+		if (S->level == SEGM_DATASET) {	/* Wrap up the lone segment */
+			Tout->segment[0]->n_rows = new_row;
+		}
+		GMT_free (GMT, coord);
+	}
+	else if (S->method == SEGM_CONTINUOUS) {	/* Basically remove various segment boundaries */
+		uint64_t seg2, new_row = 0;
+		if (S->level == SEGM_DATASET) {	/* Duplicate very first segment header only */
+			if (Din->table[0]->segment[0]->header) Tout->segment[0]->header = strdup (Din->table[0]->segment[0]->header);
+		}
+		for (tbl = seg2 = new_row = 0; tbl < Din->n_tables; tbl++) {
+			Tin = Din->table[tbl];	/* Current input table */
+			if (S->level == SEGM_TABLE) {	/* Must allocate Tin->n_records for the output table's next segment (one per input table) */
+				GMT_alloc_segment (GMT, Tout->segment[tbl], Tin->n_records, Tin->n_columns, false);
+				new_row = 0;	/* Reset output count for this output segment */
+				if (Tin->segment[0]->header) Tout->segment[seg2]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
+			}
+			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
+				for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
+					GMT_memcpy (&Tout->segment[seg2]->coord[col][new_row], Tin->segment[seg]->coord[col], Tin->segment[seg]->n_rows, double);
+				}
+				new_row += Tin->segment[seg]->n_rows;
+			}
+			if (S->level == SEGM_TABLE) {
+				Tout->segment[seg2]->n_rows = new_row;
+				seg2++;	/* Goto next output segment */
 			}
 		}
 	}
-	else {	/* Make segment lines from various origins to each point */
-		if (mode == SEGM_ORIGIN_FIXED) GMT_memcpy (coord, origin, 2, double);	/* Initialize the origin of segments once */
+	else if (S->method == SEGM_REFPOINT) {	/* Make segment lines from various origins to each point */
+		uint64_t off = 0;
+		if (S->level == SEGM_ORIGIN) GMT_memcpy (coord, S->origin, 2, double);	/* Initialize the origin of segments once */
+		if (S->level == SEGM_DATASET) {	/* Duplicate very first segment header only */
+			for (col = 0; col < Din->n_columns; col++) coord[col] = Din->table[0]->segment[seg]->coord[col][0];
+			if (Din->table[0]->segment[0]->header) Tout->segment[0]->header = strdup (Din->table[0]->segment[0]->header);
+			off = 1;
+		}
 		for (tbl = new_seg = 0; tbl < Din->n_tables; tbl++) {
 			Tin = Din->table[tbl];	/* Current input table */
-			if (mode == SEGM_ORIGIN_TABLE || (mode == SEGM_ORIGIN_DATASET && tbl == 0)) {	/* Initialize the origin as 1st point in this table (or each table) */
-				coord[GMT_X] = Tin->segment[0]->coord[GMT_X][0];
-				coord[GMT_Y] = Tin->segment[0]->coord[GMT_Y][0];
+			if (S->level == SEGM_TABLE) {	/* Initialize the origin as 1st point in this table (or for each table) */
+				for (col = 0; col < Din->n_columns; col++) coord[col] = Tin->segment[0]->coord[col][0];
+				if (Tin->segment[0]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[0]->header);	/* Duplicate first segment header in table */
+				off = 1;
 			}
 			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
-				if (mode == SEGM_ORIGIN_SEGMENT) {	/* Initialize the origin as 1st point in segment */
-					coord[GMT_X] = Tin->segment[seg]->coord[GMT_X][0];
-					coord[GMT_Y] = Tin->segment[seg]->coord[GMT_Y][0];
+				if (S->level == SEGM_SEGMENT) {	/* Initialize the origin as 1st point in segment */
+					for (col = 0; col < Din->n_columns; col++) coord[col] = Tin->segment[seg]->coord[col][0];
+					if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
+					off = 1;
 				}
 				last_row = 0;
 				for (row = off; row < Tin->segment[seg]->n_rows; row++, new_seg++) {	/* For each end point in the new 2-point segments */
 					for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
-						if (mode)	/* Set the origin, copy any additional columns from the point */
-							Tout->segment[new_seg]->coord[col][0] = (col < GMT_Z) ? coord[col] : Tin->segment[seg]->coord[col][row];	/* 1st point */
-						else	/* Set 1st point */
-							Tout->segment[new_seg]->coord[col][0] = Tin->segment[seg]->coord[col][last_row];
-						Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];		/* 2nd point */
+						Tout->segment[new_seg]->coord[col][0] = coord[col];				/* 1st point */
+						Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];	/* 2nd point */
 					}
 					last_row = row;
 				}
+				off = 0;
 			}
 		}
+		GMT_free (GMT, coord);
 	}
 	GMT_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 

@@ -28,23 +28,23 @@ gmt psxy -R0/50/0/45 -Jx${scl} -P -Ba10 -BWSne -W0.25p,- t[12].txt -K > $ps
 plotpts TWO DATA TABLES >> $ps
 # Lines from dataset origin
 gmt psxy -R -J -Ba10 -BwSnE -W0.25p,- t[12].txt -O -K -X3.25i >> $ps
-gmt psxy -R -J -W1p t[12].txt -Fd -O -K >> $ps
+gmt psxy -R -J -W1p t[12].txt -Fra -O -K >> $ps
 plotpts DATASET ORIGIN >> $ps
 # Lines from table origin
 gmt psxy -R -Jx${scl} -Ba10 -BWSne -W0.25p,- t[12].txt -O -K -X-3.25i -Y3.15i >> $ps
-gmt psxy -R -J -W1p t[12].txt -Ft -O -K >> $ps
+gmt psxy -R -J -W1p t[12].txt -Frf -O -K >> $ps
 plotpts TABLE ORIGIN >> $ps
 # Lines from segment origin
 gmt psxy -R -J -Ba10 -BwSnE -W0.25p,- t[12].txt -O -K -X3.25i >> $ps
-gmt psxy -R -J -W1p t[12].txt -Fs -O -K >> $ps
+gmt psxy -R -J -W1p t[12].txt -Frs -O -K >> $ps
 plotpts SEGMENT ORIGIN >> $ps
 # Lines from fixed origin
 gmt psxy -R -J -Ba10 -BWSne  -W0.25p,- t[12].txt -O -K -X-3.25i -Y3.15i >> $ps
-gmt psxy -R -J -W1p t[12].txt -F10/35 -O -K >> $ps
+gmt psxy -R -J -W1p t[12].txt -Fr10/35 -O -K >> $ps
 plotpts FIXED ORIGIN >> $ps
 echo 10 35 | gmt psxy -R -J -O -K -Sa0.4c -Gred -Wfaint >> $ps
 # Lines for network
 gmt psxy -R -J -Ba10 -BwSnE -W0.25p,- t[12].txt -O -K -X3.25i >> $ps
-gmt psxy -R -J -W1p t[12].txt -Fn -O -K >> $ps
+gmt psxy -R -J -W1p t[12].txt -Fna -O -K >> $ps
 plotpts NETWORK >> $ps
 gmt psxy -R -J -O -T >> $ps

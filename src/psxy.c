@@ -58,8 +58,7 @@ struct PSXY_CTRL {
 	} E;
 	struct F {	/* -F<mode> */
 		bool active;
-		unsigned int mode;
-		double origin[2];
+		struct GMT_SEGMENTIZE S;
 	} F;
 	struct G {	/* -G<fill> */
 		bool active;
@@ -312,12 +311,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   5th extra column with the sample size, which is needed to draw a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   notched box-and whisker diagram (notch width represents uncertainty.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the median).  Finally, use -W, -G to affect the 25-75%% box.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Segmentize the input line before plotting as new lines.  Append method:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     d: Draw rays from dataset's very first point to all points in data set [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t: Draw rays from each table's very first point to all points in table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s: Draw rays from each segments's very first point to all points in segment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     n: Draw rays connecting all points with all other points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x0/y0: Draw rays from given origin to all points in data set.\n");
+	GMT_segmentize_syntax (API->GMT, 'F', 1);
 	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all subheaders (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
@@ -518,20 +512,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				switch (opt->arg[0]) {
-					case 's': Ctrl->F.mode = SEGM_ORIGIN_SEGMENT;	break;
-					case 'd': Ctrl->F.mode = SEGM_ORIGIN_DATASET;	break;
-					case 't': Ctrl->F.mode = SEGM_ORIGIN_TABLE;	break;
-					case 'n': Ctrl->F.mode = SEGM_NETWORK;	break;
-					default:
-						if (opt->arg[0]) {	/* Gave arguments */
-							Ctrl->F.mode = SEGM_ORIGIN_FIXED;
-							if ((j = GMT_get_pair (GMT, opt->arg, GMT_PAIR_COORD, Ctrl->F.origin)) < 2) n_errors++;
-						}
-						else /* Default -F means -Fd */
-							Ctrl->F.mode = SEGM_ORIGIN_DATASET;
-						break;
-				}
+				n_errors += GMT_parse_segmentize (GMT, opt->option, opt->arg, 0, &(Ctrl->F.S));
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
@@ -1293,11 +1274,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (S.symbol == GMT_SYMBOL_QUOTED_LINE && S.G.segmentize) {	/* Special quoted line where each point-pair should be considered a line segment */
+			struct GMT_SEGMENTIZE S;
 			struct GMT_DATASET *Dtmp = NULL;	/* Pointer to GMT multisegment table(s) */
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			D = GMT_segmentize_data (GMT, Dtmp, 0, NULL);	/* Segmentize the data */
+			S.method = SEGM_REFPOINT;	S.level = SEGM_SEGMENT;
+			D = GMT_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the data */
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
 				Return (API->error);
 			}
@@ -1307,7 +1290,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			D = GMT_segmentize_data (GMT, Dtmp, Ctrl->F.mode, Ctrl->F.origin);	/* Segmentize the data */
+			D = GMT_segmentize_data (GMT, Dtmp, &(Ctrl->F.S));	/* Segmentize the data */
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
 				Return (API->error);
 			}

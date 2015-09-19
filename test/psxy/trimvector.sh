@@ -43,4 +43,3 @@ plot -Sv0.2i+t0.15i+s+e -X1.75i >> $ps
 plot -Sv0.2i+t0.15i+s+b -X1.75i >> $ps
 plot -Sv0.2i+t0.15i+s+b+e -X1.75i >> $ps
 gmt psxy -R -J -O -T >> $ps
-gv $ps &

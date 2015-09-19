@@ -79,6 +79,7 @@ EXTERN_MSC void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error);
 EXTERN_MSC void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
 EXTERN_MSC void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode);
+EXTERN_MSC void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode);
 EXTERN_MSC void GMT_img_syntax (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_fft_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_GSHHG_syntax (struct GMT_CTRL *GMT, char option);
@@ -362,6 +363,7 @@ EXTERN_MSC void GMT_enable_threads (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int GMT_validate_modifiers (struct GMT_CTRL *GMT, const char *string, const char option, const char *valid_modifiers);
 EXTERN_MSC double GMT_pol_area (double x[], double y[], uint64_t n);
 EXTERN_MSC void GMT_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double dim[], double off[], int justify, int anchor);
+EXTERN_MSC unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S);
 
 /* gmt_calclock.c: */
 
@@ -497,7 +499,7 @@ EXTERN_MSC struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct 
 EXTERN_MSC struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, bool alternate);
 EXTERN_MSC uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode);
 EXTERN_MSC bool GMT_crossing_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
-EXTERN_MSC struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, double *origin);
+EXTERN_MSC struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, struct GMT_SEGMENTIZE *S);
 EXTERN_MSC int GMT_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const char *where);
 EXTERN_MSC int64_t GMT_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link);
 EXTERN_MSC void GMT_delaunay_free (struct GMT_CTRL *GMT, int **link);

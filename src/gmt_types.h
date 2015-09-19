@@ -97,6 +97,13 @@ struct GMT_MODEL {	/* A model consists of n_terms */
 	struct GMT_MODEL_TERM term[GMT_N_MAX_MODEL];
 };
 
+/*! For segments */
+struct GMT_SEGMENTIZE {	/* Information about segmentation */
+	unsigned int method;	/* Type of segmentation [0] */
+	unsigned int level;	/* Organized by segments (0), per table (1) or per dataset (2) [0] */
+	double origin[2];	/* Reference point for segmentation */
+};
+
 struct GMT_DIST {	/* Holds info for a particular distance calculation */
 	bool init;	/* true if we have initialized settings for this type via GMT_init_distaz */
 	bool arc;	/* true if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */

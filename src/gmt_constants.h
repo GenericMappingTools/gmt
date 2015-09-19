@@ -227,13 +227,14 @@ enum GMT_enum_bcr {
 	BCR_BICUBIC};         /* Bicubic spline */
 
 enum GMT_segmentation {
-	SEGM_ORIGIN_NOTUSED	= 0,
-	SEGM_FLOWVECTOR,
+	SEGM_CONTINUOUS = 0,	/* The segmentation method */
+	SEGM_VECTOR,
 	SEGM_NETWORK,
-	SEGM_ORIGIN_FIXED,
-	SEGM_ORIGIN_DATASET,
-	SEGM_ORIGIN_TABLE,
-	SEGM_ORIGIN_SEGMENT};
+	SEGM_REFPOINT,
+	SEGM_SEGMENT = 0,	/* The segmentation method */
+	SEGM_TABLE,
+	SEGM_DATASET,
+	SEGM_ORIGIN};		/* External reference point */
 
 /*! Various grid/image boundary conditions */
 enum GMT_enum_bc {
