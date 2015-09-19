@@ -32,7 +32,9 @@ find_path (GSHHG_PATH
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
-  DOC "Global Self-consistent Hierarchical High-resolution Geography")
+	/usr/local
+	DOC "Global Self-consistent Hierarchical High-resolution Geography"
+)
 
 # get GSHHG file
 if (GSHHG_PATH)

@@ -43,6 +43,7 @@ if (UNIX AND NOT NETCDF_FOUND)
 		/opt/local # DarwinPorts
 		/opt/csw # Blastwave
 		/opt
+		/usr/local
 	)
 
 	if (NETCDF_CONFIG)
@@ -59,7 +60,7 @@ if (UNIX AND NOT NETCDF_FOUND)
 			OUTPUT_VARIABLE NETCDF_CONFIG_LIBS)
 		if (NETCDF_CONFIG_LIBS)
 			# Ensure -l is precedeced by whitespace to not match
-		        # '-l' in '-L/usr/lib/x86_64-linux-gnu/hdf5/serial'
+			# '-l' in '-L/usr/lib/x86_64-linux-gnu/hdf5/serial'
 			string (REGEX MATCHALL "(^| )-l[^ ]+" _netcdf_dashl ${NETCDF_CONFIG_LIBS})
 			string (REGEX REPLACE "(^| )-l" "" _netcdf_lib "${_netcdf_dashl}")
 			string (REGEX MATCHALL "(^| )-L[^ ]+" _netcdf_dashL ${NETCDF_CONFIG_LIBS})
@@ -89,6 +90,7 @@ find_path (NETCDF_INCLUDE_DIR netcdf.h
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
+	/usr/local
 )
 
 find_library (NETCDF_LIBRARY
@@ -99,12 +101,13 @@ find_library (NETCDF_LIBRARY
 	${NETCDF_ROOT}
 	$ENV{NETCDF_DIR}
 	$ENV{NETCDF_ROOT}
-	PATH_SUFFIXES lib64 lib
+	PATH_SUFFIXES lib
 	PATHS
 	/sw
 	/opt/local
 	/opt/csw
 	/opt
+	/usr/local
 )
 
 # find all libs that nc-config reports
@@ -116,23 +119,23 @@ foreach (_extralib ${_netcdf_lib})
 endforeach (_extralib)
 
 if (NETCDF_LIBRARY AND NETCDF_INCLUDE_DIR AND NOT HAVE_NETCDF4)
-  # Ensure that NetCDF with version 4 extensions is installed
-  include (CMakePushCheckState)
-  include (CheckSymbolExists)
-  cmake_push_check_state() # save state of CMAKE_REQUIRED_*
-  set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${NETCDF_INCLUDE_DIR})
-  set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${NETCDF_LIBRARY})
-  set (HAVE_NETCDF4 HAVE_NETCDF4) # to force check_symbol_exists again
-  check_symbol_exists (nc_def_var_deflate netcdf.h HAVE_NETCDF4)
-  cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
-  if (NOT HAVE_NETCDF4)
-    message (SEND_ERROR "Library found but netCDF-4/HDF5 format unsupported. Do not configure netCDF-4 with --disable-netcdf-4.")
-  endif (NOT HAVE_NETCDF4)
+	# Ensure that NetCDF with version 4 extensions is installed
+	include (CMakePushCheckState)
+	include (CheckSymbolExists)
+	cmake_push_check_state() # save state of CMAKE_REQUIRED_*
+	set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${NETCDF_INCLUDE_DIR})
+	set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${NETCDF_LIBRARY})
+	set (HAVE_NETCDF4 HAVE_NETCDF4) # to force check_symbol_exists again
+	check_symbol_exists (nc_def_var_deflate netcdf.h HAVE_NETCDF4)
+	cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
+	if (NOT HAVE_NETCDF4)
+		message (SEND_ERROR "Library found but netCDF-4/HDF5 format unsupported. Do not configure netCDF-4 with --disable-netcdf-4.")
+	endif (NOT HAVE_NETCDF4)
 endif (NETCDF_LIBRARY AND NETCDF_INCLUDE_DIR AND NOT HAVE_NETCDF4)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (NETCDF
-  DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR HAVE_NETCDF4)
+	DEFAULT_MSG NETCDF_LIBRARY NETCDF_INCLUDE_DIR HAVE_NETCDF4)
 
 set (NETCDF_LIBRARIES ${NETCDF_LIBRARY})
 set (NETCDF_INCLUDE_DIRS ${NETCDF_INCLUDE_DIR})

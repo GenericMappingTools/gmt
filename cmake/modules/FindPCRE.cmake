@@ -29,85 +29,91 @@
 #include "pcre.h"
 
 if (DEFINED PCRE_ROOT AND NOT PCRE_ROOT)
-  set (PCRE_LIBRARY "" CACHE INTERNAL "")
-  set (PCRE_INCLUDE_DIR "" CACHE INTERNAL "")
-  return()
-endif()
+	set (PCRE_LIBRARY "" CACHE INTERNAL "")
+	set (PCRE_INCLUDE_DIR "" CACHE INTERNAL "")
+	return ()
+endif (DEFINED PCRE_ROOT AND NOT PCRE_ROOT)
 
 if (UNIX AND NOT PCRE_FOUND)
-  # Use pcre-config to obtain the library version (this should hopefully
-  # allow us to -lpcre1.x.y where x.y are correct version)
-  # For some reason, libpcre development packages do not contain
-  # libpcre.so...
-  find_program (PCRE_CONFIG pcre-config
-    HINTS
-    ${PCRE_DIR}
-    ${PCRE_ROOT}
-    $ENV{PCRE_DIR}
-    $ENV{PCRE_ROOT}
-    PATH_SUFFIXES bin
-    PATHS
-    /sw # Fink
-    /opt/local # DarwinPorts
-    /opt/csw # Blastwave
-    /opt)
+	# Use pcre-config to obtain the library version (this should hopefully
+	# allow us to -lpcre1.x.y where x.y are correct version)
+	# For some reason, libpcre development packages do not contain
+	# libpcre.so...
+	find_program (PCRE_CONFIG pcre-config
+		HINTS
+		${PCRE_DIR}
+		${PCRE_ROOT}
+		$ENV{PCRE_DIR}
+		$ENV{PCRE_ROOT}
+		PATH_SUFFIXES bin
+		PATHS
+		/sw # Fink
+		/opt/local # DarwinPorts
+		/opt/csw # Blastwave
+		/opt
+		/usr/local
+	)
 
-  if (PCRE_CONFIG)
-    execute_process (COMMAND ${PCRE_CONFIG} --cflags
-      ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
-      OUTPUT_VARIABLE PCRE_CONFIG_CFLAGS)
-    if (PCRE_CONFIG_CFLAGS)
-      string (REGEX MATCHALL "-I[^ ]+" _pcre_dashI ${PCRE_CONFIG_CFLAGS})
-      string (REGEX REPLACE "-I" "" _pcre_includepath "${_pcre_dashI}")
-      string (REGEX REPLACE "-I[^ ]+" "" _pcre_cflags_other ${PCRE_CONFIG_CFLAGS})
-    endif (PCRE_CONFIG_CFLAGS)
-    execute_process (COMMAND ${PCRE_CONFIG} --libs
-      ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
-      OUTPUT_VARIABLE PCRE_CONFIG_LIBS)
-    if (PCRE_CONFIG_LIBS)
-      string (REGEX MATCHALL "-l[^ ]+" _pcre_dashl ${PCRE_CONFIG_LIBS})
-      string (REGEX REPLACE "-l" "" _pcre_lib "${_pcre_dashl}")
-      string (REGEX MATCHALL "-L[^ ]+" _pcre_dashL ${PCRE_CONFIG_LIBS})
-      string (REGEX REPLACE "-L" "" _pcre_libpath "${_pcre_dashL}")
-    endif (PCRE_CONFIG_LIBS)
-  endif (PCRE_CONFIG)
+	if (PCRE_CONFIG)
+		execute_process (COMMAND ${PCRE_CONFIG} --cflags
+			ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+			OUTPUT_VARIABLE PCRE_CONFIG_CFLAGS)
+		if (PCRE_CONFIG_CFLAGS)
+			string (REGEX MATCHALL "-I[^ ]+" _pcre_dashI ${PCRE_CONFIG_CFLAGS})
+			string (REGEX REPLACE "-I" "" _pcre_includepath "${_pcre_dashI}")
+			string (REGEX REPLACE "-I[^ ]+" "" _pcre_cflags_other ${PCRE_CONFIG_CFLAGS})
+		endif (PCRE_CONFIG_CFLAGS)
+		execute_process (COMMAND ${PCRE_CONFIG} --libs
+			ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+			OUTPUT_VARIABLE PCRE_CONFIG_LIBS)
+		if (PCRE_CONFIG_LIBS)
+			string (REGEX MATCHALL "-l[^ ]+" _pcre_dashl ${PCRE_CONFIG_LIBS})
+			string (REGEX REPLACE "-l" "" _pcre_lib "${_pcre_dashl}")
+			string (REGEX MATCHALL "-L[^ ]+" _pcre_dashL ${PCRE_CONFIG_LIBS})
+			string (REGEX REPLACE "-L" "" _pcre_libpath "${_pcre_dashL}")
+		endif (PCRE_CONFIG_LIBS)
+	endif (PCRE_CONFIG)
 endif (UNIX AND NOT PCRE_FOUND)
 
 find_path (PCRE_INCLUDE_DIR pcre.h
-  HINTS
-  ${_pcre_includepath}
-  ${PCRE_DIR}
-  ${PCRE_ROOT}
-  $ENV{PCRE_DIR}
-  $ENV{PCRE_ROOT}
-  PATH_SUFFIXES
-  include/pcre
-  include/PCRE
-  include
-  PATHS
-  ~/Library/Frameworks/pcre.framework/Headers
-  /Library/Frameworks/pcre.framework/Headers
-  /sw # Fink
-  /opt/local # DarwinPorts
-  /opt/csw # Blastwave
-  /opt)
+	HINTS
+	${_pcre_includepath}
+	${PCRE_DIR}
+	${PCRE_ROOT}
+	$ENV{PCRE_DIR}
+	$ENV{PCRE_ROOT}
+	PATH_SUFFIXES
+	include/pcre
+	include/PCRE
+	include
+	PATHS
+	~/Library/Frameworks/pcre.framework/Headers
+	/Library/Frameworks/pcre.framework/Headers
+	/sw # Fink
+	/opt/local # DarwinPorts
+	/opt/csw # Blastwave
+	/opt
+	/usr/local
+)
 
 find_library (PCRE_LIBRARY
-  NAMES ${_pcre_lib} pcre pcre.0 PCRE
-  HINTS
-  ${PCRE_DIR}
-  ${PCRE_ROOT}
-  $ENV{PCRE_DIR}
-  $ENV{PCRE_ROOT}
-  ${_pcre_libpath}
-  PATH_SUFFIXES lib64 lib
-  PATHS
-  ~/Library/Frameworks/pcre.framework
-  /Library/Frameworks/pcre.framework
-  /sw
-  /opt/local
-  /opt/csw
-  /opt)
+	NAMES ${_pcre_lib} pcre pcre.0 PCRE
+	HINTS
+	${PCRE_DIR}
+	${PCRE_ROOT}
+	$ENV{PCRE_DIR}
+	$ENV{PCRE_ROOT}
+	${_pcre_libpath}
+	PATH_SUFFIXES lib
+	PATHS
+	~/Library/Frameworks/pcre.framework
+	/Library/Frameworks/pcre.framework
+	/sw
+	/opt/local
+	/opt/csw
+	/opt
+	/usr/local
+)
 
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (PCRE DEFAULT_MSG PCRE_LIBRARY PCRE_INCLUDE_DIR)
