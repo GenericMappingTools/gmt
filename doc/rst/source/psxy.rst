@@ -129,23 +129,23 @@ Optional Arguments
     number of points in the distribution.
 
 **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*]
-    Alter the way points are connected and the data is segmented.
-    Append one of three line connections:
-    **c**\ : Continuous line segments [Default].
-    **r**\ : Line segments draw from reference point.
-    **n**\ : Network of line segments draw between all points in a batch.
-    Optionally, append the one of four segmentation methods:
-    **a**\ : Ignore all input segment headers, treat all points as one segment, and set the reference point
-    to the very first point of first file.
-    **f**\ : Consider all the data in each file to be a single separate segment, and
-    reset the reference point to the first point of each file.
-    **s**\ : Segment headers are honored; the reference point is reset to the
-    first point of each new segment [Default].
-    **r**\ : Segment headers are honored; the reference point is reset after
-    each record to the previous point (only available with **-Fr**).
+    Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
+    Append one of three line connection schemes:
+    **c**\ : Draw continuous line segments for each group [Default].
+    **r**\ : Draw line segments from a reference point reset for each group.
+    **n**\ : Draw networks of line segments between all points in each group.
+    Optionally, append the one of four segmentation methods to define the group:
+    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+    and set group reference point to the very first point of the first file.
+    **f**\ : Consider all data in each file to be a single separate group and
+    reset the group reference point to the first point of each group.
+    **s**\ : Segment headers are honored so each segment is a group; the group
+    reference point is reset to the first point of each incoming segment [Default].
+    **r**\ : Same as **s**, but the group reference point is reset after
+    each record to the previous point (this method is only available with the **-Fr** scheme).
     Instead of the codes **a**\ \|\ **f**\ \|\ **s**\ \|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
-    reference point.
+    reference point for all groups.
 
 **-G**\ *fill*
     Select color or pattern for filling of symbols or polygons [Default is no fill].

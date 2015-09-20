@@ -1139,18 +1139,20 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 
 /*! Use mode to control which options are displayed */
 void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode)
-{
-	GMT_message (GMT, "\t-%c Segmentize the input data.  Append segmentation method:\n", option);
-	GMT_message (GMT, "\t     c: Continuous line segments [Default].\n");
-	GMT_message (GMT, "\t     r: Reference point line segments.\n");
-	GMT_message (GMT, "\t     n: Network line segments.\n");
-	if (mode == 1) GMT_message (GMT, "\t     v: Vector line segment output suitable for psxy -Sv+s\n");
-	GMT_message (GMT, "\t     Optionally, append the level of segmentation:\n");
-	GMT_message (GMT, "\t       a: Ignore all input segments, reference point is very first point of first file.\n");
-	GMT_message (GMT, "\t       f: Ignore input segments within tables, reference point is reset to first point of each file.\n");
-	GMT_message (GMT, "\t       s: Segments are kept as is; reference point is reset to first point of each segment [Default].\n");
-	GMT_message (GMT, "\t       r: Segments are kept as is; reference point is reset to each point of each segment.\n");
-	GMT_message (GMT, "\t          Only available with -%cr.\n", option);
+{	/* mode == 0 for formatting and 1 for plotting */
+	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
+	GMT_message (GMT, "\t-%c Alter the way points are connected and the data are segmented.\n", option);
+	GMT_message (GMT, "\t    Append one of %s line connection schemes:\n", count[mode]);
+	GMT_message (GMT, "\t     c: %s continuous line segments for each group [Default].\n", verb[mode]);
+	GMT_message (GMT, "\t     r: %s line segments from a reference point reset for each group.\n", verb[mode]);
+	GMT_message (GMT, "\t     n: %s networks of line segments between all points in each group.\n", verb[mode]);
+	if (mode == 1) GMT_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv+s\n");
+	GMT_message (GMT, "\t     Optionally, append one of five ways to define a \"group\":\n");
+	GMT_message (GMT, "\t       a: All data is consider a single group; reference point is first point in the group.\n");
+	GMT_message (GMT, "\t       f: Each file is a separate group; reference point is reset to first point in the group.\n");
+	GMT_message (GMT, "\t       s: Each segment is a group; reference point is reset to first point in the group [Default].\n");
+	GMT_message (GMT, "\t       r: Each segment is a group, but reference point is reset to each point in the group.\n");
+	GMT_message (GMT, "\t          Only available with the -%cr scheme.\n", option);
 	GMT_message (GMT, "\t       <refpoint> : Specify a fixed external reference point instead.\n");
 }
 

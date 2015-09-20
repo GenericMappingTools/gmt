@@ -94,23 +94,24 @@ Optional Arguments
     Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
 
 **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*]
-    Segmentize the input data.  Append one of four segmentation methods:
-    **c**\ : Continuous line segments [Default].
-    **r**\ : Reference point line segments.
-    **n**\ : Network line segments.
-    **v**\ : Vector line segment output suitable for psxy **-Sv+s**.
-    Optionally, append the level of segmentation:
-    **a**\ : Ignore all input segment headers, and set the reference point
-    to the very first point of first file.
-    **f**\ : Consider all the data in each file to be separate segments, and
-    reset the reference point to the first point of each file.
-    **s**\ : Segment headers are honored; the reference point is reset to the
-    first point of each new segment [Default].
-    **r**\ : Segment headers are honored; the reference point is reset after
-    each record to the previous point (only available with **-Fr**).
-    Instead of the codes **a**\ \|\ **f** \|\ **s** \|\ **r** you may append
+    Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
+    Append one of four line connection schemes:
+    **c**\ : Form continuous line segments for each group [Default].
+    **r**\ : Form line segments from a reference point reset for each group.
+    **n**\ : Form networks of line segments between all points in each group.
+    **v**\ : Form vector line segments suitable for psxy **-Sv+s**.
+    Optionally, append the one of four segmentation methods to define the group:
+    **a**\ : Ignore all segment headers, i.e., let all points belong to a single group,
+    and set group reference point to the very first point of the first file.
+    **f**\ : Consider all data in each file to be a single separate group and
+    reset the group reference point to the first point of each group.
+    **s**\ : Segment headers are honored so each segment is a group; the group
+    reference point is reset to the first point of each incoming segment [Default].
+    **r**\ : Same as **s**, but the group reference point is reset after
+    each record to the previous point (this method is only available with the **-Fr** scheme).
+    Instead of the codes **a**\ \|\ **f**\ \|\ **s**\ \|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
-    reference point.
+    reference point for all groups.
 
 **-I**\ [**tsr**]
     Invert the order of items, i.e., output the items in reverse order,
