@@ -21,5 +21,6 @@
     Use :ref:`FONT_LABEL <FONT_LABEL>` to change the label font and
     :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`
     to change the annotation font.  The height of the map scale is controlled
-    by :ref:`MAP_SCALE_HEIGHT <MAP_SCALE_HEIGHT>`.
+    by :ref:`MAP_SCALE_HEIGHT <MAP_SCALE_HEIGHT>`, and the pen thickness is
+    set by :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`.
     See **-F** on how to place a panel behind the scale.
