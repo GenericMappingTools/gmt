@@ -50,9 +50,10 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct F {	/* -Fl|a|c */
+	struct F {	/* -Fl|a|c[1|2] */
 		bool active;
 		unsigned int mode;
+		unsigned int type;
 	} F;
 	struct I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
 		bool active;
@@ -100,7 +101,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n][+1|2] [-I<inc>[<unit>]] [-N<knottable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
@@ -121,6 +122,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set equidistant grid interval <inc> [t1 - t0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
@@ -183,21 +185,23 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
-						Ctrl->F.mode = 0;
+						Ctrl->F.mode = GMT_SPLINE_LINEAR;
 						break;
 					case 'a':
-						Ctrl->F.mode = 1;
+						Ctrl->F.mode = GMT_SPLINE_AKIMA;
 						break;
 					case 'c':
-						Ctrl->F.mode = 2;
+						Ctrl->F.mode = GMT_SPLINE_CUBIC;
 						break;
 					case 'n':
-						Ctrl->F.mode = 3;
+						Ctrl->F.mode = GMT_SPLINE_NN;
 						break;
 					default:
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Bad spline selector %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
+				if (opt->arg[1] == '+') Ctrl->F.type = (opt->arg[2] - '0');	/* Want first or second derivatives */
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -242,6 +246,7 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && GMT_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->T.col >= 2) ? Ctrl->T.col + 1 : 2);
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -251,7 +256,7 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 
 int GMT_sample1d (void *V_API, int mode, void *args)
 {
-	unsigned int geometry;
+	unsigned int geometry, int_mode;
 	bool resample_path = false;
 	int error = 0, result;
 	
@@ -290,9 +295,10 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	GMT->current.setting.interpolant = Ctrl->F.mode;
+	GMT->current.setting.interpolant = Ctrl->F.mode % 10;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->T.col] = true;				/* ... But disallow NaN in "time" column */
+	int_mode = Ctrl->F.mode + 10*Ctrl->F.type;
 	
 	if (Ctrl->I.mode) {
 		if (Ctrl->I.smode == GMT_GEODESIC) {
@@ -442,13 +448,13 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 						ttime[k] = (resample_path) ? dist_in[row] : S->coord[Ctrl->T.col][row];
 						data[k++] = S->coord[col][row];
 					}
-					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], Ctrl->F.mode);
+					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], int_mode);
 					GMT_free (GMT, ttime);
 					GMT_free (GMT, data);
 				}
 				else {
 					ttime = (resample_path) ? dist_in : S->coord[Ctrl->T.col];
-					result = GMT_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], Ctrl->F.mode);
+					result = GMT_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], int_mode);
 				}
 
 				if (result != GMT_OK) {

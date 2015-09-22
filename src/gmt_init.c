@@ -985,7 +985,7 @@ void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC"};
 		GMT_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>.\n", tab[shift], type[kind]);
 		GMT_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%cj),\n", tab[shift], option);
-		GMT_message (GMT, "\t   %s  or the mirror opposit of <refpoint> (with -%cJ), or %s (else).\n", tab[shift], option, just[kind]);
+		GMT_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%cJ), or %s (else).\n", tab[shift], option, just[kind]);
 		GMT_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from refpoint in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
 	}
 }

@@ -507,6 +507,10 @@ changes to syntax will be backwards compatible:
    The slip-vector symbol can now optionally accept a vector-head angle [30].
    Finally, to match :doc:`psxy` we have added the option **-T** for specifying no data input.
 
+*  :doc:`sample1d` spline selection option **-F** can now accept the optional
+   modifiers **+1** or **+2** which will compute
+   the first or second derivative of the spline, respectively.
+
 *  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
    all grid nodes inside a Voronoi polygon is set to the same value as the
    Voronoi node value, via **-Ez**.

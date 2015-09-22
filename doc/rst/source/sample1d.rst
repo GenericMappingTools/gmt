@@ -15,7 +15,7 @@ Synopsis
 
 **sample1d** [ *table* ]
 [ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ] [ **-I**\ *inc*\ [*unit*] ]
+[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ][\ **+1**\ \|\ **+2**\ ] [ **-I**\ *inc*\ [*unit*] ]
 [ **-N**\ *knotfile* ] [ **-S**\ *start*\ [/*stop*] ] [ **-T**\ *col* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -65,11 +65,13 @@ Optional Arguments
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
     **+l** if distances should be measured along rhumb lines (loxodromes).
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**
+**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**[\ **+1**\ \|\ **+2**\ ]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
     :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
+    You may optionally evaluate the first or second derivative of the spline
+    by appending **1** or **2**, respectively.
 **-I**\ *inc*\ [*unit*]
     *inc* defines the sampling interval [Default is the separation
     between the first and second abscissa point in the *infile*]. Append
@@ -150,6 +152,13 @@ grav_pos.dg, using a cubic spline for the interpolation, use
    ::
 
     gmt sample1d depths.dt -Ngrav_pos.dg -Fc > new_depths.dt
+
+To resample the file points.txt every 0.01 from 0-6, using a cubic spline for the
+interpolation, but output the first derivative instead (the slope), try
+
+   ::
+
+    gmt sample1d points.txt S0/6 -I0.01 -Fc+1 > slopes.txt
 
 To resample the file track.txt which contains lon, lat, depth every 2
 nautical miles, use

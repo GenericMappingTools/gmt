@@ -54,7 +54,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     By default, the anchor point on the legend is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
-    if **-DJ** is used then *justify* defaults to the mirror opposit of *refpoint*.
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Use **+l**\ *spacing* to change the line-spacing factor in units of the current
     font size [1.1].
     Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in

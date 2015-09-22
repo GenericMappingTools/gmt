@@ -85,7 +85,7 @@ Optional Arguments
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
     Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
-    if **-DJ** is used then *justify* defaults to the mirror opposit of *refpoint*.
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     If you need access to the placement of the lower left corner of the map insert and

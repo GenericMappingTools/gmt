@@ -3237,6 +3237,40 @@ double GMT_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, doubl
 	return (yp);
 }
 
+/*! . */
+double gmt_csplintslp (struct GMT_CTRL *GMT, double *x, double *y, double *c, double xp, uint64_t klo) {
+	/* As GMT_csplint but returns the first derivative instead */
+	uint64_t khi;
+	double h, ih, b, a, dypdx;
+	GMT_UNUSED(GMT);
+
+	khi = klo + 1;
+	h = x[khi] - x[klo];
+	ih = 1.0 / h;
+	a = (x[khi] - xp) * ih;
+	b = (xp - x[klo]) * ih;
+	dypdx = ih * (y[khi] - y[klo]) + ((3.0*b*b - 1.0) * c[khi] - (3.0*a*a - 1.0) * c[klo]) * h / 6.0;
+
+	return (dypdx);
+}
+
+/*! . */
+double gmt_csplintcurv (struct GMT_CTRL *GMT, double *x, double *c, double xp, uint64_t klo) {
+	/* As GMT_csplint but returns the 2nd derivative instead */
+	uint64_t khi;
+	double h, ih, b, a, d2ypdx2;
+	GMT_UNUSED(GMT);
+
+	khi = klo + 1;
+	h = x[khi] - x[klo];
+	ih = 1.0 / h;
+	a = (x[khi] - xp) * ih;
+	b = (xp - x[klo]) * ih;
+	d2ypdx2 = -(b * c[khi] + a * c[klo]);
+
+	return (d2ypdx2);
+}
+
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * GMT_intpol will interpolate from the dataset <x,y> onto a new set <u,v>
  * where <x,y> and <u> is supplied by the user. <v> is returned. The
@@ -3251,11 +3285,14 @@ double GMT_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, doubl
  *	   n = number of data pairs
  *	   m = number of desired interpolated values
  *	   u = x-values of these points
- *	  mode = type of interpolation
- *	  mode = 0 : Linear interpolation
- *	  mode = 1 : Quasi-cubic hermite spline (GMT_akima)
- *	  mode = 2 : Natural cubic spline (cubspl)
- *        mode = 3 : No interpolation (closest point)
+ *	  mode = type of interpolation, with added 10*derivative_level [0,1,2]
+ *	  mode = GMT_SPLINE_LINEAR [0] : Linear interpolation
+ *	  mode = GMT_SPLINE_AKIMA [1] : Quasi-cubic hermite spline (GMT_akima)
+ *	  mode = GMT_SPLINE_CUBIC [2] : Natural cubic spline (cubspl)
+ *        mode = GMT_SPLINE_NN [3] : No interpolation (closest point)
+ *	  derivative_level = 0 :	The spline values
+ *	  derivative_level = 1 :	The spline's 1st derivative
+ *	  derivative_level = 2 :	The spline 2nd derivative
  * output: v = y-values at interpolated points
  * PS. v must have space allocated before calling GMT_intpol
  *
@@ -3270,12 +3307,12 @@ double GMT_csplint (struct GMT_CTRL *GMT, double *x, double *y, double *c, doubl
 int gmt_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode)
 {	/* Does the main work of interpolating a section that has no NaNs */
 	uint64_t i, j;
-	int err_flag = 0;
+	int err_flag = 0, spline_mode = mode % 10;
 	double dx, x_min, x_max, *c = NULL;
 
 	/* Set minimum and maximum */
 
-	if (mode == 3) {
+	if (spline_mode == GMT_SPLINE_NN) {
 		x_min = (3*x[0] - x[1]) / 2;
 		x_max = (3*x[n-1] - x[n-2]) / 2;
 	}
@@ -3285,11 +3322,11 @@ int gmt_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint
 
 	/* Allocate memory for spline factors */
 
-	if (mode == 1) {	/* Akima's spline */
+	if (spline_mode == GMT_SPLINE_AKIMA) {	/* Akima's spline */
 		c = GMT_memory (GMT, NULL, 3*n, double);
 		err_flag = GMT_akima (GMT, x, y, n, c);
 	}
-	else if (mode == 2) {	/* Natural cubic spline */
+	else if (spline_mode == GMT_SPLINE_CUBIC) {	/* Natural cubic spline */
 		c = GMT_memory (GMT, NULL, 3*n, double);
 		err_flag = GMT_cspline (GMT, x, y, n, c);
 	}
@@ -3318,23 +3355,49 @@ int gmt_intpol_sub (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint
 		if (j > 0) j--;
 
 		switch (mode) {
-			case 0:
+			case GMT_SPLINE_LINEAR:	/* Linear spline v(u) */
 				dx = u[i] - x[j];
 				v[i] = (y[j+1]-y[j])*dx/(x[j+1]-x[j]) + y[j];
 				break;
-			case 1:
+			case GMT_SPLINE_AKIMA:	/* Akime's spline u(v) */
 				dx = u[i] - x[j];
 				v[i] = ((c[3*j+2]*dx + c[3*j+1])*dx + c[3*j])*dx + y[j];
 				break;
-			case 2:
+			case GMT_SPLINE_CUBIC:	/* Natural cubic spline u(v) */
 				v[i] = GMT_csplint (GMT, x, y, c, u[i], j);
 				break;
-			case 3:
-				v[i] = (u[i] - x[j] < x[j+1] - u[i]) ? y[j] : y[j+1];
+			case GMT_SPLINE_NN:	/* Nearest neighbor value */
+				v[i] = ((u[i] - x[j]) < (x[j+1] - u[i])) ? y[j] : y[j+1];
+				break;
+			case GMT_SPLINE_LINEAR+10:	/* Linear spline v'(u) */
+				v[i] = (y[j+1]-y[j])/(x[j+1]-x[j]);
+				break;
+			case GMT_SPLINE_AKIMA+10:	/* Akime's spline u'(v) */
+				dx = u[i] - x[j];
+				v[i] = (3.0*c[3*j+2]*dx + 2.0*c[3*j+1])*dx + c[3*j];
+				break;
+			case GMT_SPLINE_CUBIC+10:	/* Natural cubic spline u'(v) */
+				v[i] = gmt_csplintslp (GMT, x, y, c, u[i], j);
+				break;
+			case GMT_SPLINE_NN+10:	/* Nearest neighbor slopes are zero */
+				v[i] = 0.0;
+				break;
+			case GMT_SPLINE_LINEAR+20:	/* Linear spline v"(u) */
+				v[i] = 0.0;
+				break;
+			case GMT_SPLINE_AKIMA+20:	/* Akime's spline u"(v) */
+				dx = u[i] - x[j];
+				v[i] = 6.0*c[3*j+2]*dx + 2.0*c[3*j+1];
+				break;
+			case GMT_SPLINE_CUBIC+20:	/* Natural cubic spline u"(v) */
+				v[i] = gmt_csplintcurv (GMT, x, c, u[i], j);
+				break;
+			case GMT_SPLINE_NN+20:	/* Nearest neighbor curvatures are zero  */
+				v[i] = 0.0;
 				break;
 		}
 	}
-	if (mode == 1 || mode == 2) GMT_free (GMT, c);
+	if (c) GMT_free (GMT, c);
 
 	return (GMT_NOERROR);
 }
@@ -3350,7 +3413,7 @@ void gmt_intpol_reverse(double *x, double *u, uint64_t n, uint64_t m) {
 /*! . */
 int GMT_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode) {
 	uint64_t i, this_n, this_m, start_i, start_j, stop_i, stop_j;
-	int err_flag = 0;
+	int err_flag = 0, smode, deriv;
 	bool down = false, check = true, clean = true;
 	double dx;
 
@@ -3358,14 +3421,15 @@ int GMT_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t
 		check = false;
 		mode = -mode;
 	}
-
-	if (mode > 3) mode = 0;
-	if (mode != 3 && n < 4) mode = 0;
+	smode = mode % 10;	/* Get spline method first */
+	deriv = mode / 10;	/* Get spline derivative order [0-2] */
+	if (smode > GMT_SPLINE_NN) smode = GMT_SPLINE_LINEAR;	/* Default to linear */
+	if (smode != GMT_SPLINE_NN && n < 4) smode = GMT_SPLINE_LINEAR;	/* Default to linear if 3 or fewer points, unless when nearest neighbor */
 	if (n < 2) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: need at least 2 x-values\n");
 		return (EXIT_FAILURE);
 	}
-
+	mode = smode + 10 * deriv;	/* Reassemble the possibly new mode */
 	if (check) {
 		/* Check to see if x-values are monotonically increasing/decreasing */
 
