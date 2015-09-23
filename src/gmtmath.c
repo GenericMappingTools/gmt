@@ -245,6 +245,7 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	double *N = NULL, *r = NULL, *d = NULL, *x = NULL;
 	struct GMT_DATATABLE *T = S->D->table[0];
 	struct GMT_DATASET *D = NULL;
+	GMT_UNUSED(A);
 
 	for (i = n = 0; i < n_col; i++) if (!skip[i]) n++;	/* Need to find how many active columns we have */
 	if (n < 2) {
@@ -2374,6 +2375,7 @@ int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	if (S[last]->constant) a = 0.5 + copysign (0.5, S[last]->factor) * (1.0 - exp (-fabs (S[last]->factor)));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a :  0.5 + copysign (0.5, T->segment[s]->coord[col][row]) * (1.0 - exp (-fabs (T->segment[s]->coord[col][row])));
@@ -2386,6 +2388,7 @@ int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	uint64_t s, row;
 	double a = 0.0, p;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	if (S[last]->constant) {
 		p = (1.0 - S[last]->factor) - 0.5;
@@ -2559,6 +2562,7 @@ int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	uint64_t s, row;
 	double z = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	if (S[last]->constant) z = 0.5 * exp (-fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? z : 0.5 *exp (-fabs (T->segment[s]->coord[col][row]));
@@ -3291,6 +3295,7 @@ int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	uint64_t s, row;
 	double z;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
@@ -3305,6 +3310,7 @@ int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	uint64_t s, row;
 	double alpha;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		alpha = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
@@ -3319,6 +3325,7 @@ int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	uint64_t s, row;
 	double z;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		z = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
@@ -4078,6 +4085,7 @@ int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	uint64_t s, row;
 	double z = 0.0, f = 1.0 / sqrt (TWO_PI);
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
 	if (S[last]->constant) z = f * exp (-0.5 * S[last]->factor * S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? z : f * exp (-0.5 * T->segment[s]->coord[col][row] * T->segment[s]->coord[col][row]);

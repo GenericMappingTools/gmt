@@ -330,6 +330,7 @@ double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data
 	unsigned int n_modes = 0, ubin;
 	int bin, mode_bin = 0;
 	bool done;
+	GMT_UNUSED(GMT);
 
 	GMT_memset (B->fcount, B->n_bins, double);	/* Reset the counts */
 	for (i = 0; i < n; i++) {	/* Loop over data points */

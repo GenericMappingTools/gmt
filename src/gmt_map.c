@@ -1078,6 +1078,12 @@ int gmt_map_jump_not (struct GMT_CTRL *GMT, double x0, double y0, double x1, dou
 	dx = x1 - x0;
 	if (dx > map_half_size)	return (-1);	/* Cross left/west boundary */
 	if (dx < (-map_half_size)) return (1);	/* Cross right/east boundary */
+#else
+	GMT_UNUSED(GMT);
+	GMT_UNUSED(x0);
+	GMT_UNUSED(y0);
+	GMT_UNUSED(x1);
+	GMT_UNUSED(y1);
 #endif
 	return (0);
 }

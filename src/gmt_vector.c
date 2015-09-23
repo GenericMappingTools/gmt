@@ -413,9 +413,9 @@ void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned
 	free (oa);
 }
 
-int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n, double *b)
+int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b)
 {
-    int i, j, k, bad = 0;
+    int i, j, k, bad = 0, n = (int)nu;	/* Doing signed ints due to restriction from OpenMP on unsigned loop variables */
     double c, d;
 
     for (j = 0; j < (n-1); j++) { /* For all columns j */
@@ -691,6 +691,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	int n = m_in, lda = m_in, info, lwork;
 	double wkopt, *work = NULL;
 	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
+	GMT_UNUSED(n_in);	/* Since we are actually only doing square matrices... */
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using Lapack dsyev\n");
 	/* Query and allocate the optimal workspace */
         lwork = -1;
@@ -737,12 +738,16 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
+int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
 {
 	double w_abs, sing_max, total_variance, variance = 0.0, limit;
-	int i, j, n_use = 0;
+	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = GMT_memory (GMT, NULL, n, double);
-
+	GMT_UNUSED(m);	/* Since we are actually only doing square matrices... */
+	GMT_UNUSED(k);	/* Since we are actually only doing one rhs row here */
+#ifdef HAVE_LAPACK
+	GMT_UNUSED(v);	/* Not used when we solve via Lapack */
+#endif
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_solve_svd: Evaluate solution\n");
 	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
 
@@ -763,7 +768,7 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			double value;
 			unsigned int order;
 		} *eigen;
-		unsigned int n_eigen = 0;
+		int n_eigen = 0;
 		eigen = GMT_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
 		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
 			eigen[i].value = fabs (w[i]);

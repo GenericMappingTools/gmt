@@ -1022,6 +1022,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 /* -----------------------------------------------------------------*/
 int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
                                struct BODY_VERTS **body_verts, unsigned int face) {
+	GMT_UNUSED(Ctrl);
 /*
 		__________________________________________
 		|                                        |
@@ -1091,6 +1092,8 @@ int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl,
 int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
+	GMT_UNUSED(GMT);
+	GMT_UNUSED(body_desc);
 
 	/* Allocate and fill the body_desc structure with the description on how to
 	   connect the vertex of the polygonal planar surface */
@@ -1138,6 +1141,8 @@ int grdgravmag3d_body_set_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, st
 int grdgravmag3d_body_set_prism(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 		double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i) {
+	GMT_UNUSED(GMT);
+	GMT_UNUSED(body_desc);
 
 	/* Allocate and fill the body_desc structure with the description on how to
 	   connect the vertex of the rectangular planar surface */
@@ -1383,6 +1388,11 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 
 double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *mag_par) {
+	GMT_UNUSED(GMT);
+	GMT_UNUSED(z_o);
+	GMT_UNUSED(is_grav);
+	GMT_UNUSED(bd_desc);
+	GMT_UNUSED(km);
 
 	/* The MAG_PAR struct is used here to transmit the Ctrl->H members (components actually) */
 
@@ -1684,6 +1694,10 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
 
 double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or) {
+	GMT_UNUSED(GMT);
+	GMT_UNUSED(is_grav);
+	GMT_UNUSED(bd_desc);
+	GMT_UNUSED(km);
 
 	/* x_o, y_o, z_o are the coordinates of the observation point
  	 * mag is the body magnetization in A/m

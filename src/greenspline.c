@@ -1005,6 +1005,7 @@ double gradspline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double
 void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double par[], double *x, struct GREENSPLINE_LOOKUP *L)
 {	/* Set up cubic spline interpolation given the precomputed x,y values of the function */
 	GMT_UNUSED(GMT);
+	GMT_UNUSED(par);
 	L->c = GMT_memory (GMT, NULL, 3*L->n, double);
 	GMT_cspline (GMT, x, L->y, L->n, L->c);
 }

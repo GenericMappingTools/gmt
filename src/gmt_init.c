@@ -3050,7 +3050,8 @@ int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 /*! . */
 int GMT_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int dim, struct GMT_MODEL *M)
 {	/* This may eventually switch on dim, but for now it is just 1D */
-		return (GMT_parse_model1d (GMT, option, in_arg, M));
+	GMT_UNUSED(dim);
+	return (GMT_parse_model1d (GMT, option, in_arg, M));
 }
 
 /*! . */
@@ -3234,6 +3235,8 @@ int gmt_parse_x_option (struct GMT_CTRL *GMT, char *arg) {
 	else if (GMT->common.x.n_threads < 0)
 		GMT->common.x.n_threads = MAX(GMT_get_num_processors() - GMT->common.x.n_threads, 1);		/* Max-n but at least one */
 #else
+	GMT_UNUSED(GMT);
+	GMT_UNUSED(arg);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: -x is only available when compiled with OpenMP - ignored for now.\n");
 #endif
 	return (GMT_NOERROR);

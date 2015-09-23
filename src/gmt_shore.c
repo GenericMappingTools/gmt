@@ -995,10 +995,10 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
  */
 {
 	struct GMT_GSHHS_POL *p = NULL;
-	int start_side, next_side, id, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
+	int start_side, next_side, id, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL, k;
 	int cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	bool completely_inside, more, skip = false;
-	unsigned int P = 0, k;
+	unsigned int P = 0, ku;
 	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 
@@ -1030,7 +1030,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 				P++;
 			}
 		}
-		if (P < c->ns) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
+		if (P < (unsigned int)c->ns) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
 		*pol = p;
 		return (P);
 	}
@@ -1206,7 +1206,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 
 	if (c->ns > 0) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
 
-	for (k = 0; k < P; k++) gmt_shore_path_shift2 (p[k].lon, p[k].n, west, east, c->leftmost_bin);	/* Deal with possible longitude -/+360 issues */
+	for (ku = 0; ku < P; ku++) gmt_shore_path_shift2 (p[ku].lon, p[ku].n, west, east, c->leftmost_bin);	/* Deal with possible longitude -/+360 issues */
 
 	*pol = p;
 	return (P);	/* Return list of polygons found */

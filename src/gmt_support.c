@@ -12241,6 +12241,8 @@ void GMT_enable_threads (struct GMT_CTRL *GMT) {
 	else {	/* Default uses all cores */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable all available threads (up to %d)\n", GMT_get_num_processors());
 	}
+#else
+	GMT_UNUSED(GMT);
 #endif
 }
 

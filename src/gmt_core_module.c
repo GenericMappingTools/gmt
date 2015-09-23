@@ -47,7 +47,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<DI,>DO,RG-"},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<DI,>DO,RG-"},
 	{"filter1d", "core", "Do time domain filtering of 1-D data tables", "<DI,>DO"},
-	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", "<DI,>TO"},
+	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", "<DI,>TO,>DF"},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", "<DI,>TO"},
 	{"gmtconnect", "core", "Connect individual lines whose end points match within tolerance", "<DI,>DO,CDo,LTo,QTo"},
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", "<DI,>DO"},
@@ -131,7 +131,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"blockmedian", "core", "Block average (x,y,z) data tables by L1 norm (spatial median)", "<DI,>DO,RG-", &GMT_blockmedian},
 	{"blockmode", "core", "Block average (x,y,z) data tables by mode estimation", "<DI,>DO,RG-", &GMT_blockmode},
 	{"filter1d", "core", "Do time domain filtering of 1-D data tables", "<DI,>DO", &GMT_filter1d},
-	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", "<DI,>TO", &GMT_fitcircle},
+	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", "<DI,>TO,>DF", &GMT_fitcircle},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", "<DI,>TO", &GMT_gmt2kml},
 	{"gmtconnect", "core", "Connect individual lines whose end points match within tolerance", "<DI,>DO,CDo,LTo,QTo", &GMT_gmtconnect},
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", "<DI,>DO", &GMT_gmtconvert},
@@ -238,6 +238,7 @@ void gmt_core_module_show_all (void *V_API) {
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_core_module_info (void *API, char *candidate) {
 	int module_id = 0;
+	GMT_UNUSED(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_core_module[module_id].name != NULL &&
@@ -252,6 +253,7 @@ const char *gmt_core_module_info (void *API, char *candidate) {
 /* Lookup module id by name, return function pointer */
 void *gmt_core_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
+	GMT_UNUSED(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_core_module[module_id].name != NULL &&

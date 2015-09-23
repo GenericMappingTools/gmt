@@ -2196,6 +2196,7 @@ void grd_LCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 {
 	uint64_t node;
 	double a = 0.0;
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) a = 0.5 + copysign (0.5, stack[last]->factor) * (1.0 - exp (-fabs (stack[last]->factor)));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 0.5f + copysignf (0.5f, stack[last]->G->data[node]) * (1.0 - expf (-fabsf (stack[last]->G->data[node]))));
@@ -2206,6 +2207,7 @@ void grd_LCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 {
 	uint64_t node;
 	double a = 0.0, p;
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) {
 		p = (1.0 - stack[last]->factor) - 0.5;
@@ -2452,6 +2454,7 @@ void grd_LPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 {
 	uint64_t node;
 	double a = 0.0;
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) a = 0.5 * exp (-fabs (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 0.5 * expf (-fabsf (stack[last]->G->data[node])));
@@ -3101,6 +3104,7 @@ void grd_RCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 {
 	uint64_t node;
 	double a = 0.0;
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) a = 1.0 - exp (-0.5*stack[last]->factor*stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 1.0 - expf (-0.5f*stack[last]->G->data[node]*stack[last]->G->data[node]));
@@ -3111,6 +3115,7 @@ void grd_RCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 {
 	uint64_t node;
 	double a = 0.0;
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) a = M_SQRT2 * sqrt (-log (1.0 - stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : M_SQRT2 * sqrtf (-logf (1.0f - stack[last]->G->data[node])));
@@ -3133,6 +3138,7 @@ void grd_RPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 {
 	uint64_t node;
 	double a = 0.0;
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) a = stack[last]->factor * exp (-0.5 * stack[last]->factor * stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : stack[last]->G->data[node] * expf (-0.5f * stack[last]->G->data[node] * stack[last]->G->data[node]));
@@ -3986,6 +3992,7 @@ void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 {
 	uint64_t node;
 	double a = 0.0, f = 1.0 / sqrt (TWO_PI);
+	GMT_UNUSED(GMT);
 
 	if (stack[last]->constant) a = f * exp (-0.5 * stack[last]->factor * stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : f * expf (-0.5f * stack[last]->G->data[node] * stack[last]->G->data[node]));
