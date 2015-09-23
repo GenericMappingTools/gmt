@@ -1329,7 +1329,7 @@ double GMT_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double sha
 	/* Cumulative Weibull distribution */
 	if (x < 0.0) return 0.0;
 	z = x / scale;
-	p = 1.0 - exp (-pow (z,shape));
+	p = 1.0 - exp (-pow (z, shape));
 	return (p);
 }
 
@@ -1339,7 +1339,7 @@ double GMT_weibull_crit (struct GMT_CTRL *GMT, double p, double scale, double sh
 	GMT_UNUSED(GMT);
 	/* Critical values for Weibull distribution */
 	z = scale * pow (-log (1.0 - p), 1.0/shape);
-	return (p);
+	return (z);
 }
 
 double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)

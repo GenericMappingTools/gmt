@@ -10806,7 +10806,7 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 	 *   honor the segment headers [Default is -Fvs if -Fv is given].
 	 */
 	uint64_t dim[4] = {1, 0, 2, 0};	/* Put everything in one table, each segment has 2 points */
-	uint64_t tbl, seg, row, col, new_seg, last_row;
+	uint64_t tbl, seg, row, col, new_seg;
 	double *coord = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
@@ -11018,7 +11018,6 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 					for (col = 0; col < Din->n_columns; col++) coord[col] = Tin->segment[seg]->coord[col][0];
 					off = 1;
 				}
-				last_row = 0;
 				for (row = off; row < Tin->segment[seg]->n_rows; row++, new_seg++) {	/* For each end point in the new 2-point segments */
 					if (Tin->segment[seg]->header) Tout->segment[new_seg]->header = strdup (Tin->segment[seg]->header);	/* Duplicate first segment header in table */
 					for (col = 0; col < Tin->segment[seg]->n_columns; col++) {	/* For every column */
@@ -11026,7 +11025,6 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 						Tout->segment[new_seg]->coord[col][1] = Tin->segment[seg]->coord[col][row];	/* 2nd point */
 						if (S->level == SEGM_RECORD) coord[col] = Tin->segment[seg]->coord[col][row];	/* Update 1st point again */
 					}
-					last_row = row;
 				}
 				off = 0;
 			}
