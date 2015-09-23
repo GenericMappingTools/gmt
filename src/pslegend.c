@@ -596,7 +596,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		j_ptr = GMT_Find_Option (API, 'J', options);
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	}
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */

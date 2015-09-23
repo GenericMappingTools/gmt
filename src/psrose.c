@@ -582,7 +582,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		GMT->current.map.frame.paint = false;	/* Turn off so GMT_plotinit wont fill */
 		do_fill = true;
 	}
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	x_origin = Ctrl->S.scale;	y_origin = ((half_only) ? 0.0 : Ctrl->S.scale);
 	diameter = 2.0 * Ctrl->S.scale;

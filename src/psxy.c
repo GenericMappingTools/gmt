@@ -759,7 +759,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (S.G.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
 
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->T.active) {
 		GMT_plotend (GMT);
 		Return (GMT_OK);

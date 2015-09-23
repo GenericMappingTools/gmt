@@ -592,7 +592,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		}
 	}
 
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->T.active) {
 		GMT_plotend (GMT);
 		Return (GMT_OK);

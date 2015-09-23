@@ -231,7 +231,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
 	if (Ctrl->C.active && !GMT->current.map.frame.init) {
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		GMT_plotend (GMT);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
@@ -242,7 +242,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

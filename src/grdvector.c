@@ -383,7 +383,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);
@@ -449,7 +449,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		GMT_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	}
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 

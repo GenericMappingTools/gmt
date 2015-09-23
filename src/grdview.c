@@ -739,7 +739,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -908,7 +908,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
 
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	PSL_setformat (PSL, 3);
 
