@@ -11014,7 +11014,7 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 				off = 1;
 			}
 			for (seg = 0; seg < Tin->n_segments; seg++) {	/* For each input segment to resample */
-				if (S->level == SEGM_SEGMENT | S->level == SEGM_RECORD) {	/* Initialize the origin as 1st point in segment */
+				if (S->level == SEGM_SEGMENT || S->level == SEGM_RECORD) {	/* Initialize the origin as 1st point in segment */
 					for (col = 0; col < Din->n_columns; col++) coord[col] = Tin->segment[seg]->coord[col][0];
 					off = 1;
 				}
