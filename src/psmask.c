@@ -575,7 +575,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			GMT->current.ps.nclip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
 		else if (!Ctrl->T.active)
 			GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	}
 
 

@@ -528,7 +528,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);
@@ -550,7 +550,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 #endif
 
 	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);

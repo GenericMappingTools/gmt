@@ -843,7 +843,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	else
 		GMT_err_fail (GMT, GMT_map_setup (GMT, F.wesn), "");
 
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

@@ -1014,7 +1014,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (Ctrl->contour.delay) GMT_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */

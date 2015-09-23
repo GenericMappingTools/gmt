@@ -813,7 +813,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		/* No grid to plot; just do empty map and return */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 		if (make_plot) {
-			PSL = GMT_plotinit (GMT, options);
+			if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
@@ -1018,7 +1018,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours found\n");
 		if (make_plot) {
-			PSL = GMT_plotinit (GMT, options);
+			if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
@@ -1102,7 +1102,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +2;	/* Signal that this program initiates clipping that will outlive this process */
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (Ctrl->contour.delay) GMT_map_basemap (GMT);	/* Must do -B here before clipping makes it not doable */

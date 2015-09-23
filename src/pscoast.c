@@ -734,7 +734,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		else if (clipping)
 			GMT->current.ps.nclip = +1;	/* Signal that this program initiates new clipping that will outlive this process */
 
-		PSL = GMT_plotinit (GMT, options);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);

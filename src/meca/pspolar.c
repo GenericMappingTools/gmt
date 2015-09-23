@@ -414,7 +414,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 	GMT_memset (col, GMT_LEN64*4, char);
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	PSL = GMT_plotinit (GMT, options);
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
  	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
