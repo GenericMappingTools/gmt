@@ -271,7 +271,7 @@ psl_byte_stream_t psl_lzw_putcode (psl_byte_stream_t stream, short int incode);
 unsigned char *psl_deflate_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 void psl_stream_dump (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int depth, int compress, int encode, int mask);
 size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_t nbytes);
-int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy);
+int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode);
 int psl_comp_long_asc (const void *p1, const void *p2);
 int psl_comp_rgb_asc (const void *p1, const void *p2);
 static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname);
@@ -971,7 +971,7 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 	ix = PSL_memory (PSL, NULL, n, int);
 	iy = PSL_memory (PSL, NULL, n, int);
 
-	n = psl_shorten_path (PSL, x, y, n, ix, iy);
+	n = psl_shorten_path (PSL, x, y, n, ix, iy, 0);
 
 	/* If first and last point are the same, close the polygon and drop the last point
 	 * (but only if this segment runs start to finish)
@@ -992,6 +992,122 @@ int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 		PSL->internal.ix = ix[i];
 		PSL->internal.iy = iy[i];
 	}
+	if (type & PSL_STROKE && type & PSL_CLOSE)
+		PSL_command (PSL, "P S\n");	/* Close and stroke the path */
+	else if (type & PSL_CLOSE)
+		PSL_command (PSL, "P\n");	/* Close the path */
+	else if (type & PSL_STROKE)
+		PSL_command (PSL, "S\n");	/* Stroke the path */
+
+	PSL_free (ix);
+	PSL_free (iy);
+
+	return (PSL_NO_ERROR);
+}
+
+void psl_computeBezierControlPoints (struct PSL_CTRL *PSL, double *K, int n, double **P1, double **P2)
+{	/* Translated from https://www.particleincell.com/wp-content/uploads/2012/06/bezier-spline.js */
+	int i;
+	double *p1 = NULL, *p2 = NULL, *a = NULL, *b = NULL, *c = NULL, *r = NULL;
+	double m;
+	p1 = PSL_memory (PSL, NULL, n, double);
+	p2 = PSL_memory (PSL, NULL, n, double);
+	a = PSL_memory (PSL, NULL, n, double);
+	b = PSL_memory (PSL, NULL, n, double);
+	c = PSL_memory (PSL, NULL, n, double);
+	r = PSL_memory (PSL, NULL, n, double);
+	
+	n--;	/* Now id of last knot */
+	
+	/* left most segment*/
+	a[0] = 0.0;
+	b[0] = 2.0;
+	c[0] = 1.0;
+	r[0] = K[0] + 2.0 * K[1];
+	
+	/* internal segments*/
+	for (i = 1; i < n - 1; i++)
+	{
+		a[i] = 1.0;
+		b[i] = 4.0;
+		c[i] = 1.0;
+		r[i] = 4.0 * K[i] + 2.0 * K[i+1];
+	}
+			
+	/* right segment*/
+	a[n-1] = 2.0;
+	b[n-1] = 7.0;
+	c[n-1] = 0.0;
+	r[n-1] = 8.0 * K[n-1] + K[n];
+	
+	/* solves Ax=b with the Thomas algorithm (from Wikipedia)*/
+	for (i = 1; i < n; i++)
+	{
+		m = a[i] / b[i-1];
+		b[i] = b[i] - m * c[i - 1];
+		r[i] = r[i] - m*r[i-1];
+	}
+ 
+	/* Evalute p1 */
+	p1[n-1] = r[n-1] / b[n-1];
+	for (i = n - 2; i >= 0; --i)
+		p1[i] = (r[i] - c[i] * p1[i+1]) / b[i];
+		
+	/* we have p1, now compute p2*/
+	for (i = 0; i < n-1; i++)
+		p2[i] = 2.0 * K[i+1] - p1[i+1];
+	
+	p2[n-1] = 0.5 * (K[n] + p1[n-1]);
+	
+	*P1 = p1;	*P2 = p2;
+	PSL_free (a);	PSL_free (b);	PSL_free (c);	PSL_free (r);
+}
+
+int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
+{	/* Plot a (portion of a) Bezier curve. This can be a line from start to finish, or a portion of it, depending
+	 * on the type argument. Optionally, the line can be stroked (using the current pen), closed.
+	 * Type is a combination of the following:
+	 * PSL_DRAW   (0) : Draw a line segment
+	 * PSL_MOVE   (1) : Move to a new anchor point (x[0], y[0]) first [REQUIRED]
+	 * PSL_STROKE (2) : Stroke the line
+	 * PSL_CLOSE  (8) : Close the line back to the beginning of this segment, this is done automatically
+	 *                  when the first and last point are the same and PSL_MOVE is on.
+	 */
+	int i = 0, *ix = NULL, *iy = NULL;
+	double *Px1 = NULL, *Py1 = NULL, *Px2 = NULL, *Py2 = NULL;
+
+	if (n < 1) return (PSL_NO_ERROR);	/* Cannot deal with empty lines */
+	if (type < 0) type = -type;		/* Should be obsolete now */
+
+	psl_computeBezierControlPoints (PSL, x, n, &Px1, &Px2);
+	psl_computeBezierControlPoints (PSL, y, n, &Py1, &Py2);
+	
+	/* First convert knots to integers */
+
+	ix = PSL_memory (PSL, NULL, n, int);
+	iy = PSL_memory (PSL, NULL, n, int);
+
+	n = psl_shorten_path (PSL, x, y, n, ix, iy, 1);
+
+	/* If first and last point are the same, close the polygon and drop the last point
+	 * (but only if this segment runs start to finish)
+	 */
+
+	if (n > 1 && (type & PSL_MOVE) && (ix[0] == ix[n-1] && iy[0] == iy[n-1])) type |= PSL_CLOSE;
+
+	/* Move to (and set) currentpoint */
+	PSL_command (PSL, "%d %d M\n", ix[0], iy[0]);
+	n--;
+	while (i < n) {
+		PSL_command (PSL, "%d %d ", psl_ix (PSL, Px1[i]), psl_iy (PSL, Py1[i]));
+		PSL_command (PSL, "%d %d ", psl_ix (PSL, Px2[i]), psl_iy (PSL, Py2[i]));
+		i++;	/* Go to end point of segment */
+		PSL_command (PSL, "%d %d curveto\n", ix[i], iy[i]);
+	}
+	PSL_free (Px1);	PSL_free (Py1);	PSL_free (Px2);	PSL_free (Py2);
+	i--;	/* ID of last point */
+	PSL->internal.ix = ix[i];
+	PSL->internal.iy = iy[i];
 	if (type & PSL_STROKE && type & PSL_CLOSE)
 		PSL_command (PSL, "P S\n");	/* Close and stroke the path */
 	else if (type & PSL_CLOSE)
@@ -3362,12 +3478,13 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	return (PSL_NO_ERROR);
 }
 
-int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy)
+int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode)
 {
 	/* Simplifies the (x,y) array by converting it to pixel coordinates (ix,iy)
 	 * and eliminating repeating points and intermediate points along straight
 	 * line segments.  The result is the fewest points needed to draw the path
-	 * and still look exactly like the original path. */
+	 * and still look exactly like the original path.  However, if mode == 1 we do
+	 * no shortening. */
 
 	int i, k, dx, dy;
 #ifdef OLD_shorten_path
@@ -3384,7 +3501,8 @@ int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix
 		ix[i] = psl_ix (PSL, x[i]);
 		iy[i] = psl_iy (PSL, y[i]);
 	}
-
+	if (mode == 1) return (n);
+	
 #ifdef OLD_shorten_path
 	/* The only truly unique point is the starting point; all else must show increments
 	 * relative to the previous point */

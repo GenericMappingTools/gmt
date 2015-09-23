@@ -354,6 +354,7 @@ EXTERN_MSC int PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, doubl
 EXTERN_MSC int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, int nbits);
 EXTERN_MSC int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int size, int nx, int ny, int ox, int oy);
 EXTERN_MSC int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
+EXTERN_MSC int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotparagraph (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *paragraph, double angle, int justify);
 EXTERN_MSC int PSL_plotparagraphbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *paragraph, double angle, int justify, double offset[], int mode);
 EXTERN_MSC int PSL_plotpoint (struct PSL_CTRL *PSL, double x, double y, int pen);

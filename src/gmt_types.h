@@ -313,6 +313,7 @@ struct GMT_CTRL {
 	struct GMT_INTERNAL hidden;	/* Internal global variables that are not to be changed directly by users */
 	struct PSL_CTRL *PSL;		/* Pointer to the PSL structure [or NULL] */
 	struct GMTAPI_CTRL *parent;	/* Owner of this structure [or NULL]; gives access to the API from functions being passed *GMT only */
+	bool test_bezier;
 };
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments

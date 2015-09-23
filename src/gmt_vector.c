@@ -1052,7 +1052,7 @@ uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **
 	double *x = NULL, *y = NULL;
 
 	x = *a_x;	y = *a_y;	/* Default is to return the input unchanged */
-	if (n < 2) return n;		/* Nothing to do */
+	if (n < 2 || mode == 0) return n;		/* Nothing to do */
 
 	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate two tmp vectors */
 	/* Start at first point */
