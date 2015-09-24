@@ -526,7 +526,7 @@ void grd_BCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		float value;
 		p = stack[prev2]->factor;
 		n = stack[prev1]->factor;	x = stack[last]->factor;
-		value = (error) ? GMT->session.f_NaN : (float)GMT_binom_cdf (GMT, x, n, p);
+		value = (error) ? GMT->session.f_NaN : (float)GMT_binom_cdf (GMT, lrint(x), lrint(n), p);
 		GMT_grd_loop (GMT, info->G, row, col, node) stack[prev2]->G->data[node] = value;
 		return;
 	}
@@ -534,7 +534,7 @@ void grd_BCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		p = (stack[prev2]->constant) ? stack[prev2]->factor : (double)stack[prev2]->G->data[node];
 		n = (stack[prev1]->constant) ? stack[prev1]->factor : (double)stack[prev1]->G->data[node];
 		x = (stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node];
-		stack[prev2]->G->data[node] = (float)(GMT_binom_cdf (GMT, x, n, p));
+		stack[prev2]->G->data[node] = (float)(GMT_binom_cdf (GMT, lrint(x), lrint(n), p));
 	}
 }
 
@@ -3846,7 +3846,7 @@ away from zero instead of to the nearest integer (or other current rounding mode
 
 		a = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
 
-		stack[last]->G->data[node] = (float)(TWO_PI*(a/TWO_PI - rintf(a/TWO_PI)));
+		stack[last]->G->data[node] = (float)(TWO_PI*(a/TWO_PI - rint(a/TWO_PI)));
 	}
 }
 

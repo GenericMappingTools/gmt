@@ -1123,7 +1123,7 @@ double GMT_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
 	/* Probability density distribution for F */
 	double y;
 	
-	y = sqrt (pow (nu1 * F, nu1) * pow (nu2, nu2) / pow (nu1 * F + nu2, nu1+nu2)) / (F * gmt_beta (GMT, 0.5*nu1, 0.5*nu2));
+	y = sqrt (pow (nu1 * F, (double)nu1) * pow ((double)nu2, (double)nu2) / pow (nu1 * F + nu2, (double)(nu1+nu2))) / (F * gmt_beta (GMT, 0.5*nu1, 0.5*nu2));
 	return (y);
 }
 
@@ -1346,7 +1346,7 @@ double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
 {
 	double c;
 	/* Binomial distribution */
-	c = GMT_combination (GMT, n, x) * pow (p, x) * pow (1.0-p, n-x);
+	c = GMT_combination (GMT, (int)n, x) * pow (p, x) * pow (1.0-p, (double)(n-x));
 	return (c);
 }
 
@@ -1354,7 +1354,7 @@ double GMT_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
 {	/* Cumulative Binomial distribution */
 	double c = 0.0;
 	if (n > 12)	/* Use Numerical Recipes fast way for larger n */
-		gmt_inc_beta (GMT, x, n-x+1, p, &c);
+		gmt_inc_beta (GMT, (double)x, (double)(n-x+1), p, &c);
 	else {	/* Do the sum instead */
 		uint64_t j;
 		for (j = 0; j <= x; j++)

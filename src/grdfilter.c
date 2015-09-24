@@ -1278,7 +1278,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 	bool visit_check = false, go_on;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;
-	unsigned int one_or_zero = 1, GMT_n_multiples = 0;
+	unsigned int GMT_n_multiples = 0;
 	int col_in, row_in, ii, jj, row_origin;
 	char *visit;
 #ifdef DEBUG
@@ -1330,11 +1330,6 @@ void threaded_function (struct THREAD_STRUCT *t) {
 		else
 			work_array = GMT_memory (GMT, NULL, F.nx*F.ny, double);
 	}
-
-	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
-		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
-	else
-		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
 	for (row_out = r_start; row_out < r_stop; row_out++) {
 
