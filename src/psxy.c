@@ -36,39 +36,39 @@
 /* Control structure for psxy */
 
 struct PSXY_CTRL {
-	struct A {	/* -A[m|y|p|x|step] */
+	struct PSXY_A {	/* -A[m|y|p|x|step] */
 		bool active;
 		unsigned int mode;
 		double step;
 	} A;
-	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
+	struct PSXY_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D<dx>/<dy> */
+	struct PSXY_D {	/* -D<dx>/<dy> */
 		bool active;
 		double dx, dy;
 	} D;
-	struct E {	/* -E[x[+]|X][y[+]|Y][cap][/[+|-]<pen>] */
+	struct PSXY_E {	/* -E[x[+]|X][y[+]|Y][cap][/[+|-]<pen>] */
 		bool active;
 		unsigned int xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = asumemtrical error bar, 3 = box-whisker, 4 = notched box-whisker */
 		unsigned int mode;		/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
-	struct F {	/* -F<mode> */
+	struct PSXY_F {	/* -F<mode> */
 		bool active;
 		struct GMT_SEGMENTIZE S;
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSXY_G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;
-	struct I {	/* -I<intensity> */
+	struct PSXY_I {	/* -I<intensity> */
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
+	struct PSXY_L {	/* -L[+xl|r|x0][+yb|t|y0][+e|E][+p<pen>] */
 		bool active;
 		bool polygon;		/* true when just -L is given */
 		bool outline;		/* true when +p<pen> is given */
@@ -77,18 +77,18 @@ struct PSXY_CTRL {
 		double value;
 		struct GMT_PEN pen;
 	} L;
-	struct N {	/* -N[r|c] */
+	struct PSXY_N {	/* -N[r|c] */
 		bool active;
 		unsigned int mode;
 	} N;
-	struct S {	/* -S */
+	struct PSXY_S {	/* -S */
 		bool active;
 		char *arg;
 	} S;
-	struct T {	/* -T */
+	struct PSXY_T {	/* -T */
 		bool active;
 	} T;
-	struct W {	/* -W<pen> */
+	struct PSXY_W {	/* -W<pen> */
 		bool active;
 		unsigned int mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
