@@ -1346,7 +1346,7 @@ double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
 {
 	double c;
 	/* Binomial distribution */
-	c = GMT_combination (GMT, (int)n, x) * pow (p, x) * pow (1.0-p, (double)(n-x));
+	c = GMT_combination (GMT, (int)n, (int)x) * pow (p, (int)x) * pow (1.0-p, (int)(n-x));
 	return (c);
 }
 
