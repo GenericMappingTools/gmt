@@ -11002,7 +11002,7 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		uint64_t off = 0;
 		if (S->level == SEGM_ORIGIN) GMT_memcpy (coord, S->origin, 2, double);	/* Initialize the origin of segments once */
 		if (S->level == SEGM_DATASET) {	/* Duplicate very first segment header only */
-			for (col = 0; col < Din->n_columns; col++) coord[col] = Din->table[0]->segment[seg]->coord[col][0];
+			for (col = 0; col < Din->n_columns; col++) coord[col] = Din->table[0]->segment[0]->coord[col][0];
 			if (Din->table[0]->segment[0]->header) Tout->segment[0]->header = strdup (Din->table[0]->segment[0]->header);
 			off = 1;
 		}
