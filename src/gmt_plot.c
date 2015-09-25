@@ -2413,11 +2413,11 @@ void GMT_map_basemap (struct GMT_CTRL *GMT)
 
 	PSL_comment (PSL, "End of basemap\n");
 
-	for (side = 0; side < 4; side++) {
+	for (side = 0; side < 4; side++) {	/* Reset annotation crowdedness arrays */
 		if (GMT_n_annotations[side]) {
 			GMT_free (GMT, GMT_x_annotation[side]);
 			GMT_free (GMT, GMT_y_annotation[side]);
-			GMT_n_annotations[side] = 0;
+			GMT_n_annotations[side] = GMT_alloc_annotations[side] = 0;
 		}
 	}
 
