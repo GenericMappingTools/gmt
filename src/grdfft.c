@@ -458,9 +458,6 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
-		return (GMT->parent->error);
-	}
 	GMT_free (GMT, X_pow);
 	GMT_free (GMT, nused);
 	if (GridY) {
