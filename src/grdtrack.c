@@ -1045,7 +1045,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
-		bool gmt_skip_output (struct GMT_CTRL *C, double *cols, uint64_t n_cols);
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
@@ -1125,7 +1124,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			else if (pure_ascii && n_fields >= 2) {
 				/* Special case: ASCII i/o and at least 3 columns:
 				   Columns beyond first two could be text strings */
-				if (gmt_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
+				if (GMT_skip_output (GMT, value, Ctrl->G.n_grids)) continue;	/* Suppress output due to NaNs */
 
 				/* First get rid of any commas that may cause grief */
 				for (k = 0; GMT->current.io.current_record[k]; k++) if (GMT->current.io.current_record[k] == ',') GMT->current.io.current_record[k] = ' ';

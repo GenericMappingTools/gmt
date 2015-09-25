@@ -5485,12 +5485,16 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
 				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE_VIA_MATRIX\n");
 				d = record;	/* Cast the void record to a double pointer */
-				for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
-					ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
-					value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
-					GMTAPI_put_val (&(M_obj->data), ij, value);
+				if (GMT_skip_output (API->GMT, d, M_obj->n_columns))	/* Record was skipped via -s[a|r] */
+					error = -1;
+				else {
+					for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
+						ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
+						value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
+						GMTAPI_put_val (&(M_obj->data), ij, value);
+					}
+					M_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
 				}
-				M_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
 			}
 			break;
 
@@ -5519,11 +5523,15 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			else if (mode == GMT_WRITE_DOUBLE) {	/* Data record */
 				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
 				d = record;	/* Cast the void record to a double pointer */
-				for (col = 0; col < V_obj->n_columns; col++) {	/* Place the output items */
-					value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
-					GMTAPI_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], value);
+				if (GMT_skip_output (API->GMT, d, V_obj->n_columns))	/* Record was skipped via -s[a|r] */
+					error = -1;
+				else {
+					for (col = 0; col < V_obj->n_columns; col++) {	/* Place the output items */
+						value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
+						GMTAPI_put_val (&(V_obj->data[col]), API->current_rec[GMT_OUT], value);
+					}
+					V_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
 				}
-				V_obj->n_rows++;	/* Note that API->current_rec[GMT_OUT] is incremented separately at end of function */
 			}
 			break;
 

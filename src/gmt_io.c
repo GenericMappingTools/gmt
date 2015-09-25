@@ -1799,7 +1799,7 @@ void * gmt_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 }
 
 /*! . */
-bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols)
+bool GMT_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols)
 {	/* Consult the -s[<cols>][a|r] setting and the cols values to determine if this record should be output */
 	uint64_t c, n_nan;
 
@@ -1841,7 +1841,7 @@ int gmt_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 	uint64_t i, n_out, col_pos;
 	double val;
 
-	if (gmt_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
+	if (GMT_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
 	if (GMT->current.setting.io_lonlat_toggle[GMT_OUT]) double_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
 	for (i = 0, k = 0; i < n_out; i++) {
@@ -1886,7 +1886,7 @@ int GMT_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 	int e = 0, wn = 0;
 	double val;
 
-	if (gmt_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
+	if (GMT_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
 
 	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
@@ -3488,7 +3488,7 @@ void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data)
 {
 	int err;
-	if (gmt_skip_output (GMT, data, n)) return (0);	/* Record was skipped via -s[a|r] */
+	if (GMT_skip_output (GMT, data, n)) return (0);	/* Record was skipped via -s[a|r] */
 	err = GMT->current.io.write_item (GMT, fp, n, data);
 	/* Cast below since the output functions are declared with uint64_t but cannot really exceed 4096... SHould change uint64_t to uint32_t */
 	return (err ? -1 : (int)n);	/* Return -1 if failed, else n items written */
