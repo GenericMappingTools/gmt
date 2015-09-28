@@ -316,36 +316,43 @@ To do the same problem but applying tension of 0.85, use
 Considerations
 --------------
 
-(1) For the Cartesian cases we use the free-space Green functions, hence
-no boundary conditions are applied at the edges of the specified domain.
-For most applications this is fine as the region typically is
-arbitrarily set to reflect the extent of your data. However, if your
-application requires particular boundary conditions then you may
-consider using :doc:`surface` instead.
+#. For the Cartesian cases we use the free-space Green functions, hence
+   no boundary conditions are applied at the edges of the specified domain.
+   For most applications this is fine as the region typically is
+   arbitrarily set to reflect the extent of your data. However, if your
+   application requires particular boundary conditions then you may
+   consider using :doc:`surface` instead.
 
-(2) In all cases, the solution is obtained by inverting a *n* x *n*
-double precision matrix for the Green function coefficients, where *n*
-is the number of data constraints. Hence, your computer's memory may
-place restrictions on how large data sets you can process with
-`greenspline <greenspline.html>`. Pre-processing your data with `blockmean <blockmean.html>`,
-`blockmedian <blockmedian.html>`, or `blockmode <blockmode.html>` is recommended to avoid aliasing and
-may also control the size of *n*. For information, if *n* = 1024 then
-only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
-that `greenspline <greenspline.html>` is fully 64-bit compliant if compiled as such.
-For spherical data you may consider decimating using `gmtspatial <gmtspatial.html>`
-nearest neighbor reduction.
+#. In all cases, the solution is obtained by inverting a *n* x *n*
+   double precision matrix for the Green function coefficients, where *n*
+   is the number of data constraints. Hence, your computer's memory may
+   place restrictions on how large data sets you can process with
+   `greenspline <greenspline.html>`. Pre-processing your data with `blockmean <blockmean.html>`,
+   `blockmedian <blockmedian.html>`, or `blockmode <blockmode.html>` is recommended to avoid aliasing and
+   may also control the size of *n*. For information, if *n* = 1024 then
+   only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
+   that `greenspline <greenspline.html>` is fully 64-bit compliant if compiled as such.
+   For spherical data you may consider decimating using `gmtspatial <gmtspatial.html>`
+   nearest neighbor reduction.
 
-(3) The inversion for coefficients can become numerically unstable when
-data neighbors are very close compared to the overall span of the data.
-You can remedy this by pre-processing the data, e.g., by averaging
-closely spaced neighbors. Alternatively, you can improve stability by
-using the SVD solution and discard information associated with the
-smallest eigenvalues (see **-C**).
+#. The inversion for coefficients can become numerically unstable when
+   data neighbors are very close compared to the overall span of the data.
+   You can remedy this by pre-processing the data, e.g., by averaging
+   closely spaced neighbors. Alternatively, you can improve stability by
+   using the SVD solution and discard information associated with the
+   smallest eigenvalues (see **-C**).
 
-(4) The series solution implemented for **-Sq** was developed by
-Robert L. Parker, Scripps Institution of Oceanography, which we
-gratefully acknowledge.
+#. The series solution implemented for **-Sq** was developed by
+   Robert L. Parker, Scripps Institution of Oceanography, which we
+   gratefully acknowledge.
 
+#. If you need to fit a certain 1-D spline through your data
+   points you may wish to consider `sample1d <sample1d.html>` instead.
+   It will offer traditional splines with standard boundary conditions
+   (such as the natural cubic spline, which sets the curvatures at the ends
+   to zero).  In contrast, greenspline's 1-D spline, as is explained in
+   note 1, does *not* specify boundary conditions at the end of the data domain.
+   
 Tension
 -------
 
