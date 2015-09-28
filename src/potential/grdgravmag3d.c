@@ -105,6 +105,7 @@ struct GRDOKB_CTRL {
 		double	year;
 	} T;
 	struct GRDOKB_Z {	/* -Z */
+		bool top, bot;
 		double z0;
 	} Z;
 	struct GRDOKB_box {	/* No option, just a container */
@@ -197,7 +198,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z<level>] [-fg] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -235,6 +236,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S search radius in km (but only in the two grids mode) [Default = 30 km].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively set -Zt or Zb to close the body at its top (bottom) plane\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 #ifdef HAVE_GLIB_GTHREAD
@@ -402,7 +404,10 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
  			case 'T':
 				break;
 			case 'Z':
-				Ctrl->Z.z0 = atof(opt->arg);
+				if (opt->arg[0] == 't')      Ctrl->Z.top = true;
+				else if (opt->arg[0] == 'b') Ctrl->Z.bot = true;
+				else
+					Ctrl->Z.z0 = atof(opt->arg);
 				break;
 			case 'b':
 				Ctrl->H.bhatta = true;
@@ -438,11 +443,12 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 
 int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
+	size_t  ij;
+	unsigned int km = 0;		/* index of current body facet (for mag only) */
+	unsigned int n_vert_max = 0;
 	unsigned int nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
 	bool    two_grids = false, switch_xy = false;
-	unsigned int km = 0;		/* index of current body facet (for mag only) */
 	int     error = 0, retval;
-	unsigned int n_vert_max;
 	double  a, d, x_o, y_o;
 	double *x_obs = NULL, *y_obs = NULL, *x_grd = NULL, *y_grd = NULL, *x_grd_geo = NULL, *y_grd_geo = NULL;
 	double *cos_vec = NULL, *g = NULL, *x_grd2 = NULL, *y_grd2 = NULL, *cos_vec2 = NULL;
@@ -482,7 +488,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdgravmag3d main code ---------------------*/
 
-	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = true;
+	if (GMT_is_geographic(GMT, GMT_IN)) Ctrl->box.is_geog = true;
 
 	if (!Ctrl->box.is_geog)
 		Ctrl->box.d_to_m = 1.;
@@ -491,18 +497,18 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		/*Ctrl->box.d_to_m = 2.0 * M_PI * gmtdefs.ellipse[N_ELLIPSOIDS-1].eq_radius / 360.0;*/
 
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
-		if ( (retval = read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
-			return (EXIT_FAILURE);
+		if ((retval = read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
+			GMT_Report(API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
+			return(EXIT_FAILURE);
 		}
 		ndata = retval;
 	}
 
 	/* ---------------------------------------------------------------------------- */
 
-	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
-	                            Ctrl->In.file[0], NULL)) == NULL) 	/* Get header only */
-		Return (API->error);
+	if ((GridA = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
+	                           Ctrl->In.file[0], NULL)) == NULL) 	/* Get header only */
+		Return(API->error);
 
 	if (Ctrl->G.active) {
 		double wesn[4], inc[2];
@@ -516,35 +522,35 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if (wesn[YHI] > GridA->header->wesn[YHI]) error = true;
 
 		if (error) {
-			GMT_Report (API, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
-			Return (EXIT_FAILURE);
+			GMT_Report(API, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
+			Return(EXIT_FAILURE);
 		}
 
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc,
 			GridA->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
-		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
-					Gout->header->nx, Gout->header->ny);
+		GMT_Report(API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
+		           Gout->header->nx, Gout->header->ny);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
+	GMT_Report(API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
 	if (!GMT->common.R.active)
-		GMT_memcpy (wesn_new, GridA->header->wesn, 4, double);
+		GMT_memcpy(wesn_new, GridA->header->wesn, 4, double);
 	else
-		GMT_memcpy (wesn_new, GMT->common.R.wesn,  4, double);
+		GMT_memcpy(wesn_new, GMT->common.R.wesn,  4, double);
 
 	/* Process Padding request */
 	if (Ctrl->Q.active && !Ctrl->Q.n_pad) {
 		if (Ctrl->Q.pad_dist)		/* Convert the scalar pad distance into a -R string type */
-			sprintf (Ctrl->Q.region, "%f/%f/%f/%f", wesn_new[XLO] - Ctrl->Q.pad_dist,
-			         wesn_new[XHI] + Ctrl->Q.pad_dist, wesn_new[YLO] - Ctrl->Q.pad_dist,
-			         wesn_new[YHI] + Ctrl->Q.pad_dist);
+			sprintf(Ctrl->Q.region, "%f/%f/%f/%f", wesn_new[XLO] - Ctrl->Q.pad_dist,
+			        wesn_new[XHI] + Ctrl->Q.pad_dist, wesn_new[YLO] - Ctrl->Q.pad_dist,
+			        wesn_new[YHI] + Ctrl->Q.pad_dist);
 
 		GMT->common.R.active = false;
-		GMT_parse_common_options (GMT, "R", 'R', Ctrl->Q.region);	/* Use the -R parsing machinery to handle this */
-		GMT_memcpy (wesn_padded, GMT->common.R.wesn, 4, double);
-		GMT_memcpy (GMT->common.R.wesn, wesn_new, 4, double);		/* Reset previous WESN */
+		GMT_parse_common_options(GMT, "R", 'R', Ctrl->Q.region);	/* Use the -R parsing machinery to handle this */
+		GMT_memcpy(wesn_padded, GMT->common.R.wesn, 4, double);
+		GMT_memcpy(GMT->common.R.wesn, wesn_new, 4, double);		/* Reset previous WESN */
 		GMT->common.R.active = true;
 
 		if (wesn_padded[XLO] < GridA->header->wesn[XLO]) {
@@ -590,10 +596,16 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	Ctrl->box.lon_0 = (GridA->header->wesn[XLO] + GridA->header->wesn[XHI]) / 2;
 	Ctrl->box.lat_0 = (GridA->header->wesn[YLO] + GridA->header->wesn[YHI]) / 2;
 
-	if (Ctrl->Z.z0 > GridA->header->z_max) {
-		/* Typical when computing the effect of whater shell for Buguer reduction of marine data */
-		clockwise_type[0] = 5;		/* Means Top triangs will have a CCW description and CW for bot */
-		clockwise_type[1] = 0;
+	/* See if we are closing the body at the grid's top or bottom */
+	if (Ctrl->Z.top) Ctrl->Z.z0 = GridA->header->z_max;
+	if (Ctrl->Z.bot) Ctrl->Z.z0 = GridA->header->z_min;
+
+	if (Ctrl->In.file[1] == NULL) { 	/* Possible swapping triang order only when we have a single  grid */
+		if (Ctrl->Z.z0 >= GridA->header->z_max && !Ctrl->E.active) {	/* If plane is above max grid height and NOT constant thickness /*
+			/* Typical when computing the effect of whater shell for Buguer reduction of marine data */
+			clockwise_type[0] = 5;		/* Means Top triangs will have a CCW description and CW for bot */
+			clockwise_type[1] = 0;
+		}
 	}
 
 	if (Ctrl->D.z_dir != 1) {
@@ -604,30 +616,19 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* -------------- In case we have one second grid, for bottom surface -------------- */
 	if (Ctrl->In.file[1]) {
-		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
-		                            Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
-			Return (API->error);
+		if ((GridB = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
+		                           Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+			Return(API->error);
 		}
 
 		if(GridA->header->registration != GridB->header->registration) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Up and bottom grids have different registrations!\n");
-			Return (EXIT_FAILURE);
-		}
-		if ((GridA->header->z_scale_factor != GridB->header->z_scale_factor) ||
-				(GridA->header->z_add_offset != GridB->header->z_add_offset)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Up and bottom grid scale/offset not compatible!\n");
+			GMT_Report(API, GMT_MSG_NORMAL, "Up and bottom grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
 
-		if (fabs (GridA->header->inc[GMT_X] - GridB->header->inc[GMT_X]) > 1.0e-6 ||
-		          fabs (GridA->header->inc[GMT_Y] - GridB->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Up and bottom grid increments do not match!\n");
-			Return (EXIT_FAILURE);
-		}
-
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
-		                   Ctrl->In.file[1], GridB) == NULL) {			/* Get subset, or all */
-			Return (API->error);
+		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
+		                  Ctrl->In.file[1], GridB) == NULL) {			/* Get subset, or all */
+			Return(API->error);
 		}
 
 		if (Ctrl->D.z_dir != -1) {
@@ -639,30 +640,31 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* -------------- In case we have  a source (magnetization) grid -------------------- */
 	if (Ctrl->H.got_maggrid) {
-		if ((GridS = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
-		                            Ctrl->H.magfile, NULL)) == NULL) {	/* Get header only */
-			Return (API->error);
+		if ((GridS = GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
+		                           Ctrl->H.magfile, NULL)) == NULL) {	/* Get header only */
+			Return(API->error);
 		}
 
 		if(GridA->header->registration != GridS->header->registration) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Up surface and source grids have different registrations!\n");
+			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
+
 		if ((GridA->header->z_scale_factor != GridS->header->z_scale_factor) ||
 		    (GridA->header->z_add_offset != GridS->header->z_add_offset)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Up surface and source grid scale/offset not compatible!\n");
-			Return (EXIT_FAILURE);
+			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grid scale/offset not compatible!\n");
+			Return(EXIT_FAILURE);
 		}
 
 		if (fabs (GridA->header->inc[GMT_X] - GridS->header->inc[GMT_X]) > 1.0e-6 ||
-		          fabs (GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Up surface and source grid increments do not match!\n");
-			Return (EXIT_FAILURE);
+		          fabs(GridA->header->inc[GMT_Y] - GridS->header->inc[GMT_Y]) > 1.0e-6) {
+			GMT_Report(API, GMT_MSG_NORMAL, "Up surface and source grid increments do not match!\n");
+			Return(EXIT_FAILURE);
 		}
 
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
+		if (GMT_Read_Data(API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded,
 		                   Ctrl->H.magfile, GridS) == NULL) {			/* Get subset, or all */
-			Return (API->error);
+			Return(API->error);
 		}
 	}
 
@@ -701,9 +703,9 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 						-(Gout->header->wesn[YHI] - (j + d) * Gout->header->inc[GMT_Y]);
 		}
 	}
+	/* ------------------------------------------------------------------------------------------ */
 
-	if (Ctrl->H.pirtt)
-		d -= 0.5;			/* because for prisms we want all corner coords to be in pixel registration */
+	if (Ctrl->H.pirtt) d -= 0.5;		/* because for prisms we want all corner coords to be in pixel registration */
 
 	for (i = 0; i < GridA->header->nx; i++)
 		x_grd[i] = (i == (GridA->header->nx-1)) ? GridA->header->wesn[XHI] + d*GridA->header->inc[GMT_X] :
@@ -785,6 +787,12 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		y_grd[0] = y_grd[1] - Ctrl->Q.n_pad * fabs(y_grd[2] - y_grd[1]);
 		x_grd[GridA->header->nx-1] = x_grd[GridA->header->nx-1] + Ctrl->Q.n_pad * (x_grd[2] - x_grd[1]);
 		y_grd[GridA->header->ny-1] = y_grd[GridA->header->ny-1] + Ctrl->Q.n_pad * fabs(y_grd[2] - y_grd[1]);
+		if (two_grids) {	/* Do the extension using top grid's increments so that top and bot extensions are equal */
+			x_grd2[0] = x_grd2[1] - Ctrl->Q.n_pad * (x_grd[2] - x_grd[1]);		/* Why not use the x|y_inc ? */
+			y_grd2[0] = y_grd2[1] - Ctrl->Q.n_pad * fabs(y_grd[2] - y_grd[1]);
+			x_grd2[GridA->header->nx-1] += Ctrl->Q.n_pad * (x_grd[2] - x_grd[1]);
+			y_grd2[GridA->header->ny-1] += Ctrl->Q.n_pad * fabs(y_grd[2] - y_grd[1]);
+		}
 	}
 
 	if (Ctrl->F.active) { 	/* Need to compute observation coords only once */
@@ -810,15 +818,15 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	/* Decompose a paralelogram into two triangular prisms */
-	if (!Ctrl->In.file[1] && !Ctrl->In.file[2])	{	/* One grid only - EXPLICAR */
-		if (!Ctrl->H.pirtt)
-			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[0]);		/* Set CW or CCW of top triangs */
-		else
-			grdgravmag3d_body_desc_prism(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[0]);	/* Allocate structs */
-	}
+	if (!Ctrl->H.pirtt)
+		grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[0]);		/* Set CW or CCW of top triangs */
+	else
+		grdgravmag3d_body_desc_prism(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[0]);	/* Allocate structs */
 
 	/* Allocate a structure that will be used inside okabe().
-	   We do it here to avoid thousands of alloc/free that would result if done in okabe() */
+		We do it here to avoid thousands of alloc/free that would result if done in okabe() */
+
+	/* Sep 2015. Must check the validity of this because loc_or is no longer used in okabe parallel */
 	n_vert_max = body_desc.n_v[0];
 	for (i = 1; i < body_desc.n_f; i++)
 		n_vert_max = MAX(body_desc.n_v[i], n_vert_max);
@@ -860,16 +868,16 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		loc_or[2].x = sin(-Ctrl->H.t_dec * D2R);		loc_or[2].y = cos(-Ctrl->H.t_dec * D2R);
 	}
 
-/* ---------------> Now start computing <------------------------------------- */
+	/* --------------------------------> Now start computing <------------------------------------- */
 
 	if (Ctrl->G.active) {               /* grid output */
-		grdgravmag3d_calc_surf (GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-		                        mag_var, loc_or, &body_desc, body_verts);
+		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
+		                       mag_var, loc_or, &body_desc, body_verts);
 
 		if (Ctrl->H.pirtt) goto L1;                            /* Uggly, I know but the 2-grids case is not Bhattacharya implemented */
 
 		if (!two_grids) {                                       /* That is, one grid and a flat base Do the BASE now */
-			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangs */
+			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */
 
 			if (!Ctrl->E.active) {                              /* NOT constant thickness. That is, a surface and a BASE plane */
 				grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0,
@@ -880,50 +888,54 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 					for (i = 0; i < Gout->header->nx; i++) {    /* Loop over input grid cols */
 						x_o = (Ctrl->box.is_geog) ? (x_obs[i] - Ctrl->box.lon_0) * Ctrl->box.d_to_m * cos(y_obs[k]*D2R) : x_obs[i];
-						a = okabe (GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or);
+						a = okabe(GMT, x_o, y_o, Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or);
 						Gout->data[GMT_IJP(Gout->header, k, i)] += (float)a;
 					}
 				}
 			}
 			else {      /* A Constant thickness layer */
-				grdgravmag3d_calc_surf (GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-				                        mag_var, loc_or, &body_desc, body_verts);
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (float)Ctrl->E.thickness;	/* Shift by thickness */
+				grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
+				                       mag_var, loc_or, &body_desc, body_verts);
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (float)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
 			}
 		}
 		else {          /* "two_grids". One at the top and the other at the base */
-			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangs */
-			grdgravmag3d_calc_surf (GMT, Ctrl, GridB, Gout, GridS, NULL, 0, x_grd2, y_grd2, x_grd_geo, y_grd_geo, x_obs, y_obs,
-			                        cos_vec2, mag_var, loc_or, &body_desc, body_verts);
+			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangles */
+			grdgravmag3d_calc_surf(GMT, Ctrl, GridB, Gout, GridS, NULL, 0, x_grd2, y_grd2, x_grd_geo, y_grd_geo, x_obs, y_obs,
+			                       cos_vec2, mag_var, loc_or, &body_desc, body_verts);
 		}
 	}
 	else {              /* polyline output */
-		grdgravmag3d_calc_surf (GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-		                        mag_var, loc_or, &body_desc, body_verts);
+		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
+		                       mag_var, loc_or, &body_desc, body_verts);
 
 		if (Ctrl->H.pirtt) goto L1;     /* Uggly,I know but the 2-grids case is not Bhattacharya implemented */
 
 		if (!two_grids) {               /* That is, one grid and a flat base. Do the BASE now */
-			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangs */
+			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of BOT triangles */
 
 			if (!Ctrl->E.active) {      /* NOT constant thickness. That is, a surface and a BASE plane */
 				grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0,
 				                          GridA->header->ny-1, GridA->header->nx-1);
 			}
 			else {                      /* A Constant thickness layer */
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (float)Ctrl->E.thickness;	/* Shift by thickness */
 				grdgravmag3d_body_set_tri(GMT, Ctrl, GridA, &body_desc, body_verts, x_grd, y_grd, cos_vec, 0, 0, 1, 1);
+				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (float)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
 			}
 
 			for (k = 0; k < ndata; k++)
 				g[k] += okabe (GMT, x_obs[k], y_obs[k], Ctrl->L.zobs, Ctrl->C.rho, Ctrl->C.active, body_desc, body_verts, km, 0, loc_or);
 		}
 		else {                          /* "two_grids". One at the top and the other at the base */
-			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangs */
-			grdgravmag3d_calc_surf (GMT, Ctrl, GridB, NULL, GridS, g, ndata, x_grd2, y_grd2, x_grd_geo, y_grd_geo, x_obs, y_obs,
+			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangles */
+			grdgravmag3d_calc_surf(GMT, Ctrl, GridB, NULL, GridS, g, ndata, x_grd2, y_grd2, x_grd_geo, y_grd_geo, x_obs, y_obs,
 			                        cos_vec2, mag_var, loc_or, &body_desc, body_verts);
 		}
 	}
-
 	/*---------------------------------------------------------------------------------------------*/
+
 L1:
 
 	if (Ctrl->G.active) {
@@ -937,30 +949,29 @@ L1:
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK)
 			Return (API->error);
-		}
 	}
 	else {
 		double out[3];
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) 	/* Establishes data output */
 			Return (API->error);
-		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK)
 			Return (API->error);
-		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) 	/* Enables data output and sets access mode */
 			Return (API->error);
-		}
+
 		for (k = 0; k < ndata; k++) {
 			out[GMT_X] = data[k].x;
 			out[GMT_Y] = data[k].y;
 			out[GMT_Z] = g[k];
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data input */
+
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) 	/* Disables further data input */
 			Return (API->error);
-		}
 	}
 
 	GMT_free (GMT, x_grd);
@@ -1051,7 +1062,6 @@ int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, s
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 1; 	body_desc->ind[2] = 2;	/* 1st top triang (0 1 3)*/
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 2; 	body_desc->ind[5] = 3;	/* 2nd top triang (1 2 3) */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
-		return(0);
 	}
 	else if (face == 5) {			/* Decompose the BOT square surface in 2 triangles using CCW order */
 		body_desc->n_f = 2;
@@ -1063,10 +1073,9 @@ int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, s
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 2; 	body_desc->ind[2] = 1;	/* 1st bot triang */
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 3; 	body_desc->ind[5] = 2;	/* 2nd bot triang */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
-		return(0);
 	}
 	/* Other face cases will go here */
-	return(0);
+	return 0;
 }
 
 /* -----------------------------------------------------------------------------------*/
