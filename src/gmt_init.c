@@ -790,21 +790,25 @@ void GMT_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 */
 void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
 	unsigned int i;
-	char pad[16], *type[2] = {"Contour", "Line"};
+	char pad[16], *type[3] = {"Contour", "Line", "Decorated line"};
+	char *feature[3] = {"label", "label", "symbol"};
 
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	GMT_message (GMT, "%s +a<angle> will place all annotations at a fixed angle.\n", pad);
+	GMT_message (GMT, "%s +a<angle> will place all %s at a fixed angle.\n", pad, feature[kind]);
 	GMT_message (GMT, "%s Or, specify +an (line-normal) or +ap (line-parallel) [Default].\n", pad);
 	if (kind == 0) {
 		GMT_message (GMT, "%s   For +ap, you may optionally append u for up-hill\n", pad);
 		GMT_message (GMT, "%s   and d for down-hill cartographic annotations.\n", pad);
 	}
-	GMT_message (GMT, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
+	if (kind < 2) GMT_message (GMT, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
 	GMT_message (GMT, "%s +d turns on debug which draws helper points and lines.\n", pad);
-	GMT_message (GMT, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
-	GMT_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
-	GMT_message (GMT, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
-	GMT_message (GMT, "%s +j<just> sets label justification [Default is MC].\n", pad);
+	if (kind < 2) GMT_message (GMT, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
+	if (kind < 2) GMT_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
+	if (kind < 2)
+		GMT_message (GMT, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
+	else
+		GMT_message (GMT, "%s +g<fill> sets the fill for the symbol [transparent]\n", pad);
+	if (kind < 2) GMT_message (GMT, "%s +j<just> sets %s justification [Default is MC].\n", pad, feature[kind]);
 	if (kind == 1) {
 		GMT_message (GMT, "%s +l<text> Use text as label (quote text if containing spaces).\n", pad);
 		GMT_message (GMT, "%s +L<d|D|f|h|n|N|x>[<unit>] Sets label according to given flag:\n", pad);
@@ -816,16 +820,22 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 		GMT_message (GMT, "%s   N Use current file number / segment number (starting at 0/0).\n", pad);
 		GMT_message (GMT, "%s   x Like h, but us headers in file with crossing lines instead.\n", pad);
 	}
-	GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.\n", pad);
-	GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
+	if (kind < 2)
+		GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.\n", pad);
+	else
+		GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).\n", pad);
+	if (kind < 2)GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
 	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
-	GMT_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
-	GMT_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
-	GMT_message (GMT, "%s   use +T to save (x y angle label) instead\n", pad);
-	GMT_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
+	if (kind == 2) GMT_message (GMT, "%s +s<symbol><size> specifies the decorative symbol and its size.\n", pad);
+	if (kind < 2) {
+		GMT_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
+		GMT_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
+		GMT_message (GMT, "%s   use +T to save (x y angle label) instead\n", pad);
+		GMT_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
+	}
 	if (kind == 0) GMT_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
-	GMT_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
+	if (kind < 2)GMT_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
 	GMT_message (GMT, "%s +w sets how many (x,y) points to use for angle calculation [auto].\n", pad);
 	if (kind == 1) {
 		GMT_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
@@ -844,20 +854,21 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	unsigned int i;
 	double gap;
 	char pad[16];
-	char *type[2] = {"contour", "quoted line"};
+	char *type[3] = {"contour", "quoted line", "decorated line"};
+	char *feature[3] = {"label", "label", "symbol"};
 
 	gap = 4.0 * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
 	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
 	GMT_message (GMT, "%sd<dist>[%s] or D<dist>[%s]  [Default is d%g%c].\n",
 	             pad, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
-	GMT_message (GMT, "%s   d: Give distance between labels with specified map unit in %s.\n", pad, GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "%s   D: Specify geographic distance between labels in %s,\n", pad, GMT_LEN_UNITS_DISPLAY);
-	GMT_message (GMT, "%s   The first label appears at <frac>*<dist>; change by appending /<frac> [0.25].\n", pad);
-	GMT_message (GMT, "%sf<file.d> reads file <file.d> and places labels at locations\n", pad);
+	GMT_message (GMT, "%s   d: Give distance between %ss with specified map unit in %s.\n", pad, feature[kind], GMT_DIM_UNITS_DISPLAY);
+	GMT_message (GMT, "%s   D: Specify geographic distance between %ss in %s,\n", pad, feature[kind], GMT_LEN_UNITS_DISPLAY);
+	GMT_message (GMT, "%s   The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].\n", pad, feature[kind]);
+	GMT_message (GMT, "%sf<file.d> reads file <file.d> and places %ss at locations\n", pad, feature[kind]);
 	GMT_message (GMT, "%s   that match individual points along the %ss.\n", pad, type[kind]);
 	GMT_message (GMT, "%sl|L<line1>[,<line2>,...] Give start and stop coordinates for\n", pad);
-	GMT_message (GMT, "%s   straight line segments.  Labels will be placed where these\n", pad);
+	GMT_message (GMT, "%s   straight line segments; %ss will be placed where these\n", pad, feature[kind]);
 	GMT_message (GMT, "%s   lines intersect %ss.  The format of each <line>\n", pad, type[kind]);
 	GMT_message (GMT, "%s   is <start>/<stop>, where <start> or <stop> = <lon/lat> or a\n", pad);
 	GMT_message (GMT, "%s   2-character XY key that uses the \"pstext\"-style justification\n", pad);
@@ -867,22 +878,24 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 		GMT_message (GMT, "%s   minimum and maximum locations in the grid.\n", pad);
 	}
 	GMT_message (GMT, "%s   L Let point pairs define great circles [Straight lines].\n", pad);
-	GMT_message (GMT, "%sn|N<n_label> sets number of equidistant labels per %s.\n", pad, type[kind]);
-	GMT_message (GMT, "%s   N: Starts labeling exactly at the start of %s\n", pad, type[kind]);
-	GMT_message (GMT, "%s     [Default centers the labels on the %s].\n", pad, type[kind]);
-	GMT_message (GMT, "%s   N-1 places a single label at start of the %s, while\n", pad, type[kind]);
-	GMT_message (GMT, "%s   N+1 places a single label at the end of the %s.\n", pad, type[kind]);
+	GMT_message (GMT, "%sn|N<n_%s> sets number of equidistant %ss per %s.\n", pad, feature[kind], feature[kind], type[kind]);
+	GMT_message (GMT, "%s   N: Starts %s exactly at the start of %s\n", pad, feature[kind], type[kind]);
+	GMT_message (GMT, "%s     [Default centers the %ss on the %s].\n", pad, feature[kind], type[kind]);
+	GMT_message (GMT, "%s   N-1 places a single %s at start of the %s, while\n", pad, feature[kind], type[kind]);
+	GMT_message (GMT, "%s   N+1 places a single %s at the end of the %s.\n", pad, feature[kind], type[kind]);
 	GMT_message (GMT, "%s   Append /<min_dist> to enforce a minimum spacing between\n", pad);
-	GMT_message (GMT, "%s   consecutive labels [0]\n", pad);
+	GMT_message (GMT, "%s   consecutive %ss [0]\n", pad, feature[kind]);
 	if (kind == 1) {
-		GMT_message (GMT, "%ss|S<n_label> sets number of equidistant labels per segmentized %s.\n", pad, type[kind]);
+		GMT_message (GMT, "%ss|S<n_%s> sets number of equidistant %s per segmented %s.\n", pad, feature[kind], feature[kind], type[kind]);
 		GMT_message (GMT, "%s   Same as n|N but splits input lines to series of 2-point segments first.\n", pad);
 	}
 	GMT_message (GMT, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places\n", pad);
-	GMT_message (GMT, "%s   labels at intersections between %ss and lines in\n", pad, type[kind]);
+	GMT_message (GMT, "%s   %ss at intersections between %ss and lines in\n", pad, feature[kind], type[kind]);
 	GMT_message (GMT, "%s   <xfile.d>.  Use X to resample the lines first.\n", pad);
-	GMT_message (GMT, "%s   For all options, append +r<radius>[unit] to specify minimum\n", pad);
-	GMT_message (GMT, "%s   radial separation between labels [0]\n", pad);
+	if (kind < 2) {
+		GMT_message (GMT, "%s   For all options, append +r<radius>[unit] to specify minimum\n", pad);
+		GMT_message (GMT, "%s   radial separation between labels [0]\n", pad);
+	}
 }
 
 /*! Widely used in most programs that need grid increments to be set */
@@ -10007,7 +10020,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	bool check = true, degenerate = false;
 	unsigned int ju;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
-	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
 		p->base = GMT->session.d_NaN;
@@ -10035,7 +10048,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		symbol_type = '*';
 		col_off++;
 		if (cmd) p->read_size_cmd = true;
-		if (cmd) p->read_symbol_cmd = true;
+		if (cmd) p->read_symbol_cmd = 1;
 	}
 	else if (isdigit ((int)text[0]) || text[0] == '.') {	/* Size, but no symbol given */
 		n = sscanf (text, "%[^/]/%s", txt_a, txt_b);
@@ -10047,7 +10060,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		else
 			decode_error = true;
 		symbol_type = '*';
-		if (cmd) p->read_symbol_cmd = true;
+		if (cmd) p->read_symbol_cmd = 1;
 	}
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
 		strncpy (text_cp, text, GMT_LEN256);	/* Copy for processing later */
@@ -10070,7 +10083,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			decode_error = (n != 1);
 		}
 	}
-	else if (text[0] == 'k') {	/* Custom symbol spec -Sk<path_to_custom_symbol>[/<size>[unit]]*/
+	else if (text[0] == 'k' || text[0] == 'K') {	/* Custom symbol spec -Sk|K<path_to_custom_symbol>[/<size>[unit]]*/
 		/* <path_to_custom_symbol> may contains slashes (UNIX) or backslashes (Windows) so we search from the end of the string: */
 		for (j = (int)strlen (text)-1; j > 0 && text[j] != '/'; --j);	/* Determine last slash */
 		if (j == 0) {	/* No slash, i.e., no symbol size given (and no UNIX path either) */
@@ -10085,10 +10098,10 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (strchr("CcIiPp", txt_a[strlen(txt_a) - 1])) {	/* If last char equals a unit char... */
 				char t[GMT_LEN64] = {""};
 				strncpy (t, txt_a, strlen(txt_a) - 1);	/* Make a copy of what we found minus the unit char */
-				if (GMT_is_valid_number(t))         /* txt_a wihtout the unit char is a size string. Decode it. */
+				if (GMT_is_valid_number(t))         /* txt_a without the unit char is a size string. Decode it. */
 					p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
 				else                                /* txt_a is just the symbol name and text_cp has the directory */
-					{strcat(text_cp, "/");	strcat(text_cp, txt_a);}
+					{strcat(text_cp, "/");	strcat(text_cp, txt_a);col_off++;}
 			}
 			else {                                  /* It still can be a size even though no unit was given */
 				if (GMT_is_valid_number (txt_a))     /* Yes, it is */
@@ -10096,6 +10109,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				else {                              /* No, txt_a is the symbol name. */
 					strcat(text_cp, "/");	strcat(text_cp, txt_a);
 					if (p->size_x == 0.0) p->size_x = p->given_size_x;
+					col_off++;
 				}
 			}
 		}
@@ -10231,7 +10245,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
-		if (s_upper == 'F' || s_upper == 'V' || s_upper == 'Q' || s_upper == 'M')	/* "Symbols" that do not take a normal symbol size */
+		if (strchr ("FVQM~", s_upper))	/* "Symbols" that do not take a normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
 		else {
 			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
@@ -10504,8 +10518,10 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
 			if (colon) {	/* Gave :<labelinfo> */
 				text[colon] = 0;
+				GMT_contlabel_init (GMT, &p->G, 0);
 				decode_error += GMT_contlabel_info (GMT, 'S', &text[1], &p->G);
 				decode_error += GMT_contlabel_specs (GMT, &text[colon+1], &p->G);
+				if (!cmd && GMT_contlabel_prep (GMT, &p->G, NULL)) decode_error++;
 			}
 			else
 				decode_error += GMT_contlabel_info (GMT, 'S', &text[1], &p->G);
@@ -10638,6 +10654,9 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'z':
 			p->symbol = GMT_SYMBOL_ZDASH;
 			break;
+		case 'K':
+			if (cmd) p->read_symbol_cmd = 2;	/* Kustom symbol given as -SK implies we must read text data records */
+			if (cmd) p->read_size_cmd = true;
 		case 'k':
 			p->custom = GMT_get_custom_symbol (GMT, text_cp);
 			if (!p->custom) {
@@ -10673,6 +10692,27 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
 				p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
 			}
+			break;
+		case '~':	/* Decorated lines: -S~[d|n|l|s|x]<info>[:<symbolinfo>] */
+			p->symbol = GMT_SYMBOL_DECORATED_LINE;
+			check = false;
+			if (!text[1]) {	/* No args given, must parse segment header later */
+				p->fq_parse = true;	/* This will be set to false once at least one header has been parsed */
+				break;
+			}
+			for (j = 1, colon = 0; text[j]; j++) if (text[j] == ':') colon = j;
+			if (colon) {	/* Gave :<symbolinfo> */
+				text[colon] = 0;
+				GMT_decorate_init (GMT, &p->D, 0);
+				decode_error += GMT_decorate_info (GMT, 'S', &text[1], &p->D);
+				decode_error += GMT_decorate_specs (GMT, &text[colon+1], &p->D);
+				if (!cmd && GMT_decorate_prep (GMT, &p->D, NULL)) decode_error++;
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S~ option: No symbol information given\n");
+				decode_error++;
+			}
+			p->fq_parse = false;	/* No need to parse more later */
 			break;
 		default:
 			decode_error = true;

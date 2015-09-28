@@ -3550,6 +3550,7 @@ void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name,
 
 int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
 {
+	int action;
 	unsigned int na, i, id = 0, level = 0, start = 0, *type = NULL;
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
 	uint64_t n = 0;
@@ -3649,8 +3650,12 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		dim[0] = s->p[0] * size[0];
 		dim[1] = s->p[1] * size[0];
 		dim[2] = s->p[2] * size[0];
+		if (s->action == '?')	/* Reset to what is last in the input record */
+			action = GMT->current.io.current_record[strlen(GMT->current.io.current_record)-1];
+		else
+			action = s->action;
 
-		switch (s->action) {
+		switch (action) {
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
 				if (flush) gmt_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				n = 0;
@@ -3709,10 +3714,10 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case (int)'C':
 				if (GMT_compat_check (GMT, 4)) {	/* Warn and fall through */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
-					s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
+					action = s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", action, (char)action);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 					break;
 				}
@@ -3735,7 +3740,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				this_outline = (p && p->rgb[0] == -1) ? false : outline;
 				if (this_outline) GMT_setpen (GMT, p);
 				GMT_setfill (GMT, f, this_outline);
-				PSL_plotsymbol (PSL, x, y, dim, s->action);
+				PSL_plotsymbol (PSL, x, y, dim, action);
 				break;
 
 			case GMT_SYMBOL_ELLIPSE:
@@ -3797,7 +3802,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", action, (char)action);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				break;
 		}

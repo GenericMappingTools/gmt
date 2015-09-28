@@ -2282,9 +2282,14 @@ void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t
 	 * If sep is 1 we prepend col separator.
 	 * If sep is 2 we append col separator
 	 * If sep is 1|2 do both [0 means no separator].
+	 * if sep > 10 we init record then remove 10 from sep.
 	 */
 	char word[GMT_LEN64] = {""};
 	GMT_ascii_format_col (GMT, word, val, GMT_OUT, col);
+	if (sep >= 10) {	/* Initialize new record */
+		record[0] = '\0';
+		sep -= 10;
+	}
 	if (sep & 1) strcat (record, GMT->current.setting.io_col_separator);
 	strcat (record, word);
 	if (sep & 2) strcat (record, GMT->current.setting.io_col_separator);
@@ -5034,6 +5039,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T)
 		T->min[col] = DBL_MAX;
 		T->max[col] = -DBL_MAX;
 	}
+	T->n_records = 0;
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
 		GMT_set_seg_minmax (GMT, S);
@@ -5041,6 +5047,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T)
 			if (S->min[col] < T->min[col]) T->min[col] = S->min[col];
 			if (S->max[col] > T->max[col]) T->max[col] = S->max[col];
 		}
+		T->n_records += S->n_rows;
 	}
 }
 
@@ -5057,6 +5064,7 @@ void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D)
 		D->min[col] = DBL_MAX;
 		D->max[col] = -DBL_MAX;
 	}
+	D->n_records = 0;
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		GMT_set_tbl_minmax (GMT, T);
@@ -5064,6 +5072,36 @@ void GMT_set_dataset_minmax (struct GMT_CTRL *GMT, struct GMT_DATASET *D)
 			if (T->min[col] < D->min[col]) D->min[col] = T->min[col];
 			if (T->max[col] > D->max[col]) D->max[col] = T->max[col];
 		}
+		D->n_records += T->n_records;
+	}
+}
+
+/*! . */
+void gmt_set_texttbl_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTTABLE *T)
+{	/* Update table record count */
+	uint64_t seg;
+	struct GMT_TEXTSEGMENT *S = NULL;
+	GMT_UNUSED(GMT);
+
+	if (!T) return;	/* No table given */
+	T->n_records = 0;
+	for (seg = 0; seg < T->n_segments; seg++) {
+		S = T->segment[seg];
+		T->n_records += S->n_rows;
+	}
+}
+
+/*! . */
+void GMT_set_textset_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
+{	/* Update record counts for tables and dataset */
+	uint64_t tbl;
+	struct GMT_TEXTTABLE *T = NULL;
+	if (!D) return;	/* No textset given */
+	D->n_records = 0;
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		T = D->table[tbl];
+		gmt_set_texttbl_minmax (GMT, T);
+		D->n_records += T->n_records;
 	}
 }
 

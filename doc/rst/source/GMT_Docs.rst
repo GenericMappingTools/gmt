@@ -487,6 +487,8 @@ changes to syntax will be backwards compatible:
    line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive
    two-point line segments that should be individually quoted,
    and **+x**\ [*first*\ ,\ *last*] for automating cross-section labeling.
+   We added a new symbol (**-S~**) for *decorated lines*.  These are very similar
+   to quoted lines but instead place specified symbols along lines.
    We expanded **-N** to handle periodic, repeating symbols near the boundary,
    added a new modifier **+** to **-E** for asymmetrical error bars, and provided the
    shorthand **-SE-**\ *diameter* for degenerated ellipses (i.e., circles).
@@ -500,7 +502,8 @@ changes to syntax will be backwards compatible:
    a variety of connectivity modes.
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
-   modifiers for handling periodic plot symbols.  Likewise,
+   modifiers for handling periodic plot symbols.  Like, psxy it gets the same improvements
+   to quoted lines and adds decorated lines as a new symbol.  Likewise,
    the **-L** option has been enhanced to create envelope polygons around y(x),
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).

@@ -3575,7 +3575,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	if (GMT->current.setting.proj_length_unit == GMT_CM) G->label_dist_spacing = 10.0 / 2.54;
 	G->clearance[GMT_X] = G->clearance[GMT_Y] = 15.0;	/* 15 % */
 	G->clearance_flag = 1;	/* Means we gave percentages of label font size */
-	G->just = 6;	/* CM */
+	G->just = PSL_MC;
 	G->font_label = GMT->current.setting.font_annot[0];	/* FONT_ANNOT_PRIMARY */
 	G->font_label.size = 9.0;
 	G->dist_unit = GMT->current.setting.proj_length_unit;
@@ -3886,11 +3886,210 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			}
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Unrecognized modifiler %c\n", L->flag, txt[0]);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Unrecognized modifier %c\n", L->flag, txt[0]);
 			error++;
 			break;
 	}
 	if (L->isolate) *p = '+';	/* Replace the + from earlier */
+
+	return (error);
+}
+
+/*! . */
+void GMT_decorate_init (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, unsigned int mode)
+{	/* Assign default values to structure */
+	
+	GMT_decorate_free (GMT, G);	/* In case we've been here before we must free stuff first */
+
+	GMT_memset (G, 1, struct GMT_DECORATE);	/* Sets all to 0 */
+	if (mode == 1) {
+		G->line_type = 1;
+		strcpy (G->line_name, "Contour");
+	}
+	else {
+		G->line_type = 0;
+		strcpy (G->line_name, "Line");
+	}
+	G->spacing = true;
+	G->half_width = UINT_MAX;	/* Auto */
+	G->symbol_dist_spacing = 4.0;	/* Inches */
+	G->symbol_dist_frac = 0.25;	/* Fraction of above head start for closed lines */
+	if (GMT->current.setting.proj_length_unit == GMT_CM) G->symbol_dist_spacing = 10.0 / 2.54;
+}
+
+/*! . */
+int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G) {
+	unsigned int k, bad = 0, pos = 0;
+	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
+	char *specs = NULL;
+
+	/* Decode [+a<angle>|n|p[u|d]][+d][+g<fill>][+n|N<dx>[/<dy>]][+p[<pen>]]+s<symbolinfo>[+w<width>] strings */
+
+	for (k = 0; txt[k] && txt[k] != '+'; k++);	/* Look for +<options> strings */
+
+	if (!txt[k]) return (0);
+
+	/* Decode new-style +separated substrings */
+
+	G->nudge_flag = 0;
+	G->fill[0] = G->pen[0] = '\0';	/* Reset each time in case we are parsing args from a segment header */
+	specs = &txt[k+1];
+	while ((GMT_strtok (specs, "+", &pos, p))) {
+		switch (p[0]) {
+			case 'a':	/* Angle specification */
+				if (p[1] == 'p' || p[1] == 'P')	/* Line-parallel label */
+					G->angle_type = 0;
+				else if (p[1] == 'n' || p[1] == 'N')	/* Line-normal label */
+					G->angle_type = 1;
+				else {					/* Label at a fixed angle */
+					G->symbol_angle = atof (&p[1]);
+					G->angle_type = 2;
+					GMT_lon_range_adjust (GMT_IS_M180_TO_P180_RANGE, &G->symbol_angle);	/* Now -180/+180 */
+					while (fabs (G->symbol_angle) > 90.0) G->symbol_angle -= copysign (180.0, G->symbol_angle);
+				}
+				break;
+
+			case 'd':	/* Debug option - draw helper points or lines */
+				G->debug = true;
+				break;
+
+			case 'g':	/* Symbol Fill specification */
+				if (p[1]) strncpy (G->fill, &p[1], GMT_LEN64);
+				break;
+
+			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
+				G->nudge_flag = 1;
+			case 'N':	/* Nudge specification; dx/dy are increments along plot axes */
+				G->nudge_flag++;
+				k = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+				G->nudge[GMT_X] = GMT_to_inch (GMT, txt_a);
+				G->nudge[GMT_Y] = (k == 2 ) ? GMT_to_inch (GMT, txt_b) : G->nudge[GMT_X];
+				if (k == 0) bad++;
+				break;
+
+			case 'p':	/* Draw text box outline [with optional textbox pen specification] */
+				if (p[1]) strncpy (G->pen, &p[1], GMT_LEN64);
+				break;
+
+			case 's':	/* Symbol to place */
+				if (p[1]) {
+					strncpy (G->size, &p[2], GMT_BUFSIZ);
+					G->symbol_code[0] = p[1];
+				}
+				break;
+			case 'w':	/* Angle filter width [Default is auto] */
+				G->half_width = atoi (&p[1]) / 2;
+				break;
+
+			case '.':	/* Assume it can be a decimal part without leading 0 */
+			case '0':	/* A single annotated contour */
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+				break;
+
+			default:
+				bad++;
+				break;
+		}
+	}
+	if (G->symbol_code[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No symbol specified!\n");
+		bad++;
+	}
+	if (G->size[0] == '\0') {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No symbol size specified!\n");
+		bad++;
+	}
+	return (bad);
+}
+
+/*! . */
+int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DECORATE *L)
+{
+	/* Interpret the contour-label information string and set structure items */
+	int k, j = 0, error = 0;
+	char txt_a[GMT_LEN256] = {""}, c, arg;
+
+	L->spacing = false;	/* Turn off the default since we gave an option */
+	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
+	L->flag = flag;
+	/* Special check for quoted lines */
+	if (txt[0] == 'S' || txt[0] == 's') {	/* -SqS|n should be treated as -SqN|n once file is segmentized */
+		arg = (txt[0] == 'S') ? 'N' : 'n';	/* S -> N and s -> n */
+		L->segmentize = true;
+	}
+	else
+		arg = txt[0];
+
+	switch (arg) {
+		case 'L':	/* Quick straight lines for intersections */
+			L->do_interpolate = true;
+		case 'l':
+			L->crossing = GMT_DECORATE_XLINE;
+			break;
+		case 'N':	/* Specify number of labels per segment */
+			L->number_placement = 1;	/* Distribution of labels */
+			if (txt[1] == '-') L->number_placement = -1, j = 1;	/* Left symbol if n = 1 */
+			if (txt[1] == '+') L->number_placement = +1, j = 1;	/* Right symbol if n = 1 */
+		case 'n':	/* Specify number of labels per segment */
+			L->number = true;
+			k = sscanf (&txt[1+j], "%d/%s", &L->n_cont, txt_a);
+			if (k == 2) L->min_dist = GMT_to_inch (GMT, txt_a);
+			if (L->n_cont == 0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Number of symbols must exceed zero\n", L->flag);
+				error++;
+			}
+			if (L->min_dist < 0.0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Minimum symbols separation cannot be negative\n", L->flag);
+				error++;
+			}
+			break;
+		case 'f':	/* fixed points file */
+			L->fixed = true;
+			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
+			if (k == 1) L->slop = GMT_CONV8_LIMIT;
+			break;
+		case 'X':	/* Crossing complicated curve */
+			L->do_interpolate = true;
+		case 'x':	/* Crossing line */
+			L->crossing = GMT_DECORATE_XCURVE;
+			strncpy (L->file, &txt[1], GMT_BUFSIZ);
+			break;
+		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
+			L->dist_kind = 1;
+		case 'd':	/* Specify distances in plot units [cip] */
+			L->spacing = true;
+			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->symbol_dist_frac);
+			if (k == 1) L->symbol_dist_frac = 0.25;
+			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
+				k = (int)strlen (txt_a) - 1;
+				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
+				L->symbol_dist_spacing = atof (&txt_a[1]);
+				GMT_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_CONT_DIST);
+			}
+			else
+				L->symbol_dist_spacing = GMT_to_inch (GMT, &txt_a[1]);
+			if (L->symbol_dist_spacing <= 0.0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Spacing between symbols must exceed 0.0\n", L->flag);
+				error++;
+			}
+			if (L->symbol_dist_frac < 0.0 || L->symbol_dist_frac > 1.0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Initial symbols distance fraction must be in 0-1 range\n", L->flag);
+				error++;
+			}
+			break;
+		default:
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Unrecognized modifier %c\n", L->flag, txt[0]);
+			error++;
+			break;
+	}
 
 	return (error);
 }
@@ -4220,6 +4419,131 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 }
 
 /*! . */
+int GMT_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[2][3]) {
+	/* G is pointer to the LABELED CONTOUR structure
+	 * xyz, if not NULL, have the (x,y,z) min and max values for a grid
+	 */
+
+	/* Prepares decoarte line symbols machinery as needed */
+
+	unsigned int error = 0;
+	uint64_t k, i;
+	size_t n_alloc = GMT_SMALL_CHUNK;
+	double x, y;
+	char buffer[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+
+	if (G->spacing && G->dist_kind == 1) {
+		GMT->current.map.dist[GMT_LABEL_DIST].func = GMT->current.map.dist[GMT_CONT_DIST].func;
+		GMT->current.map.dist[GMT_LABEL_DIST].scale = GMT->current.map.dist[GMT_CONT_DIST].scale;
+	}
+	if (G->dist_kind == 1 && !GMT_is_geographic (GMT, GMT_IN)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Map distance options requires a map projection.\n", G->flag);
+		error++;
+	}
+
+	if (G->crossing == GMT_DECORATE_XLINE) {
+		G->xp = GMT_make_profile (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
+	}
+	else if (G->crossing == GMT_DECORATE_XCURVE) {
+		unsigned int geometry = GMT_IS_LINE;
+		if ((G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false)) == NULL) {	/* Failure to read the file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
+			error++;
+		}
+		else if (G->xp->n_columns < 2 || G->xp->n_records < 2) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
+			GMT_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+			error++;
+		}
+		else {	/* Should be OK to use */
+			for (k = 0; k < G->xp->n_segments; k++) {
+				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
+					GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
+					G->xp->segment[k]->coord[GMT_X][i] = x;
+					G->xp->segment[k]->coord[GMT_Y][i] = y;
+				}
+			}
+		}
+	}
+	else if (G->fixed) {
+		FILE *fp = NULL;
+		int kk, n_col, len;
+		bool bad_record = false;
+		double xy[2];
+		/* Reading this way since file has coordinates and possibly a text label */
+		if ((fp = GMT_fopen (GMT, G->file, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Could not open file %s\n", G->flag, G->file);
+			error++;
+			return (error);
+		}
+		n_col = 2;
+		G->f_xy[GMT_X] = GMT_memory (GMT, NULL, n_alloc, double);
+		G->f_xy[GMT_Y] = GMT_memory (GMT, NULL, n_alloc, double);
+		G->f_n = 0;
+		while (GMT_fgets (GMT, buffer, GMT_BUFSIZ, fp)) {
+			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
+			len = (int)strlen (buffer);
+			for (kk = len - 1; kk >= 0 && strchr (" \t,\r\n", (int)buffer[kk]); kk--);
+			buffer[++kk] = '\n';	buffer[++kk] = '\0';	/* Now have clean C string with \n\0 at end */
+			len = sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
+			if (len != n_col) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record with only %d items when %d was expected at line # %" PRIu64 " in file %s.\n",
+					len, n_col, GMT->current.io.rec_no, G->file);
+				continue;
+			}
+			if (GMT_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &xy[GMT_X]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
+			if (GMT_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[GMT_Y]) == GMT_IS_NAN) bad_record = true;	/* Got NaN or it failed to decode */
+			if (bad_record) {
+				GMT->current.io.n_bad_records++;
+				if (GMT->current.io.give_report && (GMT->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", GMT->current.io.rec_no);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Likely causes:\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(3) The -: switch is implied but not set.\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(4) Input file in multiple segment format but the -m switch is not set.\n");
+				}
+				continue;
+			}
+			/* Got here if data are OK */
+
+			if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
+			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
+
+			GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
+			G->f_n++;
+			if (G->f_n == n_alloc) {	/* ALlocate more space for these records */
+				n_alloc <<= 1;
+				G->f_xy[GMT_X] = GMT_memory (GMT, G->f_xy[GMT_X], n_alloc, double);
+				G->f_xy[GMT_Y] = GMT_memory (GMT, G->f_xy[GMT_Y], n_alloc, double);
+			}
+		}
+		GMT_fclose (GMT, fp);
+		if (G->f_n == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Fixed position file %s does not have any data records\n", G->flag, G->file);
+			error++;
+			GMT_free (GMT, G->f_xy[GMT_X]);
+			GMT_free (GMT, G->f_xy[GMT_Y]);
+		}
+	}
+
+	return (error);
+}
+
+/*! . */
+void GMT_decorate_free (struct GMT_CTRL *GMT, struct GMT_DECORATE *G)
+{
+	/* Free memory used by decorate */
+
+	GMT_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+	if (G->f_n) {	/* Array for fixed points */
+		GMT_free (GMT, G->f_xy[GMT_X]);
+		GMT_free (GMT, G->f_xy[GMT_Y]);
+	}
+}
+
+/*! . */
 int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[2][3]) {
 	/* G is pointer to the LABELED CONTOUR structure
 	 * xyz, if not NULL, have the (x,y,z) min and max values for a grid
@@ -4233,6 +4557,8 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	double x, y;
 	char buffer[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
+	GMT_contlabel_free (GMT, G);	/* In case we've been here before */
+	
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[GMT_X] = 0.01 * G->clearance[GMT_X] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		G->clearance[GMT_Y] = 0.01 * G->clearance[GMT_Y] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -4356,10 +4682,9 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 }
 
 /*! . */
-void gmt_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+void gmt_line_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int half, int angle_type, struct GMT_LABEL *L)
 {
 	int64_t j, sstart, sstop, nn;
-	int this_angle_type, half = G->half_width;
 	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -4383,15 +4708,14 @@ void gmt_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint
 		L->line_angle = 90.0;
 	else
 		L->line_angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
-	this_angle_type = G->angle_type;
-	if (this_angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
+	if (angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
-			this_angle_type = 0;
+			angle_type = 0;
 		else
 			L->angle = cangle;
 	}
-	if (this_angle_type != 2) {	/* Must base label angle on the contour angle */
-		L->angle = L->line_angle + this_angle_type * 90.0;	/* May add 90 to get normal */
+	if (angle_type != 2) {	/* Must base label angle on the contour angle */
+		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
 	}
@@ -4399,9 +4723,8 @@ void gmt_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint
 }
 
 /*! . */
-void gmt_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+void gmt_line_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, int angle_type, struct GMT_LABEL *L)
 {
-	int this_angle_type;
 	double dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -4414,15 +4737,14 @@ void gmt_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uin
 	dx = x[stop] - x[start];
 	dy = y[stop] - y[start];
 	L->line_angle =  d_atan2d (dy, dx);
-	this_angle_type = G->angle_type;
-	if (this_angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
+	if (angle_type == 2) {	/* Just return the fixed angle given (unless NaN) */
 		if (GMT_is_dnan (cangle)) /* Cannot use this angle - default to along-line angle */
-			this_angle_type = 0;
+			angle_type = 0;
 		else
 			L->angle = cangle;
 	}
-	if (this_angle_type != 2) {	/* Must base label angle on the contour angle */
-		L->angle = L->line_angle + this_angle_type * 90.0;	/* May add 90 to get normal */
+	if (angle_type != 2) {	/* Must base label angle on the contour angle */
+		L->angle = L->line_angle + angle_type * 90.0;	/* May add 90 to get normal */
 		if (L->angle < 0.0) L->angle += 360.0;
 		if (L->angle > 90.0 && L->angle < 270) L->angle -= 180.0;
 	}
@@ -4430,8 +4752,21 @@ void gmt_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uin
 }
 
 /*! . */
-void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, bool contour, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+void gmt_contlabel_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
+	gmt_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, L);
+}
+
+
+/*! . */
+void gmt_contlabel_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+{
+	gmt_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, L);
+}
+
+/*! . */
+void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, bool contour, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+{	/* Sets L->line_angle and L->angle */
 	if ((G->nudge_flag == 2 && G->half_width == UINT_MAX ) || G->half_width == 0) {	/* Want line-angle to follow line */
 		gmt_contlabel_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
 	}
@@ -4448,6 +4783,45 @@ void gmt_contlabel_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t
 	}
 	else {	/* Go width the selected half-width */
 		gmt_contlabel_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
+	}
+	if (contour) {	/* Limit line_angle to -90/+90 */
+		if (L->line_angle > +90.0) L->line_angle -= 180.0;
+		if (L->line_angle < -90.0) L->line_angle += 180.0;
+	}
+}
+
+/*! . */
+void gmt_decorated_angle_ave (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_DECORATE *G)
+{
+	gmt_line_angle_ave (GMT, x, y, start, stop, cangle, n, G->half_width, G->angle_type, L);
+}
+
+
+/*! . */
+void gmt_decorated_angle_line (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, struct GMT_LABEL *L, struct GMT_DECORATE *G)
+{
+	gmt_line_angle_line (GMT, x, y, start, stop, cangle, n, G->angle_type, L);
+}
+
+/*! . */
+void gmt_decorated_angle (struct GMT_CTRL *GMT, double x[], double y[], uint64_t start, uint64_t stop, double cangle, uint64_t n, bool contour, struct GMT_LABEL *L, struct GMT_DECORATE *G)
+{	/* Sets L->line_angle and L->angle */
+	if ((G->nudge_flag == 2 && G->half_width == UINT_MAX ) || G->half_width == 0) {	/* Want line-angle to follow line */
+		gmt_decorated_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
+	}
+	else if (G->half_width == UINT_MAX) {	/* Automatic width specification */
+		/* Try to come up with a number that is small for short lines and grow slowly for larger lines */
+		G->half_width = MAX (1, lrint (ceil (log10 (0.3333333333*n))));
+		G->half_width *= G->half_width;	/* New guess at half-width */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Automatic label-averaging half_width = %d [n = %d]\n", G->half_width, (int)n);
+		if (G->half_width == 1)
+			gmt_decorated_angle_line (GMT, x, y, start, stop, cangle, n, L, G);
+		else
+			gmt_decorated_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
+		G->half_width = UINT_MAX;	/* Reset back to auto */
+	}
+	else {	/* Go width the selected half-width */
+		gmt_decorated_angle_ave (GMT, x, y, start, stop, cangle, n, L, G);
 	}
 	if (contour) {	/* Limit line_angle to -90/+90 */
 		if (L->line_angle > +90.0) L->line_angle -= 180.0;
@@ -4589,6 +4963,15 @@ void GMT_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 			GMT_free (GMT, G->f_label);
 		}
 	}
+}
+
+/*! . */
+void GMT_symbol_free (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
+{	/* Free memory used by the symbol structure in psxy[z] */
+	if (S->symbol == GMT_SYMBOL_QUOTED_LINE)
+		GMT_contlabel_free (GMT, &(S->G));
+	if (S->symbol == GMT_SYMBOL_DECORATED_LINE)
+		GMT_decorate_free (GMT, &(S->D));
 }
 
 /*! . */
@@ -5715,6 +6098,212 @@ void GMT_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_
 		first = n;	/* First point in next segment */
 	}
 	GMT_free (GMT, split);
+}
+
+/*! . */
+void gmt_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G)
+{	/* Add a symbol location to the growing segment */
+	double x, y;
+	char record[GMT_BUFSIZ] = {""};
+	if (S->n_rows == S->n_alloc) {	/* Need more memory for the segment */
+		S->n_alloc += GMT_SMALL_CHUNK;
+		S->record = GMT_memory (GMT, S->record, S->n_alloc, char **);
+	}
+	/* Deal with any justifications or nudging */
+	if (G->nudge_flag) {	/* Must adjust point a bit */
+		double s = 0.0, c = 1.0, sign = 1.0;
+		if (G->nudge_flag == 2) sincosd (L->line_angle, &s, &c);
+		/* If N+1 or N-1 is used we want positive x nudge to extend away from end point */
+		sign = (G->number_placement) ? (double)L->end : 1.0;
+		L->x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
+		L->y += sign * (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
+	}
+	GMT_xy_to_geo (GMT, &x, &y, L->x, L->y);
+	/* Build record with "lon lat angle symbol" */
+	GMT_add_to_record (GMT, record, x, GMT_X, 2);
+	GMT_add_to_record (GMT, record, y, GMT_Y, 2);
+	strcat (record, G->size);
+	GMT_add_to_record (GMT, record, L->angle, 3, 3);
+	strcat (record, G->symbol_code);
+	S->record[S->n_rows++] = strdup (record);
+}
+
+/*! . */
+void gmt_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, double *yy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg)
+{	/* The xxx, yyy are expected to be projected x/y inches.
+	 * This function is modelled after gmt_hold_contour_sub but tweaked to deal with
+	 * the placement of psxy-symbols rather that text labels.  This is in most regards
+	 * simpler than placing text so many lines related to text have been yanked.  There
+	 * is the assumption that the symbols will be filled so we make no attempt to clip
+	 * the lines as we do for contours/quated lines.  It would be very complicated to
+	 * determine that clip path if the symbol is a star, for instance.  So if fill is
+	 * not given then we will see the line beneath the symbol. */
+	uint64_t i, j, start = 0;
+	bool closed;
+	double *track_dist = NULL, *map_dist = NULL, *value_dist = NULL;
+	double dx, dy, width, f, this_dist, step, stept, lon[2], lat[2];
+	struct GMT_TEXTSEGMENT *S = D->table[0]->segment[seg];	/* A single segment */
+	struct GMT_LABEL L;	/* Needed to pick up angles */
+	if (nn < 2) return;	/* You, sir, are not a line! */
+
+	closed = !GMT_polygon_is_open (GMT, xx, yy, nn);	/* true if this is a polygon */
+
+	/* Calculate distance along line and store in track_dist array */
+
+	if (G->dist_kind == 1) GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
+	map_dist   = GMT_memory (GMT, NULL, nn, double);	/* Distances on map in inches */
+	track_dist = GMT_memory (GMT, NULL, nn, double);	/* May be km, degrees or whatever */
+	value_dist = GMT_memory (GMT, NULL, nn, double);	/* May be km, degrees or whatever */
+
+	map_dist[0] = track_dist[0] = value_dist[0] = 0.0;	/* Unnecessary, just so we understand the logic */
+	for (i = 1; i < nn; i++) {
+		/* Distance from xy in plot distances (inch) */
+		dx = xx[i] - xx[i-1];
+		if (GMT_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = GMT_half_map_width (GMT, yy[i-1]))) {
+			width *= 2.0;
+			dx = copysign (width - fabs (dx), -dx);
+			if (xx[i] < width)
+				xx[i-1] -= width;
+			else
+				xx[i-1] += width;
+		}
+		dy = yy[i] - yy[i-1];
+		step = stept = hypot (dx, dy);	/* Initially these steps are in inches */
+		map_dist[i] = map_dist[i-1] + step;
+		if (G->dist_kind == 1) {	/* Wanted spacing in map distance units */
+			lon[0] = lon[1];	lat[0] = lat[1];
+			GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
+			if (G->dist_kind == 1) step = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
+		}
+		track_dist[i] = track_dist[i-1] + step;
+		value_dist[i] = value_dist[i-1] + stept;
+	}
+
+	if (G->spacing) {	/* Place symbols based on distance along lines */
+		double last_label_dist, dist_offset, dist;
+
+		dist_offset = (closed && G->dist_kind == 0) ? (1.0 - G->symbol_dist_frac) * G->symbol_dist_spacing : 0.0;	/* Only place symbols on closed contours longer than frac of dist_spacing */
+		last_label_dist = 0.0;
+		i = 1;
+		while (i < nn) {
+			dist = track_dist[i] + dist_offset - last_label_dist;
+			if (dist > G->symbol_dist_spacing) {	/* Time for symbol */
+				f = (dist - G->symbol_dist_spacing) / (track_dist[i] - track_dist[i-1]);
+				if (f < 0.5) {
+					L.x = xx[i] - f * (xx[i] - xx[i-1]);
+					L.y = yy[i] - f * (yy[i] - yy[i-1]);
+				}
+				else {
+					f = 1.0 - f;
+					L.x = xx[i-1] + f * (xx[i] - xx[i-1]);
+					L.y = yy[i-1] + f * (yy[i] - yy[i-1]);
+				}
+				this_dist = G->symbol_dist_spacing - dist_offset + last_label_dist;
+				gmt_decorated_angle (GMT, xx, yy, i - 1, i, G->symbol_angle, nn, false, &L, G);
+				gmt_add_decoration (GMT, S, &L, G);
+				dist_offset = 0.0;
+				last_label_dist = this_dist;
+			}
+			else	/* Go to next point in line */
+				i++;
+		}
+	}
+	else if (G->number) {	/* Place prescribed number of symbols evenly along lines */
+		uint64_t nc;
+		double dist;
+		nc = (map_dist[nn-1] > G->min_dist) ? G->n_cont : 0;
+		L.end = 0;
+		for (i = j = 0; i < nc; i++) {
+			if (G->number_placement && !closed) {
+				dist = (G->n_cont > 1) ? i * track_dist[nn-1] / (G->n_cont - 1) : 0.5 * (G->number_placement + 1.0) * track_dist[nn-1];
+				L.end = (G->number_placement && G->n_cont > 1) ? ((i == 0) ? -1 : +1) : G->number_placement;
+			}
+			else
+				dist = (i + 1 - 0.5 * closed) * track_dist[nn-1] / (G->n_cont + 1 - closed);
+			while (j < nn && track_dist[j] < dist) j++;
+			if (j == nn) j--;	/* Safety precaution */
+			f = ((j == 0) ? 1.0 : (dist - track_dist[j-1]) / (track_dist[j] - track_dist[j-1]));
+			if (f < 0.5) {	/* Pick the smallest fraction to minimize Taylor shortcomings */
+				L.x = xx[j-1] + f * (xx[j] - xx[j-1]);
+				L.y = yy[j-1] + f * (yy[j] - yy[j-1]);
+			}
+			else {
+				f = 1.0 - f;
+				L.x = (j == 0) ? xx[0] : xx[j] - f * (xx[j] - xx[j-1]);
+				L.y = (j == 0) ? yy[0] : yy[j] - f * (yy[j] - yy[j-1]);
+			}
+			L.node = (j == 0) ? 0 : j - 1;
+			gmt_decorated_angle (GMT, xx, yy, L.node, j, G->symbol_angle, nn, false, &L, G);
+			gmt_add_decoration (GMT, S, &L, G);
+		}
+	}
+	else if (G->crossing) {	/* Determine label positions based on crossing lines */
+		uint64_t left, right, line_no;
+		GMT_init_track (GMT, yy, nn, &(G->ylist));
+		for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
+			GMT_init_track (GMT, G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
+			G->nx = (unsigned int)GMT_crossover (GMT, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, false, &G->XC);
+			GMT_free (GMT, G->ylist_XP);
+			if (G->nx == 0) continue;
+
+			/* OK, we found intersections for labels */
+
+			for (i = 0; i < (uint64_t)G->nx; i++) {
+				left  = lrint (floor (G->XC.xnode[1][i]));
+				right = lrint (ceil  (G->XC.xnode[1][i]));
+				L.x = G->XC.x[i];	L.y = G->XC.y[i];
+				gmt_decorated_angle (GMT, xx, yy, left, right, G->symbol_angle, nn, false, &L, G);
+				gmt_add_decoration (GMT, S, &L, G);
+			}
+			GMT_x_free (GMT, &G->XC);
+		}
+		GMT_free (GMT, G->ylist);
+	}
+	else if (G->fixed) {	/* Prescribed point locations for labels that match points in input records */
+		double dist, min_dist;
+		for (j = 0; j < (uint64_t)G->f_n; j++) {	/* Loop over fixed point list */
+			min_dist = DBL_MAX;
+			for (i = 0; i < nn; i++) {	/* Loop over input line/contour */
+				if ((dist = hypot (xx[i] - G->f_xy[0][j], yy[i] - G->f_xy[1][j])) < min_dist) {	/* Better fit */
+					min_dist = dist;
+					start = i;
+				}
+			}
+			if (min_dist < G->slop) {	/* Closest point within tolerance */
+				L.x = xx[start];	L.y = yy[start];
+				gmt_decorated_angle (GMT, xx, yy, start, start, G->symbol_angle, nn, false, &L, G);
+				gmt_add_decoration (GMT, S, &L, G);
+			}
+		}
+	}
+
+	GMT_free (GMT, track_dist);
+	GMT_free (GMT, map_dist);
+	GMT_free (GMT, value_dist);
+}
+
+/*! . */
+void GMT_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg)
+{	/* The xxx, yyy are expected to be projected x/y inches.
+	 * This function just makes sure that the xxx/yyy are continuous and do not have map jumps.
+	 * If there are jumps we find them and call the main gmt_decorated_line_sub for each segment
+	 */
+
+	uint64_t *split = NULL;
+
+	if ((split = GMT_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL)	/* Just one long line */
+		gmt_decorated_line_sub (GMT, *xxx, *yyy, nn, G, D, seg);
+	else {
+		/* Here we had jumps and need to call the _sub function once for each segment */
+		uint64_t seg, first, n;
+		double *xin = *xxx, *yin = *yyy;
+		for (seg = 0, first = 0; seg <= split[0]; seg++) {	/* Number of segments are given by split[0] + 1 */
+			n = split[seg+1] - first;
+			gmt_decorated_line_sub (GMT, &xin[first], &yin[first], n, G, D, seg);
+			first = n;	/* First point in next segment */
+		}
+		GMT_free (GMT, split);
+	}
 }
 
 /*! . */
@@ -10278,6 +10867,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			case 'y':		/* Draw vertical dash symbol */
 			case '+':		/* Draw plus symbol */
 			case '-':		/* Draw horizontal dash symbol */
+			case '?':		/* Any one of these standard types, obtained from last item in data record */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
 				break;

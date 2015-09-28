@@ -90,8 +90,6 @@ struct GMT_CONTOUR {
 	double label_isolation;		/* Only have one label inside a circle of this radius */
 	double label_dist_spacing;	/* Min distance between labels */
 	double label_dist_frac;		/* Fraction of Min distance between labels offset for closed labels [0.25] */
-	double d_scale;			/* Scale to yield correct units */
-	double L_d_scale;		/* Scale to yield correct units for label content only*/
 	double min_radius;		/* Do not place labels if the radius of curvature drops below this value [0] */
 	double min_dist;		/* Do not place labels closer than this value [0] */
 	double slop;			/* slop distance in being close to points */
@@ -100,13 +98,9 @@ struct GMT_CONTOUR {
 	double clearance[2];		/* Spacing between text and textbox */
 	double nudge[2];		/* Shift between calculated and desired text placement */
 	double rgb[4];			/* Opaque box fill */
-	uint64_t current_seg_no;	/* Number (0->) of current segment in current data file */
-	unsigned int current_file_no;	/* Number (0->) of current input data file */
 	unsigned int line_type;	/* Kind of line: contour (1) or line (0) */
 	unsigned int dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
 	unsigned int dist_unit;	/* Units for labelled distances along tracks [cip] */
-	unsigned int proj_type;	/* type of scaling */
-	unsigned int L_proj_type;	/* type of scaling for label content only */
 	unsigned int half_width;	/* Number of points to use in smoothing the angle [10/2] */
 	unsigned int n_cont;		/* Number of labels per segment */
 	enum GMT_enum_contline crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */

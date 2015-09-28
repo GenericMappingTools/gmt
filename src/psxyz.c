@@ -1402,7 +1402,6 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 			if ((error = GMT_contlabel_save_end (GMT, &S.G))) Return (error);
 		}
 		GMT_contlabel_plot (GMT, &S.G);
-		GMT_contlabel_free (GMT, &S.G);
 	}
 
 	if (clip_set && !S.G.delay) GMT_map_clip_off (GMT);	/* We delay map clip off if text clipping was chosen via -Sq<args:+e */
@@ -1415,6 +1414,8 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 	GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
+
+	GMT_symbol_free (GMT, &S);
 
 	GMT_plotend (GMT);
 

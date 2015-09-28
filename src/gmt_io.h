@@ -269,7 +269,7 @@ struct GMT_IO {				/* Used to process input data records */
 	uint64_t rec_no;		/* Number of current records (counts headers etc) in entire data set */
 	uint64_t rec_in_tbl_no;		/* Number of current record (counts headers etc) in current table */
 	uint64_t pt_no;			/* Number of current valid points in a row  */
-	uint64_t curr_pos[2][3];	/* Keep track of current input/output table, segment, and row (for rec-by-rec action) */
+	uint64_t curr_pos[2][4];	/* Keep track of current input/output table, segment, row, and table headers (for rec-by-rec action) */
 	char r_mode[4];			/* Current file opening mode for reading (r or rb) */
 	char w_mode[4];			/* Current file opening mode for writing (w or wb) */
 	char a_mode[4];			/* Current file append mode for writing (a+ or ab+) */

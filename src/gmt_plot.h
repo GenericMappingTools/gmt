@@ -61,6 +61,7 @@
 #define GMT_SYMBOL_ZDASH	((int)'z')
 #define GMT_SYMBOL_PLUS		((int)'+')
 #define GMT_SYMBOL_XDASH	((int)'-')
+#define GMT_SYMBOL_DECORATED_LINE	((int)'~')
 
 #define GMT_SYMBOL_MOVE		((int)'M')
 #define GMT_SYMBOL_DRAW		((int)'D')
@@ -178,13 +179,13 @@ struct GMT_SYMBOL {
 	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	unsigned int justify;	/* Justification of text item for -Sl symbol [PSL_MC = centered] */
 	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	unsigned int read_symbol_cmd;	/* 1 when -S indicated we must read symbol type from file, 2 with -SK is used */
 	bool u_set;		/* true if u was set */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
-	bool read_symbol_cmd;	/* true when -S indicated we must read symbol type from file */
 	bool read_size;	/* true when we must read symbol size from file for the current record */
 	bool shade3D;	/* true when we should simulate shading of 3D symbols cube and column */
 	bool fq_parse;	/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
@@ -207,6 +208,7 @@ struct GMT_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */
 
 	struct GMT_CONTOUR G;	/* For quoted lines */
+	struct GMT_DECORATE D;	/* For decorated lines */
 };
 
 #endif /* _GMT_PLOT_H */

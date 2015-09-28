@@ -231,6 +231,7 @@ enum GMT_enum_iomode {
 
 /*! Entries into dim[] for matrix or vector */
 enum GMT_dim {
+	GMT_HDR = 3,	/* Used with curr_pos to keep track of table headers only */
 	DIM_COL	= 0,	/* Holds the number of columns for vectors and x-nodes for matrix */
 	DIM_ROW = 1};	/* Holds the number of rows for vectors and y-nodes for matrix */
 
@@ -1488,7 +1489,7 @@ void GMTAPI_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	struct GMT_DATATABLE *T = NULL;
 	char *txt = GMT_create_header_item (API, mode, arg);
 
-	if (!GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item, or nothing */
+	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item, or nothing */
 
 	/* Here we process free-form comments; these go into the dataset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
@@ -1508,7 +1509,7 @@ void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	struct GMT_TEXTTABLE *T = NULL;
 	char *txt = GMT_create_header_item (API, mode, arg);
 
-	if (!GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item or nothing */
+	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item or nothing */
 
 	/* Here we process free-form comments; these go into the textset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
@@ -1589,7 +1590,8 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 	S_obj->close_file = false;		/* Do not want to close file pointers passed to us unless WE open them below */
 	/* Either use binary n_columns settings or initialize to unknown, i.e., GMT_MAX_COLUMNS */
 	S_obj->n_expected_fields = (API->GMT->common.b.ncol[direction]) ? API->GMT->common.b.ncol[direction] : GMT_MAX_COLUMNS;
-	GMT_memset (API->GMT->current.io.curr_pos[direction], 3U, uint64_t);	/* Reset file, seg, point counters */
+	GMT_memset (API->GMT->current.io.curr_pos[direction], 4U, uint64_t);	/* Reset file, seg, point, header counters */
+	if (direction == GMT_IN) API->GMT->current.io.curr_pos[GMT_IN][GMT_ROW] = UINTMAX_MAX;	/* First row of input is UINTMAX_MAX until first segment header have been dealt with */
 	(void)GMTAPI_split_via_method (API, S_obj->method, &via);
 
 	switch (S_obj->method) {	/* File, array, stream etc ? */
@@ -5080,6 +5082,66 @@ int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data)
 }
 #endif
 
+static inline int GMTAPI_wind_to_next_datarecord (uint64_t *p, struct GMT_DATASET *D, unsigned int mode)
+{	/* Increment row, seg, tbl to next record and return current record status */
+	if (p[GMT_ROW] == UINTMAX_MAX) {	/* Special flag to processes table header(s) */
+		if (p[GMT_HDR] < D->table[p[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
+			p[GMT_HDR]++;	/* Increment counter for each one we return until done */
+			return GMT_IO_TABLE_HEADER;
+		}
+		/* Must be out of table headers - time for the segment header */
+		p[GMT_ROW] = 0;
+		return GMT_IO_SEGMENT_HEADER;
+	}
+	if (p[GMT_ROW] == D->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->n_rows) {	/* Previous record was last in segment, go to next */
+		p[GMT_SEG]++;	/* Next segment number */
+		p[GMT_ROW] = UINTMAX_MAX;	/* Flag to processes next segment's header first */
+		if (p[GMT_SEG] == D->table[p[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
+			p[GMT_TBL]++;	/* Next table number */
+			p[GMT_SEG] = 0;	/* Reset to start at first segment in this table */
+			p[GMT_HDR] = 0;	/* Ready to process headers from next table */
+			if (p[GMT_TBL] == D->n_tables)	/* End of entire data set */
+				return GMT_IO_EOF;
+			/* Just end of a file */
+			if (mode & GMT_READ_FILEBREAK)	/* Return empty handed to indicate a break between files */
+				return GMT_IO_NEXT_FILE;
+		}
+		return GMT_IO_SEGMENT_HEADER;
+	}
+	/* No drama, here we have a data record just go to next row */
+	return GMT_IO_DATA_RECORD;
+}
+
+static inline int GMTAPI_wind_to_next_textrecord (uint64_t *p, struct GMT_TEXTSET *D, unsigned int mode)
+{	/* Increment row, seg, tbl to next record and return current record status */
+	if (p[GMT_ROW] == UINTMAX_MAX) {	/* Special flag to processes table header(s) */
+		if (p[GMT_HDR] < D->table[p[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
+			p[GMT_HDR]++;	/* Increment counter for each one we return until done */
+			return GMT_IO_TABLE_HEADER;
+		}
+		/* Must be out of table headers - time for the segment header */
+		p[GMT_ROW] = 0;
+		return GMT_IO_SEGMENT_HEADER;
+	}
+	if (p[GMT_ROW] == D->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->n_rows) {	/* Previous record was last in segment, go to next */
+		p[GMT_SEG]++;	/* Next segment number */
+		p[GMT_ROW] = UINTMAX_MAX;	/* Flag to processes next segment's header first */
+		if (p[GMT_SEG] == D->table[p[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
+			p[GMT_TBL]++;	/* Next table number */
+			p[GMT_SEG] = 0;	/* Reset to start at first segment in this table */
+			p[GMT_HDR] = 0;	/* Ready to process headers from next table */
+			if (p[GMT_TBL] == D->n_tables)	/* End of entire data set */
+				return GMT_IO_EOF;
+			/* Just end of a file */
+			if (mode & GMT_READ_FILEBREAK)	/* Return empty handed to indicate a break between files */
+				return GMT_IO_NEXT_FILE;
+		}
+		return GMT_IO_SEGMENT_HEADER;
+	}
+	/* No drama, here we have a data record just go to next row */
+	return GMT_IO_DATA_RECORD;
+}
+
 /*! . */
 void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	/* Retrieves the next data record from the virtual input source and
@@ -5097,9 +5159,8 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 
 	int status;
 	int64_t n_fields = 0;
-	uint64_t *p = NULL, col, ij, n_nan, n_use;
+	uint64_t *p = NULL, col, ij, n_use;
 	bool get_next_record;
-	char *t_record = NULL;
 	void *record = NULL;
 	p_func_size_t GMT_2D_to_index = NULL;
 	GMT_getfunction GMTAPI_get_val = NULL;
@@ -5221,73 +5282,84 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 			case GMT_IS_REFERENCE:	/* Only for textsets and datasets */
 				p = API->GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
 				if (S_obj->family == GMT_IS_DATASET) {
-					DS_obj = S_obj->resource;
-
-					status = 0;
-					if (p[2] == DS_obj->table[p[0]]->segment[p[1]]->n_rows) {	/* Reached end of current segment */
-						p[1]++, p[2] = 0;				/* Advance to next segments 1st row */
-						status = GMT_IO_SEGMENT_HEADER;			/* Indicates a segment boundary */
-					}
-					if (p[1] == DS_obj->table[p[0]]->n_segments) {		/* Also the end of a table ("file") */
-						p[0]++, p[1] = 0;
-						if (mode & GMT_READ_FILEBREAK) {			/* Return empty handed to indicate a break between files */
-							status = GMT_IO_NEXT_FILE;
+					DS_obj = S_obj->resource;	/* Get the right dataset */
+					status = GMTAPI_wind_to_next_datarecord (p, DS_obj, mode);	/* Get current record status and wind counters if needed */
+					switch (status) {
+						case GMT_IO_DATA_RECORD:	/* Got a data record */
+							S_obj->status = GMT_IS_USING;		/* Mark this resource as currently being read */
+							for (col = 0; col < DS_obj->n_columns; col++)	/* Copy from row to curr_rec */
+								API->GMT->current.io.curr_rec[col] = DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->coord[col][p[GMT_ROW]];
+							record = API->GMT->current.io.curr_rec;	/* We will return this double array */
+							n_fields = API->GMT->common.b.ncol[GMT_IN] = DS_obj->n_columns;
+							p[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
+							break;
+						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
+							if (DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)
+								strcpy (API->GMT->current.io.segment_header, DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header);
+							else
+								API->GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
+							record = NULL;	/* No data record to return */
+							n_fields = 0;
+							break;
+						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
+							strncpy (API->GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMT_HDR]-1], GMT_BUFSIZ);
+							record = NULL;	/* No data record to return */
+							n_fields = 0;
+							break;
+						case GMT_IO_NEXT_FILE:	/* End of a table but more tables to come */
+							record = NULL;	/* No data record to return */
 							n_fields = GMT_IO_NEXT_FILE;
-							record = NULL;
-						}
-					}
-					if (p[0] == (uint64_t)DS_obj->n_tables) {	/* End of entire data set */
-						status = GMT_IO_EOF;
-						n_fields = EOF;
-						record = NULL;
-						S_obj->status = GMT_IS_USED;	/* Mark as read */
-					}
-					if (!status) {	/* OK get the record */
-						for (col = n_nan = 0; col < DS_obj->n_columns; col++) {
-							API->GMT->current.io.curr_rec[col] = DS_obj->table[p[0]]->segment[p[1]]->coord[col][p[2]];
-							if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
-						}
-						p[2]++;
-						n_fields = API->GMT->common.b.ncol[GMT_IN] = DS_obj->n_columns;
-						if (n_nan == DS_obj->n_columns) {
-							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
-							record = NULL;
-						}
-						else
-							record = API->GMT->current.io.curr_rec;
-						S_obj->status = GMT_IS_USING;	/* Mark as read */
+							break;
+						case GMT_IO_EOF:	/* End of entire data set */
+							S_obj->status = GMT_IS_USED;	/* Mark this dataset as finished */
+							record = NULL;	/* No more to return anyway */
+							n_fields = EOF;
+							break;
 					}
 					API->GMT->current.io.status = status;
 				}
 				if (S_obj->family == GMT_IS_TEXTSET) {
 					DT_obj = S_obj->resource;
-					if (p[2] == DT_obj->table[p[0]]->segment[p[1]]->n_rows) {p[1]++, p[2] = 0;}
-					if (p[1] == DT_obj->table[p[0]]->n_segments) {p[0]++, p[1] = 0;}
-					if (p[0] == DT_obj->n_tables) {
-						n_fields = EOF;
-						API->GMT->current.io.status = GMT_IO_EOF;
-						record = NULL;
-						S_obj->status = GMT_IS_USED;	/* Mark as read */
+					status = GMTAPI_wind_to_next_textrecord (p, DT_obj, mode);	/* Get current record status and wind counters if needed */
+					switch (status) {
+						case GMT_IO_DATA_RECORD:	/* Got a data record */
+							S_obj->status = GMT_IS_USING;		/* Mark this resource as currently being read */
+							record = strncpy (API->GMT->current.io.current_record, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->record[p[GMT_ROW]], GMT_BUFSIZ);	/* Copy record */
+							if (API->GMT->current.io.current_record[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Got a seg header pretending to be data */
+								strncpy (API->GMT->current.io.segment_header, GMT_trim_segheader (API->GMT, API->GMT->current.io.current_record), GMT_BUFSIZ);
+								record = NULL;	/* No data record to return */
+								n_fields = 0;
+								status = GMT_IO_SEGMENT_HEADER;	/* Change our mind */
+							}
+							else {	/* A read data record */
+								n_fields = 1;	/* Can only be one string since it is the entire record */
+							}
+							p[GMT_ROW]++;	/* Advance to next row for next time GMT_Get_Record is called */
+							break;
+						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
+							if (DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)	/* Copy segment header */
+								strncpy (API->GMT->current.io.segment_header, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZ);
+							else
+								API->GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
+							record = NULL;	/* No data record to return */
+							n_fields = 0;
+							break;
+						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
+							strncpy (API->GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMT_HDR]-1], GMT_BUFSIZ);
+							record = NULL;	/* No data record to return */
+							n_fields = 0;
+							break;
+						case GMT_IO_NEXT_FILE:		/* End of a table but more tables to come */
+							record = NULL;	/* No data record to return */
+							n_fields = GMT_IO_NEXT_FILE;
+							break;
+						case GMT_IO_EOF:	/* End of entire data set */
+							S_obj->status = GMT_IS_USED;	/* Mark this dataset as finished */
+							record = NULL;	/* No more to return anyway */
+							n_fields = EOF;
+							break;
 					}
-					else {
-						t_record = DT_obj->table[p[0]]->segment[p[1]]->record[p[2]++];
-						API->GMT->current.io.status = 0;
-						if (t_record[0] == API->GMT->current.setting.io_seg_marker[GMT_IN]) {
-							/* Segment header: Just save the header content, not the
-							 *                 marker and leading whitespace
-							 */
-							strncpy (API->GMT->current.io.segment_header,
-								GMT_trim_segheader (API->GMT, t_record), GMT_BUFSIZ);
-							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
-							record = NULL;
-						}
-						else {	/* Regular record */
-							strncpy (API->GMT->current.io.current_record, t_record, GMT_BUFSIZ);
-							record = t_record;
-						}
-						n_fields = 1;
-						S_obj->status = GMT_IS_USING;	/* Mark as read */
-					}
+					API->GMT->current.io.status = status;
 				}
 				break;
 			default:
@@ -5377,7 +5449,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if (!D_obj) {	/* First time allocation of the single output table */
 					D_obj = GMT_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, segments array; no cols or rows yet */
 					S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
-					API->GMT->current.io.curr_pos[GMT_OUT][1] = 0;	/* Start at seg = 0 */
+					API->GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = 0;	/* Start at seg = 0 */
 					if (API->GMT->common.b.ncol[GMT_OUT] == 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}

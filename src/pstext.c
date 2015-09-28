@@ -729,6 +729,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {
 				line = GMT->current.io.segment_header;
+				if (line[0] == '\0') continue;	/* Can happen if reading from API memory */
 				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
 					GMT_putwords (GMT, PSL, plot_x, plot_y, paragraph, &T);
