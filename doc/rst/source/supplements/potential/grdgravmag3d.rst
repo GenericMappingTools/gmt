@@ -14,7 +14,6 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ **-C**\ *density* ]
-[ **-D** ]
 [ **-E**\ *thick* ]
 [ **-F**\ *xy_file* ]
 [ **-G**\ *outgrid* ]
@@ -25,7 +24,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ **-S**\ *radius* ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *level* ]
+[ **-Z**\ *level*\ [\ **b**\ \|\ **t**] ]
 [ **-fg** ]
 [ **-x**\ *+a|n|-n* ]
 
@@ -113,11 +112,13 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-Z**\ *level*
+**-Z**\ *level*\ [\ **b**\ \|\ **t**]
     level of reference plane [Default = 0]. Use this option when the
     triangles describe a non-closed surface and the volume is deffined
     from each triangle and this reference level. An example will be the
-    whater depth to compute a Bouguer anomaly.
+    whater depth to compute a Bouguer anomaly. Use **-Zb** or **Zt** to close
+    the body at its bottom (for example, to compute the effect of a dome) or
+    at its top (to compute the effect of a *spoon*).
 
 **-fg**
    Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -148,7 +149,7 @@ Island" together with its not phantom seamount
 
    ::
 
-    gmt grdgravmag3d sandy_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy_okb.grd -V
+    gmt grdgravmag3d sandy_bat.grd -C1700 -Z-4300 -fg -I1m -Gsandy_okb.grd -V
 
 To compute the vertical component due to a magnetization stored in *mag.grd* over a zone defined by
 the surface *bat.grd*, using variable declination and inclination provided the the IGRF and using 4
