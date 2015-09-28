@@ -272,7 +272,7 @@ void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 	}
 }
 
-int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, struct GMT_SYMBOL *S)
+int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
 {	/* Accept the textset D with records of lon, lat, angle, symbol and will plot rotated symbols at those locations */
 	int object_ID;
 	size_t len;
@@ -1646,7 +1646,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 
 	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
-		if ((error = plot_decorations (GMT, Decorate, &S)))	/* Cannot possibly be a good thing */
+		if ((error = plot_decorations (GMT, Decorate)))	/* Cannot possibly be a good thing */
 			Return (error);
 		if (GMT_Destroy_Data (API, &Decorate) != GMT_OK) {	/* Might as well delete since no good later */
 			Return (API->error);
