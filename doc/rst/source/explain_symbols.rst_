@@ -342,7 +342,7 @@
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
         for specifying attributes.
 
-    **-S~**
+    **-S_**
         decorated line, i.e., lines with symbols along them. Append
         [**d**\ \|\ **D**\ \|\ **f**\ \|\ **l**\ \|\ **L**\ \|\ **n**\ \|\ **N**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ \|\ **X**]\ *info*\ [:*symbolinfo*].
         The required argument controls the placement of symbols along the decorated
@@ -422,5 +422,5 @@
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
-        Note: By placing **-S~** options in the segment header you can change
+        Note: By placing **-S_** options in the segment header you can change
         the decorated lines on a segment-by-segment basis.

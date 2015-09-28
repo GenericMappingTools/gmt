@@ -10020,7 +10020,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	bool check = true, degenerate = false;
 	unsigned int ju;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, diameter[GMT_LEN32] = {""}, *c = NULL;
-	static char *allowed_symbols[2] = {"~=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
+	static char *allowed_symbols[2] = {"_=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
 		p->base = GMT->session.d_NaN;
@@ -10245,7 +10245,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		char s_upper;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
-		if (strchr ("FVQM~", s_upper))	/* "Symbols" that do not take a normal symbol size */
+		if (strchr ("FVQM_", s_upper))	/* "Symbols" that do not take a normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
 		else {
 			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
@@ -10693,7 +10693,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
 			}
 			break;
-		case '~':	/* Decorated lines: -S~[d|n|l|s|x]<info>[:<symbolinfo>] */
+		case '_':	/* Decorated lines: -S_[d|n|l|s|x]<info>[:<symbolinfo>] */
 			p->symbol = GMT_SYMBOL_DECORATED_LINE;
 			check = false;
 			if (!text[1]) {	/* No args given, must parse segment header later */
@@ -10709,7 +10709,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				if (!cmd && GMT_decorate_prep (GMT, &p->D, NULL)) decode_error++;
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S~ option: No symbol information given\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S_ option: No symbol information given\n");
 				decode_error++;
 			}
 			p->fq_parse = false;	/* No need to parse more later */
