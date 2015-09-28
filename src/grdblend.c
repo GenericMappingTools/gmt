@@ -308,7 +308,10 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 		}
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */
-				sprintf (buffer, "/tmp/grdblend_resampled_%d_%d.nc", (int)getpid(), n);
+				if (GMT->parent->tmp_dir)
+					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
+				else
+					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
@@ -318,7 +321,10 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
-				sprintf (buffer, "/tmp/grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
+				if (GMT->parent->tmp_dir)
+					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
+				else
+					sprintf (buffer, "grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
 				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdconvert %s\n", B[n].file, cmd);
@@ -681,7 +687,10 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	else {
 		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			sprintf (outtemp, "/tmp/grdblend_temp_%d.nc", (int)getpid());	/* Get temporary file name */
+			if (API->tmp_dir)
+				sprintf (outtemp, "%s/grdblend_temp_%d.nc", API->tmp_dir, (int)getpid());	/* Get temporary file name */
+			else
+				sprintf (outtemp, "grdblend_temp_%d.nc", (int)getpid());	/* Get temporary file name */
 			outfile = outtemp;
 		}
 		else

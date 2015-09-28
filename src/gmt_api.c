@@ -4013,7 +4013,9 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 
 	struct GMTAPI_CTRL *API = NULL;
 	static char *unknown = "unknown";
-
+#ifdef WIN32
+	char *dir = getenv ("TEMP");
+#endif
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 2);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
@@ -4024,6 +4026,13 @@ void *GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, in
 	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
 	if (session)
 		API->session_tag = strdup (basename (session));	/* Only used in reporting and error messages */
+
+#ifdef WIN32
+	if (dir)
+		API->tmp_dir = strdup (dir);
+#else
+	API->tmp_dir = strdup ("/tmp");
+#endif
 
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
@@ -4080,6 +4089,7 @@ int GMT_Destroy_Session (void *V_API) {
 	GMT_free (API->GMT, API->object);
 	GMT_end (API->GMT);	/* Terminate GMT machinery */
 	if (API->session_tag) free (API->session_tag);
+	if (API->tmp_dir) free (API->tmp_dir);
 	GMT_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
  	free (API);	/* Not GMT_free since this item was allocated before GMT was initialized */
 

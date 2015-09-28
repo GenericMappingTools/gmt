@@ -287,7 +287,10 @@ int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, struct GMT_SY
 		return (GMT->parent->error);
 	if (GMT_Encode_ID (GMT->parent, string, object_ID) != GMT_OK)
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
-	sprintf (tmp_file, "/tmp/GMT_symbol%d.def", (int)getpid());	/* Make unique file */
+	if (GMT->parent->tmp_dir)
+		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());	/* Make unique file in current dir */
+	else
+		sprintf (tmp_file, "GMT_symbol%d.def", (int)getpid());	/* Make unique file in current dir */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Number of decorated line symbols: %d\n", (int)D->n_records);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file created: %s\n", tmp_file);
 	if ((fp = fopen (tmp_file, "w")) == NULL) {	/* Disaster */
@@ -307,7 +310,10 @@ int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, struct GMT_SY
 		char tmp_file2[GMT_LEN64] = {""};
 		bool was = GMT->current.setting.io_header[GMT_OUT];
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file for decorated lines saved: %s\n", tmp_file);
-		sprintf (tmp_file2, "/tmp/GMT_symbol%d.txt", (int)getpid());	/* Make unique file */
+		if (GMT->parent->tmp_dir)
+			sprintf (tmp_file2, "%s/GMT_symbol%d.txt", GMT->parent->tmp_dir, (int)getpid());	/* Make unique file in tmp dir */
+		else
+			sprintf (tmp_file2, "GMT_symbol%d.txt", (int)getpid());	/* Make unique file in current dir */
 		sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, tmp_file2);
 		GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary data file for decorated lines saved: %s\n", tmp_file2);
