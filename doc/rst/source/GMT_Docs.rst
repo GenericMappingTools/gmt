@@ -365,6 +365,10 @@ A few changes have affects across GMT; these are:
 *  Typesetting simultaneous sub- and super-scripts has improved (i.e., when a symbol
    should have both a subscript and and a superscript).
 
+*  The custom symbol macro codes now allow for an unspecified symbol code (**?**), which
+   means the desired code will be given as last item on each data record.  Such custom
+   symbols must be specified with uppercase **-SK**.
+
 Program-specific improvements
 -----------------------------
 
@@ -9021,6 +9025,15 @@ append specific pens (with **-W**\ *pen*) and fills (with
 **-G**\ *pen*). These settings will override the pens and fills you may
 have specified on the command line. Passing **-G**- or **-W**- means no
 fill or outline, respectively.
+
+Symbol substitution
+~~~~~~~~~~~~~~~~~~~
+
+Custom symbols that need to plot any of the standard geometric symbols
+(i.e., those controlled by a single size) can make the symbol code a variable.  By specifying **?** instead
+of the symbol codes **a**, **c**, **d**, **g**, **h**, **i**, **n**, **+**, **s**, **t**,
+**x**, **-**, or **y** the actual symbol code is expected to be found at the end of
+each data record.  Such custom symbols must be invoked with **-SK** rather than **-Sk**.
 
 Text substitution
 ~~~~~~~~~~~~~~~~~
