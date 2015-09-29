@@ -10855,11 +10855,8 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 
 			case '?':		/* Any one of these standard types, obtained from last item in data record */
 				var_symbol++;	/* Fall through on purpose */
-				if (var_symbol == 1) {	/* First time we augment the type array */
-					head->n_required++;
-					head->type = GMT_memory (GMT, head->type, head->n_required, unsigned int);
-					head->type[head->n_required-1] = GMT_IS_DIMENSION;	/* Not really, but anyway */
-				}
+				if (var_symbol == 1)	/* First time we augment the type array by one to avoid bad memory access in psxy */
+					head->type = GMT_memory (GMT, head->type, head->n_required+1, unsigned int);
 			case 'a':		/* Draw star symbol */
 			case 'c':		/* Draw complete circle */
 			case 'd':		/* Draw diamond symbol */
