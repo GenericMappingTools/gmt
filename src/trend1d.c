@@ -89,9 +89,9 @@
 #define TREND1D_N_OUTPUT_CHOICES 5
 
 struct TREND1D_CTRL {
-	int n_outputs;
-	int weighted_output;
-	int model_parameters;
+	unsigned int n_outputs;
+	bool weighted_output;
+	bool model_parameters;
 	struct C {	/* -C<condition_#> */
 		bool active;
 		double value;
