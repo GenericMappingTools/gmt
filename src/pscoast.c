@@ -634,7 +634,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	
 	bool shift = false, need_coast_base, recursive;
 	bool greenwich = false, possibly_donut_hell = false, fill_in_use = false;
-	bool clobber_background, paint_polygons = false, donut, double_recursive = false;
+	bool clobber_background = false, paint_polygons = false, donut, double_recursive = false;
 	bool donut_hell = false, world_map_save, clipping;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
