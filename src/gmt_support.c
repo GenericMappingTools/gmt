@@ -3973,7 +3973,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 
 			case 's':	/* Symbol to place */
 				if (p[1]) {
-					strncpy (G->size, &p[2], GMT_BUFSIZ);
+					strncpy(G->size, &p[2], GMT_LEN64);
 					G->symbol_code[0] = p[1];
 				}
 				break;
