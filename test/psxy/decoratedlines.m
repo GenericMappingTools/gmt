@@ -12,6 +12,10 @@ function [ps, path] = decoratedlines(out_path)
 
 	gmt('destroy'),		gmt('gmtset -Du'),	gmt('destroy')		% Make sure we start with a clean session
 
+	fid = fopen('vert.txt', 'w');
+	fprintf(fid, '90 0\n90 6\n');
+	fclose(fid);
+
 	fid = fopen('data.txt', 'w+');
 	fprintf(fid, '> The first curve\n');
 	t = gmt('gmtmath -T0/180/1 T SIND =');				fprintf(fid, '%g %f\n', t');
@@ -30,4 +34,4 @@ function [ps, path] = decoratedlines(out_path)
 	gmt(['psxy -R-5/185/-0.1/6 -JX6i/9i -P -Baf -W1p,red -S_n3:+sa0.5i+p0.25p,green+gblue data.txt > ' ps])
 	fclose(fid);
 	
-	builtin('delete','gmt.conf', 'data.txt');
+	builtin('delete','gmt.conf', 'data.txt', 'vert.txt');
