@@ -10643,7 +10643,7 @@ int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify) {
 
 /*! . */
 int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
-	unsigned int k, nc = 0, nv, error = 0;
+	unsigned int k, nc = 0, nv, error = 0, var_symbol = 0;
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true;
@@ -10853,6 +10853,13 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 
 			/* These are standard psxy-type symbols */
 
+			case '?':		/* Any one of these standard types, obtained from last item in data record */
+				var_symbol++;	/* Fall through on purpose */
+				if (var_symbol == 1) {	/* First time we augment the type array */
+					head->n_required++;
+					head->type = GMT_memory (GMT, head->type, head->n_required, unsigned int);
+					head->type[head->n_required-1] = GMT_IS_DIMENSION;	/* Not really, but anyway */
+				}
 			case 'a':		/* Draw star symbol */
 			case 'c':		/* Draw complete circle */
 			case 'd':		/* Draw diamond symbol */
@@ -10867,7 +10874,6 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			case 'y':		/* Draw vertical dash symbol */
 			case '+':		/* Draw plus symbol */
 			case '-':		/* Draw horizontal dash symbol */
-			case '?':		/* Any one of these standard types, obtained from last item in data record */
 				if (last != 3) error++;
 				s->p[0] = atof (col[2]);
 				break;
