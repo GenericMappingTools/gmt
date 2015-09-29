@@ -114,10 +114,6 @@ struct GRDOKB_CTRL {
 	} box;
 };
 
-struct DATA {
-	double  x, y;
-} *data;
-
 struct THREAD_STRUCT {
 	unsigned int row, r_start, r_stop, n_pts, thread_num;
 	double *x_grd, *x_grd_geo, *y_grd, *y_grd_geo, *x_obs, *y_obs, *cos_vec, *g;
@@ -132,7 +128,6 @@ struct THREAD_STRUCT {
 	struct GMT_CTRL *GMT;
 };
 
-int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy);
 void set_center (unsigned int n_triang);
 int grdgravmag3d_body_set_tri (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
@@ -269,9 +264,9 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 			case '<':	/* Input file */
 				Ctrl->In.active = true;
 				if (n_files == 0)
-					Ctrl->In.file[n_files++] = strdup (opt->arg);
+					Ctrl->In.file[n_files++] = strdup(opt->arg);
 				else if (n_files == 1)
-					Ctrl->In.file[n_files++] = strdup (opt->arg);
+					Ctrl->In.file[n_files++] = strdup(opt->arg);
 				else {
 					n_errors++;
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
@@ -281,7 +276,7 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.rho = atof (opt->arg) * 6.674e-6;
+				Ctrl->C.rho = atof(opt->arg) * 6.674e-6;
 				Ctrl->C.active = true;
 				break;
 			case 'D':
@@ -290,42 +285,44 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 				break;
 			case 'E':
 				Ctrl->E.active = true;
-				Ctrl->E.thickness = fabs(atof (opt->arg));
+				Ctrl->E.thickness = fabs(atof(opt->arg));
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
+				Ctrl->F.file = strdup(opt->arg);
 				break;
  			case 'G':
 				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
+				Ctrl->G.file = strdup(opt->arg);
 				break;
 			case 'H':
 				Ctrl->H.active = true;
 				if (opt->arg[0] == '+' && opt->arg[1] == 'm') {
-					Ctrl->H.magfile = strdup (&opt->arg[2]);        /* Source (magnetization) grid */
+					Ctrl->H.magfile = strdup(&opt->arg[2]);        /* Source (magnetization) grid */
 					Ctrl->H.got_maggrid = true;
 					break;
 				}
 				else if (opt->arg[0] == '+' && opt->arg[1] == 'i') {
 					if (opt->arg[2]) {
-						Ctrl->H.incfile = strdup (&opt->arg[2]);    /* Inclination grid (NOT IMPLEMENTED YET) */
+						Ctrl->H.incfile = strdup(&opt->arg[2]);    /* Inclination grid (NOT IMPLEMENTED YET) */
 						Ctrl->H.got_incgrid = true;
 					}
 					else {
 						Ctrl->H.do_igrf = true;                     /* Case when -H+i to mean use IGRF */
-						if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+						if (!GMT_is_geographic(GMT, GMT_IN))
+							GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					}
 					break;
 				}
 				else if (opt->arg[0] == '+' && opt->arg[1] == 'd') {
-					Ctrl->H.decfile = strdup (&opt->arg[2]);        /* Declination grid (NOT IMPLEMENTED YET) */
+					Ctrl->H.decfile = strdup(&opt->arg[2]);        /* Declination grid (NOT IMPLEMENTED YET) */
 					Ctrl->H.got_decgrid = true;
 					break;
 				}
 				else if (opt->arg[0] == '+' && (opt->arg[1] == 'g' || opt->arg[1] == 'r' || opt->arg[1] == 'f' || opt->arg[1] == 'n')) {
 					Ctrl->H.do_igrf = true;                         /* Anny of -H+i|+g|+r|+f|+n is allowed to mean use IGRF */
-					if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					if (!GMT_is_geographic(GMT, GMT_IN))
+						GMT_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					break;
 				}
 
@@ -353,13 +350,13 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 				if (Ctrl->H.pirtt) i = 1;
 				if (opt->arg[i] && (sscanf(&opt->arg[i], "%lf/%lf/%lf/%lf/%lf",
 				            &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (GMT_getinc(GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -368,17 +365,18 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 			case 'M':
-				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				if (GMT_compat_check(GMT, 4)) {
+					GMT_Report(API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					if (!GMT_is_geographic(GMT, GMT_IN))
+						GMT_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += GMT_default_error(GMT, opt->option);
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'n') {
-					Ctrl->Q.n_pad = atoi (&opt->arg[1]);
+					Ctrl->Q.n_pad = atoi(&opt->arg[1]);
 				}
 				else {
 					int n = 0;
@@ -388,17 +386,17 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 						pch = strchr(pch+1,'/');
 					}
 					if (n == 0)
-						Ctrl->Q.pad_dist = atof (opt->arg);	/* Pad given as a scalar distance */
+						Ctrl->Q.pad_dist = atof(opt->arg);	/* Pad given as a scalar distance */
 					else if (n == 3)
 						strncpy(Ctrl->Q.region, opt->arg, GMT_BUFSIZ);	/* Pad given as a -R region */
 					else {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
+						GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
 						n_errors++;
 					}
 				}
 				break;
 	 		case 'S':
-				Ctrl->S.radius = atof (opt->arg) * 1000;
+				Ctrl->S.radius = atof(opt->arg) * 1000;
 				Ctrl->S.active = true;
 				break;
  			case 'T':
@@ -413,27 +411,29 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 				Ctrl->H.bhatta = true;
 				break;
 			default:
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += GMT_default_error(GMT, opt->option);
 				break;
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
-				"Syntax error: -S Radius is NaN or negative\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active,
-				"Error: Must specify either -G or -F options\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && Ctrl->Q.active && !Ctrl->Q.n_pad,
-				"Error: Cannot specify -Q<pad>|<region> without -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
-				"Error: Must specify either -Cdensity or -H<stuff>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->H.active, 
-				"Syntax error Cannot specify both -C and -H options\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file,
-				"Syntax error -G option: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
-				"Syntax error -H+m option: Must specify source file\n");
-	i += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	n_errors += GMT_check_condition(GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan(Ctrl->S.radius)),
+	                                "Syntax error: -S Radius is NaN or negative\n");
+	n_errors += GMT_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active,
+	                                "Error: Must specify either -G or -F options\n");
+	n_errors += GMT_check_condition(GMT, !GMT->common.R.active && Ctrl->Q.active && !Ctrl->Q.n_pad,
+	                                "Error: Cannot specify -Q<pad>|<region> without -R option\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
+	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->C.active && Ctrl->H.active, 
+	                                "Syntax error Cannot specify both -C and -H options\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
+	                                "Syntax error -G option: Must specify output file\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
+	                                "Syntax error -H+m option: Must specify source file\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->F.active && GMT_access(GMT, Ctrl->F.file, R_OK),
+	                                "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	i += GMT_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -448,7 +448,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	unsigned int n_vert_max = 0;
 	unsigned int nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
 	bool    two_grids = false, switch_xy = false;
-	int     error = 0, retval;
+	int     error = 0;
 	double  a, d, x_o, y_o;
 	double *x_obs = NULL, *y_obs = NULL, *x_grd = NULL, *y_grd = NULL, *x_grd_geo = NULL, *y_grd_geo = NULL;
 	double *cos_vec = NULL, *g = NULL, *x_grd2 = NULL, *y_grd2 = NULL, *cos_vec2 = NULL;
@@ -459,11 +459,13 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	struct  BODY_VERTS *body_verts = NULL;
 	struct  BODY_DESC body_desc;
 	struct  GRDOKB_CTRL *Ctrl = NULL;
+	struct  GMT_DATASET *Cin = NULL;
+	struct  GMT_DATATABLE *point = NULL;
 	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct  GMT_OPTION *options = NULL;
 	struct  GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	mag_var = NULL, mag_param = NULL, data = NULL;
+	mag_var = NULL, mag_param = NULL;
 	body_desc.n_v = NULL, body_desc.ind = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -497,11 +499,16 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		/*Ctrl->box.d_to_m = 2.0 * M_PI * gmtdefs.ellipse[N_ELLIPSOIDS-1].eq_radius / 360.0;*/
 
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
-		if ((retval = read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
-			GMT_Report(API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
-			return(EXIT_FAILURE);
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
+			Return (API->error);
+		if (Cin->n_columns < 2) {	/* Trouble */
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
+			Return (EXIT_FAILURE);
 		}
-		ndata = retval;
+		point = Cin->table[0];	/* Can only be one table since we read a single file */
+		ndata = (unsigned int)point->n_records;
+		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
+			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used here. Using first segment only\n");
 	}
 
 	/* ---------------------------------------------------------------------------- */
@@ -796,9 +803,12 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->F.active) { 	/* Need to compute observation coords only once */
-		for (i = 0; i < ndata; i++) {
-			x_obs[i] = (Ctrl->box.is_geog) ?  (data[i].x - Ctrl->box.lon_0)*Ctrl->box.d_to_m*cos(data[i].y*D2R) : data[i].x;
-			y_obs[i] = (Ctrl->box.is_geog) ? -(data[i].y - Ctrl->box.lat_0)*Ctrl->box.d_to_m : -data[i].y; /* - because y positive 'south' */
+		size_t row;
+		for (row = 0; row < ndata; row++) {
+			x_obs[row] = (Ctrl->box.is_geog) ? (point->segment[0]->coord[GMT_X][row] - Ctrl->box.lon_0) *
+				Ctrl->box.d_to_m*cos(point->segment[0]->coord[GMT_Y][row] * D2R) : point->segment[0]->coord[GMT_X][row];
+			y_obs[row] = (Ctrl->box.is_geog) ? -(point->segment[0]->coord[GMT_Y][row] - Ctrl->box.lat_0) *
+				Ctrl->box.d_to_m : -point->segment[0]->coord[GMT_Y][row]; /* - because y positive 'south' */
 		}
 	}
 
@@ -964,8 +974,8 @@ L1:
 			Return (API->error);
 
 		for (k = 0; k < ndata; k++) {
-			out[GMT_X] = data[k].x;
-			out[GMT_Y] = data[k].y;
+			out[GMT_X] = point->segment[0]->coord[GMT_X][k];
+			out[GMT_Y] = point->segment[0]->coord[GMT_Y][k];
 			out[GMT_Z] = g[k];
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
@@ -980,7 +990,6 @@ L1:
 	if (y_grd2) GMT_free (GMT, y_grd2);
 	if (cos_vec2) GMT_free (GMT, cos_vec2);
 	if (g) GMT_free (GMT, g);
-	if (data) GMT_free (GMT, data);
 	GMT_free (GMT, x_obs);
 	GMT_free (GMT, y_obs);
 	GMT_free (GMT, cos_vec);
@@ -997,38 +1006,6 @@ L1:
 	Return (GMT_OK);
 }
 
-/* -----------------------------------------------------------------*/
-int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
-	/* Read file with xy points where anomaly is going to be computed
-	   This is a temporary function while we not use the API to do this job. */
-	unsigned int ndata, ix = 0, iy = 1;
-	size_t n_alloc;
-	double in[2];
-	char line[GMT_LEN256] = {""};
-	FILE *fp = NULL;
-
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
-
-	n_alloc = GMT_CHUNK;
-	ndata = 0;
-	if (switch_xy) {iy = 0; ix = 1;}
-
-	data = GMT_memory (GMT, NULL, n_alloc, struct DATA);
-
-	while (fgets (line, GMT_LEN256, fp)) {
-		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
-		if (ndata == n_alloc) {
-			n_alloc <<= 1;
-			data = GMT_memory (GMT, data, n_alloc, struct DATA);
-		}
-		data[ndata].x = in[ix];
-		data[ndata].y = in[iy];
-		ndata++;
-	}
-	fclose(fp);
-	return (ndata);
-}
 
 /* -----------------------------------------------------------------*/
 int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
