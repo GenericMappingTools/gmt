@@ -273,7 +273,7 @@ void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 }
 
 int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
-{	/* Accept the textset D with records of lon, lat, angle, symbol and will plot rotated symbols at those locations */
+{	/* Accept the textset D with records of {lon, lat, size, angle, symbol} and plot rotated symbols at those locations */
 	int object_ID;
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
@@ -283,45 +283,45 @@ int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
 		return GMT_OK;	/* No symbols to plot */
 	
 	/* Here we have symbols.  Set up ID etc for the call to psxy */
-	if ((object_ID = GMT_Get_ID (GMT->parent, GMT_IS_TEXTSET, GMT_IN, D)) == GMT_NOTSET)
+	if ((object_ID = GMT_Get_ID (GMT->parent, GMT_IS_TEXTSET, GMT_IN, D)) == GMT_NOTSET)	/* Get object ID */
 		return (GMT->parent->error);
-	if (GMT_Encode_ID (GMT->parent, string, object_ID) != GMT_OK)
-		return (GMT->parent->error);	/* Make filename with embedded object ID */
-	if (GMT->parent->tmp_dir)
-		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());	/* Make unique file in current dir */
-	else
-		sprintf (tmp_file, "GMT_symbol%d.def", (int)getpid());	/* Make unique file in current dir */
+	if (GMT_Encode_ID (GMT->parent, string, object_ID) != GMT_OK)	/* Make filename with embedded object ID */
+		return (GMT->parent->error);
+	if (GMT->parent->tmp_dir)	/* Make unique file in temp dir */
+		sprintf (tmp_file, "%s/GMT_symbol%d.def", GMT->parent->tmp_dir, (int)getpid());
+	else	/* Make unique file in current dir */
+		sprintf (tmp_file, "GMT_symbol%d.def", (int)getpid());
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Number of decorated line symbols: %d\n", (int)D->n_records);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file created: %s\n", tmp_file);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary decorated line symbol .def file created: %s\n", tmp_file);
 	if ((fp = fopen (tmp_file, "w")) == NULL) {	/* Disaster */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create symbol file needed for decorated lines: %s\n", tmp_file);
 		return EXIT_FAILURE;
 	}
-	fprintf (fp, "# Rotated standard symbol, need size and symbol code\nN: 1 o\n$1 R\n0 0 1 ?\n");	/* Make a rotated plain symbol of type picked up from input file */
+	fprintf (fp, "# Rotated standard symbol, need size and symbol code from data file\nN: 1 o\n$1 R\n0 0 1 ?\n");	/* Make a rotated plain symbol of type picked up from input file */
 	fclose (fp);
 	len = strlen (tmp_file) - 4;	/* Position of the '.' */
-	tmp_file[len] = '\0';	/* Termporarily hide the ".def" extension */
-	/* Use -SK since kustom symbol has a variable standard symbol ? that we must get from data records */
+	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
+	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
 	sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, string);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Plot all the symbols */
 		return (GMT->parent->error);
-	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file */
+	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */
 	if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
 		char tmp_file2[GMT_LEN64] = {""};
-		bool was = GMT->current.setting.io_header[GMT_OUT];
+		bool was = GMT->current.setting.io_header[GMT_OUT];	/* Save current setting */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file for decorated lines saved: %s\n", tmp_file);
-		if (GMT->parent->tmp_dir)
-			sprintf (tmp_file2, "%s/GMT_symbol%d.txt", GMT->parent->tmp_dir, (int)getpid());	/* Make unique file in tmp dir */
-		else
-			sprintf (tmp_file2, "GMT_symbol%d.txt", (int)getpid());	/* Make unique file in current dir */
+		if (GMT->parent->tmp_dir)	/* Make unique file in tmp dir */
+			sprintf (tmp_file2, "%s/GMT_symbol%d.txt", GMT->parent->tmp_dir, (int)getpid());
+		else	/* Make unique file in current dir */
+			sprintf (tmp_file2, "GMT_symbol%d.txt", (int)getpid());
 		sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, tmp_file2);
 		GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary data file for decorated lines saved: %s\n", tmp_file2);
-		GMT_set_tableheader (GMT, GMT_OUT, true);
+		GMT_set_tableheader (GMT, GMT_OUT, true);	/* We need to ensure we write the header here */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write file: %s\n", tmp_file2);
 		}
-		GMT_set_tableheader (GMT, GMT_OUT, was);
+		GMT_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else
 		remove (tmp_file);	/* Just remove the symbol def file */
@@ -436,6 +436,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use upper case 'K' if your custom symbol refers a variable symbol, ?.\n");
 	GMT_list_custom_symbols (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Mathangle: radius, start, and stop directions of math angle must be in columns 3-5.\n");
