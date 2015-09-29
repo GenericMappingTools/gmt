@@ -3855,12 +3855,20 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			L->fixed = true;
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
+			if (GMT_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->file);
+				error++;
+			}
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
 			strncpy (L->file, &txt[1], GMT_BUFSIZ);
+			if (GMT_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
+				error++;
+			}
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
@@ -4055,12 +4063,20 @@ int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DE
 			L->fixed = true;
 			k = sscanf (&txt[1], "%[^/]/%lf", L->file, &L->slop);
 			if (k == 1) L->slop = GMT_CONV8_LIMIT;
+			if (GMT_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read fixed point file %s\n", L->file);
+				error++;
+			}
 			break;
 		case 'X':	/* Crossing complicated curve */
 			L->do_interpolate = true;
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
 			strncpy (L->file, &txt[1], GMT_BUFSIZ);
+			if (GMT_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
+				error++;
+			}
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;

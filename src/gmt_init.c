@@ -4181,13 +4181,13 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value) {
 }
 
 /*! . */
-bool gmt_badvalreport (struct GMT_CTRL *GMT, char *keyword) {
+bool gmt_badvalreport (struct GMT_CTRL *GMT, const char *keyword) {
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword %s. You may have been using a deprecated GMT3 or GMT4 keyword.\nChange keyword or use with GMT_COMPATIBILITY=4. " GMT_COMPAT_INFO, keyword);
 	return (true);
 }
 
 /*! . */
-unsigned int GMT_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
+unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value)
 {
 	unsigned int pos;
 	size_t len;
@@ -5657,7 +5657,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 }
 
 /*! . */
-char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
+char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 {	/* value must hold at least GMT_BUFSIZ chars */
 	static char value[GMT_LEN256] = {""}, txt[8];
 	int case_val;
@@ -6988,7 +6988,7 @@ unsigned int GMT_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit)
 }
 
 /*! . */
-int GMT_hash (struct GMT_CTRL *GMT, char *v, unsigned int n_hash) {
+int GMT_hash (struct GMT_CTRL *GMT, const char *v, unsigned int n_hash) {
 	int h;
 	GMT_UNUSED(GMT);
 	assert (v!=NULL); /* We are in trouble if we get a NULL pointer here */
@@ -6998,7 +6998,7 @@ int GMT_hash (struct GMT_CTRL *GMT, char *v, unsigned int n_hash) {
 }
 
 /*! . */
-int GMT_hash_lookup (struct GMT_CTRL *GMT, char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash)
+int GMT_hash_lookup (struct GMT_CTRL *GMT, const char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash)
 {
 	int i;
 	unsigned int ui, k;
@@ -11383,7 +11383,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
+struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, const char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
 	int i;
 	char path[PATH_MAX+1];
 	char *unit_name[4] = {"cm", "inch", "m", "point"};
@@ -11544,7 +11544,7 @@ void gmt_set_today (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int pad) {
+struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, const char *session, unsigned int pad) {
 	/* GMT_begin is called once by GMT_Create_Session and does basic
 	 * one-time initialization of GMT before the GMT modules take over.
 	 * It will load in the gmt.conf settings from the share dir and

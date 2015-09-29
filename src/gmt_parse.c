@@ -103,7 +103,7 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head)
 #define ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
 
 /*! . */
-struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, void *in) {
+struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *in) {
 	/* This function will loop over the n_args_in supplied command line arguments (in) and
 	 * returns a linked list of GMT_OPTION structures for each program option.
 	 * These will in turn will be processed by the program-specific option parsers.
@@ -127,14 +127,14 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (in == NULL && n_args_in > 1) return_null (V_API, GMT_ARGV_LIST_NULL);	/* Gave no argument pointer but said we had at least 1 */
 	if (in == NULL) return (NULL);	/* Gave no argument pointer so a null struct is returned */
-	if (n_args_in < 0) return (in);	/* Already converted to linked list */
+	if (n_args_in < 0) return ((struct GMT_OPTION *)in);	/* Already was to linked list */
 	API = gmt_get_api_ptr (V_API);	/* Convert API to a GMTAPI_CTRL pointer */
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		unsigned int pos = 0, new_n_args = 0, k;
 		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
-		char p[GMT_BUFSIZ] = {""}, *txt_in = in;	/* Passed a single text string */
+		char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
 		/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
@@ -159,6 +159,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, void *in) {
 			if (txt_in[k] == ASCII_GS) txt_in[k] = '\t'; else if (txt_in[k] == ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 		args = new_args;
 		n_args = new_n_args;
+		free (txt_in);
 	}
 	else {
 		args = (char **)in;	/* Gave an argv[] argument */
@@ -385,7 +386,7 @@ int GMT_Destroy_Cmd (void *V_API, char **cmd) {
 }
 
 /*! Create an option structure given the option character and the optional argument arg */
-struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, char *arg) {
+struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, const char *arg) {
 	struct GMT_OPTION *new_opt = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -421,7 +422,7 @@ struct GMT_OPTION * GMT_Find_Option (void *V_API, char option, struct GMT_OPTION
 }
 
 /*! Replaces the argument of this option with new arg. */
-int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, char *arg) {
+int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	/* We passed NULL as the option */
@@ -432,8 +433,8 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, char *arg) {
 	return (GMT_OK);	/* No error encountered */
 }
 
-/*! Replaces a marker character (e.g., $) with the replacement argument in txt, except when in quotes. */
-int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, char *arg) {
+/*! Replaces a marker character (e.g., $) in the option arg with the replacement argument in arg, except when in quotes. */
+int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, const char *arg) {
 	char buffer[BUFSIZ] = {""};
 	size_t in = 0, out = 0;
 	bool quote = false;
@@ -653,7 +654,7 @@ unsigned int gmt_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *opti
 }
 
 /*! . */
-int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *options) {
+int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION *options) {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
 	 * These are processed in the order required by GMT regardless of order given.
 	 * The settings will override values set previously by other commands.

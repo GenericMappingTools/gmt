@@ -884,7 +884,7 @@ To initiate the new session we use
 
   ::
 
-    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode,
+    void *GMT_Create_Session (const char *tag, unsigned int pad, unsigned int mode,
                               int (*print_func) (FILE *, const char *));
 
 and you will typically call it thus:
@@ -1399,7 +1399,7 @@ To read an entire resource from a file, stream, or file handle, use
 
     void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
                          unsigned int geometry, unsigned int mode, double wesn[],
-                         char *input, void *ptr);
+                         const char *input, void *ptr);
 
 * :ref:`API <GMT_Create_Session>`
 * :ref:`family <tbl-family>`
@@ -1788,7 +1788,7 @@ the verbosity settings specified via **-V**.
 
   ::
 
-    int GMT_Report (void *API, unsigned int level, char *message, ...);
+    int GMT_Report (void *API, unsigned int level, const char *message, ...);
 
 This function takes a verbosity level and a multi-part message (e.g., a
 format statement and zero or more variables). The verbosity ``level`` is
@@ -1822,7 +1822,7 @@ lower or equal to the **-V**\ *level* will be printed.
 
   ::
 
-    int GMT_Message (void *API, unsigned int mode, char *format, ...);
+    int GMT_Message (void *API, unsigned int mode, const char *format, ...);
 
 This function always prints its message to the standard output. Use the
 ``mode`` value to control if a time stamp should preface the message.
@@ -1872,7 +1872,7 @@ GMT common option by calling the function
 
   ::
 
-    int GMT_Option (void *API, char *options);
+    int GMT_Option (void *API, const char *options);
 
 where ``options`` is a comma-separated list of GMT common options
 (e.g., "R,J,O,X"). You can repeat this function with different sets of
@@ -1889,7 +1889,7 @@ The parsing of all GMT common option is done by
 
   ::
 
-    int GMT_Parse_Common (void *API, char *args, struct GMT_OPTION *list);
+    int GMT_Parse_Common (void *API, const char *args, struct GMT_OPTION *list);
 
 where ``args`` is a string of the common GMT options your program may
 use. An error will be reported if any of the common GMT options fail
@@ -1938,7 +1938,7 @@ tedious to program. You can simplify this by using
 
   ::
 
-    int GMT_Get_Value (void *API, char *arg, double par[]);
+    int GMT_Get_Value (void *API, const char *arg, double par[]);
 
 where ``arg`` is the text item with one or more values that are
 separated by commas, spaces, tabs, semi-colons, or slashes, and ``par`` is an array long
@@ -1970,7 +1970,7 @@ API or GMT default settings you can do so via
 
   ::
 
-    int GMT_Get_Default (void *API, char *keyword, char *value);
+    int GMT_Get_Default (void *API, const char *keyword, char *value);
 
 where ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
 ``value`` must be a character array long enough to hold the answer.  In
@@ -1988,7 +1988,7 @@ GMT default settings you would use
 
   ::
 
-    int GMT_Set_Default (void *API, char *keyword, char *value);
+    int GMT_Set_Default (void *API, const char *keyword, const char *value);
 
 where as before ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
 ``value`` must be a character string with the new setting.
@@ -2196,7 +2196,7 @@ structure. The prototype is
 
   ::
 
-    struct GMT_OPTION *GMT_Make_Option (void *API, char option, char *arg);
+    struct GMT_OPTION *GMT_Make_Option (void *API, char option, const char *arg);
 
 Should memory allocation fail the function will print an error message
 set an error code via ``API->error``, and return NULL.
@@ -2253,7 +2253,7 @@ list. The prototype is
 
   ::
 
-    int GMT_Update_Option (void *API, struct GMT_OPTION *current, char *arg);
+    int GMT_Update_Option (void *API, struct GMT_OPTION *current, const char *arg);
 
 An error will be reported if (a) ``current`` is NULL or (b) ``arg`` is
 NULL. The function returns 1 if there is an error, otherwise it returns 0.
@@ -2323,7 +2323,7 @@ The prototype is
 
   ::
 
-    struct GMT_RESOURCE *GMT_Encode_Options (void *API, char *module, char marker, 
+    struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, char marker, 
                     	                       struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
@@ -2367,7 +2367,7 @@ calling ``GMT_Expand_Option``, with prototype
   ::
 
     int GMT_Expand_Option (void *API, struct GMT_OPTION *option,
-	                         char marker, char *name);
+	                         char marker, const char *name);
 
 where ``option`` is the current option, ``marker`` is the character
 identifier representing an explicit memory reference, and ``name``
@@ -2741,7 +2741,7 @@ your program needs to present the option usage you can call
   ::
 
     unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim,
-                                 char *string);
+                                 const char *string);
 
 Here, ``option`` is the unique character used for this particular
 program option (most GMT programs have standardized on using 'N' but
@@ -2757,7 +2757,7 @@ To parse the user's selection you call
 
   ::
 
-    void *GMT_FFT_Parse (void *API, char option, unsigned int dim, char *args);
+    void *GMT_FFT_Parse (void *API, char option, unsigned int dim, const char *args);
 
 which accepts the user's string option via ``args``; the other arguments
 are the same as those above. The function returns an opaque pointer to a
@@ -2949,7 +2949,7 @@ To inquire about the range of information in a grid, use
   ::
 
     int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[],
-                             char *title, char *remark, char *file)
+                             char *title, char *remark, const char *file)
 
 where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
 as three consecutive pairs, ``inc`` returns the x and y increment, the ``title`` and ``remark``
@@ -2964,7 +2964,7 @@ To actually read the grid, we use
   ::
 
     int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[],
-                         double inc[], char *title, char *remark, char *file)
+                         double inc[], char *title, char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
 ``limits`` returns the min and max values for x, y, and z, ``inc`` returns the x and y increments,
@@ -2981,7 +2981,7 @@ Finally, to write a grid to file you can use
   ::
 
     int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[],
-                          double inc[], char *title, char *remark, char *file)
+                          double inc[], const char *title, const char *remark, const char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
 ``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,

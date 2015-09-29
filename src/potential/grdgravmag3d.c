@@ -608,7 +608,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.bot) Ctrl->Z.z0 = GridA->header->z_min;
 
 	if (Ctrl->In.file[1] == NULL) { 	/* Possible swapping triang order only when we have a single  grid */
-		if (Ctrl->Z.z0 >= GridA->header->z_max && !Ctrl->E.active) {	/* If plane is above max grid height and NOT constant thickness /*
+		if (Ctrl->Z.z0 >= GridA->header->z_max && !Ctrl->E.active) {	/* If plane is above max grid height and NOT constant thickness */
 			/* Typical when computing the effect of whater shell for Buguer reduction of marine data */
 			clockwise_type[0] = 5;		/* Means Top triangs will have a CCW description and CW for bot */
 			clockwise_type[1] = 0;

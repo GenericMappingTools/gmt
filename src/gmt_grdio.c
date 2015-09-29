@@ -227,7 +227,7 @@ void gmt_grd_xy_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 
 /* Routines to see if a particular grd file format is specified as part of filename. */
 
-void gmt_expand_filename (struct GMT_CTRL *GMT, char *file, char *fname)
+void gmt_expand_filename (struct GMT_CTRL *GMT, const char *file, char *fname)
 {
 	bool found;
 	unsigned int i;
