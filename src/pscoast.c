@@ -630,11 +630,11 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pscoast task */
 
 	int i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
-	int level_to_be_painted = 0, direction, start_direction, stop_direction, last_pen_level;
+	int level_to_be_painted[2] = {0, 0}, lp, direction, start_direction, stop_direction, last_pen_level;
 	
 	bool shift = false, need_coast_base, recursive;
 	bool greenwich = false, possibly_donut_hell = false, fill_in_use = false;
-	bool clobber_background, paint_polygons = false, donut;
+	bool clobber_background, paint_polygons = false, donut, double_recursive = false;
 	bool donut_hell = false, world_map_save, clipping;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
@@ -685,8 +685,17 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
-	clobber_background = (Ctrl->G.active && Ctrl->S.active);
-	recursive = (Ctrl->G.active != (Ctrl->S.active || Ctrl->C.active) || clipping);
+	if (Ctrl->G.active && Ctrl->S.active) {	/* Must check if any of then are transparent */
+		if (Ctrl->G.fill.rgb[3] > 0.0 || Ctrl->S.fill.rgb[3] > 0.0) {	/* Transparency requested */
+			/* Special case since we cannot overprint so must run recursive twice */
+			double_recursive = true;
+			clobber_background = false;
+			GMT_Report (API, GMT_MSG_DEBUG, "Do double recursive painting due to transparency option for land or ocean\n");
+		}
+		else	/* OK to paint ocean first then overlay land */
+			clobber_background = true;
+	}
+	recursive = (double_recursive || (Ctrl->G.active != (Ctrl->S.active || Ctrl->C.active)) || clipping);
 	paint_polygons = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active);
 
 	if (GMT->common.R.wesn[XLO] > 360.0) {
@@ -835,16 +844,19 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			PSL_plotpolygon (PSL, xtmp, ytmp, n);
 		GMT_free (GMT, xtmp);
 		GMT_free (GMT, ytmp);
-		level_to_be_painted = 1;
+		level_to_be_painted[0] = level_to_be_painted[1] = 1;
 	}
-	if (recursive) {
+	if (double_recursive) {	/* Must recursively paint both land and ocean */
+		start_direction = -1;	stop_direction = 1;
+		level_to_be_painted[0] = 0;	level_to_be_painted[1] = 1;
+	}
+	else if (recursive) {	/* Just paint either land or ocean recursively */
 		start_direction = stop_direction = (Ctrl->G.active) ? 1 : -1;
-		level_to_be_painted = (Ctrl->G.active) ? 1 : 0;
+		level_to_be_painted[0] = level_to_be_painted[1] = (Ctrl->G.active) ? 1 : 0;
 	}
-	else {
-		start_direction = -1;
-		stop_direction = 1;
-		level_to_be_painted = (Ctrl->S.active) ? 0 : 1;
+	else {	/* Just paint one of them but not recursively */
+		start_direction = -1;	stop_direction = 1;
+		level_to_be_painted[0] = level_to_be_painted[1] = (Ctrl->S.active) ? 0 : 1;
 	}
 
 	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0 && !GMT_IS_LINEAR (GMT)) greenwich = true;
@@ -916,7 +928,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		}
 
 		for (direction = start_direction; paint_polygons && direction <= stop_direction; direction += 2) {
-
+			lp = (direction == -1) ? 0 : 1;
 			/* Assemble one or more segments into polygons */
 
 			if ((np = GMT_assemble_shore (GMT, &c, direction, true, west_border, east_border, &p)) == 0) continue;
@@ -926,22 +938,22 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			np_new = GMT_prep_shore_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
 
 			if (clipping) {
-				for (k = level_to_be_painted; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
+				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
 
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
-					if (p[k].level % 2 == level_to_be_painted || p[k].level > 2) {
+					if (p[k].level % 2 == level_to_be_painted[lp] || p[k].level > 2) {
 						PSL_plotline (PSL, p[k].lon, p[k].lat, p[k].n, PSL_MOVE);
 					}
 				}
 			}
 			else if (recursive) {	/* Must avoid pointing anything but the polygons inside */
 
-				for (k = level_to_be_painted; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, fill);
+				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, fill);
 
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
-					if (p[k].level % 2 == level_to_be_painted || p[k].level > 2) {
+					if (p[k].level % 2 == level_to_be_painted[lp] || p[k].level > 2) {
 						GMT_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
@@ -949,7 +961,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			}
 			else {	/* Simply paints all polygons as is */
 				for (k = 0; k < np_new; k++) {
-					if (p[k].n == 0 || p[k].level < level_to_be_painted) continue;
+					if (p[k].n == 0 || p[k].level < level_to_be_painted[lp]) continue;
 					if (donut_hell && GMT_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = (int)GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						GMT_setfill (GMT, &fill[p[k].fid], false);
