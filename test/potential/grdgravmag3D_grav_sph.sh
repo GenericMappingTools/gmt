@@ -19,15 +19,15 @@ echo  50 0 >> li
 gmt sample1d li -Fl -I2 > li1.dat
 
 # Compute the effect of the two hemi-spheres and add them
-gmt grdgravmag3d top_half.grd -C$rho -Zb -Gtop_g.grd -V -x
-gmt grdgravmag3d bot_half.grd -C$rho -Zt -Gbot_g.grd -V -x
+gmt grdgravmag3d top_half.grd -C$rho -Zb -Gtop_g.grd -V
+gmt grdgravmag3d bot_half.grd -C$rho -Zt -Gbot_g.grd -V
 gmt grdmath bot_g.grd top_g.grd ADD = sphere_g.grd
 
 
 # Compute the effect of the two hemi-spheres alog XX axis and add them
-grdgravmag3d top_half.grd -C$rho -Zb -Fli1.dat > tt.dat 
-grdgravmag3d bot_half.grd -C$rho -Zt -Fli1.dat > tb.dat 
-gmtmath tt.dat tb.dat ADD = t.dat
+gmt grdgravmag3d top_half.grd -C$rho -Zb -Fli1.dat > tt.dat 
+gmt grdgravmag3d bot_half.grd -C$rho -Zt -Fli1.dat > tb.dat 
+gmt gmtmath tt.dat tb.dat ADD = t.dat
 
 
 # Profile of analytic anomaly
