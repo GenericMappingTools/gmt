@@ -1544,16 +1544,21 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		uint64_t np, p, nx, tbl, seg, col;
 		double *cp[2] = {NULL, NULL};
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
-			/* Supply dummy linear proj */
-			GMT->current.proj.projection = GMT->current.proj.xyz_projection[GMT_X] = GMT->current.proj.xyz_projection[GMT_Y] = GMT_LINEAR;
-			GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
-			GMT->common.J.active = true;
+			/* Supply dummy linear proj for Cartesian or geographic data */
+			if (GMT_is_geographic (GMT, GMT_IN))
+				GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
+			else
+				GMT_parse_common_options (GMT, "J", 'J', "x1");		/* Fake linear Cartesian projection */
 		}
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];
-				if ((np = GMT_wesn_clip (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, &cp[GMT_X], &cp[GMT_Y], &nx)) == 0) continue;
+				if ((np = GMT_wesn_clip (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, &cp[GMT_X], &cp[GMT_Y], &nx)) == 0) {
+					/* Everything is outside, let go */
+					S->mode = GMT_WRITE_SKIP;
+					continue;
+				}
 				if (np > S->n_rows) GMT_alloc_segment (GMT, S, np, S->n_columns, false);
 				for (p = 0; p < np; p++) GMT_xy_to_geo (GMT, &cp[GMT_X][p], &cp[GMT_Y][p], cp[GMT_X][p], cp[GMT_Y][p]);
 				for (col = 0; col < 2; col++) {

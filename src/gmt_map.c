@@ -1478,8 +1478,10 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 		m = 0;	/* Start with nuthin' */
 
 		uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
-		/* Must ensure we copy the very first point if it is inside the clip rectangle */
-		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		if (n) {
+			/* Must ensure we copy the very first point if it is inside the clip rectangle */
+			if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		}
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
@@ -1539,6 +1541,7 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	for (row = 0; row < S->n_rows; row++) GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
+		if (S->n_rows == 0) continue;	/* Nothing! */
 		L[side] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 		GMT_alloc_segment (GMT, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
@@ -1730,6 +1733,13 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 		else if (lon[i] > border[GMT_RIGHT] && (lon[i] - 360.0) >= border[GMT_LEFT])
 			lon[i] -= 360.0;
 	}
+	if (!GMT->current.map.coastline) {	/* Not do if pscoast since it has its own oddness */
+		double xmin, xmax;
+		GMT_get_lon_minmax (GMT, lon, n, &xmin, &xmax);
+		xmin -= 360.0;	xmax -= 360.0;
+		while (xmax < border[GMT_LEFT]) {xmin += 360.0;	xmax += 360.0;}
+		if (xmin > border[GMT_RIGHT]) return 0;	/* Outside */
+	}
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
@@ -1770,13 +1780,16 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			/* For non-periodic maps we have to be careful to position the polygon so it does
 			 * not have longitude jumps at the current border.  This does not apply to pscoast
 			 * which has special handling and hence bypasses this test */
+			
 			for (i = 0; i < n; i++) {	/* If points is > 180 degrees from border, flip side */
 				if ((xtmp[in][i] - border[side]) > 180.0) xtmp[in][i] -= 360.0;
 				else if ((xtmp[in][i] - border[side]) < -180.0) xtmp[in][i] += 360.0;
 			}
 		}
-		/* Must ensure we copy the very first point if it is inside the clip rectangle */
-		if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		if (n) {
+			/* Must ensure we copy the very first point if it is inside the clip rectangle */
+			if (inside[side] ((side%2) ? xtmp[in][0] : ytmp[in][0], border[side])) {xtmp[out][0] = xtmp[in][0]; ytmp[out][0] = ytmp[in][0]; m = 1;}	/* First point is inside; add it */
+		}
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			if (polygon && cross && curved) {	/* When crossing in/out of a curved boundary we must eventually sample along the curve between crossings */
