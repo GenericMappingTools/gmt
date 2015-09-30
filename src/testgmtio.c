@@ -47,7 +47,7 @@ int main (int argc, char *argv[]) {
 
 	/* 4. Initializing data input via stdin */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) exit (EXIT_FAILURE);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) exit (EXIT_FAILURE);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data input */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data output */
 	
@@ -94,8 +94,8 @@ int main (int argc, char *argv[]) {
 			}
 		}
 		if (GMT_REC_IS_DATA (GMT)) {	/* Found a data record */
-			if ((error = GMT_set_cols (GMT, GMT_IN, n_fields))) exit (EXIT_FAILURE);
-			if ((error = GMT_set_cols (GMT, GMT_OUT, n_fields))) exit (EXIT_FAILURE);
+			if ((error = GMT_set_cols (GMT, GMT_IN, n_fields)) != 0) exit (EXIT_FAILURE);
+			if ((error = GMT_set_cols (GMT, GMT_OUT, n_fields)) != 0) exit (EXIT_FAILURE);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 			API->print_func (stdout, "D: ");
 		}

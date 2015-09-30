@@ -384,7 +384,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_solve_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_solve_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_solve main code ----------------------------*/
 
@@ -492,7 +492,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
-		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
+		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields) != 0) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
 				ID[i][n_COE] = irint (in[i]);
 				if (ID[i][n_COE] < min_ID) min_ID = ID[i][n_COE];
@@ -838,7 +838,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 
 	/* Get LS solution */
 
-	if ((error = GMT_gaussjordan (GMT, N, (unsigned int)m, b))) {
+	if ((error = GMT_gaussjordan (GMT, N, (unsigned int)m, b)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Singular matrix - unable to solve!\n");
 		Return (EXIT_FAILURE);
 	}
