@@ -15,7 +15,7 @@ Synopsis
 
 **sample1d** [ *table* ]
 [ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ][\ **+1**\ \|\ **+2**\ ] [ **-I**\ *inc*\ [*unit*] ]
+[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ] [ **-I**\ *inc*\ [*unit*] ]
 [ **-N**\ *knotfile* ] [ **-S**\ *start*\ [/*stop*] ] [ **-T**\ *col* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -65,7 +65,7 @@ Optional Arguments
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
     **+l** if distances should be measured along rhumb lines (loxodromes).
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**[\ **+1**\ \|\ **+2**\ ]
+**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see

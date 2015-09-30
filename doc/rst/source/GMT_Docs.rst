@@ -491,7 +491,7 @@ changes to syntax will be backwards compatible:
    line (**-Sq**) modifiers: **S**\ \|\ **s** for treating input as consecutive
    two-point line segments that should be individually quoted,
    and **+x**\ [*first*\ ,\ *last*] for automating cross-section labeling.
-   We added a new symbol (**-S_**) for *decorated lines*.  These are very similar
+   We added a new symbol (**-S~**) for *decorated lines*.  These are very similar
    to quoted lines but instead place specified symbols along lines.
    We expanded **-N** to handle periodic, repeating symbols near the boundary,
    added a new modifier **+** to **-E** for asymmetrical error bars, and provided the
