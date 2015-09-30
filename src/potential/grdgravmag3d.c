@@ -447,7 +447,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	unsigned int km = 0;		/* index of current body facet (for mag only) */
 	unsigned int n_vert_max = 0;
 	unsigned int nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
-	bool    two_grids = false, switch_xy = false;
+	bool    two_grids = false;
 	int     error = 0;
 	double  a, d, x_o, y_o;
 	double *x_obs = NULL, *y_obs = NULL, *x_grd = NULL, *y_grd = NULL, *x_grd_geo = NULL, *y_grd_geo = NULL;
@@ -486,7 +486,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdgravmag3d_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdgravmag3d_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdgravmag3d main code ---------------------*/
 
