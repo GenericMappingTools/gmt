@@ -146,13 +146,13 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->I.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
-				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -260,7 +260,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_datalist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_datalist_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_datalist_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_datalist main code ----------------------------*/
 
