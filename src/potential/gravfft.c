@@ -180,7 +180,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 	char   ptr[GMT_BUFSIZ] = {""}, t_or_b[4] = {""}, argument[GMT_LEN16] = {""}, combined[GMT_BUFSIZ] = {""};
 	if (GMT_compat_check (GMT, 4)) {
 		char *mod = NULL;
-		if ((popt = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
+		if ((popt = GMT_Find_Option (API, 'L', options)) != 0) {	/* Gave old -L */
 			mod = popt->arg; /* Gave old -L option */
 			if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
 			else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
@@ -264,7 +264,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -506,7 +506,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gravfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gravfft_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gravfft_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
