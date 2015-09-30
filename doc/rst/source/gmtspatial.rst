@@ -17,7 +17,7 @@ Synopsis
 [ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
 [ **-E**\ **+**\ \|\ **-** ] [ **-F**\ [**l**] ] [ **-I**\ [**e**\ \|\ **i**] ]
 [ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ **-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]] ]
+[ **-Q**\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+h**\ ][**+l**\ ][**+p**\ ] ]
 [ |SYN_OPT-R| ]
 [ **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
 [ **-T**\ [*clippolygon*] ]
@@ -123,15 +123,21 @@ Optional Arguments
     polygon are not written out. If more than one polygon contains the
     same segment we skip the second (and further) scenario.
 
-**-Q**\ [**+h**\ ][**+l**\ ][**+p**\ ][*unit*\ ]]
+**-Q**\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+h**\ ][**+l**\ ][**+p**\ ]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see UNITS). Note that the area will depend on the current
-    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a recent ellipsoid to get
-    accurate results. By default, we consider open polygons as lines.
+    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a
+    recent ellipsoid to get accurate results. The centroid is computed
+    using the mean of the 3-D Cartesian vectors making up the polygon
+    vertices, while the area is obtained via an equal-area projection.
+    For line lengths you may prepend **-**\ \|\ **+** to the unit and
+    the calculation will use Flat Earth or Geodesic algorithms, respectively
+    [Default is great circle distances].
+    By default, we consider open polygons as lines.
     Append **+p** to close open polygons and thus consider all input
     as polygons, or append **+l** to consider all input as lines, even
     if closed.

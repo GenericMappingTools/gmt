@@ -123,6 +123,7 @@ struct GMTSPATIAL_CTRL {
 		bool active;
 		bool header;
 		unsigned int mode;	/* 0 use input as is, 1 force to line, 2 force to polygon */
+		unsigned int dmode;	/* for geo data: 1 = flat earth, 2 = great circle, 3 = geodesic (for distances) */
 		char unit;
 	} Q;
 	struct S {	/* -S[u|i|c|j] */
@@ -155,6 +156,7 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	C->D.I.c_threshold = MIN_CLOSENESS;
 	C->D.I.s_threshold = MIN_SUBSET;
 	C->Q.mode = GMT_IS_POINT;	/* Undecided on line vs poly */
+	C->Q.dmode = 2;			/* Great-circle distance if not specified */
 	return (C);
 }
 
@@ -620,9 +622,9 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -666,7 +668,8 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   We also compute polygon centroid or line mid-point.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally prepend - or + to unit to select Flat Earth or Geodesic calculations [great-circle]\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   We also compute polygon centroid or line mid-point.  See documentation for more information.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+h' to place the (area, handedness) or length result in the segment header on output\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+p' to consider all input as polygons and close them if necessary [only closed polygons are polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+l' to consider all input as lines even if closed [closed polygons are considered polygons].\n");
@@ -805,7 +808,15 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = true;
 				s = opt->arg;
-				if (s[0] && s[0] != '+') {Ctrl->Q.unit = s[0]; s++;}	/* Deal with optional unit first */				
+				if (s[0] == '-' && strchr (GMT_LEN_UNITS, s[1])) {	/* Flat earth distances */
+					Ctrl->Q.dmode = 1;	Ctrl->Q.unit = s[1];	s += 2;
+				}
+				else if (s[0] == '+' && strchr (GMT_LEN_UNITS, s[1])) {	/* Geodesic distances */
+					Ctrl->Q.dmode = 3;	Ctrl->Q.unit = s[1];	s += 2;
+				}
+				else if (s[0] && strchr (GMT_LEN_UNITS, s[0])) {	/* Great circle distances */
+					Ctrl->Q.dmode = 2;	Ctrl->Q.unit = s[0];	s++;
+				}
 				pos = 0;
 				while (GMT_strtok (s, "+", &pos, p)) {
 					switch (p[0]) {
@@ -1175,7 +1186,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		}
 		geo = GMT_is_geographic (GMT, GMT_IN);
-		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
+		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
 			mode = Ctrl->Q.mode;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */

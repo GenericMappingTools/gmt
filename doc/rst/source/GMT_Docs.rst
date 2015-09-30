@@ -403,6 +403,9 @@ changes to syntax will be backwards compatible:
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  Finally, we added
    operator **POINT** which reads a data table and places the mean x and mean y on the stack.
 
+*  :doc:`gmtspatial` now lets you specify Flat Earth or Geodesic distance calculations
+   for line lengths via **-Q**.
+
 *  :doc:`grdblend` relaxes the **-W** restriction on only one output grid
    and adds the new mode **-Wz** to write the weight*zsum grid.
 
