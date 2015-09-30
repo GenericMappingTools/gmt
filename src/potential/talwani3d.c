@@ -335,7 +335,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 {	/* Talwani et al., 1959 */
 	int k;
 	double gsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
-	double xr2 = 0.0, yr2 = 0.0, dx, dy, p, em, sign2, wsign, value, part1, part2, part3, q, f, psi;
+	double xr2 = 0.0, yr2 = 0.0, dx, dy, p, em, sign2, wsign, value, part1 = 0.0, part2 = 0.0, part3 = 0.0, q, f, psi;
 	bool zerog;
 	
 	/* Get x- and y-distances of first point relative to observation point */
@@ -427,7 +427,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 {	/* Kim & Wessel, 2015 */
 	int k;
 	double vsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
-	double xr2 = 0.0, yr2 = 0.0, dx, dy, p, em, sign2, part2, part3, q, f, z2, p2;
+	double xr2 = 0.0, yr2 = 0.0, dx, dy, p, em, sign2, part2 = 0.0, part3 = 0.0, q, f, z2, p2;
 	double scl, cos_theta_i, sin_theta2_i, cos_phi_i, sin_phi2_i, area = 0.0;
 	bool zerog;
 	
@@ -553,7 +553,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 {	/* Kim & Wessel, 2015 */
 	int k;
 	double nsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside, c, z_j = z_obs;
-	double xr2 = 0.0, yr2 = 0.0, dx, dy, p_i, theta_i, sign2, part1, part2, fi_i, em, del_alpha, s_fi, s_th;
+	double xr2 = 0.0, yr2 = 0.0, dx, dy, p_i, theta_i, sign2, part1 = 0.0, part2 = 0.0, fi_i, em, del_alpha, s_fi, s_th;
 	bool zerog;
 	/* Coordinates are in km and g/cm^3 */
 	/* Get x- and y-distances relative to observation point */
