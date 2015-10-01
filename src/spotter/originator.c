@@ -197,8 +197,7 @@ void Free_originator_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int comp_hs (const void *p1, const void *p2)
-{
+int comp_hs (const void *p1, const void *p2) {
 	const struct HOTSPOT_ORIGINATOR *a = p1, *b = p2;
 
 	if (a->np_dist < b->np_dist) return (-1);
@@ -206,8 +205,7 @@ int comp_hs (const void *p1, const void *p2)
 	return (0);
 }
 
-int GMT_originator_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_originator_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n");
@@ -242,8 +240,7 @@ int GMT_originator_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to originator and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -356,8 +353,7 @@ int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_originator_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_originator (void *V_API, int mode, void *args)
-{
+int GMT_originator (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
@@ -395,7 +391,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_originator_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_originator_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_originator_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the originator main code ----------------------------*/
 

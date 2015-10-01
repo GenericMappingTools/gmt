@@ -176,8 +176,8 @@ int GMT_x2sys_get_parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
-{	/* Return track id # for this leg */
+int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
+	/* Return track id # for this leg */
 	unsigned int i;
 	
 	for (i = 0; i < n; i++) if (B->head[i].trackname && !strcmp (name, B->head[i].trackname)) return (i);
@@ -192,7 +192,6 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
-
 	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
 	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	
@@ -230,7 +229,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_get_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_get_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_get_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_get main code ----------------------------*/
 	
@@ -275,7 +274,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
-				if ((p = strchr (line, '.'))) line[(size_t)(p-line)] = '\0';	/* Remove extension */
+				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Leg %s not in the data base\n", line);

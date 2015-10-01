@@ -267,7 +267,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -276,7 +276,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 			/* Supplemental parameters */
 
 			case 'A':
-				if ((Ctrl->A.active = GMT_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->A.active = GMT_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->A.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -296,7 +296,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 					n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -304,13 +304,13 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 			case 'D':
 				switch (opt->arg[0]) {
 					case 'i':
-						if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', &opt->arg[1], GMT_OUT, GMT_IS_GRID)))
+						if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', &opt->arg[1], GMT_OUT, GMT_IS_GRID)) != 0)
 							Ctrl->D.file = strdup (&opt->arg[1]);
 						else
 							n_errors++;
 						break;
 					case 'p':
-						if ((Ctrl->PA.active = GMT_check_filearg (GMT, 'D', &opt->arg[1], GMT_OUT, GMT_IS_GRID)))
+						if ((Ctrl->PA.active = GMT_check_filearg (GMT, 'D', &opt->arg[1], GMT_OUT, GMT_IS_GRID)) != 0)
 							Ctrl->PA.file = strdup (&opt->arg[1]);
 						else
 							n_errors++;
@@ -328,7 +328,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 				}
 				break;
 			case 'L':
-				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -457,8 +457,7 @@ int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, str
 	return (np);
 }
 
-bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t node, double upper_age, bool truncate)
-{
+bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t node, double upper_age, bool truncate) {
 	/* Returns the age of this node based on either a given seafloor age grid
 	 * or the upper age, truncated if necessary */
 
@@ -503,8 +502,7 @@ void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdspotter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdspotter (void *V_API, int mode, void *args)
-{
+int GMT_grdspotter (void *V_API, int mode, void *args) {
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
 	unsigned int try;		/* Number of current bootstrap estimate */
 	unsigned int row, row2, col, col2, k_step;
@@ -575,7 +573,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdspotter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdspotter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdspotter main code ----------------------------*/
 

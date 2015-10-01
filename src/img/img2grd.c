@@ -211,7 +211,7 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -282,8 +282,7 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_img2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_img2grd (void *V_API, int mode, void *args)
-{
+int GMT_img2grd (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	unsigned int nx, ny, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
@@ -331,8 +330,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_img2grd_parse (GMT, Ctrl, options)))
-		Return (error);
+	if ((error = GMT_img2grd_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the img2grd main code ----------------------------*/
 

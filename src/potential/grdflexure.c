@@ -203,7 +203,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 	struct GMT_MODELTIME *T = NULL;
 
 	*log = false;
-	if ((p = strstr (arg, "+l"))) {	/* Want logarithmic time scale */
+	if ((p = strstr (arg, "+l")) != NULL) {	/* Want logarithmic time scale */
 		*log = true;
 		p[0] = '\0';	/* Chop off the +l modifier */
 	}
@@ -524,7 +524,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					Ctrl->In.list = true;
 					Ctrl->In.file = strdup (&opt->arg[1]);
 				}
-				else if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				else if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -583,7 +583,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 					Ctrl->F.mode = FLX_FV1;
 				break;
 			case 'G':	/* Output file name or template */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -632,12 +632,14 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file,  "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -E option: Must set elastic plate thickness regardless of rheology\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0), "Syntax error -S option: beta value must be in 0-1 range\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.beta < 0.0 || Ctrl->S.beta > 1.0),
+	                                 "Syntax error -S option: beta value must be in 0-1 range\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->T.active, "Syntax error -F option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->T.active, "Syntax error -L option: Requires time information via -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->F.active, "Syntax error -M option: Cannot mix with -F\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Filename template must contain format specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'),
+	                                 "Syntax error -G option: Filename template must contain format specified\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active && Ctrl->In.many, "Syntax error: Load template given but -T not specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -748,8 +750,7 @@ struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options,
 	return (G);
 }
 
-struct RHEOLOGY *Select_Rheology (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl)
-{
+struct RHEOLOGY *Select_Rheology (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl) {
 	unsigned int fmode = 0;
 	struct RHEOLOGY *R = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -788,8 +789,7 @@ void Accumulate_Solution (struct GMT_CTRL *GMT, struct GMT_GRID *Out, struct GMT
 	for (node = 0; node < Out->header->size; node++) Out->data[node] += Component->data[node];
 }
 
-int compare_loads (const void *load_1v, const void *load_2v)
-{
+int compare_loads (const void *load_1v, const void *load_2v) {
 	/*  Routine for qsort to sort loads structure with old loads (large t) be first in list. */
 	const struct FLX_GRID **load_1 = (const struct FLX_GRID **)load_1v, **load_2 = (const struct FLX_GRID **)load_2v;
 	if ((*load_1)->Time->value > (*load_2)->Time->value) return (-1);
@@ -831,7 +831,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdflexure_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdflexure_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdflexure_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdflexure main code ----------------------------*/
 

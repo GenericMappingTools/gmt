@@ -327,7 +327,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_rotconverter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_rotconverter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_rotconverter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the rotconverter main code ----------------------------*/
 

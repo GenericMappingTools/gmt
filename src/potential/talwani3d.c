@@ -730,7 +730,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_talwani3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_talwani3d_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_talwani3d_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the talwani3d main code ----------------------------*/
 	

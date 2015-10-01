@@ -212,8 +212,7 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to hotspotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -252,7 +251,7 @@ int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, st
 					n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -294,8 +293,7 @@ int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_hotspotter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_hotspotter (void *V_API, int mode, void *args)
-{
+int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	uint64_t n_smts;		/* Number of seamounts read */
 	uint64_t n_track;		/* Number of points along a single flowline */
@@ -356,7 +354,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_hotspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_hotspotter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_hotspotter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the hotspotter main code ----------------------------*/
 

@@ -152,7 +152,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -195,13 +195,13 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				}
 				break;
 			case 'F':
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->F.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -280,15 +280,15 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
+	                                 "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
-{
+struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Return a single polygon that encloses this geographic grid exactly.
 	 * It is used in the case when no particular clip polygon has been given.
 	 * Note that the path is the same for pixel or grid-registered grids.
@@ -299,7 +299,8 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty table with one segment, two cols */
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
+		return (NULL);	/* An empty table with one segment, two cols */
 
 	S = D->table[0]->segment[0];	/* Short hand */
 		
@@ -383,8 +384,7 @@ bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdrotater_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdrotater (void *V_API, int mode, void *args)
-{
+int GMT_grdrotater (void *V_API, int mode, void *args) {
 	int scol, srow, error = 0;	/* Signed row, col */
 	int n_stages;
 	bool not_global, global = false;
@@ -422,7 +422,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdrotater_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdrotater_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdrotater_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the grdrotater main code ----------------------------*/
 

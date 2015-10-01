@@ -145,8 +145,7 @@ int GMT_x2sys_put_parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SYS_BIX *B)
-{
+int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SYS_BIX *B) {
 	/* Remove all traces of the track with id track_id from structure tree for all bins */
 
 	struct X2SYS_BIX_TRACK *track = NULL, *skip_track = NULL;
@@ -225,7 +224,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_put_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_put_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_put_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
 
