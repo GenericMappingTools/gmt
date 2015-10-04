@@ -4502,7 +4502,7 @@ void GMT_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n)
 	GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);	/* Separately plot the outline */
 }
 
-void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n)
+uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, bool init, const char *comment)
 {
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
@@ -4525,7 +4525,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 
 	int jump_dir = JUMP_L;
 	bool jump;
-	uint64_t k, first, i;
+	uint64_t k, first, i, total = 0;
 	double *xp = NULL, *yp = NULL;
 	double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -4540,20 +4540,31 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 		 * beyond the horizon and adding arcs along the boundary between exit points
 		 */
 
-		if ((GMT->current.plot.n = GMT_clip_to_map (GMT, lon, lat, n, &xp, &yp)) == 0) return;		/* All points are outside region */
+		if ((GMT->current.plot.n = GMT_clip_to_map (GMT, lon, lat, n, &xp, &yp)) == 0) return 0;		/* All points are outside region */
+		if (init) {
+			PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");
+			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
+		}
+		PSL_comment (PSL, comment);
 		PSL_plotpolygon (PSL, xp, yp, (unsigned int)GMT->current.plot.n);	/* Fill Cartesian polygon and possibly draw outline */
 		/* Free the memory we are done with */
 		GMT_free (GMT, xp);
 		GMT_free (GMT, yp);
+		total = GMT->current.plot.n;
 	}
 	else {
 		/* Here we come for all non-azimuthal projections */
 
-		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, lon, lat, n)) == 0) return;		/* Convert to (x,y,pen) - return if nothing to do */
+		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, lon, lat, n)) == 0) return 0;		/* Convert to (x,y,pen) - return if nothing to do */
+		if (init) {
+			PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");
+			PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
+		}
+		PSL_comment (PSL, comment);
 
 		if (!GMT_is_geographic (GMT, GMT_IN)) {		/* Not geographic data so there are no periodic boundaries to worry about */
 			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
-			return;
+			return GMT->current.plot.n;
 		}
 
 		/* Check if there are any boundary jumps in the data as evidenced by pen up [PSL_MOVE] */
@@ -4563,7 +4574,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 
 		if (!jump) {	/* We happened to avoid the periodic boundary - just paint and return */
 			PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);
-			return;
+			return GMT->current.plot.n;
 		}
 
 		/* Polygon wraps and we will plot it up to three times by truncating the part that would wrap the wrong way.
@@ -4586,6 +4597,7 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 			xp[i] = (jump) ? (*x_on_border[jump_dir]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i];
 		}
 		PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+		total = GMT->current.plot.n;
 
 		/* Then do the Left truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -4597,7 +4609,10 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 			}
 			xp[i] = (jump || jump_dir == JUMP_R) ? (*x_on_border[JUMP_R]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i], k++;
 		}
-		if (k) PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+		if (k) {
+			PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+			total += GMT->current.plot.n;
+		}
 
 		/* Then do the R truncation since some wrapped pieces might not have been plotted (k > 0 means we found a piece) */
 
@@ -4609,20 +4624,24 @@ void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n
 			}
 			xp[i] = (jump || jump_dir == JUMP_L) ? (*x_on_border[JUMP_L]) (GMT, GMT->current.plot.y[i]) : GMT->current.plot.x[i], k++;
 		}
-		if (k) PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+		if (k) {
+			PSL_plotpolygon (PSL, xp, GMT->current.plot.y, (unsigned int)GMT->current.plot.n);	/* Paint the truncated polygon */
+			total = GMT->current.plot.n;
+		}
 
 		/* Free the memory we are done with */
 		GMT_free (GMT, xp);
 	}
+	return (total);
 }
 
-void gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole)
+uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment)
 {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
 	 * That detour will not be drawn, only used for fill. */
 
-	uint64_t n = S->n_rows;
+	uint64_t n = S->n_rows, k;
 	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
 
 	if (add_pole) {	/* Must detour to the N or S pole, then resample the path */
@@ -4636,11 +4655,12 @@ void gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, b
 		GMT_memcpy (&plat[1], S->coord[GMT_Y], S->n_rows, double);
 		if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) n = GMT_fix_up_path (GMT, &plon, &plat, n, 0.0, 0);
 	}
-	gmt_geo_polygon (GMT, plon, plat, n);	/* Plot filled polygon [no outline] */
+	k = gmt_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
 	if (add_pole) {		/* Delete what we made */
 		GMT_free (GMT, plon);
 		GMT_free (GMT, plat);
 	}
+	return (k);	/* Number of points plotted */
 }
 
 void GMT_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
@@ -4655,18 +4675,22 @@ void GMT_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	struct GMT_DATASEGMENT *S2 = NULL;
  	bool add_pole, separate;
 	int outline = 0;
+	uint64_t used = 0;
 	char *type[2] = {"Perimeter", "Polar cap perimeter"};
 	char *use[2] = {"fill only", "fill and outline"};
+	char comment[GMT_LEN64] = {""};
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	/* CASE 1: NO FILL REQUESTED -- JUST DRAW OUTLINE */
 
 	if (GMT_eq (PSL->current.rgb[PSL_IS_FILL][0], -1.0)) {
+		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
 		PSL_comment (PSL, "Perimeter polygon for outline only\n");
-		GMT_geo_line (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);	/* Draw the outline only */
+		GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);	/* Separately plot the outline */
 		for (S2 = S->next; S2; S2 = S2->next) {
+			if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
 			PSL_comment (PSL, "Hole polygon for outline only\n");
-			GMT_geo_line (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows);
+			GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);	/* Separately plot the outline */
 		}
 		return;	/* Done with the simple task of drawing lines */
 	}
@@ -4683,24 +4707,26 @@ void GMT_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 
 	/* Here we must lay down the perimeter and then the holes.  */
 
-	PSL_comment (PSL, "Temporarily set FO to P for complex polygon building\n");
-	PSL_command (PSL, "/FO {P}!\n");		/* Temporarily replace FO so we can build a complex path of closed polygons using {P} */
-	PSL_comment (PSL, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
-	gmt_geo_polygon_segment (GMT, S, add_pole);	/* First lay down perimeter */
+	if (PSL->internal.comments) sprintf (comment, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
+	used = gmt_geo_polygon_segment (GMT, S, add_pole, true, comment);	/* First lay down perimeter */
 	for (S2 = S->next; S2; S2 = S2->next) {	/* Process all holes [none processed if there aren't any holes] */
-		PSL_comment (PSL, "Hole polygon for %s\n", use[PSL->current.outline]);
-		gmt_geo_polygon_segment (GMT, S2, false);	/* Add this hole to the path */
+		if (PSL->internal.comments) sprintf (comment, "Hole polygon for %s\n", use[PSL->current.outline]);
+		used += gmt_geo_polygon_segment (GMT, S2, false, false, comment);	/* Add this hole to the path */
 	}
-	PSL_comment (PSL, "Reset FO and fill the path\n");
-	PSL_command (PSL, "/FO {fs os}!\nFO\n");	/* Reset FO to its original settings, then force the fill */
+	if (used) {
+		PSL_comment (PSL, "Reset FO and fill the path\n");
+		PSL_command (PSL, "/FO {fs os}!\nFO\n");	/* Reset FO to its original settings, then force the fill */
+	}
 	if (separate) {	/* Must draw outline separately */
+		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) == 0) return;	/* Nothing further to do */
 		PSL_command (PSL, "O1\n");	/* Switch on outline again */
 		PSL_comment (PSL, "%s polygon for outline only\n", type[add_pole]);
 		PSL->current.outline = outline;	/* Reset outline to what it was originally */
-		GMT_geo_line (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
+		GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);	/* Separately plot the outline */
 		for (S2 = S->next; S2; S2 = S2->next) {
+			if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) == 0) continue;	/* Nothing for this hole */
 			PSL_comment (PSL, "Hole polygon for outline only\n");
-			GMT_geo_line (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows);
+			GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);	/* Separately plot the outline */
 		}
 	}
 }

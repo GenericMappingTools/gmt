@@ -122,7 +122,7 @@ EXTERN_MSC struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *GMT, struc
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmt_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
-EXTERN_MSC void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
+EXTERN_MSC uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, bool first, const char *comment);
 EXTERN_MSC int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 
 EXTERN_MSC int GMT_gmonth_length (int year, int month);
