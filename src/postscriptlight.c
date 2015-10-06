@@ -373,7 +373,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	}
 	PSL->internal.SHAREDIR = strdup (this_c);
 	DOS_path_fix (PSL->internal.SHAREDIR);
-	if (access (PSL->internal.SHAREDIR, R_OK)) {
+	if (PSL->internal.SHAREDIR == NULL || access(PSL->internal.SHAREDIR, R_OK)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
 		PSL_exit (EXIT_FAILURE);
 	}
@@ -2111,7 +2111,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				j = 0;
 				while (ptr[j] != ';') j++;
 				ptr[j] = 0;
-				if ((s = strchr (ptr, '@'))) {	/* Also gave transparency */
+				if ((s = strchr (ptr, '@')) != NULL) {	/* Also gave transparency */
 					rgb[3] = atof (&s[1]) / 100.0;
 					s[0] = 0;
 				}
@@ -2607,7 +2607,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 		clean = psl_prepare_text (PSL, text[i]);	/* Escape special characters and European character shorthands */
 
-		if ((c = strchr (clean, '@'))) {	/* Found a @ escape command */
+		if ((c = strchr (clean, '@')) != NULL) {	/* Found a @ escape command */
 			i0 = 0;
 			i1 = (int) (c - clean);
 
@@ -4914,8 +4914,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 	PSL->internal.font = PSL_memory (PSL, PSL->internal.font, PSL->internal.N_FONTS, struct PSL_FONT);
 }
 
-int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile)
-{
+int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile) {
 	int i, status;
 	char name[PSL_BUFSIZ], file[PSL_BUFSIZ];
 	unsigned char *picture = NULL;
@@ -4943,7 +4942,7 @@ int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile)
 
 	/* Load image file. Store size, depth and bogus DPI setting */
 
-	if ((status = PSL_loadimage (PSL, file, &h, &picture))) return (0);
+	if ((status = PSL_loadimage (PSL, file, &h, &picture)) != 0) return (0);
 
 	PSL->internal.pattern[image_no].status = 1;
 	PSL->internal.pattern[image_no].nx = h.width;
