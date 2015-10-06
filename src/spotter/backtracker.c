@@ -284,7 +284,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 				break;
 
 			case 'F':	/* File with hotspot motion history */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->F.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -435,7 +435,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_backtracker_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_backtracker_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_backtracker_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the backtracker main code ----------------------------*/
 	

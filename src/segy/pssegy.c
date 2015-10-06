@@ -193,7 +193,7 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -487,7 +487,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pssegy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pssegy_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pssegy_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pssegy main code ----------------------------*/
 
@@ -598,7 +598,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
 
 	ix=0;
-	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 		/* read traces one by one */
 		if (Ctrl->S.mode == PLOT_OFFSET) {
 			/* plot traces by offset, cdp, or input order */
@@ -655,7 +655,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		data = get_segy_data (fpi, header); /* read a trace */
 		/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 		or set to number in reel header */
-		if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
+		if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 		if (Ctrl->A.active) {
 			/* need to swap the order of the bytes in the data even though assuming IEEE format */
