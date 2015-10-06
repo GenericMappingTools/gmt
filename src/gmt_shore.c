@@ -299,6 +299,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 				sprintf (path, "%s/%s%s", dir, stem, ".nc");
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
 				if ( access (path, R_OK) == 0) {	/* File can be read */
+L1:
 					if ( gshhg_require_min_version (path, version) ) {
 						fclose (fp);
 						/* update invalid GMT->session.GSHHGDIR */
@@ -310,8 +311,13 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 					else
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Failure, could not access %s\n", path);
 				}
-				else
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+				else {
+					/* Before giving up, try the old .cdf file names */
+					sprintf(path, "%s/%s%s", dir, stem, ".cdf");
+					if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
+						goto L1;
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+				}
 			}
 			fclose (fp);
 		}
@@ -394,7 +400,7 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica shelf ice grounding line as coastline */
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
-	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
+	if ((p = strstr (info, "+p")) != NULL) {	/* Requested percentage limit on small features */
 		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert percent to integer microfraction */
 	}
 	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
@@ -963,7 +969,7 @@ int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 			skip = false;
 		else {
 			for (k = 0, skip = true; skip && k < n_levels; k++)
-				if ((s_level = level[k]) == seg_level[i]) skip = false;
+				if ((s_level = (short)level[k]) == seg_level[i]) skip = false;
 		}
 		if (skip) continue;
 		if (!c->seg) c->seg = GMT_memory (GMT, NULL, c->ns, struct GMT_BR_SEGMENT);
@@ -1099,7 +1105,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			if (id < 0) {	/* Found a corner */
 				cid = id + 4;	/* ID of the corner */
 				nid = (dir == 1) ? (cid + 1) % 4 : cid;	/* Next corner [I think] */
-				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp)) != 0) {
 					/* Add the bin-border segment from last point in the growing polygon to the specified corner */
 					n_alloc += add;
 					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
@@ -1113,7 +1119,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 			else {	/* Found a segment to add to our polygon */
 				gmt_shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);	/* Get lon,lat of start of segment */
-				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp)) != 0) {
 					/* Connect the last point in the growing polygon with the starting point of this next segment */
 					n_alloc += add;
 					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
@@ -1241,7 +1247,7 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\r", c.bins[ind]);
-		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
+		if ((err = GMT_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			return (NULL);
 		}
