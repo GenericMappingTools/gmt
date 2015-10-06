@@ -1756,6 +1756,7 @@ void grd_FPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	prev1 = last - 1;
 	prev2 = last - 2;
+	if (stack[prev2]->constant && stack[prev2]->factor < 0.0)  GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one < 0 for FCDF!\n");
 	if (stack[prev1]->constant && stack[prev1]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for FCDF!\n");
 	if (stack[last]->constant  && stack[last]->factor  == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCDF!\n");
 	GMT_grd_loop (GMT, info->G, row, col, node) {

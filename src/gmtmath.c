@@ -1896,7 +1896,7 @@ int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	double F;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[prev2]->constant && (S[prev2]->factor < 0.0 || S[prev2]->factor > 1.0)) {
+	if (S[prev2]->constant && S[prev2]->factor < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error. Argument F to FPDF must be a >= 0!\n");
 		return -1;
 	}
