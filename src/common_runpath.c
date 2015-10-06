@@ -125,7 +125,7 @@ char *GMT_runtime_bindir_win32 (char *result) {
 	GMT_strrepc (result, '\\', '/');
 
 	/* Truncate full path to dirname */
-	if ( (c = strrchr (result, '/')) && c != result )
+	if (((c = strrchr (result, '/')) != NULL) && c != result)
 		*c = '\0';
 
 #ifdef DEBUG_RUNPATH
@@ -270,7 +270,7 @@ char *GMT_runtime_libdir (char *result) {
 	GMT_strrepc (result, '\\', '/');
 
 	/* Truncate full path to dirname */
-	if ( (p = strrchr (result, '/')) && p != result )
+	if (((p = strrchr (result, '/')) != NULL) && p != result)
 		*p = '\0';
 
 #ifdef DEBUG_RUNPATH
@@ -376,6 +376,12 @@ int GMT_verify_sharedir_version (const char *dir) {
 	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
 	char version_file[PATH_MAX+1];
 
+#ifdef NO_SHAREDIR_VERIFY
+	/* For Mirone and probably other future external program call one cannot impose
+	 * a certain sharedir version. */
+	return true;
+#endif
+
 #ifdef DEBUG_RUNPATH
 	fprintf (stderr, "GMT_verify_sharedir_version: got dir '%s'.\n", dir);
 #endif
@@ -383,7 +389,7 @@ int GMT_verify_sharedir_version (const char *dir) {
 	/* If the directory exists */
 	if ( access (dir, R_OK | X_OK) == 0 ) {
 		snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
-		/* Check correct version */
+		/* Check correct ver  sion */
 		if ( match_string_in_file (version_file, required_version) ) {
 #ifdef DEBUG_RUNPATH
 			fprintf (stderr, "GMT_verify_sharedir_version: found '%s' (%s).\n",
@@ -400,6 +406,16 @@ int GMT_verify_sharedir_version (const char *dir) {
 				fprintf (stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
 #endif
 				return true;
+			}
+			else {
+				/* Yet another special case: accept a file called VERSION_all. Needed when run from Mirone */
+				snprintf(version_file, PATH_MAX + 1, "%s/VERSION_all", dir);
+				if (access(version_file, R_OK) == 0) {
+#ifdef DEBUG_RUNPATH
+					fprintf(stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
+#endif
+					return true;
+				}
 			}
 		}
 	}
