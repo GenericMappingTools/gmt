@@ -109,7 +109,7 @@ int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Open the file and look for the required variable */
 	if (GMT_access (GMT, header->name, F_OK))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
-	if (nc_open (header->name, NC_NOWRITE, &ncid))
+	if ((err = nc_open (header->name, NC_NOWRITE, &ncid)))
 		return (GMT_GRDIO_OPEN_FAILED);
 	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
 		/* Old style GMT netCDF grid */
