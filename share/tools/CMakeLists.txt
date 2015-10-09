@@ -24,6 +24,7 @@ configure_file (gmt5syntax.in gmt5syntax @ONLY)
 install (PROGRAMS
 	gmt_functions.sh
 	gmt_aliases.csh
+	gmt_prepmex.sh
 	ncdeflate
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	DESTINATION ${GMT_DATADIR}/tools
