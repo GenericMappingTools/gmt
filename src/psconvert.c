@@ -1188,19 +1188,18 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					sscanf (&line[8], "%s %s %s %s %s %s %s %s %s",proj4_name,xx1,xx2,yy1,yy2,c1,c2,c3,c4);
 					west = atof (c1);		east = atof (c2);
 					south = atof (c3);		north = atof (c4);
-					GMT->common.R.wesn[XLO] = west = atof (xx1);		GMT->common.R.wesn[XHI] = east = atof (xx2);
+					GMT->common.R.wesn[XLO] = atof (xx1);		GMT->common.R.wesn[XHI] = atof (xx2);
 					if (GMT->common.R.wesn[XLO] > 180.0 && GMT->common.R.wesn[XHI] > 180.0) {
 						GMT->common.R.wesn[XLO] -= 360.0;
 						GMT->common.R.wesn[XHI] -= 360.0;
 					}
-					GMT->common.R.wesn[YLO] = south = atof (yy1);	GMT->common.R.wesn[YHI] = north = atof (yy2);
+					GMT->common.R.wesn[YLO] = atof (yy1);	GMT->common.R.wesn[YHI] = atof (yy2);
 					found_proj = true;
 					if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
 						proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
 						GMT_chop (proj4_cmd);		/* Remove the new line char */
 					}
-					if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy") ||
-						!strcmp (proj4_name,"eqc") ) {		/* Linear case, use original coords */
+					if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy")) {		/* Linear case, use original coords */
 						west  = atof(xx1);		east  = atof(xx2);
 						south = atof(yy1);		north = atof(yy2);
 						/* One further test. +xy was found, but have we geog coords? Check that */
