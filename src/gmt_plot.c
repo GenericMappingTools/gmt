@@ -4225,8 +4225,13 @@ char *GMT_export2proj4 (struct GMT_CTRL *GMT) {
 	f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
 	b = a * (1 - f);
 	sprintf(szProj4+strlen(szProj4), " +a=%.3f +b=%.6f", a, b);
-	ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
-	sprintf(szProj4+strlen(szProj4), " +ellps=%s", proj4_ename);
+	if (fabs(a - b) > 1) {		/* WGS84 is not spherical */
+		ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
+		sprintf(szProj4+strlen(szProj4), " +ellps=%s", proj4_ename);
+		if (!strcmp(proj4_ename, "WGS84"))
+			sprintf(szProj4+strlen(szProj4), " +datum=WGS84");
+	}
+	sprintf(szProj4+strlen(szProj4), " +units=m +no_defs");
 
 	pStrOut = strdup(szProj4);
 	return (pStrOut);
