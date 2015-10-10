@@ -17,8 +17,15 @@
 #
 # To prepare your system to run the gmt.mex application, run
 # /Application/GMT-5.2.x[_r#####.app]/Contents/Resources/share/tools/gmt_prepmex.sh
+# This will require sudo privileges.
 #
 #-------------------------------------------------------------------------
+printf "gmt_prepmex.sh will convert a GMT 5.2.x bundle so libraries are suitable for building the MATLAB interface\n" >&2
+printf "You must have sudo privileges on this computer.\n\nContinue? (y/n) [y]:" >&2
+read answer
+if [ "X$answer" = "Xn" ]; then
+	exit 0
+fi
 # First get a reliable absolute path to the bundle's top directory
 pushd `dirname $0` > /dev/null
 BUNDLEDIR=`pwd | sed -e sB/Contents/Resources/share/toolsBBg`
@@ -32,6 +39,7 @@ MEXBINDIR=$MEXGM5TDIR/bin
 MEXSUPDIR=$MEXLIBDIR/gmt/plugins
 # Create install directory [remove first if exist]
 sudo rm -rf $MEXGM5TDIR
+printf "gmt_prepmex.sh: Create /opt/gmt and copy files\n" >&2
 sudo mkdir -p $MEXBINDIR $MEXSUPDIR $MEXINCDIR
 # Find user's group and use that to set ownership
 grp=`id -gn`
@@ -43,6 +51,7 @@ scp -r gmt $MEXINCDIR
 cd $BUNDLEDIR/Contents/Resources/bin
 scp -r * $MEXBINDIR
 # Now copy the lib files
+printf "gmt_prepmex.sh: Copy and rename libraries\n" >&2
 cd $BUNDLEDIR/Contents/Resources/lib
 # Find a list of all libs shipped with the OSX bundle, except our own:
 ls *.dylib | egrep -v 'libgmt.dylib|libpostscriptlight.dylib' > /tmp/l.lis
@@ -55,11 +64,9 @@ done < /tmp/l.lis
 cp gmt/plugins/supplements.so $MEXLIBDIR/gmt/plugins
 cd $MEXLIBDIR
 ls *.dylib > /tmp/l.lis
+printf "gmt_prepmex.sh: Rebaptize libraries\n" >&2
 # For all libs in $MEXLIBDIR, change internal references to contain the leading "X"
 while read lib; do
-	echo
-	echo "--> $lib"
-	echo
 	otool -L $lib | grep executable_path | awk '{print $1}' > /tmp/t.lis
 	let k=1
 	while read old; do
@@ -86,8 +93,6 @@ install_name_tool -change /opt/local/lib/libtiff.5.dylib $MEXLIBDIR/libXtiff.5.d
 install_name_tool -change /opt/local/lib/libfreetype.6.dylib $MEXLIBDIR/libXfreetype.6.dylib libXgs.9.16.dylib 
 
 # Do plugin supplement separately since not called lib*
-echo "--> gmt/plugins/supplements.so"
-echo
 cd gmt/plugins
 otool -L supplements.so | grep executable_path | awk '{print $1}' > /tmp/t.lis
 let k=1
@@ -120,16 +125,16 @@ cat << EOF >> /tmp/new
 CONFIG_CFLAGS="-I/opt/gmt/include/gmt"
 CONFIG_DATA=\$(\$GMT_EXEDIR/gmt --show-datadir)
 CONFIG_INCLUDEDIR="/opt/gmt/include/gmt"
-CONFIG_LIBS="-L/opt/gmt/lib -lXgmt"
+CONFIG_LIBS="-L/opt/gmt/lib -lgmt"
 CONFIG_PREFIX="/opt/gmt"
 EOF
 sed -n '/GMT_EXEDIR/,$p' gmt-config | grep -v -f/tmp/skip >> /tmp/new
 mv -f /tmp/new gmt-config
 chmod +x gmt-config
-
+version=`gmt-config --version`
 # Report
 cat << EOF >&2
-gmt_prepmex.sh: Made new GMT 5.2 installation in /opt/gmt
-gmt_prepmex.sh: May want to add /opt/gmt to your .gmtversions and run gmtswitch to select this version
-gmt_prepmex.sh: MATLAB will need a gmt.conf file with GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so
+gmt_prepmex.sh: Made updated GMT $version installation in /opt/gmt
+gmt_prepmex.sh: Add /opt/gmt to your .gmtversions and run gmtswitch to select this version
+gmt_prepmex.sh: MATLAB needs a gmt.conf file with GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so
 EOF
