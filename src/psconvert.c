@@ -379,8 +379,7 @@ void Free_psconvert_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psconvert <psfile1> <psfile2> <...> -A[u][<margins>][-][+p[<pen>]][+g<fill>][+r][+s[m]|S<width[u]>[/<height>[u]]]\n");
@@ -406,9 +405,10 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +p[<pen>] to outline the BoundingBox [%s].\n",
-		GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	             GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n",
+	             GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -A+S<scale> to scale the image by the <scale> factor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A+r to force rounding of HighRes BoundingBox instead of ceil.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
@@ -535,7 +535,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET))) {
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
 					free (Ctrl->D.dir);
 					Ctrl->D.dir = strdup (opt->arg);
 				}
@@ -547,7 +547,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET))) {
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
 					Ctrl->F.file = strdup (opt->arg);
 					if (!GMT_File_Is_Memory (Ctrl->F.file)) GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				}
@@ -555,7 +555,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 					n_errors++;
 				break;
 			case 'G':	/* Set GS path */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET))) {
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0) {
 					free (Ctrl->G.file);
 					Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 					sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
@@ -567,7 +567,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -673,8 +673,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp)
-{
+int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp) {
 	int c;
 	int64_t in = 0;
 	char *line = *L;
@@ -737,8 +736,7 @@ void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *
 	}
 }
 
-int GMT_psconvert (void *V_API, int mode, void *args)
-{
+int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len, line_size = 0U;
@@ -811,7 +809,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psconvert_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psconvert_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psconvert main code ----------------------------*/
 
@@ -824,7 +822,8 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript version query.\n");
 		if (n != 2) {
 			/* command execution failed or cannot parse response */
-			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n", n, gsVersion.major, gsVersion.minor);
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GhostScript version query [n = %d %d %d].\n",
+			            n, gsVersion.major, gsVersion.minor);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -834,7 +833,8 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Your ghostscript version (%d.%d) no logner supports the SVG device.\n", gsVersion.major, gsVersion.minor);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Your ghostscript version (%d.%d) no logner supports the SVG device.\n",
+		            gsVersion.major, gsVersion.minor);
 		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (EXIT_FAILURE);
 	}
@@ -1056,10 +1056,10 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 					}
 					got_BB = got_HRBB = true;
 					GMT_Report (API, GMT_MSG_VERBOSE, "Figure dimensions: Width: %g points [%g %s]  Height: %g points [%g %s]\n",
-						x1-x0,
-						(x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit], API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
-						y1-y0,
-						(y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit], API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+						x1-x0, (x1-x0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
+						API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit],
+						y1-y0, (y1-y0)*GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit],
+						API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 				}
 			}
 			if (fpb != NULL) /* don't close twice */
@@ -1142,7 +1142,8 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 		/* Cannot proceed without knowing the BoundingBox */
 
 		if (!got_BB) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			GMT_Report (API, GMT_MSG_NORMAL,
+			            "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			if (!Ctrl->T.eps) remove (tmp_file);	/* Remove the temporary EPS file */
 			continue;
 		}
@@ -1617,7 +1618,7 @@ int GMT_psconvert (void *V_API, int mode, void *args)
 				free(proj4_cmd);
 				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "The gdal_translate command: \n%s\n", cmd);
+				GMT_Report (API, GMT_MSG_NORMAL, "The gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
 					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (EXIT_FAILURE);
