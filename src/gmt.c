@@ -19,7 +19,8 @@
  * Launcher for any GMT5 module via the corresponding function.
  * Modules are loaded dynamically from the GMT core library, the
  * optional supplemental library, and any number of custom libraries
- * listed via GMT_CUSTOM_LIBS in gmt.conf.
+ * listed via GMT_CUSTOM_LIBS in gmt.conf.  If <module> is not found
+ * we also try gmt<module> in case user left that part off.
  *
  * Version:	5
  * Created:	17-June-2013
@@ -51,7 +52,7 @@ int main (int argc, char *argv[]) {
 	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
 	unsigned int mode = GMT_SESSION_NORMAL;	/* Default API mode */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
-	char gmt_module[GMT_LEN32] = "gmt";
+	char gmt_module[GMT_LEN32] = "gmt";	/* Alternate module name that starts with "gmt" */
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
@@ -85,7 +86,8 @@ int main (int argc, char *argv[]) {
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* true if running the main program, false otherwise */
-	if (gmt_main && argc > 1 && (!strcmp (argv[1], "read") || !strcmp (argv[1], "write"))) {	/* Cannot call read or write module from command-line gmt.c */
+	if (gmt_main && argc > 1 && (!strcmp (argv[1], "gmtread") || !strcmp (argv[1], "read") || !strcmp (argv[1], "gmtwrite") || !strcmp (argv[1], "write"))) {
+		/* Cannot call [gmt]read or [gmt]write module from the command-line */
 		module = argv[1];	/* Name of module that does not exist */
 		status = GMT_NOT_A_VALID_MODULE;
 		modulename_arg_n = 1;
