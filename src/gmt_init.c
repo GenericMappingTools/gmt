@@ -7644,7 +7644,8 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
 
 	if (GMT->current.proj.n_geodesic_approx) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n", GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
+		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n",
+		           GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
 	}
 
 	GMT_Garbage_Collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
@@ -7734,29 +7735,25 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 
 	/* Note: GMT_set_env cannot use GMT_Report because the verbose level is not yet set */
 
-	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL
-			&& GMT_verify_sharedir_version (this_c) )
-		/* GMT5_SHAREDIR was set */
+	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL && GMT_verify_sharedir_version (this_c))	/* GMT5_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
-	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL
-			&& GMT_verify_sharedir_version (this_c) )
-		/* GMT_SHAREDIR was set */
+	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL && GMT_verify_sharedir_version (this_c)) /* GMT_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_DIR_DEBUG) )
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR_DEBUG);
 #endif
-	else if ( GMT_verify_sharedir_version (GMT_SHARE_DIR) )
-		/* Found in hardcoded GMT_SHARE_DIR */
+	else if (GMT_verify_sharedir_version (GMT_SHARE_DIR))		/* Found in hardcoded GMT_SHARE_DIR */
 		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);
 	else {
 		/* SHAREDIR still not found, make a smart guess based on runpath: */
-		if ( GMT_guess_sharedir (path, GMT->init.runtime_bindir) )
+		if (GMT_guess_sharedir (path, GMT->init.runtime_bindir))
 			GMT->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
-			fprintf (stderr, "Error: Could not locate share directory that matches the current GMT version %s.\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+			fprintf (stderr, "Error: Could not locate share directory that matches the current GMT version %s.\n",
+			         GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
@@ -7764,12 +7761,10 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine HOMEDIR (user home directory) */
 
-	if ((this_c = getenv ("HOME")) != NULL)
-		/* HOME was set */
+	if ((this_c = getenv ("HOME")) != NULL)				/* HOME was set */
 		GMT->session.HOMEDIR = strdup (this_c);
 #ifdef WIN32
-	else if ((this_c = getenv ("HOMEPATH")) != NULL)
-		/* HOMEPATH was set */
+	else if ((this_c = getenv ("HOMEPATH")) != NULL)	/* HOMEPATH was set */
 		GMT->session.HOMEDIR = strdup (this_c);
 #endif
 	else {
@@ -7783,8 +7778,7 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
-	if ((this_c = getenv ("GMT_USERDIR")) != NULL)
-		/* GMT_USERDIR was set */
+	if ((this_c = getenv ("GMT_USERDIR")) != NULL)		/* GMT_USERDIR was set */
 		GMT->session.USERDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	else if ( running_in_bindir_src && access (GMT_USER_DIR_DEBUG, R_OK|X_OK) == 0 )
@@ -7806,8 +7800,7 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 	if (GMT_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
 
-		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {
-			/* GMT_CPTDIR was set */
+		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {		/* GMT_CPTDIR was set */
 			fprintf (stderr, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
 			fprintf (stderr, "Warning: System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
 			fprintf (stderr, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", GMT->session.USERDIR);
@@ -7816,8 +7809,7 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine GMT_DATADIR (data directories) */
 
-	if ((this_c = getenv ("GMT_DATADIR")) != NULL) {
-		/* GMT_DATADIR was set */
+	if ((this_c = getenv ("GMT_DATADIR")) != NULL) {		/* GMT_DATADIR was set */
 		if (strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
 			/* A list of directories or a single directory that is accessible */
 			GMT->session.DATADIR = strdup (this_c);
@@ -7833,8 +7825,7 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
 
-	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {
-		/* GMT_TMPDIR was set */
+	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {		/* GMT_TMPDIR was set */
 		if (access (this_c, R_OK|W_OK|X_OK)) {
 			fprintf (stderr, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
 			fprintf (stderr, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
@@ -7848,8 +7839,7 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
-{
+int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Go through the given arguments and look for shorthands,
 	 * i.e., -B, -J, -R, -X, -x, -Y, -c, -p. given without arguments.
 	 * If found, see if we have a matching command line history and then
@@ -8617,7 +8607,8 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 					break;
 				case 'o':	/* Specify pole for oblique gridlines */
 					if (GMT->current.proj.projection == GMT_OBLIQUE_MERC) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projection\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+						            "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 						error++;
 					}
 					else if (!p[1] || (k = GMT_Get_Value (GMT->parent, &p[1], pole)) != 2) {

@@ -340,7 +340,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psvelo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psvelo_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psvelo_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psvelo main code ----------------------------*/
 
@@ -395,7 +395,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7], col[8], station_name);
 		}
-		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
+		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);

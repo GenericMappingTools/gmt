@@ -310,9 +310,9 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 				j = 0;
 				if (opt->arg[0] == 'c') j++, Ctrl->A.mode = 2;
 				if (opt->arg[j] && opt->arg[j] != ',') Ctrl->A.size = atof (&opt->arg[j]) * GMT->session.u2u[GMT_PT][GMT_INCH];
-				if ((t = strchr (&opt->arg[2], ','))) {	/* Want label at regular spacing */
+				if ((t = strchr (&opt->arg[2], ',')) != NULL) {	/* Want label at regular spacing */
 					t++;	/* Skip the comma */
-					error += get_annotinfo (t, &Ctrl->A.info);
+					error += (bool)get_annotinfo (t, &Ctrl->A.info);
 					Ctrl->A.mode = -Ctrl->A.mode;	/* Flag to tell machinery not to annot at entry */
 				}
 				break;
@@ -411,7 +411,7 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				error += get_annotinfo (opt->arg, &Ctrl->L.info);
+				error += (bool)get_annotinfo (opt->arg, &Ctrl->L.info);
 				break;
 
 			case 'N':
@@ -603,7 +603,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if ((error = GMT_mgd77track_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77track_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/
 	

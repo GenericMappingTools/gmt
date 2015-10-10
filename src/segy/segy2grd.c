@@ -168,7 +168,7 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -192,7 +192,7 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 				Ctrl->D.text = strdup (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -315,7 +315,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_segy2grd_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_segy2grd_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the segy2grd main code ----------------------------*/
 
@@ -412,7 +412,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->nx;
 		}
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 			if (swap_bytes) {
 /* need to permanently byte-swap number of samples in the trace header */
 				header->num_samps = bswap32 (header->num_samps);
@@ -421,7 +421,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 			data = get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace or set to number in reel header */
-			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
+			if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
 			if ((n_samp - ij0) > (uint64_t)Grid->header->ny) n_samp = Grid->header->ny + ij0;
@@ -448,7 +448,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	else {
 		/* Get trace data and position by headers */
 		ix = 0;
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 			/* read traces one by one */
 			if (Ctrl->S.mode == PLOT_OFFSET) {
 				/* plot traces by offset, cdp, or input order */
@@ -492,7 +492,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 			data = get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 			   or set to number in reel header */
-			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
+			if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			if (swap_bytes) {
 				/* need to swap the order of the bytes in the data even though assuming IEEE format */

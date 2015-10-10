@@ -587,7 +587,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
 						strncpy (txt, &opt->arg[2], GMT_LEN256);
-						if ((p = strchr (txt, '/'))) p[0] = '\0';
+						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 						if (p) {
 							p++;
@@ -817,7 +817,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoupe_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pscoupe_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pscoupe_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pscoupe main code ----------------------------*/
 
@@ -930,7 +930,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 		else
 			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
 
- 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
+ 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);

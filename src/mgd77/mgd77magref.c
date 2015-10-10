@@ -444,7 +444,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
-	if ((error = GMT_mgd77magref_parse (GMT, Ctrl, options))) {
+	if ((error = GMT_mgd77magref_parse (GMT, Ctrl, options)) != 0) {
 		MGD77_end (GMT, &M);
 		Return (error);
 	}
@@ -633,7 +633,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 			if (Ctrl->do_CM4) {				/* DO CM4 only. Eval CM4 at all points */
 				int err;
 				if ((err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->coord[GMT_X],
-							T->segment[s]->coord[GMT_Y], alt_array, time_array))) {
+							T->segment[s]->coord[GMT_Y], alt_array, time_array)) != 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: this segment has a record generating an error.\n"
 						"Unfortunately, this means all other eventually good\n"
 						"records are also ignored. Fix the bad record and rerun the command.\n");
