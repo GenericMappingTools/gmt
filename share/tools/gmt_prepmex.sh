@@ -35,6 +35,7 @@ MEXGM5TDIR=/opt/gmt
 # Set path to additional subdirectories
 MEXLIBDIR=$MEXGM5TDIR/lib
 MEXINCDIR=$MEXGM5TDIR/include
+MEXSHADIR=$MEXGM5TDIR/share
 MEXBINDIR=$MEXGM5TDIR/bin
 MEXSUPDIR=$MEXLIBDIR/gmt/plugins
 # Create install directory [remove first if exist]
@@ -44,6 +45,9 @@ sudo mkdir -p $MEXBINDIR $MEXSUPDIR $MEXINCDIR
 # Find user's group and use that to set ownership
 grp=`id -gn`
 sudo chown -R ${USER}:${grp} $MEXGM5TDIR
+# Copy the share files
+cd $BUNDLEDIR/Contents/Resources
+scp -r share $MEXSHADIR
 # Copy the include files
 cd $BUNDLEDIR/Contents/Resources/include
 scp -r gmt $MEXINCDIR

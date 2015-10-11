@@ -41,6 +41,7 @@ struct GMT_PEN {
 	double offset;			/* In points */
 	double rgb[4];			/* RGB color of pen + Transparency 0-1 [0 = opaque] */
 	char style[GMT_PEN_LEN];	/* Uses points as unit internally */
+	unsigned int mode;		/* Line-type: PSL_LINEAR [0; default] or PSL_BEZIER [1] */
 };
 
 /*! Holds fill attributes */

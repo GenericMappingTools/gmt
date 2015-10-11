@@ -1007,7 +1007,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->W.pen[k]);
 						last_pen_level = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 
@@ -1069,7 +1069,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->I.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 
@@ -1131,7 +1131,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->N.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 

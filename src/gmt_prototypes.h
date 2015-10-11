@@ -189,7 +189,7 @@ EXTERN_MSC void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], ui
 EXTERN_MSC void GMT_map_basemap (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_map_clip_off (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag);
-EXTERN_MSC void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n);
+EXTERN_MSC void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, unsigned int mode);
 EXTERN_MSC void GMT_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
 EXTERN_MSC void GMT_setfill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, int outline);
 EXTERN_MSC void GMT_vertical_axis (struct GMT_CTRL *GMT, unsigned int mode);

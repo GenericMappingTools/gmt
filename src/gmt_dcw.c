@@ -447,7 +447,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				}
 				else {	/* Plot outline only */
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, P->coord[GMT_X], P->coord[GMT_Y], P->n_rows)) == 0) continue;
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 		}

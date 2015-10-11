@@ -1466,13 +1466,24 @@ bool gmt_is_penstyle (char *word) {
 /*! . */
 bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	int i, n;
-	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""};
+	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	strncpy (line, buffer, GMT_BUFSIZ);	/* Work on a copy of the arguments */
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
+
+	/* First chop off and processes any line modifiers :
+	 * +b : Draw line via Bezier spline [Default is linear segments]
+	 * +o<offset(s) : Start and end line after an initial offset from actual coordinates [planned for 5.3]
+	 * +v<vecargs>  : Draw vector heads at line endings [planned for 5.3].
+	 */
+	
+	if ((c = strstr (line, "+b"))) {
+		P->mode = PSL_BEZIER;
+		c[0] = '\0';	/* Chop off modifiers */
+	}
 
 	/* Processes pen specifications given as [width[<unit>][,<color>[,<style>[t<unit>]]][@<transparency>] */
 
