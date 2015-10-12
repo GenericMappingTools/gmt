@@ -210,9 +210,9 @@ Optional Arguments
     PostScript file, prefixed with %%PROJ.
 
     For example the command
-    
+
        ::
-       
+
         gmt pscoast -JM0/12c -R-10/-4/37/43 \
         -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
 
@@ -255,7 +255,9 @@ rasterization (and output if **-Te** is set).
 Although PDF is also a vector format, the **-E** option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in
 the document. **ps2raster** therefore uses a larger default resolution
-when creating PDF files. In order to obtain high-quality PDF files, the
+when creating PDF files. **-E** also determines the resolution of the
+boundingbox values used to indicate the size
+of the output PDF. In order to obtain high-quality PDF files, the
 */prepress* options are in effect, allowing only loss-less DEFLATE
 compression of raster images embedded in the PostScript file.
 
