@@ -833,7 +833,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Your ghostscript version (%d.%d) no logner supports the SVG device.\n",
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Your ghostscript version (%d.%d) no longer supports the SVG device.\n",
 		            gsVersion.major, gsVersion.minor);
 		GMT_Report (API, GMT_MSG_NORMAL, "We recommend converting to PDF and then installing the pdf2svg package.\n");
 		Return (EXIT_FAILURE);
