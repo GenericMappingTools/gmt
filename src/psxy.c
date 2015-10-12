@@ -329,6 +329,16 @@ int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
 	return GMT_OK;
 }
 
+void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, struct GMT_PEN *P)
+{	/* Maybe add vector heads */
+	unsigned int k;
+	
+	for (k = 0; k < 2; k++) {
+		if (P->end[k].V == NULL) continue;
+		/* Add vector heads to this end */
+	}
+}
+
 int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psxy synopsis and optionally full usage information */
@@ -1610,6 +1620,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					if (draw_line) {
 						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 						GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, current_pen.mode);
+						plot_end_vectors (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &current_pen);	/* Maybe add vector heads */
 					}
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must also draw fault crossbars */
