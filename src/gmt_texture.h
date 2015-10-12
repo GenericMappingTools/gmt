@@ -35,13 +35,27 @@
  *			GMT TEXTURE STRUCTURE DEFINITIONS
  *--------------------------------------------------------------------*/
 
+struct GMT_VECT_ATTR;	/* Forward declaration (declared in gmt_plot.h) */
+
+/*! Holds line attributes */
+struct GMT_LINE_END {
+	double offset;		/* Offset the start or stop of the line by this amount before drawing */
+	unsigned int type;	/* Projection type for distances */
+	char unit;		/* Unit of the offset (X for Cartesian, C for plot distances in inch, else map distances) */
+	/* Here we will also add vector head attributes in 5.3 */
+	double length;
+	struct GMT_VECT_ATTR *V;
+};
+
 /*! Holds pen attributes */
 struct GMT_PEN {
 	double width;			/* In points */
 	double offset;			/* In points */
 	double rgb[4];			/* RGB color of pen + Transparency 0-1 [0 = opaque] */
 	char style[GMT_PEN_LEN];	/* Uses points as unit internally */
+	/* For line modifications: */
 	unsigned int mode;		/* Line-type: PSL_LINEAR [0; default] or PSL_BEZIER [1] */
+	struct GMT_LINE_END end[2];	/* What happens at each end of the line (see above) */
 };
 
 /*! Holds fill attributes */

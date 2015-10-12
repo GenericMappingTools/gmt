@@ -414,7 +414,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to output the resulting x, y data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append O to output all resulting x, y data even with y=0.\n");
 	GMT_Option (API, "K");
-	GMT_pen_syntax (API->GMT, 'L', "Specify pen to draw histogram.");
+	GMT_pen_syntax (API->GMT, 'L', "Specify pen to draw histogram.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0 = mean and standard deviation [Default]\n");
@@ -518,7 +518,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 			case 'L':		/* Set line attributes */
 				Ctrl->L.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					GMT_pen_syntax (GMT, 'L', " ");
+					GMT_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -535,7 +535,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p"))) {
 					if (GMT_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
-						GMT_pen_syntax (GMT, 'L', " ");
+						GMT_pen_syntax (GMT, 'L', " ", 0);
 						n_errors++;
 					}
 				}

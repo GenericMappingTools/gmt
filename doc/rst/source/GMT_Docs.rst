@@ -506,7 +506,9 @@ changes to syntax will be backwards compatible:
    The slip-vector symbol can now optionally accept a vector-head angle [30].
    The custom symbols definition tests can now compare two input variables.
    We also added a **-F** option to draw line segments from an input data sets using
-   a variety of connectivity modes.
+   a variety of connectivity modes.  Finally, for drawing lines there are new line
+   attribute modifiers available via the pen setting **-W** such as drawing with a
+   Bezier spline (**+s**) or trimming the segments from the ends before plotting (**+o**\ *offset*).
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
    modifiers for handling periodic plot symbols.  Like, psxy it gets the same improvements

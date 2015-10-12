@@ -215,7 +215,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 				if (!p[1])
 					Ctrl->A.pen = GMT->current.setting.map_default_pen;
 				else if (GMT_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					GMT_pen_syntax (GMT, 'A', "sets background outline pen attributes");
+					GMT_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
 					error++;
 				}
 				break;
@@ -226,7 +226,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 					error++;
 				}
 				else if (GMT_getfill (GMT, &p[1], &Ctrl->A.fill)) {
-					GMT_pen_syntax (GMT, 'A', "sets background fill attributes");
+					GMT_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
 					error++;
 				}
 				break;

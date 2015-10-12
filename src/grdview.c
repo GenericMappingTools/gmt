@@ -368,10 +368,10 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
 	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
 	                "\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
-	                "\t   Append o[<pen>] to draw tile outline [Default uses no outline].");
+	                "\t   Append o[<pen>] to draw tile outline [Default uses no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.");
+	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (API->GMT, P));
@@ -574,7 +574,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 					Ctrl->T.outline = true;
 					k++;
 					if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
-						GMT_pen_syntax (GMT, 'T', " ");
+						GMT_pen_syntax (GMT, 'T', " ", 0);
 						n_errors++;
 					}
 				}
@@ -594,7 +594,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-					GMT_pen_syntax (GMT, 'W', " ");
+					GMT_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				if (j == 0)	/* Copy pen when using just -W */

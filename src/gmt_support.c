@@ -101,6 +101,12 @@ enum GMT_profmode {
 	GMT_GOT_RADIUS	= 32,
 };
 
+/*! . */
+enum GMT_ends {
+	BEG = 0,
+	END = 1
+};
+
 /*! Internal struct used in the processing of CPT z-scaling and truncation */
 struct CPT_Z_SCALE {
 	unsigned int z_adjust;	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
@@ -1475,14 +1481,50 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	/* First chop off and processes any line modifiers :
-	 * +b : Draw line via Bezier spline [Default is linear segments]
+	 * +s : Draw line via Bezier spline [Default is linear segments]
 	 * +o<offset(s) : Start and end line after an initial offset from actual coordinates [planned for 5.3]
-	 * +v<vecargs>  : Draw vector heads at line endings [planned for 5.3].
+	 * +b<vecargs>  : Draw vector head at line beginning [planned for 5.3].
+	 * +e<vecargs>  : Draw vector head at line end [planned for 5.3].
 	 */
 	
-	if ((c = strstr (line, "+b"))) {
-		P->mode = PSL_BEZIER;
-		c[0] = '\0';	/* Chop off modifiers */
+	if ((c = strchr (line, '+')) && strchr ("beos", c[1])) {	/* Found valid modifiers */
+		char mods[GMT_LEN256] = {""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64];
+		unsigned int pos = 0;
+		int n;
+		size_t len;
+		strcpy (mods, &c[1]);	/* Get our copy of the modifiers */
+		c[0] = '\0';		/* Chop off modifiers */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pen modifier found: %s\n", mods);
+		while ((GMT_strtok (mods, "+", &pos, p))) {
+			switch (p[0]) {
+				case 's':	P->mode = PSL_BEZIER; break;
+				case 'o':
+					n = sscanf (&p[1], "%[^/]/%s", T[BEG], T[END]);
+					if (n == 1) strcpy (T[END], T[BEG]);
+					for (n = 0; n < 2; n++) {
+						len = strlen (T[n]) - 1;
+						if (strchr (GMT_DIM_UNITS, T[n][len])) {	/* Plot distances in cm,inch,points */
+							P->end[n].type = 0;
+							P->end[n].unit = 'C';
+							P->end[n].offset = GMT_to_inch (GMT, T[n]);
+						}
+						else if (strchr (GMT_LEN_UNITS, T[n][len]))	/* Length units */
+							P->end[n].type = GMT_get_distance (GMT, T[n], &P->end[n].offset, &P->end[n].unit);
+						else {	/* No units, select Cartesian */
+							P->end[n].type = 0;
+							P->end[n].unit = 'X';
+							P->end[n].offset = atof (T[n]);
+						}
+					}
+					break;
+				case 'b':	/* Vector head at beginning */
+				case 'e':	/* Vector head at end */
+					break;	/* NOT IMPLEMENTED UNTIL 5.3 */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pen modifier (%s) not recognized.\n", p);
+					break;
+			}
+		}
 	}
 
 	/* Processes pen specifications given as [width[<unit>][,<color>[,<style>[t<unit>]]][@<transparency>] */
@@ -1717,7 +1759,7 @@ int GMT_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	int last, d_flag = 1, start = 1, way;
 	char copy[GMT_LEN64] = {""};
 
-	/* Syntax:  -S[-|+]<radius>[d|e|f|k|m|M|n|s|u]  */
+	/* Syntax:  -S[-|+]<dist>[d|e|f|k|m|M|n|s|u]  */
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_get_distance\n"); return (-1); }
 
@@ -10990,7 +11032,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			if (pen_p[0] == '-')	/* Do not want to draw outline */
 				s->pen->rgb[0] = -1;
 			else if (GMT_getpen (GMT, pen_p, s->pen)) {
-				GMT_pen_syntax (GMT, 'W', " ");
+				GMT_pen_syntax (GMT, 'W', " ", 0);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
@@ -12964,3 +13006,62 @@ void GMT_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double
 		ref->y += off[GMT_Y];
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Reference x = %g y = %g\n", ref->x, ref->y);
 }
+
+unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, struct GMT_PEN *P)
+{	/* Recompute start and end points of line if offset trims are set */
+	uint64_t last, next, current, inc, n, new_n, start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
+	int increment[2] = {1, -1};
+	size_t n_alloc = 0;
+	unsigned int k, proj_type;
+	double *x = NULL, *y = NULL, dist, ds, f1, f2, x0, x1, y0, y1;
+	
+	if (P == NULL) return 0;	/* No settings given */
+	if (GMT_IS_ZERO (P->end[BEG].offset) && GMT_IS_ZERO (P->end[END].offset)) return 0;	/* No trims given */
+
+	/* Here we must do some trimming */
+	x = *xx;	y = *yy;	n = *nn;	/* Input arrays and length */
+	start[END] = stop[BEG] = n-1;
+	for (k = 0; k <= 1; k++) {
+		if (GMT_IS_ZERO (P->end[k].offset)) {	/* No trim at this end */
+			new[k] = start[k];
+			continue;
+		}
+		proj_type = GMT_init_distaz (GMT, P->end[k].unit, P->end[k].type, GMT_MAP_DIST);
+		next = start[k];	last = stop[k];	inc = increment[k];
+		dist = 0.0;
+		if (proj_type == GMT_GEO2CART) GMT_geo_to_xy (GMT, x[next], y[next], &x1, &y1);
+		while (dist < P->end[k].offset && next != last) {	/* Must trim more */
+			current = next;
+			next += inc;
+			if (proj_type == GMT_GEO2CART) {	/* Project and get distances in inches */
+				x0 = x1;	y0 = y1;
+				GMT_geo_to_xy (GMT, x[next], y[next], &x1, &y1);
+				ds = hypot (x0 - x1, y0 - y1);
+			}
+			else	/* User distances */
+				ds = GMT_distance (GMT, x[next], y[next], x[current], x[next]);
+			dist += ds;
+		}
+		if (current == last)	/* Trimmed away the entire line */
+			return 1;
+		/* Most likely dist now exceeds trim unless by fluke it is equal */
+		/* Must revise terminal point */
+		f1 = (GMT_IS_ZERO (ds)) ? 1.0 : (dist - P->end[k].offset) / ds;
+		f2 = 1.0 - f1;
+		x[current] = x[current] * f1 + x[next] * f2;
+		y[current] = y[current] * f1 + y[next] * f2;
+		new[k] = current;	/* First (or last) point in trimmed line */
+	}
+	if (new[END] <= new[BEG]) return 1;	/* Trimmed past each end */
+	if (new[BEG] == start[BEG] && new[END] == start[END]) return 0;	/* No change in segment length so no need to reallocate */
+	new_n = new[END] - new[BEG] + 1;	/* New length of line */
+	GMT_prep_tmp_arrays (GMT, new_n, 2);	/* Init or reallocate tmp vectors */
+	GMT_memcpy (GMT->hidden.mem_coord[GMT_X], &x[new[BEG]], new_n, double);
+	GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], &y[new[BEG]], new_n, double);
+	GMT_malloc2 (GMT, *xx, *yy, new_n, &n_alloc, double);
+	GMT_memcpy (*xx, GMT->hidden.mem_coord[GMT_X], new_n, double);
+	GMT_memcpy (*yy, GMT->hidden.mem_coord[GMT_Y], new_n, double);
+	*nn = new_n;
+	return 0;
+}
+	

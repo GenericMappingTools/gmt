@@ -942,8 +942,8 @@ void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	\param option ...
 	\param string ...
 */
-void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{
+void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode)
+{	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c ", option);
 	GMT_message (GMT, string, GMT_putpen (GMT, GMT->current.setting.map_default_pen));
@@ -961,6 +961,20 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
 	GMT_message (GMT, "\t                 <offset> shifts elements from start of the line [0].\n");
 	GMT_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
+	if (mode) 
+		GMT_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
+	if (mode & 1) 
+		GMT_message (GMT, "\t     +s Draw line using a Bezier spline in the PostScript [Linear spline].\n");
+	if (mode & 2) {
+		GMT_message (GMT, "\t     +o<offset>[unit] Trim the line from the end inward by the specified amount.\n");
+		GMT_message (GMT, "\t        Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian].\n", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
+		GMT_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
+	}
+	if (mode & 4) {
+		GMT_message (GMT, "\t     +b<vecspecs> Add vector head with the given specs at beginning of line.\n");
+		GMT_message (GMT, "\t     +e<vecspecs> Add vector head with the given specs at end of line.\n");
+		GMT_message (GMT, "\t        See vector specifications for details.\n");
+	}
 }
 
 /*! .

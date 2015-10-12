@@ -73,7 +73,7 @@ EXTERN_MSC void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *str
 EXTERN_MSC void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind);
 EXTERN_MSC void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string);
-EXTERN_MSC void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string);
+EXTERN_MSC void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode);
 EXTERN_MSC void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error);
 EXTERN_MSC void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
@@ -331,6 +331,7 @@ EXTERN_MSC int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify);
 EXTERN_MSC int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double par[]);
 EXTERN_MSC void GMT_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo);
 EXTERN_MSC void GMT_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg);
+EXTERN_MSC unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **x, double **yy, uint64_t *nn, struct GMT_PEN *P);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);

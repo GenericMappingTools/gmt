@@ -713,7 +713,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (txt_b[0] == '-')	/* Gave - as pen, meaning just note at what y-value we are but draw no line */
 							d_line_half_width = 0.0;
 						else {	/* Process the pen specification */
-							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) GMT_pen_syntax (GMT, 'W', " ");
+							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) GMT_pen_syntax (GMT, 'W', " ", 0);
 							GMT_setpen (GMT, &current_pen);
 							d_line_half_width = 0.5 * current_pen.width / PSL_POINTS_PER_INCH;	/* Half the pen width */
 						}
@@ -1271,7 +1271,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							double v_line_y_stop = d_line_last_y0;
 							v_line_ver_offset = GMT_to_inch (GMT, txt_a);
 							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) {
-								GMT_pen_syntax (GMT, 'V', " ");
+								GMT_pen_syntax (GMT, 'V', " ", 0);
 								Return (GMT_RUNTIME_ERROR);
 							}
 							GMT_setpen (GMT, &current_pen);

@@ -28,7 +28,7 @@ Synopsis
 [ **-S**\ [*symbol*][\ *size*\ [**u**] ] [ **-T** ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**][*pen*] ]
+[ **-W**\ [**-**\ \|\ **+**][*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ]
@@ -199,12 +199,17 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
+**-W**\ [**-**\ \|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
     width = default, color = black, style = solid]. A leading **+** will
     use the lookup color (via **-C**) for both symbol fill and outline
     pen color, while a leading **-** will set outline pen color and turn
-    off symbol fill.
+    off symbol fill.  You can also append one or more line attribute modifiers:
+    **+s** will draw the line using a PostScript Bezier spline [linear spline],
+    **+o**\ *offset*\ **u** will start and stop drawing the line the given offsets
+    from the end point.  Append unit **u** from **c**\ \|\ **i**\ \|\ **p** to
+    indicate plot distance on the map or append map distance units instead (see below)
+    [Cartesian distances].
 
 .. include:: explain_-XY.rst_
 
@@ -237,6 +242,8 @@ Optional Arguments
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_vectors.rst_
 

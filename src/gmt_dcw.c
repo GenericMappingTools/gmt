@@ -585,7 +585,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				case 'L':  F->mode = DCW_GET_COUNTRY_AND_STATE;  break;	/* Country and state list */
 				case 'p':
 					if (GMT_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
-						GMT_pen_syntax (GMT, option, " ");
+						GMT_pen_syntax (GMT, option, " ", 0);
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_OUTLINE;
