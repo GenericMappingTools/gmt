@@ -3722,6 +3722,69 @@ fashion. See the :doc:`gmt.conf` man page for more information.
 
    Line appearance can be varied by using :ref:`PS_LINE_CAP <PS_LINE_CAP>`
 
+Specifying line attributes
+--------------------------
+
+A line is drawn with the texture provided by the chosen pen (`Specifying pen attributes`_).
+However, depending on the module, a line also may have other attributes that can be changed in some modules.
+Given as modifiers to a pen specification, one or more modifiers may be appended to a pen
+specification. The line attribute modifiers are:
+
+
+* **+o**\ *offset*\ [**u**]
+    Lines are normally drawn from the beginning to the end point. You can modify this behavior
+    by requesting a gap between these terminal points and the start and end of the
+    visible line.  Do this by specifying the desired offset between the terminal point and the
+    start of the visible line.  Unless you are giving distances in Cartesian data units,
+    please append the distance unit, **u**.  Depending on your desired effect, you can append
+    plot distance units (i.e., **c**\ m, **i**\ nch, **p**\ oint; Section `Length units`_)) or map distance units,
+    such as **k**\ m, **d**\ egrees, and many other standard distance units listed in
+    Section `GMT units`_.  If only one offset is given then it applies equally to both ends of
+    the line.  Give two slash-separated distances to indicate different offsets at the
+    beginning and end of the line (and use 0 to indicate no offset at one end).
+
+.. _Line_offset:
+
+.. figure:: /_images/GMT_lineoffset.*
+   :width: 500 px
+   :align: center
+
+   The thin red line shows an original line segment, whereas the thick pen illustrates the effect
+   of plotting the same line but this time requesting offsets of 1 cm at the beginning and 500 km
+   at the end, via **-W2p+o**\ 1c/500k.
+
+* **+s**
+    Normally, all *PostScript* line drawing is implemented as a linear spline, i.e., we simply
+    draw straight line-segments between the given data points.  Use this modifier to render the
+    line using Bezier splines for a smoother curve.
+
+.. _Line_bezier:
+
+.. figure:: /_images/GMT_bezier.*
+   :width: 500 px
+   :align: center
+
+   (left) Normal plotting of line given input points (red circles) via **-W2p**. (right) Letting
+   the points be interpolated by a Bezier cubic spline via **-W2p+s**.
+
+* **+v**\ [**b**\ \|\ **e**]\ *vspecs*
+    By default, nothing special takes place at the ends of the lines.  Using this modifier you can
+    place arrow-heads pointing outward at one (or both) ends of the line.  Use **v** if you
+    want the same vector attributes for both ends, or use **vb** and **ve** to specify a vector
+    only at the beginning or end of the line, respectively.  Finally, these two may both be given
+    to specify different attributes for the two vectors.  The vector specification is very rich
+    and you may place other symbols, such as circle, square, or a terminal line, in lieu of the
+    vector head (see :doc:`psxy` for more details).
+
+.. _Line_vector:
+
+.. figure:: /_images/GMT_linevector.*
+   :width: 500 px
+   :align: center
+
+   Same line as above but now we have requested a blue vector head at the end of the line and a
+   red circle at the beginning of the line, made possible by the **+vb** and **+ve** modifiers.
+
 Specifying area fill attributes
 -------------------------------
 
