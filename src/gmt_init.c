@@ -963,16 +963,16 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	GMT_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
 	if (mode) 
 		GMT_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
-	if (mode & 1) 
-		GMT_message (GMT, "\t     +s Draw line using a Bezier spline in the PostScript [Linear spline].\n");
 	if (mode & 2) {
 		GMT_message (GMT, "\t     +o<offset>[unit] Trim the line from the end inward by the specified amount.\n");
 		GMT_message (GMT, "\t        Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian].\n", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 		GMT_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
 	}
+	if (mode & 1) 
+		GMT_message (GMT, "\t     +s Draw line using a Bezier spline in the PostScript [Linear spline].\n");
 	if (mode & 4) {
-		GMT_message (GMT, "\t     +b<vecspecs> Add vector head with the given specs at beginning of line.\n");
-		GMT_message (GMT, "\t     +e<vecspecs> Add vector head with the given specs at end of line.\n");
+		GMT_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
+		GMT_message (GMT, "\t        Use +ve and +vb separately to give different endings (+v applies to both).\n");
 		GMT_message (GMT, "\t        See vector specifications for details.\n");
 	}
 }

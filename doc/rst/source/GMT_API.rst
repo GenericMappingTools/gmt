@@ -2019,7 +2019,7 @@ three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 
     *mode* == ``GMT_MODULE_EXIST``
-        Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
+        Return GMT_NOERROR (0) if module exists, nonzero otherwise.
 
     *mode* == ``GMT_MODULE_PURPOSE``
         Just prints the purpose of the module; args should be NULL.

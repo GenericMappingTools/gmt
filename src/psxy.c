@@ -137,6 +137,7 @@ void Free_psxy_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocate 
 	if (!C) return;
 	if (C && C->C.file) free (C->C.file);
 	if (C && C->S.arg) free (C->S.arg);
+	GMT_freepen (GMT, &C->W.pen);
 	GMT_free (GMT, C);
 }
 
@@ -330,12 +331,27 @@ int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
 }
 
 void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, struct GMT_PEN *P)
-{	/* Maybe add vector heads */
-	unsigned int k;
-	
+{	/* Maybe add vector heads.  Here, x,y are in inches on the plot */
+	unsigned int k, current[2] = {0,0}, next[2] = {1,0};
+	double dim[PSL_MAX_DIMS], angle, s, c, L;
+	if (n < 2) return;
+	current[1] = n-1;	next[1] = n-2;
 	for (k = 0; k < 2; k++) {
 		if (P->end[k].V == NULL) continue;
 		/* Add vector heads to this end */
+		angle = d_atan2d (y[current[k]] - y[next[k]], x[current[k]] - x[next[k]]);
+		sincosd (angle, &s, &c); 
+		L = (P->end[k].V->v.v_kind[1] == GMT_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
+		P->end[k].V->v.v_width = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
+		dim[0] = x[current[k]] + c * L; dim[1] = y[current[k]] + s * L;
+		dim[2] = P->end[k].V->v.v_width, dim[3] = P->end[k].V->v.h_length, dim[4] = P->end[k].V->v.h_width;
+		dim[5] = GMT->current.setting.map_vector_shape;
+		dim[6] = (double)P->end[k].V->v.status;
+		dim[7] = (double)P->end[k].V->v.v_kind[0];	dim[8]  = (double)P->end[k].V->v.v_kind[1];
+		dim[9] = (double)P->end[k].V->v.v_trim[0];	dim[10] = (double)P->end[k].V->v.v_trim[1];
+		GMT_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & GMT_VEC_OUTLINE2) == GMT_VEC_OUTLINE2);
+		if (P->end[k].V->v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &P->end[k].V->v.pen);
+		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
 	}
 }
 
@@ -469,7 +485,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_vector_syntax (API->GMT, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 3);
+	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes [Default pen is %s]:", 7);
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 	GMT_Option (API, "X,a,bi");

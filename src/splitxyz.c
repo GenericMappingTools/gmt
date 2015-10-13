@@ -162,8 +162,8 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of <azimuth> [Default = All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is within +/- <tolerance>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   degrees of <azimuth> [Default = All].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change> [ignore course changes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");

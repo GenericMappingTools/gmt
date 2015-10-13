@@ -508,7 +508,8 @@ changes to syntax will be backwards compatible:
    We also added a **-F** option to draw line segments from an input data sets using
    a variety of connectivity modes.  Finally, for drawing lines there are new line
    attribute modifiers available via the pen setting **-W** such as drawing with a
-   Bezier spline (**+s**) or trimming the segments from the ends before plotting (**+o**\ *offset*).
+   Bezier spline (**+s**), trimming the segments from the ends before plotting (**+o**\ *offset*),
+   or adding vector heads at the ends of the lines (**+v**).
 
 *  :doc:`psxyz` also has the new **-SE-**\ *diameter* shorthand as well as the **-N**
    modifiers for handling periodic plot symbols.  Like, psxy it gets the same improvements

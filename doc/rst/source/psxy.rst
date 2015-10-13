@@ -205,11 +205,14 @@ Optional Arguments
     use the lookup color (via **-C**) for both symbol fill and outline
     pen color, while a leading **-** will set outline pen color and turn
     off symbol fill.  You can also append one or more line attribute modifiers:
-    **+s** will draw the line using a PostScript Bezier spline [linear spline],
     **+o**\ *offset*\ **u** will start and stop drawing the line the given offsets
     from the end point.  Append unit **u** from **c**\ \|\ **i**\ \|\ **p** to
     indicate plot distance on the map or append map distance units instead (see below)
     [Cartesian distances].
+    **+s** will draw the line using a *PostScript* Bezier spline [linear spline].
+    **+v**\ *vspecs* will place a vector head at the ends of the lines.  You can
+    use **+vb** and **+ve** to specify separate vector specs at each end.  See the
+    Vector Attributes for more information.
 
 .. include:: explain_-XY.rst_
 

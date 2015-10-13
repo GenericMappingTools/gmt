@@ -44,7 +44,7 @@ struct GMT_LINE_END {
 	char unit;		/* Unit of the offset (X for Cartesian, C for plot distances in inch, else map distances) */
 	/* Here we will also add vector head attributes in 5.3 */
 	double length;
-	struct GMT_VECT_ATTR *V;
+	struct GMT_SYMBOL *V;
 };
 
 /*! Holds pen attributes */
