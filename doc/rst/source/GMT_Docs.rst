@@ -229,7 +229,7 @@ GMT logo to maps and posters.
 :doc:`gmtregress` determines linear regressions for data sets using
 a variety of misfit norms and regression modes.
 
-Three new modules have also been added to the *potential* supplement:
+Four new modules have also been added to the *potential* supplement:
 
 :doc:`gmtflexure <supplements/potential/gmtflexure>`:
 	Compute the elastic flexural response to a 2-D (line) load.
@@ -246,7 +246,8 @@ Three new modules have also been added to the *potential* supplement:
 	Compute a grid or profile of the free-air gravity, geoid or vertical gravity gradient anomaly
 	over a 3-D body given as horizontal polygonal slices.
 
-In addition, here are two established modules that have been given more suitable names:
+In addition, two established modules have been given more suitable names
+(however, the old names are still recognized):
 
 :doc:`grdconvert`
     Converts between different grid formats.
@@ -270,7 +271,7 @@ We have added two new lower-case GMT common options:
 *  Programs that need to specify which values should represent "no data"
    can now use **-d**\ [**i**\ \|\ **o**]\ *nodata*. For instance, this
    option replaces the old **-N** in :doc:`grd2xyz` and :doc:`xyz2grd`
-   (but are backwards compatible).
+   (but is backwards compatible).
 
 *  Some modules are now using OpenMP to spread computations over all
    available cores (only available if compiled with OpenMP support).
@@ -327,9 +328,9 @@ Two of the established GMT common options have seen minor improvements:
 General improvements
 --------------------
 
-A few changes have affects across GMT; these are:
+Several changes have affects across GMT; these are:
 
-*  Add optional multi-threading capabilities to several modules, such as
+*  Added optional multi-threading capabilities to several modules, such as
    greenspline, grdfilter, grdmask, grdsample, the potential supplement's
    grdgravmag3d, talwani2d and talwani3d and x2sys's x2sys_solve.
 
@@ -338,21 +339,21 @@ A few changes have affects across GMT; these are:
    new multi-processor enabled algorithm.
 
 *  Allow comma-separated colors instead of CPT files in options that are
-   used to pass a CPT file (typically this means **-C**).
+   used to pass a CPT file (typically this means the **-C** option).
 
 *  Faster netCDF reading for COARDS table data (i.e., not grids).
 
 *  When importing grids via GDAL the projection info is preserved and stored as netCDF metadata.
    This will allow third party programs like GDAL and QGis to recognize the projection info of
-   GMT created grids. Same thing happens when creating grids with :doc:`grdproject`
+   GMT created grids. Same thing happens when creating grids with :doc:`grdproject`.
 
 *  Tools using GSHHG can now access information for both Antarctica data
-   set (ice-front and grounding line).
+   sets (ice-front and grounding line).
 
 *  Tools that specify pens may now explicitly choose "solid" as an attribute,
-   and we added "dashed" and "dotted" as alternatives to "-" and ".".
+   and we added "dashed" and "dotted" as alternatives to the shorthands "-" and ".".
 
-*  Added two alternative vector head choices (terminal and circle) in addition
+*  Added three alternative vector head choices (terminal, square and circle) in addition
    to the default "arrow" style. We have also added the option for trimming the
    beginning and/or end point location of a vector, and you may now place the
    vector head at the mid-point of the vector instead at the ends.
@@ -372,8 +373,8 @@ A few changes have affects across GMT; these are:
 Program-specific improvements
 -----------------------------
 
-Finally, here is a list of some enhancements to individual modules.  Any
-changes to syntax will be backwards compatible:
+Finally, here is a list of enhancements to individual modules.  Any
+changes to existing syntax will be backwards compatible:
 
 *  :doc:`fitcircle` now has a new option **-F** that allows output to be in the
    form of coordinates only (no text report) and you may choose which items to
@@ -382,14 +383,14 @@ changes to syntax will be backwards compatible:
 *  :doc:`gmt` now has a --show-cores option that reports the available cores.
 
 *  :doc:`gmtconvert` adds a **-C** option that can be used to eliminate
-   segments on output based on the number of of records it contains.  We also
+   segments on output based on the number of records it contains.  We also
    added a **-F** option to create line segments from an input data sets using
    a variety of connectivity modes.
 
 *  :doc:`gmtmath` adds the operator **BPDF** for binomial probability distribution and
    **BCDF** for the cumulative binomial distribution function.  Due to confusion with
    other probability distributions we have introduced a series of new operator names
-   (but accept backwards compatibility).  Listing the pdf and cdf for each distribution,
+   (but honor backwards compatibility).  Listing the pdf and cdf for each distribution,
    these are **TPDF** and **TCDF** for the Student t-distribution,
    **FPDF** and **FCDF** for the F-distribution,
    **CHIPDF** and **CHICDF** for the Chi-squared distribution,
@@ -399,7 +400,7 @@ changes to syntax will be backwards compatible:
    **RPDF** and **RCDF** for the Rayleigh distribution (as well as **RCRIT**),
    **WPDF** and **WCDF** for the Weibull distribution (as well as **WCRIT**), and
    **ZPDF** and **ZCDF** for the Normal distribution. We added **ROLL** for cyclic shifts of the stack, as
-   well as the constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
+   well as new constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  Finally, we added
    operator **POINT** which reads a data table and places the mean x and mean y on the stack.
 
@@ -411,7 +412,7 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`grdedit` enhances the **-E** option to allow for 90-degree rotations
    or flips of grid, as well as a new **-G** to enable writing of the result
-   to a new output file [Default updates the existing file]. **-J** option
+   to a new output file [Default updates the existing file]. The **-J** option
    saves the georeferencing info as metadata in netCDF grids.
 
 *  :doc:`grdfilter` now includes histogram mode filtering to complement mode
@@ -420,7 +421,7 @@ changes to syntax will be backwards compatible:
 *  :doc:`grdgradient` adds **-Da** to compute the aspect (down-slope) direction [up-slope].
 
 *  :doc:`grdinfo` reports the projection info of netCDF grids when that is stored in
-   grid's metadata in WKT format.
+   a grid's metadata in WKT format.
 
 *  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
    angular operators, **BPDF** for binomial probability distribution and
@@ -439,28 +440,28 @@ changes to syntax will be backwards compatible:
    to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), and **ROLL** for cyclic shifts of the stack,
    while **LDIST1** has been renamed
-   to **LDISTC**.  We also add the constants **XRANGE**, **YRANGE**, **XCOL**,
+   to **LDISTC**.  We also add new constants **XRANGE**, **YRANGE**, **XCOL**,
    **YROW** and **F_EPS**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
    and **Yn** to **YNORM** (but this is backwards compatible).
 
-*  :doc:`grdtrack` add modifier **-G+l**\ *list* modifier to provide a list of grids.
+*  :doc:`grdtrack` add the modifier **-G+l**\ *list* to pass a list of grids.
 
 *  :doc:`grdview` implements the Waterfall plot mode via **-Qmx**\ \|\ **y**.
 
-*  :doc:`kml2gmt` acquires an **-F** option to control which geometry to output.
+*  :doc:`kml2gmt` acquires a **-F** option to control which geometry to output.
 
-*  :doc:`makecpt` takes **-E** to determine range from input data table.
+*  :doc:`makecpt` takes **-E** to determine range from an input data table.
 
 *  :doc:`mapproject` can be used in conjunction with the 3-D projection options to
    compute 3-D projected coordinates.  We also added **-W** to simply output the
    projected dimensions of the plot without reading input data.
 
-*  :doc:`psbasemap` now takes **-A** to save plot domain polygon in geographical coordinates.
-   The **-L** option for map scale and **-T** for map roses hav been revised (backwards compatible) and a
+*  :doc:`psbasemap` now takes **-A** to save the plot domain polygon in geographical coordinates.
+   The **-L** option for map scale and **-T** for map roses have been revised (backwards compatible) and a
    new uniform **-F** option to specify background panel and its many settings was added.
 
-*  :doc:`pscoast` can accept multiple **-E** settings to color features independently.
-   We also have **-A** modifiers **+AS** to *only* plot Antarctica, **+ag** to use
+*  :doc:`pscoast` can accept multiple **-E** settings to color several features independently.
+   We also have the modifiers **+AS** to *only* plot Antarctica, **+ag** to use
    shelf ice grounding line for Antarctica coastline, and **+ai** to use ice/water
    front for Antarctica coastline [Default].  As above, the **-L** option for map scale
    and **-T** option for map roses have been revised (backwards compatible) and a new uniform **-F** option to specify
@@ -469,17 +470,18 @@ changes to syntax will be backwards compatible:
 *  :doc:`psconvert` (apart from the name change) has several new features, such as
    reporting dimensions of the plot when **-A** and **-V** are used,
    scaling the output plots via **-A+s**\ [**m**]\ *width*\ [**u**][/\ *height*\ [**u**]],
+   paint and outline the bounding box via **-A** modifiers **g**\ *fill* and **+p**\ *pen*,
    and **-Z** for removing the PostScript file on exit.  In addition, we have
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
 
-*  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and moved the
+*  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidaes the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
 *  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
-   to allow for more control on what happens to points in the tails.
+   to allow for more control on what happens to points falling in the tails.
 
-*  :doc:`psimage` new uniform **-D** option to specify location of image and new uniform
+*  :doc:`psimage` added a new uniform **-D** option to specify location of the image and new uniform
    **-F** option to specify background panel and its many settings.
 
 *  :doc:`pslegend` has many enhancements for specifying varying cell widths and color, as
@@ -502,7 +504,7 @@ changes to syntax will be backwards compatible:
    The **-L** option has been enhanced to create envelope polygons around y(x),
    say for confidence envelopes (modifiers **+b**\ \|\ **d**\ \|\ **D**), and to complete a closed
    polygon by adding selected corners (modifiers **+xl**\ \|\ **r**\ \|\ *x0* or **+yb**\ \|\ **t**\ \|\ *y0*).
-   The **-A** now has new modifiers **x**\ \|\ **y** for creating stair-case curves.
+   The **-A**\-option now has new modifiers **x**\ \|\ **y** for creating stair-case curves.
    The slip-vector symbol can now optionally accept a vector-head angle [30].
    The custom symbols definition tests can now compare two input variables.
    We also added a **-F** option to draw line segments from an input data sets using
@@ -522,14 +524,14 @@ changes to syntax will be backwards compatible:
 
 *  :doc:`sample1d` spline selection option **-F** can now accept the optional
    modifiers **+1** or **+2** which will compute
-   the first or second derivative of the spline, respectively.
+   the first or second derivatives of the spline, respectively.
 
 *  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
    all grid nodes inside a Voronoi polygon is set to the same value as the
    Voronoi node value, via **-Ez**.
 
 *  :doc:`trend1d` can now fit mixed polynomial and Fourier series models,
-   as well as allowing models with just some terms in a polynomial or the
+   as well as allowing models with just some terms in a polynomial or a
    Fourier series, including plain cosine or sine series terms.  Modifiers
    have been added to specify data origin and fundamental period instead of
    defaulting to the data mid-point and data range, respectively.
@@ -3750,7 +3752,7 @@ specification. The line attribute modifiers are:
    :align: center
 
    The thin red line shows an original line segment, whereas the thick pen illustrates the effect
-   of plotting the same line but this time requesting offsets of 1 cm at the beginning and 500 km
+   of plotting the same line while requesting offsets of 1 cm at the beginning and 500 km
    at the end, via **-W2p+o**\ 1c/500k.
 
 * **+s**
@@ -3784,6 +3786,7 @@ specification. The line attribute modifiers are:
 
    Same line as above but now we have requested a blue vector head at the end of the line and a
    red circle at the beginning of the line, made possible by the **+vb** and **+ve** modifiers.
+   Note that we also prescribed the line offsets in addition to the symbol endings.
 
 Specifying area fill attributes
 -------------------------------
