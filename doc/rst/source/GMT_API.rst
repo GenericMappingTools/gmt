@@ -961,7 +961,10 @@ how we to access this resource (see Table :ref:`methods <tbl-methods>` for recog
 methods), :ref:`geometry <tbl-geometry>` specifies the geometry of the data, ``ptr`` is the address of the
 pointer to the named resource. If ``direction`` is ``GMT_OUT`` and the
 ``method`` is not related to a file (filename, stream, or handle), then
-``ptr`` must be NULL. After the GMT module has written the data you
+``ptr`` must be NULL. Note there are some limitations on when you may pass a file pointer
+as the method.  Many grid file formats cannot be read via a stream (e.g., netCDF files) so in
+those situations you cannot pass a file pointer [and GMT_Register_IO would have no way of knowing
+this].  After the GMT module has written the data you
 can use GMT_Retrieve_Data_ to assign a pointer to the memory location
 (variable) where the output was allocated. For grid (and image)
 resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` array; otherwise, pass NULL
