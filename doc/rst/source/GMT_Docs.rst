@@ -3778,7 +3778,7 @@ specification. The line attribute modifiers are:
 
 .. _Line_vector:
 
-.. figure:: /_images/GMT_linevector.*
+.. figure:: /_images/GMT_linearrow.*
    :width: 500 px
    :align: center
 
