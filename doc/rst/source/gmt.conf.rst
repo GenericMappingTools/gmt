@@ -482,30 +482,26 @@ fonts can be found in the :doc:`gmt` man page.
 **IO_GRIDFILE_FORMAT**
     Default file format for grids, with optional scale, offset and
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
-    2-letter format indicator can be one of
-    [**abcegnrs**][**bsifd**]. See
-    :doc:`grdconvert` and Section `Grid file format specifications` of the
+    2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
+    :doc:`grdconvert` and Section :ref:`grid-file-format` of the
     GMT Technical Reference and Cookbook for more information. The
     *scale* and *offset* modifiers may be left empty to select default
     values (scale = 1, offset = 0), or you may specify *a* for
     auto-adjusting the scale and/or offset of packed integer grids
     (=\ *id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
-    the appropriate value for the given format is used (NaN or largest
-    negative). [nf].
+    the appropriate value for the given format is used (NaN or largest negative). [nf].
 
 .. _IO_GRIDFILE_SHORTHAND:
 
 **IO_GRIDFILE_SHORTHAND**
     If true, all grid file names are examined to see if they use the
-    file extension shorthand discussed in Section `Grid file format specifications` of the GMT
-    Technical Reference and Cookbook. If false, no filename expansion is
-    done [false].
+    file extension shorthand discussed in Section :ref:`grid-file-format` of the GMT
+    Technical Reference and Cookbook. If false, no filename expansion is done [false].
 
 .. _IO_HEADER:
 
 **IO_HEADER**
-    (**-h**) Specifies whether input/output ASCII files have header
-    record(s) or not [false].
+    (**-h**) Specifies whether input/output ASCII files have header record(s) or not [false].
 
 .. _IO_LONLAT_TOGGLE:
 
@@ -514,8 +510,7 @@ fonts can be found in the :doc:`gmt` man page.
     contain (latitude,longitude) or (y,x) rather than the expected
     (longitude,latitude) or (x,y). false means we have (x,y) both on
     input and output. true means both input and output should be (y,x).
-    IN means only input has (y,x), while OUT means only output should be
-    (y,x). [false].
+    IN means only input has (y,x), while OUT means only output should be (y,x). [false].
 
 .. _IO_N_HEADER_RECS:
 
