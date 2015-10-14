@@ -714,7 +714,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT->current.io.col_type[GMT_IN][GMT_Z] = GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 	}
 	else if (GMT_is_geographic (GMT, GMT_OUT)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Override -fog for normal operation\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Override -fog for normal operation\n");
 		GMT_set_cartesian (GMT, GMT_OUT);
 	}
 

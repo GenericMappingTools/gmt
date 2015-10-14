@@ -19,8 +19,8 @@ echo  50 0 >> li
 gmt sample1d li -Fl -I2 > li1.dat
 
 # Compute the effect of the two hemi-spheres and add them
-gmt grdgravmag3d top_half.grd -C$rho -Zb -Gtop_g.grd -V
-gmt grdgravmag3d bot_half.grd -C$rho -Zt -Gbot_g.grd -V
+gmt grdgravmag3d top_half.grd -C$rho -Zb -Gtop_g.grd
+gmt grdgravmag3d bot_half.grd -C$rho -Zt -Gbot_g.grd
 gmt grdmath bot_g.grd top_g.grd ADD = sphere_g.grd
 
 

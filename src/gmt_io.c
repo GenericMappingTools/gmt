@@ -6507,7 +6507,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	T = GMT_create_table (GMT, GMT_CHUNK, 0U, 0U, false);
 
 	T->file[GMT_IN] = strdup (file);
-	T->header = GMT_memory (GMT, NULL, n_head_alloc, char *);
+	if (header) T->header = GMT_memory (GMT, NULL, n_head_alloc, char *);
 
 	while (status >= 0 && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
 		if (header) {	/* Only true at start of an ASCII file */
