@@ -445,7 +445,7 @@ fonts can be found in the :doc:`gmt` man page.
     * US US English
 
     If your language is not supported, please examine the
-    **$GMT_SHAREDIR**/localization/us.d file and make a similar file. Please
+    **$GMT_SHAREDIR**/localization/gmt_us.locale file and make a similar file. Please
     submit it to the GMT Developers for official inclusion. Custom
     language files can be placed in directories **$GMT_SHAREDIR**/localization
     or ~/.gmt. Note: Some of these languages may require you to also
@@ -484,7 +484,7 @@ fonts can be found in the :doc:`gmt` man page.
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
     2-letter format indicator can be one of
     [**abcegnrs**][**bsifd**]. See
-    :doc:`grdconvert` and Section 4.20 of the
+    :doc:`grdconvert` and Section `Grid file format specifications` of the
     GMT Technical Reference and Cookbook for more information. The
     *scale* and *offset* modifiers may be left empty to select default
     values (scale = 1, offset = 0), or you may specify *a* for
@@ -497,7 +497,7 @@ fonts can be found in the :doc:`gmt` man page.
 
 **IO_GRIDFILE_SHORTHAND**
     If true, all grid file names are examined to see if they use the
-    file extension shorthand discussed in Section 4.17 of the GMT
+    file extension shorthand discussed in Section `Grid file format specifications` of the GMT
     Technical Reference and Cookbook. If false, no filename expansion is
     done [false].
 
