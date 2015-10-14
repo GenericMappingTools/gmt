@@ -706,7 +706,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 int GMT_psxy (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
-	bool get_rgb, clip_set = false, fill_active;
+	bool get_rgb, clip_set = false, fill_active, may_intrude_inside;
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
 	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
@@ -1032,7 +1032,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
 				/* Skip points outside map */
 				GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
-				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
+				may_intrude_inside = false;
+				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
+					if (S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT)
+						may_intrude_inside = true;
+					else
+						continue;
+				}
 			}
 
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
@@ -1073,7 +1079,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if (geovector) {
 				if (get_rgb) S.v.fill = current_fill;
 			}
-			else {	/* Vectors do it separately */
+			else if (!may_intrude_inside) {	/* Vectors do it separately */
 				GMT_setfill (GMT, &current_fill, outline_active);
 				GMT_setpen (GMT, &current_pen);
 			}
@@ -1198,10 +1204,28 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
-					else if (S.symbol == GMT_SYMBOL_ELLIPSE)	/* Got axis in km */
-						GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
-					else
-						GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+					else if (S.symbol == GMT_SYMBOL_ELLIPSE) {	/* Got axis in km */
+						if (may_intrude_inside) {	/* Must plot fill and outline separately */
+							GMT_setfill (GMT, &current_fill, 0);
+							GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							GMT_setpen (GMT, &current_pen);
+							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+							GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+						}
+						else
+							GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+					}
+					else {
+						if (may_intrude_inside) {	/* Must plot fill and outline separately */
+							GMT_setfill (GMT, &current_fill, 0);
+							GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+							GMT_setpen (GMT, &current_pen);
+							PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
+							GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+						}
+						else
+							GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
+					}
 					break;
 				case GMT_SYMBOL_TEXT:
 					if (Ctrl->G.active && !outline_active)

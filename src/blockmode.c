@@ -350,8 +350,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 	   of the total sum of weights */
 
 	double top, bottom, p, p_max, mode;
-	uint64_t i, j, src = 0;
-
+	uint64_t i, j, src = 0, n_modes = 0;
 
 	/* Do some initializations */
 	wsum = 0.5 * wsum; /* Sets the 50% range */
@@ -379,40 +378,18 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 		}
 
 		p = top / bottom;
-		if (p > p_max) {
+		if (p > p_max) {	/* New maximum, get new best mode */
 			p_max = p;
 			mode = 0.5 * (d[i].a[k] + d[j].a[k]);
-			//n_modes = 1;
+			n_modes = 1;
 			if (index) src = (emode & BLK_DO_INDEX_HI) ? d[j].src_id : d[i].src_id;
 		}
-#if 0
-		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode */
-			double new_mode = 0.5 * (d[i].a[k] + d[j].a[k]);
-			uint64_t n_modes = 1;
-			switch (mode_type) {
-				case BLOCKMODE_LOW:	/* Pick lowest mode */
-					if (new_mode < mode) {
-						mode = new_mode;
-						if (index) src = (emode & BLK_DO_INDEX_HI) ? d[j].src_id : d[i].src_id;
-					}
-					break;
-				case BLOCKMODE_AVE:		/* Get the average of the modes, leave src to be first mode */
-					mode += new_mode;
-					n_modes++;
-					break;
-				case BLOCKMODE_HIGH:	/* Pick highest mode */
-					if (new_mode > mode) {
-						mode = new_mode;
-						if (index) src = (emode & BLK_DO_INDEX_HI) ? d[j].src_id : d[i].src_id;
-					}
-					break;
-			}
+		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode, get average of these modes */
+			mode += 0.5 * (d[i].a[k] + d[j].a[k]);
+			n_modes++;
 		}
 	}
 	if (n_modes > 1) mode /= n_modes;
-#else
-	}
-#endif
 	if (emode && index) *index = src;
 	return (mode);
 }
