@@ -1066,7 +1066,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if ((D[QLINE] = get_dataset_pointer (API, D[QLINE], GMT_IS_LINE)) == NULL) return (API->error);
 							x = 0.5 * length;
 							/* Place pen and fill colors in segment header */
-							sprintf (buffer, "%c -S%s", save_EOF, symbol);
+							sprintf (buffer, "-S%s", symbol);
 							if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 							Ds[QLINE] = D[QLINE]->table[0]->segment[n_quoted_lines];	/* Next segment */
 							Ds[QLINE]->header = strdup (buffer);
@@ -1329,6 +1329,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the fronts */
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "/tmp/frontline.txt", D[FRONT]) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/frontline.txt failed\n");
+			}
+		}
+#endif
 		D[FRONT]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (D[QLINE]) {
@@ -1345,6 +1352,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the fronts */
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "/tmp/quotedline.txt", D[QLINE]) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: QLINE: to /tmp/quotedline.txt failed\n");
+			}
+		}
+#endif
 		D[QLINE]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (T[SYM]) {
@@ -1360,6 +1374,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the symbols */
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "/tmp/symtextline.txt", T[SYM]) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/symtextline.txt failed\n");
+			}
+		}
+#endif
 	}
 	if (T[TXT]) {
 		/* Create option list, register T[TXT] as input source */
@@ -1374,6 +1395,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the symbol labels */
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "/tmp/textline.txt", T[TXT]) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/textline.txt failed\n");
+			}
+		}
+#endif
 	}
 	if (T[PAR]) {
 		/* Create option list, register T[PAR] as input source */
@@ -1388,6 +1416,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot paragraphs */
 			Return (API->error);
 		}
+#ifdef DEBUG
+		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "/tmp/partextline.txt", T[PAR]) != GMT_OK) {
+				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/partextline.txt failed\n");
+			}
+		}
+#endif
 	}
 
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */

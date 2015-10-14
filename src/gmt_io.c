@@ -5702,7 +5702,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
-	bool ASCII, close_file = false, append;
+	bool ASCII, close_file = false, append, was;
 	int save = 0;
 	unsigned int k;
 	uint64_t row = 0, seg, col;
@@ -5772,6 +5772,8 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 		if (table->ogr) GMT_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
 	}
 
+	was = GMT->current.io.multi_segments[GMT_OUT];
+	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || table->segment[0]->header);
 	out = GMT_memory (GMT, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
@@ -5814,6 +5816,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 	if (close_file) GMT_fclose (GMT, fp);	/* Close the file since we opened it */
 	GMT_free (GMT, out);			/* Free up allocated memory */
 	if (!use_GMT_io) GMT->current.io.output = psave;	/* Restore former pointers and values */
+	GMT->current.io.multi_segments[GMT_OUT] = was; 
 
 	return (0);	/* OK status */
 }
@@ -5909,7 +5912,7 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
-	bool close_file = false;
+	bool close_file = false, was;
 	uint64_t row = 0, seg;
 	unsigned int hdr, append;
 	int *fd = NULL;	/* Must be int, not int */
@@ -5963,6 +5966,8 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 			GMT_write_newheaders (GMT, fp, 0);	/* Write general header block */
 		}
 	}
+	was = GMT->current.io.multi_segments[GMT_OUT];
+	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || table->segment[0]->header);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
 		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
@@ -5993,6 +5998,7 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 		}
 		if (io_mode == GMT_WRITE_SEGMENT) GMT_fclose (GMT, fp);	/* Close the segment file */
 	}
+	GMT->current.io.multi_segments[GMT_OUT] = was; 
 
 	if (close_file) GMT_fclose (GMT, fp);	/* Close the file since we opened it */
 
