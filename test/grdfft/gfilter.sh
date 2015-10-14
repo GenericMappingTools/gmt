@@ -3,6 +3,7 @@
 # Testing gmt grdfft
 
 ps=gfilter.ps
+gmt set GMT_FFT kiss
 
 topo="${src:-.}"/../../doc/examples/ex38/topo.nc
 

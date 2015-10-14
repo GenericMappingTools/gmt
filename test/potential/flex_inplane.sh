@@ -7,7 +7,8 @@ m=g
 f=0.2
 N=5e12
 Te=10k
-gmt set MAP_FRAME_TYPE plain
+gmt set MAP_FRAME_TYPE plain GMT_FFT kiss
+
 cat << EOF > t.txt
 #lon lat azimuth, semi-major, semi-minor, height
 0	0	0	50	50	5000

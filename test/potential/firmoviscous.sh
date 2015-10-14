@@ -1,6 +1,7 @@
 #!/bin/bash
 # Testing firmoviscous flexure code
 ps=firmoviscous.ps
+gmt set GMT_FFT kiss
 # Set densities
 rhol=2700
 rhom=3300

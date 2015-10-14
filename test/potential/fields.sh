@@ -5,6 +5,7 @@
 ps=fields.ps
 order=2
 dx=1
+gmt set GMT_FFT kiss
 function Ugly {
 	# sub-function for integral I (z, b, c)
 	z=$1

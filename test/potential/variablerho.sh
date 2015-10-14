@@ -3,6 +3,7 @@
 #
 # Compute FAA and VGG for case of variable density
 ps=variablerho.ps
+gmt set GMT_FFT kiss
 order=4
 dx=0.5
 # 2 panels of topo and grav, with top profile of admittance & coherence

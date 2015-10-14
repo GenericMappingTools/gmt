@@ -3,6 +3,7 @@
 # Testing gmt grdfft -N+m mirror reflection and -N+e edge-point symmetry
 
 ps=out_taper.ps
+gmt set GMT_FFT kiss
 
 # Create a egg-carton input grid
 gmt grdmath -R0/300/0/200 -I1 X 5 MUL COSD Y 10 MUL SIND MUL = t.nc

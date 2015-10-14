@@ -5,6 +5,7 @@
 # using results flex_analytical.txt produced by flex_analytical.m
 ps=flexapprox.ps
 # Parameters for disc load
+gmt set GMT_FFT kiss
 h=4000
 r=15000
 rhom=3300

@@ -3,7 +3,7 @@
 #
 # Compare gmt gravfft and gmt grdfft calculations of admittance and coherence between bathymetry and geoid over the Azores
 ps=cross_spec.ps
-
+gmt set GMT_FFT kiss
 gmt gravfft bathy_1m.nc geoid_1m.nc -N+d -Iwck -fg > coh.txt
 gmt gravfft bathy_1m.nc geoid_1m.nc -N+d -Iwk  -fg > adm.txt
 gmt grdfft  bathy_1m.nc geoid_1m.nc -N+d -Ewk  -fg > cross.txt

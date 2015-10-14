@@ -4,6 +4,7 @@
 # Compute E-W and N-S deflections over synthetic seamount
 ps=deflections.ps
 order=2
+gmt set GMT_FFT kiss
 # 1. Create a bathymetry data set with one circular truncated seamount
 #    as in Fig 3. of Marks & Smith, 2007 [GRL], with R_base = 35 km,
 # R_top = 10 km, height = 3751 m, depth = -5084 m, density d_rho = 2800-1030

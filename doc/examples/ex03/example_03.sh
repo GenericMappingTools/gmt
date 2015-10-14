@@ -24,6 +24,7 @@
 # most closely fitting the x,y points in "sat.xyg":
 #
 ps=example_03.ps
+gmt set GMT_FFT kiss
 gmt fitcircle sat.xyg -L2 > report
 cposx=`grep "L2 Average Position" report | cut -f1` 
 cposy=`grep "L2 Average Position" report | cut -f2` 
