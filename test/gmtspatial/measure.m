@@ -21,7 +21,7 @@ function [pass, d_path] = measure(out_path)
 		fclose(fid);
 	end
 	% Geographic centroid and area
-	answer = [0.5	0.500019038226	12308.3096995];
+	answer = [0.5	0.500019546308	12225.9408994];
 	result = gmt('gmtspatial -Q -fg', area);	
 	pass2 = isequal(result, answer);
 	if (~pass2)
