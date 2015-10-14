@@ -56,8 +56,8 @@ sign. @e, @o, @a, @E, @O, @A give the accented Scandinavian characters.
 Composite characters (overstrike) may be indicated with the
 @!<char1><char2> sequence, which will print the two characters on top of
 each other. To learn the octal codes for symbols not available on the
-keyboard and some accented European characters, see Section `Character escape sequences` and
-Appendix `F. Chart of Octal Codes for Characters` in the GMT Technical Reference and Cookbook. Note that
+keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
+Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` must be set to an extended character set in your
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted

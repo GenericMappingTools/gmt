@@ -4178,6 +4178,8 @@ relevant manual pages.
    changing its shape via the :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` setting.
    Other vector heads are the circle (**c**) and the terminal line (**t**).
 
+.. _Char-esc-seq:
+
 Character escape sequences
 --------------------------
 
@@ -7923,6 +7925,7 @@ below at 300 dpi using the default black and white shades.
    :width: 500 px
    :align: center
 
+.. _Chart-Octal-Codes-for-Chars:
 
 F. Chart of Octal Codes for Characters
 ======================================
