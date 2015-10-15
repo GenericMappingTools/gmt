@@ -706,7 +706,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 int GMT_psxy (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
-	bool get_rgb, clip_set = false, fill_active, may_intrude_inside;
+	bool get_rgb, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
 	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
