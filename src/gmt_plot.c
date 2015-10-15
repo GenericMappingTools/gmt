@@ -3345,15 +3345,15 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	/* In case clearances are not symmetric we need to shift the symbol center accordingly */
 	x += 0.5 * (P->padding[XHI] - P->padding[XLO]);
 	y += 0.5 * (P->padding[YHI] - P->padding[YLO]);
-	if (mode == 1) outline = 0;	/* Do not draw outlines (if requested) at this time */
+	if (mode == 1) outline = 0;	/* Do not draw outlines (even if requested) at this time since mode == 1*/
 	if ((mode & 1) && (P->mode & GMT_PANEL_SHADOW)) {	/* Draw offset background shadow first */
 		GMT_setfill (GMT, &P->sfill, false);	/* The shadow has no outline */
 		PSL_plotsymbol (GMT->PSL, x + P->off[GMT_X], y + P->off[GMT_Y], dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	}
-	if ((mode & 2) && outline) GMT_setpen (GMT, &P->pen1);	/* Set frame outline pen */
+	if ((mode & 2) && outline) GMT_setpen (GMT, &P->pen1);	/* Need to set frame outline pen */
 	if (mode & 1) fill = &P->fill;		/* Select fill (which may be NULL) unless we are just doing outlines */
-	GMT_setfill (GMT, fill, outline);	/* Activate frame fill, with optional outline */
-	if (!(mode == 2 && !outline)) PSL_plotsymbol (GMT->PSL, x, y, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
+	if (fill || outline) GMT_setfill (GMT, fill, outline);	/* Activate frame fill, with optional outline */
+	if ((mode&1 && (P->mode & GMT_PANEL_FILL)) || (mode&2 && (P->mode & GMT_PANEL_OUTLINE))) PSL_plotsymbol (GMT->PSL, x, y, dim, (P->mode & GMT_PANEL_ROUNDED) ? PSL_RNDRECT : PSL_RECT);
 	if ((mode & 2) && (P->mode & GMT_PANEL_INNER)) {	/* Also draw secondary frame on the inside */
 		dim[GMT_X] -= 2.0 * P->gap;	/* Shrink dimension of panel by the uniform gap on all sides */
 		dim[GMT_Y] -= 2.0 * P->gap;
