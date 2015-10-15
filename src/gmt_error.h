@@ -121,7 +121,7 @@ static inline char* __source_line_func (const char* src_line, const char* func) 
 	const char *c = src_line;
 	size_t len;
   *str = '\0';
-	while ((c = strpbrk (c, "/\\"))) /* get basename of src_line */
+	while ((c = strpbrk (c, "/\\")) != NULL) /* get basename of src_line */
 		src_line = ++c;
 	strncat (str, src_line, 255);
 	len = strlen (src_line);
