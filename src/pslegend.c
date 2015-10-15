@@ -1331,7 +1331,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 #ifdef DEBUG
 		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "/tmp/frontline.txt", D[FRONT]) != GMT_OK) {
+			char file[GMT_LEN64] = {""};
+			sprintf (file, "%s/frontline.txt", GMT->session.TMPDIR);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, file, D[FRONT]) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/frontline.txt failed\n");
 			}
 		}
@@ -1354,7 +1356,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 #ifdef DEBUG
 		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "/tmp/quotedline.txt", D[QLINE]) != GMT_OK) {
+			char file[GMT_LEN64] = {""};
+			sprintf (file, "%s/quotedline.txt", GMT->session.TMPDIR);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, file, D[QLINE]) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: QLINE: to /tmp/quotedline.txt failed\n");
 			}
 		}
@@ -1376,7 +1380,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 #ifdef DEBUG
 		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "/tmp/symtextline.txt", T[SYM]) != GMT_OK) {
+			char file[GMT_LEN64] = {""};
+			sprintf (file, "%s/symtextline.txt", GMT->session.TMPDIR);
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[SYM]) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/symtextline.txt failed\n");
 			}
 		}
@@ -1397,7 +1403,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 #ifdef DEBUG
 		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "/tmp/textline.txt", T[TXT]) != GMT_OK) {
+			char file[GMT_LEN64] = {""};
+			sprintf (file, "%s/textline.txt", GMT->session.TMPDIR);
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[TXT]) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/textline.txt failed\n");
 			}
 		}
@@ -1418,7 +1426,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 #ifdef DEBUG
 		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "/tmp/partextline.txt", T[PAR]) != GMT_OK) {
+			char file[GMT_LEN64] = {""};
+			sprintf (file, "%s/partextline.txt", GMT->session.TMPDIR);
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[PAR]) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/partextline.txt failed\n");
 			}
 		}
