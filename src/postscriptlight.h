@@ -26,7 +26,7 @@
 
 /*!
  * \file postscriptlight.h
- * \brief Include file that must be included by all programs using postscriptlight 
+ * \brief Include file that must be included by all programs using postscriptlight
  */
 
 #ifndef _POSTSCRIPTLIGHT_H
@@ -103,7 +103,7 @@ enum PSL_enum_vecattr {
 	PSL_VEC_OFF_END		= 131072,	/* End point of vector should be moved a distance along the line */
 	PSL_VEC_MID_FWD		= 262144,	/* End point of vector should be moved a distance along the line */
 	PSL_VEC_MID_BWD		= 524288};	/* End point of vector should be moved a distance along the line */
-	
+
 #define PSL_vec_justify(status) ((status>>6)&3)			/* Return justification as 0-3 */
 #define PSL_vec_head(status) ((status)&3)			/* Return head selection as 0-3 */
 #define PSL_vec_side(status,head) (((status>>(2+2*head))&3) ? 2*((status>>(2+2*head))&3)-3 : 0)	/* Return side selection for this head as 0,-1,+1 */
@@ -324,6 +324,7 @@ struct imageinfo {
 	int maplength;	/* length (bytes) of following map */
 	int xorigin;	/* x-coordinate of origin (EPS only) */
 	int yorigin;	/* y-coordinate of origin (EPS only) */
+	double llx, lly, trx, try; /* Four corners of the (HiRes)BoundingBox (EPS only) */
 	/* color map follows for maplength bytes, followed by image */
 };
 
@@ -354,7 +355,7 @@ EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double rad
 EXTERN_MSC int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, double annotfontsize, int side);
 EXTERN_MSC int PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, double f_rgb[], double b_rgb[]);
 EXTERN_MSC int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, int nbits);
-EXTERN_MSC int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int size, int nx, int ny, int ox, int oy);
+EXTERN_MSC int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, struct imageinfo *h);
 EXTERN_MSC int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotparagraph (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *paragraph, double angle, int justify);

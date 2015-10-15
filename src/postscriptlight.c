@@ -294,7 +294,8 @@ int psl_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned
 int psl_colorimage_cmap (double x, double y, double xsize, double ysize, psl_indexed_image_t image, int nx, int ny, int nbits);
 int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **buffer);
 int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **buffer);
-int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try);
+int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try,
+	double *hires_llx, double *hires_lly, double *hires_trx, double *hires_try);
 char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *stem, const char *suffix, char *path);
 int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]);
 int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]);
@@ -912,16 +913,14 @@ int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int ima
 	return (image_no);
 }
 
-int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int size, int nx, int ny, int ox, int oy)
+int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, struct imageinfo *h)
 {
 	/* Plots an EPS image
 	 * x,y		: Position of image (in plot coordinates)
 	 * xsize, ysize	: Size of image (in user units)
 	 * justify	: Indicate which corner (x,y) refers to (see graphic)
 	 * buffer	: EPS file (buffered)
-	 * size		: Number of bytes in buffer
-	 * nx, ny	: Size of image (in points)
-	 * ox, oy	: Coordinates of lower left corner (in points)
+	 * h        : Image buffer header
 	 *
 	 *   9       10      11
 	 *   |----------------|
@@ -929,10 +928,13 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	 *   |----------------|
 	 *   1       2        3
 	 */
+	double width, height;
 
 	/* If one of [xy]size is 0, keep the aspect ratio */
-	if (PSL_eq (xsize, 0.0)) xsize = (ysize * nx) / ny;
-	if (PSL_eq (ysize, 0.0)) ysize = (xsize * ny) / nx;
+	width = h->trx - h->llx;
+	height = h->try - h->lly;
+	if (PSL_eq (xsize, 0.0)) xsize = ysize * width / height;
+	if (PSL_eq (ysize, 0.0)) ysize = xsize * height / width;
 
 	/* Correct origin (x,y) in case of justification */
 	if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
@@ -941,11 +943,11 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	}
 
 	PSL_command (PSL, "PSL_eps_begin\n");
-	PSL_command (PSL, "%d %d T %g %g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / nx, ysize * PSL->internal.dpu / ny);
-	PSL_command (PSL, "%d %d T\n", -ox, -oy);
-	PSL_command (PSL, "N %d %d M %d %d L %d %d L %d %d L P clip N\n", ox, oy, ox+nx, oy, ox+nx, oy+ny, ox, oy+ny);
+	PSL_command (PSL, "%d %d T %g %g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
+	PSL_command (PSL, "%g %g T\n", -h->llx, -h->lly);
+	PSL_command (PSL, "N %g %g M %g %g L %g %g L %g %g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
 	PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
-	fwrite (buffer, 1U, (size_t)size, PSL->internal.fp);
+	fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
 	PSL_command (PSL, "%%%%EndDocument\n");
 	PSL_command (PSL, "PSL_eps_end\n");
 	return (PSL_NO_ERROR);
@@ -1016,15 +1018,15 @@ void psl_computeBezierControlPoints (struct PSL_CTRL *PSL, double *K, int n, dou
 	b = PSL_memory (PSL, NULL, n, double);
 	c = PSL_memory (PSL, NULL, n, double);
 	r = PSL_memory (PSL, NULL, n, double);
-	
+
 	n--;	/* Now id of last knot */
-	
+
 	/* left most segment*/
 	a[0] = 0.0;
 	b[0] = 2.0;
 	c[0] = 1.0;
 	r[0] = K[0] + 2.0 * K[1];
-	
+
 	/* internal segments*/
 	for (i = 1; i < n - 1; i++)
 	{
@@ -1033,13 +1035,13 @@ void psl_computeBezierControlPoints (struct PSL_CTRL *PSL, double *K, int n, dou
 		c[i] = 1.0;
 		r[i] = 4.0 * K[i] + 2.0 * K[i+1];
 	}
-			
+
 	/* right segment*/
 	a[n-1] = 2.0;
 	b[n-1] = 7.0;
 	c[n-1] = 0.0;
 	r[n-1] = 8.0 * K[n-1] + K[n];
-	
+
 	/* solves Ax=b with the Thomas algorithm (from Wikipedia)*/
 	for (i = 1; i < n; i++)
 	{
@@ -1047,18 +1049,18 @@ void psl_computeBezierControlPoints (struct PSL_CTRL *PSL, double *K, int n, dou
 		b[i] = b[i] - m * c[i - 1];
 		r[i] = r[i] - m*r[i-1];
 	}
- 
+
 	/* Evalute p1 */
 	p1[n-1] = r[n-1] / b[n-1];
 	for (i = n - 2; i >= 0; --i)
 		p1[i] = (r[i] - c[i] * p1[i+1]) / b[i];
-		
+
 	/* we have p1, now compute p2*/
 	for (i = 0; i < n-1; i++)
 		p2[i] = 2.0 * K[i+1] - p1[i+1];
-	
+
 	p2[n-1] = 0.5 * (K[n] + p1[n-1]);
-	
+
 	*P1 = p1;	*P2 = p2;
 	PSL_free (a);	PSL_free (b);	PSL_free (c);	PSL_free (r);
 }
@@ -1081,7 +1083,7 @@ int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type)
 
 	psl_computeBezierControlPoints (PSL, x, n, &Px1, &Px2);
 	psl_computeBezierControlPoints (PSL, y, n, &Py1, &Py2);
-	
+
 	/* First convert knots to integers */
 
 	ix = PSL_memory (PSL, NULL, n, int);
@@ -1220,7 +1222,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
 	if (PSL->internal.call_level == 1) PSL->internal.fp = (fp == NULL) ? stdout : fp;	/* For higher levels we reuse existing file pointer */
-	
+
 	PSL->internal.overlay = overlay;
 	memcpy (PSL->init.page_size, page_size, 2 * sizeof(double));
 
@@ -1978,7 +1980,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		last_chr = ptr[strlen(ptr)-1];
 		ptr = strtok_r (NULL, "@", &plast);
 		kase = ((last_chr > 0 && last_chr < 255) && islower (last_chr)) ? PSL_LC : PSL_UC;
-		
+
 	}
 
 	font = old_font = PSL->current.font_no;
@@ -3384,7 +3386,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				break;
 			case PSL_VEC_SQUARE:
-				xx[0] = xx[3] = xp - s;	xx[1] = xx[2] = xp + s;	
+				xx[0] = xx[3] = xp - s;	xx[1] = xx[2] = xp + s;
 				if (asymmetry[PSL_BEGIN] == -1)	{	/* Left side */
 					yy[0] = yy[1] = s;
 					yy[2] = yy[3] = 0.0;
@@ -3444,7 +3446,7 @@ int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				break;
 			case PSL_VEC_SQUARE:
-				xx[0] = xx[3] = xp - s;	xx[1] = xx[2] = xp + s;	
+				xx[0] = xx[3] = xp - s;	xx[1] = xx[2] = xp + s;
 				if (asymmetry[PSL_END] == -1)	{	/* Left side */
 					yy[0] = yy[1] = s;
 					yy[2] = yy[3] = 0.0;
@@ -3502,7 +3504,7 @@ int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix
 		iy[i] = psl_iy (PSL, y[i]);
 	}
 	if (mode == 1) return (n);
-	
+
 #ifdef OLD_shorten_path
 	/* The only truly unique point is the starting point; all else must show increments
 	 * relative to the previous point */
@@ -3784,11 +3786,9 @@ int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned 
 	int n, p, llx, lly, trx, try, BLOCKSIZE=4096;
 	unsigned char *buffer = NULL;
 
-	llx=0; lly=0; trx=720; try=720;
-
 	/* Scan for BoundingBox */
 
-	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try);
+	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try, &h->llx, &h->lly, &h->trx, &h->try);
 
 	/* Rewind and load into buffer */
 
@@ -5169,17 +5169,33 @@ int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, 
 	return (nbits);
 }
 
-int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try)
+int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try,
+	double *hires_llx, double *hires_lly, double *hires_trx, double *hires_try)
 {
-	int nested;
+	int nested = 0;
 	char buf[PSL_BUFSIZ];
 
-	nested = 0; *llx = 1; *trx = 0;
+	/* Set default BoundingBox and HiResBoundingBox */
+
+	*hires_llx = *llx = 0; *hires_trx = *trx = 720; *hires_lly = *lly = 0; *hires_try = *try = 720;
+
+	/* Fish for the BoundingBox and the HiResBoundingBox. It assumes the line with HiResBoundingBox
+	   always follows the BoundingBox line. */
+
 	while (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
-		if (!nested && !strncmp(buf, "%%BoundingBox:", 14U)) {
-			if (!strstr(buf, "(atend)")) {
+		if (!nested) {
+			if  (!strncmp(buf, "%%BoundingBox:", 14U) && !strstr(buf, "(atend)")) {
 				if (sscanf(strchr(buf, ':') + 1, "%d %d %d %d", llx, lly, trx, try) < 4) return 1;
-				break;
+				*hires_llx = *llx;
+				*hires_lly = *lly;
+				*hires_trx = *trx;
+				*hires_try = *try;
+				if (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
+					if  (!strncmp(buf, "%%HiResBoundingBox:", 19U) && !strstr(buf, "(atend)")) {
+						if (sscanf(strchr(buf, ':') + 1, "%lg %lg %lg %lg", hires_llx, hires_lly, hires_trx, hires_try) < 4) return -1;
+					}
+				}
+				return 0;
 			}
 		}
 		else if (!strncmp(buf, "%%Begin", 7U)) {
@@ -5190,13 +5206,8 @@ int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int
 		}
 	}
 
-	if (*llx >= *trx || *lly >= *try) {
-		*llx = 0; *trx = 720; *lly = 0; *try = 720;
-		PSL_message (PSL, PSL_MSG_NORMAL, "No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
-		return 1;
-	}
-
-	return 0;
+	PSL_message (PSL, PSL_MSG_NORMAL, "No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
+	return 1;
 }
 
 char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *stem, const char *suffix, char *path)
