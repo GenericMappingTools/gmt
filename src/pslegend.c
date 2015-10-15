@@ -346,6 +346,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 #else
 	char *tmp_dir = "/tmp";
 #endif
+	char *dname[N_DAT] = {"front", "qline"};
+	char *tname[N_TXT] = {"symtext", "textline", "partext"};
 #endif
 	unsigned char *dummy = NULL;
 
@@ -1335,15 +1337,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the fronts */
 			Return (API->error);
 		}
-#ifdef DEBUG
-		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			char file[GMT_LEN64] = {""};
-			sprintf (file, "%s/frontline.txt", tmp_dir);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, file, D[FRONT]) != GMT_OK) {
-				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to /tmp/frontline.txt failed\n");
-			}
-		}
-#endif
 		D[FRONT]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (D[QLINE]) {
@@ -1360,15 +1353,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the fronts */
 			Return (API->error);
 		}
-#ifdef DEBUG
-		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			char file[GMT_LEN64] = {""};
-			sprintf (file, "%s/quotedline.txt", tmp_dir);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, file, D[QLINE]) != GMT_OK) {
-				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: QLINE: to %s\n", file);
-			}
-		}
-#endif
 		D[QLINE]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (T[SYM]) {
@@ -1384,15 +1368,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the symbols */
 			Return (API->error);
 		}
-#ifdef DEBUG
-		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			char file[GMT_LEN64] = {""};
-			sprintf (file, "%s/symtextline.txt", tmp_dir);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[SYM]) != GMT_OK) {
-				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to %s failed\n", file);
-			}
-		}
-#endif
 	}
 	if (T[TXT]) {
 		/* Create option list, register T[TXT] as input source */
@@ -1407,15 +1382,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the symbol labels */
 			Return (API->error);
 		}
-#ifdef DEBUG
-		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			char file[GMT_LEN64] = {""};
-			sprintf (file, "%s/textline.txt", tmp_dir);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[TXT]) != GMT_OK) {
-				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to %s failed\n", file);
-			}
-		}
-#endif
 	}
 	if (T[PAR]) {
 		/* Create option list, register T[PAR] as input source */
@@ -1430,15 +1396,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot paragraphs */
 			Return (API->error);
 		}
-#ifdef DEBUG
-		if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			char file[GMT_LEN64] = {""};
-			sprintf (file, "%s/partextline.txt", tmp_dir);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[PAR]) != GMT_OK) {
-				GMT_Report (API, GMT_MSG_DEBUG, "PRINTING: FRONT: to %s failed\n", file);
-			}
-		}
-#endif
 	}
 
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
@@ -1447,13 +1404,35 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	GMT_map_basemap (GMT);
 	GMT_plotend (GMT);
 
-	if (D[FRONT] && GMT_Destroy_Data (API, &D[FRONT]) != GMT_OK) {
-		Return (API->error);
+	for (id = 0; id < N_DAT; id++) {
+		if (D[id]) {
+#ifdef DEBUG
+			if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+				char file[GMT_LEN64] = {""};
+				sprintf (file, "%s/%s", tmp_dir, dname[id]);
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, file, D[id]) != GMT_OK) {
+					GMT_Report (API, GMT_MSG_DEBUG, "Dumping data to %s failed\n", file);
+				}
+			}
+#endif
+			if (GMT_Destroy_Data (API, &D[id]) != GMT_OK)
+				Return (API->error);
+		}
 	}
 
 	for (id = 0; id < N_TXT; id++) {
-		if (T[id] && GMT_Destroy_Data (API, &T[id]) != GMT_OK) {
-			Return (API->error);
+		if (T[id]) {
+#ifdef DEBUG
+			if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
+				char file[GMT_LEN64] = {""};
+				sprintf (file, "%s/%s", tmp_dir, tname[id]);
+				if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, file, T[id]) != GMT_OK) {
+					GMT_Report (API, GMT_MSG_DEBUG, "Dumping data to %s failed\n", file);
+				}
+			}
+#endif
+			if (GMT_Destroy_Data (API, &T[id]) != GMT_OK)
+				Return (API->error);
 		}
 	}
 
