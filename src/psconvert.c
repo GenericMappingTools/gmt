@@ -268,8 +268,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 	return (error);
 }
 
-int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C)
-{
+int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C) {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 
 	bool error = false;
@@ -505,8 +504,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -1612,8 +1610,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				else
 					quiet = "";
 
-				sprintf (cmd, "gdal_translate -a_srs %c%s%c -co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
-					quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
+				sprintf (cmd, "gdal_translate -mo TIFFTAG_XRESOLUTION=%d -mo TIFFTAG_YRESOLUTION=%d -a_srs %c%s%c "
+				              "-co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
+					Ctrl->E.dpi, Ctrl->E.dpi, quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
 				free(proj4_cmd);
 				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
