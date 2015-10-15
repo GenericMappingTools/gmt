@@ -563,7 +563,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
  	if (Ctrl->F.active) {	/* Draw frame, fill only */
 		Ctrl->F.panel->width = Ctrl->D.nx * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
-		GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel->width, 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
+		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
+		//GMT_draw_map_panel (GMT, 0.5 * Ctrl->F.panel->width, 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
  	}
 
 	for (row = 0; row < Ctrl->D.ny; row++) {
