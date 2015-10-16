@@ -53,7 +53,7 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"mgd77track", "mgd77", "Plot track-line map of MGD77 cruises", ">XO,RG-"},
 	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<GI,GGO,RG-"},
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "<DI,QDi,>DO"},
-	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a body by the method of Okabe", "<DI,FDi,GGO"},
+	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a body by the method of Okabe", "<DI,FDi,GGO,>Do"},
 	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<GI,GGO"},
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<GI,GGO"},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<GI,FDi,GGO"},
