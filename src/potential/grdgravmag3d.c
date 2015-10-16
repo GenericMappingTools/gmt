@@ -502,13 +502,14 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
 			Return (API->error);
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
+			            Ctrl->F.file);
 			Return (EXIT_FAILURE);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
 		ndata = (unsigned int)point->n_records;
 		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
-			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used here. Using first segment only\n");
+			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used in grdgravmag3d. Using first segment only\n");
 	}
 
 	/* ---------------------------------------------------------------------------- */
