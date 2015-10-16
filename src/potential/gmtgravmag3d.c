@@ -29,7 +29,7 @@
 #define THIS_MODULE_NAME	"gmtgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a body by the method of Okabe"
-#define THIS_MODULE_KEYS	"<DI,FDi,GGO,>Do"
+#define THIS_MODULE_KEYS	"TDI,FDi,GGo,>DO"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"
@@ -157,11 +157,10 @@ int check_triang_cw (unsigned int n, unsigned int type);
 int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [%s]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-C<density>] [-G<outgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>] [%s] [-fg] [%s]\n", 
-		GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s]\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -272,6 +271,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 				break;
 	 		case 't':		/* For backward compat of pre GMT version */
 			case 'T': 		/* Selected input mesh format */
+				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'd':	/* Surface computed by triangulate */
 						j = 0;
@@ -298,7 +298,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 							j++;
 						}
 						if (j != 2 && j != 3) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
+							GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
 							n_errors++;
 						}
 						Ctrl->T.triangulate = true;
@@ -325,16 +325,17 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
-					 "Syntax error: Radius is NaN or negative\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active , "Error: Must specify either -G or -F options\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->I.active , "Error: Must specify -I option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
-					"Error: Must specify either -Cdensity or -H<stuff>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-	j = GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
-	if (GMT_check_condition (GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
+	n_errors += GMT_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
+	                                "Syntax error: Radius is NaN or negative\n");
+	n_errors += GMT_check_condition(GMT, !Ctrl->T.active, "Error: Option -T is mandatory\n");
+	n_errors += GMT_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Error: Must specify either -G or -F options\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Error: Must specify -I option\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
+	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	j = GMT_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	if (GMT_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
 
 	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
