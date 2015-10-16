@@ -16,6 +16,6 @@ function [ps, path] = vectors(out_path)
 	t_cpt = gmt('makecpt -T0.5/1.5/0.1 -Z');
 
 	gmt(['grdvector $ $ -A -C -JG45/45/4.5i -Q0.2i+e -W2p -Si2500 -P -K -B30g30' ...
-		' -Xc -Y0.75i --MAP_VECTOR_SHAPE=0.5 > ' ps], t_cpt, Gr, Gaz)
-	gmt(['grdvector $ $ -A -C -J -W2p -Si2500 -O -B30g30 -Y5i >> ' ps], t_cpt, Gr, Gaz)
+		' -Xc -Y0.75i --MAP_VECTOR_SHAPE=0.5 > ' ps], Gr, Gaz, t_cpt)
+	gmt(['grdvector $ $ -A -C -J -W2p -Si2500 -O -B30g30 -Y5i >> ' ps], Gr, Gaz, t_cpt)
 	builtin('delete','gmt.conf');
