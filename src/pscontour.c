@@ -36,56 +36,56 @@
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
-	struct A {	/* -A[-][labelinfo] */
+	struct PSCONT_A {	/* -A[-][labelinfo] */
 		bool active;
 		unsigned int mode;	/* 1 turns off all labels */
 		double interval;
 		double single_cont;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct PSCONT_C {	/* -C<cpt> */
 		bool active;
 		bool cpt;
 		char *file;
 		double interval;
 		double single_cont;
 	} C;
-	struct D {	/* -D<dumpfile> */
+	struct PSCONT_D {	/* -D<dumpfile> */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E<indexfile> */
+	struct PSCONT_E {	/* -E<indexfile> */
 		bool active;
 		char *file;
 	} E;
-	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
+	struct PSCONT_G {	/* -G[d|f|n|l|L|x|X]<params> */
 		bool active;
 	} G;
-	struct I {	/* -I */
+	struct PSCONT_I {	/* -I */
 		bool active;
 	} I;
-	struct L {	/* -L<pen> */
+	struct PSCONT_L {	/* -L<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct N {	/* -N */
+	struct PSCONT_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S[p|t] */
+	struct PSCONT_S {	/* -S[p|t] */
 		bool active;
 		unsigned int mode;	/* 0 skip points; 1 skip triangles */
 	} S;
-	struct T {	/* -T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
+	struct PSCONT_T {	/* -T[+|-][+d<gap>[c|i|p][/<length>[c|i|p]]][+lLH|"low,high"] */
 		bool active;
 		bool label;
 		bool low, high;	/* true to tick low and high locals */
 		double dim[2];	/* spacing, length */
 		char *txt[2];	/* Low and high label */
 	} T;
-	struct Q {	/* -Q<cut> */
+	struct PSCONT_Q {	/* -Q<cut> */
 		bool active;
 		unsigned int min;
 	} Q;
-	struct W {	/* -W[+|-]<type><pen> */
+	struct PSCONT_W {	/* -W[+|-]<type><pen> */
 		bool active;
 		bool color_cont;
 		bool color_text;
@@ -372,8 +372,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 	}
 }
 
-int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_PEN P;
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -383,8 +382,8 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "[-E<indextable>] [%s] [-I] [%s] [-K] [-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<cut>] [-S[p|t]] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[+]<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_c_OPT, GMT_h_OPT,
-		GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+	             GMT_Y_OPT, GMT_b_OPT, GMT_d_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -489,8 +488,7 @@ unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct PSC
 	return (n_errors);
 }
 
-int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pscontour and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -672,16 +670,19 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
+	                                 "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && 
-			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
-			"Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error: Must specify one of -W or -I\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active), "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
+	                                 "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
+	                                 "Syntax error: Must specify one of -W or -I\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active),
+	                                 "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Syntax error -E option: Must specify an index file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && GMT_access (GMT, Ctrl->E.file, F_OK), "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && GMT_access (GMT, Ctrl->E.file, F_OK),
+	                                 "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
 	n_errors += GMT_check_binary_io (GMT, 3);
 
@@ -691,8 +692,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pscontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pscontour (void *V_API, int mode, void *args)
-{
+int GMT_pscontour (void *V_API, int mode, void *args) {
 	int add, error = 0;
 	bool two_only = false, make_plot, skip = false, convert, get_contours, is_closed, skip_points, skip_triangles;
 	
@@ -738,7 +738,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pscontour_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pscontour_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
@@ -885,7 +885,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = GMT_delaunay (GMT, x, y, n, &ind);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Obtained %d indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Obtained %d indices triplets via Delauney triangulation [%s].\n",
+		            np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
@@ -1024,7 +1025,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) {
 		uint64_t dim[4] = {0, 0, 0, 3};
-		if (Ctrl->D.file || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers means a single output file */
+		if (!Ctrl->D.file || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
 			n_tables = 1;
 		}
@@ -1062,7 +1063,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
 		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 	}
 	
 	if (make_plot) {
@@ -1442,7 +1443,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
 			label_mode |= 2;
 			if (Ctrl->contour.save_labels == 2) label_mode |= 4;
-			if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour))) Return (error);
+			if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) Return (error);
 		}
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contoursand plot/save L|H labels */
 			size_t kk;
@@ -1460,7 +1461,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 			GMT_contlabel_free (GMT, &Ctrl->contour);
 		}
 		if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
-			if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour))) Return (error);
+			if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour)) != 0) Return (error);
 		}
 	}
 
