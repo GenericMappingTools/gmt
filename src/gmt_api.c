@@ -2481,6 +2481,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 		GMT_setmode (API->GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
 #endif
 	}
+	GMT_set_dataset_minmax (API->GMT, D_obj);	/* Update all counters and min/max arrays */
 	D_obj->io_mode = mode;	/* Handles if tables or segments should be written to separate files, according to mode */
 	switch (S_obj->method) {	/* File, array, stream, etc. */
 	 	case GMT_IS_STREAM:
