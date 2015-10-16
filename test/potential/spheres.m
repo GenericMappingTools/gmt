@@ -25,7 +25,9 @@ function [ps, path] = spheres(out_path)
 
 
 	% Profile of analytic anomaly
-	ztmp = gmt('gmtmath -T-50/50/1 T $ HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL $ 3 POW MUL $ MUL $ ABS MUL', z0, r, ro, z0);
-	gmt(['psxy ztmp.dat -R -JX -W1p,200/0/0 -O >> ' ps], ztmp)
+	ztmp = gmt('gmtmath -T-50/50/1 T -15 HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL 10 3 POW MUL 1000 MUL -15 ABS MUL');
+	% Next line fails complaining about T
+	%ztmp = gmt('gmtmath -T-50/50/1 T $ HYPOT 3 POW INV 6.674e-6 MUL 4 MUL 3 DIV PI MUL $ 3 POW MUL $ MUL $ ABS MUL', z0, r, ro, z0);
+	gmt(['psxy -R -JX -W1p,200/0/0 -O >> ' ps], ztmp)
 
 	builtin('delete','gmt.conf');
