@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness* ]
+**gmtgravmag3d** **-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*
+[ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness* ]
 [ **-F**\ *xy_file* ]
 [ **-G**\ *outputgrid.nc* ]
 [ **-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip* ]
 [ **-L**\ *z_observation* ]
 |SYN_OPT-V|
 [ **-S**\ *radius* ]
-[ **-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file* ]
 [ **-Z**\ *level* ]
 [ |SYN_OPT-V| ]
 [ **-fg**\ ]
@@ -57,6 +57,26 @@ Required Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
+**-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*]
+    Give either names of xyz[m] and *vertex* files or of a *raw* or
+    *stl* file defining a close surface. In the first case append a *d*
+    immediately after **-T** and optionally a */m* after the vertex file
+    name. In the second case append a *r* or a *s* immediately after
+    **-T** and before the file name. A *vertex* file is a file with N
+    rows (one per triangle) and 3 columns with integers defining the
+    order by which the points in the *xyz* file are to be connected to
+    form a triangle. The output of the program triangulate comes in this
+    format. The optional */m* instructs the program that the xyzm file
+    has four columns and that the fourth column contains the
+    magnetization intensity (plus signal), which needs not to be
+    constant. In this case the third argument of the **-H** option is
+    ignored. A *raw* format (selected by the **r** flag is a file with N
+    rows (one per triangle) and 9 columns corresponding to the x,y,x
+    coordinates of each of the three vertex of each triangle.
+    Alternatively, the **s** flag indicates that the surface file is in
+    the ASCII STL (Stereo Lithographic) format. These two type of files
+    are used to provide a closed surface.
+
 Optional Arguments
 ------------------
 
@@ -77,26 +97,6 @@ Optional Arguments
     *radius* from current output point will not be taken into account.
     Use this option to speed up computation at expenses of a less
     accurate result.
-
-**-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*]
-    Give either names of xyz[m] and *vertex* files or of a *raw* or
-    *stl* file defining a close surface. In the first case append a *d*
-    immediately after **-T** and optionally a */m* after the vertex file
-    name. In the second case append a *r* or a *s* immediately after
-    **-T** and before the file name. A *vertex* file is a file with N
-    rows (one per triangle) and 3 columns with integers defining the
-    order by which the points in the *xyz* file are to be connected to
-    form a triangle. The output of the program triangulate comes in this
-    format. The optional */m* instructs the program that the xyzm file
-    has four columns and that the fourth column contains the
-    magnetization intensity (plus signal), which needs not to be
-    constant. In this case the third argument of the **-H** option is
-    ignored. A *raw* format (selected by the **r** flag is a file with N
-    rows (one per triangle) and 9 columns corresponding to the x,y,x
-    coordinates of each of the three vertex of each triangle.
-    Alternatively, the **s** flag indicates that the surface file is in
-    the ASCII STL (Stereo Lithographic) format. These two type of files
-    are used to provide a closed surface.
 
 **-Z**\ [*level*]
     level of reference plane [Default = 0]. Use this option when the
