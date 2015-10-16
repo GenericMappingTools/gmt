@@ -164,8 +164,10 @@
 #set (BUILD_SUPPLEMENTS FALSE)
 
 # Build/Install GMT Developer include files [FALSE]:
-# This installs the extra include files and configured files needed by gmt-devel
-#set (BUILD_DEVELOPER TRUE)
+# This installs the extra include files and configured files needed by 3rd-party
+# developers.  Until we build a separate gmt-devel we include them in the main
+# Distribution.
+set (BUILD_DEVELOPER TRUE)
 
 ##
 ## Section 4: Advanced tweaking
