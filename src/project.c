@@ -540,10 +540,9 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P)
+int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P)
 {
 	int error;
-	bool pure_ascii;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""};
@@ -584,7 +583,6 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 	out = GMT_memory (GMT, NULL, n_items, double);
 
 	if (P->first && (error = GMT_set_cols (GMT, GMT_OUT, n_items))) return (error);
-	pure_ascii = GMT_is_ascii_record (GMT);
 
 	/* Now output  */
 
@@ -930,7 +928,7 @@ int GMT_project (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		pure_ascii = GMT_is_ascii_record (GMT);	/* Must come after GMT_Begin_IO */
+		pure_ascii = GMT_is_ascii_record (GMT, options);
 
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
@@ -956,7 +954,7 @@ int GMT_project (void *V_API, int mode, void *args)
 				}
 				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
-						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
+						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P))) Return (error);
 						n_total_used += P.n_used;
 						P.n_used = 0;
 					}
@@ -1025,7 +1023,7 @@ int GMT_project (void *V_API, int mode, void *args)
 		if (P.n_used < n_alloc) p_data = GMT_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
 
 		if (P.n_used) {	/* Finish last segment output */
-			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
+			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P))) Return (error);
 			n_total_used += P.n_used;
 		}
 

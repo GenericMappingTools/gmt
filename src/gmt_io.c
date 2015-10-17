@@ -219,13 +219,26 @@ void GMT_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode) {
 }
 
 /*! . */
-bool GMT_is_ascii_record (struct GMT_CTRL *GMT) {
-	/* Returns true if the input is potentially an ASCII record, possibly with text, and
-	 * there are no options in effect to select specific columns on input or output. */
+bool GMT_is_ascii_record (struct GMT_CTRL *GMT, struct GMT_OPTION *head) {
+	/* Modules that read/write data records one at the time via GMT_Get_Record and
+	 * GMT_Put_Record needs to know they are writing to files or memory.  Only if
+	 * we are writing to files (or stdout) AND no -b has bee specified can we truly
+	 * say we are doing ASCII i/o.  Otherwise we must do binary i/o.  We check for
+	 * the various situations and returns true or false accordingly. */
+	
 	if (GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT]) return (false);	/* Binary, so clearly false */
-	if (GMT->current.io.ndim > 0) return (false);					/* netCDF, so clearly false */
+	if (GMT->current.io.ndim > 0) return (false);						/* netCDF, so clearly false */
 	if (GMT->common.i.active || GMT->common.o.active) return (false);			/* Selected columns via -i and/or -o, so false */
-	return (true);	/* Might be able to treat record as an ASCII record */
+	if (GMT->parent->mode) {	/* External interface (e.g., mex, Python) so must check if writing files or memory */
+		struct GMT_OPTION *current = head;
+		while (current) {	/* Look for file names */
+			if (current->option == GMT_OPT_INFILE || current->option == GMT_OPT_OUTFILE) {	/* File given, see if memory */
+				if (GMT_File_Is_Memory (current->arg)) return (false);	/* Planning to read/write via memory */
+			}
+			current = current->next;
+		}
+	}
+	return (true);	/* Should be able to treat record as an ASCII record */
 }
 
 /*! . */

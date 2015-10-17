@@ -1054,7 +1054,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		pure_ascii = GMT_is_ascii_record (GMT);	/* Must come after GMT_Begin_IO */
+		pure_ascii = GMT_is_ascii_record (GMT, options);
 		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
 
