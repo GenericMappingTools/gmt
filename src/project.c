@@ -87,9 +87,9 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 };
 
 struct PROJECT_DATA {
-	double a[6];
-	double *z;
-	char *t;
+	double a[6];	/* xypqrs */
+	double *z;	/* all z's */
+	char *t;	/* Text endings of each record */
 };
 
 struct PROJECT_INFO {
@@ -629,7 +629,7 @@ int GMT_project (void *V_API, int mode, void *args)
 {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
 	unsigned int rmode;
-	bool pure_ascii, skip, z_first = true;
+	bool skip, z_first = true;
 	int error = 0;
 
 	size_t n_alloc = GMT_CHUNK;
@@ -712,8 +712,6 @@ int GMT_project (void *V_API, int mode, void *args)
 		}
 		P.n_outputs++;
 	}
-
-	pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT]);
 
 	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (all) */
 		P.n_outputs = PROJECT_N_FARGS;
@@ -828,16 +826,6 @@ int GMT_project (void *V_API, int mode, void *args)
 
 	/*  Now we are ready to work  */
 
-	if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
-		Return (error);
-	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
-		Return (API->error);
-	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-		Return (API->error);
-	}
-
 	P.n_used = n_total_read = 0;
 
 	if (Ctrl->G.active) {	/* Not input data expected, just generate x,y,d track from arguments given */
@@ -902,6 +890,16 @@ int GMT_project (void *V_API, int mode, void *args)
 
 		/* Now output generated track */
 
+		if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+
 		if (!GMT->common.b.active[GMT_OUT] && Ctrl->G.header) {	/* Want segment header on output */
 			int kind = (doubleAlmostEqualZero (Ctrl->G.colat, 90.0)) ? 0 : 1;
 			char *type[2] = {"Great", "Small"};
@@ -915,6 +913,9 @@ int GMT_project (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Must read input file */
+		bool pure_ascii = false;
+		enum GMT_enum_family family;
+		enum GMT_enum_geometry geometry;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
@@ -929,7 +930,21 @@ int GMT_project (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
+		pure_ascii = GMT_is_ascii_record (GMT);	/* Must come after GMT_Begin_IO */
+
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
+		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
+		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
+		
+		if ((error = GMT_set_cols (GMT, GMT_OUT, P.n_outputs)) != GMT_OK) {
+			Return (error);
+		}
+		if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */

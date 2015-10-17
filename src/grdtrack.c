@@ -1045,17 +1045,23 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
+		enum GMT_enum_family family;
+		enum GMT_enum_geometry geometry;
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-			Return (API->error);
-		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		pure_ascii = GMT_is_ascii_record (GMT);	/* Must come after GMT_Begin_IO */
+		family = (pure_ascii) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
+		geometry = (pure_ascii) ? GMT_IS_NONE : GMT_IS_POINT;
+
+		if (GMT_Init_IO (API, family, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, family, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 
@@ -1066,7 +1072,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
 		}
 		
-		pure_ascii = GMT_is_ascii_record (GMT);
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 
