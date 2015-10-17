@@ -25,25 +25,22 @@
 #
 ps=example_03.ps
 gmt set GMT_FFT kiss
-gmt fitcircle sat.xyg -L2 > report
-cposx=`grep "L2 Average Position" report | cut -f1` 
-cposy=`grep "L2 Average Position" report | cut -f2` 
-pposx=`grep "L2 N Hemisphere" report | cut -f1` 
-pposy=`grep "L2 N Hemisphere" report | cut -f2` 
+cpos=`gmt fitcircle sat.xyg -L2 -Fm --IO_COL_SEPARATOR=/`
+ppos=`gmt fitcircle sat.xyg -L2 -Fn --IO_COL_SEPARATOR=/`
 #
 # Now we use "gmt project" to gmt project the data in both sat.xyg and ship.xyg
 # into data.pg, where g is the same and p is the oblique longitude around
 # the great circle.  We use -Q to get the p distance in kilometers, and -S
 # to sort the output into increasing p values.
 #
-gmt project  sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
-gmt project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
+gmt project  sat.xyg -C$cpos -T$ppos -S -Fpz -Q > sat.pg
+gmt project ship.xyg -C$cpos -T$ppos -S -Fpz -Q > ship.pg
 #
 # The gmtinfo utility will report the minimum and maximum values for all columns. 
 # We use this information first with a large -I value to find the appropriate -R
 # to use to plot the .pg data. 
 #
-R=`cat sat.pg ship.pg | gmt info -I100/25`
+R=`gmt info -I100/25 sat.pg ship.pg`
 gmt psxy $R -UL/-1.75i/-1.25i/"Example 3a in Cookbook" -BWeSn \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > example_03a.ps
@@ -158,7 +155,7 @@ gmt trend1d -Fxrw -Np1+r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 #
 # We plot these to see how they look:
 #
-R=`cat samp2_sat.pg samp2_ship.pg | gmt info -I100/25`
+R=`gmt info -I100/25 samp2_sat.pg samp2_ship.pg`
 gmt psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
 	-Bxa500f100+l"Distance along great circle" -Bya50f25+l"Gravity anomaly (mGal)" \
 	-BWeSn -UL/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > example_03e.ps
