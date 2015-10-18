@@ -1,7 +1,7 @@
 #!/bin/bash
 #       $Id$
 
-# Testing gmt math for BCDF PCDF ZCDF TCDF FCDF CHICDF
+# Testing gmt math for BCDF PCDF ZCDF TCDF FCDF
 # Red dots are output from MATLAB for comparison
 ps=cdfs1.ps
 # Plot binomial cumulative distribution

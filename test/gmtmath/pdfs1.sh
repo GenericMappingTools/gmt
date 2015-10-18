@@ -1,7 +1,7 @@
 #!/bin/bash
 #       $Id$
 
-# Testing gmt math for BPDF PPDF ZPDF TPDF FPDF CHIPDF
+# Testing gmt math for BPDF PPDF ZPDF TPDF FPDF
 # Red dots are output from MATLAB for comparison
 ps=pdfs1.ps
 # Plot binomial distribution

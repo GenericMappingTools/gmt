@@ -59,7 +59,7 @@ gmt math -T0/8/0.1 T 1 1.5 WPDF = p.d
 gmt psxy -R0/8/0/0.8 -J -O -K p.d -W1p -BWS -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 echo "Weibull P(z,1,1.5)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
-# Plot CHIDIST distribution
+# Plot CHI2DIST distribution
 cat << EOF > ML.txt
 0	                0
 1	0.151632664928158
@@ -71,7 +71,7 @@ cat << EOF > ML.txt
 7	0.052845420989057
 8	0.036631277777468
 EOF
-gmt math -T0/8/0.1 T 4 CHIPDF = p.d
+gmt math -T0/8/0.1 T 4 CHI2PDF = p.d
 gmt psxy -R0/8/0/0.25 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
 echo "@~c@~@+2@+(z,@~n=4@~)" | gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR >> $ps
