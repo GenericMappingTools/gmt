@@ -1298,7 +1298,7 @@ int table_CHI2CDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 }
 
 int table_CHI2PDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: CHI2PDF 2 1 Chi^2 probability density function for chi = A and nu = B.  */
+/*OPERATOR: CHI2PDF 2 1 Chi-squared probability density function for chi = A and nu = B.  */
 {
 	uint64_t s, row, nu;
 	unsigned int prev;

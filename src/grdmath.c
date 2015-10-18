@@ -963,7 +963,7 @@ void grd_CHI2CDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 }
 
 void grd_CHI2PDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: CHI2PDF 2 1 Chi^2 probability density function for chi = A and nu = B.  */
+/*OPERATOR: CHI2PDF 2 1 Chi-squared probability density function for chi = A and nu = B.  */
 {
 	uint64_t node, nu;
 	unsigned int prev = last - 1, row, col;
