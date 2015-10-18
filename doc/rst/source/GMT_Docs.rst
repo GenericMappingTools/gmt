@@ -387,7 +387,7 @@ changes to existing syntax will be backwards compatible:
    added a **-F** option to create line segments from an input data sets using
    a variety of connectivity modes.
 
-*  :doc:`gmtmath` adds the operator **BPDF** for binomial probability distribution and
+*  :doc:`gmtmath` adds a long list of new operators.  We have the operator **BPDF** for binomial probability distribution and
    **BCDF** for the cumulative binomial distribution function.  Due to confusion with
    other probability distributions we have introduced a series of new operator names
    (but honor backwards compatibility).  Listing the pdf and cdf for each distribution,
@@ -401,8 +401,10 @@ changes to existing syntax will be backwards compatible:
    **WPDF** and **WCDF** for the Weibull distribution (as well as **WCRIT**), and
    **ZPDF** and **ZCDF** for the Normal distribution. We added **ROLL** for cyclic shifts of the stack, as
    well as new constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
-   normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  Finally, we added
+   normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  We added
    operator **POINT** which reads a data table and places the mean x and mean y on the stack.
+   Finally, we added new hyperbolic and inverse hyperbolic functions **COTH** and **ACOTH**,
+   **SECH** and **ASECH**, and **CSCH** and **ACSCH**.
 
 *  :doc:`gmtspatial` now lets you specify Flat Earth or Geodesic distance calculations
    for line lengths via **-Q**.
@@ -423,7 +425,7 @@ changes to existing syntax will be backwards compatible:
 *  :doc:`grdinfo` reports the projection info of netCDF grids when that is stored in
    a grid's metadata in WKT format.
 
-*  :doc:`grdmath` adds several new operators, such as **ARC** and **WRAP** for
+*  :doc:`grdmath` adds numerous new operators, such as **ARC** and **WRAP** for
    angular operators, **BPDF** for binomial probability distribution and
    **BCDF** for the cumulative binomial distribution function.  Due to confusion with
    other probability distributions we have introduced a series of new operator names
@@ -443,6 +445,8 @@ changes to existing syntax will be backwards compatible:
    to **LDISTC**.  We also add new constants **XRANGE**, **YRANGE**, **XCOL**,
    **YROW** and **F_EPS**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
    and **Yn** to **YNORM** (but this is backwards compatible).
+   Finally, we added new hyperbolic and inverse hyperbolic functions **COTH** and **ACOTH**,
+   **SECH** and **ASECH**, and **CSCH** and **ACSCH**.
 
 *  :doc:`grdtrack` add the modifier **-G+l**\ *list* to pass a list of grids.
 

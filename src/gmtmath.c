@@ -720,9 +720,35 @@ int table_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand < 1 for ACOSH!\n");
+	if (S[last]->constant && fabs (S[last]->factor) < 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand < 1 for ACOSH!\n");
 	if (S[last]->constant) a = acosh (S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : acosh (T->segment[s]->coord[col][row]);
+	return 0;
+}
+
+int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ACOT 1 1 acot (A).  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOT!\n");
+	if (S[last]->constant) a = atan (1.0 / S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atan (1.0 / T->segment[s]->coord[col][row]);
+	return 0;
+}
+
+int table_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ACOTH 1 1 acoth (A).  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) <= 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| <= 1 for ACOTH!\n");
+	if (S[last]->constant) a = atanh (1.0/S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atanh (1.0/T->segment[s]->coord[col][row]);
 	return 0;
 }
 
@@ -739,16 +765,16 @@ int table_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: ACOT 1 1 acot (A).  */
+int table_ACSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ACSCH 1 1 acsch (A).  */
 {
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
 
-	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOT!\n");
-	if (S[last]->constant) a = atan (1.0 / S[last]->factor);
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atan (1.0 / T->segment[s]->coord[col][row]);
+	if (S[last]->constant) a = asinh (1.0/S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : asinh (1.0/T->segment[s]->coord[col][row]);
 	return 0;
 }
 
@@ -800,6 +826,19 @@ int table_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASEC!\n");
 	if (S[last]->constant) a = d_acos (1.0 / S[last]->factor);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : d_acos (1.0 / T->segment[s]->coord[col][row]);
+	return 0;
+}
+
+int table_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ASECH 1 1 asech (A).  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant && fabs (S[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand > 1 for ASECH!\n");
+	if (S[last]->constant) a = acosh (1.0/S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : acosh (1.0/T->segment[s]->coord[col][row]);
 	return 0;
 }
 
@@ -1448,6 +1487,19 @@ int table_COTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
+int table_COTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: COTH 1 1 coth (A).  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
+
+	if (S[last]->constant) a = 1.0 / tanh (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / tanh (T->segment[s]->coord[col][row]);
+	return 0;
+}
+
 int table_CSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CSC 1 1 csc (A) (A in radians).  */
 {
@@ -1475,6 +1527,19 @@ int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / sind (T->segment[s]->coord[col][row]));
 	}
+	return 0;
+}
+
+int table_CSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: CSCH 1 1 csch (A).  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
+
+	if (S[last]->constant) a = 1.0 / sinh (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / sinh (T->segment[s]->coord[col][row]);
 	return 0;
 }
 
@@ -3460,6 +3525,19 @@ int table_SECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 
 	if (S[last]->constant) a = (1.0 / cosd (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : (1.0 / cosd (T->segment[s]->coord[col][row]));
+	return 0;
+}
+
+int table_SECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: SECH 1 1 sech (A).  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+	GMT_UNUSED(GMT);
+
+	if (S[last]->constant) a = 1.0 / cosh (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / cosh (T->segment[s]->coord[col][row]);
 	return 0;
 }
 

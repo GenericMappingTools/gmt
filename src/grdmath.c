@@ -340,7 +340,7 @@ void grd_ACOSH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
+	if (stack[last]->constant && fabs (stack[last]->factor) < 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand < 1 for ACOSH!\n");
 	if (stack[last]->constant) a = (float)acosh (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -360,6 +360,17 @@ void grd_ACOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : atanf (1.0f / stack[last]->G->data[node]);
 }
 
+void grd_ACOTH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ACOTH 1 1 acoth (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+
+	if (stack[last]->constant && fabs (stack[last]->factor) <= 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| <= 1 for ACOTH!\n");
+	if (stack[last]->constant) a = (float)atanh (1.0/stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : atanhf (1.0f/stack[last]->G->data[node]);
+}
+
 void grd_ACSC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ACSC 1 1 acsc (A).  */
 {
@@ -371,6 +382,17 @@ void grd_ACSC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	if (stack[last]->constant) a = (float)d_asin (1.0 / stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : d_asinf (1.0f / stack[last]->G->data[node]);
+}
+
+void grd_ACSCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ACSCH 1 1 acsch (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+	GMT_UNUSED(GMT);
+
+	if (stack[last]->constant) a = (float)asinh (1.0/stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : asinhf (1.0f/stack[last]->G->data[node]);
 }
 
 void grd_ADD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -439,6 +461,19 @@ void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASEC!\n");
 	if (stack[last]->constant) a = (float)d_acos (1.0 / stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (1.0f / stack[last]->G->data[node]);
+}
+
+void grd_ASECH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ASECH 1 1 asech (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+
+	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand > 1 for ASECH!\n");
+	if (stack[last]->constant) a = (float)acosh (1.0/stack[last]->factor);
+	for (node = 0; node < info->size; node++)
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : acoshf (1.0f/stack[last]->G->data[node]);
 }
 
 void grd_ASIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1046,6 +1081,17 @@ void grd_COTD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 1.0 / tand (stack[last]->G->data[node]));
 }
 
+void grd_COTH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: COTH 1 1 coth (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+	GMT_UNUSED(GMT);
+
+	if (stack[last]->constant) a = (float)(1.0/tanh (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : 1.0f / tanhf (stack[last]->G->data[node]);
+}
+
 void grd_PCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PCDF 2 1 Poisson cumulative distribution function x = A and lambda = B.  */
 {
@@ -1097,6 +1143,17 @@ void grd_CSCD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	if (stack[last]->constant) a = 1.0 / sind (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 1.0 / sind (stack[last]->G->data[node]));
+}
+
+void grd_CSCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: CSCH 1 1 csch (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+	GMT_UNUSED(GMT);
+
+	if (stack[last]->constant) a = (float)(1.0 / sinh (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : 1.0f / sinhf (stack[last]->G->data[node]);
 }
 
 void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3354,6 +3411,17 @@ void grd_SECD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	if (stack[last]->constant) a = 1.0 / cosd (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : 1.0 / cosd (stack[last]->G->data[node]));
+}
+
+void grd_SECH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: SECH 1 1 sech (A).  */
+{
+	uint64_t node;
+	float a = 0.0f;
+	GMT_UNUSED(GMT);
+
+	if (stack[last]->constant) a = (float)(1.0/cosh (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : 1.0f/coshf (stack[last]->G->data[node]);
 }
 
 void grd_SIGN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
