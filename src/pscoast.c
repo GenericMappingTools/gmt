@@ -711,7 +711,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	else if (Ctrl->M.active && !GMT->common.J.active)
 		GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
 

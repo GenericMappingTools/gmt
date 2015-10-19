@@ -240,7 +240,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 
 	/* Here we have -R -J etc to deal with */
 	
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */

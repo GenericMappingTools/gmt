@@ -874,10 +874,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 		}
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
-		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
-	else
-		GMT_err_fail (GMT, GMT_map_setup (GMT, F.wesn), "");
+	else {
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, F.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	}
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 

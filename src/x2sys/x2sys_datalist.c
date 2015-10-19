@@ -300,7 +300,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 			GMT->common.R.wesn[XLO] += 360.0;
 			GMT->common.R.wesn[XHI] += 360.0;
 		}
-		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */

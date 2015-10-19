@@ -344,7 +344,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the psvelo main code ----------------------------*/
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

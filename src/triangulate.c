@@ -294,7 +294,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;
-		GMT_err_fail (GMT, GMT_map_setup (GMT, Grid->header->wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	/* Now we are ready to take on some input values */

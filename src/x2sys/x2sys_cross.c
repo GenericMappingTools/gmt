@@ -484,7 +484,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 		do_project = true;
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
-		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	GMT_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);

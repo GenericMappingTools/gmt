@@ -570,7 +570,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		penset_OK = false;	/* Since it is set in PSL */
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
 		save_u = GMT->current.setting.proj_length_unit;

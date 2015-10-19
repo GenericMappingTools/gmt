@@ -595,12 +595,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "x1i");
 		wesn[XHI] = Ctrl->D.dim[GMT_X];	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 	else {
 		r_ptr = GMT_Find_Option (API, 'R', options);
 		j_ptr = GMT_Find_Option (API, 'J', options);
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);

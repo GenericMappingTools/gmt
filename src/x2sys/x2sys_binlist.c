@@ -251,7 +251,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		GMT_parse_common_options (GMT, "J", 'J', proj);
-		GMT_err_fail (GMT, GMT_map_setup (GMT, B.wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		GMT_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
 		GMT_geo_to_xy (GMT, B.wesn[XHI], B.wesn[YHI], &B.wesn[XHI], &B.wesn[YHI]);
 		y_max = B.wesn[YHI];

@@ -573,7 +573,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 		}
 	}
-	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};

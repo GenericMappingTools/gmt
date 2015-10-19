@@ -674,7 +674,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 

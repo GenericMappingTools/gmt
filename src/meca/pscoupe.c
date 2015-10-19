@@ -839,7 +839,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 		if (GMT_IS_ZERO (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

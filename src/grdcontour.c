@@ -844,7 +844,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
-	if (need_proj && GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
+	if (need_proj && GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to actually read the grid file */
 
