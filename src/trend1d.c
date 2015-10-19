@@ -812,7 +812,8 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 		sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
 		GMT_Message (API, GMT_TIME_NONE, "\n");
-		if (Ctrl->N.M.chebyshev) GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+		if (!Ctrl->N.M.chebyshev)
+			GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Model Coefficients (Polynomial): ");
 		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
 		GMT_Message (API, GMT_TIME_NONE, "\n");
@@ -834,7 +835,7 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 	if (!Ctrl->model_parameters)	/* Write any or all of the 'xymrw' */
 		write_output_trend1d (GMT, data, n_data, Ctrl->F.col, Ctrl->n_outputs);
 	else {				/* Write only the model parameters */
-		if (Ctrl->N.M.chebyshev)
+		if (!Ctrl->N.M.chebyshev)
 			GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, c_model);
 	}
