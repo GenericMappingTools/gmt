@@ -8398,8 +8398,8 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 			Return (GMT_MAP_NO_PROJECTION);
 	}
 
-	if (!search)	/* Some wrror in projection projection parameters, return to a horrible death */
-		Return(GMT_MAP_NO_PROJECTION);
+	//if (!search)	/* Some wrror in projection projection parameters, return to a horrible death */
+		//Return(GMT_MAP_NO_PROJECTION);
 
 	/* If intervals are not set specifically, round them to some "nice" values
 	 * Remember whether frame items in both directions were are automatically set */
