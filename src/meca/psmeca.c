@@ -281,7 +281,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;
 				strncpy (txt, opt->arg, GMT_LEN256);
-				if ((p = strchr (txt, 'P'))) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
+				if ((p = strchr (txt, 'P')) != NULL) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
 				if (txt[0] != 'P') {	/* Have a pen up front */
 					if (p) p[0] = '\0';
 					if (GMT_getpen (GMT, txt, &Ctrl->C.pen)) {
@@ -307,7 +307,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
 						strncpy (txt, &opt->arg[2], GMT_LEN256);
-						if ((p = strchr (txt, '/'))) p[0] = '\0';
+						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 						p++;
 						switch (strlen (p)) {
@@ -524,7 +524,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psmeca_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psmeca_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psmeca main code ----------------------------*/
 
@@ -599,7 +599,8 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 				col[8], col[9], col[10], string);
 			last = 10;
 		}
- 		for (k = 0; k <= last; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
+ 		for (k = 0; k <= last; k++)
+ 			if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		/* Immediately skip locations outside of the map area */
 

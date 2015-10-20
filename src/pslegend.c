@@ -388,7 +388,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pslegend_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pslegend_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pslegend main code ----------------------------*/
 
@@ -436,7 +436,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 					case 'B':	/* Color scale Bar [Use GMT_psscale] */
 						/* B cptname offset height[+modifiers] [ Optional psscale args -B -I -L -M -N -S -Z -p ] */
 						sscanf (&line[2], "%*s %*s %s", bar_height);
-						if ((c = strchr (bar_height, '+'))) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
+						if ((c = strchr (bar_height, '+')) != NULL) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
 						height += GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 						column_number = 0;
 						break;
@@ -673,7 +673,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						module_options[0] = '\0';
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, module_options);
 						strcpy (bar_modifiers, bar_height);	/* Save the entire modifier string */
-						if ((c = strchr (bar_height, '+'))) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
+						if ((c = strchr (bar_height, '+')) != NULL) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
 						row_height = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, 1, fill);
 						x_off = GMT_to_inch (GMT, bar_gap);
@@ -692,7 +692,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'C':	/* Font color change: C textcolor */
 						sscanf (&line[2], "%[^\n]", txtcolor);
-						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txtcolor))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txtcolor)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						break;
 
 					case 'D':	/* Delimiter record: D [offset] <pen>|- [-|=|+] */
@@ -744,7 +744,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						for (col = 0; col < PSLEGEND_MAX_COLS; col++) if (fill[col]) {free (fill[col]); fill[col] = NULL;}
 						pos = n_col = 0;
 						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
-							if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, p))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+							if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
 							if (n_col > n_columns) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
@@ -1014,7 +1014,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							drawn = true;
 							break;
 						}
-						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c))) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						if (strchr ("LCR", txt_a[0])) {	/* Gave L, C, or R justification relative to current cell */
 							justify = GMT_just_decode (GMT, txt_a, 0);
 							off_ss = (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
@@ -1046,7 +1046,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								strcpy (B, "-1");		/* One centered tick */
 								tlen = 0.3 * length;		/* The default length of the tick is 30% of length */
 							}
-							if ((c = strchr (symbol, '+')))	/* Pass along all the given modifiers */
+							if ((c = strchr (symbol, '+')) != NULL)	/* Pass along all the given modifiers */
 								strcpy (sub, c);
 							else	/* The necessary arguments not supplied, provide reasonable defaults */
 								sprintf (sub, "+l+b");	/* Box to the left of the line is our default front symbol */
@@ -1136,9 +1136,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 									size[i++] = '\0';	/* So GMT_to_inch won't complain */
 									sprintf (sub, "%s%s+jc+e", symbol, &size[i]);
 								}
-								else if ((c = strchr (symbol, '+'))) {	/* GMT5 syntax: Pass along all the given modifiers */
+								else if ((c = strchr (symbol, '+')) != NULL) {	/* GMT5 syntax: Pass along all the given modifiers */
 									strcpy (sub, symbol);
-									if ((c = strstr (sub, "+j")) && c[2] != 'c') {	/* Got justification, check if it is +jc */
+									if ((c = strstr (sub, "+j")) != NULL && c[2] != 'c') {	/* Got justification, check if it is +jc */
 										GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector justification changed from +j%c to +jc\n", c[2]);
 										c[2] = 'c';	/* Replace with centered justification */
 									}

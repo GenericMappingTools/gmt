@@ -325,7 +325,7 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 				wanty = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LAT;
 				n_errors += GMT_verify_expectations (GMT, wantx, GMT_scanf_arg (GMT, txt_a, wantx, &Ctrl->S.lon), txt_a);
 				n_errors += GMT_verify_expectations (GMT, wanty, GMT_scanf_arg (GMT, txt_b, wanty, &Ctrl->S.lat), txt_b);
-				if ((units = strrchr (opt->arg, '/'))) {
+				if ((units = strrchr (opt->arg, '/')) != NULL) {
 					units++;
 					Ctrl->S.label = strdup (units);
 				}
@@ -419,7 +419,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pswiggle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pswiggle_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pswiggle_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 

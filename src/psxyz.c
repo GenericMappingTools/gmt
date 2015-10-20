@@ -317,13 +317,13 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'L':		/* Force closed polygons */
 				Ctrl->L.active = true;
-				if ((c = strstr (opt->arg, "+b")))	/* Build asymmetric polygon from lower and upper bounds */
+				if ((c = strstr (opt->arg, "+b")) != NULL)	/* Build asymmetric polygon from lower and upper bounds */
 					Ctrl->L.anchor = PSXY_POL_ASYMM_ENV;
-				else if ((c = strstr (opt->arg, "+d")))	/* Build symmetric polygon from deviations about y(x) */
+				else if ((c = strstr (opt->arg, "+d")) != NULL)	/* Build symmetric polygon from deviations about y(x) */
 					Ctrl->L.anchor = PSXY_POL_SYMM_DEV;
-				else if ((c = strstr (opt->arg, "+D")))	/* Build asymmetric polygon from deviations about y(x) */
+				else if ((c = strstr (opt->arg, "+D")) != NULL)	/* Build asymmetric polygon from deviations about y(x) */
 					Ctrl->L.anchor = PSXY_POL_ASYMM_DEV;
-				else if ((c = strstr (opt->arg, "+x"))) {	/* Parse x anchors for a polygon */
+				else if ((c = strstr (opt->arg, "+x")) != NULL) {	/* Parse x anchors for a polygon */
 					switch (c[2]) {
 						case 'l':	Ctrl->L.mode = XLO;	break;	/* Left side anchors */
 						case 'r':	Ctrl->L.mode = XHI;	break;	/* Right side anchors */
@@ -331,7 +331,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 					}
 					Ctrl->L.anchor = PSXY_POL_X;
 				}
-				else if ((c = strstr (opt->arg, "+y"))) {	/* Parse y anchors for a polygon */
+				else if ((c = strstr (opt->arg, "+y")) != NULL) {	/* Parse y anchors for a polygon */
 					switch (c[2]) {
 						case 'b':	Ctrl->L.mode = YLO;	break;	/* Bottom side anchors */
 						case 't':	Ctrl->L.mode = YHI;	break;	/* Top side anchors */
@@ -341,7 +341,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				}
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
-				if ((c = strstr (opt->arg, "+p"))) {	/* Want outline */
+				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
 					if (c[2] && GMT_getpen (GMT, &c[2], &Ctrl->L.pen)) {
 						GMT_pen_syntax (GMT, 'W', "sets pen attributes [no outline]", 0);
 						n_errors++;
@@ -521,7 +521,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	S.u = GMT->current.setting.proj_length_unit;
 
 	Ctrl = New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psxyz_parse (GMT, Ctrl, options, &S))) Return (error);
+	if ((error = GMT_psxyz_parse (GMT, Ctrl, options, &S)) != 0) Return (error);
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 
@@ -1399,8 +1399,8 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (S.G.save_labels) {	/* Want to save the Line label locations (lon, lat, angle, label) */
-			if ((error = GMT_contlabel_save_begin (GMT, &S.G))) Return (error);
-			if ((error = GMT_contlabel_save_end (GMT, &S.G))) Return (error);
+			if ((error = GMT_contlabel_save_begin (GMT, &S.G)) != 0) Return (error);
+			if ((error = GMT_contlabel_save_end (GMT, &S.G)) != 0) Return (error);
 		}
 		GMT_contlabel_plot (GMT, &S.G);
 	}

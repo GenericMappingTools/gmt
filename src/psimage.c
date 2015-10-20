@@ -367,8 +367,7 @@ int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psimage (void *V_API, int mode, void *args)
-{
+int GMT_psimage (void *V_API, int mode, void *args) {
 	int i, j, n, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
 	unsigned int row, col;
 	bool free_GMT = false, did_gray = false;
@@ -406,7 +405,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psimage_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psimage_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psimage main code ----------------------------*/
 
@@ -452,7 +451,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
 				k = 4 * I->data[j] + 3;
 				if (has_trans && colormap[k] == 0)
-					I->data[n--] = b, I->data[n--] = g, I->data[n--] = r;
+					I->data[n--] = (unsigned char)b, I->data[n--] = (unsigned char)g, I->data[n--] = (unsigned char)r;
 				else
 					I->data[n--] = colormap[--k], I->data[n--] = colormap[--k], I->data[n--] = colormap[--k];
 			}
@@ -463,7 +462,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, I->data, (int)I->header->nm, &r, &g, &b);
 			for (j4 = n4 = 0; j4 < 4 * I->header->nm; j4++) { /* Reduce image from 32- to 24-bit */
 				if (has_trans && I->data[j4+3] == 0)
-					I->data[n4++] = r, I->data[n4++] = g, I->data[n4++] = b, j4 += 3;
+					I->data[n4++] = (unsigned char)r, I->data[n4++] = (unsigned char)g, I->data[n4++] = (unsigned char)b, j4 += 3;
 				else
 					I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++], I->data[n4++] = I->data[j4++];
 			}
