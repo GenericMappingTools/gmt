@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ...
-[ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ **-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**] ] [**-D**\ *dfile* ]
-[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**] ]
-[ **-N** ] 
+**grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
+[ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
+[ |-C|\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**] ] [|-D|\ *dfile* ]
+[ |-E|\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**] ]
+[ |-N| ] 
 [ |SYN_OPT-R| ]
-[ **-S**\ *method*/*modifiers* ] [ **-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
-[ **-V**\ [*level*] ] [ **-Z** ]
+[ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
+[ **-V**\ [*level*] ] [ |-Z| ]
 [ |SYN_OPT-b| ] 
 [ |SYN_OPT-d| ] 
 [ |SYN_OPT-f| ] 
@@ -53,6 +53,8 @@ edge is zero) unless the grid is automatically recognized as periodic.)
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *gridfile*
     *grdfile* is a 2-D binary grid file with the function f(x,y). If the
     specified grid is in Sandwell/Smith Mercator format you must append
@@ -76,6 +78,9 @@ Optional Arguments
     This is an ASCII (or binary, see **-bi**)
     file where the first 2 columns hold the (x,y) positions where the
     user wants to sample the 2-D data set.
+
+.. _-A:
+
 **-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**
     For track resampling (if **-C** is set) we can select how this is to
     be performed. Append **f** to keep original points, but add
@@ -87,6 +92,9 @@ Optional Arguments
     given spacing to fit the track length exactly. Finally, append
     **+l** if distances should be measured along rhumb lines
     (loxodromes). Ignored unless **-C** is used.
+
+.. _-C:
+
 **-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
@@ -103,11 +111,17 @@ Optional Arguments
     Cartesian grids implies the user unit.  The output columns will be
     *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
     the sampled values for each of the *n* grids)
+
+.. _-D:
+
 **-D**\ *dfile*
     In concert with **-C** we can save the (possibly resampled) original
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
     (sampled value for each grid)
+
+.. _-E:
+
 **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
@@ -132,12 +146,17 @@ Optional Arguments
     great circle distances in km (if geographic).  If working with geographic
     data you can prepend - (Flat Earth) or + (Geodesic) to *inc*, *length*, or *radius*
     to change the mode of distance calculation [Great Circle].
+
+.. _-N:
+
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-S**\ *method*/*modifiers*
     In conjunction with **-C**, compute a single stacked profile from
@@ -166,6 +185,8 @@ Optional Arguments
     When more than one grid is sampled this sequence of 1-3 columns are
     repeated for each grid.
 
+.. _-T:
+
 **-T**\ [*radius*\ [**u**]][**+e**\ \|\ **p**]
    To be used with normal grid sampling, and limited to a single, non-IMG grid.
    If the nearest node to the input point is NaN, search outwards until we find
@@ -178,6 +199,8 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**
     Only write out the sampled z-values [Default writes all columns].
@@ -278,3 +301,41 @@ See Also
 :doc:`gmtconvert`,
 :doc:`sample1d`,
 :doc:`surface`
+
+.. |-G| raw:: html
+
+   <strong><a class="reference internal" href="#g"><span>-G</span></a></strong>
+
+.. |-A| raw:: html
+
+   <strong><a class="reference internal" href="#a"><span>-A</span></a></strong>
+
+.. |-C| raw:: html
+
+   <strong><a class="reference internal" href="#c"><span>-C</span></a></strong>
+
+.. |-D| raw:: html
+
+   <strong><a class="reference internal" href="#d"><span>-D</span></a></strong>
+
+.. |-E| raw:: html
+
+   <strong><a class="reference internal" href="#e"><span>-E</span></a></strong>
+
+.. |-N| raw:: html
+
+   <strong><a class="reference internal" href="#n"><span>-N</span></a></strong>
+
+.. |-S| raw:: html
+
+   <strong><a class="reference internal" href="#s"><span>-S</span></a></strong>
+
+.. |-T| raw:: html
+
+   <strong><a class="reference internal" href="#t"><span>-T</span></a></strong>
+
+.. |-Z| raw:: html
+
+   <strong><a class="reference internal" href="#z"><span>-Z</span></a></strong>
+
+
