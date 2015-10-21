@@ -6836,7 +6836,7 @@ const char * GMTAPI_get_moduleinfo (void *V_API, char *module)
 	for (lib = 0; lib < API->n_shared_libs; lib++) {	/* Look for gmt_module in any of the shared libs */
 		keys = gmt_get_module_info (API, gmt_module, lib);
 		if (keys) {	/* Found it in this shared library, adjust module name and return the keys */
-			strncpy (module, gmt_module, GMT_LEN32);	/* Rewrite module name to contain prefix of gmt */
+			strncpy(module, gmt_module, strlen(gmt_module));	/* Rewrite module name to contain prefix of gmt */
 			return (keys);
 		}
 	}
@@ -6939,7 +6939,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		*n = UINT_MAX;
 		return NULL;
 	}
-	module = calloc (strlen (module_name) + 3, sizeof(char));	/* Allow space for any "gmt" prefix added to module in GMTAPI_get_moduleinfo */
+	module = calloc (strlen (module_name) + 4, sizeof(char));	/* Allow space for any "gmt" prefix added to module in GMTAPI_get_moduleinfo */
 	strcpy (module, module_name);			/* This string can grow by 3 if need be */
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = GMTAPI_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
