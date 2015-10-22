@@ -1108,7 +1108,7 @@ struct srf_header6 {	/* Surfer 6 file header structure */
 
    Note: I had significant troubles to be able to read correctly the Surfer 7 format.
    In its basic and mostly used form (that is, without break-lines info) what we normally
-   call a header, can be described by the srf_header7 structure bellow (but including
+   call a header, can be described by the srf_header7 structure below (but including
    the three commented lines). This would make that the header is composed of 2 char[4] and
    and 5 ints followed by doubles. The problem was that after the ints the doubles were not
    read correctly. It looked like everything was displaced by 4 bytes.

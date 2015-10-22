@@ -54,7 +54,7 @@ Optional Arguments
     height of the entire grid]. The area is measured in the plane of the contour.
     The **Cr** form on the other hand computes volume between the grid
     surface and the plans defined by *low* and *high*. Note that this is an
-    *outside* volume whilst the other forms compute an *inside* (bellow the surface)
+    *outside* volume whilst the other forms compute an *inside* (below the surface)
     area volume. Use this form to compute for example the volume of water
     between two contours.
 **-L**\ *base*

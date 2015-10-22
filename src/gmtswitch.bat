@@ -37,7 +37,7 @@ REM	The second mode is temporary because the path to the selected GMT binary dir
 REM	prepended to previous path via a shell command line. This modification disappears
 REM	when the shell cmd window where it was executes is deleted.
 REM
-REM	It is the user responsibility to set the contents of the G32_32 to G5_64 bellow
+REM	It is the user responsibility to set the contents of the G32_32 to G5_64 below
 REM	to valid paths where the binaries of the different GMT versions are installed
 REM	Note that it's not mandatory to have all four of them in you computer. For the
 REM	ones you do not have just let them pointing to nothing e.g.
