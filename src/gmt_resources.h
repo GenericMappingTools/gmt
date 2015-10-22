@@ -91,6 +91,7 @@ enum GMT_enum_method {
 
 enum GMT_enum_via {
 	GMT_VIA_NONE = 0,	/* No via anything */
+	GMT_VIA_MODULE_INPUT = 64,	/* To flag resources destined for another module's "command-line" input */
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 

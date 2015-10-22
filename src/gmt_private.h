@@ -81,6 +81,7 @@ struct GMTAPI_DATA_OBJECT {
 	bool region;				/* true if wesn was passed, false otherwise */
 	bool no_longer_owner;			/* true if the data pointed to by the object was passed on to another object */
 	bool messenger;				/* true for output objects passed from the outside to receive data from GMT. If true we destroy data pointer before writing */
+	bool module_input;			/* true for input objects that will serve as module input(s) and not option inputs */
 	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
 	enum GMT_enum_std direction;		/* GMT_IN or GMT_OUT */
 	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GRID|MATRIX|VECTOR|COORD} */
