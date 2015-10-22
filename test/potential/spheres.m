@@ -14,7 +14,7 @@ function [ps, path] = spheres(out_path)
 
 	r = 10;		z0 = -15;	ro = 1000;
 
-	%li1 = gmt('sample1d -Fl -I1', [-50 0; 50 0]);		% This is currently failing
+	%li1 = gmt('sample1d -Fl -I1', [-50 0; 50 0]);
 	li1 = [(-50:50)' zeros(101,1)];
 
 	ptodos_g = gmt(['gmtgravmag3d -Tr' path 'sphere.raw -C' num2str(ro) ' -F'], li1);
