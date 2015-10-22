@@ -747,7 +747,7 @@ int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, doubl
 	
 	if (Ctrl->box.is_geog) {	/* take a first read just to compute the central longitude */
 		while (fgets (line, GMT_LEN256, fp)) {
-			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done bellow */
+			sscanf (line, "%lg %lg", &in[0], &in[1]); /* A test on file integrity will be done below */
 			x_min = (float)MIN(in[0], x_min);	x_max = (float)MAX(in[0], x_max);
 			y_min = (float)MIN(in[1], y_min);	y_max = (float)MAX(in[1], y_max);
 		}
