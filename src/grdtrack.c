@@ -739,7 +739,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdtrack_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdtrack_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdtrack_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
@@ -1069,7 +1069,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {
 			GMT_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z all columns */
 			n_out = Ctrl->G.n_grids;
-			if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
+			if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
 		}
 		
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
@@ -1104,7 +1104,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (n_out == 0) {
 				n_out = GMT_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get new # of output cols */
 				if (Ctrl->T.mode == 2) n_out += 3;
-				if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
+				if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
 			}
 			n_read++;
 

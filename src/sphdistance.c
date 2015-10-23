@@ -136,8 +136,7 @@ void Free_sphdistance_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
@@ -174,8 +173,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sphdistance and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -215,7 +213,7 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 				if (opt->arg[k]) Ctrl->E.dist = atof (&opt->arg[k]);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -265,8 +263,7 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sphdistance_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sphdistance (void *V_API, int mode, void *args)
-{
+int GMT_sphdistance (void *V_API, int mode, void *args) {
 	bool first = false, periodic, duplicate_col;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
@@ -308,7 +305,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sphdistance_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_sphdistance_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the sphdistance main code ----------------------------*/
 

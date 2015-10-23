@@ -104,8 +104,7 @@ struct PROJECT_INFO {
 	double plon, plat;	/* Pole location */
 };
 
-int compare_distances (const void *point_1, const void *point_2)
-{
+int compare_distances (const void *point_1, const void *point_2) {
 	double d_1, d_2;
 
 	d_1 = ((struct PROJECT_DATA *)point_1)->a[2];
@@ -151,8 +150,7 @@ double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p,
 	return (sin_lat_to_pole);
 }
 
-void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *x_t_lat, double *x_t_lon, double *p, double *c)
-{
+void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *x_t_lat, double *x_t_lon, double *p, double *c) {
 	/* routine takes the point x at conventional (xlat, xlon) and
 	   computes the transformed coordinates (x_t_lat, x_t_lon) in
 	   an oblique reference frame specified by the unit 3-vectors
@@ -176,8 +174,7 @@ void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *
 	*x_t_lon = copysign(d_acosd(temp1), temp2);
 }
 
-void make_euler_matrix (double *p, double *e, double theta)
-{
+void make_euler_matrix (double *p, double *e, double theta) {
 	/* Routine to fill an euler matrix e with the elements
 	   needed to rotate a 3-vector about the pole p through
 	   an angle theta (in degrees).  p is a unit 3-vector.
@@ -209,8 +206,7 @@ void make_euler_matrix (double *p, double *e, double theta)
 	e[8] = temp * p[2] + cos_theta;
 }
 
-void matrix_3v (double *a, double *x, double *b)
-{
+void matrix_3v (double *a, double *x, double *b) {
 	/* routine to find b, where Ax = b, A is a 3 by 3 square matrix,
 	   and x and b are 3-vectors.  A is stored row wise, that is:
 
@@ -221,8 +217,7 @@ void matrix_3v (double *a, double *x, double *b)
 	b[2] = x[0]*a[6] + x[1]*a[7] + x[2]*a[8];
 }
 
-void matrix_2v (double *a, double *x, double *b)
-{
+void matrix_2v (double *a, double *x, double *b) {
 	/* routine to find b, where Ax = b, A is a 2 by 2 square matrix,
 	   and x and b are 2-vectors.  A is stored row wise, that is:
 
@@ -232,8 +227,7 @@ void matrix_2v (double *a, double *x, double *b)
 	b[1] = x[0]*a[2] + x[1]*a[3];
 }
 
-void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, bool two_pts)
-{
+void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, bool two_pts) {
 	/* routine to initialize a pole vector, p, and a central meridian
 	   normal vector, c, for use in projecting points onto a great circle.
 
@@ -330,8 +324,7 @@ void Free_project_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_project_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_project_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+]]\n");
@@ -391,8 +384,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to project and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -516,7 +508,8 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2, "Syntax error: Expected -W<min>/<max>\n");
+				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2,
+				                                 "Syntax error: Expected -W<min>/<max>\n");
 				break;
 
 			default:	/* Report bad options */
@@ -525,23 +518,32 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option: w_min must be < w_max\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max, "Syntax error -W option: w_min must be < w_max\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1, "Syntax error: Specify only one of -A, -E, and -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y), "Syntax error -E option: Second point must differ from origin!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !Ctrl->E.active, "Syntax error -G option: Must also specify -Lmin/max or use -E instead\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Syntax error -G option: -F not allowed [Defaults to rsp]\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->G.inc <= 0.0, "Syntax error -G option: Must specify a positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active, "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)), "Syntax error -N option: Cannot be used with -fg\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode, "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max,
+	                                 "Syntax error -L option: w_min must be < w_max\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max,
+	                                 "Syntax error -W option: w_min must be < w_max\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1,
+	                                 "Syntax error: Specify only one of -A, -E, and -T\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y),
+	                                 "Syntax error -E option: Second point must differ from origin!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !Ctrl->E.active,
+	                                 "Syntax error -G option: Must also specify -Lmin/max or use -E instead\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active,
+	                                 "Syntax error -G option: -F not allowed [Defaults to rsp]\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->G.inc <= 0.0,
+	                                 "Syntax error -G option: Must specify a positive increment\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active,
+	                                 "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)),
+	                                 "Syntax error -N option: Cannot be used with -fg\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
+	                                 "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P)
-{
+int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P) {
 	int error;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
@@ -582,7 +584,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 	n_items = P->n_outputs + ((P->want_z_output && P->n_z) ? P->n_z - 1 : 0);
 	out = GMT_memory (GMT, NULL, n_items, double);
 
-	if (P->first && (error = GMT_set_cols (GMT, GMT_OUT, n_items))) return (error);
+	if (P->first && (error = GMT_set_cols (GMT, GMT_OUT, n_items)) != 0) return (error);
 
 	/* Now output  */
 
@@ -623,8 +625,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_project_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_project (void *V_API, int mode, void *args)
-{
+int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
 	unsigned int rmode;
 	bool skip, z_first = true;
@@ -657,7 +658,7 @@ int GMT_project (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_project_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_project_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_project_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the project main code ----------------------------*/
 
@@ -954,7 +955,7 @@ int GMT_project (void *V_API, int mode, void *args)
 				}
 				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
-						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P))) Return (error);
+						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
 						n_total_used += P.n_used;
 						P.n_used = 0;
 					}
@@ -1023,7 +1024,7 @@ int GMT_project (void *V_API, int mode, void *args)
 		if (P.n_used < n_alloc) p_data = GMT_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
 
 		if (P.n_used) {	/* Finish last segment output */
-			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P))) Return (error);
+			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
 			n_total_used += P.n_used;
 		}
 

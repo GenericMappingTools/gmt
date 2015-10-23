@@ -193,7 +193,7 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 				}
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -295,7 +295,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_nearneighbor_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_nearneighbor_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 

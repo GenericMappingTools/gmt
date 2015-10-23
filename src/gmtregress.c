@@ -1025,7 +1025,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtregress_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtregress_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtregress_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtregress main code ----------------------------*/
 
@@ -1062,7 +1062,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights)) != 0) Return (error);
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -1077,7 +1077,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_columns))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_columns)) != 0) Return (error);
 
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
 	

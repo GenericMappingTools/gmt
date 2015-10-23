@@ -203,8 +203,7 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdinfo_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdinfo (void *V_API, int mode, void *args)
-{
+int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int n_grds = 0, o_type = GMT_IS_TEXTSET, n_cols = 0, col;
 	bool subset;
@@ -239,7 +238,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdinfo_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdinfo_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdinfo main code ----------------------------*/
 
@@ -265,7 +264,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, o_type, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (n_cols && (error = GMT_set_cols (GMT, GMT_OUT, n_cols))) Return (error);	/* Set number of output columns */
+	if (n_cols && (error = GMT_set_cols (GMT, GMT_OUT, n_cols)) != 0) Return (error);	/* Set number of output columns */
 	
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 

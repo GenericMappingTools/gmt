@@ -373,12 +373,12 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2cpt_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grd2cpt_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
 	if (Ctrl->C.active) {
-		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+		if ((l = strstr (Ctrl->C.file, ".cpt")) != NULL) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = true;

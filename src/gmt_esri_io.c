@@ -226,7 +226,7 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 
 	if (header->flags[0] == 'M' || header->flags[0] == 'I') {	/* We are dealing with a ESRI .hdr file */
 		int error;
-		if ((error = read_esri_info_hdr (GMT, header))) 		/* Continue the work someplace else */
+		if ((error = read_esri_info_hdr (GMT, header)) != 0) 		/* Continue the work someplace else */
 			return (error);
 		else
 			return (GMT_NOERROR);
@@ -376,7 +376,7 @@ int GMT_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	else if ((fp = GMT_fopen (GMT, header->name, "r")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if ((error = read_esri_info (GMT, fp, header))) return (error);
+	if ((error = read_esri_info (GMT, fp, header)) != 0) return (error);
 
 	GMT_fclose (GMT, fp);
 		
@@ -468,7 +468,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (!strcmp (header->name, "="))	/* Read from pipe */
 		fp = GMT->session.std[GMT_IN];
 	else if ((fp = GMT_fopen (GMT, header->name, r_mode)) != NULL) {
-		if ((error = read_esri_info (GMT, fp, header))) return (error);
+		if ((error = read_esri_info (GMT, fp, header)) != 0) return (error);
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);

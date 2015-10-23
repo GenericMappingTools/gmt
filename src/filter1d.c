@@ -537,8 +537,7 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64
 	}
 }
 
-int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
-{
+int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	uint64_t i_row, left, right, n_l, n_r;
 	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
 	uint64_t iq, i_col, diff;
@@ -735,8 +734,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	return (0);
 }
 
-int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
-{
+int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	F->n_this_col = GMT_memory (GMT, NULL, F->n_cols, uint64_t);
 	F->data = GMT_memory_aligned (GMT, NULL, F->n_cols, double *);
 
@@ -760,8 +758,7 @@ int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	return (0);
 }
 
-void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
-{
+void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i;
 	if (!F) return;
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {
@@ -784,8 +781,7 @@ void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	if (F->n_f_wts) GMT_free (GMT, F->f_wt);
 }
 
-void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, uint64_t n_cols)
-{
+void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, uint64_t n_cols) {
 	F->filter_width = Ctrl->F.width;
 	F->dt = Ctrl->D.inc;
 	F->equidist = !Ctrl->D.active;
@@ -809,8 +805,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 #define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_filter1d (void *V_API, int mode, void *args)
-{
+int GMT_filter1d (void *V_API, int mode, void *args) {
 	uint64_t col, tbl, row, seg;
 	int error;
 	unsigned int save_col;
@@ -839,7 +834,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
-	if ((error = GMT_filter1d_parse (GMT, Ctrl, options))) Return (error, "Error parsing filter1d options\n");
+	if ((error = GMT_filter1d_parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");
 
 	/*---------------------------- This is the filter1d main code ----------------------------*/
 
@@ -905,7 +900,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 			break;
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
-			if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error, "Error in GMT_set_cols");
+			if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in GMT_set_cols");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Always read the weights as floats */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {

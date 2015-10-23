@@ -836,7 +836,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options))) Return (error);
+	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 

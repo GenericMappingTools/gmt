@@ -4255,7 +4255,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (EXIT_FAILURE);
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
-	if ((error = GMT_grdmath_parse (GMT, Ctrl, options))) Return1 (error);
+	if ((error = GMT_grdmath_parse (GMT, Ctrl, options)) != 0) Return1 (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 

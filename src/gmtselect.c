@@ -150,8 +150,7 @@ void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int compare_x (const void *point_1, const void *point_2)
-{
+int compare_x (const void *point_1, const void *point_2) {
 	const struct GMTSELECT_DATA *p1 = point_1, *p2 = point_2;
 
 	if (p1->x < p2->x) return (-1);
@@ -160,8 +159,7 @@ int compare_x (const void *point_1, const void *point_2)
 }
 
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
-void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out)
-{
+void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
 	unsigned int col, k, n_aspatial = 0;
 	size_t len;
 	char text[GMT_LEN64] = {""};
@@ -214,8 +212,7 @@ void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out)
 	}
 }
 
-int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
@@ -277,8 +274,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -484,8 +480,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtselect_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtselect (void *V_API, int mode, void *args)
-{
+int GMT_gmtselect (void *V_API, int mode, void *args) {
 	int err;	/* Required by GMT_err_fail */
 	unsigned int base = 3, np[2] = {0, 0}, r_mode;
 	unsigned int side, col, id;
@@ -524,7 +519,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtselect_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtselect_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
@@ -688,7 +683,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	}
 	
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
 
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	

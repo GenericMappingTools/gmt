@@ -168,8 +168,7 @@ int GMT_testapi_parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct G
 #define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); bailout (code);}
 //#define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_testapi (void *V_API, int mode, void *args)
-{
+int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
 	int geometry[7] = {GMT_IS_POINT, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
 	uint64_t k;
@@ -209,7 +208,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	GMT = API->GMT;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_testapi_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_testapi_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the testapi main code ----------------------------*/
 

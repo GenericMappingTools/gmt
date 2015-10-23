@@ -736,8 +736,7 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdraster (void *V_API, int mode, void *args)
-{
+int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
 	unsigned int ijras, jseek, jras2, iras2;
 	uint64_t n_nan;
@@ -785,11 +784,11 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	GMT_set_geographic (GMT, GMT_OUT);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdraster_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdraster_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 
-	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN))) Return (EXIT_FAILURE);
+	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN)) != 0) Return (EXIT_FAILURE);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d data sets in grdraster.info\n", nrasters);
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */

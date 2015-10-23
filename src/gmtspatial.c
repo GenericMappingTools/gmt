@@ -914,8 +914,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtspatial_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtspatial (void *V_API, int mode, void *args)
-{
+int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0;
 	bool mseg = false;
@@ -945,7 +944,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtspatial_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtspatial_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtspatial_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtspatial main code ----------------------------*/
 
@@ -1058,7 +1057,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			}
 		}
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 7))) Return (error);
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 7)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_BUFSIZ] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (GMT_is_geographic (GMT, GMT_IN)) ? 1 : 0;
@@ -1068,7 +1067,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		}
 		else {	/* Just output the NN analysis results */
 			GMT_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_BUFSIZ];
 				sprintf (header, "#NN_dist[0]\tID[1]\tNN_ID[2]");
@@ -1194,7 +1193,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		}
 		else {
 			mode = GMT_IS_POINT;
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
@@ -1408,7 +1407,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 							GMT_x_free (GMT, &XC);
 						}
 						else if (Ctrl->S.mode == POL_CLIP) {	/* No crossings; see if it is inside or outside C */
-							if ((in = GMT_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows))) {
+							if ((in = GMT_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows)) != 0) {
 								/* Inside, copy out the entire polygon */
 								if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 									if (S2->header)

@@ -338,7 +338,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +e instead.\n");
 				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+e) with the old-style -D option.\n");
 				Ctrl->D.extend = true;
-				if ((c = strchr (opt->arg, 'n'))) {	/* Got +n[<text>] */
+				if ((c = strchr (opt->arg, 'n')) != NULL) {	/* Got +n[<text>] */
 					c--;	*c = 0; c += 2;
 					Ctrl->D.etext = (*c) ? strdup (c) : strdup ("NaN");
 					Ctrl->D.emode = 4;
@@ -846,7 +846,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
-				if ((f = P->range[ii].fill))	/* Using pattern fills */
+				if ((f = P->range[ii].fill) != NULL)	/* Using pattern fills */
 					GMT_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
@@ -884,7 +884,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			for (i = 0; i < 3; i++) xp[i] += xd;
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
-			if ((f = P->patch[id].fill))
+			if ((f = P->patch[id].fill) != NULL)
 				GMT_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
@@ -900,7 +900,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, Ctrl->D.elength);
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
-			if ((f = P->patch[GMT_NAN].fill))
+			if ((f = P->patch[GMT_NAN].fill) != NULL)
 				GMT_setfill (GMT, f, true);
 			else {
 				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
@@ -916,7 +916,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			for (i = 0; i < 3; i++) xp[i] -= xd;
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
-			if ((f = P->patch[id].fill))
+			if ((f = P->patch[id].fill) != NULL)
 				GMT_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
@@ -1041,7 +1041,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
-				if ((f = P->range[ii].fill))	/* Using pattern fills */
+				if ((f = P->range[ii].fill) != NULL)	/* Using pattern fills */
 					GMT_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
@@ -1101,7 +1101,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			for (i = 0; i < 3; i++) xp[i] += xd;
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
-			if ((f = P->patch[id].fill))
+			if ((f = P->patch[id].fill) != NULL)
 				GMT_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
@@ -1117,7 +1117,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			xp[0] = xp[1] = xleft - gap;	xp[2] = xp[3] = xp[0] - MAX (width, Ctrl->D.elength);
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
-			if ((f = P->patch[GMT_NAN].fill))
+			if ((f = P->patch[GMT_NAN].fill) != NULL)
 				GMT_setfill (GMT, f, true);
 			else {
 				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
@@ -1133,7 +1133,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			for (i = 0; i < 3; i++) xp[i] -= xd;
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
-			if ((f = P->patch[id].fill))
+			if ((f = P->patch[id].fill) != NULL)
 				GMT_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
@@ -1325,7 +1325,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psscale_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psscale_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 

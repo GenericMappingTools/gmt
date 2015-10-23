@@ -111,7 +111,7 @@ int GMT_grdpaste_parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
  			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -142,8 +142,7 @@ static inline bool is_nc_grid (struct GMT_GRID *grid) {
 		grid->header->type == GMT_GRID_IS_ND;
 }
 
-int GMT_grdpaste (void *V_API, int mode, void *args)
-{
+int GMT_grdpaste (void *V_API, int mode, void *args) {
 	int error = 0, way = 0;
 	unsigned int one_or_zero;
 	bool common_y = false;
@@ -172,7 +171,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdpaste_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdpaste_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdpaste_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdpaste main code ----------------------------*/
 

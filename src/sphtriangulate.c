@@ -512,8 +512,7 @@ int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sphtriangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sphtriangulate (void *V_API, int mode, void *args)
-{
+int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 	int error = 0;
 	bool first = false, steradians = false, do_authalic = false;
@@ -546,7 +545,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sphtriangulate_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_sphtriangulate_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the sphtriangulate main code ----------------------------*/
 

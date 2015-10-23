@@ -93,8 +93,7 @@ int GMT_grdconvert_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdconvert_parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdconvert_parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -147,8 +146,7 @@ int GMT_grdconvert_parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdconvert_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdconvert (void *V_API, int mode, void *args)
-{
+int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int hmode, type[2];
 	char fname[2][GMT_BUFSIZ];
@@ -173,7 +171,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdconvert_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdconvert_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdconvert main code ----------------------------*/
 

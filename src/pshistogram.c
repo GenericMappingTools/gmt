@@ -311,7 +311,7 @@ double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETT
 			}
 			else if (cpt) {
 				index = GMT_get_rgb_from_z (GMT, P, xval, rgb);
-				if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))	/* Pattern */
+				if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
 					GMT_setfill (GMT, f, draw_outline);
 				else
 					PSL_setfill (PSL, rgb, draw_outline);
@@ -533,7 +533,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 					n_errors++;
 				}
 				Ctrl->N.selected[mode] = true;
-				if ((c = strstr (opt->arg, "+p"))) {
+				if ((c = strstr (opt->arg, "+p")) != NULL) {
 					if (GMT_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
 						GMT_pen_syntax (GMT, 'L', " ", 0);
 						n_errors++;
@@ -556,7 +556,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if ((c = strchr (opt->arg, '+'))) {
+				if ((c = strchr (opt->arg, '+')) != NULL) {
 					if (c[1] == 'l') Ctrl->W.mode = PSHISTOGRAM_LEFT;
 					else if (c[1] == 'h') Ctrl->W.mode = PSHISTOGRAM_RIGHT;
 					else if (c[1] == 'b') Ctrl->W.mode = PSHISTOGRAM_BOTH;
@@ -641,7 +641,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	}
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pshistogram_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pshistogram_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pshistogram_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 

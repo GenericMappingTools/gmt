@@ -580,7 +580,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 					Ctrl->A.null = true;
 					k = 1;
 				}
-				if ((c = strchr (opt->arg, '+')) && strchr ("esw", c[1])) {	/* Got a valid modifier */
+				if ((c = strchr(opt->arg, '+')) != NULL && strchr("esw", c[1]) != NULL) {	/* Got a valid modifier */
 					unsigned int pos = 0;
 					char p[GMT_LEN256] = {""};
 					c[0] = '\0';	/* Temporarily chop off modifiers */
@@ -4326,8 +4326,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	return (GMTMATH_ARG_IS_BAD);	/* Dummy return to satisfy some compilers */
 }
 
-char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg)
-{
+char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
 	char *label = strchr (arg, '@') + 1;	/* Label that follows @ */
 	if (!label || label[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No label appended to STO|RCL|CLR operator!\n");
@@ -4352,8 +4351,7 @@ void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }
 
-int GMT_gmtmath (void *V_API, int mode, void *args)
-{
+int GMT_gmtmath (void *V_API, int mode, void *args) {
 	int i, k, op = 0, status = 0;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
 	unsigned int j, nstack = 0, n_stored = 0, kk;
@@ -4398,7 +4396,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (EXIT_FAILURE);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, list)) Return1 (API->error);
 	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtmath_parse (GMT, Ctrl, list))) Return1 (error);
+	if ((error = GMT_gmtmath_parse (GMT, Ctrl, list)) != 0) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 
@@ -4919,7 +4917,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */
 			GMT_set_tbl_minmax (GMT, R->table[0]);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, R->n_columns))) Return (error);	/* Since -bo might have been used */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, R->n_columns)) != 0) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record */
 			uint64_t r, row;
 			uint64_t nr, c;

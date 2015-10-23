@@ -175,7 +175,7 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -215,7 +215,7 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -353,7 +353,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_xyz2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_xyz2grd_parse (GMT, Ctrl, &io, options))) Return (error);
+	if ((error = GMT_xyz2grd_parse (GMT, Ctrl, &io, options)) != 0) Return (error);
 
 	/*---------------------------- This is the xyz2grd main code ----------------------------*/
 
@@ -371,7 +371,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		GMT->current.io.output = GMT_z_output;		/* Override output writer with chosen binary writer for selected type */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set input binary as well */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
-		if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
+		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != 0) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */

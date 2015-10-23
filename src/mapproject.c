@@ -480,7 +480,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mapproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mapproject_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_mapproject_parse (GMT, Ctrl, options)) != 0) Return (error);
 	if (!GMT->common.J.active && !GMT_is_geographic (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */
 		if ((Ctrl->G.active && Ctrl->G.unit != 'X') || (Ctrl->L.active && Ctrl->L.unit != 'X')) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
 	}
@@ -594,7 +594,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
+		if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
@@ -722,7 +722,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	}
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */

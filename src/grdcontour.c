@@ -823,7 +823,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdcontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdcontour_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdcontour_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
@@ -1273,7 +1273,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) if -T is set */
 		label_mode |= 2;
 		if (Ctrl->contour.save_labels == 2) label_mode |= 4;
-		if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour))) Return (error);
+		if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) Return (error);
 	}
 
 	if (make_plot) PSL_setdash (PSL, NULL, 0.0);
@@ -1306,7 +1306,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
-		if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour))) Return (error);
+		if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour)) != 0) Return (error);
 	}
 
 	if (make_plot || Ctrl->contour.save_labels) GMT_contlabel_free (GMT, &Ctrl->contour);

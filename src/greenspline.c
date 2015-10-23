@@ -1372,7 +1372,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_greenspline_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_greenspline_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_greenspline_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 
@@ -1900,7 +1900,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 #endif
 		v = GMT_memory (GMT, NULL, nm * nm, double);
 		s = GMT_memory (GMT, NULL, nm, double);
-		if ((error = GMT_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v))) Return (error);
+		if ((error = GMT_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = GMT_memory (GMT, NULL, nm, double);

@@ -290,7 +290,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sample1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sample1d_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_sample1d_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
@@ -325,7 +325,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 
 	/* First read input data to be sampled */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}

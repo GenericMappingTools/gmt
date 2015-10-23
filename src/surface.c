@@ -1740,7 +1740,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_surface_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_surface_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the surface main code ----------------------------*/
 
@@ -1819,7 +1819,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 			0, 0, C.Grid) == NULL) Return (API->error);	/* Don't bother with padding since no BCs will be applied */
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
-		if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
+		if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);
 		Return (EXIT_SUCCESS);
 	}
 	
@@ -1881,7 +1881,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free C.High\n");
 	}
 
-	if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
+	if ((error = write_output_surface (GMT, &C, Ctrl->G.file)) != 0) Return (error);
 
 	Return (GMT_OK);
 }

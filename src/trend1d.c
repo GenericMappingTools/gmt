@@ -501,8 +501,7 @@ void Free_trend1d_Ctrl (struct GMT_CTRL *GMT, struct TREND1D_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: trend1d [<table>] -F<xymrw|p> -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r]\n");
@@ -541,8 +540,7 @@ int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to trend1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -623,8 +621,7 @@ int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_trend1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_trend1d (void *V_API, int mode, void *args)
-{
+int GMT_trend1d (void *V_API, int mode, void *args) {
 	unsigned int i, n_model, rank, np;
 	int error = 0;
 	bool significant;
@@ -657,7 +654,7 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_trend1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_trend1d_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_trend1d_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the trend1d main code ----------------------------*/
 
@@ -674,7 +671,7 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
-	if ((error = read_data_trend1d (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.active, &work))) Return (error);
+	if ((error = read_data_trend1d (GMT, &data, &n_data, &xmin, &xmax, Ctrl->W.active, &work)) != 0) Return (error);
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

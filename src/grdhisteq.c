@@ -274,15 +274,13 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	return (0);
 }
 
-int compare_indexed_floats (const void *point_1, const void *point_2)
-{
+int compare_indexed_floats (const void *point_1, const void *point_2) {
 	if (((struct INDEXED_DATA *)point_1)->x < ((struct INDEXED_DATA *)point_2)->x) return (-1);
 	if (((struct INDEXED_DATA *)point_1)->x > ((struct INDEXED_DATA *)point_2)->x) return (+1);
 	return (0);
 }
 
-int compare_indices (const void *point_1, const void *point_2)
-{
+int compare_indices (const void *point_1, const void *point_2) {
 	if (((struct INDEXED_DATA *)point_1)->i < ((struct INDEXED_DATA *)point_2)->i) return (-1);
 	if (((struct INDEXED_DATA *)point_1)->i > ((struct INDEXED_DATA *)point_2)->i) return (1);
 	return (0);
@@ -338,8 +336,7 @@ int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdhisteq_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdhisteq (void *V_API, int mode, void *args)
-{
+int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	double wesn[4];
@@ -364,7 +361,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdhisteq_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdhisteq_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
@@ -399,7 +396,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
+		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active)) != 0) Return (EXIT_FAILURE);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was true */
 	}
 	if (Ctrl->G.active) {

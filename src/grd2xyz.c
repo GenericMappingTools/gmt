@@ -210,8 +210,7 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grd2xyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grd2xyz (void *V_API, int mode, void *args)
-{
+int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	bool first = true;
 	unsigned int row, col, n_output;
 	int error = 0, write_error = 0;
@@ -244,7 +243,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2xyz_parse (GMT, Ctrl, &io, options))) Return (error);
+	if ((error = GMT_grd2xyz_parse (GMT, Ctrl, &io, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/
 

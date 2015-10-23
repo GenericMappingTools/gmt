@@ -848,7 +848,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdfilter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdfilter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdfilter main code ----------------------------*/
 

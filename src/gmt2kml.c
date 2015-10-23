@@ -179,8 +179,7 @@ void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -252,8 +251,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmt2kml and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -428,7 +426,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'T':	/* Title [and folder] */
 				Ctrl->T.active = true;
-				if ((c = strchr (opt->arg, '/'))) {	/* Got both title and folder */
+				if ((c = strchr (opt->arg, '/')) != NULL) {	/* Got both title and folder */
 					if (c[1]) Ctrl->T.folder = strdup (&c[1]);
 					*c = '\0';
 					if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
@@ -523,8 +521,7 @@ int kml_print (struct GMTAPI_CTRL *API, int ntabs, char *format, ...)
 	return (GMT_NOERROR);
 }
 
-int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
-{
+int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat) {
 	if (*lat < GMT->common.R.wesn[YLO] || *lat > GMT->common.R.wesn[YHI]) return (true);
 	if (*lon < GMT->common.R.wesn[XLO]) *lon += 360.0;
 	if (*lon > GMT->common.R.wesn[XHI]) *lon -= 360.0;
@@ -532,8 +529,7 @@ int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
 	return (false);
 }
 
-void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode, int ntabs)
-{
+void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode, int ntabs) {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) kml_print (API, ntabs, "<extrude>1</extrude>\n");
 	if (fmode) kml_print (API, ntabs, "<tessellate>1</tessellate>\n");
@@ -541,8 +537,7 @@ void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode
 	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) kml_print (API, ntabs, "<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
 }
 
-void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs)
-{
+void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs) {
 	char X[GMT_LEN256] = {""}, Y[GMT_LEN256] = {""}, Z[GMT_LEN256] = {""};
 	GMT_ascii_format_col (API->GMT, X, out[GMT_X], GMT_OUT, GMT_X);
 	GMT_ascii_format_col (API->GMT, Y, out[GMT_Y], GMT_OUT, GMT_Y);
@@ -550,8 +545,7 @@ void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs)
 	kml_print (API, ntabs, "%s,%s,%s\n", X, Y, Z);
 }
 
-void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], double max[], int N)
-{
+void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], double max[], int N) {
 	char text[GMT_LEN256] = {""};
 	if (GMT_360_RANGE (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
 	kml_print (API, N++, "<Region>\n");
@@ -595,16 +589,14 @@ void set_iconstyle (struct GMTAPI_CTRL *API, double *rgb, double scale, char *ic
 	kml_print (API, --N, "</IconStyle>\n");
 }
 
-void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_PEN *pen, double *rgb, int N)
-{
+void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_PEN *pen, double *rgb, int N) {
 	kml_print (API, N++, "<LineStyle>\n");
 	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	kml_print (API, N, "<width>%ld</width>\n", lrint (pen->width));
 	kml_print (API, --N, "</LineStyle>\n");
 }
 
-void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int active, int N)
-{
+void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int active, int N) {
 	kml_print (API, N++, "<PolyStyle>\n");
 	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	kml_print (API, N, "<fill>%d</fill>\n", !active);
@@ -716,7 +708,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmt2kml_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmt2kml_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 

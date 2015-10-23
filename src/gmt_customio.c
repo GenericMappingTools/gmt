@@ -513,7 +513,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	if (stat (header->name, &buf))
 		return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
 	strncpy (t_head.name, header->name, GMT_LEN256);
-	if ((status = GMT_native_read_grd_info (GMT, &t_head)))
+	if ((status = GMT_native_read_grd_info (GMT, &t_head)) != 0)
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
 	if (t_head.nx <= 0 || t_head.ny <= 0 || !(t_head.registration == GMT_GRID_NODE_REG || t_head.registration == GMT_GRID_PIXEL_REG))
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */

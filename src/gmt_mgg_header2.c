@@ -193,8 +193,7 @@ int GMT_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return GMT_NOERROR;
 }
 
-int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int ok;
@@ -228,8 +227,7 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int err;
@@ -239,7 +237,7 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	if ((err = gmt_GMTtoMGG2 (header, &mggHeader))) return (err);
+	if ((err = gmt_GMTtoMGG2 (header, &mggHeader)) != 0) return (err);
 
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 
@@ -248,8 +246,7 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{
+int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	MGG_GRID_HEADER_2 mggHeader;
 	FILE *fp = NULL;
 	int *tLong = NULL;
@@ -357,8 +354,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{
+int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	MGG_GRID_HEADER_2 mggHeader;
 	bool is_float = false, check;
 	int i, j, err;
@@ -407,7 +403,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	}
 
 	/* store header information and array */
-	if ((err = gmt_GMTtoMGG2(header, &mggHeader))) return (err);;
+	if ((err = gmt_GMTtoMGG2(header, &mggHeader)) != 0) return (err);;
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 

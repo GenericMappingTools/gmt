@@ -138,8 +138,7 @@ int GMT_triangulate_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to triangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -176,7 +175,7 @@ int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, 
 				Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -235,8 +234,7 @@ int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_triangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_triangulate (void *V_API, int mode, void *args)
-{
+int GMT_triangulate (void *V_API, int mode, void *args) {
 	int *link = NULL;	/* Must remain int and not int due to triangle function */
 	
 	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
@@ -276,7 +274,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_triangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_triangulate_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_triangulate_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the triangulate main code ----------------------------*/
 
@@ -290,7 +288,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
 	triplets[GMT_OUT] = (n_output == 3);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;

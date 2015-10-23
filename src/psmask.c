@@ -645,7 +645,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psmask_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psmask_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psmask main code ----------------------------*/
 
@@ -674,7 +674,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != 0) Return (error);
 	}
 	
 	if (make_plot) {

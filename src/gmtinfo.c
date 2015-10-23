@@ -316,7 +316,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtinfo_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtinfo_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
@@ -341,7 +341,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 		}
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 	o_mode = (Ctrl->C.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
@@ -587,7 +587,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
-			if (Ctrl->C.active && (error = GMT_set_cols (GMT, GMT_OUT, 2*ncol))) Return (error);
+			if (Ctrl->C.active && (error = GMT_set_cols (GMT, GMT_OUT, 2*ncol)) != 0) Return (error);
 		}
 
 		/* Process all columns and update the corresponding minmax arrays */

@@ -114,7 +114,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 			case 'D':	/* Histogram mode estimate */
 				Ctrl->D.active = true;
 				Ctrl->D.width = atof (opt->arg);
-				if ((c = strchr (opt->arg, '+'))) {	/* Found modifiers */
+				if ((c = strchr (opt->arg, '+')) != NULL) {	/* Found modifiers */
 					while ((GMT_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
@@ -437,7 +437,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_blockmode_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_blockmode_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the blockmode main code ----------------------------*/
 
