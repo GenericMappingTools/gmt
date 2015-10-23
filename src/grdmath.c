@@ -2504,6 +2504,7 @@ void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		if (stack[last]->G->data[node] < low) low = stack[last]->G->data[node];
 	}
 	/* Now copy that low value everywhere */
+	if (low == FLT_MAX) low = GMT->session.f_NaN;
 	for (node = 0; node < info->size; node++) if (!GMT_is_fnan (stack[last]->G->data[node])) stack[last]->G->data[node] = low;
 }
 
@@ -3822,6 +3823,7 @@ void grd_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		if (GMT_is_fnan (stack[last]->G->data[node])) continue;
 		if (stack[last]->G->data[node] > high) high = stack[last]->G->data[node];
 	}
+	if (high == -FLT_MAX) high = GMT->session.f_NaN;
 	for (node = 0; node < info->size; node++) if (!GMT_is_fnan (stack[last]->G->data[node])) stack[last]->G->data[node] = high;
 }
 
