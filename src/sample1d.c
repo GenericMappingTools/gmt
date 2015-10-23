@@ -333,6 +333,10 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
 		GMT_init_io_columns (GMT, GMT_IN);	/* Reset any effects of -i */
+		#ifdef DEBUG
+			GMT_list_API (API, "sample1d -N");
+		#endif
+		
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}

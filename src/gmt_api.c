@@ -2140,7 +2140,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
 	unsigned int geometry, n_used = 0;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
-	bool via = false, got_data = false, module_input = false;
+	bool via = false, got_data = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
 	uint64_t row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
 	p_func_size_t GMT_2D_to_index = NULL;
@@ -2156,7 +2156,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 
 	if (object_ID == GMT_NOTSET) {	/* Means there is more than one source: Merge all registered data tables into a single virtual data set */
 		last_item = API->n_objects - 1;	/* Must check all objects */
-		allocate = module_input = true;
+		allocate = true;
 		n_alloc = GMT_TINY_CHUNK;
 	}
 	else {		/* Requested a single, specific data table */
@@ -2183,7 +2183,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 		if (!S_obj->selected) continue;			/* Registered, but not selected */
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so skip output objects */
 		if (S_obj->family != GMT_IS_DATASET) continue;	/* We're doing datasets here, so skip other data types */
-		if (module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
+		if (API->module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
 		if (S_obj->status != GMT_IS_UNUSED) { 	/* Already read this resource before; are we allowed to re-read? */
 			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
 			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
@@ -2645,7 +2645,7 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 
 	int item, first_item = 0, last_item, this_item = GMT_NOTSET, new_item, new_ID;
 	unsigned int n_used = 0;
-	bool update = false, allocate = false, via = false, module_input = false;
+	bool update = false, allocate = false, via = false;
 	size_t n_alloc;
 	uint64_t row, seg;
 	char *t_ptr = NULL;
@@ -2660,7 +2660,7 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 
 	if (object_ID == GMT_NOTSET) {	/* More than one source: Merge all registered data tables into a single virtual text set */
 		last_item = API->n_objects - 1;	/* Must check all objects */
-		allocate = module_input = true;
+		allocate = true;
 		n_alloc = GMT_TINY_CHUNK;
 	}
 	else {		/* Requested a single, specific data table */
@@ -2681,7 +2681,7 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 		if (!S_obj->selected) continue;			/* Registered, but not selected */
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so bugger off! */
 		if (S_obj->family != GMT_IS_TEXTSET) continue;	/* We're doing textsets here, so skip other things */
-		if (module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
+		if (API->module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
 		if (S_obj->status != GMT_IS_UNUSED) {	/* Already read this resource before; are we allowed to re-read? */
 			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
 			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
@@ -4880,6 +4880,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	just_get_data = (GMT_File_Is_Memory (input) && via == 0);	/* Memory is passed and it is a regular GMT resource, not matrix or vector */
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
+	API->module_input = false;	/* Reset to normal */
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
 		if ((in_ID = GMTAPI_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
 		if (!full_region (wesn)) {	/* Must update subset selection */
@@ -4917,6 +4918,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!(family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
 		API->shelf = family;	/* Save which one it is so we know in GMT_Get_Data */
+		API->module_input = true;	/* Since we are passing NULL as file name we must loop over registered resources */
 	}
 	if (just_get_data) {
 		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, in_ID, GMT_NOTSET)) == GMT_NOTSET) {
@@ -4945,6 +4947,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	if ((new_obj = GMT_Get_Data (API, in_ID, mode, data)) == NULL) return_null (API, API->error);
 	if (reset) API->object[item]->status = 0;	/* Reset  to unread */
 	if (input) free (input);	/* Done with this variable) */
+	API->module_input = false;	/* Reset to normal */
 
 #ifdef DEBUG
 	GMT_list_API (API, "GMT_Read_Data");
