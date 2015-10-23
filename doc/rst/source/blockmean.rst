@@ -13,13 +13,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
+.. include:: common_link_options.rst_
+
 **blockmean** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-C** ]
-[ **-E**\ [**p**] ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
+[ |-C| ]
+[ |-E|\ [**p**] ] [ |-S|\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**i**\ \|\ **o**] ]
+[ |-W|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -63,8 +65,12 @@ Optional Arguments
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
 
+.. _-C:
+
 **-C**
     Use the center of the block as the output location [Default uses the mean location].
+
+.. _-E:
 
 **-E**\ [**p**]
     Provide Extended report which includes **s** (the standard deviation
@@ -75,6 +81,8 @@ Optional Arguments
     If **-Ep** is used we assume weights are 1/(sigma squared) and *s*
     becomes the propagated error of the mean.
 
+.. _-S:
+
 **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
     Use **-Sn** to report the number of points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
@@ -82,6 +90,8 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**i**\ \|\ **o**]
     Weighted modifier[s]. Unweighted input and output has 3 columns

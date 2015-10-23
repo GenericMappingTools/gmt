@@ -28,7 +28,7 @@ Synopsis
 [ |SYN_OPT-h| ] 
 [ |SYN_OPT-i| ] 
 [ |SYN_OPT-n| ]
-[ **-o**\ *cols*\ [,...] ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
 [ **-:**\ [**i**\ \|\ **o**] ]
 
