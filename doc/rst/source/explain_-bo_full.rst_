@@ -1,6 +1,6 @@
 .. _-bo_full:
 
-**-bo**\ [*ncols*][**t**]
+**-bo**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**]
     Select native binary output. Here, *ncols* is the actual number
     of data columns of type **t**, which must be one of **c**, **u**, **h**,
     **H**, **i**, **I** (capital i), **l** (lower case elle), **L**, **f**, and **d** (see **-bi**).
