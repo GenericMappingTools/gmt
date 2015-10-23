@@ -3979,7 +3979,7 @@ int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 		if (info->local) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = high;
 	}
 	if (info->local) return 0;	/* Done with local */
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) if (!GMT_is_dnan (T->segment[s]->coord[col][row])) T->segment[s]->coord[col][row] = high;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = high;
 	return 0;
 }
 
