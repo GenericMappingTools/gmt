@@ -686,7 +686,7 @@ int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp) {
 			(*size) <<= 1;	/* Double the current buffer space */
 			line = *L = GMT_memory (GMT, *L, *size, char);
 		}
-		line[in++] = c;	/* Add this char to our buffer */
+		line[in++] = (char)c;	/* Add this char to our buffer */
 	}
 	if (c == EOF) return EOF;
 	if (in) line[in] = '\0';
@@ -700,9 +700,9 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	/* return alpha bits which are valid for the selected driver */
 	static char alpha[48];
 	char *c = alpha;
+	unsigned int bits;
 	*alpha = '\0'; /* reset string */
 	if (Ctrl->Q.on[0]) {
-		unsigned int bits;
 		if (Ctrl->T.device == GS_DEV_PDF || Ctrl->T.device == -GS_DEV_PDF)
 			/* Note: cannot set GraphicsAlphaBits > 1 with a vector device */
 			bits = 1;
@@ -711,8 +711,14 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 		sprintf (c, " -dGraphicsAlphaBits=%d", bits);
 		c = strrchr(c, '\0'); /* advance to end of string */
 	}
-	if (Ctrl->Q.on[1])
-		sprintf (c, " -dTextAlphaBits=%d", Ctrl->Q.bits[1]);
+	if (Ctrl->Q.on[1]) {
+		if (Ctrl->T.device == GS_DEV_PDF || Ctrl->T.device == -GS_DEV_PDF)
+			/* Note: cannot set GraphicsAlphaBits > 1 with a vector device */
+			bits = 1;
+		else
+			bits = Ctrl->Q.bits[1];
+		sprintf (c, " -dTextAlphaBits=%d", bits);
+	}
 	return alpha;
 }
 
