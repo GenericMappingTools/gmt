@@ -13,7 +13,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**fitcircle** [ *table* ] **-L**\ *norm* [ **-F**\ *flags* ] [ **-S**\ [*lat*] ]
+.. include:: common_link_options.rst_
+
+**fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -60,6 +62,8 @@ represented factor in the data and is not easily estimated by either method.
 Required Arguments
 ------------------
 
+.. _-L:
+
 **-L**\ *norm*
     Specify the desired *norm* as 1 or 2, or use **-L** or **-L3** to
     see both solutions.
@@ -72,13 +76,18 @@ Optional Arguments
     **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 
+.. _-F:
+
 **-F**\ **f**\ \|\ **m**\ \|\ **n**\ \|\ **s**\ \|\ **c**
     Normally, **fitcircle** will write its results in the form of a text report, with
     the values intermingled with report sentences.  Use **-F** to only return data
     coordinates, and append *flags* to specify which coordinates you would like. You
     can choose from **f** (Flat Earth mean location), **m** (mean location),
     **n** (north pole of great circle), **s** (south pole of great circle), and
-    **c** (pole of small circle and its colatitude, which requires **-S**).
+    **c
+    ** (pSle of small circle and its colatitude, which requires **-S**).
+
+.. _-S:
 
 **-S**\ [*lat*]
     Attempt to fit a small circle instead of a great circle. The pole
