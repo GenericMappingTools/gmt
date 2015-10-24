@@ -2882,6 +2882,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				}
 			}
 			assert (M_obj->n_rows == row_out);	/* Sanity check */
+			M_obj->alloc_level = S_obj->alloc_level;
 			S_obj->resource = M_obj;		/* Set resource pointer from object to this matrix */
 			break;
 		default:
@@ -3509,6 +3510,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 				ij = GMT_2D_to_index (row, col, M_obj->dim);
 				GMTAPI_put_val (&(M_obj->data), ij, (double)G_obj->data[ijp]);
 			}
+			M_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
 			break;
 
@@ -3523,6 +3525,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMTAPI_grdheader_to_matrixinfo (G_obj->header, M_obj);	/* Populate an array with GRD header information */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to user memory location\n");
 			M_obj->data.f4 = G_obj->data;
+			M_obj->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
 			break;
 
