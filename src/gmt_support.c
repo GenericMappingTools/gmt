@@ -7362,17 +7362,17 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 			switch (GMT->common.n.BC[i]) {
 				case 'g':	/* Geographic sets everything */
 					h->gn = h->gs = true;
-					h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_GEO;
+					h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_GEO;
 					break;
 				case 'n':	/* Natural BCs */
-					if (GMT->common.n.BC[i+1] == 'x') { h->BC[0] = h->BC[1] = GMT_BC_IS_NATURAL; i++; }
-					else if (GMT->common.n.BC[i+1] == 'y') { h->BC[2] = h->BC[3] = GMT_BC_IS_NATURAL; i++; }
-					else h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_NATURAL;
+					if (GMT->common.n.BC[i+1] == 'x') { h->BC[XLO] = h->BC[XHI] = GMT_BC_IS_NATURAL; i++; }
+					else if (GMT->common.n.BC[i+1] == 'y') { h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_NATURAL; i++; }
+					else h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_NATURAL;
 					break;
 				case 'p':	/* Periodic BCs */
-					if (GMT->common.n.BC[i+1] == 'x') { h->BC[0] = h->BC[1] = GMT_BC_IS_PERIODIC; h->nxp = -1; i++; }
-					else if (GMT->common.n.BC[i+1] == 'y') { h->BC[2] = h->BC[3] = GMT_BC_IS_PERIODIC; h->nyp = -1; i++; }
-					else { h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_PERIODIC; h->nxp = h->nyp = -1; }
+					if (GMT->common.n.BC[i+1] == 'x') { h->BC[XLO] = h->BC[XHI] = GMT_BC_IS_PERIODIC; h->nxp = 1; i++; }
+					else if (GMT->common.n.BC[i+1] == 'y') { h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_PERIODIC; h->nyp = 1; i++; }
+					else { h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_PERIODIC; h->nxp = h->nyp = 1; }
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot parse boundary condition %s\n", GMT->common.n.BC);
@@ -7381,9 +7381,9 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 			}
 			i++;
 		}
-		if (h->gn && !(h->BC[0] == GMT_BC_IS_GEO && h->BC[1] == GMT_BC_IS_GEO && h->BC[2] == GMT_BC_IS_GEO && h->BC[3] == GMT_BC_IS_GEO)) {
+		if (h->gn && !(h->BC[XLO] == GMT_BC_IS_GEO && h->BC[XHI] == GMT_BC_IS_GEO && h->BC[YLO] == GMT_BC_IS_GEO && h->BC[YHI] == GMT_BC_IS_GEO)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT boundary condition g overrides n[x|y] or p[x|y]\n");
-			h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_GEO;
+			h->BC[XLO] = h->BC[XHI] = h->BC[YLO] = h->BC[YHI] = GMT_BC_IS_GEO;
 		}
 	}
 	else {	/* Determine BC based on whether grid is geographic or not */
@@ -7414,8 +7414,8 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 			h->nyp = 0;
 			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
 			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_CONV4_LIMIT * h->inc[GMT_Y]));
-			if (!h->gs) h->BC[2] = GMT_BC_IS_NATURAL;
-			if (!h->gn) h->BC[3] = GMT_BC_IS_NATURAL;
+			if (!h->gs) h->BC[YLO] = GMT_BC_IS_NATURAL;
+			if (!h->gn) h->BC[YHI] = GMT_BC_IS_NATURAL;
 		}
 	}
 	else {	/* Either periodic or natural */
@@ -9390,13 +9390,14 @@ double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T)
 }
 
 /*! . */
-int GMT_just_decode (struct GMT_CTRL *GMT, char *key, unsigned int def) {
+int GMT_just_decode (struct GMT_CTRL *GMT, char *key, int def) {
 	/* Converts justification info (key) like BL (bottom left) to justification indices
 	 * def = default value.
 	 * When def % 4 = 0, horizontal position must be specified
 	 * When def / 4 = 3, vertical position must be specified
 	 */
-	unsigned int i, j, k;
+	int i, j;
+	size_t k;
 
 	if (isdigit ((int)key[0])) {	/* Apparently got one of the 1-11 codes */
 		i = atoi(key);
@@ -9406,7 +9407,7 @@ int GMT_just_decode (struct GMT_CTRL *GMT, char *key, unsigned int def) {
 
 	i = def % 4;
 	j = def / 4;
-	for (k = 0; k < (unsigned int)strlen (key); k++) {
+	for (k = 0; k < strlen (key); k++) {
 		switch (key[k]) {
 			case 'b': case 'B':	/* Bottom baseline */
 				j = 0;
@@ -12494,7 +12495,7 @@ int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int i
 	/* Depending on mode, returns the closest out_dim >= in_dim that will speed up computations
 	 * in surface (mode = 1) or for FFT work (mode = 2).  We return 0 if we found a better
 	 * choice or 1 if the in_dim is the best choice. */
-	unsigned int retval = 0;
+	int retval = 0;
 	GMT_memcpy (out_dim, in_dim, 2U, unsigned int);	/* Default we return input if we cannot find anything better */
 
 	if (mode == 1) {

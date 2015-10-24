@@ -491,7 +491,7 @@ EXTERN_MSC char * GMT_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen);
 EXTERN_MSC unsigned int GMT_inonout (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S);
 EXTERN_MSC unsigned int GMT_inonout_sphpol (struct GMT_CTRL *GMT, double plon, double plat, const struct GMT_DATASEGMENT *P);
 EXTERN_MSC int GMT_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode);
-EXTERN_MSC int GMT_just_decode (struct GMT_CTRL *GMT, char *key, unsigned int def);
+EXTERN_MSC int GMT_just_decode (struct GMT_CTRL *GMT, char *key, int def);
 EXTERN_MSC unsigned int GMT_minmaxinc_verify (struct GMT_CTRL *GMT, double min, double max, double inc, double slop);
 EXTERN_MSC unsigned int GMT_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double r, double dir1, double dir2, double **x, double **y);
 EXTERN_MSC unsigned int GMT_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, double *x, double *y, uint64_t n_path);

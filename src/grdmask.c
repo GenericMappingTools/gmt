@@ -451,6 +451,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 #endif
 					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
+						side = 0;
 						if (do_test && (side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
 

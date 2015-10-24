@@ -335,7 +335,6 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
 	idy = 1.0 / Grid->header->inc[GMT_Y];
-	ij = -1;	/* Will be incremented to 0 or set first time around */
 
 	/* read in reel headers from segy file */
 	if (Ctrl->In.active) {

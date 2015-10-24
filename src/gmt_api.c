@@ -1727,10 +1727,10 @@ int GMTAPI_Next_Data_Object (struct GMTAPI_CTRL *API, enum GMT_enum_family famil
 {	/* Sets up current_item to be the next unused item of the required direction; or return EOF.
 	 * When EOF is returned, API->current_item[direction] holds the last object ID used. */
 	bool found = false;
-	unsigned int item;
+	int item;
 
 	item = API->current_item[direction] + 1;	/* Advance to next item, if possible */
-	while (item < API->n_objects && !found) {
+	while (item < (int)API->n_objects && !found) {
 		if (API->object[item] && API->object[item]->selected && API->object[item]->status == GMT_IS_UNUSED && API->object[item]->direction == direction && family == API->object[item]->family)
 			found = true;	/* Got item that is selected and unused, has correct direction and family */
 		else

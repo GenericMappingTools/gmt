@@ -336,7 +336,7 @@ double gmt_sum (double *x, uint64_t n)
 double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int norm)
 {	/* Return the proper "average" intercept given the chosen norm */
 	unsigned int GMT_n_multiples = 0;
-	double intercept, *ee = NULL;
+	double intercept = 0.0, *ee = NULL;
 	
 	if (norm != GMTREGRESS_NORM_L2) {	/* Need temporary space for scaled residuals */
 		ee = GMT_memory (GMT, NULL, n, double);
@@ -351,7 +351,7 @@ double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int no
 			intercept = gmt_sum (e, n) / n;
 			break;
 		case GMTREGRESS_NORM_LMS:	/* Return mode */
-			GMT_mode (GMT, ee, n, n/2, 0L, -1L, &GMT_n_multiples, &intercept);
+			GMT_mode (GMT, ee, n, n/2, 0, -1, &GMT_n_multiples, &intercept);
 			break;
 	}
 	if (norm != GMTREGRESS_NORM_L2) GMT_free (GMT, ee);

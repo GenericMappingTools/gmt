@@ -53,14 +53,14 @@ struct DIMFILTER_CTRL {
 	} C;
 	struct D {	/* -D<distflag> */
 		bool active;
-		unsigned int mode;
+		int mode;
 	} D;
 	struct E {	/* -E */
 		bool active;
 	} E;
 	struct F {	/* <type><filter_width>*/
 		bool active;
-		unsigned int filter;	/* Id for the filter */
+		int filter;	/* Id for the filter */
 		double width;
 	} F;
 	struct G {	/* -G<file> */
@@ -74,7 +74,7 @@ struct DIMFILTER_CTRL {
 	struct N {	/* -N */
 		bool active;
 		unsigned int n_sectors;
-		unsigned int filter;	/* Id for the filter */
+		int filter;	/* Id for the filter */
 	} N;
 	struct Q {	/* -Q */
 		bool active;

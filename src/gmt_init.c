@@ -3531,7 +3531,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 				break;
 		}
 	}
-	if ((GMT->common.g.col[i] + 1) > GMT->common.g.n_col) GMT->common.g.n_col = GMT->common.g.col[i] + 1;	/* Needed when checking since it may otherwise not be read */
+	if ((uint64_t)(GMT->common.g.col[i] + 1) > GMT->common.g.n_col) GMT->common.g.n_col = (uint64_t)(GMT->common.g.col[i] + 1);	/* Needed when checking since it may otherwise not be read */
 	GMT->common.g.n_methods++;
 	return (GMT_NOERROR);
 }

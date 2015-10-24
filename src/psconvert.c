@@ -1139,7 +1139,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				got_end = true;
 			if (got_BBatend == 1 && (got_end || i == 19)) {	/* Now is the time to look at the end of the file */
 				got_BBatend++;			/* Avoid jumping more than once to the end */
-				if (!fseek (fp, (off_t)-256, SEEK_END)) i = -30;
+				if (!fseek (fp, (off_t)-256, SEEK_END))
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Seeking to start of last 256 bytes failed\n");
 			}
 		}
 
@@ -1409,7 +1410,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 
 		/* Recede a bit to test the contents of last line. -7 for when PS has CRLF endings */
-		fseek (fp, (off_t)-7, SEEK_END);
+		if (!fseek (fp, (off_t)-7, SEEK_END))
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Seeking to spot 7 bytes earlier failed\n");
 		/* Read until last line is encountered */
 		while (line_reader (GMT, &line, &line_size, fp) != EOF);
 		if (strncmp (line, "%%EOF", 5U))
