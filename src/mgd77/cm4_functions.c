@@ -2017,8 +2017,8 @@ void geocen(int ctyp, double re, double rp, double rm, double h, double clat, do
 
 void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r) {
 
-    int l, n, np, kd0, kd1, kd2, kp0, kp1, kp2, kq2, kq1, kq0, ksm2, ktm2, ksec, ktes, knnp, nd0sec;
-    int np1sec, nd0tes, nd1tes, np1tes, np2tes, nq0nnp, nq0msq;
+    int l, n, np = 0, kd0, kd1, kd2, kp0, kp1, kp2, kq2, kq1, kq0, ksm2 = 0, ktm2 = 0, ksec, ktes, knnp, nd0sec = 0;
+    int np1sec = 0, nd0tes = 0, nd1tes = 0, np1tes = 0, np2tes = 0, nq0nnp = 0, nq0msq = 0;
     double cscth2, costh2, sinth2, cscthe, cotthe, cthsth;
     double root3 = 1.732050807568877;
 

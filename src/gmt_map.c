@@ -1794,7 +1794,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			if (polygon && cross && curved) {	/* When crossing in/out of a curved boundary we must eventually sample along the curve between crossings */
 				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
-				x_type[n_cross] = cross;	/* -1 going out, +1 going in */
+				x_type[n_cross] = (char)cross;	/* -1 going out, +1 going in */
 				if (++n_cross == n_x_alloc) {
 					x_index = GMT_malloc (GMT, x_index, n_cross, &n_x_alloc, uint64_t);
 					x_type = GMT_malloc (GMT, x_type,  n_cross, &n_t_alloc, char);
@@ -3900,7 +3900,7 @@ void gmt_map_set_utmzone (struct GMT_CTRL *GMT) {
 		if (ky >= 11) ky += 4;		/* zone = (P-X) */
 		else if (ky >= 6) ky += 3;	/* zone = (J-N) */
 		else ky += 2;			/* zone = (C-H) */
-		GMT->current.proj.utm_zoney = 'A' + ky;
+		GMT->current.proj.utm_zoney = 'A' + (char)ky;
 		if (GMT->current.proj.utm_zoney == 'X') {	/* Deal with funky zone X */
 			if (clon >= 0.0 && clon < 9.0)
 				kx = 31;
@@ -6385,7 +6385,7 @@ uint64_t *GMT_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 				way = GMT_malloc (GMT, way, n_seg, &n_alloc, char);
 			}
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
-			way[n_seg] = l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */
+			way[n_seg] = (char)l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */
 			n_seg++;
 		}
 	}
