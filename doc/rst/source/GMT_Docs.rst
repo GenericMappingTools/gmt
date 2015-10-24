@@ -4969,6 +4969,8 @@ case where this is being used to change an UTM grid in meters to km.
 These modifiers are only allowed when map projections are not selected
 (or are Cartesian).
 
+.. _modifiers-for-CF:
+
 Modifiers for COARDS-compliant netCDF files
 -------------------------------------------
 
