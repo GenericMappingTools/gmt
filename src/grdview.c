@@ -289,7 +289,7 @@ void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PA
 
 	/* Now we must paint, with colors or patterns */
 
-	if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))	/* Pattern */
+	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
 		GMT_setfill (GMT, f, outline);
 	else {	/* Solid color/gray */
 		if (intens) GMT_illuminate (GMT, intensity, rgb);
@@ -407,7 +407,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -477,7 +477,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					char colors[GMT_LEN64] = {""};
 					Ctrl->N.active = true;
-					if ((c = strstr (opt->arg, "+g"))) {	/* Gave modifier +g<fill> */
+					if ((c = strstr (opt->arg, "+g")) != NULL) {	/* Gave modifier +g<fill> */
 						c[0] = '\0';	/* Truncate string temporarily */
 						Ctrl->N.level = atof (opt->arg);
 						c[0] = '+';	/* Restore the + */
@@ -485,7 +485,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
-					else if (GMT_compat_check (GMT, 4) && (c = strchr (opt->arg, '/'))) {	/* Deprecated <level>/<fill> */
+					else if (GMT_compat_check (GMT, 4) && (c = strchr (opt->arg, '/')) != NULL) {	/* Deprecated <level>/<fill> */
 						GMT_Report (API, GMT_MSG_COMPAT,
 						            "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */

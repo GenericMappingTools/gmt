@@ -270,7 +270,7 @@ void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_
 
 	/* Now we must paint, with colors or patterns */
 
-	if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))
+	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))
 		GMT_setfill (GMT, f, false);
 	else
 		PSL_setfill (PSL, rgb, -2);
@@ -1346,7 +1346,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			while (this_c) {
 				p = this_c->begin;
 				m = 1;
-				while ((p = p->next)) m++;	/* Find total number of points in this linked list */
+				while ((p = p->next) != NULL) m++;	/* Find total number of points in this linked list */
 				use_it = (m >= Ctrl->Q.min);	/* True if we will use this line */
 
 				if (use_it) {	/* Need arrays to hold the coordinates */
@@ -1355,7 +1355,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					m = 0;
 				}
 				p = this_c->begin;	/* Start over and maybe get the points this time */
-				while ((q = p)) {	/* More points to add */
+				while ((q = p) != NULL) {	/* More points to add */
 					if (use_it) {xp[m] = p->x; yp[m++] = p->y;}
 					p = p->next;
 					GMT_free (GMT, q);	/* Free linked list as we go along */

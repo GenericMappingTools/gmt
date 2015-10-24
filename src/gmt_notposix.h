@@ -173,6 +173,9 @@
 #	ifdef _MSC_VER
 		/* Suppress Visual Studio deprecation warnings */
 #		pragma warning( disable : 4996 )
+		/* Suppress Visual Studio W4 warnings */
+#		pragma warning( disable : 4127 )	/* warning C4127: conditional expression is constant */
+#		pragma warning( disable : 4706 )	/* warning C4706: assignment within conditional expression */
 		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
 /*#		pragma warning( once : 4244 4267 ) */
 #	 	if (_MSC_VER <= 1600)

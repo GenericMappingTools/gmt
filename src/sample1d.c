@@ -205,13 +205,13 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if ((c = strchr (opt->arg, 'c'))) Ctrl->I.mode = INT_2D_CART, *c = 0;	/* Chop off unit c as not understood by GMT_get_distance */
+				if ((c = strchr (opt->arg, 'c')) != NULL) Ctrl->I.mode = INT_2D_CART, *c = 0;	/* Chop off unit c as not understood by GMT_get_distance */
 				Ctrl->I.smode = GMT_get_distance (GMT, opt->arg, &(Ctrl->I.inc), &(Ctrl->I.unit));
 				if (strchr (GMT_LEN_UNITS, Ctrl->I.unit)) Ctrl->I.mode = INT_2D_GEO;
 				if (Ctrl->I.mode == INT_2D_CART) *c = 'c';	/* Restore the c */
 				break;
 			case 'N':
-				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->N.file = strdup (opt->arg);
 				else
 					n_errors++;

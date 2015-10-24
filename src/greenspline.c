@@ -398,7 +398,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Output locations */
-				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->N.active = GMT_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->N.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -470,7 +470,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 						Ctrl->S.value[0] = atof (&opt->arg[1]);
 						if (Ctrl->S.value[0] == 0.0)	/* Switch to Parker_1994 since tension is zero */
 							Ctrl->S.mode = PARKER_1994;
-						if ((c = strchr (opt->arg, '+'))) {
+						if ((c = strchr (opt->arg, '+')) != NULL) {
 							while (GMT_strtok (c, "+", &pos, p)) {
 								switch (p[0]) {
 									case 'e':	Ctrl->S.value[2] = atof (&p[1]);	break;	/* Change the truncation error limit */
@@ -492,7 +492,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				}
 				break;
 			case 'T':	/* Input mask grid */
-				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_IN, GMT_IS_GRID))) {	/* Obtain -R -I -r from file */
+				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_IN, GMT_IS_GRID)) != 0) {	/* Obtain -R -I -r from file */
 					struct GMT_GRID *G = NULL;
 					Ctrl->T.file = strdup (opt->arg);
 					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
@@ -1958,7 +1958,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by Gauss-Jordan elimination\n");
-		if ((error = GMT_gaussjordan (GMT, A, (unsigned int)nm, obs))) {
+		if ((error = GMT_gaussjordan (GMT, A, (unsigned int)nm, obs)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "You probably have nearly duplicate data constraints\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "Preprocess your data with one of the blockm* modules\n");
 			Return (error);

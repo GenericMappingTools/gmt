@@ -99,7 +99,7 @@ int main (int argc, char *argv[]) {
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
 		module = argv[1];	/* Try this module name */
-		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE)) {
+		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE) != 0) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
 			strncat (gmt_module, argv[1], GMT_LEN32-4U);
 			status = GMT_Call_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */

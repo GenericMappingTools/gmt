@@ -365,7 +365,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 					continue;
 				}
 				pen = GMT->current.setting.map_default_pen;	/* Set default pen */
-				if ((string = strchr (opt->arg, '/'))) {	/* Get specified pen */
+				if ((string = strchr (opt->arg, '/')) != NULL) {	/* Get specified pen */
 					if (GMT_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
 						GMT_pen_syntax (GMT, 'I', " ", 0);
 						n_errors++;
@@ -423,7 +423,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 					continue;
 				}
 				pen = GMT->current.setting.map_default_pen;	/* Set default pen */
-				if ((string = strchr (opt->arg, '/'))) {	/* Get specified pen */
+				if ((string = strchr (opt->arg, '/')) != NULL) {	/* Get specified pen */
 					if (GMT_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
 						GMT_pen_syntax (GMT, 'N', " ", 0);
 						n_errors++;
@@ -668,7 +668,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
-	if ((error = GMT_pscoast_parse (GMT, Ctrl, options))) {
+	if ((error = GMT_pscoast_parse (GMT, Ctrl, options)) != 0) {
 		if (error == NOT_REALLY_AN_ERROR) Return (0);
 		Return (error);
 	}
@@ -722,18 +722,18 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	
 	world_map_save = GMT->current.map.is_world;
 
-	if (need_coast_base && (err = GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)))  {
+	if (need_coast_base && (err = GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
 	}
 
-	if (Ctrl->N.active && (err = GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn))) {
+	if (Ctrl->N.active && (err = GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
 	if (need_coast_base) GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
-	if (Ctrl->I.active && (err = GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn))) {
+	if (Ctrl->I.active && (err = GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->I.active = false;
 	}
@@ -896,7 +896,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 #ifdef DEBUG
 		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
 #endif
-		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
+		if ((err = GMT_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}

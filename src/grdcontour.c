@@ -302,7 +302,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -1221,14 +1221,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 					save[n_save].n = n + extra;
 					n_save++;
 				}
-				if (need_proj && (nn = (unsigned int)GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
+				if (need_proj && (nn = (unsigned int)GMT_clip_to_map (GMT, x, y, n, &xp, &yp)) != 0) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
 						if (data_is_time) {
 							double tval = (use_t_offset) ? cval - t_offset : cval;
 							char *c = NULL;
 							GMT_ascii_format_col (GMT, cont_label, tval, GMT_OUT, GMT_Z);
-							if ((c = strchr (cont_label, 'T'))) c[0] = ' ';	/* Replace ISO T with space for plots */
+							if ((c = strchr (cont_label, 'T')) != NULL) c[0] = ' ';	/* Replace ISO T with space for plots */
 						}
 						else {
 							GMT_get_format (GMT, cval, Ctrl->contour.unit, NULL, format);

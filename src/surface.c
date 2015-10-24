@@ -755,7 +755,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 	int i, j, err;
 	float *u = C->Grid->data, *v2 = NULL;
 
-	if ((err = load_constraints (GMT, C, false))) return (err);	/* Reload constraints but this time do not transform data */
+	if ((err = load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints but this time do not transform data */
 		
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
@@ -1589,13 +1589,13 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'D':
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->D.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
