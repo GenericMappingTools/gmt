@@ -95,18 +95,16 @@ fi
 
 # 5. Lastly remove libs and plugin directory
 cd $lib
-cd ..
+cd ../..
 here=`pwd`
-if [ -d gmt ]; then	# plugin directory inside a gmt directory; delete instead
+if [ -d gmt ]; then	# plugin directory inside a gmt directory; delete gmt instead
 	printf "Remove: %s\n" $here
-	rm -rf $here
+	rm -rf gmt
 else			# Just delete plugin directory
 	printf "Remove: %s\n" $lib
 	rm -rf $lib
 fi
 # Check for GMT libs here	
-cd ..
-here=`pwd`
 printf "Remove: libgmt.*\n"
 printf "Remove: libpostscriptlight.*\n"
 rm -rf libgmt.* libpostscriptlight.*
