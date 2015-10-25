@@ -1,18 +1,18 @@
-.. |SYN_OPT-B| replace:: **-B**\ [**p**\ \|\ **s**]\ *parameters*
+.. |SYN_OPT-B| replace:: |-B|\ [**p**\ \|\ **s**]\ *parameters*
 
-.. |SYN_OPT-I| replace:: **-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+.. |SYN_OPT-I| replace:: |-I|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
 
-.. |SYN_OPT-R| replace:: **-R**\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
+.. |SYN_OPT-R| replace:: |-R|\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
 
-.. |SYN_OPT-Rz| replace:: **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
+.. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
 
-.. |SYN_OPT-X| replace:: **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
+.. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 
-.. |SYN_OPT-Y| replace:: **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]] 
+.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]] 
 
-.. |SYN_OPT-U| replace:: **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*]
+.. |SYN_OPT-U| replace:: |-U|\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*]
 
-.. |SYN_OPT-V| replace:: **-V**\ [*level*]
+.. |SYN_OPT-V| replace:: |-V|\ [*level*]
 
 .. .. |SYN_OPT-a| replace:: **-a**\ *col*\ =\ *name*\ [*...*\ ]
 
@@ -79,3 +79,110 @@
 .. |br| raw:: html
 
    <br />
+
+
+
+.. |-A| raw:: html
+
+   <strong><a class="reference internal" href="#a"><span>-A</span></a></strong>
+
+.. |-B| raw:: html
+
+   <strong><a class="reference internal" href="#b"><span>-B</span></a></strong>
+
+.. |-C| raw:: html
+
+   <strong><a class="reference internal" href="#c"><span>-C</span></a></strong>
+
+.. |-D| raw:: html
+
+   <strong><a class="reference internal" href="#d"><span>-D</span></a></strong>
+
+.. |-E| raw:: html
+
+   <strong><a class="reference internal" href="#e"><span>-E</span></a></strong>
+
+.. |-F| raw:: html
+
+   <strong><a class="reference internal" href="#f"><span>-F</span></a></strong>
+
+.. |-G| raw:: html
+
+   <strong><a class="reference internal" href="#g"><span>-G</span></a></strong>
+
+.. |-H| raw:: html
+
+   <strong><a class="reference internal" href="#h"><span>-H</span></a></strong>
+
+.. |-I| raw:: html
+
+   <strong><a class="reference internal" href="#i"><span>-I</span></a></strong>
+
+.. |-J| raw:: html
+
+   <strong><a class="reference internal" href="#j"><span>-J</span></a></strong>
+
+.. |-K| raw:: html
+
+   <strong><a class="reference internal" href="#k"><span>-K</span></a></strong>
+
+.. |-L| raw:: html
+
+   <strong><a class="reference internal" href="#l"><span>-L</span></a></strong>
+
+.. |-M| raw:: html
+
+   <strong><a class="reference internal" href="#m"><span>-M</span></a></strong>
+
+.. |-N| raw:: html
+
+   <strong><a class="reference internal" href="#n"><span>-N</span></a></strong>
+
+.. |-O| raw:: html
+
+   <strong><a class="reference internal" href="#o"><span>-O</span></a></strong>
+
+.. |-P| raw:: html
+
+   <strong><a class="reference internal" href="#p"><span>-P</span></a></strong>
+
+.. |-Q| raw:: html
+
+   <strong><a class="reference internal" href="#q"><span>-Q</span></a></strong>
+
+.. |-R| raw:: html
+
+   <strong><a class="reference internal" href="#r"><span>-R</span></a></strong>
+
+.. |-S| raw:: html
+
+   <strong><a class="reference internal" href="#s"><span>-S</span></a></strong>
+
+.. |-T| raw:: html
+
+   <strong><a class="reference internal" href="#t"><span>-T</span></a></strong>
+
+.. |-U| raw:: html
+
+   <strong><a class="reference internal" href="#u"><span>-U</span></a></strong>
+
+.. |-V| raw:: html
+
+   <strong><a class="reference internal" href="#v"><span>-V</span></a></strong>
+
+.. |-W| raw:: html
+
+   <strong><a class="reference internal" href="#w"><span>-W</span></a></strong>
+
+.. |-X| raw:: html
+
+   <strong><a class="reference internal" href="#x"><span>-X</span></a></strong>
+
+.. |-Y| raw:: html
+
+   <strong><a class="reference internal" href="#y"><span>-Y</span></a></strong>
+
+.. |-Z| raw:: html
+
+   <strong><a class="reference internal" href="#z"><span>-Z</span></a></strong>
+

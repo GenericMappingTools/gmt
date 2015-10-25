@@ -13,13 +13,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconvert** [ *table* ] [ **-A** ] [ **-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
-[ **-D**\ [*template*] ]
-[ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
-[ **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
-[ **-I**\ [**tsr**] ] [ **-Q**\ [**~**]\ *selection*]
-[ **-S**\ [**~**]\ *"search string"* \| **-S**\ [**~**]/\ *regexp*/[**i**] ]
-[ **-T** ]
+**gmtconvert** [ *table* ] [ |-A| ] [ |-C|\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]]
+[ |-D|\ [*template*] ]
+[ |-E|\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ |-L| ]
+[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*] ]
+[ |-I|\ [**tsr**] ] [ |-Q|\ [**~**]\ *selection*]
+[ |-S|\ [**~**]\ *"search string"* \| |-S|\ [**~**]/\ *regexp*/[**i**] ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
@@ -60,12 +60,16 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**
     The records from the input files should be pasted horizontally, not
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
     (as set with **-bi**); ASCII tables can have different number of columns.
+
+.. _-C:
 
 **-C**\ [**+l**\ *min*][\ **+u**\ *max*][**+i**]
     Only output segments whose number of records matches your given criteria:
@@ -74,6 +78,8 @@ Optional Arguments
     must have at most *max* records to be written [inf].  You may append **+i**
     to invert the selection, i.e., only segments with record counts outside the
     given range will be output.
+
+.. _-D:
 
 **-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output
@@ -87,11 +93,15 @@ Optional Arguments
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
 
+.. _-E:
+
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]
     Only extract the first and last record for each segment of interest
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
     Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
+
+.. _-F:
 
 **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ \|\ **v**\ ][*refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
@@ -113,6 +123,8 @@ Optional Arguments
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
 
+.. _-I:
+
 **-I**\ [**tsr**]
     Invert the order of items, i.e., output the items in reverse order,
     starting with the last and ending up with the first item [Default
@@ -121,9 +133,13 @@ Optional Arguments
     the order of segments within each table, and **r** will reverse the
     order of records within each segment [Default].
 
+.. _-L:
+
 **-L**
     Only output a listing of all segment header records and no data
     records (requires ASCII data).
+
+.. _-Q:
 
 **-Q**\ [**~**]\ *selection*
     Only write segments whose number is included in *selection* and skip
@@ -132,8 +148,9 @@ Optional Arguments
     segment *number* or a range with stepped increments given via *start*\ [:*step*:]\ :*stop*
     (*step* is optional and defaults to 1). A leading **~** will
     invert the selection and write all segments but the ones listed.  Instead
-    of a list of ranges, use **+f**\ *file* to supply a file list with one
-    *range* per line.
+    of a list of ranges, use **+f**\ *file* to supply a file list with one *range* per line.
+
+.. _-S:
 
 **-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
     Only output those segments whose header record contains the
@@ -152,8 +169,12 @@ Optional Arguments
     For a list of such patterns, give **+f**\ *file* with one pattern per line.
     To give a single pattern starting with +f, escape it with a backslash.
 
+.. _-T:
+
 **-T**
     Suppress the writing of segment headers on output. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

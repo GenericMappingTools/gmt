@@ -13,7 +13,6 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-.. include:: common_link_options.rst_
 
 **fitcircle** [ *table* ] |-L|\ *norm* [ |-F|\ *flags* ] [ |-S|\ [*lat*] ]
 [ |SYN_OPT-V| ]
@@ -95,6 +94,8 @@ Optional Arguments
     of the best-fit great circle and the mean location of the data.
     Optionally append the desired fixed latitude of the small circle
     [Default will determine the latitude].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

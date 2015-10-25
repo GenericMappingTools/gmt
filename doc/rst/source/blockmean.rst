@@ -13,8 +13,6 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-.. include:: common_link_options.rst_
-
 **blockmean** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
@@ -87,6 +85,8 @@ Optional Arguments
     Use **-Sn** to report the number of points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
     to report the sum of weights [Default (or **-Sm** reports mean value]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

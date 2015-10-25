@@ -13,8 +13,6 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-.. include:: common_link_options.rst_
-
 **filter1d** [ *table* ] |-F|\ *type<width>*\ [*mode*]
 [ |-D|\ *increment* ] [ |-E| ] [ |-I|\ *ignore\_val* ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
@@ -142,6 +140,8 @@ Optional Arguments
     Make evenly spaced time-steps from *t\_min* to *t_max* by *t_inc*
     [Default uses input times]. Append **+** to *t_inc* if you are
     specifying the number of equidistant points instead. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

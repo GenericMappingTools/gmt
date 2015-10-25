@@ -13,8 +13,6 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-.. include:: common_link_options.rst_
-
 **blockmode** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
@@ -110,6 +108,8 @@ Optional Arguments
     (Quicker) Finds mode *z* and mean (*x*,\ *y*) [Default finds mode
     *x*, mode *y*, mode *z*]. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
@@ -121,8 +121,7 @@ Optional Arguments
     Weights can be used in input to construct weighted mean values in
     blocks. Weight sums can be reported in output for later combining
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, **-Wo** for weighted output only. [Default uses
-    unweighted i/o]. 
+    input only, **-Wo** for weighted output only. [Default uses unweighted i/o]. 
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_

@@ -154,6 +154,8 @@ Optional Arguments
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
@@ -197,6 +199,7 @@ Optional Arguments
    distance from the input point, append **+e**. To instead replace the input
    point with the coordinates of the nearest node, append **+p**.
 
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -302,41 +305,3 @@ See Also
 :doc:`gmtconvert`,
 :doc:`sample1d`,
 :doc:`surface`
-
-.. |-G| raw:: html
-
-   <strong><a class="reference internal" href="#g"><span>-G</span></a></strong>
-
-.. |-A| raw:: html
-
-   <strong><a class="reference internal" href="#a"><span>-A</span></a></strong>
-
-.. |-C| raw:: html
-
-   <strong><a class="reference internal" href="#c"><span>-C</span></a></strong>
-
-.. |-D| raw:: html
-
-   <strong><a class="reference internal" href="#d"><span>-D</span></a></strong>
-
-.. |-E| raw:: html
-
-   <strong><a class="reference internal" href="#e"><span>-E</span></a></strong>
-
-.. |-N| raw:: html
-
-   <strong><a class="reference internal" href="#n"><span>-N</span></a></strong>
-
-.. |-S| raw:: html
-
-   <strong><a class="reference internal" href="#s"><span>-S</span></a></strong>
-
-.. |-T| raw:: html
-
-   <strong><a class="reference internal" href="#t"><span>-T</span></a></strong>
-
-.. |-Z| raw:: html
-
-   <strong><a class="reference internal" href="#z"><span>-Z</span></a></strong>
-
-

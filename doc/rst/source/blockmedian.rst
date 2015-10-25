@@ -13,13 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-.. include:: common_link_options.rst_
-
 **blockmedian** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-C| ]
-[ |-E|\ [**b**] ] [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
+[ |-E|\ [**b**] ] [ |-E|\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
 [ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**i**\ \|\ **o**] ]
@@ -106,6 +104,8 @@ Optional Arguments
 **-T**\ *quantile*
     Sets the *quantile* of the distribution to be returned [Default is
     0.5 which returns the median *z*]. Here, 0 < *quantile* < 1.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

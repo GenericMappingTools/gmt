@@ -13,19 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-.. include:: common_link_options.rst_
-
 **gmt2kml** [ *table* ]
 [ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
 [ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
 [ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p** ]
-[ |-G|\ **f\|n**\ **-**\ \|\ *fill* ] [ **-I**\ *icon* ] [ **-K**]
+[ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
+[ |-I|\ *icon* ] [ **-K**]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [+\|*name\_template*\ \|\ *name*] ] [ **-O**]
-[ **-Ra**\ \|\ *w/e/s/n* ] [ |-S|\ **c**\ \|\ **n**\ *scale*] ]
+[ |-R|\ **a**\ \|\ *w/e/s/n* ]
+[ |-S|\ **c**\ \|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**-**\ \|\ **+**]\ *pen* ] [ |-Z|\ *args* ]
+[ |-W|\ [**-**\ \|\ **+**]\ *pen* ]
+[ |-Z|\ *args* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
@@ -133,6 +134,8 @@ Optional Arguments
     to the name. To turn off icons entirely (e.g., when just wanting a
     text label), use **-I**-. [Default is a local icon with no directory path].
 
+.. _-K:
+
 **-K**
     Allow more KML code to be appended to the output later [finalize the KML file].
 
@@ -169,8 +172,12 @@ Optional Arguments
     appear before the extended data columns.  Also note that options
     (1) and (2) are not available unless input is an ASCII file.
 
+.. _-O:
+
 **-O**
     Appended KML code to an existing KML file [initialize a new KML file].
+
+.. _-R:
 
 **-Ra**\ \|\ *w/e/s/n*
     Issue a single Region tag. Append *w/e/s/n* to set a particular
@@ -192,6 +199,8 @@ Optional Arguments
     features into folders within the KML document. [The default folder
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, or Polygon].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

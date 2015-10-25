@@ -13,23 +13,23 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdcontour** *grid* **-C**\ [+]\ *cont_int*\ \|\ *cpt*
-**-J**\ *parameters* [ **-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*] ]
+**grdcontour** *grid* |-C|\ [+]\ *cont_int*\ \|\ *cpt*
+|-J|\ *parameters* [ |-A|\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ **-D**\ *<template>* ]
-[ **-F**\ [**l**\ \|\ **r**] ]
-[ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ *low/high* ]
-[ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
+[ |-D|\ *<template>* ]
+[ |-F|\ [**l**\ \|\ **r**] ]
+[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] [ |-L|\ *low/high* ]
+[ |-O| ] [ |-P| ] [ |-Q|\ *cut* ]
 [ |SYN_OPT-Rz| ]
-[ **-S**\ *smoothfactor* ]
-[ **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
+[ |-S|\ *smoothfactor* ]
+[ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**+**][*type*]\ *pen* ]
+[ |-W|\ [**+**][*type*]\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z**\ [*factor*\ [/*shift*]][**p**] ]
+[ |-Z|\ [*factor*\ [/*shift*]][**p**] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-do| ]
@@ -53,6 +53,8 @@ Required Arguments
 
 *grid*
     2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
+
+.. _-C:
 
 **-C**\ [+]\ *cont_int*
     The contours to be drawn may be specified in one of three possible ways:
@@ -85,11 +87,15 @@ Required Arguments
     upper case C or A will have tickmarks. In all cases the contour
     values have the same units as the grid. 
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments
 ------------------
+
+.. _-A:
 
 **-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
     *annot_int* is annotation interval in data units; it is ignored if
@@ -101,7 +107,11 @@ Optional Arguments
 
 .. include:: explain_clabelinfo.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-D:
 
 **-D**\ *<template>* 
     Dump contours as data line segments; no plotting takes place.
@@ -116,10 +126,14 @@ Optional Arguments
     separate segments into one file per contour level, and %d would write all segments.
     to individual files; see manual page for more examples.
 
+.. _-F:
+
 **-F**\ [**l**\ \|\ **r**]
     Force dumped contours to be oriented so that higher z-values are to the
     left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
     [Default is arbitrary orientation]. Requires **-D**.
+
+.. _-G:
 
 **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* 
 
@@ -127,18 +141,30 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *low/high*
     Limit range: Do not draw contours for data values below *low* or
     above *high*. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
+.. _-Q:
+
 **-Q**\ *cut*
     Do not draw contours with less than *cut* number of points [Draw all contours]. 
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -146,9 +172,13 @@ Optional Arguments
 .. |Add_-Rz| replace:: [Default is region defined in the grid file].
 .. include:: explain_-Rz.rst_
 
+.. _-S:
+
 **-S**\ *smoothfactor*
     Used to resample the contour lines at roughly every
     (gridbox_size/*smoothfactor*) interval.
+
+.. _-T:
 
 **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
     Will draw tick marks pointing in the downward direction every *gap*
@@ -165,10 +195,16 @@ Optional Arguments
     then only contours marked with upper case C or A will have tick marks
     [and annotations]. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**+**][*type*]\ *pen* :ref:`(more ...) <set-pens>`
     *type*, if present, can be **a** for annotated contours or **c** for
@@ -179,7 +215,11 @@ Optional Arguments
     **-C**). If the **-** flag is prepended then the color from the cpt
     file is applied both to the contours and the contour annotations. 
 
+.. _-X:
+
 .. include:: explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**\ [*factor*\ [/*shift*]][**p**]
     Use to subtract *shift* from the data and multiply the results by
