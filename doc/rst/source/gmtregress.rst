@@ -13,10 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtregress** [ *table* ] [ **-A**\ *min*\ /*max*\ /*inc* ] [ **-C**\ *level* ]
-[ **-Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
-[ **-F**\ *flags* ] [ **-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]  [ **-S**\ [**r**] ]
-[ **-T**\ *min*\ /*max*\ /*inc* \| **-T**\ *n* ] [ **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
+**gmtregress** [ *table* ] [ |-A|\ *min*\ /*max*\ /*inc* ]
+[ |-C|\ *level* ]
+[ |-E|\ **x**\ \|\ **y**\ \|\ **o**\ \|\ **r** ]
+[ |-F|\ *flags* ]
+[ |-N|\ **1**\ \|\ **2**\ \|\ **r**\ \|\ **w** ]
+[ |-S|\ [**r**] ]
+[ |-T|\ *min*\ /*max*\ /*inc* \| |-T|\ *n* ]
+[ |-W|\ [**w**]\ [**x**]\ [**y**]\ [**r**] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
@@ -54,6 +58,8 @@ Optional Arguments
    of one of both of the data coordinates, and even their correlation.
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ *min*\ /*max*\ /*inc*
     Instead of determining a best-fit regression we explore the full range of regressions.
     Examine all possible regression lines with slope angles between *min* and *max*,
@@ -63,9 +69,13 @@ Optional Arguments
     the range of specified angles. The best model parameters within this range 
     are written into the segment header and reported in verbose mode (**-V**).
 
+.. _-C:
+
 **-C**\ *level*
     Set the confidence level (in %) to use for the optional calculation of confidence bands
     on the regression [95].  This is only used if **-F** includes the output column **c**.
+
+.. _-E:
 
 **-Ex**\ \|\ **y**\ \|\ **o**\ \|\ **r**
     Type of linear regression, i.e., select the type of misfit we should calculate.
@@ -74,12 +84,16 @@ Optional Arguments
     i.e., the misfit is measured from data point orthogonally to nearest point on the line), or **r** (Reduced Major
     Axis regression; i.e., the misfit is the product of both vertical and horizontal misfits) [**y**].
 
+.. _-F:
+
 **-F**\ *flags*
     Append a combination of the columns you wish returned; the output order will match the order specified.  Choose from
     **x** (observed *x*), **y** (observed *y*), **m** (model prediction), **r** (residual = data minus model),
     **c** (symmetrical confidence interval on the regression; see **-C**
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
+
+.. _-N:
 
 **-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
@@ -90,15 +104,21 @@ Optional Arguments
     As alluded to, RLS implies an initial LMS regression which is then used to identify outliers in the data,
     assign these a zero weight, and then redo the regression using a L-2 norm.
 
+.. _-S:
+
 **-S**\ [**r**]
     Restricts which records will be output.  By default all data records will be output in the format specified
     by **-F**.  Use **-S** to exclude data points identified as outliers by the regression.  Alternatively,
     use **-Sr** to reverse this and only output the outlier records.
 
+.. _-T:
+
 **-T**\ *min*\ /*max*\ /*inc* \| **-T**\ *n*
     Evaluate the best-fit regression model at the equidistant points implied by the arguments.  If
     **-T**\ *n* is given instead we will reset *min* and *max* to the extreme *x*-values for each segment and determine *inc*
     so that there are exactly *n* output values for each segment.  To skip the model evaluation entirely, simply provide **-T**\ 0.
+
+.. _-W:
 
 **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**]
     Specifies weighted regression and which weights will be provided.
@@ -111,6 +131,8 @@ Optional Arguments
     Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  Note: residuals
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
     residual (**-N1** is the only exception).
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
