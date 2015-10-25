@@ -44,7 +44,7 @@ _gmt()
     progs=( 2kml backtracker blockmean blockmedian blockmode connect convert \
         defaults dimfilter filter1d fitcircle flexure get gmt2kml gmtconnect gmtconvert \
         gmtdefaults gmtflexure gmtget gmtgravmag3d gmtinfo gmtlogo gmtmath gmtselect gmtset \
-        gmtsimplify gmtspatial gmtvector gmtwhich gravfft grd2cpt grd2rgb \
+        gmtregress gmtsimplify gmtspatial gmtvector gmtwhich gravfft grd2cpt grd2rgb \
         grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter grdflexure \
         grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask grdmask \
         grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdconvert \
@@ -56,9 +56,9 @@ _gmt()
         psimage pslegend psmask psmeca pspolar psrose psscale pssegy pssegyz \
         pstext psvelo pswiggle psxy psxyz rotconverter sample1d segy2grd select \
         set simplify spatial spectrum1d sph2grd sphdistance sphinterpolate \
-        sphtriangulate splitxyz surface trend1d trend2d triangulate vector which \
+        sphtriangulate splitxyz surface talwani2d talwani3d trend1d trend2d triangulate vector which \
         x2sys_binlist x2sys_cross x2sys_datalist x2sys_get x2sys_init x2sys_list \
-        x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd )
+        x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd)
 
     # complete first arg
     if [[ ${COMP_CWORD} -eq 1 ]]; then

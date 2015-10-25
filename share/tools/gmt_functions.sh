@@ -19,21 +19,22 @@
 
 gmt_modules="backtracker blockmean blockmedian blockmode dimfilter filter1d \
 fitcircle gmt2kml gmtconnect gmtconvert gmtdefaults gmtflexure \
-gmtget gmtgravmag3d gmtinfo gmtlogo gmtmath \
-gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich gravfft \
+gmtget gmtgravmag3d gmtinfo gmtlogo gmtmath gmtregress \
+gmtselect gmtset gmtsimplify gmtspatial gmtvector gmtwhich gravfft \
 grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft \
 grdfilter grdflexure grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask \
 grdmask grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdconvert \
 grdrotater grdsample grdseamount grdspotter grdtrack grdtrend grdvector \
 grdview grdvolume greenspline gshhg hotspotter img2grd kml2gmt makecpt \
 mapproject mgd77convert mgd77info mgd77list mgd77magref mgd77manage mgd77path \
-mgd77sniffer mgd77track minmax nearneighbor originator project psconvert \
+mgd77sniffer mgd77track nearneighbor originator project psconvert \
 psbasemap psclip pscoast pscontour pscoupe pshistogram psimage pslegend \
 psmask psmeca pspolar psrose psscale pssegy pssegyz pstext psvelo pswiggle \
 psxy psxyz rotconverter sample1d segy2grd spectrum1d sph2grd sphdistance \
-sphinterpolate sphtriangulate splitxyz surface trend1d trend2d triangulate \
+sphinterpolate sphtriangulate splitxyz surface talwani2d talwani3d trend1d trend2d triangulate \
 x2sys_binlist x2sys_cross x2sys_datalist x2sys_get x2sys_init x2sys_list \
-x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd"
+x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd \
+minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster
 
 for module in ${gmt_modules}; do
   eval "function ${module} () { gmt ${module} \"\$@\"; }"
