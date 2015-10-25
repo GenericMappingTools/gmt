@@ -24,6 +24,7 @@ configure_file (gmt5syntax.in gmt5syntax @ONLY)
 install (PROGRAMS
 	gmt_functions.sh
 	gmt_aliases.csh
+	gmt_links.sh
 	gmt_prepmex.sh
 	gmt_uninstall.sh
 	ncdeflate
