@@ -13,17 +13,18 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-pspolar [ *table* ] **-J**\ *parameters*
+pspolar [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
-**-M**\ *size* **-S**\ *<symbol><size>*
+|-M|\ *size* |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ **-C**\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ] [ **-F**\ *color* ]
-[ **-G**\ *fill* ] [ **-K** ] [ **-L** ] [ **-N** ]
-[ **-O** ] [ **-Q**\ *mode*\ [*args*] ]
-[ **-T**\ *angle*/*form*/*justify*/*fontsize* ]
+[ |-C|\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ] [ |-F|\ *color* ]
+[ |-G|\ *fill* ] [ |-K| ] [ |-L| ] [ |-N| ]
+[ |-O| ]
+[ |-Q|\ *mode*\ [*args*] ]
+[ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
@@ -60,19 +61,28 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-D:
 
 **-D**\ longitude/latitude)
     Maps the bubble at given longitude and latitude point.
 
+.. _-M:
+
 **-M**\ size)
     Sets the size of the beach ball to plot polarities in. *Size* is in
     inch (unless **c**, **i**, **m**, or **p** is appended).
+
+.. _-S:
 
 **-S**\ <symbol\_type><size>)
     Selects *symbol\_type* and symbol *size*. Size is in inch (unless
@@ -83,32 +93,53 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-B:
+
 .. include:: ../../explain_-B.rst_
+
+.. _-C:
 
 **-C**
     Offsets focal mechanisms to the latitude and longitude specified in
     the last two columns of the input file.
+
+.. _-E:
 
 **-E**\ fill)
     Selects filling of symbols for stations in extensive quadrants. Set
     the color [Default is 250]. If **-E**\ *fill* is the same as
     **-F**\ *fill*, use **-e** to outline.
 
+.. _-F:
+
 **-F**\ *fill*
     Sets background color of the beach ball. Default is no fill.
+
+.. _-G:
 
 **-G**\ *fill*
     Selects filling of symbols for stations in compressional quadrants.
     Set the color [Default is black].
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-N:
 
 **-N**
     Does **not** skip symbols that fall outside map border [Default
     plots points inside border only].
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-Q:
 
 **-Q**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
@@ -134,20 +165,28 @@ Optional Arguments
     **m**, or **p** is appended). [**L**\ ] option is for outline.
 
 **-Qt**\ *pen*
-    Set pen color to write station code. Default uses the default pen
-    (see **-W**).
+    Set pen color to write station code. Default uses the default pen (see **-W**).
 
+.. _-Y:
 
 **-T**\ *angle/form/justify/fontsize in points*
     To write station code. [Default is 0.0/0/5/12].
 
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
+.. _-W:
+
 **-W**\ *pen*
     Set current pen attributes [Defaults: width = default, color = black, style = solid].
+
+.. _-X:
 
 .. include:: ../../explain_-XY.rst_
 .. include:: ../../explain_-c.rst_

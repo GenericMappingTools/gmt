@@ -174,7 +174,7 @@ and output arguments.
 | **BCDF**      | 3 1   | Binomial cumulative distribution function for p = A, n = B, and x = C                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BPDF**      | 3 1   | Binomial probability density function for p = A, n = B, and x = C                                      |
-+-----------------+--------+-----------------------------------------------------------------------------------------------------+
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BEI**       | 1 1   | bei (A)                                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BER**       | 1 1   | ber (A)                                                                                                |
@@ -437,7 +437,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTY**      | 2 1   | Rotate A by the (constant) shift B in y-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) :ref:`(...) <SDIST>` |
+| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -739,3 +739,18 @@ See Also
 :doc:`gmt`, :doc:`gmtmath`,
 :doc:`grd2xyz`, :doc:`grdedit`,
 :doc:`grdinfo`, :doc:`xyz2grd`
+
+.. ------------------------------------- Examples per option -------------------
+
+.. |ex_SDIST| raw:: html
+
+   <button id="ExampleBtn">Example</button>
+   <div id="overlay"></div>
+   <div id="popup">
+     # To compute all distances to north pole:
+     <button id="CloseBtn">Close</button></br>
+     </br>
+     gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br>
+   </div>
+   <script type="text/javascript" src="popupbox.js"></script>
+   <link type="text/css" rel="stylesheet" href="overlaypopup.css" />

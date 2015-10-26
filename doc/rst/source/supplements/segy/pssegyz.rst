@@ -13,20 +13,24 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pssegyz** *SEGYfile* **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters*
+**pssegyz** *SEGYfile* |-J|\ *parameters*
+|-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
-**-D**\ *deviation* **-F**\ [*rgb*\ \|\ *gray*] **-W**
-[ **-B**\ *bias* ]
-[ **-C**\ *clip* ] [ **-I** ] [ **-K** ] [ **-L**\ *nsamp* ]
-[ **-M**\ *ntrace* ] [ **-N** ] [ **-O** ] [ **-P** ]
-[ **-Q**\ *<mode><value>* ]
-[ **-S**\ *header_x*/*header_y* ]
+|-D|\ *deviation* |-F|\ [*rgb*\ \|\ *gray*] **-W**
+[ |-B|\ *bias* ]
+[ |-C|\ *clip* ]
+[ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
+[ |-M|\ *ntrace* ]
+[ |-N| ]
+[ |-O| ]
+[ |-P| ]
+[ |-Q|\ *<mode><value>* ]
+[ |-S|\ *header_x*/*header_y* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z** ]
+[ |-Z| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -65,19 +69,31 @@ Required Arguments
 *SEGYfile*
     Seismic data set to be imaged
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
 
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-D:
 
 **-D**\ *deviation*
     gives the deviation in X units of the plot for 1.0 on the scaled
     trace, This may be a single number (applied equally in X and Y
     directions) or devX/devY
+
+.. _-F:
+
 **-F**\ [*rgb*\ \|\ *gray*]
     Fill trace (variable area, defaults to filling positive). rgb or
     gray gives the color with which the imagemask is filled.
+
+.. _-W:
+
 **-W**
     Draw wiggle trace.
 
@@ -86,30 +102,55 @@ You *must* specify at least one of **-W** and **-F**.
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     Flip the default byte-swap state (default assumes data have a
     bigendian byte-order).
+
+.. _-C:
+
 **-C**\ *clip*
     Sample value at which to clip data (clipping is applied to both
     positive and negative values).
+
+.. _-Y:
+
 **-I**
     Fill negative rather than positive excursions.
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *nsamp*
     Override number of samples per trace in reel header (program
     attempts to determine number of samples from each trace header if
     possible to allow for variable length traces).
+
+.. _-M:
+
 **-M**\ *ntrace*
     Override number of traces specified in reel header. Program detects
     end of file (relatively) gracefully, but this parameter limits
     number of traces that the program attempts to read.
+
+.. _-N:
+
 **-N**
     Normalize trace by dividing by rms amplitude over full trace length.
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-Q:
 
 **-Q**\ *<mode><value>*
     Can be used to change 4 different settings:
@@ -121,22 +162,33 @@ Optional Arguments
 
        **-Qy**\ *<dy>* to override sample interval in reel header.
 
+.. _-S:
+
 **-S**\ *header_x*/*header_y*
     Read trace locations from trace headers: header is either c for CDP,
     o for offset, b<num> to read a long starting at byte <num> in the
     header (first byte corresponds to num=0), or a number to fix the
     location. First parameter for x, second for y. Default has X and Y
     given by trace number.
+
+.. _-U:
+
 **-U**\ *redvel*
     Apply reduction velocity by shifting traces *upwards* by
     redvel/\|offset\|. Negative velocity removes existing reduction.
     Units should be consistent with offset in trace header and sample
     interval.
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
+.. _-X:
+
 .. include:: ../../explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**
     Do not plot traces with zero rms amplitude.

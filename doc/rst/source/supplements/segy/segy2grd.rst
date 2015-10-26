@@ -13,12 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**segy2grd** *segyfile* **-G**\ *grdfile*
+**segy2grd** *segyfile* |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**n**\ \|\ **z**] ]
-[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
-[ **-M**\ [*flags*\ ] ] [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
+[ |-A|\ [**n**\ \|\ **z**] ]
+[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ |-M|\ [*flags*\ ] ]
+[ |-N|\ *nodata* ]
+[ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-:| ]
@@ -41,11 +43,18 @@ Required Arguments
 
 *segyfile* is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.
 
+.. _-G:
+
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file.
+
+.. _-I:
+
 **-I**
     *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
     to indicate minutes or **c** to indicate seconds.
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
@@ -53,33 +62,58 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**n**\ \|\ **z**]
     Add up multiple values that belong to the same node (same as
     **-Az**). Append **n** to simply count the number of data points
     that were assigned to each node. [Default (no **-A** option) will
     calculate mean value]. Not used for simple mapping.
+
+.. _-D:
+
 **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark*
     Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
     *title*, and *remark*. To leave some of these values untouched,
     specify = as the value.
+
+.. _-M:
+
 **-M**\ [*flags*\ ]
     Fix number of traces to read in. Default tries to read 10000 traces.
     **-M**\ 0 will read number in binary header, **-M**\ *n* will
     attempt to read only *n* traces.
+
+.. _-N:
+
 **-N**\ *nodata*
     No data. Set nodes with no input sample to this value [Default is
     NaN].
+
+.. _-S:
+
 **-S**\ [*zfile*\ ]
     set variable spacing *header* is c for cdp, o for offset, b<number>
     for 4-byte float starting at byte number If -S not set, assumes even
     spacing of samples at the dx, dy supplied with -I
+
+.. _-L:
+
 **-L**
     Override number of samples in each trace
+
+.. _-X:
+
 **-X**
     applies scalar *x-scale* to coordinates in trace header to match the
     coordinates specified in -R
+
+.. _-Y:
+
 **-Y**
     Specifies sample interval as *s_int* if incorrect in the SEGY file
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

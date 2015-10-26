@@ -13,12 +13,15 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdredpol** *anom_grd* **-G**\ *rtp_grd* [**-C**\ *dec/dip*]
-[**-E**\ *dec_grd/dip\grd*] [**-F**\ *<m/n>*] [**-M**\ *m\|r*]
-[**-N** ] [**-W**\ *win_width*]
+**grdredpol** *anom_grd* |-G|\ *rtp_grd* [|-C|\ *dec/dip*]
+[ |-E|\ *dec_grd/dip\grd*]
+[ |-F|\ *<m/n>*]
+[ |-M|\ *m\|r*]
+[ |-N| ]
+[ |-W|\ *win_width*]
 [ |SYN_OPT-V| ]
-[ **-T**\ *year* ]
-[ **-Z**\ *filtergrd* ]
+[ |-T|\ *year* ]
+[ |-Z|\ *filtergrd* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
 
@@ -49,44 +52,67 @@ Required Arguments
 
 *anom_grd*
     The anomaly grid to be converted.
+
+.. _-G:
+
 **-G**\ *rtp_grd*
     is the filename for output grdfile with the RTP solution
 
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *dec/dip*
     Use this (constant) declination and inclination angles for both
     field and magnetization. This option consists in the classical RTP
     procedure.
+
+.. _-E:
 
 **-E**\ *dip_grd/dec_grd*
     Get magnetization DIP & DEC from these grids [default: use IGRF].
     Note that these two grids do not need to have the same resolution as
     the anomaly grid. They can be coarser.
 
+.. _-F:
+
 **-F**\ *m/n*
     The filter window size in terms of row/columns. The default value is 25x25.
+
+.. _-M:
 
 **-M**\ *m\|r*
     Set boundary conditions. m\|r stands for mirror or replicate edges
     (Default is zero padding).
 
+.. _-N:
+
 **-N**
     Do NOT use Taylor expansion.
 
+.. _-R:
+
 **-R**\ *west*/*east*/*south*/*north*
     defines the Region of the output points. [Default: Same as input.]
+
+.. _-T:
 
 **-T**\ *year*
     Decimal year used by the IGRF routine to compute the declination and
     inclination at each point [default: 2000]
 
+.. _-W:
+
 **-W**\ *width*
     The size of the moving window in degrees [5].
 
+.. _-Z:
+
 **-Z**\ *filter_grd*
     Write the filter file to disk.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

@@ -13,11 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtflexure** **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
-[ **-A**\ [**l**\|\ **r**][/*args*] ] [ **-Cp**\ *Poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *force* ]
-[ **-Q**\ *args*\ ] [ **-S** ] [ **-T**\ *wfile*\ ]
+**gmtflexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
+[ |-A|\ [**l**\|\ **r**][/*args*] ]
+[ |-C|\ **p**\ *Poisson* ] [ |-C|\ **y**\ *Young* ]
+[ |-F|\ *force* ]
+[ |-Q|\ *args*\ ] [ |-S| ] [ |-T|\ *wfile*\ ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *wd*] [ **-Z**\ *zm*]
+[ |-W|\ *wd*]
+[ |-Z|\ *zm*]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
@@ -36,10 +39,14 @@ equations.
 Required Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
     Sets density for mantle, load, infill (optionally, otherwise it is
     assumed to equal the load density), and water.  If *ri* is not given
     then it defaults to *rl*.
+
+.. _-E:
 
 **-E**\ *Te*\ [**u**]\|\ *D*\|\ *file*
     Sets the elastic plate thickness (in meter); append **k** for km.
@@ -52,6 +59,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**l**\|\ **r**]\ *bc*\ [/*args*]
     Sets the boundary conditions at the **l**\ eft and **r**\ ight boundary.
     The *bc* can be one of four codes: 0 selects the infinity condition, were
@@ -62,14 +71,20 @@ Optional Arguments
     where *args* is given as *moment*/*force* which specify the end bending
     moment and vertical shear force [0/0].  Use SI units for any optional arguments.
 
+.. _-C:
+
 **-Cp**\ *Poisson*
     Change the current value of Poisson's ratio [0.25].
 
 **-Cy**\ *Young*
     Change the current value of Young's modulus [7.0e10 N/m^2].
 
+.. _-F:
+
 **-F**\ *force*]
     Set a constant horizontal in-plane force, in Pa m [0] 
+
+.. _-Q:
 
 **-Qn**\ \|\ **q**\ \|\ **t**\ [*args*]
     Sets the vertical load specification. Choose among these three options:
@@ -83,21 +98,31 @@ Optional Arguments
     (or stdin if not given) with (x,load in m or km, positive up); see **-M** for
     topography unit used [m].
 
+.. _-S:
+
 **-S**
     Compute the curvature along with the deflections and report them via the
     third output column [none].
 
+.. _-T:
+
 **-T**\ *wfile*
     Supply a file with pre-existing deformations [undeformed surface].
+
+.. _-W:
 
 **-W**\ *wd*
     Specify water depth in m; append k for km.  Must be positive [0].
     Any subarial topography will be scaled via the densities set in **-D**
     to compensate for the larger density contrast with air.
 
+.. _-Z:
+
 **-Z**\ *zm*
     Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].
     We add this value to the flexed surface before output.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

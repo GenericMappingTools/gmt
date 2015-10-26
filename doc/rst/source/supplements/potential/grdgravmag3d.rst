@@ -13,18 +13,18 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ **-C**\ *density* ]
-[ **-E**\ *thick* ]
-[ **-F**\ *xy_file* ]
-[ **-G**\ *outgrid* ]
-[ **-H**\ *<...>* ]
+**grdgravmag3d** *grdfile_top* [*grdfile_bot*] [ |-C|\ *density* ]
+[ |-E|\ *thick* ]
+[ |-F|\ *xy_file* ]
+[ |-G|\ *outgrid* ]
+[ |-H|\ *<...>* ]
 [ |SYN_OPT-I| ]
-[ **-L**\ *z_obs* ]
-[ **-Q**\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [<w/e/s/n>] ]
+[ |-L|\ *z_obs* ]
+[ |-Q|\ [\ **n**\ *n_pad*]\ \|\ [*pad_dist*]\ \|\ [<w/e/s/n>] ]
 [ |SYN_OPT-R| ]
-[ **-S**\ *radius* ]
+[ |-S|\ *radius* ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *level*\ [\ **b**\ \|\ **t**] ]
+[ |-Z|\ *level*\ [\ **b**\ \|\ **t**] ]
 [ **-fg** ]
 [ **-x**\ *+a|n|-n* ]
 
@@ -45,12 +45,18 @@ Required Arguments
    Grid file whose gravity efect is going to be computed. If two grids are
    provided then the gravity/magnetic efect of the volume between them is computed. 
 
+.. _-C:
+
 **-C**\ *density*
     Sets body density in SI. This option is mutually exclusive with **-H**
+
+.. _-F:
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
     option is mutually exlusive with **-G**.
+
+.. _-G:
 
 **-G**\ *outgrid*
     Output the gravity anomaly at nodes of this grid file.
@@ -58,8 +64,12 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-E:
+
 **-E**\ *thickness*
     To provide the layer thickness in m [Default = 500 m].
+
+.. _-H:
 
 **-H**\ *f_dec/f_dip/m_int/m_dec/m_dip* **-H**\ *+m<magfile>*  **-H**\ *x|y|z|h|t* **-H**\ *+i|+g|+r|+f|+n*  
     Sets parameters for computation of magnetic anomaly (Can be used multiple times).
@@ -86,11 +96,17 @@ Optional Arguments
 
       For a variable inclination and declination use IGRF. Set any of **-H**\ *+i|+g|+r|+f|+n* to do that 
 
+.. _-I:
+
 .. include:: ../../explain_-I.rst_
+
+.. _-L:
 
 **-L**\ *z_obs* 
     Sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
+
+.. _-Q:
 
 **-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [<w/e/s/n>]
     Extend the domain of computation with respect to output **-R** region. 
@@ -101,16 +117,24 @@ Optional Arguments
 
       **-Q**\ *region* Same sintax as **-R**.
 
+.. _-R:
+
 .. |Add_-R| replace:: Note: this overrides the source grid region (Default: use same region as input)
 .. include:: ../../explain_-R.rst_
+
+.. _-S:
 
 **-S**\ *radius*
     Set search radius in km (valid only in the two grids mode OR when **-E**) [Default = 30 km].
     This option serves to speed up the computation by not computing the effect of prisms that
     are further away than *radius* from the current node.
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ *level*\ [\ **b**\ \|\ **t**]
     level of reference plane [Default = 0]. Use this option when the

@@ -14,10 +14,14 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **talwani3d** [ *modeltable* ]
-[ **-A** ] [ **-D**\ *rho* ] ]
-[ **-F**\ **f**\ \|\ **n**\ \|\ **v** ] [ **-G**\ *grdfile* ] [ |SYN_OPT-I| ]
-[ **-M**\ [**h**]\ [**v**] ] [ **-N**\ *trackfile* ]  [ |SYN_OPT-R| ]
-[ **-Z**\ *level*\ \|\ *obsgrid* ]
+[ |-A| ] [ |-D|\ *rho* ] ]
+[ |-F|\ **f**\ \|\ **n**\ \|\ **v** ]
+[ |-G|\ *grdfile* ]
+[ |SYN_OPT-I| ]
+[ |-M|\ [**h**]\ [**v**] ]
+[ |-N|\ *trackfile* ]
+[ |SYN_OPT-R| ]
+[ |-Z|\ *level*\ \|\ *obsgrid* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ **-fg** ]
@@ -50,7 +54,11 @@ Required Arguments
     The file describing the horizontal contours of the bodies.  Contours will be
     automatically closed if not already closed, and repeated vertices will be eliminated.
 
+.. _-I:
+
 .. include:: ../../explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
@@ -58,28 +66,47 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     The *z*-axis should be positive upwards [Default is down].
+
+.. _-D:
 
 **-D**\ *unit*
     Sets fixed density contrast that overrides any setting in model file, in kg/m^3.
 
+.. _-F:
+
 **-F**\ **f**\ \|\ **n**\ \|\ **v**
     Specify desired gravitational field component.  Choose between **f** (free-air anomaly) [Default],
     **n** (geoid) or **v** (vertical gravity gradient).
+
+.. _-G:
 
 **-G**\ *grdfile*
     Specify the name of the output grid file; see GRID FILE FORMATS below).
     Required when an equidistant grid is implied for output.  If **-N** is used
     then the output is written to stdout.
 
+.. _-M:
+
 **-M**\ [**h**]\ [**v**]
     Sets units used.  Append **h** to indicate horizontal distances are in km [m],
     and append **z** to indicate vertical distances are in km [m].
 
+.. _-N:
+
 **-N**\ *trackfile*
     Specifies locations where we wish to compute the predicted value.  When this option
     is used there are no grids and the output data records are written to stdout.
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+..  include:: ../../explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ *level*\ \|\ *obsgrid*
     Set observation level either as a constant or give the name of a grid with observation
@@ -98,9 +125,6 @@ Optional Arguments
 .. include:: ../../explain_-icols.rst_
 
 .. include:: ../../explain_-ocols.rst_
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: ../../explain_-V.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_

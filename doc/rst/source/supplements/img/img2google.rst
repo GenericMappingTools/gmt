@@ -17,12 +17,16 @@ Synopsis
 **img2google**
 |SYN_OPT-R|
 [ *imgfile* ]
-[ **-A**\ *mode*\ [*altitude*] ] [ **-C** ]
-[ **-F**\ *fademin/fademax* ] [ **-G**\ *prefix* ]
-[ **-L**\ *LODmin/LODmax* ] [ **-N**\ *layername* ] [ **-T**\ *doctitle* ]
-[ **-U**\ *URL* ]
+[ |-A|\ *mode*\ [*altitude*] ]
+[ |-C| ]
+[ |-F|\ *fademin/fademax* ]
+[ |-G|\ *prefix* ]
+[ |-L|\ *LODmin/LODmax* ]
+[ |-N|\ *layername* ]
+[ |-T|\ *doctitle* ]
+[ |-U|\ *URL* ]
 [ |SYN_OPT-V| ]
-[ **-Z** ]
+[ |-Z| ]
 
 Description
 -----------
@@ -44,6 +48,8 @@ Options
     **$GMT_DATADIR**, then :doc:`img2grd` will try
     to find *imgfile* in **$GMT_DATADIR**.
 
+.. _-A:
+
 **-A**
     Selects one of 5 altitude modes recognized by Google Earth that
     determines the altitude (in m) of the image: **G** clamped to the
@@ -51,9 +57,13 @@ Options
     altitude, **s** append altitude relative to seafloor, and **S** clamp it
     to the seafloor [Default].
 
+.. _-C:
+
 **-C**
     Turn on clipping so that only portions below sea level will be visible
     in the image [no clipping].
+
+.. _-F:
 
 **-F**
     Sets the distance over which the geometry fades, from fully opaque to
@@ -61,10 +71,14 @@ Options
     applied at the minimum and maximum end of the LOD (visibility) limits,
     respectively. [no fading (0/0)].
 
+.. _-G:
+
 **-G**
     Specify the prefix for the output image file (the extensions are set
     automatically). Default uses the naming
     topoN\|S\ *<north>*\ E\|W<*west*\ >.
+
+.. _-L:
 
 **-L**
     Measurement in screen pixels that represents the minimum limit of the
@@ -80,21 +94,31 @@ Options
     of the visibility range for a given Region. A value of 1, the default,
     indicates "active to infinite size." [always active].
 
+.. _-N:
+
 **-N**
     Append the layername of the image (use quotes if strings contain spaces)
     [topoN\|S<*north*>\ E\|W<*west*>].
 
+.. _-T:
+
 **-T**
     Append the document title (use quotes if strings contain spaces)
     ["Predicted bathymetry"].
+
+.. _-U:
 
 **-U**
     By default, images are referenced locally relative to the KML file.
     Specify an URL to prepend a server address to the image name reference
     [local].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-Z:
 
 **-Z**
     Uses zip (which must be installed) to create a \*.kmz file for easy

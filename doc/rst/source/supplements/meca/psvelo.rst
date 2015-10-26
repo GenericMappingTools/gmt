@@ -13,16 +13,20 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**psvelo** [ *table* ] **-J**\ *parameters*
+**psvelo** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ **-A**\ *parameters* ]
+[ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
-[ **-F**\ *color* ] [ **-E**\ *color* ] [ **-G**\ *fill* ] [ **-K** ]
-[ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ]
-[ **-S**\ *symbol*/*scale*/*conf*/*font\_size* ] [
+[ |-F|\ *color* ]
+[ |-E|\ *color* ]
+[ |-G|\ *fill* ]
+[ |-K| ]
+[ |-L| ]
+[ |-N| ] [ |-O| ] [ |-P| ]
+[ |-S|\ *symbol*/*scale*/*conf*/*font\_size* ] [
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
@@ -49,16 +53,21 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-S:
+
 **-S**
 
-Selects the meaning of the columns in the data file and the figure to be
-plotted.
+Selects the meaning of the columns in the data file and the figure to be plotted.
 
 **-Se**\ *velscale/confidence/fontsize*.
 
@@ -157,24 +166,36 @@ are expected to be in the following columns:
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *parameters*
     Modify vector parameters. For vector heads, append vector head
     *size* [Default is 9p]. See VECTOR ATTRIBUTES for specifying
     additional attributes.
 
+.. _-B:
+
 .. include:: ../../explain_-B.rst_
+
+.. _-D:
 
 **-D**\ *Sigma\_scale*
     can be used to rescale the uncertainties of velocities (**-Se** and
     **-Sr**) and rotations (**-Sw**). Can be combined with the *confidence* variable.
 
+.. _-F:
+
 **-F**\ *fill*
     Sets the color or shade used for frame and annotation. [Default is black]
+
+.. _-E:
 
 **-E**\ *fill*
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
     **-E** is not specified, the uncertainty regions will be transparent.]
+
+.. _-G:
 
 **-G**\ *fill*
     Specify color (for symbols/polygons) or pattern (for polygons)
@@ -185,25 +206,46 @@ Optional Arguments
     pixels, use **-GP** instead of **-Gp**. See **pspatterns** for
     information on individual patterns.
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-L:
 
 **-L**
     Draw lines. Ellipses and fault planes will have their outlines drawn
     using current pen (see **-W**).
+
+.. _-N:
+
 **-N**
     Do **NOT** skip symbols that fall outside the frame boundary
     specified by **-R**. [Default plots symbols inside frame only].
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
+.. _-W:
+
 **-W**
     Set pen attributes for velocity arrows, ellipse circumference and
     fault plane edges. [Defaults: width = default, color = black, style = solid].
+
+.. _-X:
 
 .. include:: ../../explain_-XY.rst_
 .. include:: ../../explain_-c.rst_

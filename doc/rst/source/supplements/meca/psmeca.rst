@@ -13,20 +13,21 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-psmeca [ *table* ] **-J**\ *parameters*
-|SYN_OPT-R|
+psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |SYN_OPT-B| ]
-[ **-C**\ [*pen*\ ][\ **P**\ *pointsize*] ] [ **-D**\ *depmin*/*depmax* ]
-[ **-E**\ *fill*] [ **-F**\ *mode*\ [*args*] ] [ **-G**\ *fill*] [ **-K** ] [ **-L**\ [*pen*\ ] ]
-[ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ]
-[ **-S**\ *<format><scale>*\ [/**d**]]
-[ **-T**\ *num\_of\_plane*\ [*pen*\ ] ]
+[ |-C|\ [*pen*\ ][\ **P**\ *pointsize*] ] [ |-D|\ *depmin*/*depmax* ]
+[ |-E|\ *fill*]
+[ |-F|\ *mode*\ [*args*] ] [ |-G|\ *fill*] [ |-K| ] [ |-L|\ [*pen*\ ] ]
+[ |-M| ]
+[ |-N| ] [ |-O| ] [ |-P| ]
+[ |-S|\ *<format><scale>*\ [/**d**]]
+[ |-T|\ *num\_of\_plane*\ [*pen*\ ] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z**\ *cptfile*]
+[ |-Z|\ *cptfile*]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
@@ -49,11 +50,17 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
 
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-S:
 
 **-S**\ *<format><scale>*\ [/**d**]
 
@@ -224,10 +231,14 @@ following columns:
     **16**:
     Text string to appear above or below the beach ball (optional).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
+
+.. _-B:
 
 .. include:: ../../explain_-B.rst_
+
+.. _-C:
 
 **-C**\ [*pen*\ ][\ **P**\ *pointsize*]
     Offsets focal mechanisms to the longitude, latitude specified in the
@@ -236,14 +247,22 @@ following columns:
     connects the beachball to the circle. Specify *pen* and/or
     *pointsize* to change the line style and/or size of the circle.
     [Defaults: *pen* as given by **-W**; *pointsize* 0].
+
+.. _-D:
+
 **-D**\ *depmin/depmax*
     Plots events between depmin and depmax.
+
+.. _-E:
+
 **-E**\ *fill*
     Selects filling of extensive quadrants. Usually white. Set the color
     [Default is white].
+
+.. _-F:
+
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
-
 **-Fa**\ [*size*\ ][/\ *P\_axis\_symbol*\ [*T\_axis\_symbol*\ ]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
@@ -269,24 +288,43 @@ following columns:
     Overlay zero trace moment tensor using default pen (see **-W**), or
     sets pen attributes.
 
+.. _-G:
+
 **-G**\ *fill*
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
     shaded. Set the color [Default is black].
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *pen*
     Draws the "beach ball" outline with *pen* attributes instead of with
     the default pen set by **-W**.
+
+.. _-M:
+
 **-M**
     Use the same size for any magnitude. Size is given with **-S**.
+
+.. _-N:
+
 **-N**
     Does **not** skip symbols that fall outside frame boundary specified
     by **-R** [Default plots symbols inside frame only].
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-T:
 
 **-T**\ [*num\_of\_planes*\ ][\ **/**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
@@ -301,10 +339,16 @@ following columns:
     Append **/**\ *pen* to set the pen attributes for this feature.
     Default pen is as set by **-W**.
 
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
@@ -312,7 +356,11 @@ following columns:
     setting applies to **-C**, **-L**, **-T**, **-p**, **-t**, and
     **-z**, unless overruled by options to those arguments.
 
+.. _-X:
+
 .. include:: ../../explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**\ *cptfile*
     Give a color palette file and let compressive part color be

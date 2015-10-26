@@ -16,10 +16,18 @@ Synopsis
 **grdseamount** [ *intable* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [*out*/*in*\ ] ] [ **-Cc**\|\ **d**\ \|\ **g**\ \|\ **p** ] [ **-D**\ [*unit*\ ] ]
-[ **-E** ] [ **-F**\ [*flattening*] ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
-[ **-M**\ *list* ] [ **-N**\ *norm* ] [ **-Q**\ *bmode*/*qmode* ] [ **-S**\ *scale* ]
-[ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ] [ **-Z**\ *level* ]
+[ |-A|\ [*out*/*in*\ ] ]
+[ |-C|\ **c**\|\ **d**\ \|\ **g**\ \|\ **p** ]
+[ |-D|\ [*unit*\ ] ]
+[ |-E| ]
+[ |-F|\ [*flattening*] ]
+[ |-G|\ *grdfile* ]
+[ |-L|\ [*cut*] ]
+[ |-M|\ *list* ] [ |-N|\ *norm* ]
+[ |-Q|\ *bmode*/*qmode* ]
+[ |-S|\ *scale* ]
+[ |-T|\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ]
+[ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ **-fg** ]
@@ -48,7 +56,11 @@ by each time step (see **-Q**).
 Required Arguments
 ------------------
 
+.. _-I:
+
 .. include:: ../../explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
@@ -56,25 +68,37 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [*out/in*]
     Build a mask grid, append outside/inside values [1/NaN].
     Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
+
+.. _-C:
 
 **-C**
     Select shape function: choose among **c** (cone), **d** (disc), **g** (Gaussian)
     and **p** (parabolic) shape [Default is Gaussian].
 
+.. _-D:
+
 **-D**\ *unit*
     Append the unit used for horizontal distances in the input file (see UNITS).
     Does not apply for geographic data (**-fg**) which we convert to km.
+
+.. _-E:
 
 **-E**
     Elliptical data format [Default is Circular]. Read lon, lat, azimuth,
     major, minor, height (m) for each seamount.
 
+.. _-F:
+
 **-F**\ [*flattening*]
     Seamounts are to be truncated to guyots.  Append *flattening*, otherwise we expect
     to find it in last input column [no truncation].  Ignored if used with **-Cd**.
+
+.. _-G:
 
 **-G**\ *grdfile*
     Specify the name of the output grid file; see GRID FILE FORMATS below).
@@ -84,16 +108,24 @@ Optional Arguments
     (in units specified in **-T**) to generate the individual file names, otherwise
     we use time in years with no unit.
 
+.. _-L:
+
 **-L**\ [*cut*]
     List area, volume, and mean height for each seamount; NO grid is created.
     Optionally, append the noise-floor cutoff level below which we ignore area and volume [0].
+
+.. _-M:
 
 **-M**\ *list*
     Write the names of all grids that were created to the text file *list*.
     Requires **-T**.
 
+.. _-N:
+
 **-N**\ *norm*
     Normalize grid so maximum grid height equals *norm*.
+
+.. _-Q:
 
 **-Q**\ *bmode*/*qmode*
     Only to be used in conjunction with **-T**.  Append two different modes settings:
@@ -102,8 +134,12 @@ Optional Arguments
     The *qmode* determines the volume flux curve.  Give **g** for a Gaussian volume flux history
     or **l** for a linear volume flux history between the start and stop times of each feature.
 
+.. _-S:
+
 **-S**\ *scale*
     Sets optional scale factor for radii [1].
+
+.. _-T:
 
 **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
@@ -114,6 +150,8 @@ Optional Arguments
     may have individual units appended, otherwise we assume year).  Note that the grid
     for *t0* (if a range is given) is not written as it is zero and marks the start of
     the building history.
+
+.. _-Z:
 
 **-Z**\ *level*
     Set the background depth [0].

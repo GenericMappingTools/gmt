@@ -13,19 +13,24 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**pscoupe** [ *files* ] **-J**\ *parameters*
-|SYN_OPT-R| **-A**\ *parameters*
-[ |SYN_OPT-B| ] [ **-E**\ *fill* ]
-[ **-F**\ *mode*\ [*args*] ]
-[ **-G**\ *fill* ] [ **-K** ] [ **-L**\ *[pen]* ] [ **-M** ] [ **-N** ]
-[ **-O** ] [ **-Q** ]
-[ **-S**\ *<symbol><scale>*\ [/**d**] ]
-[ **-T**\ *n* ]
-[ |SYN_OPT-U| ] [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
+**pscoupe** [ *files* ] |-J|\ *parameters*
+|SYN_OPT-R| |-A|\ *parameters*
+[ |SYN_OPT-B| ]
+[ |-E|\ *fill* ]
+[ |-F|\ *mode*\ [*args*] ]
+[ |-G|\ *fill* ] [ **-K** ] [ **-L**\ *[pen]* ]
+[ |-M| ] [ |-N| ]
+[ |-O| ]
+[ |-Q| ]
+[ |-S|\ *<symbol><scale>*\ [/**d**] ]
+[ |-T|\ *n* ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z**\ *cpt* ] [ |SYN_OPT-c| ]
+[ |-Z|\ *cpt* ]
+[ |SYN_OPT-c| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -59,12 +64,18 @@ defined in (-u^s, -u, s) system.
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| replace:: If frame is defined from cross-section parameters
    (see **-A** this option is not taken into account, but must be present.
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-A:
 
 **-A**
    selects the cross-section.
@@ -89,6 +100,8 @@ defined in (-u^s, -u, s) system.
 
 **-Ad**\ *x1/y1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**f**\ ]
    The same as **-Ab** option with *x* and *y* cartesian coordinates.
+
+.. _-S:
 
 **-S**
    selects the meaning of the columns in the data file and the figure to be plotted.
@@ -244,10 +257,16 @@ defined in (-u^s, -u, s) system.
 Optional Arguments
 ------------------
 
+.. _-B:
+
 .. include:: ../../explain_-B.rst_
+
+.. _-E:
 
 **-E**\ *fill*
     Sets color or fill pattern for extensive quadrants [Default is white].
+
+.. _-F:
 
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
@@ -291,25 +310,46 @@ Optional Arguments
 **-Ft**\ [*pen*]
     Draws the T axis outline using current pen (see **-W**), or sets pen attributes.
 
+.. _-G:
+
 **-G**\ *fill*
     Sets color or fill pattern for compressional quadrants [Default is black].
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-L:
 
 **-L**\ [*pen*]
     Draws the "beach ball" outline using current pen (see **-W**) or
     sets pen attributes.
+
+.. _-M:
+
 **-M**
     Same size for any magnitude.
+
+.. _-N:
+
 **-N**
     Does **not** skip symbols that fall outside map border [Default
     plots points inside border only].
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Suppress the production of files with cross-section and mechanism information.
+
+.. _-T:
 
 **-T**\ [*num_of_planes*]
     Plots the nodal planes and outlines the bubble which is transparent.
@@ -319,16 +359,26 @@ Optional Arguments
     *2*: only the second nodal plane is plotted
     [Default: 0].
 
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**
     set pen attributes for text string or default pen attributes for
     fault plane edges. [Defaults: width = default, color = black, style = solid].
 
+.. _-X:
+
 .. include:: ../../explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**\ cptfile
     Give a color palette file and let compressive part color be

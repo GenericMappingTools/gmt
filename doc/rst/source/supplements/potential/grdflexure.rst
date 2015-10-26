@@ -13,14 +13,16 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdflexure** *topogrd* **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw* **-E**\ *Te*\ [**u**] **-G**\ *outgrid*
-[ **-A**\ *Nx*/*Ny*/*Nxy* ]
-[ **-Cp**\ *poisson* ] [ **-Cy**\ *Young* ] [ **-F**\ *nu_a*\ [/*h_a*/*nu_m*] ]
-[ **-L**\ *list* ]
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-S**\ *beta* ] [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ]
+**grdflexure** *topogrd* |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw* |-E|\ *Te*\ [**u**] |-G|\ *outgrid*
+[ |-A|\ *Nx*/*Ny*/*Nxy* ]
+[ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
+[ |-F|\ *nu_a*\ [/*h_a*/*nu_m*] ]
+[ |-L|\ *list* ]
+[ |-N|\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx*/*ny*][**+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+[ |-S|\ *beta* ] [ **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**] ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *wd*] [ **-Z**\ *zm*]
+[ |-W|\ *wd*]
+[ |-Z|\ *zm*]
 [ **-fg** ]
 
 |No-spaces|
@@ -50,17 +52,23 @@ Required Arguments
     the evaluation times given via **-T**.  For load time format, see
     **-T**.
 
+.. _-D:
+
 **-D**\ *rm*/*rl*\ [/*ri*]\ /*rw*
     Sets density for mantle, load, infill (optional, otherwise it is
     assumed to equal the load density), and water or air.  If *ri* differs from
     *rl* then an approximate solution will be found.  If *ri* is not given
     then it defaults to *rl*.
 
+.. _-E:
+
 **-E**\ *Te*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity D (by default D is computed from *Te*, Young's
     modulus, and Poisson's ratio; see **-C** to change these values).
+
+.. _-G:
 
 **-G**\ *outfile*
     If **-T** is set then *grdfile* must be a filename template that contains
@@ -72,16 +80,22 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *Nx*/*Ny*/*Nxy*
     Specify in-plane compressional or extensional forces in the x- and y-directions,
     as well as any shear force [no in-plane forces].  Compression is indicated by
     negative values, while extensional forces are specified using positive values.
+
+.. _-C:
 
 **-Cp**\ *poisson*
     Change the current value of Poisson's ratio [0.25].
 
 **-Cy**\ *Young*
     Change the current value of Young's modulus [7.0e10 N/m^2].
+
+.. _-F:
 
 **-F**\ *nu_a*\ [\ /*h_a*/*nu_m*]
     Specify a firmoviscous model in conjunction with an elastic plate
@@ -92,21 +106,31 @@ Optional Arguments
     the asthenosphere. Give viscosities in Pa*s. If used, give the
     thickness of the asthenosphere in meter; append **k** for km.
 
+.. _-N:
+
 .. include:: ../../explain_fft.rst_
+
+.. _-L:
 
 **-L**\ *list*
     Write the names and evaluation times of all grids that were created
     to the text file *list*. Requires **-T**.
+
+.. _-M:
 
 **-M**\ *tm*
     Specify a viscoelastic model in conjunction with an elastic plate
     thickness specified via **-E**.  Append the Maxwell time *tm* for the
     viscoelastic model (in ).
 
+.. _-S:
+
 **-S**\ *beta*
     Specify a starved moat fraction in the 0-1 range, where 1 means the moat is fully
     filled with material of density *ri* while 0 means it is only filled with
     material of density *rw* (i.e., just water) [1].
+
+.. _-T:
 
 **-T**\ *t0*\ [**u**]\ [/*t1*\ [**u**]/*dt*\ [**u**]\ \|\ *n*]\ [**+l**]
     Specify *t0*, *t1*, and time increment (*dt*) for sequence of calculations
@@ -117,13 +141,19 @@ Optional Arguments
     may have individual units appended, otherwise we assume year).
     We then write a separate model grid file for each given time step.
 
+.. _-W:
+
 **-W**\ *wd*
     Set reference depth to the undeformed flexed surface in m [0].  Append **k** to indicate
     km.
 
+.. _-Z:
+
 **-Z**\ *zm*
     Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
     Must be positive. [0].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

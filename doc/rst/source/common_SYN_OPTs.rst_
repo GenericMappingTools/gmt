@@ -1,14 +1,22 @@
 .. |SYN_OPT-B| replace:: |-B|\ [**p**\ \|\ **s**]\ *parameters*
 
-.. |SYN_OPT-I| replace:: |-I|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+.. .. |SYN_OPT-I| replace:: |-I|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
 
-.. |SYN_OPT-R| replace:: |-R|\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
+.. |SYN_OPT-I| replace:: |-I|\ *increment*
+
+.. .. |SYN_OPT-R| replace:: |-R|\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
+
+.. |SYN_OPT-R| replace:: |-R|\ *region*
 
 .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
 
-.. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
+.. .. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 
-.. |SYN_OPT-Y| replace:: |-Y|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]] 
+.. |SYN_OPT-X| replace:: |-X|\ *x_offset*
+
+.. .. |SYN_OPT-Y| replace:: |-Y|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]] 
+
+.. |SYN_OPT-Y| replace:: |-Y|\ *y_offset*
 
 .. |SYN_OPT-U| replace:: |-U|\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*]
 
@@ -20,21 +28,29 @@
 
 .. .. |SYN_OPT-b| replace:: **-b**\ [**i**\ \|\ **o**][*ncol*][**type**][w][\ **+L**\ \|\ **+B**]
 
-.. |SYN_OPT-b| replace:: **-b**\ :ref:`<binary> <-bi_full>` 
+.. |SYN_OPT-b| replace:: **-b**\ :ref:`<binary> <-bi_full>`
 
-.. |SYN_OPT-bi| replace:: **-bi**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**] 
+.. .. |SYN_OPT-bi| replace:: **-bi**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**] 
 
-.. |SYN_OPT-bo| replace:: **-bo**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**] 
+.. |SYN_OPT-bi| replace:: **-bi**\ :ref:`<binary> <-bi_full>`
+
+.. .. |SYN_OPT-bo| replace:: **-bo**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**] 
+
+.. |SYN_OPT-bo| replace:: **-bo**\ :ref:`<binary> <-bo_full>`
 
 .. |SYN_OPT-c| replace:: **-c**\ *copies*
 
 .. .. |SYN_OPT-d| replace:: **-d**\ [**i**\ \|\ **o**]\ *nodata*
 
-.. |SYN_OPT-d| replace:: **-d**\ :ref:`<nodata> <-d_full>` 
+.. |SYN_OPT-d| replace:: **-d**\ :ref:`<nodata> <-d_full>`
 
-.. |SYN_OPT-di| replace:: **-di**\ *nodata*
+.. .. |SYN_OPT-di| replace:: **-di**\ *nodata*
 
-.. |SYN_OPT-do| replace:: **-do**\ *nodata*
+.. |SYN_OPT-di| replace:: **-di**\ :ref:`<nodata> <-di_full>`
+
+.. .. |SYN_OPT-do| replace:: **-do**\ *nodata*
+
+.. |SYN_OPT-do| replace:: **-do**\ :ref:`<nodata> <-do_full>`
 
 .. .. |SYN_OPT-f| replace:: **-f**\ [**i**\ \|\ **o**]\ *colinfo*
 
@@ -68,7 +84,9 @@
 
 .. |SYN_OPT-s| replace:: **-s**\ :ref:`<flags> <-s_full>`
 
-.. |SYN_OPT-t| replace:: **-t**\ [*transp*]
+.. .. |SYN_OPT-t| replace:: **-t**\ [*transp*]
+
+.. |SYN_OPT-t| replace:: **-t**\ :ref:`<transp> <-t_full>`
 
 .. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
 

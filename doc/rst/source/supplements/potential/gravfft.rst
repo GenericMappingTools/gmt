@@ -13,13 +13,18 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density*\ \|\ *rhogrid* ] [ **-E**\ *n_terms* ]
-[ **-F**\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
+**gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
+[ |-C|\ *n/wavelength/mean\_depth/tbw* ]
+[ |-D|\ *density*\ \|\ *rhogrid* ]
+[ |-E|\ *n_terms* ]
+[ |-F|\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ]
+[ |-I|\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
+[ |-N|\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+[ |-Q| ]
+[ |-T|\ *te/rl/rm/rw*\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *wd*] [ **-Z**\ *zm*\ [*zl*] ]
+[ |-W|\ *wd*]
+[ |-Z|\ *zm*\ [*zl*] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -58,12 +63,17 @@ Required Arguments
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
     For cross-spectral operations, also give the second grid file *ingrd2*.
+
+.. _-G:
+
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
 
 Optional Arguments
 ------------------
+
+.. _-C:
 
 **-C**\ *n/wavelength/mean\_depth/tbw*
     Compute only the theoretical admittance curves of the selected model
@@ -72,6 +82,9 @@ Optional Arguments
     depth. Append dataflags (one or two) of *tbw* in any order. *t* =
     use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
+
+.. _-D:
+
 **-D**\ *density*\ \|\ *rhogrid*
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
@@ -79,9 +92,15 @@ Optional Arguments
     do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
     specify a co-registered grid with density contrasts if a variable
     density contrast is required.
+
+.. _-E:
+
 **-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 3]
+
+.. _-F:
+
 **-F**\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
@@ -96,6 +115,8 @@ Optional Arguments
        **e** = East deflections of the vertical (micro-radian).
 
        **n** = North deflections of the vertical (micro-radian).
+
+.. _-I:
 
 **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k**
     Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
@@ -113,17 +134,25 @@ Optional Arguments
 
 .. include:: ../../explain_fft.rst_
 
+.. _-Q:
+
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
     (and output by **-G**). That is the "gravimetric Moho". **-Q**
     implicitly sets **-N+h**
+
+.. _-S:
+
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
     necessary parameters are set within **-T** and **-Z** options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
+
+.. _-T:
+
 **-T**\ *te/rl/rm/rw*\ [**+m**]
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle, and
@@ -132,13 +161,20 @@ Optional Arguments
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
+
+.. _-W:
+
 **-W**\ *wd*
-    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate
-    km.
+    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
+
+.. _-Z:
+
 **-Z**\ *zm*\ [*zl*]
     Moho [and swell] average compensation depths. For the "load from
     top" model you only have to provide *zm*, but for the "loading from
     below" don't forget *zl*.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

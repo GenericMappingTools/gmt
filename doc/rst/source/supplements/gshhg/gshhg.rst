@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gshhg** *binaryfile.b* [ **-A**\ *min* ] [ **-G** ] [ **-I**\ *id* ]
-[ **-L** ] [ **-N**\ *level* ] [ **-Qe**\ \|\ **i** ]
+**gshhg** *binaryfile.b* [ |-A|\ *min* ] [ |-G| ] [ |-I|\ *id* ]
+[ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ |SYN_OPT-o| ] > *asciifile.txt*
@@ -53,22 +53,39 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *min*
     Only output information for the polygon if its area equals or
     exceeds *min* [Default outputs all polygons].
+
+.. _-G:
+
 **-G**
     Write output that can be imported into GNU Octave or Matlab by
     ending segments with a NaN-record.
+
+.. _-I:
+
 **-I**\ *id*
     Only output information for the polygon that matches *id*. Use
     **-Ic** to get all the continents only [Default outputs all
     polygons].
+
+.. _-L:
+
 **-L**
     Only output a listing of polygon or line segment headers [Default
     outputs headers and data records].
+
+.. _-N:
+
 **-N**
     Only output features whose level matches the given *level* [Default
     will output all levels].
+
+.. _-Q:
+
 **-Qe**\ \|\ **i**
     Control what to do with river-lakes (river sections large enough to
     be stored as closed polygons). Use **-Qe** to exclude them and
