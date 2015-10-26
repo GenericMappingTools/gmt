@@ -15,7 +15,7 @@ Synopsis
 
 **spectrum1d** [ *table* ] |-S|\ *segment_size*]
 [ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\ \|\ **m**] ]
-[ |-N|\ [**+**]\ *name_stem* ] [ |-W| ]
+[ |-N|\ [\ *name_stem* ] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -63,6 +63,9 @@ ASCII unless **-bo** is set) are as follows:
     (Squared) coherency spectrum, or linear correlation coefficient as a
     function of frequency. Dimensionless number in [0, 1]. The
     Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5. 
+
+In addition, a single file with all of the above as individual columns will
+be written to *stdout* (unless disabled via **-T**).
 
 Required Arguments
 ------------------
@@ -114,12 +117,17 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**+**]\ *name\_stem*
-    *name_stem* Supply the name stem to be used for output files [Default = "spectrum"].
-    To place all the computed output columns in a single table, use **-N+**. 
+**-N**\ [*name\_stem*]
+    Supply an alternate name stem to be used for output files [Default = "spectrum"].
+    Giving no argument will disable the writing of individual output files.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-T:
+
+**-T**
+    Disable the writing of a single composite results file to stdout.
 
 .. _-W:
 
@@ -168,7 +176,7 @@ data.g as output, use
 
    ::
 
-    paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C
+    paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C > results.txt
 
 Tutorial
 --------

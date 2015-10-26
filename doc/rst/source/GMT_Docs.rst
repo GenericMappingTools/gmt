@@ -530,6 +530,9 @@ changes to existing syntax will be backwards compatible:
    modifiers **+1** or **+2** which will compute
    the first or second derivatives of the spline, respectively.
 
+*  :doc:`spectrum1d` can now turn off single-output data to stdout via **-T**
+   or turn off multi-file output via **-N**.
+
 *  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
    all grid nodes inside a Voronoi polygon is set to the same value as the
    Voronoi node value, via **-Ez**.

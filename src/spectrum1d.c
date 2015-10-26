@@ -48,6 +48,10 @@
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 
 struct SPECTRUM1D_CTRL {
+	struct SPECT1D_Out {	/* -><file> */
+		bool active;
+		char *file;
+	} Out;
 	struct SPECT1D_C {	/* -C[<xycnpago>] */
 		bool active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
@@ -70,6 +74,9 @@ struct SPECTRUM1D_CTRL {
 		bool active;
 		unsigned int size;
 	} S;
+	struct SPECT1D_T {	/* -T */
+		bool active;
+	} T;
 	struct SPECT1D_W {	/* -W */
 		bool active;
 	} W;
@@ -283,7 +290,7 @@ int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x,
 }
 
 int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem)
-{	/* Writes separate files for each output type.  Does NOT use GMT_Put_* functions */
+{	/* Writes separate hardwired files for each output type.  Does NOT use GMT_Put_* functions */
 	int i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
 	char fname[GMT_LEN256] = {""};
@@ -308,7 +315,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].xpow;
-				out[2] = eps_pow * C->spec[i].xpow;
+				out[GMT_Z] = eps_pow * C->spec[i].xpow;
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -324,7 +331,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow;
-				out[2] = eps_pow * C->spec[i].ypow;
+				out[GMT_Z] = eps_pow * C->spec[i].ypow;
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -339,7 +346,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * C->spec[i].coh;
-				out[2] = out[GMT_Y] * eps_pow * sqrt ( (2.0 - C->spec[i].coh) / C->spec[i].coh);
+				out[GMT_Z] = out[GMT_Y] * eps_pow * sqrt ( (2.0 - C->spec[i].coh) / C->spec[i].coh);
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -354,7 +361,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * (1.0 - C->spec[i].coh);
-				out[2] = out[GMT_Y] * eps_pow;
+				out[GMT_Z] = out[GMT_Y] * eps_pow;
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -369,7 +376,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].gain;
-				out[2] = out[GMT_Y] * eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
+				out[GMT_Z] = out[GMT_Y] * eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -392,7 +399,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].radmit;
-				out[2] = fabs (eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) ) * out[GMT_Y]);
+				out[GMT_Z] = fabs (eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) ) * out[GMT_Y]);
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -407,7 +414,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].phase;
-				out[2] = eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
+				out[GMT_Z] = eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -421,7 +428,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].coh;
-				out[2] = out[GMT_Y] * eps_pow * (1.0 - C->spec[i].coh) * sqrt(2.0 / C->spec[i].coh);
+				out[GMT_Z] = out[GMT_Y] * eps_pow * (1.0 - C->spec[i].coh) * sqrt(2.0 / C->spec[i].coh);
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			GMT_fclose (GMT, fpout);
@@ -531,7 +538,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[+]<name_stem>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[<name_stem>]] [-T]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -550,7 +557,8 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output files will be named <name_stem>.xpower, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To save all selected spectra in a single table, use -N+<file>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To disable the writing of individuial files, just give -N.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Disable writing the single output to stdout.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
 	GMT_Option (API, "bi2,bo,d,f,g,h,i,s,.");
@@ -567,7 +575,7 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 	 */
 
 	int sval;
-	unsigned int n_errors = 0, j, window_test = 2;
+	unsigned int n_errors = 0, j, window_test = 2, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -576,6 +584,13 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 
 			case '<':	/* Skip input files */
 				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				break;
+
+			case '>':	/* Got named output file */
+				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+					Ctrl->Out.file = strdup (opt->arg);
+				else
+					n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -607,13 +622,26 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
 				else Ctrl->L.active = true;
 				break;
-			case 'N':
+			case 'N':	/* Set alternate file stem OR turn off multiple files */
 				Ctrl->N.active = true;
 				if (opt->arg[0]) {
-					free (Ctrl->N.name);
-					if (opt->arg[0] == '+') Ctrl->N.mode = 1;
-					Ctrl->N.name = strdup (&opt->arg[Ctrl->N.mode]);
+					if (opt->arg[0] == '+') {	/* Obsolete syntax */
+						if (GMT_compat_check (GMT, 5)) {
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Modifier -N+<file> is deprecated; use -N in the future to save to stdout.\n");
+							if (n_files++ == 0) Ctrl->Out.file = strdup (&opt->arg[1]);
+						}
+						else {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Unrecognized modifier +%c\n", opt->arg[1]);
+							n_errors++;
+						}
+					}
+					else {	/* Set name stem */
+						free (Ctrl->N.name);
+						Ctrl->N.name = strdup (opt->arg);
+					}
 				}
+				else	/* Turn off multiple file output */
+					Ctrl->N.mode = 1;
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -623,6 +651,9 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 				while (window_test < Ctrl->S.size) {
 					window_test += window_test;
 				}
+				break;
+			case 'T':	/* Turn off multicolumn single output file */
+				Ctrl->T.active = true;
 				break;
 			case 'W':
 				Ctrl->W.active = true;
@@ -637,6 +668,8 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
 	n_errors += GMT_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
 	n_errors += GMT_check_binary_io (GMT, Ctrl->C.active + 1);
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Syntax error: Cannot use both -T and -N as no output would be produced\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -646,11 +679,10 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 
 int GMT_spectrum1d (void *V_API, int mode, void *args)
 {
-	bool one_table;
 	int error = 0;
 	unsigned int k, n_outputs;
 	
-	uint64_t tbl, seg;
+	uint64_t tbl, seg, n_cols_tot = 0;
 
 	double *y = NULL;	/* Used for cross-spectra only */
 	struct SPECTRUM1D_INFO C;
@@ -686,7 +718,6 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	C.dt = Ctrl->D.inc;
 	C.y_given = Ctrl->C.active;
 	C.window = Ctrl->S.size;
-	one_table = (Ctrl->N.mode == 1);
 	for (k = n_outputs = 0; k < SPECTRUM1D_N_OUTPUT_CHOICES && Ctrl->C.col[k]; k++) n_outputs++;
 
 	if (!Ctrl->C.active) {		/* ensure x-power output */
@@ -707,19 +738,20 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 
 	alloc_arrays (GMT, &C);
 
-	if (one_table) {
+	if (!Ctrl->T.active) {	/* Write single data file with 17 columns to stdout (or specified name) */
 		uint64_t dim[4];
-		dim[GMT_TBL] = Din->n_tables;		/* Same number of tables as input */
-		dim[GMT_SEG] = 0;			/* Don't know about segments yet */
-		dim[GMT_COL] = 1 + 2 * n_outputs;	/* Number of columns needed output file */
-		dim[GMT_ROW] = C.n_spec;		/* Number of rows */
+		n_cols_tot = 1 + 2 * n_outputs;
+		dim[GMT_TBL] = Din->n_tables;	/* Same number of tables as input */
+		dim[GMT_SEG] = 0;		/* Don't know about segments yet */
+		dim[GMT_COL] = n_cols_tot;	/* Number of columns needed output file */
+		dim[GMT_ROW] = C.n_spec;	/* Number of rows */
 		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 			Return (API->error);	/* An empty table for stacked results */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		if (one_table) {
+		if (!Ctrl->T.active) {
 			GMT_free_table (GMT, Dout->table[tbl], Dout->alloc_mode);	/* Free it, then allocate separately */
-			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, C.n_spec, 3, false);
+			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, C.n_spec, n_cols_tot, false);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -730,12 +762,12 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 
-			if (one_table) {
+			if (!Ctrl->T.active) {
 				Sout = Tout->segment[seg];	/* Current output segment */
 				GMT_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, false);
 				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
 			}
-			else {
+			if (Ctrl->N.mode == 0) {	/* Write separate tables */
 				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
 					Return (EXIT_FAILURE);
 			}
@@ -744,7 +776,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	
 	free_space_spectrum1d (GMT, &C);
 	
-	if (one_table && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, Dout->io_mode, NULL, Ctrl->N.name, Dout) != GMT_OK) {
+	if (!Ctrl->T.active && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
 

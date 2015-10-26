@@ -102,7 +102,7 @@ gmt psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 # data, we do this:
 # 
-gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C > /dev/null
+gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 # Now we want to plot the spectra. The following commands will plot the ship and sat 
 # power in one diagram and the coherency on another diagram, both on the same page.  
@@ -165,7 +165,7 @@ gmt psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 # the previous one (example_03d.ps) we see that throwing out the large feature has reduced
 # the power in both data sets and reduced the coherency at wavelengths between 20--60 km.
 #
-gmt gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C > /dev/null
+gmt gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn \
 	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \
