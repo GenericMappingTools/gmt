@@ -132,6 +132,12 @@ int main (int argc, char *argv[]) {
 				goto exit;
 			}
 
+			/* Print all modules and exit */
+			if (!strcmp (argv[arg_n], "--show-modules")) {
+				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_LIST, NULL);
+				goto exit;
+			}
+
 			/* Print version and exit */
 			if (!strcmp (argv[arg_n], "--version")) {
 				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
@@ -192,6 +198,7 @@ no_such:
 		fprintf (stderr, "  --show-bindir     Show directory with GMT executables.\n");
 		fprintf (stderr, "  --show-cores      Show number of available cores.\n");
 		fprintf (stderr, "  --show-datadir    Show directory/ies with user data.\n");
+		fprintf (stderr, "  --show-modules    Single list of all module names.\n");
 		fprintf (stderr, "  --show-plugindir  Show directory for plug-ins.\n");
 		fprintf (stderr, "  --show-sharedir   Show directory for shared GMT resources.\n");
 		fprintf (stderr, "  --version         Print GMT version number.\n\n");

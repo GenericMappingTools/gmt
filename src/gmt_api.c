@@ -6770,6 +6770,7 @@ void * gmt_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigne
 int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 {	/* Call the specified shared module and pass it the mode and args.
  	 * mode can be one of the following:
+	 * GMT_MODULE_LIST [-4]:	As GMT_MODULE_PURPOSE, but only list the modules.
 	 * GMT_MODULE_EXIST [-3]:	Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
 	 * GMT_MODULE_PURPOSE [-2]:	As GMT_MODULE_EXIST, but also print the module purpose.
 	 * GMT_MODULE_OPT [-1]:		Args is a linked list of option structures.
@@ -6783,17 +6784,18 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
-	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (V_API, GMT_ARG_IS_NULL);
+	if (module == NULL && !(mode == GMT_MODULE_LIST || mode == GMT_MODULE_PURPOSE)) return_error (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
 	API->error = GMT_NOERROR;
 
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
 		char gmt_module[GMT_LEN256] = {""};	/* To form gmt_<lib>_module_show_all */
+		char *listfunc = (mode == GMT_MODULE_LIST) ? "list" : "show";
 		void (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
 
 		/* Here we list purpose of all the available modules in each shared library */
 		for (lib = 0; lib < API->n_shared_libs; lib++) {
-			sprintf (gmt_module, "gmt_%s_module_show_all", API->lib[lib].name);
+			sprintf (gmt_module, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
 			*(void **) (&l_func) = gmt_get_module_func (API, gmt_module, lib);
 			if (l_func == NULL) continue;	/* Not found in this shared library */
 			(*l_func) (V_API);	/* Run this function */

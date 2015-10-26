@@ -98,6 +98,7 @@ cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
 EXTERN_MSC void gmt_${L_TAG}_module_show_all (void *API);
+EXTERN_MSC void gmt_${L_TAG}_module_list_all (void *API);
 
 /* Undocumented API function for developers to get information about a module */
 EXTERN_MSC const char * gmt_${L_TAG}_module_info (void *API, char *candidate);
@@ -264,6 +265,33 @@ else
 		sprintf (message, "%-16s %s\n",
 			g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
+		++module_id;
+	}
+}
+
+/* Produce single list of all GMT ${L_TAG} module names for gmt --show-modules */
+void gmt_${L_TAG}_module_list_all (void *V_API) {
+	unsigned int module_id = 0;
+EOF
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
+	while (g_${L_TAG}_module[module_id].name != NULL) {
+EOF
+if [ "$U_TAG" = "CORE" ]; then
+		cat << EOF >> ${FILE_GMT_MODULE_C}
+		if (API->mode || (strcmp (g_${L_TAG}_module[module_id].name, "read") && strcmp (g_${L_TAG}_module[module_id].name, "write")))
+			GMT_Message (V_API, GMT_TIME_NONE, "%s\n", g_${L_TAG}_module[module_id].name);
+EOF
+else
+		cat << EOF >> ${FILE_GMT_MODULE_C}
+		GMT_Message (V_API, GMT_TIME_NONE, "%s\n", g_${L_TAG}_module[module_id].name);
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
