@@ -272,13 +272,17 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 	}
 }
 
-/* Produce single list of all GMT ${L_TAG} module names for gmt --show-modules */
+/* Produce single list on stdout of all GMT ${L_TAG} module names for gmt --show-modules */
 void gmt_${L_TAG}_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+EOF
+else
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+	GMT_UNUSED(V_API);
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -287,11 +291,11 @@ EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
 		if (API->mode || (strcmp (g_${L_TAG}_module[module_id].name, "read") && strcmp (g_${L_TAG}_module[module_id].name, "write")))
-			GMT_Message (V_API, GMT_TIME_NONE, "%s\n", g_${L_TAG}_module[module_id].name);
+			printf ("%s\n", g_${L_TAG}_module[module_id].name);
 EOF
 else
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		GMT_Message (V_API, GMT_TIME_NONE, "%s\n", g_${L_TAG}_module[module_id].name);
+		printf ("%s\n", g_${L_TAG}_module[module_id].name);
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}

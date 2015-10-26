@@ -2025,7 +2025,10 @@ how the options are passed to the module:
         Return GMT_NOERROR (0) if module exists, nonzero otherwise.
 
     *mode* == ``GMT_MODULE_PURPOSE``
-        Just prints the purpose of the module; args should be NULL.
+        Just prints the purpose of the module; args must be NULL.
+
+    *mode* == ``GMT_MODULE_LIST``
+        Just prints a list of all modules; args must be NULL.
 
     *mode* == ``GMT_MODULE_OPT``
         Expects ``args`` to be a pointer to a doubly-linked list of objects with individual

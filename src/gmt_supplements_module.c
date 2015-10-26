@@ -103,11 +103,12 @@ void gmt_supplements_module_show_all (void *V_API) {
 	}
 }
 
-/* Produce single list of all GMT supplements module names for gmt --show-modules */
+/* Produce single list on stdout of all GMT supplements module names for gmt --show-modules */
 void gmt_supplements_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
+	GMT_UNUSED(V_API);
 	while (g_supplements_module[module_id].name != NULL) {
-		GMT_Message (V_API, GMT_TIME_NONE, "%s\n", g_supplements_module[module_id].name);
+		printf ("%s\n", g_supplements_module[module_id].name);
 		++module_id;
 	}
 }

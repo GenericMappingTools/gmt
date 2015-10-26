@@ -235,13 +235,13 @@ void gmt_core_module_show_all (void *V_API) {
 	}
 }
 
-/* Produce single list of all GMT core module names for gmt --show-modules */
+/* Produce single list on stdout of all GMT core module names for gmt --show-modules */
 void gmt_core_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].name != NULL) {
 		if (API->mode || (strcmp (g_core_module[module_id].name, "read") && strcmp (g_core_module[module_id].name, "write")))
-			GMT_Message (V_API, GMT_TIME_NONE, "%s\n", g_core_module[module_id].name);
+			printf ("%s\n", g_core_module[module_id].name);
 		++module_id;
 	}
 }
