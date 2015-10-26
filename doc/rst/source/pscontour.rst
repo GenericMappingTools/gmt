@@ -13,18 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] **-C**\ [+]\ *cptfile* **-J**\ *parameters*
+**pscontour** [ *table* ] |-C|\ [+]\ *cptfile* |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
+[ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ **-D**\ [*template*] ] [ **-E**\ *indexfile* ]
-[ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
-[ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] 
-[ **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
-[ **-S**\ [\ *p*\ \|\ *t*] ]
-[ **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
+[ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
+[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
+[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] 
+[ |-L|\ *pen* ] [ |-N| ]
+[ |-O| ] [ |-P| ] [ |-Q|\ *cut* ]
+[ |-S|\ [\ *p*\ \|\ *t*] ]
+[ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ] 
-[ |SYN_OPT-V| ] [ **-W**\ [**+**]\ *pen* ] 
+[ |SYN_OPT-V| ]
+[ |-W|\ [**+**]\ *pen* ] 
 [ |SYN_OPT-X| ] 
 [ |SYN_OPT-Y| ] 
 [ |SYN_OPT-b| ]
@@ -53,6 +55,8 @@ one or more output files (or stdout) and no plot is produced.
 
 Required Arguments
 ------------------
+
+.. _-C:
 
 **-C**\ [+]\ *cont_int*
     The contours to be drawn may be specified in one of three possible ways:
@@ -84,8 +88,12 @@ Required Arguments
     upper case C or A will have tickmarks. In all cases the contour
     values have the same units as the file.
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -99,6 +107,8 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
     *annot_int* is annotation interval in data units; it is ignored if
     contour levels are given in a file. [Default is no annotations]. Append
@@ -109,47 +119,74 @@ Optional Arguments
 
 .. include:: explain_clabelinfo.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-D:
 
 **-D**\ [*template*]
 
 .. include:: explain_contdump.rst_
+
+.. _-E:
 
 **-E**\ *indexfile*
     Give name of file with network information. Each record must contain
     triplets of node numbers for a triangle [Default computes these
     using Delaunay triangulation (see **triangulate**)].
 
+.. _-G:
+
 **-G**
 
 .. include:: explain_contlabel.rst_
+
+.. _-I:
 
 **-I**
     Color the triangles using the color palette table. 
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *pen* :ref:`(more ...) <set-pens>`
     Draw the underlying triangular mesh using the specified pen
     attributes [Default is no mesh].
+
+.. _-N:
+
 **-N**
     Do NOT clip contours or image at the boundaries [Default will clip
     to fit inside region **-R**]. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
+.. _-Q:
+
 **-Q**\ *cut*
     Do not draw contours with less than *cut* number of points [Draw all contours]. 
+
+.. _-S:
 
 **-S**\ [\ *p*\ \|\ *t*]
     Skip all input *xyz* points that fall outside the region [Default
     uses all the data in the triangulation].  Alternatively, use **-St**
     to skip triangles whose three vertices are all outside the region.
     **-S** with no modifier is interpreted as **-Sp**.
+
+.. _-T:
 
 **-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
     Will draw tick marks pointing in the downward direction every *gap*
@@ -166,10 +203,16 @@ Optional Arguments
     then only contours marked with upper case C or A will have tick marks
     [and annotations]. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**+**\ ]\ *pen* :ref:`(more ...) <set-pens>`
     Select contouring and set contour pen attributes. If the **+** flag
@@ -177,6 +220,8 @@ Optional Arguments
     cpt file (see **-C**). If the **-** flag is prepended then the color
     from the cpt file is applied both to the contours and the contour
     annotations. 
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 

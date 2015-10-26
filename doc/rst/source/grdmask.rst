@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdmask** *pathfiles* **-G**\ *mask_grd_file*]
+**grdmask** *pathfiles* |-G|\ *mask_grd_file*]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
-[ **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
-[ **-S**\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
+[ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
+[ |-N|\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
+[ |-S|\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
@@ -53,16 +53,24 @@ Required Arguments
     The name of 1 or more ASCII [or binary, see
     **-bi**] files holding the polygon(s) or data points.
 
+.. _-G:
+
 **-G**\ *mask_grd_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 Optional Arguments
 ------------------
+
+.. _-A:
 
 **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
     If the input data are geographic (as indicated by **-f**) then the
@@ -73,6 +81,8 @@ Optional Arguments
     For Cartesian data, points are simply connected, unless you append
     **x** or **y** to construct stair-case paths whose first move is along 
     *x* or *y*, respectively.
+
+.. _-N:
 
 **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values*
     Sets the *out/edge/in* that will be assigned to nodes that are
@@ -88,6 +98,8 @@ Optional Arguments
     **-N**\ **z**\ \|\ **Z**\ \|\ **p**\ \|\ **P** cannot be used in
     conjunction with **-S**; they also all optionally accept /*out* [0].
 
+.. _-S:
+
 **-S**\ *search\_radius*\ [*unit*]
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
@@ -96,6 +108,8 @@ Optional Arguments
     individual radii from the 3rd input column. If **-S** is not set
     then we consider the input data to define closed polygon(s) instead.
  
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 

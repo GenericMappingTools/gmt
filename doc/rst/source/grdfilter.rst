@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdfilter** *ingrid* **-D**\ *distance\_flag*
-**-Fx**\ *width*\ [/*width2*][*modifiers*]
-**-G**\ *outgrid*
+**grdfilter** *ingrid* |-D|\ *distance_flag*
+|-F|\ **x**\ *width*\ [/*width2*][*modifiers*]
+|-G|\ *outgrid*
 [ |SYN_OPT-I| ]
-[ **-N**\ **i**\ \|\ **p**\ \|\ **r** ]
-[ |SYN_OPT-R| ] [ **-T** ]
+[ |-N|\ **i**\ \|\ **p**\ \|\ **r** ]
+[ |SYN_OPT-R| ] [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -42,7 +42,10 @@ Required Arguments
 
 *ingrid*
     The grid file of points to be filtered. (See GRID FILE FORMATS below).
-**-D**\ *distance\_flag*
+
+.. _-D:
+
+**-D**\ *distance_flag*
     Distance *flag* tells how grid (x,y) relates to filter *width* as
     follows:
 
@@ -69,6 +72,8 @@ Required Arguments
 
     *flag* = 5: grid (x,y) in Mercator **-Jm**\ 1 img units, *width* in
     km, Spherical distance calculation.
+
+.. _-F:
 
 **-Fx**\ *width*\ [/*width2*][*modifiers*\ ]
     Sets the filter type. Choose among convolution and non-convolution
@@ -126,11 +131,15 @@ Required Arguments
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return NaN.
 
+.. _-G:
+
 **-G**\ *outgrid*
     *outgrid* is the output grid file of the filter. (See GRID FILE FORMATS below).
 
 Optional Arguments
 ------------------
+
+.. _-I:
 
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
     *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
@@ -138,6 +147,9 @@ Optional Arguments
     the new *x\_inc*, *y\_inc* are NOT integer multiples of the old ones
     (in the input data), filtering will be considerably slower.
     [Default: Same as input.]
+
+.. _-N:
+
 **-N**\ **i**\ \|\ **p**\ \|\ **r**
     Determine how NaN-values in the input grid affects the filtered
     output: Append **i** to ignore all NaNs in the calculation of
@@ -146,13 +158,21 @@ Optional Arguments
     if both grids are co-registered), and **p** which will force the
     filtered value to be NaN if any grid-nodes with NaN-values are found
     inside the filter circle.
+
+.. _-R:
+
 **-R**
     *west*, *east*, *south*, and *north* defines the Region of the
     output points. [Default: Same as input.]
+
+.. _-T:
+
 **-T**
     Toggle the node registration for the output grid so as to become the
     opposite of the input grid [Default gives the same registration as
     the input grid]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

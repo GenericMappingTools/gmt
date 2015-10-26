@@ -13,22 +13,23 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxy** [ *table* ] **-J**\ *parameters*
+**psxy** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
+[ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
-[ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
-[ **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
-[ **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
-[ **-G**\ *fill* ] [ **-I**\ *intens* ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
-[ **-N**\ [**c**\ \|\ **r**] ]
-[ **-O** ] [ **-P** ]
-[ **-S**\ [*symbol*][\ *size*\ [**u**] ] [ **-T** ]
+[ |-C|\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
+[ |-E|\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
+[ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
+[ |-G|\ *fill* ] [ |-I|\ *intens* ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ]
+[ |-N|\ [**c**\ \|\ **r**] ]
+[ |-O| ] [ |-P| ]
+[ |-S|\ [*symbol*][\ *size*\ [**u**] ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**][*pen*][*attr*] ]
+[ |-W|\ [**-**\ \|\ **+**][*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ]
@@ -64,8 +65,12 @@ respectively. The PostScript code is written to standard output.
 Required Arguments
 ------------------
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -79,6 +84,8 @@ Optional Arguments
 .. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
     By default, geographic line segments are drawn as great circle arcs. To draw them as
     straight lines, use the **-A** flag.  Alternatively, add **m** to draw
@@ -88,7 +95,11 @@ Optional Arguments
     are simply connected, unless you append **x** or **y** to draw stair-case
     curves that whose first move is along *x* or *y*, respectively.
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**\ *cptfile*
     Give a color palette file or specify -Ccolor1,color2[,color3,...]
@@ -103,9 +114,13 @@ Optional Arguments
     **-Z**\ *val* string. The *val* will control the color of the line or
     polygon (if **-L** is set) via the cpt file.
 
+.. _-D:
+
 **-D**\ *dx*/*dy*
     Offset the plot symbol or line locations by the given amounts *dx/dy*
     [Default is no offset]. If *dy* is not given it is set equal to *dx*.
+
+.. _-E:
 
 **-E**\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*]
     Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
@@ -128,6 +143,8 @@ Optional Arguments
     in the median. Then a 5th extra data column is expected to contain the
     number of points in the distribution.
 
+.. _-F:
+
 **-F**\ [**c**\ \|\ **n**\ \|\ **r**\ ][**a**\ \|\ **f**\ \|\ **s**\ \|\ **r**\ \|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of three line connection schemes:
@@ -147,10 +164,14 @@ Optional Arguments
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
 
+.. _-G:
+
 **-G**\ *fill*
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that **psxy** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
+
+.. _-I:
 
 **-I**\ *intens*
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
@@ -158,9 +179,13 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
 
 .. include:: PSXY_OPTs_EX.rst_
+
+.. _-L:
 
 **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
@@ -171,6 +196,8 @@ Optional Arguments
     append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either ymin, ymax, or y0.
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
 
+.. _-N:
+
 **-N**\ [**c**\ \|\ **r**]
     Do NOT clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
@@ -180,11 +207,19 @@ Optional Arguments
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
+.. _-S:
+
 .. include:: explain_symbols.rst_
+
+.. _-T:
 
 **-T**
     Ignore all input files, including standard input. This is the same
@@ -194,10 +229,16 @@ Optional Arguments
     **-T** to terminate a sequence of GMT plotting commands without
     producing any plotting output.
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**-**\ \|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
@@ -213,6 +254,8 @@ Optional Arguments
     **+v**\ *vspecs* will place a vector head at the ends of the lines.  You can
     use **+vb** and **+ve** to specify separate vector specs at each end [shared specs].
     See the :ref:`Vec_attributes` for more information.
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 

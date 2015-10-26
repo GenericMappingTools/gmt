@@ -14,8 +14,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **kml2gmt** [ *kmlfiles* ]
-[ **-F**\ **s**\ \|\ **l**\ \|\ **p** ]
-[ |SYN_OPT-V| ] [ **-Z** ]
+[ |-F|\ **s**\ \|\ **l**\ \|\ **p** ]
+[ |SYN_OPT-V| ]
+[ |-Z| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 [ |SYN_OPT-:| ]
@@ -46,13 +47,19 @@ Optional Arguments
     Name of one or more KML files to work on. If not are given, then
     standard input is read.
 
+.. _-F:
+
 **-F**\ **s**\ \|\ **l**\ \|\ **p**
     Specify a particular feature type to output. Choose from points (**s**),
     **l**\ ine, or **p**\ olygon.  By default we output all geometries.
 
+.. _-Z:
+
 **-Z**
     Output the altitude coordinates as GMT z coordinates [Default will
     output just longitude and latitude]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

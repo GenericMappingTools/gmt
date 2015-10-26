@@ -13,9 +13,10 @@ grdtrend
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrend** *grdfile* **-N**\ *n\_model*\ [**r**] [ **-D**\ *diff.nc* ]
+**grdtrend** *grdfile* |-N|\ *n\_model*\ [**r**]
+[ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
-[ **-T**\ *trend.nc* ] [ **-W**\ *weight.nc* ]
+[ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
 
 |No-spaces|
 
@@ -47,6 +48,9 @@ Required Arguments
 
 *grdfile*
     The name of a 2-D binary grid file.
+
+.. _-N:
+
 **-N**\ *n\_model*\ [**r**\ ]
     *n\_model* sets the number of model parameters to fit.
     Append **r** for robust fit.
@@ -62,11 +66,17 @@ Optional Arguments
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 
+.. _-T:
+
 **-T**\ *trend.nc*
     Write the fitted trend to the file *trend.nc*. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *weight.nc*
     If *weight.nc* exists, it will be read and used to solve a weighted

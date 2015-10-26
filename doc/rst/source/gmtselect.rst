@@ -14,15 +14,16 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmtselect** [ *table* ]
-[ **-A**\ *min\_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
-[ **-C**\ *dist*\ [*unit*]/\ *ptfile* ]
-[ **-D**\ *resolution*\ [**+**] ] [ **-E**\ [**fn**] ]
-[ **-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
-[ **-J**\ *parameters* ]
-[ **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
-[ **-N**\ *maskvalues* ]
+[ |-A|\ *min\_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
+[ |-C|\ *dist*\ [*unit*]/\ *ptfile* ]
+[ |-D|\ *resolution*\ [**+**] ]
+[ |-E|\ [**fn**] ]
+[ |-F|\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
+[ |-J|\ *parameters* ]
+[ |-L|\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
+[ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
-[ **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*] ]
+[ |-Z|\ *min*\ [/*max*]\ [**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -61,8 +62,12 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 .. |Add_-A| replace:: Ignored unless **-N** is set.
 .. include:: explain_-A.rst_
+
+.. _-C:
 
 **-C**\ *dist*\ [*unit*]/\ *ptfile*
     Pass all records whose location is within *dist* of any of the
@@ -75,6 +80,8 @@ Optional Arguments
     inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
     Cartesian distances are compared to *dist*.
 
+.. _-D:
+
 **-D**\ *resolution*\ [**+**]
     Ignored unless **-N** is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
@@ -85,6 +92,8 @@ Optional Arguments
     differ in details it is not guaranteed that a point will remain
     inside [or outside] when a different resolution is selected.
 
+.. _-E:
+
 **-E**\ [**fn**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
@@ -92,12 +101,16 @@ Optional Arguments
     **-F** and **-N** options, respectively, so that boundary points are
     considered to be outside.
 
+.. _-F:
+
 **-F**\ *polygonfile*
     Pass all records whose location is within one of the closed polygons
     in the multiple-segment file *polygonfile*. For spherical polygons
     (lon, lat), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
     ASCII regardless of whether **-bi** is used.
+
+.. _-I:
 
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
@@ -114,9 +127,13 @@ Optional Arguments
     (and **-A**, **-D**).
 
     **z** select records NOT within the range specified by **-Z**.
+
+.. _-J:
  
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-L:
 
 **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile*
     Pass all records whose location is within *dist* of any of the line
@@ -133,6 +150,8 @@ Optional Arguments
     within the segments endpoints [Default considers points "beyond" the
     line's endpoints.
 
+.. _-N:
+
 **-N**\ *maskvalues*
     Pass all records whose location is inside specified geographical
     features. Specify if records should be skipped (s) or kept (k) using
@@ -144,11 +163,17 @@ Optional Arguments
 
     [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land]. 
 
+.. _-R:
+
 .. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. 
 .. include:: explain_-R.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*]
     Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range

@@ -14,13 +14,16 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psconvert** *psfile(s)*
-[ **-A**\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
-[ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [ **-F**\ *<out_name>* ]
-[ **-G**\ *ghost_path* ] [ **-I** ] [ **-L**\ *listfile* ] [ **-P** ]
-[ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
-[ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t** ]
+[ |-A|\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
+[ |-C|\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [ **-F**\ *<out_name>* ]
+[ |-G|\ *ghost_path* ]
+[ |-I| ]
+[ |-L|\ *listfile* ]
+[ |-P| ]
+[ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
+[ |-T|\ **b**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t** ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
+[ |-W|\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
 
 |No-spaces|
 
@@ -53,6 +56,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
@@ -78,23 +83,33 @@ Optional Arguments
     use **-A+p**\ [\ *pen*\ ] to draw the BoundingBox outline (append a pen or accept
     the default pen of 0.25p,black).
 
+.. _-C:
+
 **-C**\ *gs_option*
     Specify a single, custom option that will be passed on to
     GhostScript as is. Repeat to add several options [none].
+
+.. _-D:
 
 **-D**\ *outdir*
     Sets an alternative output directory (which must exist) [Default is
     the same directory as the PS files]. Use **-D.** to place the output
     in the current directory instead.
 
+.. _-E:
+
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
+
+.. _-F:
 
 **-F**\ *out_name*
     Force the output file name. By default output names are constructed
     using the input names as base, which are appended with an
     appropriate extension. Use this option to provide a different name,
     but without extension. Extension is still determined automatically.
+
+.. _-G:
 
 **-G**\ *ghost_path*
     Full path to your GhostScript executable. NOTE: For Unix systems
@@ -107,6 +122,8 @@ Optional Arguments
     So in case of 'get from registry' failure the default name (when no
     **-G** is used) is the one of the 64 bits version, or gswin64c
 
+.. _-I:
+
 **-I**
     Enforce gray-shades by using ICC profiles.  GhostScript versions
     >= 9.00 change gray-shades by using ICC profiles.  GhostScript 9.05
@@ -116,13 +133,19 @@ Optional Arguments
     shifting is applied to all but PDF format.  We have no solution to
     offer other than upgrade GhostScript.
 
+.. _-L:
+
 **-L**\ *listfile*
     The *listfile* is an ASCII file with the names of the PostScript
     files to be converted.
 
+.. _-N:
+
 **-N**
     This option is obsolete. Use **-S** to print the GhostScript
     command, if applicable. Use **-Te** to save the intermediate EPS file.
+
+.. _-P:
 
 **-P**
     Force Portrait mode. All Landscape mode plots will be rotated back
@@ -130,14 +153,20 @@ Optional Arguments
     converting to image formats or preparing EPS or PDF plots for
     inclusion in documents.
 
+.. _-Q:
+
 **-Q**\ [**g**\ \|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
     Append the size of the subsample box (1, 2, or 4) [4]. Default is no
     anti-aliasing (same as *bits* = 1).
 
+.. _-S:
+
 **-S**
     Print to standard error the GhostScript command after it has been executed.
     This option also prevent all intermediate files from being removed.
+
+.. _-T:
 
 **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s**\ \|\ **t**
     Sets the output format, where **b** means BMP, **e** means EPS,
@@ -150,8 +179,12 @@ Optional Arguments
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
     PDF file from the list of input PS or PDF files. It requires the **-F** option.
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*]
     Write a ESRI type world file suitable to make (e.g) .tif files be

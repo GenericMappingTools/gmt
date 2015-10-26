@@ -14,10 +14,10 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdmath**
-[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
-[ **-D**\ *resolution*\ [**+**] ]
+[ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ |-D|\ *resolution*\ [**+**] ]
 [ |SYN_OPT-I| ]
-[ **-M** ] [ **-N** ]
+[ |-M| ] [ |-N| ]
 [ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -63,8 +63,12 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 .. |Add_-A| replace:: (**-A** is only relevant to the **LDISTG** operator)
 .. include:: explain_-A.rst_
+
+.. _-D:
 
 **-D**\ *resolution*\ [**+**]
     Selects the resolution of the data set to use with the operator LDISTG
@@ -73,7 +77,11 @@ Optional Arguments
     Append **+** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-M:
 
 **-M**
     By default any derivatives calculated are in z_units/ x(or
@@ -81,13 +89,19 @@ Optional Arguments
     in degrees of longitude,latitude into meters using a flat Earth
     approximation, so that gradients are in z_units/meter.
 
+.. _-N:
+
 **-N**
     Turn off strict domain match checking when multiple grids are
     manipulated [Default will insist that each grid domain is within
     1e-4 \* grid_spacing of the domain of the first grid listed].
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

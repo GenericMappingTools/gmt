@@ -13,19 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ **-A** ]
+**grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ |-A| ]
 [ |SYN_OPT-B| ]
-[ **-C**\ *cptfile* ]
-[ **-G**\ *fill* ]
-[ **-I**\ [**x**]\ *dx*\ [/*dy*] ]
-[ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ]
+[ |-C|\ *cptfile* ]
+[ |-G|\ *fill* ]
+[ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
+[ |-K| ] [ |-N| ] [ |-O| ] [ |-P| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
-[ **-S**\ [**i**\ \|\ **l**\ ]\ *scale* ] [ **-T** ]
+[ |-S|\ [**i**\ \|\ **l**\ ]\ *scale* ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
-[ **-W**\ *pen* ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z** ]
+[ |-Z| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-p| ]
@@ -51,17 +52,25 @@ Required Arguments
 *compy.nc*
     Contains the y-component of the vector field. (See GRID FILE FORMATS below.) 
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     Means grid files have polar (r, theta) components instead of
     Cartesian (x, y). 
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**\ [*cptfile*]
     Use *cptfile* to assign colors based on vector length. Alternatively,
@@ -73,8 +82,12 @@ Optional Arguments
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
+.. _-G:
+
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
+
+.. _-I:
 
 **-I**\ [**x**]\ *dx*\ [/*dy*]
     Only plot vectors at nodes every *x\_inc*, *y\_inc* apart (must be
@@ -82,22 +95,36 @@ Optional Arguments
     **s** for arc seconds.  Alternatively, use **-Ix** to specify the
     multiples *multx*\ [/*multy*] directly [Default plots every node]. 
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-N:
 
 **-N**
     Do NOT clip vectors at map boundaries [Default will clip]. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**\ *parameters*
     Modify vector parameters. For vector heads, append vector head
     *size* [Default is 0, i.e., stick-plot]. See VECTOR ATTRIBUTES for
     specifying additional attributes. 
 
+.. _-R:
+
 .. |Add_-R| replace:: Specify a subset of the grid.
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-S**\ [**i**\ \|\ **l**\ ]\ *scale*
     Sets scale for Cartesian vector length in data units per distance measurement
@@ -107,24 +134,35 @@ Optional Arguments
     km. Use **-Si** if it is simpler to give the reciprocal scale in
     measurement unit per data unit or km per data unit.
 
+.. _-T:
+
 **-T**
     Means azimuth of Cartesian data sets should be adjusted for different scales
     in the x- and y-directions [Leave alone].
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *pen*
     Set pen attributes used for vector outlines [Default: width =
     default, color = black, style = solid]. 
 
+.. _-X:
+
 .. include:: explain_-XY.rst_
 
+.. _-Z:
+
 **-Z**
-    Means the angles provided are azimuths rather than direction
-    (requires **-A**). 
+    Means the angles provided are azimuths rather than direction (requires **-A**). 
 
 .. include:: explain_-c.rst_
 

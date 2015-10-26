@@ -13,12 +13,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *cptfile* ]
-[ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ [*nlevels*] ]
-[ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ] [ **-M** ]
-[ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ]
-[ **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* ]
-[ **-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
+**makecpt** [ |-A|\ [**+**\ ]\ *transparency* ]
+[ |-C|\ *cptfile* ]
+[ |-D|\ [**i**\ \|\ **o**] ]
+[ |-E|\ [*nlevels*] ]
+[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ]
+[ |-G|\ *zlo*\ /\ *zhi* ]
+[ |-I| ] [ |-M| ]
+[ |-N| ] [ |-Q|\ [**i**\ \|\ **o**] ]
+[ |-T|\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* ]
+[ |-V|\ [*level*\ ] ] [ |-W| ] [ |-Z| ]
 
 |No-spaces|
 
@@ -60,15 +64,23 @@ None.
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**+**\ ]\ *transparency*
     Sets a constant level of transparency (0-100) for all color slices.
     Prepend **+** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
+
+.. _-C:
+
 **-C**\ *cptfile*
     Selects the master color table *cptfile* to use in the interpolation.
     Choose among the built-in tables (type **makecpt** to see the list)
     or give the name of an existing cpt file [Default gives a rainbow
     cpt file].
+
+.. _-D:
+
 **-D**\ [**i**\ \|\ **o**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output cpt file [Default uses
@@ -76,6 +88,9 @@ Optional Arguments
     parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
     :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) cpt file.
+
+.. _-E:
+
 **-E**\ [*nlevels*]
     Implies reading data table(s) from given command-line files or standard input.
     We use the last data column to determine the data range; use **-i** to
@@ -84,20 +99,32 @@ Optional Arguments
     We create a linear color table by dividing the table data z-range into
     *nlevels* equidistant slices.  If *nlevels* is not given it defaults to
     the number of levels in the chosen CPT file.
+
+.. _-F:
+
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**]
     Force output cpt file to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).
+
+.. _-G:
+
 **-G**\ *zlo*\ /\ *zhi*
     Truncate the incoming CPT so that the lowest and highest z-levels
     are to *zlo* and *zhi*.  If one of these equal NaN then
     we leave that end of the CPT alone.  The truncation takes place
     before any resampling.
+
+.. _-I:
+
 **-I**
     Reverses the sense of color progression in the master cpt file. Also
     exchanges the foreground and background colors, including those
     specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
     :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
+
+.. _-M:
+
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master cpt file with the values of the parameters
@@ -105,14 +132,22 @@ Optional Arguments
     and :ref:`COLOR_NAN <COLOR_NAN>`
     specified in the :doc:`gmt.conf` file or on the command line. When
     combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
+
+.. _-N:
+
 **-N**
-    Do not write out the background, foreground, and NaN-color fields
-    [Default will write them].
+    Do not write out the background, foreground, and NaN-color fields [Default will write them].
+
+.. _-Q:
+
 **-Q**\ [**i**\ \|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
+
+.. _-T:
+
 **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable*
     Defines the range of the new cpt file by giving the lowest and
     highest z-value and interval. When used with **-C** and *z_inc* is
@@ -123,8 +158,12 @@ Optional Arguments
     per record. If **-T** is not given, the existing range in the master
     cpt file will be used intact. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**
     Do not interpolate the input color table but pick the output colors
@@ -132,6 +171,9 @@ Optional Arguments
     intervals are assigned. This is particularly useful in combination
     with a categorical color table, like "categorical". Cannot be used
     in combination with **-Z**.
+
+.. _-Z:
+
 **-Z**
     Creates a continuous cpt file [Default is discontinuous, i.e.,
     constant colors for each interval]. 

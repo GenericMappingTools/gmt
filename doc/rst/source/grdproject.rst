@@ -13,10 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdproject** *in_grdfile* **-G**\ *out_grdfile* **-J**\ *parameters*
-[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ] [ **-C**\ [*dx/dy*] ] [
-**-D**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
-] [ **-E**\ *dpi* ] [ **-I** ] [ **-Mc**\ \|\ **i**\ \|\ **p** ] [
+**grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
+[ |-A|\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ]
+[ |-C|\ [*dx/dy*] ]
+[ |-D|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]] ]
+[ |-E|\ *dpi* ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ] [
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
@@ -52,14 +53,20 @@ Required Arguments
 *in_grdfile*
     2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)
 
+.. _-G:
+
 **-G**\ *out_grdfile*
     Specify the name of the output grid file. (See GRID FILE FORMATS below.) 
+
+.. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments
 ------------------
+
+.. _-A:
 
 **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
@@ -69,6 +76,8 @@ Optional Arguments
     (point). Without **-A**, the output (or input, see **-I**) are in
     the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see **-M**).
 
+.. _-C:
+
 **-C**\ [*dx/dy*\ ]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
@@ -76,26 +85,38 @@ Optional Arguments
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0].
 
+.. _-D:
+
 **-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
     Set the grid spacing for the new grid. Append **m** for arc minute,
     **s** for arc second. If neither **-D** nor **-E** are set then we
     select the same number of output nodes as there are input nodes.
 
+.. _-E:
+
 **-E**\ *dpi*
     Set the resolution for the new grid in dots per inch.
 
+.. _-I:
+
 **-I**
     Do the Inverse transformation, from rectangular to geographical.
+
+.. _-M:
 
 **-Mc**\ \|\ **i**\ \|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
     :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-A**.
-    
+
+.. _-R:
+
 .. |Add_-R| replace:: You may ask to project only
     a subset of the grid by specifying a smaller input *w/e/s/n* region
     [Default is the region given by the grid file]. 
 .. include:: explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -112,8 +133,7 @@ Optional Arguments
 Examples
 --------
 
-To transform the geographical grid dbdb5.nc onto a pixel Mercator grid
-at 300 dpi, run
+To transform the geographical grid dbdb5.nc onto a pixel Mercator grid at 300 dpi, run
 
    ::
 

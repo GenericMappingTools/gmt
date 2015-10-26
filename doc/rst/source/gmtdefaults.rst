@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtdefaults** [ **-D**\ [**u**\ \|\ **s**] ]
+**gmtdefaults** [ |-D|\ [**u**\ \|\ **s**] ]
 
 |No-spaces|
 
@@ -40,6 +40,8 @@ None.
 
 Optional Arguments
 ------------------
+
+.. _-D:
 
 **-D**
     Print the system GMT defaults to standard output. Append **u**

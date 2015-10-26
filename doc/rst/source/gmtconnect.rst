@@ -13,9 +13,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconnect** [ *table* ] [ **-C**\ [*closed*] ]
-[ **-D**\ [*template*] ] [ **-L**\ [*linkfile*] ]
-[ **-Q**\ [*template*] ] [ **-T**\ [*cutoff*\ [*unit*][/\ *nn\_dist*]] ]
+**gmtconnect** [ *table* ] [ |-C|\ [*closed*] ]
+[ |-D|\ [*template*] ] [ |-L|\ [*linkfile*] ]
+[ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [*unit*][/\ *nn\_dist*]] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -53,12 +53,15 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-C:
 
 **-C**\ [*closed*]
     Write all the closed polygons to *closed* [gmtconnect_closed.txt]
     and all other segments as they are to stdout. No connection takes
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and if
     *cutoff* is > 0 then we also explicitly close the polygons on output.
+
+.. _-D:
 
 **-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output
@@ -75,6 +78,8 @@ Optional Arguments
     will be written out as comments to make it possible to identify
     where the connected pieces came from.
 
+.. _-L:
+
 **-L**\ [*linkfile*]
     Writes the link information to the specified file
     [gmtconnect_link.txt]. For each segment we write the original
@@ -83,12 +88,16 @@ Optional Arguments
     (B) or end (E) point that is closest, and the distance between those
     points in units determined by **-T**.
 
+.. _-Q:
+
 **-Q**\ [*template*]
     Used with **-D** to a list file with the names of the individual
     output files. Optionally, append a filename template for the
     individual file names; this template **may** contain a C format
     specifier that can format an character (C or O for closed or open,
     respectively). [Default is gmtconnect_list.txt].
+
+.. _-T:
 
 **-T**\ [*cutoff*\ [*unit*][/\ *nn\_dist*]]
     Specifies the separation tolerance in the data coordinate units [0];
@@ -99,6 +108,8 @@ Optional Arguments
     distance must be given in the same units as *cutoff*.  However, if
     no arguments are given then we close every polygon regardless of
     the gap between first and last point.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

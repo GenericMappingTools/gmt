@@ -13,10 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*]\|\ *vector* ] 
-[ **-C**\ [**i**\ \|\ **o**] ] 
-[ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
-[ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
+**gmtvector** [ *table* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ] 
+[ |-C|\ [**i**\ \|\ **o**] ] 
+[ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
+[ |-T|\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -62,6 +62,8 @@ Optional Arguments
     if **-Ci** is given). If no file is specified, **gmtvector**, will
     read from standard input.
 
+.. _-A:
+
 **-A**\ **m**\ [*conf*\ ]\|\ *vector*
     Specify a single, primary vector instead of reading *infiles*; see
     *infiles* for possible vector formats. Alternatively, append **m**
@@ -72,25 +74,35 @@ Optional Arguments
     optionally append the confidence level in percent [95]. These three
     parameters are reported in the final three output columns.
 
+.. _-C:
+
 **-C**\ [**i**\ \|\ **o**]
     Select Cartesian coordinates on input and output. Append **i** for
     input only or **o** for output only; otherwise both input and output
     will be assumed to be Cartesian [Default is polar r/theta for 2-D
     data and geographic lon/lat for 3-D].
 
+.. _-E:
+
 **-E**
     Convert input geographic coordinates from geodetic to geocentric and
     output geographic coordinates from geocentric to geodetic. Ignored
     unless **-fg** is in effect, and is bypassed if **-C** is selected.
 
+.. _-N:
+
 **-N**
     Normalize the resultant vectors prior to reporting the output [No
     normalization]. This only has an effect if **-Co** is selected.
+
+.. _-S:
 
 **-S**\ [*vector*]
     Specify a single, secondary vector in the same format as the first
     vector. Required by operations in **-T** that need two vectors
     (average, bisector, dot product, cross product, and sum).
+
+.. _-T:
 
 **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **x**]
     Specify the vector transformation of interest. Append **a** for
@@ -105,6 +117,8 @@ Optional Arguments
     If **-T** is not given then no transformation takes place; the
     output is determined by other options such as **-A**, **-C**,
     **-E**, and **-N**. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -134,8 +148,8 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+`Examples`
+----------
 
 Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the

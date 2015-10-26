@@ -13,17 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2cpt** *grid* [ **-A**\ [**+**\ ]\ *transparency* ]
-[ **-C**\ *cptfile* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels* ]
-[ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ]
-[ **-L**\ *minlimit/maxlimit* ] [ **-M** ] [ **-N** ]
-[ **-Q**\ [**i**\ \|\ **o**] ]
+**grd2cpt** *grid* [ |-A|\ [**+**\ ]\ *transparency* ]
+[ |-C|\ *cptfile* ] [ |-D|\ [**i**\ \|\ **o**] ]
+[ |-E|\ *nlevels* ]
+[ |-F|\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ]
+[ |-G|\ *zlo*\ /\ *zhi* ] [ |-I| ]
+[ |-L|\ *minlimit/maxlimit* ]
+[ |-M| ] [ |-N| ]
+[ |-Q|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-R| ]
-[ **-S**\ *zstart/zstop/zinc* ]
-[ **-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ]
+[ |-S|\ *zstart/zstop/zinc* ]
+[ |-T|\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ]
 [ |SYN_OPT-V| ]
-[ **-W** ]
-[ **-Z** ]
+[ |-W| ]
+[ |-Z| ]
 
 |No-spaces|
 
@@ -73,10 +76,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**+**\ ]\ *transparency*
     Sets a constant level of transparency (0-100) for all color slices.
     Prepend **+** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
+
+.. _-C:
+
 
 **-C**\ *cptfile*
     Selects the master color table to use in the interpolation. Choose
@@ -87,6 +95,8 @@ Optional Arguments
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
+.. _-D:
+
 **-D**\ [**i**\ \|\ **o**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output cpt file [Default uses
@@ -95,14 +105,20 @@ Optional Arguments
     :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) cpt file.
 
+.. _-E:
+
 **-E**\ *nlevels*
     Create a linear color table by dividing the grid z-range into
     *nlevels* equidistant slices.
+
+.. _-F:
 
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**]
     Force output cpt file to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).
+
+.. _-G:
 
 **-G**\ *zlo*\ /\ *zhi*
     Truncate the incoming CPT so that the lowest and highest z-levels
@@ -110,15 +126,21 @@ Optional Arguments
     we leave that end of the CPT alone.  The truncation takes place
     before any resampling.
 
+.. _-I:
+
 **-I**
     Reverses the sense of color progression in the master cpt file. Also
     exchanges the foreground and background colors, including those
     specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
     :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
 
+.. _-L:
+
 **-L**\ *minlimit/maxlimit*
     Limit range of cpt file to *minlimit/maxlimit*, and don't count data
     outside this range when estimating CDF(Z). [Default uses min and max of data.]
+
+.. _-M:
 
 **-M**
     Overrule background, foreground, and NaN colors specified in the
@@ -128,9 +150,13 @@ Optional Arguments
     specified in the :doc:`gmt.conf` file or on the command line. When
     combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
 
+.. _-N:
+
 **-N**
     Do not write out the background, foreground, and NaN-color fields
     [Default will write them].
+
+.. _-Q:
 
 **-Q**\ [**i**\ \|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
@@ -138,8 +164,12 @@ Optional Arguments
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z. 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-S**\ *zstart/zstop/zinc* or **-S**\ *n*
     Set steps in cpt file. Calculate entries in cpt file from *zstart*
@@ -148,20 +178,28 @@ Optional Arguments
     Use **-S**\ *n* to select *n* points from such a
     cumulative normal distribution [11].
 
+.. _-T:
+
 **-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=**
     Force the color table to be symmetric about zero (from -R to +R).
     Append flag to set the range R: **-** for R =\|zmin\|, **+** for R =
     \|zmax\|, **\_** for R = min(\|zmin\|, \|zmax\|), or **=** for R =
     max(\|zmin\|, \|zmax\|).
 
+.. _-V:
+
 **-V**
     Verbose operation. This will write CDF(Z) estimates to stderr. [Default is silent.]
+
+.. _-W:
 
 **-W**
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
     combination with a categorical color table. Cannot be used in
     combination with **-Z**.
+
+.. _-Z:
 
 **-Z**
     Will create a continuous color palette. [Default is discontinuous,

@@ -20,7 +20,7 @@ Synopsis
 [ |-N| ] 
 [ |SYN_OPT-R| ]
 [ |-S|\ *method*/*modifiers* ] [ |-T|\ [*radius*\ [**u**]][**+e**\ \|\ **p**]]
-[ **-V**\ [*level*] ] [ |-Z| ]
+[ |-V|\ [*level*] ] [ |-Z| ]
 [ |SYN_OPT-b| ] 
 [ |SYN_OPT-d| ] 
 [ |SYN_OPT-f| ] 

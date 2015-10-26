@@ -13,10 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdsample** *in_grdfile* **-G**\ *out_grdfile*
+**grdsample** *in_grdfile* |-G|\ *out_grdfile*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ **-T** ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -50,20 +50,33 @@ Required Arguments
 *in_grdfile*
     The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
 
+.. _-G:
+
 **-G**\ *out_grdfile*
     The name of the output grid file. (See GRID FILE FORMAT below.)
 
 Optional Arguments
 ------------------
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-T:
+
 **-T**
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

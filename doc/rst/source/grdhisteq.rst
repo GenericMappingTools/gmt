@@ -13,9 +13,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdhisteq** *in_grdfile* [ **-G**\ *out_grdfile* ]
-[ **-C**\ *n_cells* ] [ **-D**\ [*file*] ] [ **-N**\ [*norm*] ]
-[ **-Q** ]
+**grdhisteq** *in_grdfile* [ |-G|\ *out_grdfile* ]
+[ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
+[ |-Q| ]
 |SYN_OPT-R|
 |SYN_OPT-V|
 
@@ -65,25 +65,41 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *n_cells*
     Sets how many cells (or divisions) of data range to make [16].
+
+.. _-D:
+
 **-D**
-    Dump level information to *file*, or standard output if no file is
-    provided.
+    Dump level information to *file*, or standard output if no file is provided.
+
+.. _-G:
+
 **-G**\ *out_grdfile*
-    Name of output 2-D grid file. Used with **-N** only. (See GRID FILE
-    FORMATS below).
+    Name of output 2-D grid file. Used with **-N** only. (See GRID FILE FORMATS below).
+
+.. _-N:
+
 **-N**\ [*norm*]
     Gaussian output. Use with **-G** to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
     the <-1,+1> range [Default is standard normal scores].
+
+.. _-Q:
+
 **-Q**
     Use quadratic intensity scaling. [Default is linear]. 
+
+.. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of *in_grdfile* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. 
 .. include:: explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

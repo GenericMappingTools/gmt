@@ -14,14 +14,18 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **greenspline** [ *table* ]
-[ **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile* ]
-[ **-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
-[ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*]] ] [ **-L** ] [ **-N**\ *nodefile* ]
-[ **-Q**\ *az*\ \|\ *x/y/z* ]
+[ |-A|\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile* ]
+[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ]
+[ |-D|\ *mode* ]
+[ |-G|\ *grdfile* ]
+[ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
+[ |-L| ]
+[ |-N|\ *nodefile* ]
+[ |-Q|\ *az*\ \|\ *x/y/z* ]
 [ |SYN_OPT-Rz| ]
-[ **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
+[ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
-[ **-W** ]
+[ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -67,6 +71,9 @@ Optional Arguments
     The name of one or more ASCII [or binary, see
     **-bi**] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
+
+.. _-A:
+
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
     The solution will partly be constrained by surface gradients **v** =
     *v*\ \*\ **n**, where *v* is the gradient magnitude and **n** its
@@ -87,6 +94,9 @@ Optional Arguments
     **x**, **v**. **5**: records contain **x**, **n**, *v*. Append name
     of ASCII file with the surface gradients (following a comma if a
     format is specified).
+
+.. _-C:
+
 **-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
@@ -101,6 +111,9 @@ Optional Arguments
     Alternatively, use **-Cn** to select the *cut* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
+
+.. _-D:
+
 **-D**\ *mode*
     Sets the distance flag that determines how we calculate distances
     between data points. Select *mode* 0 for Cartesian 1-D spline
@@ -116,6 +129,9 @@ Optional Arguments
     arcs. Select *mode* 5 for Cartesian 3-D surface spline
     interpolation: **-D**\ 5 means (*x*,\ *y*,\ *z*) in user units,
     Cartesian distances.
+
+.. _-G:
+
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
@@ -127,9 +143,14 @@ Optional Arguments
     **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
     **-C**\ 0 is given.
+
+.. _-I:
+
 **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]]
-    Specify equidistant sampling intervals, on for each dimension,
-    separated by slashes.
+    Specify equidistant sampling intervals, on for each dimension, separated by slashes.
+
+.. _-L:
+
 **-L**
     Do *not* remove a linear (1-D) or planer (2-D) trend when **-D**
     selects mode 0-3 [For those Cartesian cases a least-squares line or
@@ -137,6 +158,9 @@ Optional Arguments
     to the residuals]. However, in mixed cases with both data values and
     gradients, or for spherical surface data, only the mean data value
     is removed (and later and restored).
+
+.. _-N:
+
 **-N**\ *nodefile*
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
@@ -144,11 +168,17 @@ Optional Arguments
     specified]; see **-bo** for binary output
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.
+
+.. _-Q:
+
 **-Q**\ *az*\ \|\ *x/y/z*
     Rather than evaluate the surface, take the directional derivative in
     the *az* azimuth and return the magnitude of this derivative
     instead. For 3-D interpolation, specify the three components of the
     desired vector direction (the vector will be normalized before use).
+
+.. _-R:
+
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]]
     Specify the domain for an equidistant lattice where output
     predictions are required. Requires **-I** and optionally **-r**.
@@ -167,6 +197,8 @@ Optional Arguments
     *x*, *y* and *z* coordinates. See the 2-D section if your horizontal
     coordinates are geographical; note the shorthands **-Rg** and
     **-Rd** cannot be used if a 3-D domain is specified.
+
+.. _-S:
 
 **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
     Select one of six different splines. The first two are used for
@@ -190,13 +222,20 @@ Optional Arguments
     points to use in the spline setup [10001].  The finite Legendre sum has
     a truncation error [1e-6]; you can lower that by appending **+e**\ *limit*
     at the expense of longer run-time.
+
+.. _-T:
+
 **-T**\ *maskgrid*
     For 2-D interpolation only. Only evaluate the solution at the nodes
     in the *maskgrid* that are not equal to NaN. This option eliminates
     the need to specify options **-R**, **-I**, and **-r**. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**
    Expect data weights in the final input column, typically given as

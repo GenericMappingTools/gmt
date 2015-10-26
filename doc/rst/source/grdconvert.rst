@@ -15,7 +15,7 @@ Synopsis
 
 **grdconvert** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]]]
 *outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]][\ *:driver*\ [*/datatype*]]]
-[ **-N** ]
+[ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
@@ -79,13 +79,19 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-N:
+
 **-N**
     Suppress the writing of the GMT header structure. This is useful
     when you want to write a native grid to be used by **grdraster**. It
     only applies to native grids and is ignored for netCDF output. 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

@@ -13,12 +13,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2rgb** *infile* **-G**\ *template* [ **-C**\ *cptfile* ] [
-**-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ]
-[ **-L**\ *layer* ]
+**grd2rgb** *infile* |-G|\ *template* 
+[ |-C|\ *cptfile* ] [
+|-I|\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ]
+[ |-L|\ *layer* ]
 |SYN_OPT-R|
 |SYN_OPT-V|
-[ **-W**\ *width*/*height*\ [/*n\_bytes*] ]
+[ |-W|\ *width*/*height*\ [/*n\_bytes*] ]
 [ **-r** ]
 
 |No-spaces|
@@ -50,19 +51,31 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *cptfile*
     name of the color palette table (for 2-D binary input grid only). 
 
+.. _-I:
+
 ..  include:: explain_-I.rst_
+
+.. _-L:
 
 **-L**\ *layer*
     Output only the specified layer (r, g, or b). [Default outputs all 3 layers]. 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *width*/*height*\ [/*n\_bytes*]
     Sets the size of the raw raster file. By default an RGB file (which

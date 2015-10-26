@@ -13,10 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ **-A**\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**] ] [ **-C**\ *cols* ]
-[ **-E**\ *eigen* ] [ **-I** ]
-[ **-N**\ *n\_col*\ [/*t_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
-] [ **-T**\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
+**gmtmath** [ |-A|\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**] ]
+[ |-C|\ *cols* ]
+[ |-E|\ *eigen* ] [ |-I| ]
+[ |-N|\ *n\_col*\ [/*t_col*] ]
+[ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
+[ |-T|\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -67,6 +69,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**]
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
@@ -80,6 +84,9 @@ Optional Arguments
     *t_f(t).d* has a third column with 1-sigma.  In those two cases we
     find the weighted solution.  The weights (or sigmas) will be output
     as the last column when **+e** is in effect.
+
+.. _-C:
+
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are
@@ -88,28 +95,44 @@ Optional Arguments
     columns, including time column, while **-Cr** reverses (toggles) the
     current choices.  When **-C** is in effect it also controls which
     columns from a file will be placed on the stack.
+
+.. _-E:
+
 **-E**\ *eigen*
     Sets the minimum eigenvalue used by operators LSQFIT and SVDFIT [1e-7].
     Smaller eigenvalues are set to zero and will not be considered in the
     solution.
+
+.. _-I:
+
 **-I**
-    Reverses the output row sequence from ascending time to descending
-    [ascending].
+    Reverses the output row sequence from ascending time to descending [ascending].
+
+.. _-N:
+
 **-N**\ *n_col*\ [/*t_col*]
     Select the number of columns and optionally the column number that
     contains the "time" variable [0]. Columns are numbered starting at 0
     [2/0]. If input files are specified then **-N** will add any missing
     columns.
+
+.. _-Q:
+
 **-Q**
-    Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0
-    **-T**\ 0/0/1.
+    Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
+
+.. _-S:
+
 **-S**\ [**f**\ \|\ **l**]
     Only report the first or last row of the results [Default is all
     rows]. This is useful if you have computed a statistic (say the
     **MODE**) and only want to report a single number instead of
     numerous records with identical values. Append **l** to get the last
     row and **f** to get the first row only [Default].
-**-T**\ *t\_min*/*t\_max*/*t\_inc*\ [**+**\ ]\|\ *tfile*
+
+.. _-T:
+
+**-T**\ *t_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile*
     Required when no input files are given. Sets the t-coordinates of
     the first and last point and the equidistant sampling interval for
     the "time" column (see **-N**). Append **+** if you are specifying
@@ -117,6 +140,8 @@ Optional Arguments
     (only data columns), give **-T** with no arguments; this also
     implies **-Ca**. Alternatively, give the name of a file whose first
     column contains the desired t-coordinates which may be irregular. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

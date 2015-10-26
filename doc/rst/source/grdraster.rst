@@ -15,9 +15,9 @@ Synopsis
 
 **grdraster** [ *filenumber* \| *"text pattern"* ]
 |SYN_OPT-R|
-[ **-G**\ *grdfile* ]
+[ |-G|\ *grdfile* ]
 [ |SYN_OPT-I| ]
-[ **-J**\ *parameters* ]
+[ |-J|\ *parameters* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
@@ -58,6 +58,8 @@ Required Arguments
     will match the given text pattern with the data set description in
     order to determine the data set.
 
+.. _-R:
+
 .. |Add_-Rgeo| replace:: If **r** is appended, you may also specify a
     map projection to define the shape of your region. The output region
     will be rounded off to the nearest whole grid-step in both dimensions.
@@ -66,15 +68,23 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *grdfile*
     Name of output grid file. If not set, the grid will be written as
     ASCII (or binary; see **-bo**) xyz-triplets
     to stdout instead. 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

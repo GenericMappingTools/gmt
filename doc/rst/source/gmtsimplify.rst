@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtsimplify** [ *table* ] **-T**\ *tolerance*\ [*unit*]
+**gmtsimplify** [ *table* ] |-T|\ *tolerance*\ [*unit*]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -40,6 +40,8 @@ insight on how the algorithm works
 Required Arguments
 ------------------
 
+.. _-T:
+
 **-T**\ *tolerance*\ [*unit*]
     Specifies the maximum mismatch tolerance in the user units. If the
     data is not Cartesian then append the distance unit (see UNITS).
@@ -49,6 +51,8 @@ Optional Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

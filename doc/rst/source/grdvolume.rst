@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* ]
-[ **-L**\ *base* ]
+**grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* ]
+[ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
-[ **-S**\ [*unit*\ ] ] [ **-T**\ [**c**\ \|\ **h**] ]
+[ |-S|\ [*unit*\ ] ] [ |-T|\ [**c**\ \|\ **h**] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *fact*\ [/*shift*] ]
+[ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-o| ]
 
@@ -47,6 +47,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* 
     find area, volume and mean height (volume/area) inside the *cval*
     contour. Alternatively, search using all contours from *low* to
@@ -57,24 +59,39 @@ Optional Arguments
     *outside* volume whilst the other forms compute an *inside* (below the surface)
     area volume. Use this form to compute for example the volume of water
     between two contours.
+
+.. _-L:
+
 **-L**\ *base*
     Also add in the volume from the level of the contour down to *base*
     [Default base is contour].
+
+.. _-S:
+
 **-S**\ [*unit*\ ]
     Convert degrees to Flat Earth distances, append a unit from
     **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**
     [Default is Cartesian].
+
+.. _-T:
+
 **-T**\ [**c**\ \|\ **h**]
     Determine the single contour that maximized the average height (=
     volume/area). Select **-Tc** to use the maximum curvature of heights
     versus contour value rather than the contour with the maximum height
     to pick the best contour value (requires **-C**). 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ *fact*\ [/*shift*]
     Optionally subtract *shift* before scaling data by *fact*. [Default

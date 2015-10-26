@@ -13,10 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ]
+**grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [*weight*] ] [ **-Z**\ [*flags*] ]
+[ |-W|\ [*weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -47,6 +47,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ [**f**\ \|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
@@ -54,17 +56,25 @@ Optional Arguments
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
+.. _-R:
+
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. 
 .. include:: explain_-R.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 ..  include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [*weight*]
     Write out x,y,z,w, where w is the supplied *weight* (or 1 if not
     supplied) [Default writes x,y,z only].
+
+.. _-Z:
 
 **-Z**\ [*flags*]
     Write a 1-column ASCII [or binary] table. Output will be organized

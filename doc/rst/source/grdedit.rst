@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdedit** *grid* [ **-A** ]
-[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-E**\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
-[ **-G**\ *outgrid* ]
-[ **-J**\ *parameters* ]
-[ **-N**\ *table* ]
+**grdedit** *grid* [ |-A| ]
+[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
+[ |-E|\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**] ]
+[ |-G|\ *outgrid* ]
+[ |-J|\ *parameters* ]
+[ |-N|\ *table* ]
 [ |SYN_OPT-R| ]
-[ **-S** ] [ **-T** ]
+[ |-S| ] [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -51,6 +51,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     If necessary, adjust the file's *x_inc*, *y_inc* to be compatible
     with its domain (or a new domain set with **-R**). Older grid files
@@ -58,7 +60,11 @@ Optional Arguments
     *x_inc*, *y_inc* and an adjustment is necessary. Newer files are
     created correctly.
 
+.. _-D:
+
 .. include:: explain_-D_cap.rst_
+
+.. _-E:
 
 **-E**\ [**a**\ \|\ **h**\ \|\ **l**\ \|\ **r**\ \|\ **t**\ \|\ **v**]
     Transform the grid in one of six ways and (for **l**\ \|\ **r**\ \|\ **t**)
@@ -71,33 +77,48 @@ Optional Arguments
     **-Ev** will flip the grid vertically (top-to-bottom).
     Incompatible with the other options (except **-G**).
 
+.. _-G:
+
 **-G**\ *outgrid*
     Normally, grdedit will overwrite the existing grid with the modified grid.
     Use **-G** to write the modified grid to the file *outgrid* instead.
 
+.. _-J:
+
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be reconized by GDAL.
 .. include:: explain_-J.rst_
+
+.. _-N:
 
 **-N**\ *table*
     Read the ASCII (or binary; see **-bi**) file
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values. 
 
+.. _-R:
+
 .. |Add_-R| replace:: The new w/e/s/n values will
     replace those in the grid, and the *x_inc*, *y_inc* values are
     adjusted, if necessary.
 .. include:: explain_-R.rst_
 
+.. _-S:
+
 **-S**
     For global, geographical grids only. Grid values will be shifted
     longitudinally according to the new borders given in **-R**.
+
+.. _-T:
+
 **-T**
     Make necessary changes in the header to convert a
     gridline-registered grid to a pixel-registered grid, or vice-versa.
     Basically, gridline-registered grids will have their domain extended
     by half the x- and y-increments whereas pixel-registered grids will
     have their domain shrunk by the same amount. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

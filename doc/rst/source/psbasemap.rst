@@ -13,20 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psbasemap** **-J**\ *parameters*
+**psbasemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-A**\ [*file*] ]
-[ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]][**+s**\ *file*] ]
-[ **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ **-K** ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ]
-[ **-L**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [**+u**]\ ]
-[ **-O** ]
-[ **-P** ]
+[ |-A|\ [*file*] ]
+[ |-D|\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]][**+s**\ *file*] ]
+[ |-F|\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ |-K| ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-L|\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+c**\ [*slon*/]\ *slat*\ **+w**\ *length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**]\ [\ **+a**\ *align*]\ [**+f**]\ [\ **+l**\ [*label*]\ ]\ [**+u**]\ ]
+[ |-O| ]
+[ |-P| ]
 [ |SYN_OPT-U| ]
-[ **-Td**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]]
-[ **-Tm**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]]
+[ |-T|\ **d**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+f**\ [*level*]]\ [**+j**\ *justify*]\ [**+l**\ *w,e,s,n*][**+o**\ *dx*\ [/*dy*]]]
+[ |-T|\ **m**\ [**g**\ \|\ **j**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+d**\ *dec*\ [/\ *dlabel*]]]\ [**+i**\ *pen*]\ [**+j**\ *justify*][**+l**\ *w,e,s,n*][**+p**\ *pen*]\ [**+t**\ *ints*][**+o**\ *dx*\ [/*dy*]]]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -49,8 +49,12 @@ At least one of the options **-B**, **-L**, or **-T** must be specified.
 Required Arguments
 ------------------
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -61,6 +65,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [*file*]
     No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
     for the (possibly oblique) rectangular map domain.  The plot domain must be given via
@@ -68,7 +74,11 @@ Optional Arguments
     **MAP_LINE_STEP** parameter.  The coordinates are written to *file* or to standard output if no file
     is specified.
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-D:
 
 **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*]
     Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
@@ -93,10 +103,12 @@ Optional Arguments
     to *file*.
     Specify insert box attributes via the **-F** option [outline only].
 
+.. _-F:
+
 **-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around any map insert (**-D**),
     map scale (**-L**) or map rose (**-T**) using
-    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    **MAP_FRAME_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the logo box [no fill].
     Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
     or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
@@ -114,24 +126,38 @@ Optional Arguments
     to specify panel parameters for just that panel [Default uses the same panel
     parameters for all selected map features].
 
-    after each of these.
-
 .. include:: explain_-Jz.rst_
+
+.. _-K:
 
 .. include:: explain_-K.rst_
 
+.. _-L:
+
 .. include:: explain_-L_scale.rst_
+
+.. _-O:
 
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-T:
 
 .. include:: explain_-T_rose.rst_
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
