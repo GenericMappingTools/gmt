@@ -183,11 +183,9 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-.. include:: PSXY_OPTs_EX.rst_
-
 .. _-L:
 
-**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |loc_OPT-L|
+**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] |ex_OPT-L|
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
     Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 3.
     Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 3-4.
@@ -401,3 +399,30 @@ See Also
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`gmtcolors`,
 :doc:`psbasemap`, :doc:`psxyz`
+
+.. ------------------------------------- Examples per option -------------------
+
+.. |ex_OPT-L| raw:: html
+
+   <button id="ExampleBtn">Example</button>
+   <div id="overlay"></div>
+   <div id="popup">
+     #!/bin/bash
+     <button id="CloseBtn">Close</button></br>
+     ps=filler.ps</br>
+     cat << EOF > t.txt</br>
+     1 1</br>
+     2 3</br>
+     3 2</br>
+     4 4</br>
+     EOF</br>
+     psxy -R0/5/0/5 -JX3i -P -K -B0 t.txt -Gred -W2p -L+yb > $ps</br>
+     psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+yt -X3.25i >> $ps</br>
+     psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xl -X-3.25i -Y3.25i >> $ps</br>
+     psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+xr -X3.25i >> $ps</br>
+     psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+y4 -X-3.25i -Y3.25i >> $ps</br>
+     psxy -R -J -O -K -B0 t.txt -Gred -W2p -L+x4.5 -X3.25i >> $ps</br>
+     psxy -R -J -O -T >> $ps</br>
+   </div>
+   <script type="text/javascript" src="popupbox.js"></script>
+   <link type="text/css" rel="stylesheet" href="overlaypopup.css" />
