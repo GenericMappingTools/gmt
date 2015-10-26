@@ -14,15 +14,15 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **testapi**
-**-I**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
-**-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **t**
-**-W**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
-[ **-V**\ [*level*] ]
+|-I|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
+|-T|\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **t**
+|-W|\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **testapi** will test the API for all i/o combinations. In general, data
 types (DATASET, TEXTSET, CPT, GRID, and IMAGE) can be read from or
@@ -32,6 +32,8 @@ possibilities, for each data type.
 
 Required Arguments
 ------------------
+
+.. _-I:
 
 **-I**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
     Set input method; choose from **c**\ opy from memory, file
@@ -43,9 +45,15 @@ Required Arguments
     vectors and pass that as the source instead of a data file. **-Td**
     may take either **m**\ \|\ **v** while **-Tg** can only take the
     **m** modifier.
+
+.. _-T:
+
 **-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **t**
     Specify data type; choose from **c**\ pt, **d**\ ataset, **g**\ rid,
     **i**\ mage, or **t**\ extset.
+
+.. _-W:
+
 **-W**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
     Set output method; choose from **c**\ opy to memory, file
     **d**\ escriptor, **f**\ ile, memory **r**\ eference, or
@@ -58,6 +66,8 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

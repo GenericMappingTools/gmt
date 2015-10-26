@@ -13,14 +13,18 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**surface** [ *table* ] **-G**\ *outputfile.nc*
+**surface** [ *table* ] |-G|\ *outputfile.nc*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ *aspect_ratio* ] [ **-C**\ *convergence_limit* ]
-[ **-Ll**\ *lower* ] [ **-Lu**\ *upper* ] [ **-N**\ *max_iterations* ]
-[ **-Q** ] [ **-S**\ *search_radius*\ [**m**\ \|\ **s**] ]
-[ **-T**\ [**i**\ \|\ **b**] ]\ *tension_factor* [ **-V**\ [*level*] ]
-[ **-Z**\ *over-relaxation_factor* ]
+[ |-A|\ *aspect_ratio* ]
+[ |-C|\ *convergence_limit* ]
+[ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
+[ |-N|\ *max_iterations* ]
+[ |-Q| ]
+[ |-S|\ *search_radius*\ [**m**\ \|\ **s**] ]
+[ |-T|\ [**i**\ \|\ **b**] ]\ *tension_factor* ]
+[ |SYN_OPT-V| ]
+[ |-Z|\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -60,11 +64,17 @@ boundary conditions in the longitude direction.
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *outputfile.nc*
     Output file name. Output is a binary 2-D *.nc* file. Note that the
     smallest grid dimension must be at least 4. 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -75,10 +85,15 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ *aspect_ratio*
     Aspect ratio. If desired, grid anisotropy can be added to the
     equations. Enter *aspect_ratio*, where dy = dx / *aspect_ratio*
     relates the grid dimensions. [Default = 1 assumes isotropic grid.]
+
+.. _-C:
+
 **-C**\ *convergence_limit*\ [%]
     Convergence limit. Iteration is assumed to have converged when the
     maximum absolute change in any grid value is less than
@@ -89,6 +104,9 @@ Optional Arguments
     This is the final convergence limit at the desired grid spacing; for
     intermediate (coarser) grids the effective convergence limit is scaled
     by the grid spacing multiplier.
+
+.. _-L:
+
 **-Ll**\ *lower* and **-Lu**\ *upper*
     Impose limits on the output solution. **l**\ *lower* sets the lower
     bound. *lower* can be the name of a grid file with lower bound
@@ -99,6 +117,9 @@ Optional Arguments
     unconstrained [Default]. Grid files used to set the limits may
     contain NaNs. In the presence of NaNs, the limit of a node masked
     with NaN is unconstrained.
+
+.. _-N:
+
 **-N**\ *max_iterations*
     Number of iterations. Iteration will cease when *convergence_limit*
     is reached or when number of iterations reaches *max_iterations*.
@@ -106,6 +127,9 @@ Optional Arguments
     intermediate (coarser) grids the effective iteration limit is scaled
     by the grid spacing multiplier.
     [Default is 500.]
+
+.. _-Q:
+
 **-Q**
     Suggest grid dimensions which have a highly composite greatest
     common factor. This allows surface to use several intermediate steps
@@ -113,12 +137,18 @@ Optional Arguments
     sizes suggested by **-Q** can be achieved by altering **-R** and/or
     **-I**. You can recover the **-R** and **-I** you want later by
     using **grdsample** or **grdcut** on the output of **surface**.
+
+.. _-S:
+
 **-S**\ *search_radius*\ [**m**\ \|\ **s**]
     Search radius. Enter *search\_radius* in same units as x,y data;
     append **m** to indicate arc minutes or **s** for arc seconds. This
     is used to initialize the grid before the first iteration; it is not
     worth the time unless the grid lattice is prime and cannot have
     regional stages. [Default = 0.0 and no search is made.]
+
+.. _-T:
+
 **-T**\ [**i**\ \|\ **b**] ]\ *tension_factor*
     Tension factor[s]. These must be between 0 and 1. Tension may be
     used in the interior solution (above equation, where it suppresses
@@ -131,10 +161,14 @@ Optional Arguments
     set to the same value. [Default = 0 for both gives minimum curvature
     solution.] 
 
+.. _-V:
+
 .. |Add_-V| replace:: 
     **-V3** will report the convergence after each iteration; 
     **-V** will report only after each regional grid is converged.
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ *over-relaxation_factor*
     Over-relaxation factor. This parameter is used to accelerate the

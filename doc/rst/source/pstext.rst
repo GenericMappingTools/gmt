@@ -13,21 +13,22 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pstext** [ *textfiles* ] **-J**\ *parameters*
+**pstext** [ *textfiles* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ **-A** ]
+[ |-A| ]
 |SYN_OPT-B|
-[ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*]] ]
-[ **-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+h**][\ **+j**\ [*justify*]][\ **+l**] ] 
-[ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L** ] [ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
-**-Q**\ **l**\ \|\ **u** ] [
-**-T**\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
-[ **-W**\ *pen* ]
+[ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*]] ]
+[ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+h**][\ **+j**\ [*justify*]][\ **+l**] ] 
+[ |-G|\ *color* ] [ |-J|\ ((z**\ \|\ **Z**\ *parameters* ]
+[ |-K| ]
+[ |-L| ] [ |-M| ] [ |-N| ] [ |-O| ] [ |-P| ]
+[ |-Q|\ **l**\ \|\ **u** ]
+[ |-T|\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-U| ]
-[ **-Z** ] [ **-a**\ *col*\ =\ *name*\ [...] ]
+[ |-Z| ] [ **-a**\ *col*\ =\ *name*\ [...] ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
@@ -67,8 +68,12 @@ characters, except in paragraph mode (**-M**)).
 Required Arguments
 ------------------
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -95,17 +100,26 @@ Optional Arguments
     onto the (*x*,\ *y*) point. Choose a 2 character combination of L,
     C, R (for left, center, or right) and T, M, B for top, middle, or
     bottom. e.g., BL for lower left.
+
+.. _-A:
+
 **-A**
     Angles are given as azimuths; convert them to directions using the
     current projection. 
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**\ *dx/dy*
     Sets the clearance between the text and the surrounding box [15%].
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
     :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) or % for a percentage of the font size.
+
+.. _-D:
 
 **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
@@ -116,6 +130,8 @@ Optional Arguments
     sqrt(2). Optionally, append **v** which will draw
     a line from the original point to the shifted point; append a *pen*
     to change the attributes for this line.
+
+.. _-F:
 
 **-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+h**][\ **+j**\ [*justify*]][\ **+l**] 
     By default, text will be placed horizontally, using the primary
@@ -141,6 +157,8 @@ Optional Arguments
     text as the most recent segment header or segment label, respectively in
     a multisegment input file.
 
+.. _-G:
+
 **-G**\ *color*
     Sets the shade or color used for filling the text box [Default is no
     fill]. Alternatively, use **-Gc** to plot the text and then use the
@@ -150,10 +168,17 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**
     Lists the font-numbers and font-names available, then exits.
+
+.. _-M:
+
 **-M**
     Paragraph mode. Files must be multiple segment files. Segments are
     separated by a special record whose first character must be *flag*
@@ -171,16 +196,28 @@ Optional Arguments
     discussed above. Separate paragraphs with a blank line.  Note that
     here, the justification set via **-F+j** applies to the box alignment
     since the text justification is set by *parjust*.
+
+.. _-N:
+
 **-N**
     Do NOT clip text at map boundaries [Default will clip]. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Change all text to either **l**\ ower or **u**\ pper case [Default
     leaves all text as is].
+
+.. _-T:
+
 **-T**
     Specify the shape of the textbox when using **-G** and/or **-W**.
     Choose lower case **o** to get a straight rectangle [Default].
@@ -188,16 +225,26 @@ Optional Arguments
     mode (**-M**) you can also choose lower case **c** to get a concave
     rectangle or upper case **C** to get a convex rectangle. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
     **-T**) [Default is width = default, color = black, style = solid].
 
+.. _-X:
+
 .. include:: explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**
     For 3-D projections: expect each item to have its own level given in

@@ -14,9 +14,12 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **sample1d** [ *table* ]
-[ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ] [ **-I**\ *inc*\ [*unit*] ]
-[ **-N**\ *knotfile* ] [ **-S**\ *start*\ [/*stop*] ] [ **-T**\ *col* ]
+[ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
+[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
+[ |-I|\ *inc*\ [*unit*] ]
+[ |-N|\ *knotfile* ]
+[ |-S|\ *start*\ [/*stop*] ]
+[ |-T|\ *col* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -54,6 +57,9 @@ Optional Arguments
     independent variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
+
+.. _-A:
+
 **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
@@ -65,6 +71,9 @@ Optional Arguments
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
     **+l** if distances should be measured along rhumb lines (loxodromes).
+
+.. _-F:
+
 **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
@@ -72,6 +81,9 @@ Optional Arguments
     :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
     You may optionally evaluate the first or second derivative of the spline
     by appending **1** or **2**, respectively.
+
+.. _-I:
+
 **-I**\ *inc*\ [*unit*]
     *inc* defines the sampling interval [Default is the separation
     between the first and second abscissa point in the *infile*]. Append
@@ -80,21 +92,32 @@ Optional Arguments
     a spacing of *inc* in the chosen units. For sampling of (x, y)
     Cartesian tracks, specify the unit as c. Use **-A** to control how
     path resampling is performed.
+
+.. _-N:
+
 **-N**\ *knotfile*
     *knotfile* is an optional ASCII file with the x locations where the
     data set will be resampled in the first column. Note: If **-H** is
     selected it applies to both *infile* and *knotfile*. Also note that
     **-i** never applies to *knotfile* since we always consider the
     first column only.
+
+.. _-S:
+
 **-S**\ *start*\ [*stop*] 
     For equidistant sampling, *start* indicates the location of the
     first output value. [Default is the smallest even multiple of *inc*
     inside the range of *infile*]. Optionally, append /*stop* to
     indicate the location of the last output value [Default is the
     largest even multiple of *inc* inside the range of *infile*].
+
+.. _-T:
+
 **-T**\ *col*
     Sets the column number of the independent variable [Default is 0
     (first)]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

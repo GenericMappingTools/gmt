@@ -13,14 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**xyz2grd** [ *table* ] **-G**\ *grdfile*
+**xyz2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
-[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-S**\ [*zfile*] ]
+[ |-A|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
+[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
+[ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ [*flags*\ ] ]
+[ |-Z|\ [*flags*\ ] ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
@@ -45,11 +45,17 @@ of formats, see **-Z** below.)
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file. (See GRID FILE
     FORMAT below.) 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -60,8 +66,10 @@ Optional Arguments
 *table*
     One or more ASCII [or binary, see **-bi**]
     files holding z or (x,y,z) values. The xyz triplets do not have to
-    be sorted. One-column z tables must be sorted and the **-Z** must be
-    set.
+    be sorted. One-column z tables must be sorted and the **-Z** must be set.
+
+.. _-A:
+
 **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use **-A** to change this behavior, except it is
@@ -74,15 +82,23 @@ Optional Arguments
     requires two input columns *x* and *y* as *z* is not consulted). Append
     **z** to sum multiple values that belong to the same node.
 
+.. _-D:
+
 .. include:: explain_-D_cap.rst_
+
+.. _-S:
 
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
     (or stdout if not supplied). 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ [*flags*]
     Read a 1-column ASCII [or binary] table. This assumes that all the

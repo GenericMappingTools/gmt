@@ -13,18 +13,21 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxyz** [ *table* ] **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters*
+**psxyz** [ *table* ] |-J|\ *parameters*
+|-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-D**\ *dx*/*dy*\ [/*dz*] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
-[ **-K** ]
-[ **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
-[ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] 
-[ **-S**\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ] [ **-T** ]
+[ |-D|\ *dx*/*dy*\ [/*dz*] ]
+[ |-G|\ *fill* ]
+[ |-I|\ *intens* ] 
+[ |-K| ]
+[ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
+[ |-N| ] [ |-O| ] [ |-P| ] [ |-Q| ] 
+[ |-S|\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**][*pen*] ] 
+[ |-W|\ [**-**\ \|\ **+**][*pen*] ] 
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ] 
@@ -60,10 +63,14 @@ respectively. The PostScript code is written to standard output.
 Required Arguments
 ------------------
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -77,7 +84,11 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**\ *cptfile*
     Give a color palette file or specify -Ccolor1,color2[,color3,...]
@@ -92,20 +103,30 @@ Optional Arguments
     **-Z**\ *val* string. The *val* will control the color of the line or
     polygon (if **-L** is set) via the cpt file.
 
+.. _-D:
+
 **-D**\ *dx*/*dy*\ [/*dz*]
     Offset the plot symbol or line locations by the given amounts
     *dx/dy*\ [*dz*\ ] [Default is no offset].
+
+.. _-G:
 
 **-G**\ *fill*
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that **psxyz** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
 
+.. _-I:
+
 **-I**\ *intens*
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
     modulate the fill color by simulating illumination [none]. 
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*]
     Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
@@ -117,6 +138,8 @@ Optional Arguments
     Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
     All constructed polygons are assumed to have a constant z value.
 
+.. _-N:
+
 **-N**\ [**c**\ \|\ **r**]
     Do NOT clip symbols that fall outside map border [Default plots points
     whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
@@ -126,16 +149,26 @@ Optional Arguments
     Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
     use **-Nc** to retain clipping but turn off plotting of repeating symbols.
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Turn off the automatic sorting of items based on their distance from the
     viewer. The default is to sort the items so that items in the foreground
     are plotted after items in the background. 
 
+.. _-S:
+
 .. include:: explain_symbols2.rst_
+
+.. _-T:
 
 **-T**
     Ignore all input files, including standard input. This is the same
@@ -145,10 +178,16 @@ Optional Arguments
     **-T** to terminate a sequence of GMT plotting commands without
     producing any plotting output. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
@@ -156,6 +195,8 @@ Optional Arguments
     use the lookup color (via **-C**) for both symbol fill and outline
     pen color, while a leading **-** will set outline pen color and turn
     off symbol fill. 
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -180,8 +221,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
-    Select perspective view.
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
 

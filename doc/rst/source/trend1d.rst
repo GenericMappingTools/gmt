@@ -13,11 +13,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**trend1d** [ *table* ] **-F**\ **xymrw\|p**
-**-N**\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
+**trend1d** [ *table* ] |-F|\ **xymrw\|p**
+|-N|\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
 [ *xy[w]file* ]
-[ **-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*] ]
-[ |SYN_OPT-V| ] [ **-W** ]
+[ |-C|\ *condition\_number* ]
+[ |-I|\ [*confidence\_level*] ]
+[ |SYN_OPT-V| ]
+[ |-W| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
@@ -40,12 +42,17 @@ terms in f(x) which significantly reduce the variance in y.
 Required Arguments
 ------------------
 
+.. _-F:
+
 **-F**\ **xymrw\|p**
     Specify up to five letters from the set {**x y m r w**\ } in any
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **m** = model f(x), **r** = residual y - **m**, **w** =
     weight used in fitting. Alternatively choose **-F**\ **p** (i.e., no
     other of the 5 letters) to output only the model coefficients.
+
+.. _-N:
+
 **-N**\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
     Specify the components of the (possibly mixed) model.  Append
     one or more comma-separated model components.  Each component is
@@ -73,12 +80,18 @@ Optional Arguments
     One or more ASCII [or binary, see **-bi**]
     files containing x,y [w] values in the first 2 [3] columns. If no
     files are specified, **trend1d** will read from standard input.
+
+.. _-C:
+
 **-C**\ *condition\_number*
     Set the maximum allowed condition number for the matrix solution.
     **trend1d** fits a damped least squares model, retaining only that
     part of the eigenvalue spectrum such that the ratio of the largest
     eigenvalue to the smallest eigenvalue is *condition\_#*. [Default:
     *condition\_#* = 1.0e06. ].
+
+.. _-I:
+
 **-I**\ [*confidence\_level*\ ]
     Iteratively increase the number of model parameters, starting at
     one, until *n\_model* is reached or the reduction in variance of the
@@ -89,8 +102,12 @@ Optional Arguments
     model terms are added in the order they were given in **-N** so you
     should place the most important terms first.
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**
     Weights are supplied in input column 3. Do a weighted least squares

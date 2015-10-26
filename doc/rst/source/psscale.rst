@@ -13,23 +13,25 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
+**psscale** |-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
-[ **-C**\ *cpt\_file* ]
-[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ **-G**\ *zlo*\ /\ *zhi* ]
-[ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
-[ **-J**\ *parameters* ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**i**][*gap*] ] [ **-M** ] [ **-N**\ [**p**\ \|\ *dpi* ]] [ **-O** ]
-[ **-P** ] [ **-Q** ]
+[ |-C|\ *cpt\_file* ]
+[ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ |-G|\ *zlo*\ /\ *zhi* ]
+[ |-I|\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
+[ |-J|\ *parameters* ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-K| ]
+[ |-L|\ [**i**][*gap*] ] [ **-M** ] [ **-N**\ [**p**\ \|\ *dpi* ]]
+[ |-O| ]
+[ |-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ **-S** ]
+[ |-S| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z**\ *zfile* ]
+[ |-Z|\ *zfile* ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
@@ -52,6 +54,8 @@ If a label is requested, it is plotted with :ref:`FONT_LABEL <FONT_LABEL>`.
 
 Required Arguments
 ------------------
+
+.. _-D:
 
 **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the color scale using one of four coordinate systems:
@@ -86,6 +90,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-B:
+
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set annotation, tick, and gridline interval for the colorbar. The
     x-axis label will plot beneath a horizontal bar (or vertically to
@@ -99,6 +105,8 @@ Optional Arguments
     flags in the cpt file). To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the cpt file.
 
+.. _-C:
+
 **-C**\ *cpt_file*
     *cpt\_file* is the color palette file to be used. By default all
     color changes are annotated. To use a subset, add an extra column to
@@ -110,6 +118,8 @@ Optional Arguments
     when plotting.  To do so, append **+U**\ *unit* to the file name.
     Likewise, if the CPT file uses another unit than meter and you wish
     to plot the CPT versus meters, append **+u**\ *unit*.
+
+.. _-F:
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the scale using
@@ -127,11 +137,15 @@ Optional Arguments
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
 
+.. _-G:
+
 **-G**\ *zlo*\ /\ *zhi*
     Truncate the incoming CPT so that the lowest and highest z-levels
     are to *zlo* and *zhi*.  If one of these equal NaN then
     we leave that end of the CPT alone.  The truncation takes place
     before the plotting.
+
+.. _-I:
 
 **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*]
     Add illumination effects. Optionally, set the range of intensities
@@ -139,12 +153,18 @@ Optional Arguments
     Alternatively, append *low/high* intensities to specify an
     asymmetric range [Default is no illumination].
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ [**i**][*gap*]
     Gives equal-sized color rectangles. Default scales rectangles
@@ -156,8 +176,12 @@ Optional Arguments
     instead. If **-I** is used then each rectangle will have its
     constant color modified by the specified intensity.
 
+.. _-M:
+
 **-M**
     Force a monochrome graybar using the (television) YIQ transformation.
+
+.. _-N:
 
 **-N**\ [**p**\ \|\ *dpi*]
     Controls how the color scale is represented by the PostScript language.
@@ -165,15 +189,22 @@ Optional Arguments
     Otherwise we will preferentially draw images (e.g., for continuous colors).
     Optionally append effective dots-per-inch for rasterization of color scales [600].
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Select logarithmic scale and power of ten annotations. All z-values
     in the cpt file will be converted to p = log10(z) and only integer p
-    values will be annotated using the 10^p format [Default is linear
-    scale].
+    values will be annotated using the 10^p format [Default is linear scale].
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
@@ -181,15 +212,25 @@ Optional Arguments
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
+.. _-S:
+
 **-S**
     Do not separate different color intervals with black grid lines.
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-X:
+
 .. include:: explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**\ *zfile*
     File with colorbar-width per color entry. By default, width of entry

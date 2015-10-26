@@ -14,19 +14,21 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *specfile* ]
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+l**\ *spacing*]\ [**+o**\ *dx*\ [/*dy*]]
-[ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
-[ **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
-[ **-J**\ *parameters* ] [ **-K** ] [ **-O** ] [
-**-P** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-c**\ *copies* ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+|-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+l**\ *spacing*]\ [**+o**\ *dx*\ [/*dy*]]
+[ |-B|\ [**p**\ \|\ **s**]\ *parameters* ]
+[ |-C|\ *dx*/*dy* ]
+[ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ |-J|\ *parameters* ]
+[ |-K| ] [ |-O| ]
+[ |-P| ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
@@ -38,8 +40,10 @@ specific legend-related information from an input file [or stdin].
 Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
+
+.. _-D:
 
 **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+l**\ *spacing*]\ [**+o**\ *dx*\ [/*dy*]]
     Defines the reference point on the map for the legend using one of four coordinate systems:
@@ -60,14 +64,19 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     Finally, add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
+
+.. _-B:
 
 .. include:: explain_-B.rst_
 
+.. _-C:
+
 **-C**\ *dx*/*dy*
-    Sets the clearance between the legend frame and the internal items
-    [4\ **p**/4\ **p**].
+    Sets the clearance between the legend frame and the internal items [4\ **p**/4\ **p**].
+
+.. _-F:
 
 **-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the legend using
@@ -85,22 +94,38 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-O:
 
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -113,8 +138,8 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 .. include:: explain_help.rst_
 
-`Pslegend Codes <#toc6>`_
--------------------------
+Pslegend Codes
+--------------
 
 *specfile*
     This ASCII file contains instructions for the layout of items in the

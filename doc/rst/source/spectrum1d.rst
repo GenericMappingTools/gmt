@@ -121,6 +121,8 @@ Optional Arguments
     Supply an alternate name stem to be used for output files [Default = "spectrum"].
     Giving no argument will disable the writing of individual output files.
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
