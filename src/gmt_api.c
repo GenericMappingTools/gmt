@@ -3561,7 +3561,7 @@ void *GMTAPI_Import_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, 
 	if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN, flag)) == GMT_NOTSET) return_null (API, API->error);
 
 	/* The case where object_ID is not set but a virtual (memory) file is found is a special case: we must supply the correct object_ID */
-	if (object_ID == GMT_NOTSET && item && API->object[item]->method != GMT_IS_FILE) object_ID = API->object[item]->ID;	/* Found virtual file; set actual object_ID */
+	//if (object_ID == GMT_NOTSET && item && API->object[item]->method != GMT_IS_FILE) object_ID = API->object[item]->ID;	/* Found virtual file; set actual object_ID */
 
 	switch (family) {	/* CPT, Dataset, or Grid */
 		case GMT_IS_CPT:
@@ -4890,7 +4890,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
 	int in_ID = GMT_NOTSET, item = GMT_NOTSET;
-	unsigned int via = 0;
+	unsigned int via = 0, module_input = 0;
 	bool just_get_data, reset;
 	void *new_obj = NULL;
 	char *input = NULL;
@@ -4904,7 +4904,9 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	just_get_data = (GMT_File_Is_Memory (input) && via == 0);	/* Memory is passed and it is a regular GMT resource, not matrix or vector */
 	reset = (mode & GMT_IO_RESET);	/* We want to reset resource as unread after reading it */
 	if (reset) mode -= GMT_IO_RESET;
-	API->module_input = false;	/* Reset to normal */
+	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we reading a resource that should be considered a module input? */
+	family -= module_input;
+	API->module_input = (module_input) ? true : false;
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
 		if ((in_ID = GMTAPI_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
 		if (!full_region (wesn)) {	/* Must update subset selection */
@@ -4934,10 +4936,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			free (file);	/* Free temp CPT file name */
 			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) return_null (API, API->error);
 		}
-		else if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET) return_null (API, API->error);
+		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET) return_null (API, API->error);
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
-		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
+		if ((in_ID = GMT_Register_IO (API, family|module_input, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!multiple_files_ok (family)) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
@@ -4956,8 +4958,6 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 #endif
 			if (reset) API->object[item]->status = 0;	/* Reset  to unread */
 			return (GMTAPI_Pass_Object (API, API->object[item], family, wesn));
-			//if (family == GMT_IS_CPT && API->object[item]->resource) GMT_init_cpt (API->GMT, API->object[item]->resource);
-			//return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 		}
 	}
 
