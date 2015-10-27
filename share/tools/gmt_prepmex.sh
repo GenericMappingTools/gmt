@@ -90,6 +90,7 @@ ln -s libXgmt.5.dylib libXgmt.dylib
 ln -s libXpostscriptlight.5.dylib libXpostscriptlight.dylib
 # Same stuff for gs which is called by psconvert as a system call.
 # Here we must determine from where to copy...
+GSV=`gs --version`
 if [ -d /sw/lib ]; then			# Fink
 	FROM=/sw/lib
 elif [ -d /opt/local/lib ]; then	# Macports
@@ -97,12 +98,12 @@ elif [ -d /opt/local/lib ]; then	# Macports
 elif [ -d /usr/local/lib ]; then		# Brew
 	FROM=/usr/local/lib
 fi
-cp $FROM/libgs.9.16.dylib libXgs.9.16.dylib 
+cp $FROM/libgs.${GSV}.dylib libXgs.${GSV}.dylib 
 cp $FROM/libfreetype.6.dylib libXfreetype.6.dylib
-install_name_tool -id $MEXLIBDIR/libXgs.9.16.dylib libXgs.9.16.dylib 
-install_name_tool -id $MEXLIBDIR/libXfreetype.6.dylib libXfreetype.6.dylib
-install_name_tool -change $FROM/libtiff.5.dylib $MEXLIBDIR/libXtiff.5.dylib libXgs.9.16.dylib 
-install_name_tool -change $FROM/libfreetype.6.dylib $MEXLIBDIR/libXfreetype.6.dylib libXgs.9.16.dylib 
+sudo install_name_tool -id $MEXLIBDIR/libXgs.${GSV}.dylib libXgs.${GSV}.dylib 
+sudo install_name_tool -id $MEXLIBDIR/libXfreetype.6.dylib libXfreetype.6.dylib
+sudo install_name_tool -change $FROM/libtiff.5.dylib $MEXLIBDIR/libXtiff.5.dylib libXgs.${GSV}.dylib 
+sudo install_name_tool -change $FROM/libfreetype.6.dylib $MEXLIBDIR/libXfreetype.6.dylib libXgs.${GSV}.dylib 
 
 # Do plugin supplement separately since not called lib*
 cd gmt/plugins
