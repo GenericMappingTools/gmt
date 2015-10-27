@@ -160,7 +160,6 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		OPTIONAL)
 	install (FILES
 		${CMAKE_CURRENT_BINARY_DIR}/_source/overlaypopup.css
-		${CMAKE_CURRENT_BINARY_DIR}/_source/overlaypopup2.css
 		DESTINATION ${GMT_DOCDIR}/html
 		COMPONENT Documentation
 		OPTIONAL)
