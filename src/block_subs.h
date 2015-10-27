@@ -194,8 +194,8 @@ void *NEW_BLK (struct GMT_CTRL *GMT) {
 
 /*! Deallocate control structure */
 void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
-	if (C->G.file) free (C->G.file);	
-	GMT_free (GMT, C);	
+	if (C && C->G.file) free (C->G.file);	
+	if (C) GMT_free (GMT, C);	
 }
 
 #if !defined(BLOCKMEAN)	/* Only used by blockmean */
