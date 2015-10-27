@@ -253,7 +253,7 @@ static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASE
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtconnect_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_gmtconnect_Ctrl (GMT, Ctrl); if (segment) GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	int error = 0;

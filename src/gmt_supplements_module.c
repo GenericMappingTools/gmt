@@ -36,7 +36,6 @@ struct Gmt_moduleinfo {
 };
 
 struct Gmt_moduleinfo g_supplements_module[] = {
-	{"grd2sph", "core", "Compute spherical harmonic coefficients from global grid", "<GI,>DO"},
 	{"gshhg", "gshhg", "Extract data tables from binary GSHHS or WDBII data files", ">DO"},
 	{"img2grd", "img", "Extract a subset from an img file in Mercator or Geographic format", "<GI,GGO,RG-"},
 	{"pscoupe", "meca", "Plot cross-sections of focal mechanisms", "<DI,>XO,RG-"},

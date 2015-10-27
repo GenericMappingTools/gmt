@@ -24,7 +24,6 @@ extern "C" {
 #include "declspec.h"
 
 /* Prototypes of all modules in the GMT supplements library */
-EXTERN_MSC int GMT_grd2sph (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gshhg (void *API, int mode, void *args);
 EXTERN_MSC int GMT_img2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pscoupe (void *API, int mode, void *args);

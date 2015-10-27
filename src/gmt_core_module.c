@@ -82,6 +82,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"grdinfo", "core", "Extract information from grids", "<GI,>TO,>DC,RG-"},
 	{"grdlandmask", "core", "Create a \"wet-dry\" mask grid from shoreline data base", "GGO,RG-"},
 	{"grdmask", "core", "Create mask grid from polygons or point coverage", "<DI,GGORGi"},
+	{"grdmath", "core", "Reverse Polish Notation (RPN) calculator for grids (element by element)", "<GI,=GO"},
 	{"grdmath", "core", "Reverse Polish Notation (RPN) calculator for grids (element by element)", "<GI,=GO,RG-"},
 	{"grdpaste", "core", "Join two grids along their common edge", "<GI,GGO,RG-"},
 	{"grdproject", "core", "Forward and inverse map transformation of grids", "<GI,GGO,RG-"},
@@ -166,6 +167,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 	{"grdinfo", "core", "Extract information from grids", "<GI,>TO,>DC,RG-", &GMT_grdinfo},
 	{"grdlandmask", "core", "Create a \"wet-dry\" mask grid from shoreline data base", "GGO,RG-", &GMT_grdlandmask},
 	{"grdmask", "core", "Create mask grid from polygons or point coverage", "<DI,GGORGi", &GMT_grdmask},
+	{"grdmath", "core", "Reverse Polish Notation (RPN) calculator for grids (element by element)", "<GI,=GO", &GMT_grdmath},
 	{"grdmath", "core", "Reverse Polish Notation (RPN) calculator for grids (element by element)", "<GI,=GO,RG-", &GMT_grdmath},
 	{"grdpaste", "core", "Join two grids along their common edge", "<GI,GGO,RG-", &GMT_grdpaste},
 	{"grdproject", "core", "Forward and inverse map transformation of grids", "<GI,GGO,RG-", &GMT_grdproject},
@@ -226,7 +228,7 @@ void gmt_core_module_show_all (void *V_API) {
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
-		if (API->mode || (strcmp (g_core_module[module_id].name, "read") && strcmp (g_core_module[module_id].name, "write"))) {
+		if (API->mode || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite"))) {
 			sprintf (message, "%-16s %s\n",
 				g_core_module[module_id].name, g_core_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
@@ -240,7 +242,7 @@ void gmt_core_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	while (g_core_module[module_id].name != NULL) {
-		if (API->mode || (strcmp (g_core_module[module_id].name, "read") && strcmp (g_core_module[module_id].name, "write")))
+		if (API->mode || (strcmp (g_core_module[module_id].name, "gmtread") && strcmp (g_core_module[module_id].name, "gmtwrite")))
 			printf ("%s\n", g_core_module[module_id].name);
 		++module_id;
 	}
