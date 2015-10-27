@@ -131,7 +131,7 @@ int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behaviour, use -Ip<dx>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behavior, use -Ip<dx>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");

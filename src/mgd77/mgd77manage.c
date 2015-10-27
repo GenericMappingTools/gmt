@@ -156,7 +156,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t        [Default uses formula specified in the MGD77 header, or 4 if not valid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with distances (in km) in first column and data values in 2nd.  Only one cruise can be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with mathcing distance will have data assigned.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching distance will have data assigned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   D: Same as d but we interpolate between the dist,data pairs to fill in all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77.\n");

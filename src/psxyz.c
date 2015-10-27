@@ -140,7 +140,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxyz [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] [-K] [-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] [-K]\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] [-O]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q] [-S[<symbol>][<size>[<unit>]][/size_y]] [-T]\n\t[%s] [%s] [-W[+|-][<pen>]]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_c_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
@@ -153,7 +153,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header.  Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy>[/<dz>] [no offset].\n");
 	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [Default is no fill].");
@@ -189,7 +189,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default, the 3-D symbols column and cube are shaded;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   use upper case O and U to disable this 3-D illumination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of a circle of given dimater.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of a circle of given diameter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Bar (or Column): Append b[<base>] to give the y- (or z-) value of the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      base [Default = 0 (1 for log-scales)]. Use -SB for horizontal\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      bars; then <base> value refers to the x location.  To read the <base>\n");

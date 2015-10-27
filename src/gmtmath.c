@@ -476,13 +476,13 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A[-]<ftable>[+s]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE,
-		"\tA, B, etc are table files, constants, or symbols (see below).\n"
+		"\tA, B, etc. are table files, constants, or symbols (see below).\n"
 		"\tTo read stdin give filename as STDIN (which can appear more than once).\n"
 		"\tThe stack can hold up to %d entries (given enough memory).\n", GMTMATH_STACK_SIZE);
 	GMT_Message (API, GMT_TIME_NONE,

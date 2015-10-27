@@ -161,7 +161,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ez The z-value of the Voronoi center node (NN gridding).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ed The distance to the nearest data point [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append resampling interval in spherical degrees for polygon arcs [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile,\n\tor arc (s)econd [e].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   PROJ_ELLIPSOID determines if geodesic or great-circle distances are used.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Specify table with Voronoi polygons in sphtriangulate -Qv format\n");

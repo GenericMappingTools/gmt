@@ -108,7 +108,7 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achive the following [Default is no tension]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achieve the following [Default is no tension]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1: Smooth interpolation with local gradient estimates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");

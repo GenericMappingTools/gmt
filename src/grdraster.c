@@ -667,7 +667,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the filename for output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify the sampling interval of the grid [Default is raster spacing].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Idx or -Idx/dy if dy not equal dx.  Append m for minutes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I<xinc> or -I<xinc>/<yinc> if <yinc> not equal <xinc>.  Append m for minutes or s for seconds.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-I does not do any filtering; it just sub-samples the raster.)\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the filename for output ASCII table with xyz triplets.\n");

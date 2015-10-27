@@ -126,7 +126,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<COEdbase> File with crossover error data base [stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(nright + n_left) [1, i.e., use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(n_right + n_left) [1, i.e., use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");

@@ -622,11 +622,11 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]]\n\t[%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -656,7 +656,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use uppercase E or I to consider all segments within the same table as one entity [separate].\n");
 #ifdef PW_TESTING
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Remove tile Lines.  These are superfluous lines along the -R border.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append gap_dist (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <gap_dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].\n");
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
@@ -668,18 +668,19 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally prepend - or + to unit to select Flat Earth or Geodesic calculations [great-circle]\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally prepend - or + to unit to select Flat Earth or Geodesic calculations [great-circle].\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t   We also compute polygon centroid or line mid-point.  See documentation for more information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+h' to place the (area, handedness) or length result in the segment header on output\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+p' to consider all input as polygons and close them if necessary [only closed polygons are polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+h' to place the (area, handedness) or length result in the segment header on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+p' to consider all input as polygons and close them if necessary\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [only closed polygons are considered polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append '+l' to consider all input as lines even if closed [closed polygons are considered polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i for intersection [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   j for joining polygons that were split by the Dateline [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s for splitting polygons that straddle the Dateline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u for union [Not implemented yet].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     i for intersection [Not implemented yet].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     j for joining polygons that were split by the Dateline [Not implemented yet].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s for splitting polygons that straddle the Dateline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     u for union [Not implemented yet].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and clip against a polygon derived from the region border.\n");
 	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,s,:,.");

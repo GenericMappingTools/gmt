@@ -147,7 +147,7 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Input file has observation weights in 4th column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Input <table> has observation weights in 4th column.\n");
 	GMT_Option (API, "bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
 	GMT_Option (API, "di,f,h,i");

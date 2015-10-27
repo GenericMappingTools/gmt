@@ -55,11 +55,9 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mean z-value [Default outputs the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (mean x, mean y) location].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   see -W regarding the weight w.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mean z-value [Default outputs (mean x, mean y) location]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default is (x,y,z[,w])]; see -W regarding the weight w.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ep is used we assume weights are 1/sigma^2 and s becomes the propagated error.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the quantity to be reported per block; choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm report mean values [Default].\n");
@@ -73,7 +71,7 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no weights used].\n");
 	GMT_Option (API, "a,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set), or 2 for -Sn.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set), or 2 for -Sn.\n");
 	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
 
 	return (EXIT_FAILURE);

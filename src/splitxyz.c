@@ -166,8 +166,7 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change> [ignore course changes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use negative width to highpass.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.  Use negative width for high-pass filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Write individual segments to separate files [Default writes one\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%d) that represents\n");

@@ -462,33 +462,34 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W[z]] [-Z<scale>] [%s] [%s]\n\n",
+		GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Each record has 1-3 items: filename [-R<inner_reg>] [<weight>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Relative weights are <weight> [1] inside the given -R [grid domain] and cosine taper to 0 at actual grid -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Skip <inner_reg> if inner region should equal the actual region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Relative weights are <weight> [1] inside the given -R [grid domain] and cosine taper to 0\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   at actual grid -R. Skip <inner_reg> if inner region should equal the actual region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <weight> is not given we default to 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Grids not in netCDF or native binary format will be converted first.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Grids not coregistered with the output -R -I will be resampled first.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Grids not co-registered with the output -R -I will be resampled first.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tAlternatively, if all grids have the same weight (1) and inner region should equal the outer,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tthen you can instead list all the grid files on the command line (e.g., patches_*.nc).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tYou must have at least 2 input grids for this mechanism to work.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the name of the final 2-D grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only netCDF and native binary grid formats are directly supported;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   other formats will be converted via grdconvert when blending is complete.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   other grid formats will be converted via grdconvert when blending is complete.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Clobber modes; no blending takes places as output node is determinde by the mode:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f The first input grid determines the final value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l The lowest input grid value determines the final value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   o The last input grid overrides any previous value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u The highest input grid value determines the final value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Clobber modes; no blending takes places as output node is determined by the mode:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f The first input grid determines the final value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l The lowest input grid value determines the final value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     o The last input grid overrides any previous value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     u The highest input grid value determines the final value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without constraints [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Grdraster-compatible output without leading grd header [Default writes GMT grid file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Grdraster-compatible output without leading grid header [Default writes GMT grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output grid must be in one of the native binary formats.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write out weight-sum only [make blend grid].\n");

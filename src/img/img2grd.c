@@ -152,7 +152,7 @@ int GMT_img2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set input img pixels to be <min> minutes of longitude wide [2.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Without -I we automatically determine the pixel size from the file size.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Write a Mercator grid [Default writes a geographic grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Output averages of input in navg by navg squares [no averaging].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Output averages of input in <navg> by <navg> squares [no averaging].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Multiply img integer values by <scale> before output [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To set scale based on information encoded in filename, just give -S.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Select the img type format:\n");

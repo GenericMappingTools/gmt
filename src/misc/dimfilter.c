@@ -115,7 +115,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -130,8 +130,8 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -D4 grid x,y in degrees, <filter_width> in km, spherical Distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F sets the primary filter type and full (6 sigma) filter-width  Choose between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (b)oxcar, (c)osine arch, (g)aussian, (m)edian filters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum liklihood Probability estimator -- a mode estimator)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output name for filtered grdfile\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum likelihood Probability estimator -- a mode estimator).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output name for filtered grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N sets the secondary filter type and the number of sectors.  Choose between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");

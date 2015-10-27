@@ -247,7 +247,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     -D4 x,y in degrees, use cosine of spherical distances in degrees.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Option 5 applies to Cartesian 3-D volume interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -D5 x,y,z in user units, Cartesian distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great cicle arcs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great circle arcs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify a regular set of output locations.  Give equidistant increment for each dimension.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -R for specifying the output domain.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");

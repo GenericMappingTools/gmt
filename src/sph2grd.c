@@ -102,7 +102,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grid file\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grid file.\n");
 	GMT_Option (API, "I,Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");

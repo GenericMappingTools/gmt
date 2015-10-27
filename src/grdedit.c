@@ -98,8 +98,8 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdedit <grid> [-A] [%s]\n", GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-N<table>] [%s] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n", GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|h|l|r|t|v]] [-G<outgrid>] [-N<table>] [%s] [-S] [-T]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -107,14 +107,14 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Tranpose or rotate the entire grid (this may exchange x and y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose or rotate the entire grid (this may exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  h Flip grid left-to-right (as grdmath FLIPLR).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  l Rotate grid 90 degrees left (counter-clockwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  t Transpose grid [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Tranpose the entire grid (this will exchange x and y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose the entire grid (this will exchange x and y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
 	GMT_Option (API, "R");

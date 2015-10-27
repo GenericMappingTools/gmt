@@ -193,11 +193,11 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_top is the grdfile whose gravity efect is to be computed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_top is the grdfile whose gravity effect is to be computed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   volume between them is computed\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C sets body density in SI\n");
@@ -223,7 +223,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L sets level of observation [Default = 0]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Extend the domain of computation with respect to output -R region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn<N> artifficially extends the width of the outer rim of cells to have a fake\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn<N> artificially extends the width of the outer rim of cells to have a fake\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   width of N * dx[/dy].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<pad_dist> extend the region by west-pad, east+pad, etc\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same sintax as -R.\n");

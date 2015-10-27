@@ -302,8 +302,8 @@ void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high>] [-L<base>] [-S<unit>] [-T[c|h]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n\t[%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high>] [-L<base>] [-S<unit>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[c|h]] [%s] [%s] [-Z<fact>[/<shift>]] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);

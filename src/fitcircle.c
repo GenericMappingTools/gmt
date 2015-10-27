@@ -74,7 +74,7 @@
 
 #define THIS_MODULE_NAME	"fitcircle"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Find mean position and best-fitting great- or small-circle to points on sphere"
+#define THIS_MODULE_PURPOSE	"Find mean position and great [or small] circle fit to points on sphere"
 #define THIS_MODULE_KEYS	"<DI,>TO,>DF"
 
 #include "gmt_dev.h"
@@ -130,7 +130,7 @@ int GMT_fitcircle_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a text report with the amswer.  Use -F to return just data\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a text report with the answer.  Use -F to return just data\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Indicate what output columns you want as one or more of fmnsc in any order:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f: Flat Earth mean location\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     m: Fisher (L1) or Eigenvalue (L2) mean location\n");

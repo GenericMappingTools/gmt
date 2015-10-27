@@ -199,7 +199,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     vel:     Ship velocity (m/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   >Geophysical Observations:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     twt:     Two-way traveltime (s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     twt:     Two-way travel-time (s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     depth:   Corrected bathymetry (m) [Also see -Z].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mtf2:    Magnetic Total Field Sensor 2 (gamma, nTesla).\n");

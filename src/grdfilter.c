@@ -540,7 +540,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<modifiers>] -G<outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]%s\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]%s\n\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -560,7 +560,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the low-pass filter type and full diameter (6 sigma) filter-width.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose between convolution-type filters which differ in how weights are assigned\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and geospatial filters that seek to return a representative value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative filter width to select highpass filtering [lowpass].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative filter width to select high-pass filtering [low-pass].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Filters are isotropic.  For rectangular filtering append /<width2> (requires -Dp|0).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : a simple averaging of all points inside filter domain.\n");
@@ -590,7 +590,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Use -A<mode><lon/<lat> to instead save filter specifics at that point. Choose:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   mode as a (area weights), c (composite weight), r (radii), or w (filter weight).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Save area weigths to <file> with -As<file> [no save]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A DEBUG: Save area weights to <file> with -As<file> [no save]\n");
 #endif
 	GMT_Option (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
@@ -598,7 +598,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ni skips all NaN values and returns a filtered value unless all are NaN [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Np sets filtered output to NaN is any NaNs are found inside filter circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Nr sets filtered output to NaN if the corresponding input node was NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      (only possible if the input and output grids are coregistered).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      (only possible if the input and output grids are co-registered).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");

@@ -524,7 +524,7 @@ unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode)
 
 void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 {	/* Show the usage */
-	char *action[2] = {"extract", "plot"};
+	char *action[2] = {"extract", "plott"};
 	if (plot == 1)
 		GMT_Message (API, GMT_TIME_NONE, "\t-%c Apply different fill or outline to specified list of countries.\n", option);
 	else
@@ -535,7 +535,7 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %sing takes place].\n", action[plot]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/terretories for Australia, Brazil, Canada, and the US.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Australia, Brazil, Canada, and the US.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +r to obtain -Rw/e/s/n from polygon(s). Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     for a region in these multiples [none].  Use +R to extend region by increments instead [0].\n");
 	if (plot == 1) {

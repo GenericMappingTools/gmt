@@ -195,10 +195,10 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Altitude mode, choose among three modes:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t      a Absolute altitude.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t      g Altitude relative to sea surface or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t      s Altitude relative to seafloor or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t    Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a Absolute altitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g Altitude relative to sea surface or ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to seafloor or ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Append color palette name to color symbols by third column z-value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend feature down to the ground [no extrusion].\n");
@@ -221,7 +221,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Supply extended named data columns via <name1>,<name2>,... [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Control the feature labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Specify -N- if the first non-coordinate column of the data record should be used as single-word label (-Fe|s|t only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. Specify -N- if first non-coordinate column of data record is a single-word label (-Fe|s|t only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. Append a string that may contain the format %%d for a running feature count.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   4. Give no argument to indicate no labels.\n");

@@ -485,7 +485,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t\t\tgrd             0       -       -       -\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t\ti2              2       -       -       32767\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tgrdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "E77 ERROR OUTPUT\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tE77 ERROR OUTPUT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tError output is divided into (1) a header containing information globally\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tapplicable to the cruise and (2) individual error records summarizing all\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tall  errors  encountered in each cruise record.\n");

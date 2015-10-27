@@ -119,19 +119,19 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give list of file pairs that are ok to compare [Default is all combinations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print run time for each pair. Optionally append <fname> to save them in file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set the interpolation mode.  Choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Acubic spline interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l Linear interpolation [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a Akima spline interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c Cubic spline interpolation.\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e for external crossovers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append i for internal crossovers [Default is all crossovers].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sl sets lower speed [Default is 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Su sets upper speed [Default is Infinity].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Sl sets lower speed [Default is 0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Sh no headings should be computed if velocity drops below this value [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Su sets upper speed [Default is Infinity].\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of crossover to use in interpolation [Default is 3].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
 	GMT_Option (API, "bo,do,.");
 	

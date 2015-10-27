@@ -95,7 +95,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> contains records that must contain lon, lat, alt, time[, other cols].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   longitude and latitude is the geocentric position on the ellipsoid [but see -G].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   alt is the altitude in km positive above the ellipsoid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   time is the time of data aquisition, in <date>T<clock> format (but see -A+y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   time is the time of data acquisition, in <date>T<clock> format (but see -A+y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We read <stdin> if no input file is given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust how the input records are interpreted. Append\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a<alt> to indicate a constant altitude [Default is 3rd column].\n");
@@ -119,7 +119,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t	 d means list declination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t	 i means list inclination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a number to indicate the requested field contribution(s):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 0 means Core field from IGRF only (no CM4 evalution).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t	 0 means Core field from IGRF only (no CM4 evaluation).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t	 1 means Core field.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t	 2 means Lithospheric field.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t	 3 Primary Magnetospheric field.\n");

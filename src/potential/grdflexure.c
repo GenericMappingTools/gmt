@@ -664,7 +664,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with flexed surface.  If -T is set then <outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If the floating point format is followed by %c then we scale time to unit in -T and append the unit.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If the floating point format is followed by %%c then we scale time to unit in -T and append the unit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets in-plane force components Nx, Ny and shear force Nxy [isotropic deformation].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Negative values mean compression, positive values mean extensional forces.\n");
@@ -683,7 +683,7 @@ int GMT_grdflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that time axis is positive back in time.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Subarial topography will be scaled by -D to account for density differences.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Subaerial topography will be scaled by -D to account for density differences.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, ".");

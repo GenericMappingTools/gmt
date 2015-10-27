@@ -6313,7 +6313,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     +l: Leave data alone.\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t   Append modifiers for extending the %s via symmetries:\n", data_type[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     If FFT %s > %s %s, data are extended via edge point symmetry\n", dim_ref[d1], data_type[d1], dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     and tapered to zero.  Several modifers can be set to change this behavior:\n");
+	GMT_Message (V_API, GMT_TIME_NONE, "\t     and tapered to zero.  Several modifiers can be set to change this behavior:\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     +e: Extend data via edge point symmetry [Default].\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     +m: Extend data via edge mirror symmetry.\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     +n: Do NOT extend data.\n");
@@ -6321,7 +6321,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     If +n is set then +t instead sets the boundary width of the interior\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     %s margin to be tapered [0].\n", data_type[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t   Append modifiers for saving modified %s before or after the %u-D FFT is called:\n", data_type[d1], dim);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +w[<suffix>] will write the intermediate %s passed to FFT after detrending/extention/tapering.\n", data_type[d1]);
+	GMT_Message (V_API, GMT_TIME_NONE, "\t     +w[<suffix>] will write the intermediate %s passed to FFT after detrending/extension/tapering.\n", data_type[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t       File name will have _<suffix> [tapered] inserted before file extension.\n");
 	GMT_Message (V_API, GMT_TIME_NONE, "\t     +z[p] will write raw complex spectrum to two separate %s files.\n", data_type[d1]);
 	GMT_Message (V_API, GMT_TIME_NONE, "\t       File name will have _real/_imag inserted before the file extensions.\n");

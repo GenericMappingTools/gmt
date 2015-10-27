@@ -160,7 +160,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-C<density>] [-G<outgrid>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s]\n", GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 

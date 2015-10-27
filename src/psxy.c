@@ -381,7 +381,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on z-value in 3rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S. Without -S, psxy excepts lines/polygons\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each multiheader. Then, color is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header. Then, color is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy> [no offset].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Draw (symmetrical) error bars for x, y, or both.  Add cap-width [%gp].\n", EBAR_CAP_WIDTH);
@@ -396,7 +396,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the median).  Finally, use -W, -G to affect the 25-75%% box.\n");
 	GMT_segmentize_syntax (API->GMT, 'F', 1);
 	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all subheaders (not with -S).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all segment headers (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line.\n");

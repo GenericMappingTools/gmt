@@ -368,7 +368,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Check the Length along the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses all points.  Note p = 0 at C and increases toward E in azim direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses all points.  Note p = 0 at C and increases toward E in <azimuth> direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a cartesian projection is made.  Default is spherical.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
@@ -378,7 +378,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in azim direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
 	GMT_Option (API, "bi2,bo,d,f,g,h,i,s,:,.");
 
 	return (EXIT_FAILURE);

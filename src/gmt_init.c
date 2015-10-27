@@ -1013,7 +1013,7 @@ void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 		GMT_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>.\n", tab[shift], type[kind]);
 		GMT_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%cj),\n", tab[shift], option);
 		GMT_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%cJ), or %s (else).\n", tab[shift], option, just[kind]);
-		GMT_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from refpoint in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
+		GMT_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
 	}
 }
 
@@ -1067,7 +1067,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Choose between a directional (-Td) or magnetic (-Tm) rose.\n");
-	GMT_message (GMT, "\t   Both share most modifers for locating and sizing the rose.\n");
+	GMT_message (GMT, "\t   Both share most modifiers for locating and sizing the rose.\n");
 	GMT_refpoint_syntax (GMT, 'T', NULL, GMT_ANCHOR_MAPROSE, 3);
 	GMT_message (GMT, "\t   Set the diameter of the rose with modifier +w<width>.\n");
 	GMT_message (GMT, "\t   Several modifiers are optional:\n");
@@ -1079,7 +1079,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the\n");
 	GMT_message (GMT, "\t     magnetic declination and <dlabel> is an optional label for the magnetic compass needle.\n");
 	GMT_message (GMT, "\t     If +d does not include <dlabel> we default to \"delta = <declination>\".\n");
-	GMT_message (GMT, "\t     Set <dlabel> to \"-\"to disable the delication label.\n");
+	GMT_message (GMT, "\t     Set <dlabel> to \"-\" to disable the declination label.\n");
 	GMT_message (GMT, "\t     Append +p<pen> to draw outline of secondary (outer) circle [no circle].\n");
 	GMT_message (GMT, "\t     Append +i<pen> to draw outline of primary (inner) circle [no circle].\n");
 	GMT_message (GMT, "\t     Append +t<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].\n");
@@ -1098,7 +1098,7 @@ void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
-	GMT_message (GMT, "\t      [Default is no border].\n");
+	GMT_message (GMT, "\t     [Default is no border].\n");
 	GMT_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp].\n", GMT_FRAME_CLEARANCE);
 	GMT_message (GMT, "\t     Note: For a map insert the default clearance is zero.\n");
 #ifdef DEBUG

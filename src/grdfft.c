@@ -594,7 +594,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   wavelength in km (geographic grids only) [m].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      frequencies outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");

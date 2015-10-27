@@ -331,9 +331,9 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	             GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n",
-	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -360,8 +360,8 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
 		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qmx or -Qmy do waterfall type plots (row or column profiles).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw meshlines on the surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw mesh-lines on the surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to raster-image.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append +m.\n");
 	GMT_Option (API, "R");
@@ -377,7 +377,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -Qm or -Qsm to take effect.\n");
 	P.width *= 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t   c draw scontours on top of surface or mesh [Default is no contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c draw contours on top of surface or mesh [Default is no contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");

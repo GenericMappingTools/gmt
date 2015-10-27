@@ -321,7 +321,7 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Al3/m/f or -Ar3/m/f : \"Free\" condition, specify (m)oment and (f)orce at end [0/0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default BCs are -Al0 -Ar0.  Use SI units for any optional arguments.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F specifies the uniform, horisontal stress in the plate [Pa m].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F specifies the uniform, horizontal stress in the plate [Pa m].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L uses variable restoring force k(x) that depends on w(x).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M sets units used, as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Mx indicates all x-distances are in km [meters]\n");
@@ -330,7 +330,7 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T to use file <wpre> with pre-existing deflections [none].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Subarial topography will be scaled by -D to account for density differences.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Subaerial topography will be scaled by -D to account for density differences.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].\n");
 	GMT_Option (API, "h,i,o,.");
 	return (EXIT_FAILURE);

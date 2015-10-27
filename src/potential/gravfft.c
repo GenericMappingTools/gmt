@@ -425,7 +425,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t     b writes \"loading from below\" admittance.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t     w writes wavelength instead of wavenumber.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-D Sets density contrast across surface (used when not -T).\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t   Give a coregistered density grid for a variable density contrast [constant].\n");
+	GMT_Message (API, GMT_TIME_NONE,"\t   Give a co-registered density grid for a variable density contrast [constant].\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-I Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   for the same region of <topo_grd>. Default computes admittance. Output\n");

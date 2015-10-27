@@ -156,8 +156,8 @@ void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Dea
 int GMT_grdtrack_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]]\n\t[-C<length>[u]/<ds>[/<spacing>][+a]] [-D<dfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s] [-Z]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a]] [-D<dfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);

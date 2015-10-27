@@ -1833,7 +1833,7 @@ int GMT_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	strncpy (copy, line, GMT_LEN64);
 	*dist = GMT->session.d_NaN;
 
-	switch (copy[0]) {	/* Look for modifers -/+ to set how spherical distances are computed */
+	switch (copy[0]) {	/* Look for modifiers -/+ to set how spherical distances are computed */
 		case '-':	/* Want flat Earth calculations */
 			way = 0;
 			break;

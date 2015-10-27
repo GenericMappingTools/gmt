@@ -454,7 +454,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_fill_syntax (API->GMT, 'E', "Set color used for extensive parts. [default is white]\n");
+	GMT_fill_syntax (API->GMT, 'E', "\tSet color used for extensive parts. [default is white]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Plot axis. Default symbols are circles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Set color used for T_symbol [default as set by -E].\n");
@@ -476,7 +476,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose format between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t (c) Focal mechanisms in Harvard CMT convention\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike1, dip1, rake1, strike2, dip2, rake2, moment, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     with moment in 2 columns : mantiss and exponent corresponding to seismic moment in dynes-cm\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     with moment in 2 columns : mantissa and exponent corresponding to seismic moment in dynes-cm\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t (a) Focal mechanism in Aki & Richard's convention:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike, dip, rake, mag, event_title\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t (p) Focal mechanism defined with\n");

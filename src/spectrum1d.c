@@ -546,7 +546,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Use data subsets of <segment_size> elements.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <segment_size> must be radix 2;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   std. err. = 1/sqrt(n_data/segment_size).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOptions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C[<xycnpago>] 2 column X(t),Y(t) input; estimate Cross-spectra\n\t   [Default 1 col, X power only].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally specify cross-spectra output(s)  [Default is all].\n");
@@ -557,7 +557,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output files will be named <name_stem>.xpower, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To disable the writing of individuial files, just give -N.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To disable the writing of individual files, just give -N.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Disable writing the single output to stdout.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");

@@ -99,11 +99,12 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s\n\t%s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
 #ifdef DEBUG
-	GMT_Message (API, GMT_TIME_NONE, "\t[-+<bin>]\n");
+	GMT_Message (API, GMT_TIME_NONE, " [-+<bin>]");
 #endif
+	GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -112,18 +113,18 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a - auto: select best resolution given selected region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a - auto: select best resolution given selected region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f - full resolution (may be very slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h - high resolution (may be slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -N<wet>/<dry>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_Option (API, "V,r,.");
 #ifdef DEBUG

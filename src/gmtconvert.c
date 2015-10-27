@@ -115,8 +115,8 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]] [-L] [-Q[~]<selection>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-Q[~]<selection>] [-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -127,8 +127,8 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   All files must have the same number of segments and rows,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   but they may differ in their number of columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Only output segments whose number of records matches criteria:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +l<min> Segment must have at least <min> records [0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +u<max> Segment must have at most <max> records [inf]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +l<min> Segment must have at least <min> records [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +u<max> Segment must have at most <max> records [inf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +i will invert the test.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write individual segments to separate files [Default writes one\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
@@ -147,7 +147,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     r: reverse the order of records within each segment on output [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Output only segment headers and skip all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires ASCII input data [Output headers and data].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output specificed segment numbers in <selection> [All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output specified segment numbers in <selection> [All].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <selection> syntax is [~]<range>[,<range>,...] where each <range> of items is\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   either a single number, start-stop (for range), start:step:stop (for stepped range),\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or +f<file> for a file list with one <range> selection per line.\n");
