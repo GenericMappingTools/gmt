@@ -43,6 +43,9 @@ several other options are available:
 **-**\ **-show-datadir**
     Show data directory/ies and exit.
 
+**-**\ **-show-modules**
+    List module names on stdout and exit.
+
 **-**\ **-show-plugindir**
     Show plugin directory and exit.
 
@@ -98,10 +101,12 @@ The Common GMT Options
 |SYN_OPT-Y|
 |SYN_OPT-a|
 |SYN_OPT-b|
+|SYN_OPT-d|
 |SYN_OPT-f|
 |SYN_OPT-g|
 |SYN_OPT-h|
 |SYN_OPT-i|
+|SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
 **-r**
