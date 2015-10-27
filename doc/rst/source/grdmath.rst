@@ -671,7 +671,11 @@ is required that the optional comment flag (:) must be followed by a space.
 Examples
 --------
 
-.. include:: grdmath_examples.rst_
+To compute all distances to north pole: 
+
+    ::
+
+     gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
 
 To take log10 of the average of 2 files, use
 
@@ -744,13 +748,12 @@ See Also
 
 .. |ex_SDIST| raw:: html
 
-   <button id="ExampleBtn">Example</button>
-   <div id="overlay"></div>
-   <div id="popup">
-     # To compute all distances to north pole:
-     <button id="CloseBtn">Close</button></br>
-     </br>
-     gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br>
+   <a href="#openModal">Example</a>
+   <div id="openModal" class="modalDialog">
+    <div>
+        <a href="#close" title="Close" class="close">X</a>
+        <h2>To compute all distances to north pole:</h2>
+        <p>gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br></p>
+    </div>
    </div>
-   <script type="text/javascript" src="popupbox.js"></script>
-   <link type="text/css" rel="stylesheet" href="overlaypopup.css" />
+   <link type="text/css" rel="stylesheet" href="overlaypopup2.css" />
