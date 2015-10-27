@@ -671,7 +671,7 @@ is required that the optional comment flag (:) must be followed by a space.
 Examples
 --------
 
-To compute all distances to north pole: 
+To compute all distances to north pole:
 
     ::
 
@@ -756,4 +756,4 @@ See Also
         <p>gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br></p>
     </div>
    </div>
-   <link type="text/css" rel="stylesheet" href="overlaypopup2.css" />
+   <link type="text/css" rel="stylesheet" href="_static/overlaypopup.css" />
