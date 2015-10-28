@@ -357,7 +357,8 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	/* invert;	true if we want to invert all the rotations */
 	/* t_max;	Extend earliest stage pole back to this age */
 	bool GPlates = false, total_in = false;
-	unsigned int n, nf, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
+	int nf;
+	unsigned int n, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lat, rot, t, last_t = -DBL_MAX;
 	FILE *fp = NULL;
@@ -368,7 +369,14 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
-		strncpy (Plates, ((this_c = getenv ("GPLATES_PLATES")) != NULL) ? this_c : GPLATES_PLATES, GMT_BUFSIZ);
+		if ((this_c = getenv ("GPLATES_PLATES")))
+			strncpy (Plates, this_c, GMT_BUFSIZ);
+		else {
+			if (!GMT_getsharepath (GMT, "spotter", GPLATES_PLATES, ".txt", Plates, R_OK)) {	/* Decode GPlates ID file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_PLATES file : %s\n", Plates);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+		}
 #ifdef WIN32
 		DOS_path_fix (Plates);
 #endif
@@ -380,7 +388,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		A_id = B_id = 0;
 		while ((A_id == 0 || B_id == 0) && GMT_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 			if (buffer[0] == '#' || buffer[0] == '\n') continue;
-			sscanf (buffer, "%d %s %[^\n]", &id, txt, comment);
+			if ((nf = sscanf (buffer, "%d\t%s\t%[^\n]", &id, txt, comment)) < 3) continue;
 			if (A_id == 0 && !strcmp (txt, A)) A_id = id;
 			if (B_id == 0 && !strcmp (txt, B)) B_id = id;
 		}
@@ -394,7 +402,14 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		/* OK, here we have the two IDs */
-		strncpy (Rotations, ((this_c = getenv ("GPLATES_ROTATIONS")) != NULL) ? this_c : GPLATES_ROTATIONS, GMT_BUFSIZ);
+		if ((this_c = getenv ("GPLATES_ROTATIONS")))
+			strncpy (Rotations, this_c, GMT_BUFSIZ);
+		else {
+			if (!GMT_getsharepath (GMT, "spotter", GPLATES_ROTATIONS, ".rot", Rotations, R_OK)) {	/* Decode GPlates rotations file */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_ROTATIONS file : %s\n", Rotations);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+		}
 #ifdef WIN32
 		DOS_path_fix (Rotations);
 #endif

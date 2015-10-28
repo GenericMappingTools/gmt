@@ -38,8 +38,8 @@
 #define PA_2_T  (1.0 / T_2_PA)
 #define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
-#define GPLATES_PLATES "Global_EarthByte_GPlates_Rotation_20071218.txt"
-#define GPLATES_ROTATIONS "Global_EarthByte_GPlates_Rotation_20091015.rot"
+#define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table_AREPS"	/* .txt */
+#define GPLATES_ROTATIONS "Global_EarthByte_230-0Ma_GK07_AREPS"		/* .rot */
 
 /*! Structure with info on each Euler (stage) pole */
 struct EULER {

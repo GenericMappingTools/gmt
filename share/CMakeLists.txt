@@ -20,7 +20,7 @@
 #
 
 set (_gmt_share_dirs conf cpt custom dbase localization mgd77 mgg
-	postscriptlight x2sys)
+	postscriptlight spotter x2sys)
 
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}
