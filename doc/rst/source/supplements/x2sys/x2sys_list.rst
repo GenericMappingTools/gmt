@@ -13,14 +13,18 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_list** **-C**\ *column* **-T**\ *TAG* [ *coedbase.txt* ]
-[ **-A**\ *asymm_max* ] [ **-E** ] [ **-F**\ *acdhiInNtTvwxyz* ]
-[ **-I**\ [*list*] ] [ **-L**\ [*corrtable*] ] [ **-N**\ *nx_min* ]
-[ **-Qe**\ \|\ **i** ]
+**x2sys_list** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
+[ |-A|\ *asymm_max* ]
+[ |-E| ]
+[ |-F|\ *acdhiInNtTvwxyz* ]
+[ |-I|\ [*list*] ]
+[ |-L|\ [*corrtable*] ]
+[ |-N|\ *nx_min* ]
+[ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-R| ]
-[ **-S**\ *track* ]
+[ |-S|\ *track* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [*list*] ]
+[ |-W|\ [*list*] ]
 [ |SYN_OPT-bo| ]
 
 |No-spaces|
@@ -35,6 +39,8 @@ arguments. The output may be ASCII or binary.
 Required Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *column*
     Specify which data column you want to process. Crossovers related to
     this column name must be present in the crossover data base.
@@ -47,6 +53,9 @@ Optional Arguments
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
     **x2sys_cross**. If not given we read standard input instead.
+
+.. _-A:
+
 **-A**\ *asymm_max*
     Specifies maximum asymmetry in the distribution of crossovers
     relative to the mid point in time (or distance, if not time is
@@ -56,10 +65,15 @@ Optional Arguments
     values close to zero. If specified, we exclude tracks whose
     asymmetry exceeds the specify cutoff in absolute value [1, i.e.,
     include all].
+
+.. _-E:
+
 **-E**
     Enhance ASCII output by writing GMT segment headers with name of the
-    two tracks and their total number of cross-overs [no segment
-    headers].
+    two tracks and their total number of cross-overs [no segment headers].
+
+.. _-F:
+
 **-F**\ *acdhiInNtTvwxyz*
     Specify your desired output using any combination of
     *acdhiInNtTvwxyz*, in any order. Do not use space between the
@@ -85,34 +99,54 @@ Optional Arguments
     the other track). The sign convention for **c**,\ **i** is track one
     minus track two (lexically sorted). Time intervals will be returned
     according to the **TIME_UNIT** GMT defaults setting.
+
+.. _-i:
+
 **-I**\ [*list*\ ]
     Name of ASCII file with a list of track names (one per record) that
     should be excluded from consideration [Default includes all tracks].
+
+.. _-L:
+
 **-L**\ [*corrtable*\ ]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
     **$X2SYS_HOME**/*TAG* directory]. For the format of this file, see
     **x2sys_solve**.
+
+.. _-N:
+
 **-N**\ *nx_min*
     Only report data from pairs that generated at least *nx_min*
     crossovers between them [use all pairs].
+
+.. _-Q:
+
 **-Qe**\ \|\ **i**
     Append **e** for external crossovers or **i** for internal
     crossovers only [Default is all crossovers].
+
+.. _-R:
 
 .. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option bases the
     statistics on those COE that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-S:
+
 **-S**\ *track*
     Name of a single track. If given we restrict output to those
     crossovers involving this track [Default output is crossovers
     involving any track pair].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [*list*\ ]
     Name of ASCII file with a list of track names and their relative

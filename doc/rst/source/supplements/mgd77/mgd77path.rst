@@ -13,8 +13,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77path** *NGDC-ids* [ **-A**\ [**-**] ] [ **-D** ]
-[ **-I**\ *ignore* ]
+**mgd77path** *NGDC-ids* [ |-A|\ [**-**] ] [ |-D| ]
+[ |-I|\ *ignore* ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -34,20 +34,28 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**-**]
     Display the full path to each cruise [Default]. Optionally, append
     **-** which will list just the cruise IDs instead.
 
+.. _-D:
+
 **-D**
     Instead of cruise listings, just show the directory paths currently
     used in the search.
+
+.. _-I:
 
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
-    
+
+.. _-V:
+
 .. |Add_-V| replace:: Reports the total number of cruises found. 
 .. include:: ../../explain_-V.rst_
 
@@ -83,8 +91,8 @@ See Also
 :doc:`mgd77manage`
 :doc:`mgd77track`
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt*. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_

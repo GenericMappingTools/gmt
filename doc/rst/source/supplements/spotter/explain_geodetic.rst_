@@ -1,5 +1,5 @@
-`Geodetic versus Geocentric Coordiinates <#toc11>`_
----------------------------------------------------
+Geodetic versus Geocentric Coordiinates
+---------------------------------------
 
 All spherical rotations are applied to geocentric coordinates.
 This means that incoming data points and grids are considered

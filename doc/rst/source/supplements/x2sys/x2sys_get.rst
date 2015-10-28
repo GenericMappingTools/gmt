@@ -13,8 +13,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_get** **-T**\ *TAG* [ **-C** ] [ **-F**\ *flags* ] [ **-G** ]
-[ **-L**\ [**+**\ ][*list*] ] [ **-N**\ *flags* ] [
+**x2sys_get** |-T|\ *TAG* [ |-C| ] [ |-F|\ *flags* ] [ |-G| ]
+[ |-L|\ [**+**\ ][*list*] ]
+[ |-N|\ *flags* ] [
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 
@@ -37,19 +38,33 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**
     Instead of reporting the track names, just output the coordinates of
     the center of each bin that has at least one track with the
     specified data.
+
+.. _-D:
+
 **-D**
     Only report the track names [Default adds the availability of data for each field].
+
+.. _-F:
+
 **-F**\ *flags*
     Give a comma-separated list of column names (as described in the
     definition file) that should be present. [Default selects all data columns].
+
+.. _-G:
+
 **-G**
     Report data flags (Y or N) for the entire track rather than just for
     the portion that is inside the region set by **-R** [Default].
-**-L**\ [**+**\ ][*list*\ ]
+
+.. _-L:
+
+**-L**\ [**+**\ ][*list*]
     Crossover mode. Return a list of track pairs that should be checked
     for possible crossovers. The list is determined from the bin-index
     data base on the assumption that tracks occupying the same bin are
@@ -58,16 +73,22 @@ Optional Arguments
     you want to limit the output to those pairs that involve at least
     one of the track names in your list. The output is suitable for the
     **-A** option in **x2sys_cross**. By default, only external
-    crossover pairs are listed. Use **-L+** to include internal pairs in
-    the list.
+    crossover pairs are listed. Use **-L+** to include internal pairs in the list.
+
+.. _-N:
+
 **-N**\ *flags*
     Give a comma-separated list of column names (as described in the
     definition file) that must be absent.
+
+.. _-R:
 
 .. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option limits the tracks
     to those that fall at least partly inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

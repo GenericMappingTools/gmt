@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_cross** *track(s)* **-T**\ *TAG* [ **-A**\ *combi.lis* ]
-[ **-C**\ [*runtimes*] ] [ **-Il**\ \|\ **a**\ \|\ **c** ]
-[ **-J**\ *parameters* ] [ **-Qe**\ \|\ **i** ]
-[ **-Sl**\ \|\ **u**\ \|\ **h**\ *speed* ]
+**x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
+[ |-C|\ [*runtimes*] ] [ |-I|\ **l**\ \|\ **a**\ \|\ **c** ]
+[ |-J|\ *parameters* ] [ |-Q|\ e**\ \|\ **i** ]
+[ |-S|\ **l**\ \|\ **u**\ \|\ **h**\ *speed* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *size* ] [ **-Z** ]
+[ |-W|\ *size* ] [ |-Z| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
 
@@ -46,10 +46,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *combi.lis*
     Only process the pair-combinations found in the file *combi.lis*
     [Default process all possible combinations among the specified
     files]. The file *combi.lis* created by :doc:`x2sys_get` -L option
+
+.. _-C:
+
 **-C**\ [*runtimes*]
     Compute and append the processing run-time for each pair to the
     progress message. Append a filename to save these run-times to file.
@@ -58,6 +63,9 @@ Optional Arguments
     different processor of your multi-core machine. See the MATLAB
     function *split_file4coes.m* that lives in the x2sys supplement
     source code.
+
+.. _-I:
+
 **-Il**\ \|\ **a**\ \|\ **c**
     Sets the interpolation mode for estimating values at the crossover.
     Choose among:
@@ -68,8 +76,12 @@ Optional Arguments
 
     **c** Cubic spline interpolation.
 
+.. _-J:
+
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+
+.. _-Q:
 
 **-Qe**\ \|\ **i**
     Append **e** for external COEs only, and **i** for internal COEs
@@ -79,6 +91,8 @@ Optional Arguments
     data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to
     those that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-S:
 
 **-Sl**\ \|\ **u**\ \|\ **h**\ *speed*
     Defines window of track speeds. If speeds are outside this window we
@@ -92,12 +106,19 @@ Optional Arguments
     will not be computed (i.e., set to NaN) [Default calculates
     headings regardless of speed].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *size*
     Give the maximum number of data points on either side of the
     crossover to use in the spline interpolation [3].
+
+.. _-Z:
+
 **-Z**
     Report the values of each track at the crossover [Default reports
     the crossover value and the mean value].

@@ -13,8 +13,10 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdpmodeler** *agegrdfile* **-E**\ *rot_file* **-S**\ *flags*
-[ **-F**\ *polygonfile* ] [ **-G**\ *outgrdfile* ] [ **-T**\ *age* ]
+**grdpmodeler** *agegrdfile* |-E|\ *rot_file* **-S**\ *flags*
+[ |-F|\ *polygonfile* ]
+[ |-G|\ *outgrdfile* ]
+[ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -37,8 +39,10 @@ Required Arguments
 ------------------
 
 *ingrdfile*
-    Name of a grid file in geographical (lon, lat) coordinates with ages
-    in Myr.
+    Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+
+.. _-E:
+
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
@@ -64,6 +68,8 @@ Required Arguments
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
 
+.. _-S:
+
 **-S**\ *flags*
     Type of model prediction(s). Append one or more items: choose from **a** for plate motion
     azimuth, **d** for great-circle distance between current location and its
@@ -78,10 +84,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-F:
+
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
     area of the grid where the model should be evaluated; the outside
     will be set to NaN [Default evaluates model on the entire grid].
+
+.. _-G:
+
 **-G**\ *outgrdfile*
     Name of output grid. This is the grid with the model predictions
     given the specified rotations. Note: If you specified more than one
@@ -90,9 +101,14 @@ Optional Arguments
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
     If the **-G** option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
+
+.. _-T:
+
 **-T**\ *age*
     Use a fixed age for model evaluation (i.e., override the ages in the
     age grid). This lets you evaluate the model at a snapshot in time.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

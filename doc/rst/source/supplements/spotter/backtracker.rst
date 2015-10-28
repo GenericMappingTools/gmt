@@ -13,13 +13,17 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**backtracker** [ *table* ] **-E**\ *rot_file*\|\ *lon*/*lat*/*angle*
-[ **-A**\ [*young*/*old*] ] [
-**-Df**\ \|\ **b** ] [ **-F**\ *drift.txt* ] [
-**-Lf**\ \|\ **b**\ *step* ] [ **-N**\ *upper_age* ] [
-**-Q**\ *fixed_age* ] [ **-S**\ *filestem* ] [ **-T**\ *zero_age* ]
+**backtracker** [ *table* ] |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+[ |-A|\ [*young*/*old*] ]
+[ |-D|\ **f**\ \|\ **b** ]
+[ |-F|\ *drift.txt* ]
+[ |-L|\ **f**\ \|\ **b**\ *step* ]
+[ |-N|\ *upper_age* ]
+[ |-Q|\ *fixed_age* ]
+[ |-S|\ *filestem* ]
+[ |-T|\ *zero_age* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**a**\ \|\ **t**] ]
+[ |-W|\ [**a**\ \|\ **t**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
@@ -43,6 +47,8 @@ additional data fields after the first 3 columns which must have
 
 Required Arguments
 ------------------
+
+.. _-E:
 
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
@@ -78,6 +84,8 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-A:
+
 **-A**\ [*young*/*old*]
     Used in conjunction with **-Lb**\ \|\ **f** to limit the track
     output to those sections whose predicted ages lie between the
@@ -85,12 +93,18 @@ Optional Arguments
     instead then the limits apply to the stage ids (id 1 is the youngest
     stage). If no limits are specified then individual limits for each
     record are expected in columns 4 and 5 of the input file.
+
+.. _-D:
+
 **-Df**\ \|\ **b**
     Set the direction to go: **-Df** will go backward in time (from
     younger to older positions), while **-Db** will go forward in time
     (from older to younger positions) [Default]. Note: For **-Db** you
     are specifying the age at the given location, whereas for **-Df**
     you are not; instead you specify the age at the reconstructed point.
+
+.. _-F:
+
 **-F**\ *drift.txt*
     Supply a file with lon, lat, age records that describe the history
     of hotspot motion for the current hotspot. The reconstructions will
@@ -98,6 +112,9 @@ Optional Arguments
     location of the hotspot at that time, via an interpolation of the
     hotspot motion history. This adjusted location is then used to
     reconstruct the point or path [No drift].
+
+.. _-L:
+
 **-Lf**\ \|\ **b**\ *step*
     Specify a sampled path between initial and final position: **-Lf**
     will draw particle flowlines, while **-Lb** will draw backtrack
@@ -106,23 +123,39 @@ Optional Arguments
     **-LB** is used, the third output column will contain the stage id
     (1 is youngest) [Default is along-track predicted ages]. You can
     control the direction of the paths by using **-D**.
+
+.. _-N:
+
 **-N**\ *upper_age*
     Set the maximum age to extend the oldest stage rotation back in time
     [Default is no extension].
+
+.. _-Q:
+
 **-Q**\ *fixed_age*
     Assign a fixed age to all positions. Only lon, lat input is expected
     [Default expects longitude, latitude, age]. Useful when the input
     are points defining isochrons.
+
+.. _-S:
+
 **-S**\ *filestem*
     When **-L** is set, the tracks are normally written to *stdout* as a
     multisegment file. Specify a *filestem* to have each track written
     to *filestem.#*, where *#* is the track number. The track number is
     also copied to the 4th output column.
+
+.. _-T:
+
 **-T**\ *zero_age*
     Set the current time [Default is 0 Ma].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**a**\ \|\ **t**]
     Rotates the given input (lon,lat,t) and calculates the confidence

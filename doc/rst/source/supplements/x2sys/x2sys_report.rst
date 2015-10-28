@@ -13,11 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_report** **-C**\ *column* **-T**\ *TAG* [ *coedbase.txt* ]
-[ **-A** ] [ **-I**\ [*list*\ ] ] [ **-L**\ [*corrtable*] ]
-[ **-N**\ *nx_min* ] [ **-Qe**\ \|\ **i** ]
+**x2sys_report** |-C|\ *column* |-T|\ *TAG* [ *coedbase.txt* ]
+[ |-A| ]
+[ |-I|\ [*list*\ ] ]
+[ |-L|\ [*corrtable*] ]
+[ |-N|\ *nx_min* ]
+[ |-Q|\ **e**\ \|\ **i** ]
 [ [ |SYN_OPT-R| ]
-[ **-S**\ *track* ]
+[ |-S|\ *track* ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -36,6 +39,9 @@ Required Arguments
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
     **x2sys_cross**. If not given we read standard input instead.
+
+.. _-C:
+
 **-C**\ *column*
     Specify which data column you want to process. Crossovers related to
     this column name must be present in the crossover data base.
@@ -45,6 +51,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     Eliminate COEs by distributing the COE between the two tracks in
     proportion to track weight and producing (dist, adjustment) spline
@@ -53,31 +61,48 @@ Optional Arguments
     are called *track.column*.adj and are placed in the
     **$X2SYS_HOME**/*TAG* directory. For background information on how
     these adjustments are designed, see *Mittal* [1984].
-**-I**\ [*list*\ ]
+
+.. _-I:
+
+**-I**\ [*list*]
     Name of ASCII file with a list of track names (one per record) that
     should be excluded from consideration [Default includes all tracks].
-**-L**\ [*corrtable*\ ]
+
+.. _-L:
+
+**-L**\ [*corrtable*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
     **$X2SYS_HOME**/*TAG* directory]. For the format of this file, see
     **x2sys_solve**.
+
+.. _-N:
+
 **-N**\ *nx_min*
-    Only report data from tracks involved in at least *nx_min*
-    crossovers [all tracks].
+    Only report data from tracks involved in at least *nx_min* crossovers [all tracks].
+
+.. _-Q:
+
 **-Qe**\ \|\ **i**
     Append **e** for external crossovers or **i** for internal
     crossovers only [Default is external].
+
+.. _-R:
 
 .. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option bases the
     statistics on those COE that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-S:
+
 **-S**\ *track*
     Name of a single track. If given we restrict output to those
     crossovers involving this track [Default output is crossovers
     involving any track pair].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

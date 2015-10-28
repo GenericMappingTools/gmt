@@ -14,10 +14,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77info** *NGDC-ids*
-[ **-C**\ [**m**\ \|\ **e**] ]
-[ **-E**\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
-[ **-Mf**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]
-[ **-L**\ [**v**\ ] ]
+[ |-C|\ [**m**\ \|\ **e**] ]
+[ |-E|\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
+[ |-M|\ **f**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]
+[ |-L|\ [**v**\ ] ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -45,13 +45,19 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ [**m**\ \|\ **e**]
     List abbreviations for all columns present in the MGD77[+] files.
     Append **m** or **e** to limit the display to the MGD77 standard or
     MGD77+ extended set only.
 
+.. _-E:
+
 **-E**\ [**m**\ \|\ **e**]
     Give a one-line summary for each cruise listed.
+
+.. _-M:
 
 **-Mf**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h**
     List the meta-data (header) and (if present) the MGD77+ history for
@@ -66,11 +72,15 @@ Optional Arguments
     **r** instead. For the MGD77+ E77 status, append **e** instead.
     Finally, for the MGD77+ history, append **h** instead.
 
+.. _-I:
+
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
+
+.. _-L:
 
 **-L**\ [**v**\ ]
     No cruise information is listed. Instead, we just display a list of
@@ -93,6 +103,8 @@ Optional Arguments
     TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS, (J8) J.O.D.C. JAPAN,
     (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
  
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
     

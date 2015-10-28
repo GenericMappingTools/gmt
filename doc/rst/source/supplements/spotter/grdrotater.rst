@@ -13,11 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdrotate** *ingrdfile* **-E**\ *rot_file*\|\ *lon*/*lat*/*angle*
-**-G**\ *outgrdfile* [ **-D**\ *rotoutline* ] [ **-F**\ *polygonfile* ]
-[ **-N** ]
+**grdrotate** *ingrdfile* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+|-G|\ *outgrdfile*
+[ |-D|\ *rotoutline* ]
+[ |-F|\ *polygonfile* ]
+[ |-N| ]
 [ |SYN_OPT-R| ]
-[ **-S** ] [ **-T**\ *ages* ]
+[ |-S| ]
+[ |-T|\ *ages* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -43,6 +46,9 @@ Required Arguments
 
 *ingrdfile*
     Name of a grid file in geographical (lon, lat) coordinates.
+
+.. _-E:
+
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
@@ -71,6 +77,8 @@ Required Arguments
     latitude, and opening angle (all in degrees and separated by /) for
     a single total reconstruction rotation.
 
+.. _-G:
+
 **-G**\ *outgrdfile*
     Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation. If more than one reconstruction
@@ -80,6 +88,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *rotoutline*
     Name of the grid polygon outline file. This represents the outline
     of the grid reconstructed to the specified time. If more than one reconstruction
@@ -87,20 +97,32 @@ Optional Arguments
     to format a floating point number (reconstruction time) to text.
     If only one time is implied and **-D** is not set then we write the
     polygon to stdout (but see **-N**).
+
+.. _-F:
+
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
-    area of the grid that should be projected [Default projects entire
-    grid].
+    area of the grid that should be projected [Default projects entire grid].
+
+.. _-N:
+
 **-N**
     Do Not output the rotated polygon outline [Default will write it to
     stdout, or to a file via **-D**\ ].
 
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-S:
 
 **-S**
     Skip the rotation of the grid, just rotate the polygon outline
     (requires **-F** if no grid is provided).
+
+.. _-T:
+
 **-T**\ *ages*
     Sets the desired reconstruction times.  For a single time append
     the desired time.  For an equidistant range of reconstruction times
@@ -109,6 +131,8 @@ Optional Arguments
     via the first column in a file, e.g., **-T**\ *agefile*.  If no **-T**
     option is given and **-E** specified a rotation file then we equate
     the rotation file times with the reconstruction times.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

@@ -14,11 +14,13 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77manage** *NGDC-ids*
-[ **-A**\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
-[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ]
-[ **-D**\ *abbrev1*,\ *abbrev2*,...) ] [ **-E**\ *empty* ] [ **-F** ]
-[ **-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
-[ **-N**\ *unit* ]
+[ |-A|\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
+[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
+[ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
+[ |-E|\ *empty* ]
+[ |-F| ]
+[ |-I|\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
+[ |-N|\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -50,6 +52,8 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-A:
 
 **-A**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*
     Add a new data column. If an existing column with the same
@@ -143,6 +147,8 @@ Optional Arguments
     case **T** instead and we will interpolate the column at all record
     times.
 
+.. _-C:
+
 **-C**\ **f**\ \|\ **g**\ \|\ **e**
     Append a one-letter code to select the procedure for along-track
     distance calculation when using **-Ad**\ \|\ **D** (see **-N** for
@@ -154,6 +160,8 @@ Optional Arguments
 
     **e** Geodesic distances on current GMT ellipsoid.
 
+.. _-D:
+
 **-D**\ *abbrev1*,\ *abbrev2*,...)
     Give a comma-separated list of column abbreviations that you want to
     delete from the MGD77+ files. Do NOT use this option to remove
@@ -163,13 +171,22 @@ Optional Arguments
     successfully created we temporarily rename the old file, change the
     new filename to the old filename, and finally remove the old,
     renamed file.
+
+.. _-E:
+
 **-E**\ *empty*
     Give a single character that will be repeated to fill empty string
     values, e.g., "9" will yield a string like "99999..." [9].
+
+.. _-F:
+
 **-F**
     Force mode. When this mode is active you are empowered to delete or
     replace even the standard MGD77 set of columns. You better know what
     you are doing!
+
+.. _-I:
+
 **-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment*
     In addition to file information we must specify additional
     information about the extra column. Specify a short (16 char or
@@ -185,12 +202,19 @@ Optional Arguments
     Furthermore, the discussion on interpolation does not apply and the
     NaN value becomes a "no string" value (see **-E** for what this is).
     Place quotes around terms with more than one word (e.g., "Corrected Depth").
+
+.. _-N:
+
 **-N**\ *unit*
     Append the distance unit (see UNITS). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\ \|\ **i** is selected. 
 
+.. _-R:
+
 .. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected. 
 .. include:: ../../explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

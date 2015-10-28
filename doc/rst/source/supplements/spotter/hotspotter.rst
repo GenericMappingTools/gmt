@@ -13,10 +13,11 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**hotspotter** [*tables*\ ] **-E**\ *rotfile* **-G**\ *CVAgrid*
+**hotspotter** [*tables*\ ] |-E|\ *rotfile* |-G|\ *CVAgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-N**\ *upper_age* ] [ **-S** ] [ **-T** ]
+[ |-N|\ *upper_age* ]
+[ |-S| ] [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -44,6 +45,8 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-E:
+
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following format:
@@ -68,10 +71,16 @@ Required Arguments
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
 
+.. _-G:
+
 **-G**\ *CVAgrid*
     Specify name for output grid file.
 
+.. _-I:
+
 .. include:: ../../explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
@@ -79,21 +88,31 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *factor*
     Modify the sampling interval along flowlines. Default [0.5] gives
     approximately 2 points within each grid box. Smaller factors gives
     higher resolutions at the expense of longer processing time.
 
+.. _-N:
+
 **-N**\ *upper_age*
     Set the upper age to assign seamounts whose crustal age is unknown
     (i.e., NaN) [no upper age].
 
+.. _-S:
+
 **-S**
     Normalize the resulting CVA grid to percentages of the CVA maximum.
+
+.. _-T:
 
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no
     truncation].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

@@ -13,13 +13,17 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originator** [ *tables* ] **-E**\ [**+**]\ *rotfile*
-**-F**\ [**+**]\ *hs_file* [ **-D**\ *d_km* ] [ **-L**\ [*flag*] ]
-[ **-N**\ *upper_age* ] [ **-Q**\ *r/t* ] [ **-S**\ [*n_hs*] ]
-[ **-T** ]
+**originator** [ *tables* ] |-E|\ [**+**]\ *rotfile*
+|-F|\ [**+**]\ *hs_file* 
+[ |-D|\ *d_km* ]
+[ |-L|\ [*flag*] ]
+[ |-N|\ *upper_age* ]
+[ |-Q|\ *r/t* ]
+[ |-S|\ [*n_hs*] ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *maxdist* ]
-[ **-Z** ]
+[ |-W|\ *maxdist* ]
+[ |-Z| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
@@ -47,6 +51,8 @@ radius, crustal_age) files.
 Required Arguments
 ------------------
 
+.. _-E:
+
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
@@ -72,6 +78,8 @@ Required Arguments
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found. Prepend **+** if you want to invert
     the rotations prior to use.
+
+.. _-F:
 
 **-F**\ *file*
     Give file with hotspot locations. This file must contain one record
@@ -108,35 +116,54 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-D:
+
 **-D**\ *d_km*
     Sets the flowline sampling interval in km. [Default is 5].
 
-**-L**\ [*flag*\ ]
+.. _-L:
+
+**-L**\ [*flag*]
     Output closest approach for nearest hotspot only (ignores **-S**).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
     (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
     *dist* in spherical degrees.
 
+.. _-N:
+
 **-N**\ *upper_age*
     Set the maximum age to extend the oldest stage back in time [no extension].
+
+.. _-Q:
 
 **-Q**\ *r/t*
     Input files only has (*x*,\ *y*,\ *z*); specify constant values for *r*,\ *t* that
     will be implied for each record.
 
+.. _-S:
+
 **-S**\ [*n_hs*\ ]
     Set the number of closest hotspots to report [Default is 1].
+
+.. _-T:
 
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *maxdist*
     Only report those seamounts whose flowlines came within *maxdist* to
     any hotspot [Default reports all seamounts].
+
+.. _-Z:
+
 **-Z**
     Use the hotspot ID number rather than the name tag in output records.
 

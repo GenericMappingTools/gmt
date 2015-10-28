@@ -14,9 +14,14 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77magref** [ *inputfile* ]
-[ **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ] [ **-C**\ *cm4file* ]
-[ **-D**\ *Dstfile* ] [ **-E**\ *f107file* ] [ **-F**\ *flags* ]
-[ **-G** ] [ **-Sc**\ \|\ **l**\ *low/high* ] [ |SYN_OPT-V| ]
+[ |-A|\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ]
+[ |-C|\ *cm4file* ]
+[ |-D|\ *Dstfile* ]
+[ |-E|\ *f107file* ]
+[ |-F|\ *flags* ]
+[ |-G| ]
+[ |-S|\ **c**\ \|\ **l**\ *low/high* ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
@@ -71,6 +76,8 @@ Optional Arguments
     solar-radio/noontime-flux/penticton/penticton_absolute/listings/
     listing_drao_noontime-flux-absolute_monthly.txt 
 
+.. _-A:
+
 **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**]
     Adjusts how the input record is interpreted. Append **+a** to set a
     fixed *altitude* (in km) that should apply to all data records
@@ -81,18 +88,26 @@ Optional Arguments
     specified as decimal years [Default is ISO *date*\ T\ *colck* format, see
     :ref:`TIME_EPOCH <TIME_EPOCH>`].
 
+.. _-C:
+
 **-C**\ *cm4file*
     Specify an alternate CM4 coefficient file [umdl.CM4].
+
+.. _-D:
 
 **-D**\ *Dstfile*
     Specify an alternate file with hourly means of the Dst index for CM4
     [Dst_all.wdc]. Alternatively, simply specify a single index to
     apply for all records.
 
+.. _-E:
+
 **-E**\ *f107file*
     Specify an alternate file with monthly means of absolute F10.7 solar
     radio flux for CM4 [F107_mon.plt]. Alternatively, simply specify a
     single flux to apply for all records.
+
+.. _-F:
 
 **-F**\ *flags*
     Selects output items; *flags* is a string made up of one or more of
@@ -144,8 +159,12 @@ Optional Arguments
     but output the field components. The data is written out in the
     order they appear in *flags* [Default is **-Frthxyzdi**/**1**].
 
+.. _-G:
+
 **-G**
     Specifies that coordinates are geocentric [geodetic].
+
+.. _-L:
 
 **-L**
     Computes J field vectors from certain external sources.
@@ -170,6 +189,8 @@ Optional Arguments
 
     **4** means Poloidal field.
 
+.. _-S:
+
 **-Sc**\ *low/high*
     Limits the wavelengths of the core field contribution to the band
     indicated by the low and high spherical harmonic order [1/13].
@@ -177,6 +198,8 @@ Optional Arguments
 **-Sl**\ *low/high*
     Limits the wavelengths of the lithosphere field contribution to the
     band indicated by the low and high spherical harmonic order [14/65].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
