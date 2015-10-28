@@ -219,19 +219,19 @@ To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
    ::
 
-    gmt gmtconvert test.b -bi4f > test.dat
+    gmt convert test.b -bi4f > test.dat
 
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 
    ::
 
-    gmt gmtconvert test.d -bo > test.b
+    gmt convert test.d -bo > test.b
 
 You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try
 
    ::
 
-    gmt gmtconvert table.d -o5,0 | psxy ...
+    gmt convert table.d -o5,0 | psxy ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
@@ -239,41 +239,41 @@ columns 4-6 and write ASCII with the command
 
    ::
 
-    gmt gmtconvert results.b -o8,4-6 -bi9s | psxy ...
+    gmt convert results.b -o8,4-6 -bi9s | psxy ...
 
 You want to plot the 2nd column of a 2-column file left.d versus the
 first column of a file right.d:
 
    ::
 
-    gmt gmtconvert left.d right.d -A -o1,2 | psxy ...
+    gmt convert left.d right.d -A -o1,2 | psxy ...
 
 To extract all segments in the file big_file.d whose headers contain
 the string "RIDGE AXIS", try
 
    ::
 
-    gmt gmtconvert big_file.d -S"RIDGE AXIS" > subset.d
+    gmt convert big_file.d -S"RIDGE AXIS" > subset.d
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try
 
    ::
 
-    gmt gmtconvert -S~"/^profile [0-9]+[g-l]$/"
+    gmt convert -S~"/^profile [0-9]+[g-l]$/"
 
 To reverse the order of segments in a file without reversing the order
 of records within each segment, try
 
    ::
 
-    gmt gmtconvert lots_of_segments.txt -Is > last_segment_first.txt
+    gmt convert lots_of_segments.txt -Is > last_segment_first.txt
 
 To extract segments 20 to 40 in steps of 2, plus segment 0 in a file, try
 
    ::
 
-    gmt gmtconvert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
+    gmt convert lots_of_segments.txt -Q0,20:2:40 > my_segments.txt
 
 
 To extract the attribute ELEVATION from an ogr gmt file like this
@@ -292,20 +292,20 @@ do
 
    ::
 
-    gmt gmtconvert file.gmt -a2=ELEVATION > xyz.dat
+    gmt convert file.gmt -a2=ELEVATION > xyz.dat
 
 or just
 
    ::
 
-    gmt gmtconvert file.gmt -aELEVATION > xyz.dat
+    gmt convert file.gmt -aELEVATION > xyz.dat
 
 To connect all points in the file sensors.txt with the specified origin
 at 23.5/19, try
 
    ::
 
-    gmt gmtconvert sensors.txt -F23.5/19 > lines.txt
+    gmt convert sensors.txt -F23.5/19 > lines.txt
 
 See Also
 --------

@@ -105,7 +105,7 @@ Optional Arguments
     the adjusted **-R**. By setting the default **PROJ_ ELLIPSOID** =
     Sphere, the user can make overlays with the adjusted **-R** so that
     they match. See **EXAMPLES** below. The adjusted **-R** is also
-    written in the grdheader remark, so it can be found later. See
+    written in the grid header remark, so it can be found later. See
     **-C** to set coordinates relative to projection center.
 
 .. _-N:
@@ -126,7 +126,7 @@ Optional Arguments
     [Default is 1.0]. For recent img files: img topo files are stored in
     (corrected) meters [**-S**\ 1]; free-air gravity files in mGal\*10
     [**-S**\ 0.1 to get mGal]; vertical deflection files in
-    microradians\*10 [**-S**\ 0.1 to get microradians], vertical gravity
+    micro-radians\*10 [**-S**\ 0.1 to get micro-radians], vertical gravity
     gradient files in Eotvos\*50 [**-S**\ 0.02 to get Eotvos, or
     **-S**\ 0.002 to get mGal/km]). If no *scale* is given we try to
     determine the scale by examining the file name for clues.

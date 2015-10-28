@@ -95,7 +95,7 @@ Optional Arguments
     =\ *pen* to the font specification. The *angle* is measured in degrees
     counter-clockwise from horizontal, and *justify* sets the alignment.
     If *font* is not an integer, then it is taken to be a text string
-    with the desired fontname (see **-L** for available fonts). The
+    with the desired font name (see **-L** for available fonts). The
     alignment refers to the part of the text string that will be mapped
     onto the (*x*,\ *y*) point. Choose a 2 character combination of L,
     C, R (for left, center, or right) and T, M, B for top, middle, or

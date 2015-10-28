@@ -35,12 +35,12 @@ Description
 -----------
 
 **grdmask** can operate in two different modes. 1. It reads one or more
-xy-files that each define a closed polygon. The nodes defined by the
+*pathfiles* that each define a closed polygon. The nodes defined by the
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
 perimeter, or inside the polygon. The resulting mask may be used in
 subsequent operations involving **grdmath** to mask out data from
-polygonal areas. 2. The xy-files simply represent data point locations
+polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
 a node is within a maximum distance from the nearest data point. If the
 distance specified is zero then only the nodes nearest each data point

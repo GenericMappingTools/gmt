@@ -86,7 +86,7 @@ Optional Arguments
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
     **B** to position first element in a row. For gridline registered
-    grids: If grid is periodic in x but the outcoming data should not
+    grids: If grid is periodic in x but the written data should not
     contain the (redundant) column at x = xmax, append **x**. For grid
     periodic in y, skip writing the redundant row at y = ymax by
     appending **y**. If the byte-order needs to be swapped, append

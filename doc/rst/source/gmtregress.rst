@@ -98,7 +98,7 @@ Optional Arguments
 **-N1**\ \|\ **2**\ \|\ **r**\ \|\ **w**
     Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
     absolute residuals), **2** (Least-squares; the mean of the squared residuals), 
-    **r** (LMS; The least median of the squared residuals), or **w** (RLS; reweighted least squares: the
+    **r** (LMS; The least median of the squared residuals), or **w** (RLS; Reweighted Least Squares: the
     mean of the squared residuals after outliers identified via LMS have been removed) [Default is **2**].
     Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
     As alluded to, RLS implies an initial LMS regression which is then used to identify outliers in the data,
@@ -168,14 +168,14 @@ x, y, and model prediction with 99% confidence intervals, try
 
    ::
 
-    gmt gmtregress points.txt -Fxymc -C99 > points_regressed.txt
+    gmt regress points.txt -Fxymc -C99 > points_regressed.txt
 
 To do a reweighted least-squares regression on the data rough.txt and return
 x, y, model prediction and the RLS weights, try 
 
    ::
 
-    gmt gmtregress rough.txt -Fxymw > points_regressed.txt
+    gmt regress rough.txt -Fxymw > points_regressed.txt
 
 To do an orthogonal least-squares regression on the data crazy.txt but first take
 the logarithm of both x and y, then return x, y, model prediction and the normalized
@@ -183,14 +183,14 @@ residuals (z-scores), try
 
    ::
 
-    gmt gmtregress crazy.txt -Eo -Fxymz -i0-1l > points_regressed.txt
+    gmt regress crazy.txt -Eo -Fxymz -i0-1l > points_regressed.txt
 
 To examine how the orthogonal LMS misfits vary with angle between 0 and 90
 in steps of 0.2 degrees for the same file, try 
 
    ::
 
-    gmtregress points.txt -A0/90/0.2 -Eo -Nr > points_analysis.txt
+    gmt regress points.txt -A0/90/0.2 -Eo -Nr > points_analysis.txt
 
 
 References

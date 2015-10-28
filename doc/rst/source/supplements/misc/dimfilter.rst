@@ -41,7 +41,7 @@ mode and only requires the total number of columns in the input file,
 which contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
-sectors. The output can be rought unless the input data is noise-free.
+sectors. The output can be rough unless the input data is noise-free.
 Thus, an additional filtering (e.g., Gaussian via **grdfilter**) of the
 DiM-filtered data is generally recommended.
 

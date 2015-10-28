@@ -278,7 +278,7 @@ using a minimum cubic spline, try
 
    ::
 
-    gmt gmtmath -T0/10/1 0 1 NRAND = 1D.txt
+    gmt math -T0/10/1 0 1 NRAND = 1D.txt
     gmt psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
     gmt greenspline 1D.txt -R0/10 -I0.1 -Sc -V | psxy -R -J -O -Wthin >> 1D.ps
 

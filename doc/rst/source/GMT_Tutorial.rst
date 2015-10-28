@@ -84,7 +84,7 @@ GMT installation considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See the GMT wiki for how to install GMT.  In addition, we recommend
-access to a *PostScript* previewer (e.g., gv (or ghostviewor plain ghostscript)),
+access to a *PostScript* previewer (e.g., gv (or ghostview or plain ghostscript)),
 and any flavor of the UNIX operating system (UNIX, Linux, OS X, Cygwin, MinGW, etc.).
 We do not recommend using the DOS command window under Windows.
 
@@ -1668,7 +1668,7 @@ Multi-dimensional maps
 
 Climate data, like ocean temperatures or atmospheric pressure, are often provided as
 multi-dimensional (3-D, 4-D or 5-D) grids in netCDF format. This section will demonstrate
-that GMT is able to plot "horizonal"
+that GMT is able to plot "horizontal"
 slices (spanning latitude and longitude) of such grids without much effort.
 
 As an example we will download the Seasonal Analysed Mean Temperature from the

@@ -31,7 +31,7 @@ Description
 -----------
 
 **fitcircle** reads lon,lat [or lat,lon] values from the first two
-columns on standard input [or *xyfile*]. These are converted to
+columns on standard input [or *table*]. These are converted to
 Cartesian three-vectors on the unit sphere. Then two locations are
 found: the mean of the input positions, and the pole to the great circle
 which best fits the input positions. The user may choose one or both of
@@ -84,7 +84,7 @@ Optional Arguments
     can choose from **f** (Flat Earth mean location), **m** (mean location),
     **n** (north pole of great circle), **s** (south pole of great circle), and
     **c
-    ** (pSle of small circle and its colatitude, which requires **-S**).
+    ** (pole of small circle and its colatitude, which requires **-S**).
 
 .. _-S:
 

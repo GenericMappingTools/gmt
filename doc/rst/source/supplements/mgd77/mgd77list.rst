@@ -93,7 +93,7 @@ Required Arguments
     **twt**
         Two-Way Travel time (in s).
     **depth**
-        Corrected bathymetry (in m, positive below sealevel).
+        Corrected bathymetry (in m, positive below sea level).
     **mtf1**
         Magnetic Total Field intensity from sensor 1 (in nTesla).
     **mtf2**
@@ -321,13 +321,13 @@ Optional Arguments
     **-Amc<offset>[unit]** Apply a correction that tries to compensate
     the fact that the magnetic field was not acquired at the same
     position as the navigation refer (ship's position). This is
-    accomplished by reinterpolating the total magnetic field to what it
+    accomplished by re-interpolating the total magnetic field to what it
     would have had if it was measured at the ship's position (remember,
     it probably was measured <offset> meters behind). Due to this
     interpolation step, bad navigation, namely too many repeated points,
     may cause troubles. Measures are taken to minimize this effect but
     they aren't 100% full prof. The interpolation method is controlled
-    by the gmtdefaults GMT_INTERPOLANT. Append **e** for meter, **f**
+    by the GMT default GMT_INTERPOLANT. Append **e** for meter, **f**
     for feet, **k** for km, **m** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is e (meters)].
 

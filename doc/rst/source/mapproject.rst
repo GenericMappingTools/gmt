@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**mapproject** [ *table* ] |-J|\ *parameters*
+**mapproject** [ *tables* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ **b**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*] ]
 [ |-C|\ [*dx*/*dy*] ]
@@ -44,7 +44,7 @@ Synopsis
 Description
 -----------
 
-**mapproject** reads (longitude, latitude) positions from *infiles* [or
+**mapproject** reads (longitude, latitude) positions from *tables* [or
 standard input] and computes (x,y) coordinates using the specified map
 projection and scales. Optionally, it can read (x,y) positions and
 compute (longitude, latitude) values doing the inverse transformation.

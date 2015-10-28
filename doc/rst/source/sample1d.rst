@@ -35,7 +35,7 @@ Description
 -----------
 
 **sample1d** reads a multi-column ASCII [or binary] data set from file
-[or standard input] and interpolates the timeseries/profile at locations
+[or standard input] and interpolates the time-series or spatial profile at locations
 where the user needs the values. The user must provide the column number
 of the independent (monotonically increasing **or** decreasing)
 variable. Equidistant or arbitrary sampling can be selected. All columns
@@ -86,7 +86,7 @@ Optional Arguments
 
 **-I**\ *inc*\ [*unit*]
     *inc* defines the sampling interval [Default is the separation
-    between the first and second abscissa point in the *infile*]. Append
+    between the first and second abscissa point in the *table*]. Append
     a distance unit (see UNITS) to indicate that the first two columns
     contain longitude, latitude and you wish to resample this path with
     a spacing of *inc* in the chosen units. For sampling of (x, y)
@@ -98,7 +98,7 @@ Optional Arguments
 **-N**\ *knotfile*
     *knotfile* is an optional ASCII file with the x locations where the
     data set will be resampled in the first column. Note: If **-H** is
-    selected it applies to both *infile* and *knotfile*. Also note that
+    selected it applies to both *table* and *knotfile*. Also note that
     **-i** never applies to *knotfile* since we always consider the
     first column only.
 
@@ -107,9 +107,9 @@ Optional Arguments
 **-S**\ *start*\ [*stop*] 
     For equidistant sampling, *start* indicates the location of the
     first output value. [Default is the smallest even multiple of *inc*
-    inside the range of *infile*]. Optionally, append /*stop* to
+    inside the range of *table*]. Optionally, append /*stop* to
     indicate the location of the last output value [Default is the
-    largest even multiple of *inc* inside the range of *infile*].
+    largest even multiple of *inc* inside the range of *table*].
 
 .. _-T:
 

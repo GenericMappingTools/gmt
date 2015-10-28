@@ -265,7 +265,7 @@ points in pts.d but more than 100 km away from the lines in lines.d, run
 
    ::
 
-    gmt gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
+    gmt select lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
@@ -275,21 +275,21 @@ points on land (as determined by the high-resolution coastlines), use
 
    ::
 
-    gmt gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
+    gmt select data.d -R120/121/22/24 -Dh -Nk/s > subset
 
 To return all points in quakes.d that are inside or on the spherical
 polygon lonlatpath.d, try
 
    ::
 
-    gmt gmtselect quakes.d -Flonlatpath.d -fg > subset1
+    gmt select quakes.d -Flonlatpath.d -fg > subset1
 
 To return all points in stations.d that are within 5 cm of the point in
 origin.d for a certain projection, try
 
    ::
 
-    gmt gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c \
+    gmt select stations.d -C5/origin.d -R20/50/-10/20 -JM20c \
     --PROJ_LENGTH_UNIT=cm > subset2
 
 .. include:: explain_gshhs.rst_

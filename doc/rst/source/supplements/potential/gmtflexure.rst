@@ -113,7 +113,7 @@ Optional Arguments
 
 **-W**\ *wd*
     Specify water depth in m; append k for km.  Must be positive [0].
-    Any subarial topography will be scaled via the densities set in **-D**
+    Any subaerial topography will be scaled via the densities set in **-D**
     to compensate for the larger density contrast with air.
 
 .. _-Z:

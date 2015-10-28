@@ -46,7 +46,7 @@ Optional Arguments
 ------------------
 
 **-D**
-    Calculate the length of trackline segments per bin [Default skips
+    Calculate the length of track-line segments per bin [Default skips
     this step]. The length fragments are given as the 5th output column
     (after the *flags*). The length units are obtained via the TAB
     setting (see :doc:`x2sys_init`).
@@ -56,7 +56,7 @@ Optional Arguments
     **-JY**\ *lon0*/37:04:17.166076/360, where *lon0* is the
     mid-longitude of the region. Requires **-D**, geographical data, and
     a global region (e.g., **-Rg** or **-Rd**). This option is useful
-    for statistics related to trackline density but should not be used
+    for statistics related to track-line density but should not be used
     when preparing bin-index files for the x2sys track data bases.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code

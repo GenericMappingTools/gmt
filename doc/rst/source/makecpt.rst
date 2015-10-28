@@ -41,7 +41,7 @@ The color palette includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
 than the lowest *z*-value, the foreground color (F) assigned to values
 higher than the highest *z*-value, and the NaN color (N) painted
-whereever values are undefined.
+wherever values are undefined.
 
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters

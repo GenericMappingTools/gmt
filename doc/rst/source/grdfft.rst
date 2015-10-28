@@ -232,4 +232,5 @@ See Also
 :doc:`gmt`, :doc:`grdedit`,
 :doc:`grdfilter`,
 :doc:`grdmath`,
-:doc:`grdproject`
+:doc:`grdproject`,
+:doc:`gravfft <supplements/potential/gravfft>`

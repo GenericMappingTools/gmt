@@ -440,7 +440,7 @@ GMT grids expect this type of variable.
        unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
        size_t       nm;                 /* Number of data items in this grid (nx * ny) [padding is excluded] */
        size_t       size;               /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
-       size_t       n_alloc;            /* Bytes allcoated for this grid */
+       size_t       n_alloc;            /* Bytes allocated for this grid */
        unsigned int trendmode;          /* Holds status for detrending of grids. 0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
        unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
        unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
@@ -496,7 +496,7 @@ itself may be of any data type and have more than one band (channel).
 Both image and header information are passed via a ``struct GMT_IMAGE``,
 which is a container that holds both items. Thus, the arguments to
 GMT API functions that handle GMT images expect this type of
-variable. Unlike the other objects, writting images has only partial
+variable. Unlike the other objects, writing images has only partial
 support via ``GMT_grdimage`` [4]_.
 
 .. _struct-image:
@@ -538,7 +538,7 @@ pass as arguments to GMT modules.
        /* Variables we document for the API: */
        unsigned int          n_headers;          /* Number of CPT file header records (0 if no header) */
        unsigned int          n_colors;           /* Number of colors in CPT lookup table */
-       unsigned int          cpt_flags;          /* Flags controling use of BFN colors */
+       unsigned int          cpt_flags;          /* Flags controlling use of BFN colors */
        struct GMT_LUT       *range;              /* CPT lookup table read by GMT_read_cpt */
        struct GMT_BFN_COLOR  patch[3];           /* Structures with back/fore/nan colors */
        char **header;                            /* Array with all CPT file header records, if any) */
@@ -2294,7 +2294,7 @@ append to file.B:
 
   ::
 
-    gmtconvert -<file.A ->>file.B
+    gmt convert -<file.A ->>file.B
 
 These options also work on the command line but usually one would have
 to escape the special characters < and > as they are

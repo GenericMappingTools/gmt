@@ -203,7 +203,7 @@ Optional Arguments
     **-Gp**\ *icon\_size/pattern*, where *pattern* gives the number of
     the image pattern (1-90) OR the name of a icon-format file.
     *icon\_size* sets the unit size in inches. To invert black and white
-    pixels, use **-GP** instead of **-Gp**. See **pspatterns** for
+    pixels, use **-GP** instead of **-Gp**. See the CookBook for
     information on individual patterns.
 
 .. _-K:

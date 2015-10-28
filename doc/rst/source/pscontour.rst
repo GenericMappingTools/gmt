@@ -42,7 +42,7 @@ Synopsis
 Description
 -----------
 
-**pscontour** reads an ASCII [or binary] xyz-file and produces a raw
+**pscontour** reads an ASCII [or binary] *table* and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk's [1996] or Watson's
 [1982] method as selected during GMT installation; type **pscontour
@@ -85,7 +85,7 @@ Required Arguments
         equal to the specified annotation interval.
 
     If a file is given and **-T** is set, then only contours marked with
-    upper case C or A will have tickmarks. In all cases the contour
+    upper case C or A will have tick-marks. In all cases the contour
     values have the same units as the file.
 
 .. _-J:

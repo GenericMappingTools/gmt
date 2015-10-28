@@ -84,7 +84,7 @@ Required Arguments
         equal to the specified annotation interval.
 
     If a file is given and **-T** is set, then only contours marked with
-    upper case C or A will have tickmarks. In all cases the contour
+    upper case C or A will have tick-marks. In all cases the contour
     values have the same units as the grid. 
 
 .. _-J:

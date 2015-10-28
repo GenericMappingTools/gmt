@@ -104,7 +104,7 @@ Examples
 --------
 
 To convert the entire intermediate GSHHG binary data to ASCII files for
-Octave/Mathlab, run
+Octave/Matlab, run
 
    ::
 
@@ -132,7 +132,7 @@ custom programs should consult the gshhg.c and gshhg.h source code and
 familiarize themselves with the data format and how various information
 flags are packed into a single 4-byte integer. While we do not maintain
 any Octave/Matlab code to read these files we are aware that both
-Mathworks and IDL have made such tools available to their users.
+MathWorks and IDL have made such tools available to their users.
 However, they tend not to update their code and our file structure has
 evolved considerably over time, breaking their code. Here, some general
 technical comments on the binary data files are given.

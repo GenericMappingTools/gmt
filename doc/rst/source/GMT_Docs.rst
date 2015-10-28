@@ -479,7 +479,7 @@ changes to existing syntax will be backwards compatible:
    added SVG as a new output vector graphics format and now handle transparency even if
    non-PDF output formats are requested.
 
-*  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidaes the
+*  :doc:`pscontour` adds a **-Q**\ *cut* option like :doc:`grdcontour` and consolidates the
    old **-T**, **-Q** options for an index file to a new **-E** option.
 
 *  :doc:`pshistogram` added modifiers **-W**\ *width*\ [**+l**\ \|\ **h**\ \|\ **b**]
@@ -2156,7 +2156,7 @@ ways in which this can be accomplished.
 
    ::
 
-    gmt gmtset FONT_ANNOT_PRIMARY 12p,Times-Bold,red
+    gmt set FONT_ANNOT_PRIMARY 12p,Times-Bold,red
 
    These changes will remain in effect until they are overridden.
 
@@ -2527,12 +2527,12 @@ day-names) may be affected by the :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`,
 
 For automated plots the region may not always be the same and thus it
 can be difficult to determine the appropriate *stride* in advance. Here
-GMT provides the opportunity to autoselect the spacing between the
+GMT provides the opportunity to auto-select the spacing between the
 major and minor ticks and the grid lines, by not specifying the *stride*
 value. For example, **-Bafg** will select all three spacings
 automatically for both axes. In case of longitude--latitude plots, this
 will keep the spacing the same on both axes. You can also use
-**-Bafg/afg** to autoselect them separately.
+**-Bafg/afg** to auto-select them separately.
 
 In the case of automatic spacing, when the *stride* argument is omitted
 after **g**, the grid line spacing is chosen the same as the minor tick
@@ -2654,7 +2654,7 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
    :width: 500 px
    :align: center
 
-   Linear Cartesian projection axis.  Long tickmarks accompany
+   Linear Cartesian projection axis.  Long tick-marks accompany
    annotations, shorter ticks indicate frame interval. The axis label is
    optional. For this example we used ``-R0/12/0/0.95 -JX3i/0.3i -Ba4f2g1+lFrequency+u" %" -BS``
 
@@ -2724,7 +2724,7 @@ Cartesian time axes
 What sets time axis apart from the other kinds of plot axes is the
 numerous ways in which we may want to tick and annotate the axis. Not
 only do we have both primary and secondary annotation items but we also
-have interval annotations versus tickmark annotations, numerous time
+have interval annotations versus tick-mark annotations, numerous time
 units, and several ways in which to modify the plot. We will demonstrate
 this flexibility with a series of examples. While all our examples will
 only show a single *x*\ -axis (south, selected via **-BS**), time-axis
@@ -4944,7 +4944,7 @@ Modifiers for changing the grid coordinates
 A few GMT tools require that the two horizontal dimensions be
 specified in meters. One example is
 :doc:`grdfft` which must compute the 2-D
-Fourier transform of a grid and evaluate wavenumbers in the proper units
+Fourier transform of a grid and evaluate wave numbers in the proper units
 (1/meter). There are two situations where the user may need to change
 the coordinates of the grid passed to such programs:
 
@@ -5039,13 +5039,13 @@ needed than name the variables on the command line. For example:
    ::
 
     gmt psxy "file.nc?lon/lat" ...
-    gmt gmtconvert "file.nc?time/lat/lon"
+    gmt convert "file.nc?time/lat/lon"
 
 If one or more of the selected variables are two-dimensional, and have
 the same leading dimension as the other selected variables they will be
 plotted in their entirety. For example, if a netCDF files contains 6
 time steps recording temperature at 4 points, and the variable ``temp`` is a 6 by
-4 array, then the command ``gmtconvert "file.nc?time/temp"`` can result in:
+4 array, then the command ``gmt convert "file.nc?time/temp"`` can result in:
 
    ::
 
@@ -5057,7 +5057,7 @@ time steps recording temperature at 4 points, and the variable ``temp`` is a 6 b
     2012-06-27T12:00:00 27.2 27.2 27.5 27.5
 
 If, for example, only the second temperature column is needed, use
-``gmt gmtconvert "file.nc?time/temp[1]"`` (indices start counting at 0).
+``gmt convert "file.nc?time/temp[1]"`` (indices start counting at 0).
 
 The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units
@@ -5190,7 +5190,7 @@ simple example using :doc:`grdinfo` would be
 
    ::
 
-    grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
+    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
 
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Title: Grid imported via GDAL
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Command:
@@ -5398,8 +5398,8 @@ Polish Notation" (RPN) calculator that operates on or creates table data:
 
    ::
 
-      gmt gmtmath -T0/100/1  T SQRT = sqrt.d
-      gmt gmtmath -T0/100/10 T SQRT = sqrt.d10
+      gmt math -T0/100/1  T SQRT = sqrt.d
+      gmt math -T0/100/10 T SQRT = sqrt.d10
 
 Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -6421,7 +6421,7 @@ projection. GMT offers three different definitions:
 
 For all three definitions, the upper case **A**\ \|\ **B**\ \|\ **C** means we
 will allow projection poles in the southern hemisphere [By default we map any such
-poles to their antipodes in the north heimsphere].  Our example was produced by the command
+poles to their antipodes in the north hemisphere].  Our example was produced by the command
 
    ::
 
@@ -6853,7 +6853,7 @@ Eckert IV and VI projection (**-Jk** **-JK**) :ref:`... <-Jk_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Eckert IV and VI projections, presented by the German cartographer
-Max Eckert-Greiffendorff in 1906, are pseudocylindrical equal-area
+Max Eckert-Greiffendorff in 1906, are pseudo-cylindrical equal-area
 projections. Central meridian and all parallels are straight lines;
 other meridians are equally spaced elliptical arcs (IV) or sinusoids
 (VI). The scale is true along latitudes 40º30' (IV) and 49º16' (VI). Their
@@ -6983,8 +6983,7 @@ A. GMT Supplemental Packages
 
 These packages are for the most part written and supported by us, but
 there are some exceptions. They provide extensions of GMT that are
-needed for particular rather than general applications. The software is
-provided in a separate, supplemental archive (GMT_suppl.tar.gz (or .bz2)).
+needed for particular rather than general applications.
 Questions or bug reports for this software
 should be addressed to the person(s) listed in the ``README`` file associated with
 the particular program. It is not guaranteed that these programs are
@@ -7061,8 +7060,12 @@ synthetic bathymetry over various seamount shapes, and
 :doc:`gmtgravmag3d <supplements/potential/gmtgravmag3d>` and
 :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>`,
 which computes the gravity or
-magnetic anomaly of a body by the method of Okabe [30]_. The package is
-maintained by Joaquim Luis and Paul Wessel.
+magnetic anomaly of a body by the method of Okabe [30]_, and
+:doc:`talwani2d <supplements/potential/talwani2d>` and
+:doc:`talwani3d <supplements/potential/talwani3d>` and
+which uses the methods of Talwani to compute various geopotential components
+from 2-D [31]_ or 3-D [32]_ bodies.
+The package is maintained by Joaquim Luis and Paul Wessel.
 
 segyprogs: plotting SEGY seismic data
 -------------------------------------
@@ -7074,7 +7077,7 @@ and y:time/depth) while :doc:`pssegyz <supplements/segy/pssegyz>`
 generates a 3-D plot (x and y: location coordinates, z: time/depth).
 Locations may be read from predefined or arbitrary portions of each
 trace header. Finally, :doc:`segy2grd <supplements/segy/segy2grd>` can
-convert SEGY data to a GMT grid file. The package is maintained by Tim Henstock [31]_.
+convert SEGY data to a GMT grid file. The package is maintained by Tim Henstock [33]_.
 
 spotter: backtracking and hotspotting
 -------------------------------------
@@ -7944,7 +7947,7 @@ encoded fonts are shown in
 Figure :ref:`Octal codes for Standard and ISO <Octal_codes_stand_iso>`. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
-:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`gmt.conf` file [32]_.
+:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` to Standard+ or ISOLatin1+ in your :doc:`gmt.conf` file [34]_.
 
 .. _Octal_codes_stand_iso:
 
@@ -8477,7 +8480,7 @@ they require more work (doubling the width to achieve the same cut-off wavelengt
 One of the nice things about the gaussian filter is that its transfer
 functions are the same in 1-D and 2-D. Another nice property is that it
 has no negative side lobes. There are many definitions of the gaussian
-filter in the literature (see page 7 of Bracewell [33]_). We define
+filter in the literature (see page 7 of Bracewell [35]_). We define
 :math:`\sigma` equal to 1/6 of the filter width, and the impulse
 response proportional to :math:`\exp[-0.5(t/\sigma)^2)`. With this
 definition, the transfer function is :math:`\exp[-2(\pi\sigma f)^2]` and
@@ -8518,7 +8521,7 @@ data is far superior to the WDB data as far as data quality goes, but as
 noted it lacks lakes, not to mention rivers and borders. We decided to
 use the WVS whenever possible and supplement it with WDB data. We got
 these data over the Internet; they are also available on CD-ROM from the
-National Geophysical Data Center in Boulder, Colorado [34]_.
+National Geophysical Data Center in Boulder, Colorado [36]_.
 
 Format required by GMT
 ----------------------
@@ -8617,13 +8620,13 @@ becomes a complicated processing step.
    operation would take a very long time to complete. We chose to make 5
    versions on the database, corresponding to different resolutions. The
    decimation was carried out using the Douglas-Peucker (DP)
-   line-reduction algorithm [35]_. We chose the cutoffs so that each
+   line-reduction algorithm [37]_. We chose the cutoffs so that each
    subset was approximately 20% the size of the next higher resolution.
    The five resolutions are called **f**\ ull, **h**\ igh,
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
    :doc:`pscoast`, :doc:`gmtselect`, and
    :doc:`grdlandmask` with the **-D**
-   option [36]_. For each of these 5 data sets (**f**, **h**, **i**,
+   option [38]_. For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
    split all polygons into line-segments that each fit inside one of the
    many boxes defined by these grid lines. Thus, to paint the entire
@@ -8634,7 +8637,7 @@ becomes a complicated processing step.
    feature is smaller than the cutoff specified by the user. The
    resulting segment coordinates were then scaled to fit in short
    integer format to preserve precision and written in netCDF format for
-   ultimate portability across hardware platforms [37]_.
+   ultimate portability across hardware platforms [39]_.
 
 *  While we are now back to a file of line-segments we are in a much
    better position to create smaller polygons for painting. Two problems
@@ -8852,11 +8855,8 @@ Follow the instructions on the Cygwin page on how to install the
 package; note you must explicitly add all the development tool packages
 (e.g., **gcc** etc) as the basic installation does not include them by
 default. Once you are up and running under Cygwin, you may install
-GMT  the same way you do under any other UNIX platform by either
-running the automated install via **install_gmt** or manually running
-configure first, then type make all. If you install via the web form,
-make sure you save the parameter file without DOS CR/LF endings. Use
-**dos2unix** to get rid of those if need be.
+GMT  the same way you do under any other UNIX platform; our wiki
+has instructions for packages you need to install first.
 
 Finally, from Cygwin's User Guide: By default, no Cygwin program can
 allocate more than 384 MB of memory (program and data). You should not
@@ -8899,7 +8899,7 @@ Built-in color palette tables
 
 Figures :ref:`CPT files a <CPT_files_a>` and
 :ref:`b <CPT_files_b>` show the 36 built-in
-color palettes, stored in so-called CPT tables [38]_. The programs
+color palettes, stored in so-called CPT tables [40]_. The programs
 :doc:`makecpt` and
 :doc:`grd2cpt` are used to access these
 master CPT tables and translate/scale them to fit the user's range of
@@ -9313,7 +9313,7 @@ D:
     **D**\ *dist*\ [**d\ \|\ m\ \|\ s\ \|\ e\ \|\ f\ \|\ k\ \|\ M\ \|\ n**][/\ *frac*].
     This option is similar to **d** except the original data must be
     referred to geographic coordinates (and a map projection must have
-    been chosen) and actual Earth [39]_ surface distances along the
+    been chosen) and actual Earth [41]_ surface distances along the
     lines are considered. Append the unit you want to measure distances
     in; choose among arc **d**\ egree, **m**\ inute, and **s**\ econd,
     or m\ **e**\ ter [Default], **f**\ eet, **k**\ ilometer, statute
@@ -9773,7 +9773,7 @@ labels. This is done with **awk**.
 
     ::
 
-     gmt gmtconvert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
+     gmt convert -i0,1,4 -Em150 transect.txt | $AWK '{print $1,$2,int($3)}' > fix2.txt
      gmt pscoast -R50/160/-15/15 -JM5.3i -Gburlywood -Sazure -A500 -K -P > GMT_App_O_8.ps
      gmt grdcontour geoid.nc -J -O -K -B20f10 -BWSne -C10 -A20+d+u" m"+f8p -Gl50/10S/160/10S \
                     -S10 -T+l"-+" >> GMT_App_O_8.ps
@@ -9797,7 +9797,7 @@ Finally, we will make a more complex composite illustration that uses
 several of the label placement and label attribute settings discussed in
 the previous sections. We make a map showing the tsunami travel times
 (in hours) from a hypothetical catastrophic landslide in the Canary
-Islands [40]_. We lay down a color map based on the travel times and the
+Islands [42]_. We lay down a color map based on the travel times and the
 shape of the seafloor, and travel time contours with curved labels as
 well as a few quoted lines. The final script is
 
@@ -9805,7 +9805,7 @@ well as a few quoted lines. The final script is
 
      R=-R-85/5/10/55
      gmt grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
-     gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
+     gmt set FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
      gmt project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.txt
      gmt project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.txt
      km=`echo -17 28 | gmt mapproject -G-74/41/k -fg --FORMAT_FLOAT_OUT=%.0f -o2`
@@ -9820,7 +9820,7 @@ well as a few quoted lines. The final script is
      gmt psxy -R -J -Wfatter,white great_NY_Canaries.txt -O -K  >> GMT_App_O_9.ps
      gmt pscoast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
                  -Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
-     gmt gmtconvert great_NY_*.txt -E | gmt psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
+     gmt convert great_NY_*.txt -E | gmt psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
      gmt psxy -R -J -Wthick great_NY_Canaries.txt -O -K \
               -Sqn1:+f8p,Times-Italic+l"Distance Canaries to New York = $km km"+ap+v >> GMT_App_O_9.ps
      gmt psxy -R -J great_NY_Paris.txt -O -K -Sc0.08c -Gblack >> GMT_App_O_9.ps
@@ -9901,7 +9901,7 @@ The example below shows how *isolation mode* works.
 
      # These settings will be local to this script only since it writes to
      # $GMT_TMPDIR/gmt.conf
-     gmt gmtset COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
+     gmt set COLOR_MODEL rgb FONT_ANNOT_PRIMARY 14p
 
      # Make grid file and color map in temporary directory
      gmt grdmath -Rd -I1 Y = $GMT_TMPDIR/lat.nc
@@ -10448,44 +10448,53 @@ Finally we show an example of a polygon file:
    *Geophysics, 44*, 730--741.
 
 .. [31]
+   Talwani, M., J. L. Worzel, and M. Landisman (1959), Rapid gravity computations
+   for two-dimensional bodies with application to the Mendocino submarine fracture zone,
+   *J. Geophys. Res., 64*, 49-–59.
+
+.. [32]
+   Talwani, M., and M. Ewing (1960), Rapid computation of gravitational attraction of
+   three-dimensional bodies of arbitrary shape, *Geophysics, 25*, 203--225.
+
+.. [33]
    `Timothy J. Henstock <http://www.southampton.ac.uk/oes/research/staff/then.page>`_,
    University of Southampton
 
-.. [32]
+.. [34]
    If you chose SI units during the installation then the default
    encoding is ISOLatin1+, otherwise it is Standard+.
 
-.. [33]
+.. [35]
    R. Bracewell, *The Fourier Transform and its Applications*,
    McGraw-Hill, London, 444 p., 1965.
 
-.. [34]
+.. [36]
    `National Geophysical Data Center, Boulder, Colorado <http://www.ngdc.noaa.gov/>`_
 
-.. [35]
+.. [37]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
    of the number of points required to represent a digitized line or its
    caricature, *Canadian Cartographer*, 10, 112--122.
 
-.. [36]
+.. [38]
    The full and high resolution files are in separate archives because
    of their size. Not all users may need these files as the intermediate
    data set is better than the data provided with version 2.2.4.
 
-.. [37]
+.. [39]
    If you need complete polygons in a simpler format, see the article on
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
    *J. Geophys. Res. 101*, 8741--8743).
 
-.. [38]
+.. [40]
    The 23rd palette is called *random* and produces a random set of
    colors suitable for categorical plots.
 
-.. [39]
+.. [41]
    or whatever planet we are dealing with.
 
-.. [40]
+.. [42]
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see `<http://www.geoware-online.com/>`_.
 

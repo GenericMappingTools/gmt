@@ -125,7 +125,7 @@ geophysical data to and from the NGDC data center. Normally, only the
 ship-operations people and the cruise PI might be involved in *making*
 an MGD77 ASCII file for transmission to NGDC; users are more interested
 in *reading* such files. (2) The MGD77+ netCDF format was developed to
-fascilitate the use of MGD77 data by scientists. It contains all the
+facilitate the use of MGD77 data by scientists. It contains all the
 information of the original MGD77 file and if you convert back and forth
 you end up with the original. However, file sizes are typically ~30% of
 the original ASCII format and is much faster to operate on. (3) The

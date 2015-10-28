@@ -72,7 +72,7 @@ Required Arguments
     data types are case insensitive.
 
     Consider setting :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>`
-    to reduce file size and to further increase read/write performace.
+    to reduce file size and to further increase read/write performance.
     Especially when working with subsets of global grids, masks, and grids with
     repeating grid values, the improvement is usually significant.
 
@@ -210,7 +210,7 @@ suffix between quotes.
 Native Binary Files
 -------------------
 
-For binary native GMT files the size of the GMT grdheader block
+For binary native GMT files the size of the GMT grid header block
 is *hsize* = 892 bytes, and the total size of the file is *hsize* + *nx*
 \* *ny* \* *item_size*, where *item_size* is the size in bytes of each
 element (1, 2, 4). Bit grids are stored using 4-byte integers, each

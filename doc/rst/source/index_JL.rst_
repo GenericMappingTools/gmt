@@ -104,7 +104,7 @@ MATLAB Wrapper
 |    ml_wrapper      |
 +--------------------+
 
-.. Include an hiden page with option's examples that can be referenced by individual programs
+.. Include an hidden page with option's examples that can be referenced by individual programs
 
 .. toctree::
    :hidden:

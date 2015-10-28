@@ -92,7 +92,7 @@ Imagining that we want to plot that random data art, we can do it with a call to
 
 Note that we now sent the *G grid* as argument instead of the **-G**\ *gridname* that we would have
 used in the command line. The second command means that we ended our work with **GMT** and call
-the internall functions that will do the house keeping of freeing no longer needed memory.
+the internal functions that will do the house keeping of freeing no longer needed memory.
 
 So that's basically how it works. When numeric data has to be sent *in* to **GMT** we use
 MATLAB variables holding the data in matrices or structures or cell arrays depending on the case. On

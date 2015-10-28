@@ -870,7 +870,7 @@ fonts can be found in the :doc:`gmt` man page.
 |     *International-1967*: Worldwide use (1967)
 |     *Kaula*: From satellite tracking (1961)
 |     *Krassovsky*: Used in the (now former) Soviet Union (1940)
-|     *Lerch*: For geoid modelling (1979)
+|     *Lerch*: For geoid modeling (1979)
 |     *Maupertius*: Really old ellipsoid used in France (1738)
 |     *Mercury-1960*: Same as Fischer-1960 (1960)
 |     *MERIT-83*: United States Naval Observatory (1983)

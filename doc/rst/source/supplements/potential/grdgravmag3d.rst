@@ -43,7 +43,7 @@ Required Arguments
 
 *grdfile_top* [*grdfile_bot*]
    Grid file whose gravity efect is going to be computed. If two grids are
-   provided then the gravity/magnetic efect of the volume between them is computed. 
+   provided then the gravity/magnetic effect of the volume between them is computed. 
 
 .. _-C:
 
@@ -54,7 +54,7 @@ Required Arguments
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
-    option is mutually exlusive with **-G**.
+    option is mutually exclusive with **-G**.
 
 .. _-G:
 
@@ -110,12 +110,12 @@ Optional Arguments
 
 **-Q**\ [\ **n**\ *n_pad*]\ \|\ [\ *pad_dist*]\ \|\ [<w/e/s/n>]
     Extend the domain of computation with respect to output **-R** region. 
-      **-Qn**\ *n_pad* artifficially extends the width of the outer rim of
+      **-Qn**\ *n_pad* artificially extends the width of the outer rim of
       cells to have a fake width of *n_pad* * dx[/dy].
 
       **-Q**\ *pad_dist* extend the region by west-pad, east+pad, etc.
 
-      **-Q**\ *region* Same sintax as **-R**.
+      **-Q**\ *region* Same syntax as **-R**.
 
 .. _-R:
 
@@ -138,9 +138,9 @@ Optional Arguments
 
 **-Z**\ *level*\ [\ **b**\ \|\ **t**]
     level of reference plane [Default = 0]. Use this option when the
-    triangles describe a non-closed surface and the volume is deffined
+    triangles describe a non-closed surface and the volume is defined
     from each triangle and this reference level. An example will be the
-    whater depth to compute a Bouguer anomaly. Use **-Zb** or **Zt** to close
+    water depth to compute a Bouguer anomaly. Use **-Zb** or **Zt** to close
     the body at its bottom (for example, to compute the effect of a dome) or
     at its top (to compute the effect of a *spoon*).
 

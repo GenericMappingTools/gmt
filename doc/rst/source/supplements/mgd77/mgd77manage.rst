@@ -73,7 +73,7 @@ Optional Arguments
     to use [1]). For gravity we choose the reference field based on the
     parameter Gravity Theoretical Formula Code in the cruise's MGD77
     header. If this is not set or is invalid we default to the IGF 1980.
-    You can override this behaviour by appending the desired code: 1 =
+    You can override this behavior by appending the desired code: 1 =
     Heiskanen 1924, 2 = International 1930, 3 = IGF1967, or 4 = IGF1980.
 
     **d** Append filename of a two-column table with the first column
@@ -266,7 +266,7 @@ ideas and steps you need to take to maintain your files.
 Our starting point is the MGD77 ASCII data files distributed from NGDC
 on CD-ROMS, DVD-ROMS, and via FTP. Using Geodas to install the files
 locally we choose the "Carter corrected depth" option which will fill in
-the depth column using the two-way traveltimes and the Carter tables if
+the depth column using the two-way travel-times and the Carter tables if
 twt is present. This step yields ~5000 individual cruise files. Place
 these in one or more sub-directories of your choice, list these
 sub-directories (one per line) in the file mgd77_paths.txt, and place

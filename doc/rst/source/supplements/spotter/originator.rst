@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originator** [ *table* ] **-E**\ [**+**]\ *rotfile*
+**originator** [ *tables* ] **-E**\ [**+**]\ *rotfile*
 **-F**\ [**+**]\ *hs_file* [ **-D**\ *d_km* ] [ **-L**\ [*flag*] ]
 [ **-N**\ *upper_age* ] [ **-Q**\ *r/t* ] [ **-S**\ [*n_hs*] ]
 [ **-T** ]
@@ -32,7 +32,7 @@ Description
 -----------
 
 **originator** reads (longitude, latitude, height, radius, crustal_age)
-records from *infiles* [or standard input] and uses the given Absolute
+records from *tables* [or standard input] and uses the given Absolute
 Plate Motion (APM) stage or total reconstruction rotation file and the
 list of hotspot locations to determine the most likely origin (hotspot)
 for each seamount. It does so by calculating flowlines back in time and

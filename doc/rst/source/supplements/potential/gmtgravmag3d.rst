@@ -47,7 +47,7 @@ Required Arguments
 .. _-H:
 
 **-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip*
-    Sets parameters for computing a magnetic anomally. Use
+    Sets parameters for computing a magnetic anomaly. Use
     *f_dec*/*f_dip* to set the geomagnetic declination/inclination in
     degrees. *m_int*/*m_dec*/*m_dip* are the body magnetic intensity
     declination and inclination.
@@ -123,9 +123,9 @@ Optional Arguments
 
 **-Z**\ [*level*]
     level of reference plane [Default = 0]. Use this option when the
-    triangles describe a non-closed surface and the volume is deffined
+    triangles describe a non-closed surface and the volume is defined
     from each triangle and this reference level. An example will be the
-    whater depth to compute a Bouguer anomaly.
+    hater depth to compute a Bouguer anomaly.
 
 **-fg**
    Geographic grids (dimensions of longitude, latitude) will be converted to

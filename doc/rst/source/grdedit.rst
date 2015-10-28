@@ -38,7 +38,7 @@ replaces the information with values provided on the command line [if
 any]. As an option, global, geographical grids (with 360 degrees
 longitude range) can be rotated in the east-west direction, and
 individual nodal values can be replaced from a table of *x*, *y*, *z*
-values. **grdedit** only operates on files containing a grdheader. Note:
+values. **grdedit** only operates on files containing a grid header. Note:
 If it is important to retain the original data you should use **-G**
 to save the modified grid to a new file. 
 
@@ -86,7 +86,7 @@ Optional Arguments
 .. _-J:
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
-    metadata in netCDF grids. This metadata will be reconized by GDAL.
+    metadata in netCDF grids. This metadata will be recognized by GDAL.
 .. include:: explain_-J.rst_
 
 .. _-N:

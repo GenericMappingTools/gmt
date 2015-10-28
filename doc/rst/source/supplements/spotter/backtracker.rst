@@ -156,28 +156,28 @@ Optional Arguments
 Examples
 --------
 
-To backtrack the (x,y,t) points in the file seamounts.d to their origin
-(presumably the hotspot), using the DC85.d Euler poles, run
+To backtrack the (x,y,t) points in the file seamounts.txt to their origin
+(presumably the hotspot), using the DC85.txt Euler poles, run
 
    ::
 
-    gmt backtracker seamounts.d -Db -EDC85.d > newpos.d
+    gmt backtracker seamounts.txt -Db -EDC85.txt > newpos.txt
 
 To project flowlines forward from the (x,y,t) points stored in several
 3-column, binary, double precision files, run
 
    ::
 
-    gmt backtracker points.gmt \* -Df -EDC85.d -Lf25 -bo -bi3 > lines.b
+    gmt backtracker points.gmt \* -Df -EDC85.txt -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with **psxy**.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
-total reconstruction rotations for the plate (PAC_APM.d), try
+total reconstruction rotations for the plate (PAC_APM.txt), try
 
    ::
 
-    echo 204 19 80 | gmt backtracker -Df -EPAC_APM.d -Lb1 > path.d
+    echo 204 19 80 | gmt backtracker -Df -EPAC_APM.txt -Lb1 > path.txt
 
 Notes
 -----

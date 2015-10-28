@@ -42,7 +42,7 @@ Description
 
 **psbasemap** creates PostScript code that will produce a basemap.
 Several map projections are available, and the user may specify separate
-tickmark intervals for boundary annotation, ticking, and [optionally]
+tick-mark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
 At least one of the options **-B**, **-L**, or **-T** must be specified.
 
@@ -200,7 +200,7 @@ Log-log plot
 
 To make a log-log frame with only the left and bottom axes, where the
 x-axis is 25 cm and annotated every 1-2-5 and the y-axis is 15 cm and
-annotated every power of 10 but has tickmarks every 0.1, run
+annotated every power of 10 but has tick-marks every 0.1, run
 
    ::
 

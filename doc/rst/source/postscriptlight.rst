@@ -215,7 +215,7 @@ initialization:
     are presented in the PostScript code. The *origin* setting
     determines for x and y separately the origin of the specified
     offsets (next argument). Each of the two characters are either **r**
-    for an offset relative to the current origin, **a** for a temporaty
+    for an offset relative to the current origin, **a** for a temporary
     adjustment of the origin which is undone during BD(PSL_endplot),
     **f** for a placement of the origin relative to the lower left corner
     of the page, **c** for a placement of the origin relative to the
@@ -378,7 +378,7 @@ affect the current state of parameters such as line and fill attributes.
     and end of a line segment. PSL_BUTT_CAP (0) gives butt line caps
     [Default], PSL_ROUND_CAP (1) selects round
     caps, while PSL_SQUARE_CAP (2) results
-    in square caps. THus, the two last options will visually lengthen a
+    in square caps. Thus, the two last options will visually lengthen a
     straight line-segment by half the line width at either end.
 
 **long PSL_setlinejoin** (**struct PSL_CTRL** *\*P*, **long** *join*)
@@ -448,7 +448,7 @@ set prior to calling these functions; see CHANGING SETTINGS above.
     arc is interpreted: PSL_MOVE (1) means set new
     anchor point, PSL_STROKE (2) means stroke
     the arc, PSL_MOVE + PSL_STROKE (3) means
-    both, whereas PSL_DRAW (0) justs adds to arc path to the current
+    both, whereas PSL_DRAW (0) just adds to arc path to the current
     path.
 
 **long PSL_plotline** (**struct PSL_CTRL** *\*P*, **double** *x*,
@@ -860,7 +860,7 @@ passed.
 
 **long PSL_setcommand** (**struct PSL_CTRL** *\*P*, **char** *\*text*)
     Writes a raw PostScript command to the PostScript output file,
-    e.g., "1 setlinejoin0.
+    e.g., "1 setlinejoin.
 
 **long PSL_comment** (**struct PSL_CTRL** *\*P*, **char** *\*text*)
     Writes a comment (*text*) to the PostScript output file, e.g.,

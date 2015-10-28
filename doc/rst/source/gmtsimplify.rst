@@ -94,14 +94,14 @@ To reduce the geographic line segment.d using a tolerance of 2 km, run
 
    ::
 
-    gmt gmtsimplify segment.d -T2k > new_segment.d
+    gmt simplify segment.d -T2k > new_segment.d
 
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45 and
 write the reduced lines to file new_xylines.d, run
 
    ::
 
-    gmt gmtsimplify xylines.d -T0.45 > new_xylines.d
+    gmt simplify xylines.d -T0.45 > new_xylines.d
 
 Notes
 -----

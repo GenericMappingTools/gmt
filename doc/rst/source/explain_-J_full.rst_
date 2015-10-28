@@ -18,7 +18,7 @@ option is used. The default standard parallel is the equator.
 The ellipsoid used in the map projections is user-definable by editing
 the **gmt.conf** file in your home directory. 73 commonly used
 ellipsoids and spheroids are currently supported, and users may also
-specify their own custum ellipsoid parameters [Default is WGS-84].
+specify their own custom ellipsoid parameters [Default is WGS-84].
 Several GMT parameters can affect the projection: :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`,
 :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>`, :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`, and
 :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the :doc:`gmt.conf` man page for details.

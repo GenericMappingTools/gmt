@@ -228,27 +228,27 @@ run
 
    ::
 
-    gmt gmtspatial lines.txt -F > polygons.txt
+    gmt spatial lines.txt -F > polygons.txt
 
 To compute the area of all geographic polygons in the multisegment file
 polygons.txt, run
 
    ::
 
-    gmt gmtspatial polygons.txt -Q > areas.txt
+    gmt spatial polygons.txt -Q > areas.txt
 
 Same data, but now orient all polygons to go counter-clockwise and write
 their areas to the segment headers, run
 
    ::
 
-    gmt gmtspatial polygons.txt -Q+h -E+ > areas.txt
+    gmt spatial polygons.txt -Q+h -E+ > areas.txt
 
 To determine the intersections between the polygons A.txt and B.txt, run
 
    ::
 
-    gmt gmtspatial A.txt B.txt -Ce > crossovers.txt
+    gmt spatial A.txt B.txt -Ce > crossovers.txt
 
 See Also
 --------
