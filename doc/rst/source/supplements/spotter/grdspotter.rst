@@ -162,6 +162,13 @@ for the specified domain, run
 
 This file can then be plotted with :doc:`grdimage </grdimage>`.
 
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
+
 See Also
 --------
 

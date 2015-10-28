@@ -139,7 +139,14 @@ GPlates rotations database, try
 
    ::
 
-    gmt rotconverter IND-CIB CIB-ANT ANT-AFR > India_AFrica.RPM
+    gmt rotconverter IND-CIB CIB-ANT ANT-AFR > India_Africa.RPM
+
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
 
 See Also
 --------

@@ -160,6 +160,13 @@ To repeat the same exercise but save output *lon,lat,age,xorigin,yorigin* to a t
 
     gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d -SXY > origin.txt
 
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
+
 See Also
 --------
 

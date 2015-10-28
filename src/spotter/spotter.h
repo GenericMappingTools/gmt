@@ -19,7 +19,7 @@
  *
  * Author:	Paul Wessel, SOEST, Univ. of Hawaii, Honolulu, HI, USA
  * Date:	19-JUL-2010
- * Version:	1.2 for GMT 5
+ * Version:	 GMT 5
  *
  */
 
@@ -30,7 +30,6 @@
 
 #include "gmt_dev.h" /* Requires GMT to compile and link */
 
-#define SPOTTER_VERSION "1.2"
 #define EQ_RAD 6371.0087714
 #define KM_PR_DEG (EQ_RAD * M_PI / 180.0)
 #define BIG_CHUNK 65536

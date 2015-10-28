@@ -180,6 +180,13 @@ The grid overlap.nc now has 1s in the regions of overlap and 0
 elsewhere. You can use it as a mask or use grdcontour **-D** to extract
 a polygon (i.e., a contour).
 
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
+
 See Also
 --------
 
