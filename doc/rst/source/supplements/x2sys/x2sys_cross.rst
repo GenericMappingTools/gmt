@@ -15,7 +15,7 @@ Synopsis
 
 **x2sys_cross** *track(s)* |-T|\ *TAG* [ |-A|\ *combi.lis* ]
 [ |-C|\ [*runtimes*] ] [ |-I|\ **l**\ \|\ **a**\ \|\ **c** ]
-[ |-J|\ *parameters* ] [ |-Q|\ e**\ \|\ **i** ]
+[ |-J|\ *parameters* ] [ |-Q|\ **e**\ \|\ **i** ]
 [ |-S|\ **l**\ \|\ **u**\ \|\ **h**\ *speed* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *size* ] [ |-Z| ]
