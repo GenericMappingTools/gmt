@@ -117,7 +117,7 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign colors based on vector length. Optionally, instead give name\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT file to assign colors based on vector length. Optionally, instead give name\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of a master cpt to automatically assign 16 continuous colors over the data range [rainbow].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a linear\n");
     GMT_Message (API, GMT_TIME_NONE, "\t   continuous cpt from those colors automatically.\n");

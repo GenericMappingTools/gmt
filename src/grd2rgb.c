@@ -18,7 +18,7 @@
 /*
  * Brief synopsis: grd2rgb reads either (1) an 8, 24, or 32 bit Sun rasterfile and writes out the
  * red, green, and blue components in three separate grid files, or (2) a z grd
- * file and a cpt file and compute r, g, b and write these out instead.
+ * file and a CPT file and compute r, g, b and write these out instead.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -40,7 +40,7 @@ struct GRD2RGB_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C<cptfile> */
+	struct C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
@@ -242,7 +242,7 @@ int GMT_grd2rgb_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<infile> can be one of three different intput files:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  (1) An 8, 24, or 32-bit Sun rasterfile.  Use -I, -R, and -F to change the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      the default values of dx = dy = 1 and region 1/ncols/1/nrows.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  (2) A regular z grid file.  Use -C to provide a cpt file with which\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  (2) A regular z grid file.  Use -C to provide a CPT file with which\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      to convert z to r/g/b triplets. -R, -I, and -F are ignored.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  (3) A RGB or RGBA raw rasterfile. Since raw rasterfiles have no header, you have to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      give the image dimensions via -W.\n");
@@ -293,7 +293,7 @@ int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
-			case 'C':	/* Use cpt table */
+			case 'C':	/* Use CPT file */
 				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
 				break;
@@ -353,7 +353,7 @@ int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct G
 	}
 	else {
 		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input z grid file\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->C.file, "Syntax error: Must specify cpt file\n");
+		n_errors += GMT_check_condition (GMT, !Ctrl->C.file, "Syntax error: Must specify CPT file\n");
 	}
 	n_errors += GMT_check_condition (GMT, !strstr (Ctrl->G.name, "%c"), "Syntax error: output template must contain %%c\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !strchr ("rgb", Ctrl->L.layer), "Syntax error: -L layer must be one of r, g, or b\n");

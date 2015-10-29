@@ -120,7 +120,7 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grd_z> is data set to be plotted.  Its z-values are in user units and will be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the cpt file.  Alternatively, give three separate\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT file.  Alternatively, give three separate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  grid files that contain the red, green, and blue components in the 0-255 range.\n");
 #ifdef HAVE_GDAL
 	GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
@@ -744,7 +744,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 
 
-	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file only apply to -T\n");
+	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT file only apply to -T\n");
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate pixel colors\n");
 
 	NaN_rgb = (P) ? P->patch[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];

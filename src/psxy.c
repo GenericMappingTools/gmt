@@ -378,7 +378,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   then parallel, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to draw x- or y-staircase curves.\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT file (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on z-value in 3rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S. Without -S, psxy excepts lines/polygons\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<val> options in each segment header. Then, color is\n");
@@ -1026,7 +1026,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			if (get_rgb) {
 				GMT_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
 				if (Ctrl->I.active) GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-				if (P->skip) continue;	/* Chosen cpt file indicates skip for this z */
+				if (P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 			}
 
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
@@ -1441,7 +1441,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				change = GMT_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, L->ogr);
 
 
-				if (P && P->skip) continue;	/* Chosen cpt file indicates skip for this z */
+				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 
 				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */

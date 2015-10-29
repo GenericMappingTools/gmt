@@ -3484,7 +3484,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 		unsigned int want_col, col, pos;
 		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
 		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
-		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt< was used or if this is psxyz, no? */
+		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt> was used or if this is psxyz, no? */
 		want_col = start + n;
 		for (col = pos = 0; col <= want_col; col++) GMT_strtok (GMT->current.io.current_record, GMT_TOKEN_SEPARATORS, &pos, text);
 	}

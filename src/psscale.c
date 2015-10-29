@@ -57,17 +57,11 @@ enum psscale_shift {
 /* Control structure for psscale */
 
 struct PSSCALE_CTRL {
-	#if 0
-	struct A {	/* -A[a|c|l|u] */
-		bool active;
-		unsigned int mode;
-	} A;
-	#endif
-	struct C {	/* -C<cptfile> */
+	struct C {	/* -C<cpt> */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]] */
+	struct D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]] */
 		bool active;
 		bool horizontal;
 		bool move;
@@ -81,14 +75,6 @@ struct PSSCALE_CTRL {
 		double elength;
 		char *etext;
 	} D;
-	#if 0
-	struct E {	/* -E[b|f][<length>][+n[<text>]] */
-		bool active;
-		unsigned int mode;
-		double length;
-		char *text;
-	} E;
-	#endif
 	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		struct GMT_MAP_PANEL *panel;
@@ -178,10 +164,10 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, stdin is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default all color changes are annotated (but see -B).  To use a subset,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the cpt-file with a L, U, or B\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT file with a L, U, or B\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If a categorical CPT file is given the -Li is set automatically.\n");
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale", 3);
@@ -193,7 +179,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-L For equal-sized color rectangles. -B interval cannot be used.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append i to annotate the interval range instead of lower/upper.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <gap> is appended, we separate each rectangle by <gap> units and center each\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete cpt table.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Control how color-scale is represented by PostScript.\n");

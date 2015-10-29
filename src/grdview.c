@@ -30,7 +30,7 @@
  * As an option, a drape grid file can be specified.  Then, the colors
  * are calculated from that file while the topo file is used for shape.
  * Alternatively, give three drape files (red, green, blue components)
- * to bypass the z -> rgb via the cpt file.
+ * to bypass the z -> rgb via the CPT file.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -1036,7 +1036,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
 		if (Ctrl->C.active && P->has_pattern)
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file will not work with -Qi\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT file will not work with -Qi\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "Get and store projected vertices\n");
 
 		PSL_comment (PSL, "Plot 3-D surface using scanline conversion of polygons to raster image\n");

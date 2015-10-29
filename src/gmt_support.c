@@ -66,7 +66,7 @@
  *  gmt_rgb_to_hsv          Convert RGB to HSV
  *  gmt_rgb_to_lab          Convert RGB to CMYK
  *  gmt_rgb_to_xyz          Convert RGB to CIELAB XYZ
- *  GMT_sample_cpt          Resamples the current cpt table based on new z-array
+ *  GMT_sample_cpt          Resamples the current CPT file based on new z-array
  *  gmt_smooth_contour      Use Akima's spline to smooth contour
  *  GMT_shift_refpoint      Adjust reference point based on size and justification of plotted item
  *  GMT_sprintf_float       Make formatted string from float, while checking for %-apostrophe
@@ -2276,7 +2276,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 		GMT_strstrip (line, true);
 		c = line[0];
 
-		if (strstr (line, "COLOR_MODEL")) {	/* cpt file overrides default color model */
+		if (strstr (line, "COLOR_MODEL")) {	/* CPT file overrides default color model */
 			if (strstr (line, "+RGB") || strstr (line, "rgb"))
 				X->model = GMT_RGB + GMT_COLORINT;
 			else if (strstr (line, "RGB"))
@@ -2532,7 +2532,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	}
 
 	if (X->categorical && n_cat_records != n) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot decode %s as categorical cpt file\n", cpt_file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot decode %s as categorical CPT file\n", cpt_file);
 		return (NULL);
 	}
 	if (error) {
@@ -2622,7 +2622,7 @@ struct GMT_PALETTE *GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enum
 	   For 2 & 3 we take the master table and linearly shift the z values to fit the range.
 	*/
 
-	if (GMT_File_Is_Memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A cptfile was given and exists or is memory location */
+	if (GMT_File_Is_Memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A CPT file was given and exists or is memory location */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Take master cpt and stretch to fit data range */
@@ -2676,10 +2676,10 @@ void GMT_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double t
 /*! . */
 struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pin, double z[], int nz_in, bool continuous, bool reverse, bool log_mode, bool no_inter)
 {
-	/* Resamples the current cpt table based on new z-array.
+	/* Resamples the current CPT file based on new z-array.
 	 * Old cpt is normalized to 0-1 range and scaled to fit new z range.
 	 * New cpt may be continuous and/or reversed.
-	 * We write the new cpt table to stdout. */
+	 * We write the new CPT file to stdout. */
 
 	unsigned int i = 0, j, k, upper, lower, nz;
 	uint64_t dim_nz;
@@ -2708,12 +2708,12 @@ struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	i += GMT_check_condition (GMT, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
 
-	/* First normalize old cpt file so z-range is 0-1 */
+	/* First normalize old CPT file so z-range is 0-1 */
 
 	b = 1.0 / (Pin->range[Pin->n_colors-1].z_high - Pin->range[0].z_low);
 	a = -Pin->range[0].z_low * b;
 
-	for (i = 0; i < Pin->n_colors; i++) {	/* Copy/normalize cpt file and reverse if needed */
+	for (i = 0; i < Pin->n_colors; i++) {	/* Copy/normalize CPT file and reverse if needed */
 		if (reverse) {
 			j = Pin->n_colors - i - 1;
 			lut[i].z_low = 1.0 - a - b * Pin->range[j].z_high;
@@ -2892,7 +2892,7 @@ struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 /*! . */
 int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int cpt_flags, struct GMT_PALETTE *P) {
-	/* We write the cpt table to fpr [or stdout].
+	/* We write the CPT file to fpr [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * cpt_flags is a combination of:
 	 * GMT_CPT_NO_BNF = Do not write BFN
@@ -2949,7 +2949,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s CPT table to %s\n", msg1[append], &cpt_file[append]);
 
-	/* Start writing cpt file info to fp */
+	/* Start writing CPT file info to fp */
 
 	for (i = 0; i < P->n_headers; i++) {	/* First write the old headers */
 		GMT_write_tableheader (GMT, fp, P->header[i]);
@@ -3006,7 +3006,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 
 	/* Background, foreground, and nan colors */
 
-	if (cpt_flags & GMT_CPT_NO_BNF) {	/* Do not want to write BFN to the cpt file */
+	if (cpt_flags & GMT_CPT_NO_BNF) {	/* Do not want to write BFN to the CPT file */
 		if (close_file) fclose (fp);
 		return (EXIT_SUCCESS);
 	}

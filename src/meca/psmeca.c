@@ -101,7 +101,7 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<cptfile> */
+	struct Z {	/* -Z<cpt> */
 		bool active;
 		char *file;
 	} Z;
@@ -247,7 +247,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use CPT file to assign colors based on depth-value in 3rd column.\n");
 	GMT_Option (API, "X,c,di,h,i,:,.");
 
 	return (EXIT_FAILURE);

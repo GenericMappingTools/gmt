@@ -4920,7 +4920,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		if (family == GMT_IS_CPT && !just_get_data) { /* CPT files must be handled differently since the master files live in share/cpt and filename is missing .cpt */
 			int c_err = 0;
 			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
-			if ((c_err = GMTAPI_Colors2CPT (API, &file)) < 0) { /* Maybe converted colors to new cpt file */
+			if ((c_err = GMTAPI_Colors2CPT (API, &file)) < 0) { /* Maybe converted colors to new CPT file */
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
@@ -4931,7 +4931,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				else	/* Use name as is */
 					strncpy (CPT_file, file, GMT_BUFSIZ);
 			}
-			else	/* Got color list, now a temp cpt file instead */
+			else	/* Got color list, now a temp CPT file instead */
 				strncpy (CPT_file, file, GMT_BUFSIZ);
 			free (file);	/* Free temp CPT file name */
 			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) return_null (API, API->error);

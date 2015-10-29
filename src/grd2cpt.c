@@ -17,14 +17,14 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: grd2cpt reads a 2d binary gridded grdfile and creates a continuous-color-
- * palette cpt file, with a non-linear histogram-equalized mapping between
+ * palette CPT file, with a non-linear histogram-equalized mapping between
  * hue and data value.  (The linear mapping can be made with grd2cpt.)
  *
  * Creates a cumulative distribution function f(z) describing the data
  * in the grdfile.  f(z) is sampled at z values supplied by the user
  * [with -S option] or guessed from the sample mean and standard deviation.
  * f(z) is then found by looping over the grd array for each z and counting
- * data values <= z.  Once f(z) is found then a master cpt table is resampled
+ * data values <= z.  Once f(z) is found then a master CPT file is resampled
  * based on a normalized f(z).
  *
  * Author:	Walter H. F. Smith
@@ -145,8 +145,8 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0].\n");
 	if (GMT_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k)\n");
@@ -212,7 +212,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 				if (opt->arg[0] == '+') Ctrl->A.mode = 1;
 				Ctrl->A.value = 0.01 * atof (&opt->arg[Ctrl->A.mode]);
 				break;
-			case 'C':	/* Get cpt table */
+			case 'C':	/* Get CPT file */
 				Ctrl->C.active = true;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
@@ -578,7 +578,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, cdf_cpt[j].z, cdf_cpt[j].f);
 	}
 
-	/* Now the cdf function has been found.  We now resample the chosen cptfile  */
+	/* Now the cdf function has been found.  We now resample the chosen CPT file  */
 
 	z = GMT_memory (GMT, NULL, Ctrl->E.levels, double);
 	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;

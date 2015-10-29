@@ -21,9 +21,9 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  *
- * Brief synopsis: Reads an existing cpt table and desired output grid
- * and produces a GMT cpt file.  Can be inverted [-I] or made to be
- * continuous [-Z].  Discrete color jumps in cpt tables are handled
+ * Brief synopsis: Reads an existing CPT file and desired output grid
+ * and produces a GMT CPT file.  Can be inverted [-I] or made to be
+ * continuous [-Z].  Discrete color jumps in CPT files are handled
  * correctly.  Default color table is "rainbow".
  *
  */
@@ -128,8 +128,8 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
 	if (GMT_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies we read data from given command-line files [or stdin] to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   determine data range (use -i to select a data column, else last column is used).\n");
@@ -149,7 +149,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>, <z_max>, and <z_inc> for colorscale in z-units,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or filename with custom z-values.  If no -T option is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then the range in the master cptfile will be used.  If no increment\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then the range in the master CPT file will be used.  If no increment\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   is given we match the number of entries in the master CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
 	GMT_Option (API, "V");
@@ -399,7 +399,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 	}
-	else {	/* Just copy what was in the cpt file */
+	else {	/* Just copy what was in the CPT file */
 		nz = Pin->n_colors + 1;
 		z = GMT_memory (GMT, NULL, nz, double);
 		if (Ctrl->I.active) {
@@ -414,7 +414,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 
 	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
 
-	/* Now we can resample the cpt table and write out the result */
+	/* Now we can resample the CPT file and write out the result */
 
 	Pout = GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 

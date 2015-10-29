@@ -5130,7 +5130,7 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 *	 -W-		Turn outline OFF
 	 *	 -W		Revert to default pen [current.map_default_pen if not set on command line]
 	 * z:	-Z<zval>	Obtain fill via cpt lookup using this z value
-	 *	-ZNaN		Get the NaN color from the cpt file
+	 *	-ZNaN		Get the NaN color from the CPT file
 	 *
 	 * header is the text string to process
 	 * P is the color palette used for the -Z option
