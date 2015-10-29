@@ -652,6 +652,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	size_t max_alloc;
 
+	float *saved_data_pointer = NULL;
+	
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
 	double inc2[2], wesn[4], z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
@@ -1069,7 +1071,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 			GMT_free (GMT, x_drape);
 			GMT_free (GMT, y_drape);
 			if (use_intensity_grid) {	/* Reset intensity grid so that we have no boundary row/cols */
-				GMT_free_aligned (GMT, Intens->data);
+				saved_data_pointer = Intens->data;
 				Intens->data = int_drape;
 			}
 		}
@@ -1791,6 +1793,10 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
 	if (use_intensity_grid) {
 		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
+		if (saved_data_pointer) {
+			GMT_free (GMT, Intens->data);
+			Intens->data = saved_data_pointer;
+		}
 	}
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);

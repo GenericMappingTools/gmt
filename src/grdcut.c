@@ -350,7 +350,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - row1) * G->header->inc[GMT_Y];
 			wesn_new[YHI] = G->header->wesn[YHI] - row0 * G->header->inc[GMT_Y];
 		}
-		GMT_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
+		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
 		add_mode = GMT_IO_RESET;	/* Pass this to allow reading the data again. */
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */

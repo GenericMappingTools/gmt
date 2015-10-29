@@ -382,7 +382,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	else if (Ctrl->E.active) {	/* Transpose, flip, or rotate the matrix and possibly exchange x and y info */
 		struct GMT_GRID_HEADER *h_tr = NULL;
 		uint64_t ij, ij_tr = 0;
-		float *a_tr = NULL;
+		float *a_tr = NULL, *save_grid_pointer = NULL;
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
@@ -449,13 +449,15 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			}
 			a_tr[ij_tr] = G->data[ij];
 		}
-		GMT_free_aligned (GMT, G->data);	/* Eliminate original grid and hook on the modified grid instead */
+		save_grid_pointer = G->data;	/* Save original grid pointer and hook on the modified grid instead */
 		G->data = a_tr;
 		GMT_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
 		GMT_free (GMT, h_tr);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_OK) {
 			Return (API->error);
 		}
+		G->data = save_grid_pointer;
+		GMT_free (GMT, a_tr);
 	}
 	else {	/* Change the domain boundaries */
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
