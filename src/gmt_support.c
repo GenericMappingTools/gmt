@@ -2899,24 +2899,26 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
-	unsigned int i;
+	unsigned int i, append = 0;
 	bool close_file = false;
 	double cmyk[5];
 	char format[GMT_BUFSIZ] = {""}, cpt_file[GMT_BUFSIZ] = {""}, code[3] = {'B', 'F', 'N'};
+	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
+		static char *msg2[2] = {"create", "append to"};
 		strncpy (cpt_file, dest, GMT_BUFSIZ);
-		Z = gmt_cpt_parse_z_unit (GMT, cpt_file, GMT_OUT);
-		if ((Z = gmt_cpt_parse_z_unit (GMT, cpt_file, GMT_OUT))) {
+		append = (cpt_file[0] == '>');	/* Want to append to existing file */
+		if ((Z = gmt_cpt_parse_z_unit (GMT, &cpt_file[append], GMT_OUT))) {
 			gmt_cpt_z_scale (GMT, P, Z, GMT_OUT);
 			GMT_free (GMT, Z);
 		}
-		if ((fp = fopen (cpt_file, "w")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot create file %s\n", cpt_file);
+		if ((fp = fopen (&cpt_file[append], (append) ? "a" : "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s file %s\n", msg2[append], &cpt_file[append]);
 			return (EXIT_FAILURE);
 		}
 		close_file = true;	/* We only close files we have opened here */
@@ -2931,7 +2933,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 	}
 	else if (dest_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
 		int *fd = dest;
-		if (fd && (fp = fdopen (*fd, "w")) == NULL) {
+		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in GMT_write_cpt\n", *fd);
 			return (EXIT_FAILURE);
 		}
@@ -2945,7 +2947,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in GMT_write_cpt\n", dest_type);
 		return (EXIT_FAILURE);
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Writing CPT table to %s\n", cpt_file);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s CPT table to %s\n", msg1[append], &cpt_file[append]);
 
 	/* Start writing cpt file info to fp */
 
