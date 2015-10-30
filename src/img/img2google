@@ -6,14 +6,14 @@
 # Credit to Joaquim Luis for adding KML output from ps2raster
 #
 # Shell script that will generate a Google Earth png tile from
-# Sandwell/Smith's 1x1 min Mercator topo.17.1img grid and add
+# Sandwell/Smith's 1x1 min Mercator topo.18.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
 
 # Change these only if you know what you are doing!  Note this script
 # is hardwired to do bathymetry.  You must change many things to have
 # it plot crustal ages or gravity.
 #------------------
-TOPO=topo.17.1.img
+TOPO=topo.18.1.img
 INC=1
 DPI=240
 #------------------

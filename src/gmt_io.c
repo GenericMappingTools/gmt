@@ -7342,7 +7342,7 @@ int GMT_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *G)
 #endif
 
 /*! . */
-double GMT_get_aspatial_value (struct GMT_CTRL *GMT, uint64_t col, struct GMT_DATASEGMENT *S) {
+double GMT_get_aspatial_value (struct GMT_CTRL *GMT, int col, struct GMT_DATASEGMENT *S) {
 	/* Return the value associated with the aspatial values given for this column col */
 
 	uint64_t k;

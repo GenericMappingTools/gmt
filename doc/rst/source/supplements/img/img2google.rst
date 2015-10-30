@@ -33,7 +33,7 @@ Description
 
 **img2google** is a shell script that reads a 1x1 minute Mercator surface relief img file and
 creates a Google Earth overlay KML file and associated PNG tile for the
-specified region. If no input file is given we use topo.17.1.img.
+specified region. If no input file is given we use topo.18.1.img.
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
@@ -129,14 +129,14 @@ Examples
 --------
 
 To create a 10x10 degree Google Earth KML tile for the region
-**-R**\ 170/180/20/30 using the default *topo.17.1.img* and output
+**-R**\ 170/180/20/30 using the default *topo.18.1.img* and output
 naming convention, try
 
    ::
 
     img2google -R170/180/20/30
 
-To make the same tile with the previous *topo.15.1.img*, run in verbose
+To make the same tile with a previous file such as *topo.15.1.img*, run in verbose
 mode, clip so only oceanic areas are visible, name the output oldimage,
 specify the KML metadata directly (including setting the image altitude
 to 10 km), and make a single \*.kmz file, try
@@ -149,7 +149,7 @@ to 10 km), and make a single \*.kmz file, try
 DATA SETS
 ---------
 
-For topo.17.1.img and other Sandwell/Smith altimetry-derived Mercator
+For topo.18.1.img and other Sandwell/Smith altimetry-derived Mercator
 grids, visit http://topex.ucsd.edu.
 
 SEE ALSO

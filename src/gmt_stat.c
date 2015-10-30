@@ -1844,7 +1844,7 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, ui
 	return (mode);
 }
 
-int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)
+int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est)
 {
 	uint64_t i, istop;
 	unsigned int multiplicity;
@@ -1902,7 +1902,7 @@ int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	return (0);
 }
 
-int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)
+int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est)
 {
 	uint64_t i, istop;
 	unsigned int multiplicity;

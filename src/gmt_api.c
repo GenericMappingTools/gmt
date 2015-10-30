@@ -2153,7 +2153,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 	 */
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
-	unsigned int geometry, n_used = 0;
+	unsigned int geometry = GMT_IS_PLP, n_used = 0;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
 	bool via = false, got_data = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
@@ -4044,7 +4044,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
 		if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level)))	/* Yes, this object was added at this level, get rid of it; do not increment i */
-			GMTAPI_Unregister_IO (API, S_obj->ID, GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
+			GMTAPI_Unregister_IO (API, (int)S_obj->ID, GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */
 	}
@@ -4169,7 +4169,7 @@ int GMT_Destroy_Session (void *V_API) {
 	GMTAPI_free_sharedlibs (API);			/* Close shared libraries and free list */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
-	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, API->object[i]->ID, GMT_NOTSET);
+	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, (int)API->object[i]->ID, GMT_NOTSET);
 	GMT_free (API->GMT, API->object);
 	GMT_end (API->GMT);	/* Terminate GMT machinery */
 	if (API->session_tag) free (API->session_tag);
@@ -5967,7 +5967,7 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 		unsigned int j;
 		void *address = API->object[item]->data;
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[family], object_ID);
-		if ((error = GMTAPI_Unregister_IO (API, object_ID, GMT_NOTSET))) return_error (API, error);	/* Did not find object */
+		if ((error = GMTAPI_Unregister_IO (API, (int)object_ID, GMT_NOTSET))) return_error (API, error);	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) {
 			if (API->object[j]->data == address) API->object[j]->data = NULL;		/* Set repeated data references to NULL so we don't try to free twice */
 			if (API->object[j]->resource == address) API->object[j]->resource = NULL;	/* Set matching resources to NULL so we don't try to read from there again */
