@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id: grdseamount.c 15109 2015-10-30 19:51:28Z pwessel $
+ *	$Id$
  *
  *	Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
