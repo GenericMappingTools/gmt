@@ -207,7 +207,7 @@ bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_co
 	return (false);
 }
 
-struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode)
+struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode, struct GMT_OPTION *options)
 {	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits
 	 * mode = GMT_DCW_PLOT		: Plot the polygons
@@ -312,6 +312,18 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		GMT_set_geographic (GMT, GMT_OUT);
 	}
+	if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
+		if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			return NULL;
+		}
+		if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			return NULL;
+		}
+		if (GMT_set_cols (GMT, GMT_OUT, 2) != GMT_OK) {
+			return NULL;
+		}
+	}
+	
 	pos = 0;
 	while (GMT_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
@@ -457,6 +469,11 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	GMT_free (GMT, GMT_DCW_country);
 	GMT_free (GMT, GMT_DCW_state);
 
+	if (mode & GMT_DCW_DUMP) {	/* Dumped the coordinates to stdout */
+		if (GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			return NULL;
+		}
+	}
 	if (mode & GMT_DCW_REGION) {
 		if (F->adjust) {
 			if (F->extend) {	/* Extend the region by increments */

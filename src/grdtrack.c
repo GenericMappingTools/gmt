@@ -1093,6 +1093,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					continue;
 				}
 				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
+					if (API->mode && n_out == 0) {	/* Need to set output columns now */
+						n_out = n_fields + Ctrl->G.n_grids;	/* Get new # of output cols */
+						if (Ctrl->T.mode == 2) n_out += 3;
+						if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != 0) Return (error);
+					}
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					continue;
 				}

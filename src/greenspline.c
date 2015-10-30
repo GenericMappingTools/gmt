@@ -1988,8 +1988,9 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-
-		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
+		if ((error = GMT_set_cols (GMT, GMT_OUT, dimension + 1)) != GMT_OK) {
+			Return (error);
+		}
 		GMT_memset (out, 4, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		for (seg = 0; seg < T->n_segments; seg++) {
