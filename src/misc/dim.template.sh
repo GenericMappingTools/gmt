@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-# Seung-Sep Kim, GG/SOEST/UHM
+# Seung-Sep Kim, CHungnam National University, Daejeon, South Korea [seungsep@cnu.ac.kr]
 # $Revision$    $Date$
 
 # This is a template file showing the steps for DiM-based
@@ -97,4 +97,3 @@ if [ ! -f $dim ]; then
 	gmt xyz2grd /tmp/$$.err.xyz -G$err -I1m $box -V -F
 
 fi
-

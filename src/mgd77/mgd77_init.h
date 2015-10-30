@@ -9,7 +9,7 @@
  *  Include file for mgd77.c
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
+ *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
  *		
  *  This include file contains initializations for the MGD77 system.
  *  MUST BE INCUDED AFTER mgd77.h IN mgd77.c

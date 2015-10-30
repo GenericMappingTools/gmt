@@ -9,7 +9,7 @@
  *  Include file for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
+ *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
  *		
  *  Version:	1.4
  *  Revised:	15-MAR-2006

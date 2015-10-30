@@ -62,7 +62,7 @@ gmt grdview hat.nc -Chat.cpt -JX6i -P -B1g1 -BWSne -Qs -Wc1p -K -X1.25i > $PS
 gmt psxy -R -J -O -K trackA.xydz -W2p,red >> $PS
 gmt psxy -R -J -O -K trackB.xydz -W2p,blue >> $PS
 gmt psxy -R -J -O -K trackC.xydz -W2p,black >> $PS
-gmt psxy -R -J -O -K -M fake_COE_orig.txt -Sc0.15 -W0.5p >> $PS
+gmt psxy -R -J -O -K fake_COE_orig.txt -Sc0.15 -W0.5p >> $PS
 head -1 trackA.xydz | gmt psxy -R -J -O -K -Sc0.1i -Gred >> $PS
 head -1 trackB.xydz | gmt psxy -R -J -O -K -Sc0.1i -Gblue >> $PS
 head -1 trackC.xydz | gmt psxy -R -J -O -K -Sc0.1i -Gblack >> $PS
@@ -100,7 +100,7 @@ cut -f3,4 trackBc.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -
 gmt x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fdc -StrackB | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 cut -f3,4 trackCc.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 gmt x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fdc -StrackC | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-gmt psxy -R -J -O /dev/null >> $PS
+gmt psxy -R -J -O -T >> $PS
 gv $PS &
 
 # Solve for constants
@@ -131,7 +131,7 @@ cut -f3,4 trackBcc.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i 
 gmt x2sys_list -TFAKE -Cz fake_COE_constant_corr.txt -Fdc -StrackB | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 cut -f3,4 trackCcc.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 gmt x2sys_list -TFAKE -Cz fake_COE_constant_corr.txt -Fdc -StrackC | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-gmt psxy -R -J -O /dev/null >> $PS
+gmt psxy -R -J -O -T >> $PS
 gv $PS &
 #---------------------------------------------------------
 # Test 2: Add some linear drifts and try to resolve them
@@ -162,7 +162,7 @@ cut -f3,4 trackBd.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -
 gmt x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fdc -StrackB | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 cut -f3,4 trackCd.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 gmt x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fdc -StrackC | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-gmt psxy -R -J -O /dev/null >> $PS
+gmt psxy -R -J -O -T >> $PS
 gv $PS &
 
 # Solve for trends
@@ -190,9 +190,8 @@ cut -f3,4 trackBdc.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i 
 gmt x2sys_list -TFAKE -Cz fake_COE_drift_corr.txt -Fdc -StrackB | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 cut -f3,4 trackCdc.xydz | gmt psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 gmt x2sys_list -TFAKE -Cz fake_COE_drift_corr.txt -Fdc -StrackC | gmt psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-gmt psxy -R -J -O /dev/null >> $PS
+gmt psxy -R -J -O -T >> $PS
 gv $PS &
 if [ $delete -eq 1 ]; then
 	rm -f hat.nc hat.cpt track[ABC]*.xydz fake_COE_*.txt COE.txt corr_const.lis corr_trend.lis
 fi
-

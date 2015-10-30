@@ -9,11 +9,11 @@
  *  Function library for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *                              Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
+ *              Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
  *
  *  Version:     1.2
  *  Revised:     1-MAR-2006
- *  Revised:    21-JAN-2010     IGRF2010
+ *  Revised:    21-JAN-2015     IGRF2015
  *
  *-------------------------------------------------------------------------*/
 

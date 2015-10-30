@@ -2,6 +2,7 @@
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
+ *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
@@ -16,10 +17,10 @@ PostScript code is written to stdout.
 
  Author:	Kurt Feigl
  Date:		7 July 1998
- Version:	4
+ Version:	5
  Roots:		based on psxy.c
  Adapted to version 3.3 by Genevieve Patau (25 June 1999)
- Last modified : 18 February 2000
+ Last modified : 18 February 2000.  Ported to GMT 5 by P. Wessel
 
 */
 

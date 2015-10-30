@@ -22,7 +22,7 @@
  *
  * Author:	Tim Henstock (then@noc.soton.ac.uk)
  * Date:	30-JUN-2002
- * Version:	3.4.1
+ * Version:	3.4.1, ported to GMT5 by P. Wessel
  */
  
 #define THIS_MODULE_NAME	"segy2grd"

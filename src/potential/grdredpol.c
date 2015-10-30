@@ -1027,23 +1027,23 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-E<dip_grd>/<dec_grd>] [-F<m>/<n>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filter>]\n\t[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filterfile>]\n\t[%s]\n\n",
 				GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
                 
-	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output grid with the RTP solution\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C<dec>/<dip> uses this constant values in the RTP procedure.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E<dip_grd>/<dec_grd> Get magnetization DIP & DEC from these grids [default: use IGRF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F<m>/<n> filter with [25x25].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<m|r> Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets<dec>/<dip> and uses this constant values in the RTP procedure.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Gets magnetization DIP & DEC from these two grids [default: use IGRF].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets <m>/<n> filter widths [25x25].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Sets boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT use Taylor expansion.\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T<year> Year used by the IGRF routine to compute the various DECs & DIPs [default: 2000]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W<wid> window width in degrees [5]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z<filter> Write filter file on disk\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Sets year used by the IGRF routine to compute the various DECs & DIPs [default: 2000].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Sets window width in degrees [5].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write filter file <filterfile> to disk.\n");
 	GMT_Option (API, "V,n,.");
 	
 	return (EXIT_FAILURE);

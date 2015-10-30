@@ -7,7 +7,8 @@ LICENSE.TXT in main GMT directory.
 ==> CHANGES IN GMT 5 <==
 
 img2mercgrd and img2mgrd are now a single C module (and executable).
-Much of the discussion on install below is obsolete.
+Much of the discussion on install below is obsolete; the main
+GMT5 install automatically installs all supplements.
 
 ==> CHANGES IN GMT 4.4.1 <==
 

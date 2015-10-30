@@ -37,6 +37,7 @@
 #define PA_2_T  (1.0 / T_2_PA)
 #define SQRT_CHI2 2.44774689322	/* This is sqrt (Chi^2) for 95% and 2 degrees of freedom */
 
+/* Latest GPlates rotation model and polygon IDs */
 #define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table_AREPS"	/* .txt */
 #define GPLATES_ROTATIONS "Global_EarthByte_230-0Ma_GK07_AREPS"		/* .rot */
 
@@ -53,7 +54,7 @@ struct EULER {
 	double k_hat;			/* k_hat uncertainty scale */
 	double g;			/* g magnitude scale */
 	double df;			/* Degrees of freedom in the estimate of rotation */
-	bool has_cov;		/* true if there is a covariance matrix for this R */
+	bool has_cov;			/* true if there is a covariance matrix for this R */
 	unsigned int id[2];		/* The ID numbers for GPlates pairs */
 };
 
@@ -62,7 +63,7 @@ struct FLOWLINE {
 	uint64_t n;		/* Number of points in this flowline */
 	uint64_t ij;		/* Node in bathymetry grid where this flowline originated */
 	uint64_t *node;		/* Nodes in CVA grid covered by this flowline */
-	unsigned short *PA;		/* Predicted Ages along flowline (t = PI/250, to nearest 0.004 My) */
+	unsigned short *PA;	/* Predicted Ages along flowline (t = PI/250, to nearest 0.004 My) */
 };
 
 /*! Structure holding all the information about a hotspot */
@@ -73,8 +74,8 @@ struct HOTSPOT {
         unsigned int id;		/* Hot spot id flag */
 	double radius;			/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;		/* Time interval hotspot was active */
-	bool create, fit, plot;	/* true if we want to create, fit, or plot hotspot */
-        char name[GMT_LEN64];	/* Full name of hotspot */
+	bool create, fit, plot;		/* true if we want to create, fit, or plot hotspot */
+        char name[GMT_LEN64];		/* Full name of hotspot */
 	/* Secondary (derived) quantities */
         double x, y, z;			/* Cartesian Current location of hot spot */
 };

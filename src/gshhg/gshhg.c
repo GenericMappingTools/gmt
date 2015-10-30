@@ -6,10 +6,10 @@
  * PROGRAM:	gshhg.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
- * DATE:	JULY 1, 2014
- * PURPOSE:	To extract ASCII data from the binary GSHHG shoreline data
+ * DATE:	JAN 1, 2015
+ * PURPOSE:	To extract ASCII data from the binary GSHHG geography databas
  *		as described in the 1996 Wessel & Smith JGR Data Analysis Note.
- * VERSION:	1-JUL-2014.  For use with GSHHG version 2.3.1
+ * VERSION:	1-JAN-2015.  For use with GSHHG version 2.3.4
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@
 #define THIS_MODULE_NAME	"gshhg"
 #define THIS_MODULE_LIB		"gshhg"
 #define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
-#define THIS_MODULE_KEYS	">DO"
+#define THIS_MODULE_KEYS	">DO,>TL"
 
 #include "gmt_dev.h"
 #include "gmt_gshhg.h"
@@ -93,7 +93,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
         GMT_Message (API, GMT_TIME_NONE, "\t-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by MATLAB or GNU Octave.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List header records only (no data records will be written).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all polygons].\n");

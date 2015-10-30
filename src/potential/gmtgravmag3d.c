@@ -164,25 +164,25 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-H sets parameters for computation of magnetic anomaly\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C sets body density in SI\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F pass locations where anomaly is going to be computed\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G name of the output grdfile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int></m_dec></m_dip> -> body magnetic intensity/declination/inclination.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body <density> in SI units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes locations where anomaly is going to be computed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grdfile.\n");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L sets level of observation [Default = 0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 0 m]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 0 m].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S search radius in km\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Give either names of xyz[m] and vertex files or of a file defining a close surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives either names of xyz[m] and vertex files or of a file defining a close surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' immediately after -T and before the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Sets z level of reference plane [Default = 0].\n");
 	GMT_Option (API, "bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, "r,:,.");
 
 	return (EXIT_FAILURE);

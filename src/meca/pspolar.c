@@ -2,6 +2,7 @@
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
+ *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
@@ -14,8 +15,8 @@
  *
  * Author:	Genevieve Patau
  * Date:	19-OCT-1995 (psprojstations)
- * Version:	4
- * Roots:	heavily based on psxy.c
+ * Version:	5
+ * Roots:	heavily based on psxy.c; ported to GMT5 by P. Wessel
  *
  */
 
