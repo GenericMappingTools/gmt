@@ -1806,23 +1806,25 @@ int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	 * module_input = GMTAPI_MODULE_INPUT [1]:	Only validate resources with module_input = true. */
 	unsigned int i;
 	int item, s_value;
+	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	 /* Search for the object in the active list.  However, if object_ID == GMT_NOTSET we pick the first in that direction */
 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
-		if (!API->object[i]) continue;									/* Empty object */
-		if (direction != GMT_NOTSET && API->object[i]->status != GMT_IS_UNUSED) continue;		/* Already used this object */
-		if (!(family == GMT_NOTSET || (s_value = API->object[i]->family) == family)) continue;		/* Not the required data type */
-		if (object_ID == GMT_NOTSET && (s_value = API->object[i]->direction) == direction) item = i;	/* Pick the first object with the specified direction */
-		if (object_ID == GMT_NOTSET && !(API->object[i]->family == GMT_IS_DATASET || API->object[i]->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
-		else if (direction == GMT_NOTSET && (s_value = API->object[i]->ID) == object_ID) item = i;	/* Pick the requested object regardless of direction */
-		else if ((s_value = API->object[i]->ID) == object_ID) item = i;					/* Pick the requested object */
-		if (item != GMT_NOTSET && direction == GMT_IN && module_input != GMT_NOTSET) {	/* Must check that object's module_input status matches */
+		S_obj = API->object[i];	/* Shorthand only */
+		if (!S_obj) continue;									/* Empty object */
+		if (direction != GMT_NOTSET && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this object */
+		if (!(family == GMT_NOTSET || (s_value = S_obj->family) == family)) continue;		/* Not the required data type */
+		if (object_ID == GMT_NOTSET && (s_value = S_obj->direction) == direction) item = i;	/* Pick the first object with the specified direction */
+		if (object_ID == GMT_NOTSET && !(S_obj->family == GMT_IS_DATASET || S_obj->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
+		else if (direction == GMT_NOTSET && (s_value = S_obj->ID) == object_ID) item = i;	/* Pick the requested object regardless of direction */
+		else if ((s_value = S_obj->ID) == object_ID) item = i;					/* Pick the requested object */
+		if (item != GMT_NOTSET && direction == GMT_IN && module_input != GMT_NOTSET) {		/* Must check that object's module_input status matches */
 			bool status = (module_input == GMTAPI_MODULE_INPUT) ? true : false;
-			if (status != API->object[i]->module_input) item = GMT_NOTSET;	/* Not the right type of input resouce */
+			if (status != S_obj->module_input) item = GMT_NOTSET;	/* Not the right type of input resouce */
 		}
 	}
-	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }			/* No such object found */
+	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }		/* No such object found */
 
 	/* OK, we found the object; is it the right kind (input or output)? */
 	if (direction != GMT_NOTSET && (s_value = API->object[item]->direction) != direction) {
@@ -3613,6 +3615,9 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
 
+#ifdef DEBUG
+	GMT_list_API (API, "GMTAPI_Export_Data-in");
+#endif
 	switch (family) {	/* CPT, Dataset, Textfile, or Grid */
 		case GMT_IS_CPT:	/* Export a CPT */
 			error = GMTAPI_Export_CPT (API, object_ID, mode, data);
@@ -3635,6 +3640,9 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, in
 			error = GMT_NOT_A_VALID_FAMILY;
 			break;
 	}
+#ifdef DEBUG
+	GMT_list_API (API, "GMTAPI_Export_Data-out");
+#endif
 	return (GMTAPI_report_error (API, error));	/* Return status */
 }
 
@@ -4631,12 +4639,12 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode) {
 	API = gmt_get_api_ptr (V_API);
 	GMT = API->GMT;
 	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 0);	/* Free segment-related array */
-	if (direction == GMT_OUT) {		/* Finalize output issues */
+	if (direction == GMT_OUT && API->io_mode[GMT_OUT] == GMTAPI_BY_REC) {		/* Finalize output issues */
 		S_obj = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 		if (S_obj) {	/* Dealt with file i/o */
 			S_obj->status = GMT_IS_USED;	/* Done writing to this destination */
 			method = GMTAPI_split_via_method (API, S_obj->method, NULL);
-			if ((method == GMT_IS_DUPLICATE || method == GMT_IS_REFERENCE) && API->io_mode[GMT_OUT] == GMTAPI_BY_REC) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
+			if ((method == GMT_IS_DUPLICATE || method == GMT_IS_REFERENCE)) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
 				if (S_obj->actual_family == GMT_IS_DATASET) {	/* Dataset type */
 					struct GMT_DATASET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {

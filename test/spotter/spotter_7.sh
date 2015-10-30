@@ -9,7 +9,7 @@ ps=spotter_7.ps
 # transform, Geochem. Geophys. Geosyst., 9(Q08004), doi:10.1029/2008GC002058.
 # Coarsened to speed up calculations.
 
-APM=${src}/../../src/spotter/WK97.d
+APM=${src}/../../src/spotter/WK97.txt
 
 gmt grdspotter pac_residual_topo.nc -E$APM -Gcva_bathy.nc -R200/210/15/25 -I5m -r -N140 -S -Tt
 gmt makecpt -Chot -T0/100/10 -Z > h.cpt
