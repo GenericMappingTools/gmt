@@ -144,7 +144,7 @@ void GMT_strrepc (char *string, int c, int r) {
 	assert (string != NULL); /* NULL pointer */
 	do {
 		if (*string == c)
-			*string = r;
+			*string = (char)r;
 	} while (*(++string)); /* repeat until \0 reached */
 }
 
