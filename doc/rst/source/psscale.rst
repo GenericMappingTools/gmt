@@ -13,16 +13,18 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** |-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *length*/*width*\ [**+e**\ [**b**\ \|\ **f**][*length*]][**+h**][**+j**\ *justify*]\ [**+m**\ [**a**\ \|\ **c**\ \|\ **l**\ \|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
+**psscale** |-D|\ *refpoint*
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt\_file* ]
-[ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ |-F|\ *box* ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
-[ |-I|\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
+[ |-I|\ [*max\_intens*\ \|\ *low_i*/*high_i*] ]
 [ |-J|\ *parameters* ]
 [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-K| ]
-[ |-L|\ [**i**][*gap*] ] [ **-M** ] [ **-N**\ [**p**\ \|\ *dpi* ]]
+[ |-L|\ [**i**][*gap*] ]
+[ |-M| ]
+[ |-N|\ [**p**\ \|\ *dpi* ]]
 [ |-O| ]
 [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
@@ -121,7 +123,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
     Without further options, draws a rectangular border around the scale using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+g**\ *fill* to fill the scale box [no fill].
@@ -147,7 +149,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*]
+**-I**\ [*max_intens*\ \|\ *low\_i*/*high_i*]
     Add illumination effects. Optionally, set the range of intensities
     from - to + *max\_intens*. If not specified, 1 is used.
     Alternatively, append *low/high* intensities to specify an

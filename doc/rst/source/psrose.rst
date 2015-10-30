@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psrose** [ *table* ] [ |-A|\ [**r**]*sector_width* ]
+**psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ [*mode_file*] ]
 [ |-D| ]
@@ -67,7 +67,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**r**]*sector\_width*
+**-A**\ [**r**]\ *sector_width*
     Gives the sector width in degrees for sector and rose diagram.
     [Default 0 means windrose diagram]. Use **-Ar** to draw rose
     diagram instead of sector diagram. 

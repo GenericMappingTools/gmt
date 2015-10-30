@@ -14,11 +14,12 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psimage** *imagefile*
-[ |-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+e**\ *dpi*\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]] ]
-[ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ |-D|\ *refpoint* ]
+[ |-F|\ *box* ]
 [ |-G|\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ]
 [ |-I| ]
-[ |-J|\ *parameters* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-J|\ *parameters* ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-K| ]
 [ |-M| ]
 [ |-O| ]

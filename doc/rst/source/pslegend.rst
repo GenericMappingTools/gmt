@@ -14,10 +14,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pslegend** [ *specfile* ]
-|-D|\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+l**\ *spacing*]\ [**+o**\ *dx*\ [/*dy*]]
-[ |-B|\ [**p**\ \|\ **s**]\ *parameters* ]
+|-D|\ *refpoint* ]
 [ |-C|\ *dx*/*dy* ]
-[ |-F|\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ]
+[ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
 [ |-K| ] [ |-O| ]
 [ |-P| ]
