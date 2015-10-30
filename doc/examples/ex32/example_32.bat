@@ -50,7 +50,7 @@ echo 05:41:27 50:51:05 Maastricht  > cities.txt
 echo 04:21:00 50:51:00 Bruxelles  >> cities.txt
 echo 07:07:03 50:43:09 Bonn       >> cities.txt
 
-gmt grdtrack -Gtopo.nc -sa cities.txt | gmt psxyz -i0,1,3 %Rplot% -J -JZ -p -Sc7p -W1p,white -Gred -K -O >> %ps%
+gmt grdtrack -Gtopo.nc cities.txt | gmt psxyz -i0,1,3 %Rplot% -J -JZ -p -Sc7p -W1p,white -Gred -K -O >> %ps%
 gmt pstext %Rplot% -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O cities.txt >> %ps%
 
 REM Cleanup
