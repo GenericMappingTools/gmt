@@ -25,7 +25,7 @@ set (SUPPL_PROGS_SRCS segy2grd.c pssegy.c pssegyz.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.segyprogs
-	test.cpt test.list wa1_mig13.segy)
+	test.list wa1_mig13.segy)
 set (SUPPL_EXAMPLE_PROGS segyprogs_1.sh segyprogs_2.sh segyprogs_3.sh
 	segyprogs_4.sh segyprogs_5.sh)
 
