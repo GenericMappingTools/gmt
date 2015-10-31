@@ -122,28 +122,29 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: segy2grd <segyfile> -G<grdfile> %s\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[n|z]]\n\t[%s] [-L<nsamp>]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>][-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>] [-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G to name the output grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I specifies grid size(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name the output grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid size(s).\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A (or -Az): Add multiple entries at the same node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D to enter header information.  Specify '=' to get default value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L<nsamp> to override number of samples\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<ntraces> to fix number of traces. Default reads all traces.\n\t\t-M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N set value for nodes without corresponding input sample [Default is NaN]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q<mode><value> can be used to change two different settings:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qx<scl> applies scalar x-scale to coordinates in trace header to match the coordinates specified in -R\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qy<s_int> specifies sample interval as <s_int> if incorrect in the SEGY file\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S<header> to set variable spacing\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tIf -S not set, assumes even spacing of samples at dx, dy supplied with -I\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Let <nsamp> override number of samples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Fix number of traces. Default reads all traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without corresponding input sample [Default is NaN].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change either of two different settings:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<scl> applies scalar x-scale to coordinates in trace header to match the coordinates specified in -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<s_int> specifies sample interval as <s_int> if incorrect in the SEGY file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Append <header> to set variable spacing\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -S not set, assumes even spacing of samples at dx, dy supplied with -I.\n");
 	GMT_Option (API, "V,r,.");
 	
 	return (EXIT_FAILURE);

@@ -18,9 +18,11 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ [**n**\ \|\ **z**] ]
 [ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
-[ |-M|\ [*flags*\ ] ]
+[ |-L|\ [*nsamp*\ ] ]
+[ |-M|\ [*ntraces*\ ] ]
 [ |-N|\ *nodata* ]
-[ |-S|\ [*zfile*] ]
+[ |-Q|\ *<mode><value>* ]
+[ |-S|\ [*header*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-:| ]
@@ -52,7 +54,7 @@ Required Arguments
 
 **-I**
     *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
-    to indicate minutes or **c** to indicate seconds.
+    to indicate minutes or **s** to indicate seconds.
 
 .. _-R:
 
@@ -72,16 +74,18 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark*
-    Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
-    *title*, and *remark*. To leave some of these values untouched,
-    specify = as the value.
+.. include:: ../../explain_-D_cap.rst_
+
+.. _-L:
+
+**-L**
+    Let *nsamp* override number of samples in each trace.
 
 .. _-M:
 
-**-M**\ [*flags*\ ]
+**-M**\ [*ntraces*\ ]
     Fix number of traces to read in. Default tries to read 10000 traces.
-    **-M**\ 0 will read number in binary header, **-M**\ *n* will
+    **-M**\ 0 will read number in binary header, **-M**\ *ntraces* will
     attempt to read only *n* traces.
 
 .. _-N:
@@ -90,28 +94,21 @@ Optional Arguments
     No data. Set nodes with no input sample to this value [Default is
     NaN].
 
+.. _-Q:
+
+**-Q**\ *<mode><value>*
+    Can be used to change two different settings depending on *mode*:
+       **-Qx**\ *x-scale* applies scalar *x-scale* to coordinates in trace
+       header to match the coordinates specified in -R.
+
+       **-Qy**\ *s_int* specifies sample interval as *s_int* if incorrect in the SEGY file.
+
 .. _-S:
 
-**-S**\ [*zfile*\ ]
-    set variable spacing *header* is c for cdp, o for offset, b<number>
-    for 4-byte float starting at byte number If -S not set, assumes even
-    spacing of samples at the dx, dy supplied with -I
-
-.. _-L:
-
-**-L**
-    Override number of samples in each trace
-
-.. _-X:
-
-**-X**
-    applies scalar *x-scale* to coordinates in trace header to match the
-    coordinates specified in -R
-
-.. _-Y:
-
-**-Y**
-    Specifies sample interval as *s_int* if incorrect in the SEGY file
+**-S**\ [*header*\ ]
+    Set variable spacing; *header* is **c** for cdp, **o** for offset, or **b**\ *number*
+    for 4-byte float starting at byte *number*. If **-S** not set, assumes even
+    spacing of samples at the *x_inc, y_inc* supplied with **-I**.
 
 .. _-V:
 
@@ -141,7 +138,7 @@ sample interval is 0.1, try
 
    ::
 
-    gmt segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -X0.1 -Y0.1
+    gmt segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -Qx0.1 -Qy0.1
 
 Because the grid interval is larger than the SEGY file sampling, the
 individual samples will be averaged in bins

@@ -16,8 +16,7 @@ Synopsis
 **pssegy** *SEGYfile* |-J|\ *parameters*
 |SYN_OPT-R|
 |-D|\ *deviation*
-|-F|\ [*rgb*\ \|\ *gray*] |-W|
-[ |-B|\ *bias* ]
+|-F|\ [*color*] |-W|
 [ |-C|\ *clip* ]
 [ |-E|\ *error* ] [ |-I| ] [ |-K| ] [ |-L|\ *nsamp* ]
 [ |-M|\ *ntrace* ] [ |-N| ] [ |-O| ] [ |-P| ]
@@ -54,16 +53,16 @@ determines how far *in the plot coordinates* a
 [normalized][biased][clipped] sample value of 1 plots from the trace
 location.
 
-The SEGY file should be a disk image of the tape format (ie 3200 byte
+The SEGY file should be a disk image of the tape format (i.e., 3200 byte
 text header, which is ignored, 400 byte binary reel header, and 240 byte
 header for each trace) with samples as native real\*4 (IEEE real on all
-the platforms to which I have access)
+the platforms to which I have access).
 
 Required Arguments
 ------------------
 
 *SEGYfile*
-    Seismic data set to be imaged
+    Seismic SEGY data set to be imaged.
 
 .. _-J:
 
@@ -83,9 +82,9 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ [*rgb*\ \|\ *gray*]
-    Fill trace (variable area, defaults to filling positive). rgb or
-    gray gives the color with which the imagemask is filled.
+**-F**\ [*color*]
+    Fill trace (variable area, defaults to filling positive). Specify
+    the *color* with which the imagemask is filled.
 
 .. _-W:
 
@@ -154,21 +153,21 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *<mode><value>*
-    Can be used to change 4 different settings:
-       **-Qb**\ *<bias>* to bias scaled traces (-B-0.1 subtracts 0.1 from values)
+    Can be used to change 4 different settings depending on *mode*:
+       **-Qb**\ *bias* to bias scaled traces (-Qb-0.1 subtracts 0.1 from values).
 
-       **-Qu**\ *<redvel>* to apply reduction velocity (-ve removes reduction already present)
+       **-Qu**\ *redvel* to apply reduction velocity (negative value removes reduction already present).
 
-       **-Qx**\ *<mult>* to multiply trace locations by *mult*
+       **-Qx**\ *mult* to multiply trace locations by *mult*.
 
-       **-Qy**\ *<dy>* to override sample interval in reel header.
+       **-Qy**\ *dy* to override sample interval in SEGY reel header.
 
 .. _-S:
 
 **-S**\ *header*
-    Read trace locations from trace headers: header is either c for CDP,
-    o for offset, or b<num> to read a long starting at byte <num> in the
-    header (first byte corresponds to num=0). Default has location given
+    Read trace locations from trace headers: header is either **c** for CDP,
+    **o** for offset, or **b**\ *num* to read a long starting at byte *num* in the
+    header (first byte corresponds to *num* = 0). Default has location given
     by trace number.
 
 .. _-T:
@@ -180,11 +179,7 @@ Optional Arguments
 
 .. _-U:
 
-**-U**\ *redvel*
-    Apply reduction velocity by shifting traces *upwards* by
-    redvel/\|offset\|. Negative velocity removes existing reduction.
-    Units should be consistent with offset in trace header and sample
-    interval.
+.. include:: ../../explain_-U.rst_
 
 .. _-V:
 
@@ -218,13 +213,13 @@ variable area shading in black, use
     gmt pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack > segy.ps
 
 To plot the SEGY file wa1.segy with traces plotted at true cdp\*0.1,
-clipped at +-3, with bias -1 and negative variable area shaded red, use
+clipped at +/-3, with bias -1 and negative variable area shaded red, use
 
    ::
 
-    gmt pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -X0.1 -Fred -B-1 -I > segy.ps
+    gmt pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -Qx0.1 -Fred -Qb-1 -I > segy.ps
 
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`pssegyz`
+:doc:`gmt </gmt>`, :doc:`pssegyz`, :doc:`segy2grd`
