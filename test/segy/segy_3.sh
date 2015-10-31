@@ -5,7 +5,7 @@
 #
 # cdp = 40 * coordinate on line, 30km max depth
 #
-ps=segyprogs_3.ps
+ps=segy_3.ps
 area1=-R-35/6/-35/6/0/30
 proj1="-Jx0.15i/-0.15i -Jz-0.15i -p175/05"
 

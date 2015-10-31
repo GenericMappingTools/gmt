@@ -6,7 +6,7 @@
 This example demonstrates how :doc:`pscoast </pscoast>`
 can be used to set up clip paths based on coastlines. This approach is
 well suited when different gridded data sets are to be merged on a plot
-using different color palette files. Merging the files themselves may
+using different CPT files. Merging the files themselves may
 not be doable since they may represent different data sets, as we show
 in this example. Here, we lay down a color map of the geoid field near
 India with :doc:`grdimage </grdimage>`, use
@@ -27,7 +27,7 @@ amounts (in red) are not very prevalent, that color spans a long range.
 For this image it is appropriate to use the **-I** option in
 :doc:`psscale </psscale>` so the legend gets shaded,
 similar to the geoid grid. See Appendix [app:M] to learn more about
-color palettes and ways to draw color legends.
+CPT files and ways to draw color legends.
 
 .. literalinclude:: /_verbatim/example_17.txt
    :language: bash

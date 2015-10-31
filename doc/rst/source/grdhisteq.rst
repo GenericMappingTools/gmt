@@ -34,8 +34,8 @@ result in most of the image being very dark gray, with the mountain
 being almost white. One could use **grdhisteq** to write to stdout or file an
 ASCII list of those data values which divide the range of the data into
 *n_cells* segments, each of which has an equal area in the image. Using
-**awk** or :doc:`makecpt` one can take this output and build a cpt file;
-using the cptfile with grdimage will result in an image with all levels
+**awk** or :doc:`makecpt` one can take this output and build a CPT file;
+using the CPT file with grdimage will result in an image with all levels
 of gray occurring equally. Alternatively, see :doc:`grd2cpt`.
 
 The second common use of **grdhisteq** is in writing a grid with

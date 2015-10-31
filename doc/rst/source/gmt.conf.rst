@@ -95,12 +95,12 @@ fonts can be found in the :doc:`gmt` man page.
 .. _COLOR_MODEL:
 
 **COLOR_MODEL**
-    Selects in which color space a color palette should be interpolated.
+    Selects in which color space a CPT should be interpolated.
     By default, color interpolation takes place directly on the RGB
     values which can produce some unexpected hues, whereas interpolation
     directly on the HSV values better preserves those hues. The choices
     are: **none** (default: use whatever the COLOR_MODEL setting in the
-    color palette file demands), **rgb** (force interpolation in RGB),
+    CPT file demands), **rgb** (force interpolation in RGB),
     **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
     in CMYK but interpolates in RGB).
 

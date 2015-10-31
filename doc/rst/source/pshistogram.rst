@@ -17,7 +17,7 @@ Synopsis
 |-W|\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
 [ |-A| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cptfile* ]
+[ |-C|\ *cpt* ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
 [ |-F| ]
 [ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
@@ -89,8 +89,8 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cptfile*
-    Give a color palette file. The mid x-value for each bar is used to
+**-C**\ *cpt*
+    Give a CPT file. The mid x-value for each bar is used to
     look-up the bar color.
 
 .. _-D:

@@ -6,6 +6,7 @@
 function cpt_check {
 	testapi -I$1 -W$2 -Tc
 	diff -q --strip-trailing-cr ctest[io].cpt >> fail
+	rm -f ctesto.cpt
 }
 
 gmt makecpt -Cno_green -T0/10/1 > ctesti.cpt

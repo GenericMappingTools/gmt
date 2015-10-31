@@ -6,6 +6,7 @@
 function dataset_check {
 	testapi -I$1 -W$2 -Td
 	diff -q --strip-trailing-cr dtest[io].txt >> fail
+	rm -f dtesto.txt
 }
 
 cat << EOF > dtesti.txt

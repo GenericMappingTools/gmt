@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] |-C|\ [+]\ *cptfile* |-J|\ *parameters*
+**pscontour** [ *table* ] |-C|\ [+]\ *cpt* |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
@@ -49,7 +49,7 @@ triangulation is performed (using either Shewchuk's [1996] or Watson's
 -** to see which method is selected), but the user may optionally
 provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
-between contours may be painted according to the color palette file.
+between contours may be painted according to the CPT file.
 Alternatively, the x/y/z positions of the contour lines may be saved to
 one or more output files (or stdout) and no plot is produced. 
 
@@ -62,13 +62,13 @@ Required Arguments
     The contours to be drawn may be specified in one of three possible ways:
 
     (1) If *cont_int* has the suffix ".cpt" and can be opened as a
-        file, it is assumed to be a color palette table. The color
-        boundaries are then used as contour levels. If the cpt-file has
+        file, it is assumed to be a CPT file. The color
+        boundaries are then used as contour levels. If the CPT file has
         annotation flags in the last column then those contours will be
         annotated. By default all contours are labeled; use **-A-** to
         disable all annotations.
 
-    (2) If *cont_int* is a file but not a cpt-file, it is expected to
+    (2) If *cont_int* is a file but not a CPT file, it is expected to
         contain contour levels in column 1 and a
         C(ontour) OR A(nnotate) in
         col 2. The levels marked C (or c) are contoured, the levels marked A
@@ -145,7 +145,7 @@ Optional Arguments
 .. _-I:
 
 **-I**
-    Color the triangles using the color palette table. 
+    Color the triangles using the CPT file. 
 
 .. include:: explain_-Jz.rst_
 
@@ -217,8 +217,8 @@ Optional Arguments
 **-W**\ [**+**\ ]\ *pen* :ref:`(more ...) <set-pens>`
     Select contouring and set contour pen attributes. If the **+** flag
     is prepended then the color of the contour lines are taken from the
-    cpt file (see **-C**). If the **-** flag is prepended then the color
-    from the cpt file is applied both to the contours and the contour
+    CPT file (see **-C**). If the **-** flag is prepended then the color
+    from the CPT file is applied both to the contours and the contour
     annotations. 
 
 .. _-X:
@@ -251,7 +251,7 @@ Examples
 --------
 
 To make a raw contour plot from the file topo.xyz and drawing the
-contours (pen = 2) given in the color palette file topo.cpt on a Lambert
+contours (pen = 2) given in the CPT file topo.cpt on a Lambert
 map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
    ::

@@ -992,7 +992,7 @@ Finally, here is a list of numerous enhancements to individual programs:
    specify output color representation, e.g., to output the CPT table in
    h-s-v format despite originally being given in r/g/b, and **-G** to
    truncate incoming CPT to be limited to a given range.  It also adds **Di**
-   to match the bottom/top values in the input cpt file.
+   to match the bottom/top values in the input CPT file.
 
 *  :doc:`mapproject` has a new **-N**
    option to do geodetic/geocentric conversions; it combines with **-I**
@@ -8314,11 +8314,11 @@ assuming software would be smart enough to go the shorter route. More
 likely, red will be recorded as 0-1-1, so hue will be interpolated the
 other way around, reducing hue from 240 to 0, via cyan, green, and yellow.
 
-Depending on the design of your color palette, you may want to have it
+Depending on the design of your CPT, you may want to have it
 either way. By default, GMT interpolates in RGB space, even when the
-original color palette is in the HSV system. However, when you add the
+original CPT is in the HSV system. However, when you add the
 line ``#COLOR_MODEL=+HSV`` (with the leading ‘+' sign) in the header of
-the color palette file, GMT will not only read the color
+the CPT file, GMT will not only read the color
 representation as HSV values, but also interpolate colors in the HSV
 system. That means that H, S, and V values are interpolated linearly
 between two colors, instead of their respective R, G, and B values.
@@ -8894,8 +8894,8 @@ L. Of Colors and Color Legends
 ==============================
 
 
-Built-in color palette tables
------------------------------
+Built-in color palette tables (CPT)
+-----------------------------------
 
 Figures :ref:`CPT files a <CPT_files_a>` and
 :ref:`b <CPT_files_b>` show the 36 built-in

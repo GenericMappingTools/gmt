@@ -108,7 +108,7 @@ Creating GMT Graphics
     :doc:`makecpt` to generate a linear color
     palette file ``geoid.cpt`` for the geoid and use
     :doc:`grd2cpt` to get a histogram-equalized
-    cpt file ``topo.cpt`` for the topography data. To emphasize the structures in the
+    CPT file ``topo.cpt`` for the topography data. To emphasize the structures in the
     data we calculate the slopes in the north-south direction using
     :doc:`grdgradient`; these will be used to
     modulate the color image. Next we run
@@ -184,7 +184,7 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_04.txt
        :language: bash
 
-    The purpose of the color palette file ``zero.cpt`` is to have the positive topography
+    The purpose of the CPT file ``zero.cpt`` is to have the positive topography
     mesh painted light gray (the remainder is white). The left side of
     Figure shows the complete illustration.
 
@@ -416,7 +416,7 @@ Creating GMT Graphics
     values, and call :doc:`pscontour` to make a
     contour map and image directly from the raw data. Thus, in this example
     we do not actually make grid files but still are able to contour and
-    image the data. We use a color palette table ``topo.cpt`` (created via
+    image the data. We use a CPT table ``topo.cpt`` (created via
     :doc:`gmtinfo` and
     :doc:`makecpt`). The script becomes:
 
@@ -581,7 +581,7 @@ Creating GMT Graphics
     This example demonstrates how :doc:`pscoast`
     can be used to set up clip paths based on coastlines. This approach is
     well suited when different gridded data sets are to be merged on a plot
-    using different color palette files. Merging the files themselves may
+    using different CPT files. Merging the files themselves may
     not be doable since they may represent different data sets, as we show
     in this example. Here, we lay down a color map of the geoid field near
     India with :doc:`grdimage`, use
@@ -602,7 +602,7 @@ Creating GMT Graphics
     For this image it is appropriate to use the **-I** option in
     :doc:`psscale` so the legend gets shaded,
     similar to the geoid grid. See Appendix [app:M] to learn more about
-    color palettes and ways to draw color legends.
+    CPT files and ways to draw color legends.
 
     .. literalinclude:: /_verbatim/example_17.txt
        :language: bash

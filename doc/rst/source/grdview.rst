@@ -15,7 +15,7 @@ Synopsis
 
 **grdview** *relief_file* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
-[ |-C|\ [*cptfile*]]
+[ |-C|\ [*cpt*]]
 [ |-G|\ *drapefile* \| |-G|\ *grd_r*,\ *grd_g*,\ *grd_b* ]
 [ |-I|\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
 [ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
@@ -67,8 +67,8 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cptfile*]
-    name of the color palette file. Must be present if you want
+**-C**\ [*cpt*]
+    name of the CPT file. Must be present if you want
     (1) mesh plot with contours (**-Qm**), or
     (2) shaded/colored perspective image (**-Qs** or
     **-Qi**). For **-Qs**: You can specify that you want to skip a
@@ -85,9 +85,9 @@ Optional Arguments
     *relief_file*. [Default is *relief_file*]. Note that **-Jz** and
     **-N** always refers to the *relief_file*. The *drapefile* only
     provides the information pertaining to colors, which is looked-up
-    via the cpt file (see **-C**). Alternatively, give three grid files
+    via the CPT file (see **-C**). Alternatively, give three grid files
     separated by commas. These files must contain the red, green, and
-    blue colors directly (in 0-255 range) and no cpt file is needed. The
+    blue colors directly (in 0-255 range) and no CPT file is needed. The
     *drapefile* may be of higher resolution than the *relief_file*.
 
 .. _-I:
@@ -208,7 +208,7 @@ Examples
 --------
 
 To make a mesh plot from the file hawaii_grav.nc and drawing the
-contours given in the color palette file hawaii.cpt on a Lambert map at
+contours given in the CPT file hawaii.cpt on a Lambert map at
 1.5 cm/degree along the standard parallels 18 and 24, with vertical
 scale 20 mgal/cm, and looking at the surface from SW at 30 degree
 elevation, run
@@ -219,7 +219,7 @@ elevation, run
                 -Jz0.05c -Qm -N-100 -p225/30 -Wc > hawaii_grav_image.ps
 
 To create a illuminated color perspective plot of the gridded data set
-image.nc, using the color palette file color.rgb, with linear scaling at
+image.nc, using the CPT file color.rgb, with linear scaling at
 10 cm/x-unit and tickmarks every 5 units, with intensities provided by
 the file intens.nc, and looking from the SE, use
 
@@ -234,7 +234,7 @@ To make the same plot using the rastering option with dpi = 50, use
     gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc > image3D.ps
 
 To create a color PostScript perspective plot of the gridded data set
-magnetics.nc, using the color palette file mag_intens.cpt, draped over
+magnetics.nc, using the CPT file mag_intens.cpt, draped over
 the relief given by the file topography.nc, with Mercator map width of 6
 inch and tickmarks every 1 degree, with intensities provided by the file
 topo_intens.nc, and looking from the SE, run

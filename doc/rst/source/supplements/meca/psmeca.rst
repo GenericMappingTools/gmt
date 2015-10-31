@@ -27,7 +27,7 @@ psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *cptfile*]
+[ |-Z|\ *cpt*]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
@@ -362,8 +362,8 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *cptfile*
-    Give a color palette file and let compressive part color be
+**-Z**\ *cpt*
+    Give a CPT file and let compressive part color be
     determined by the z-value in the third column.
 
 .. include:: ../../explain_-c.rst_

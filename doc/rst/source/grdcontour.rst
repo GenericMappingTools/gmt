@@ -60,13 +60,13 @@ Required Arguments
     The contours to be drawn may be specified in one of three possible ways:
 
     (1) If *cont_int* has the suffix ".cpt" and can be opened as a
-        file, it is assumed to be a color palette table. The color
-        boundaries are then used as contour levels. If the cpt-file has
+        file, it is assumed to be a CPT file. The color
+        boundaries are then used as contour levels. If the CPT file has
         annotation flags in the last column then those contours will be
         annotated. By default all contours are labeled; use **-A-** to
         disable all annotations.
 
-    (2) If *cont_int* is a file but not a cpt-file, it is expected to
+    (2) If *cont_int* is a file but not a CPT file, it is expected to
         contain contour levels in column 1 and a
         C(ontour) OR A(nnotate) in
         col 2. The levels marked C (or c) are contoured, the levels marked A
@@ -211,7 +211,7 @@ Optional Arguments
     regular contours [Default]. *pen* sets the attributes for the
     particular line. Default pen for annotated contours: 0.75p,black.
     Regular contours use pen 0.25p,black. If the **+** flag is prepended
-    then the color of the contour lines are taken from the cpt file (see
+    then the color of the contour lines are taken from the CPT file (see
     **-C**). If the **-** flag is prepended then the color from the cpt
     file is applied both to the contours and the contour annotations. 
 

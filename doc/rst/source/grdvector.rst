@@ -15,7 +15,7 @@ Synopsis
 
 **grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ |-A| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cptfile* ]
+[ |-C|\ *cpt* ]
 [ |-G|\ *fill* ]
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-K| ] [ |-N| ] [ |-O| ] [ |-P| ] [ |-Q|\ *parameters* ]
@@ -72,8 +72,8 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [*cptfile*]
-    Use *cptfile* to assign colors based on vector length. Alternatively,
+**-C**\ [*cpt*]
+    Use *cpt* to assign colors based on vector length. Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdvector** automatically determine a 16-level continuous CPT from
     the grid's z-range.

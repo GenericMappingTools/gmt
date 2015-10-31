@@ -6,10 +6,10 @@
 #
 # cdp = 40 * coordinate on line, 30km max depth
 #
-ps=segyprogs_1.ps
+ps=segy_1.ps
 
 area1=-R-35/6/0/30
 proj1="-Jx0.15i/-0.15i"
 
-gmt pssegy "${src:-.}"/wa1_mig13.segy $area1 $proj1 -Qx0.1i -D0.35 -C8.0 -Qy0.1i -W -Fgreen -Qb-1.2 -Sc -K -Xc > $ps 
+gmt pssegy "${src:-.}"/wa1_mig13.segy $area1 $proj1 -Qx0.1i -D0.35 -C8.0 -Qy0.1i -W -Fgreen -Qb-1.2 -Sc -P -K -Xc > $ps 
 gmt psbasemap -R -J -Baf -O >> $ps

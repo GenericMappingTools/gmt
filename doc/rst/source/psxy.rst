@@ -17,7 +17,7 @@ Synopsis
 |SYN_OPT-Rz|
 [ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cptfile* ] [ |-D|\ *dx*/*dy* ]
+[ |-C|\ *cpt* ] [ |-D|\ *dx*/*dy* ]
 [ |-E|\ [**x**\ [**+**]\ \|\ **y**\ [**+**]\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ]
 [ |-F|\ [**c**\ \|\ **n**\ \|\ **r**\ ][*refpoint*] ]
 [ |-G|\ *fill* ] [ |-I|\ *intens* ]
@@ -101,9 +101,9 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cptfile*
-    Give a color palette file or specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.
+**-C**\ *cpt*
+    Give a CPT file or specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous CPT from those colors automatically.
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
     If **-S** is set, let symbol fill color be
@@ -112,7 +112,7 @@ Optional Arguments
     field, etc.). If **-S** is not set, then **psxy** expects the user to
     supply a multisegment file where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
-    polygon (if **-L** is set) via the cpt file.
+    polygon (if **-L** is set) via the CPT file.
 
 .. _-D:
 
@@ -298,7 +298,7 @@ Examples
 
 To plot solid red circles (diameter = 0.25 cm) at the positions listed
 in the file DSDP.xy on a Mercator map at 5 cm/degree of the area 150E to
-154E, 18N to 23N, with tickmarks every 1 degree and gridlines every 15
+154E, 18N to 23N, with tick-marks every 1 degree and gridlines every 15
 minutes, use
 
    ::
@@ -307,27 +307,27 @@ minutes, use
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
-the third using the color palette cpt on a linear map, use
+the third using the CPT rgb.cpt on a linear map, use
 
    ::
 
-    gmt psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Ccpt -B200 > map.ps
+    gmt psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Crgb -B200 > map.ps
 
-To plot the file trench.xy on a Mercator map, with white triangles with
+To plot the file trench.txt on a Mercator map, with white triangles with
 sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
    ::
 
-    gmt psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
+    gmt psxy trench.txt -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
 
 To plot the data in the file misc.d as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
-and color based on the third column via the color palette cpt on a
+and color based on the third column via the CPT chrome on a
 linear map, use
 
    ::
 
-    gmt psxy misc.d -R0/100/-50/100 -JX6i -S -Ccpt -B20 > map.ps
+    gmt psxy misc.d -R0/100/-50/100 -JX6i -S -Cchrome -B20 > map.ps
 
 If you need to place vectors on a plot you can choose among
 straight Cartesian vectors, math circular vectors, or geo-vectors (these
@@ -373,7 +373,7 @@ Segment header records may contain one of more of the following options:
 **-Z**\ *zval*
     Obtain fill via cpt lookup using z-value *zval*
 **-Z**\ *NaN*
-    Get the NaN color from the cpt file
+    Get the NaN color from the CPT file
 
 Custom Symbols
 --------------

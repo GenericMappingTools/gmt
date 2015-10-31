@@ -756,8 +756,8 @@ longitude and latitude (or *x* and *y*.  The remaining items
 apply when one (or more) of the following conditions are met:
 
 #. If you want the color of each symbol to be determined individually,
-   supply a cptfile with the **-C** option and let the 3rd data column
-   contain the *z*-values to be used with the cptfile.
+   supply a CPT file with the **-C** option and let the 3rd data column
+   contain the *z*-values to be used with the CPT file.
 
 #. If you want the size of each symbol to be determined individually,
    append the size in a separate column.
@@ -1455,8 +1455,8 @@ and grid-line intervals for the color bars.)
 
   +--------------------------------------------------------+------------------------------------------------+
   | Option                                                 | Purpose                                        | 
-  +===========================================+=============================================================+
-  | **-C**\ *cptfile*                                      | The required CPT file                          |
+  +========================================================+================================================+
+  | **-C**\ *cpt*                                          | The required CPT file                          |
   +--------------------------------------------------------+------------------------------------------------+
   | **-Dx**\ *xpos/ypos*\ **+w**\ *length/width*\ [**+h**] | Sets the position and dimensions of scale bar. |
   +--------------------------------------------------------+------------------------------------------------+
@@ -1750,7 +1750,7 @@ In addition, some options may be required:
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
   | Option                  | Purpose                                                                                                     | 
   +=========================+=============================================================================================================+
-  | **-C**\ *cptfile*       | The *cptfile* is required for color -coded surfaces and for contoured mesh plots                            |
+  | **-C**\ *cpt*           | The *cpt* is required for color-coded surfaces and for contoured mesh plots                                 |
   +-------------------------+-------------------------------------------------------------------------------------------------------------+
   | **-G**\ *drape\_file*   | Assign colors using *drape\_file* instead of *relief\_file*                                                 |
   +-------------------------+-------------------------------------------------------------------------------------------------------------+

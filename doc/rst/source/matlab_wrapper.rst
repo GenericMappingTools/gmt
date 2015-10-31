@@ -91,7 +91,7 @@ used in the command line. But for readability we could well had left the **-G** 
 
 While for this particular case it makes no difference to use or not the **-G**, because there is **only**
 one input, the same does not hold true when we have more than one. For example, we can run the same example
-but compute the color palette separately.
+but compute the CPT separately.
 
   ::
 
@@ -110,7 +110,7 @@ made of colored filled circles.
    x = linspace(-pi, pi)';            % The *xx* var
    seno = sin(x);                     % *yy*
    xyz  = [x seno seno];              % Duplicate *yy* so that it can be colored
-   cpt  = gmt('makecpt -T-1/1/0.1');  % Create a color palette
+   cpt  = gmt('makecpt -T-1/1/0.1');  % Create a CPT
    gmt('psxy -R-3.2/3.2/-1.1/1.1 -JX12c -Sc0.1c -C -P -Ba > seno.ps', cpt, xyz)
 
 The poin here is that we had to give *cpt, xyz* and not *xyz, cpt* (which would error) because input data

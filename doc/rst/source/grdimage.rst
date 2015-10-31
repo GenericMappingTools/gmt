@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
-[ |-A|\ *out_img*\ **=**\ *driver* ] [ |-C|\ *cptfile* ]
+[ |-A|\ *out_img*\ **=**\ *driver* ] [ |-C|\ *cpt* ]
 [ |-D|\ [**r**\ ] ] [ |-E|\ **i**\ [\|\ *dpi*] ] |-J|\ *parameters*
 [ |-G|\ [**f**\ \|\ **b**]\ *color* ] [ |-I|\ *intensfile*\ \|\ *intensity* ]
 [ |-J|\ **z**\ \|\ **-Z**\ *parameters* ] [ |-K| ] [ |-M| ] [ |-N| ]
@@ -97,13 +97,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cptfile*
-    Name of the color palette table (for *grd_z* only). Alternatively,
+**-C**\ *cpt*
+    Name of the CPT file (for *grd_z* only). Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdimage** automatically determine a 16-level continuous CPT from
     the grid's z-range.
     Yet another option is to specify -Ccolor1,color2[,color3,...]
-    to build a linear continuous cpt from those colors automatically.  
+    to build a linear continuous CPT from those colors automatically.  
     In this case *color*\ **n** can be a r/g/b triplet, a color name,
     or an HTML hexadecimal color (e.g. #aabbcc ).
 
