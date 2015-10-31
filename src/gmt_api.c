@@ -242,6 +242,10 @@ enum GMTAPI_enum_input {
 	GMTAPI_OPTION_INPUT 	= 0,	/* Input resource specified via an option (e.g., -G<file>) */
 	GMTAPI_MODULE_INPUT 	= 1};	/* Input resource specified via the module command line */
 
+enum GMTAPI_enum_status {
+	GMTAPI_GOT_SEGHEADER 	= -1,	/* Read a segment header */
+	GMTAPI_GOT_SEGGAP 	= -2};	/* Detected a gap and insertion of new segment header */
+
 /*==================================================================================================
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
  *==================================================================================================
@@ -807,10 +811,10 @@ int gmt_bin_input_memory (struct GMT_CTRL *GMT, uint64_t n, uint64_t n_use)
 	GMT->current.io.status = GMT_IO_DATA_RECORD;	/* Default status we expect, but this may change below */
 	GMT->current.io.rec_no++;			/* One more input record read */
 	status = GMT_process_binary_input (GMT, n_use);	/* Check for segment headers */
-	if (status == 1) return (-1);			/* A segment header was found and we are done here */
+	if (status == 1) return (GMTAPI_GOT_SEGHEADER);	/* A segment header was found and we are done here */
 	//n_read = (GMT->common.i.active) ? GMT_bin_colselect (GMT) : n;	/* We may have used -i and select fewer of the input columns */
 
-	if (GMT_gap_detected (GMT)) { GMT_set_gap (GMT); return (-2); }	/* Gap forced a segment header to be issued and we get out */
+	if (GMT_gap_detected (GMT)) { GMT_set_gap (GMT); return (GMTAPI_GOT_SEGGAP); }	/* Gap forced a segment header to be issued and we get out */
 	GMT->current.io.pt_no++;	/* Actually got a valid data record */
 	return (GMT_NOERROR);
 }
@@ -1696,6 +1700,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				M_obj = S_obj->resource;
 				S_obj->n_rows = M_obj->n_rows;
 				S_obj->n_columns = M_obj->n_columns;
+				S_obj->rec = 0;	/* Start of this "file" */
 				GMT->common.b.ncol[direction] = M_obj->n_columns;
 			}
 			GMT->common.b.active[direction] = true;	/* Basically, we are doing what GMT calls binary i/o */
@@ -2278,7 +2283,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 					}
 					/* Now process the current record */
 					if ((status = gmt_bin_input_memory (GMT, M_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the segment we worked on and goto next */
-						if (status == -2) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as the first in next segment */
+						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as the first in next segment */
 						if (got_data) {	/* If first input segment has header then we already have that segment allocated */
 							GMT_alloc_segment (GMT, S, n_records, n_columns, false);	/* Reallocate to exact length */
 							D_obj->table[D_obj->n_tables]->n_records += n_records;			/* Update record count for this table */
@@ -2338,7 +2343,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 						GMTAPI_get_val (&(V_obj->data[col]), row, &(GMT->current.io.curr_rec[col]));
 					}
 					if ((status = gmt_bin_input_memory (GMT, V_obj->n_columns, n_use)) < 0) {	/* Segment header found, finish the one we had and add more */
-						if (status == -2) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
 						if (got_data) {	/* If first input segment has header then we already have a segment allocated */
 							GMT_alloc_segment (GMT, S, n_records, n_columns, false);
 							D_obj->table[D_obj->n_tables]->n_records += n_records;
@@ -5349,61 +5354,85 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 
 			case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Here we copy/read from a user memory location */
 			case GMT_IS_REFERENCE_VIA_MATRIX:
-				if (API->current_rec[GMT_IN] >= S_obj->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
-					GMT->current.io.status = GMT_IO_EOF;
+				if (S_obj->rec >= S_obj->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows that was registered */
 					S_obj->status = GMT_IS_USED;	/* Mark as read */
-					if (retval) *retval = EOF;
-					return (NULL);	/* Done with this array */
+					if (GMTAPI_Next_Data_Object (API, S_obj->family, GMT_IN) == EOF) {	/* That was the last source, return */
+						n_fields = EOF;					/* EOF is ONLY returned when we reach the end of the LAST data file */
+						GMT->current.io.status = GMT_IO_EOF;
+					}
+					else if (mode & GMT_READ_FILEBREAK) {			/* Return empty handed to indicate a break between files */
+						n_fields = GMT_IO_NEXT_FILE;			/* We flag this situation with a special return value */
+						GMT->current.io.status = GMT_IO_NEXT_FILE;
+					}
+					else {	/* Get ready to read the next data file */
+						S_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the next data source to work on */
+						get_next_record = true;				/* Since we haven't read the next record yet */
+					}
 				}
-				else
+				else {	/* Read from this resource */
 					S_obj->status = GMT_IS_USING;				/* Mark as being read */
-				M_obj = S_obj->resource;
-				n_use = gmt_n_cols_needed_for_gaps (GMT, S_obj->n_columns);
-				gmt_update_prev_rec (GMT, n_use);
-				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : S_obj->n_columns;
-				GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-				GMTAPI_get_val = GMTAPI_select_get_function (API, M_obj->type);
-				for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
-					col_pos = gmt_pick_in_col_number (GMT, col);
-					ij = GMT_2D_to_index (API->current_rec[GMT_IN], col_pos, M_obj->dim);
-					GMTAPI_get_val (&(M_obj->data), ij, &(GMT->current.io.curr_rec[col]));
+					M_obj = S_obj->resource;
+					n_use = gmt_n_cols_needed_for_gaps (GMT, S_obj->n_columns);
+					gmt_update_prev_rec (GMT, n_use);
+					n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : S_obj->n_columns;
+					GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
+					GMTAPI_get_val = GMTAPI_select_get_function (API, M_obj->type);
+					for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
+						col_pos = gmt_pick_in_col_number (GMT, col);
+						ij = GMT_2D_to_index (S_obj->rec, col_pos, M_obj->dim);
+						GMTAPI_get_val (&(M_obj->data), ij, &(GMT->current.io.curr_rec[col]));
+					}
+					if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
+						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						record = NULL;
+					}
+					else {	/* Valid data record */
+						record = GMT->current.io.curr_rec;
+						S_obj->rec++;
+					}
+					n_fields = n_columns;
 				}
-				if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
-					if (status == -2) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
-					record = NULL;
-				}
-				else	/* Valid data record */
-					record = GMT->current.io.curr_rec;
-				n_fields = n_columns;
 				break;
 
 			 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* Here we copy from a user memory location that points to an array of column vectors */
 			 case GMT_IS_REFERENCE_VIA_VECTOR:
-				if (API->current_rec[GMT_IN] >= S_obj->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number or rows that was registered */
-					GMT->current.io.status = GMT_IO_EOF;
+				if (S_obj->rec == S_obj->n_rows) {	/* Our only way of knowing we are done is to quit when we reach the number of rows in this vector */
 					S_obj->status = GMT_IS_USED;	/* Mark as read */
-					if (retval) *retval = EOF;
-					return (NULL);	/* Done with this array */
+					if (GMTAPI_Next_Data_Object (API, S_obj->family, GMT_IN) == EOF) {	/* That was the last source, return */
+						n_fields = EOF;					/* EOF is ONLY returned when we reach the end of the LAST data file */
+						GMT->current.io.status = GMT_IO_EOF;
+					}
+					else if (mode & GMT_READ_FILEBREAK) {			/* Return empty handed to indicate a break between files */
+						n_fields = GMT_IO_NEXT_FILE;			/* We flag this situation with a special return value */
+						GMT->current.io.status = GMT_IO_NEXT_FILE;
+					}
+					else {	/* Get ready to read the next data file */
+						S_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the next data source to work on */
+						get_next_record = true;				/* Since we haven't read the next record yet */
+					}
 				}
-				else
+				else {	/* Read from this resource */
 					S_obj->status = GMT_IS_USING;				/* Mark as being read */
-				V_obj = S_obj->resource;
-				n_use = gmt_n_cols_needed_for_gaps (GMT, S_obj->n_columns);
-				gmt_update_prev_rec (GMT, n_use);
-				GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[0]);	/* For 1st column and probably all of them */
-				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : S_obj->n_columns;
-				for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
-					col_pos = gmt_pick_in_col_number (GMT, col);
-					if (col_pos && V_obj->type[col_pos] != V_obj->type[col_pos-1]) GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[col_pos]);
-					GMTAPI_get_val (&(V_obj->data[col_pos]), API->current_rec[GMT_IN], &(GMT->current.io.curr_rec[col]));
+					V_obj = S_obj->resource;
+					n_use = gmt_n_cols_needed_for_gaps (GMT, S_obj->n_columns);
+					gmt_update_prev_rec (GMT, n_use);
+					GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[0]);	/* For 1st column and probably all of them */
+					n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : S_obj->n_columns;
+					for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
+						col_pos = gmt_pick_in_col_number (GMT, col);
+						if (col_pos && V_obj->type[col_pos] != V_obj->type[col_pos-1]) GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[col_pos]);
+						GMTAPI_get_val (&(V_obj->data[col_pos]), S_obj->rec, &(GMT->current.io.curr_rec[col]));
+					}
+					if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
+						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						record = NULL;
+					}
+					else {	/* Valid data record */
+						record = GMT->current.io.curr_rec;
+						S_obj->rec++;
+					}
+					n_fields = n_columns;
 				}
-				if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
-					if (status == -2) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
-					record = NULL;
-				}
-				else	/* Valid data record */
-					record = GMT->current.io.curr_rec;
-				n_fields = n_columns;
 				break;
 
 			case GMT_IS_REFERENCE:	/* Only for textsets and datasets */

@@ -69,7 +69,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
 	 * needed while reading/writing from a table (file or array) */
-	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VETOR only] */
+	uint64_t rec;				/* Current rec to read [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
+	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
