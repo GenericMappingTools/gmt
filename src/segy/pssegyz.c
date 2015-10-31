@@ -794,7 +794,7 @@ use a few of these*/
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
 			scale= (float) segyz_rms (data, n_samp);
-			GMT_Report (API, GMT_MSG_VERBOSE, "\t\t rms value is %f\n", scale);
+			GMT_Report (API, GMT_MSG_VERBOSE, "rms value is %f\n", scale);
 		}
 		for (iz = 0; iz < n_samp; iz++) { /* scale bias and clip each sample in the trace */
 			if (Ctrl->N.active) data[iz] /= scale;

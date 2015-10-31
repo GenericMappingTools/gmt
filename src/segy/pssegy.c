@@ -646,7 +646,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 		if (Ctrl->Q.value[U_ID]) {
 			toffset = (float) - (fabs ((double)(header->sourceToRecDist)) / Ctrl->Q.value[U_ID]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "pssegy: time shifted by %f\n", toffset);
+			GMT_Report (API, GMT_MSG_VERBOSE, "time shifted by %f\n", toffset);
 		}
 
 		data = get_segy_data (fpi, header); /* read a trace */
@@ -666,7 +666,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
 			scale = segy_rms (data, n_samp);
-			GMT_Report (API, GMT_MSG_VERBOSE, "pssegy: \t\t rms value is %f\n",scale);
+			GMT_Report (API, GMT_MSG_VERBOSE, "rms value is %f\n", scale);
 		}
 		for (iy = 0; iy < n_samp; iy++) { /* scale bias and clip each sample in the trace */
 			if (Ctrl->N.active) data[iy] /= scale;
@@ -676,7 +676,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		}
 
 		if ((!Ctrl->Z.active || scale) && (plot_it || !n_tracelist)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "pssegy: trace %d plotting at %f \n", ix+1, x0);
+			GMT_Report (API, GMT_MSG_VERBOSE, "trace %d plotting at %f \n", ix+1, x0);
 			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, bitmap, bm_nx, bm_ny);
 		}
 		free (data);
