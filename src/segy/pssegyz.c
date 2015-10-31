@@ -175,7 +175,7 @@ int GMT_pssegyz_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pssegyz_parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pssegyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -187,7 +187,6 @@ int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct 
 	unsigned int k, n_errors = 0, n_files = 0;
 	char *txt[2] = {NULL, NULL}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -266,7 +265,7 @@ int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct 
 				break;
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Can't specify more than one trace location key\n");
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Can't specify more than one trace location key\n");
 					n_errors++;
 					continue;
 				}
@@ -578,7 +577,7 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 
 int GMT_pssegyz (void *V_API, int mode, void *args)
 {
-	int nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
+	int nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny, error;
 
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};
 
@@ -612,6 +611,7 @@ int GMT_pssegyz (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pssegyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_pssegyz_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pssegyz main code ----------------------------*/
 
