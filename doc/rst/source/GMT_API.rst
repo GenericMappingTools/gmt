@@ -2330,11 +2330,12 @@ The prototype is
   ::
 
     struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, char marker, 
-                    	                       struct GMT_OPTION **head, int *n_items);
+                    	            int n_in, struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
 pointed to by ``*head``, the ``marker`` is the special character that
-identifies a data resource (usually $), and we return an array
+identifies a data resource (usually $), ``n_in`` contains the number of *input*
+objects we have to connect (or -1 if not known) and we return an array
 that contains specific information for those options that
 (after processing) contain explicit memory references.  The number of
 items in the array is returned via the ``n_items`` variable.  The function

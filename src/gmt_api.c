@@ -6897,13 +6897,14 @@ const char * GMTAPI_get_moduleinfo (void *V_API, char *module)
 }
 
 /*! . */
-struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, char marker, struct GMT_OPTION **head, unsigned int *n) {
+struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, char marker, int n_in, struct GMT_OPTION **head, unsigned int *n) {
 	/* This function determines which input sources and output destinations are required given the options.
 	 * It is only used to assist developers of external APIs such as the MATLAB, Julia, Python, R, and other APIs.
 	 * These are the function arguments:
 	 *   API	Controls all things within GMT.
 	 *   module	Name of the GMT module. An input arg, but may grow if a prefix of "gmt" is prepended.
 	 *   marker	Character that represents a resource, typically $, but could be another char if need be.
+	 *   n_in	Number of objects given as input resources (-1 if not known).
 	 *   head	Linked list of GMT options passed for this module. We may hook on 1-2 additional options.
 	 *   We return an array of structures with information about registered resources going to/from GMT.
 	 *   The number of structures is returned by the *n argument. Struct GMT_RESOURCE is defined in gmt.h.
@@ -6969,7 +6970,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
-	int k;
+	int k, n_in_added = 0, n_to_add, e;
 	bool deactivate_output = false;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
@@ -7068,6 +7069,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			info[n_items].pos = pos = (direction == GMT_IN) ? explicit_pos++ : output_pos++;	/* Explicitly given arguments are the first given on the r.h.s. */
 			kind = GMT_FILE_EXPLICIT;
 			n_items++;
+			if (direction == GMT_IN) n_in_added++;
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_IS_NONE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
 			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well*/
@@ -7110,6 +7112,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				n_implicit++;
 				kind = GMT_FILE_EXPLICIT;
 				n_items++;
+				if (direction == GMT_IN) n_in_added++;
 			}
 		}
 		else {	/* No implicit file argument involved, just check if this satisfies a required option */
@@ -7136,17 +7139,21 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			char str[2] = {0,0};
 			str[0] = marker;
 			direction = GMTAPI_key_to_family (API, key[ku], &family, &geometry);
-			new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option with filename "$" */
-			/* Append the new option to the list */
-			*head = GMT_Append_Option (API, new_ptr, *head);
-			info[n_items].option    = new_ptr;
-			info[n_items].family    = family;
-			info[n_items].geometry  = geometry;
-			info[n_items].direction = direction;
-			info[n_items].pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
-			GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c%c as implicit memory reference to %s argument # %d\n",
-				S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
-			n_items++;
+			n_to_add = (direction == GMT_OUT || n_in == -1) ? 1 : n_in - n_in_added;
+			for (e = 0; e < n_to_add; e++) {
+				new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option(s) with filename "$" */
+				/* Append the new option to the list */
+				*head = GMT_Append_Option (API, new_ptr, *head);
+				info[n_items].option    = new_ptr;
+				info[n_items].family    = family;
+				info[n_items].geometry  = geometry;
+				info[n_items].direction = direction;
+				info[n_items].pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
+				GMT_Report (API, GMT_MSG_DEBUG, "%s: Must add -%c%c as implicit memory reference to %s argument # %d\n",
+					S[direction], key[ku][K_OPT], marker, LR[direction], info[n_items].pos);
+				n_items++;
+				if (direction == GMT_IN) n_in_added++;
+			}
 		}
 		free (key[ku]);	/* Free up this key */
 	}
@@ -7177,9 +7184,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 }
 
 #ifdef FORTRAN_API
-struct GMT_RESOURCE * GMT_Encode_Options_ (const char *module, char *marker, struct GMT_OPTION **head, unsigned int *n, int len)
+struct GMT_RESOURCE * GMT_Encode_Options_ (const char *module, char *marker, int *n_in, struct GMT_OPTION **head, unsigned int *n, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, head, n));
+	return (GMT_Encode_Options (GMT_FORTRAN, module, *marker, *n_in, head, n));
 }
 #endif
 
