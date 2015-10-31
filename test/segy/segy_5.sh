@@ -13,6 +13,6 @@ proj1="-Jx0.15i/-0.15i"
 
 gmt makecpt -T-5/5/1 -Z -Cpolar > test.cpt
 gmt segy2grd $area1 -Sc -Qx0.1 -Qy0.1 -I0.5/0.2 "${src:-.}"/wa1_mig13.segy -Gtest.nc -V
-gmt grdimage $area1 $proj1 -K test.nc -Ctest.cpt -P -Xc -Y1.5i > $ps
+gmt grdimage $area1 $proj1 -K test.nc -Ctest.cpt -P -Xc > $ps
 gmt psbasemap -R -J -Baf -O >> $ps
 rm -f test.nc test.cpt
