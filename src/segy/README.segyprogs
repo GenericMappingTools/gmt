@@ -91,7 +91,7 @@ used for files with little-endian byte order.
 Authorship:
 
 The pssegy, pssegyz and segy2grd programs were written and are maintained by Tim Henstock,
-then@soc.soton.ac.uk, and I'm happy (well, not exactly happy
+then@noc.soton.ac.uk, and I'm happy (well, not exactly happy
 since I think I got most of the bugs) to have reports of unexpected behaviour.
 The routines which read the SEGY data are modified from the IRIS/PASSCAL
 software distribution.
