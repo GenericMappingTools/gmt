@@ -5382,14 +5382,13 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 						ij = GMT_2D_to_index (S_obj->rec, col_pos, M_obj->dim);
 						GMTAPI_get_val (&(M_obj->data), ij, &(GMT->current.io.curr_rec[col]));
 					}
+					S_obj->rec++;
 					if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
-						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						if (status == GMTAPI_GOT_SEGGAP) S_obj->rec--, API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
 						record = NULL;
 					}
-					else {	/* Valid data record */
+					else	/* Valid data record */
 						record = GMT->current.io.curr_rec;
-						S_obj->rec++;
-					}
 					n_fields = n_columns;
 				}
 				break;
@@ -5423,14 +5422,13 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 						if (col_pos && V_obj->type[col_pos] != V_obj->type[col_pos-1]) GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[col_pos]);
 						GMTAPI_get_val (&(V_obj->data[col_pos]), S_obj->rec, &(GMT->current.io.curr_rec[col]));
 					}
+					S_obj->rec++;
 					if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
-						if (status == GMTAPI_GOT_SEGGAP) API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						if (status == GMTAPI_GOT_SEGGAP) S_obj->rec--, API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
 						record = NULL;
 					}
-					else {	/* Valid data record */
+					else	/* Valid data record */
 						record = GMT->current.io.curr_rec;
-						S_obj->rec++;
-					}
 					n_fields = n_columns;
 				}
 				break;
