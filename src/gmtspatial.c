@@ -1178,7 +1178,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		double out[3];
 		uint64_t seg, row_f, row_l, tbl, col;
 		unsigned int handedness = 0;
-		int mode, poly, geo;
+		int qmode, poly, geo;
 
 		char line[GMT_BUFSIZ];
 		
@@ -1189,14 +1189,14 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
-			mode = Ctrl->Q.mode;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
+			qmode = Ctrl->Q.mode;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
 			GMT->current.io.multi_segments[GMT_OUT] = true;	/* To ensure we can write headers */
 		}
 		else {
-			mode = GMT_IS_POINT;
+			qmode = GMT_IS_POINT;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, qmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
