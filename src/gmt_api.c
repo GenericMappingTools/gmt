@@ -4527,6 +4527,46 @@ int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *
 }
 #endif
 
+#if 0
+ /*! . */
+int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head) {
+	/* Scan the registered module input|output resources to learn what their family is.
+	 * direction:	Either GMT_IN or GMT_OUT
+	 * head:	Head of the list of module options
+	 *
+	 * Returns:	The family value (GMT_IS_DATASET|TEXTSET|CPT|GRID) or GMT_NOTSET if not known
+	 */
+	struct GMTAPI_CTRL *API = NULL;
+	struct GMT_OPTION *current = NULL;
+	int family = GMT_NOTSET;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	API = gmt_get_api_ptr (V_API);
+	API->error = GMT_OK;	/* Reset in case it has some previous error */
+	current = head;	/* Start at the first argument */
+	desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE
+	while (current) {		/* Loop over the list and look for input files */
+		if (current->option == desired_option && if (GMT_File_Is_Memory (current->arg))) {	/* A memory resource; determine family */
+			<get object ID>
+			<get item number>
+			if ((API->object[item]->family & GMT_VIA_MODULE_INPUT))
+			switch (API->object[item]->family) {
+				
+			}
+		}
+		current = current->next;	/* Go to next option */
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Determined family to be %s\n", GMT_family[family]);
+	return (family);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Family_ (unsigned int direction, struct GMT_OPTION *head)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
+}
+#endif
+#endif
+
  /*! . */
 int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args) {
 	/* Registers program option file arguments as sources/destinations for the current module.
