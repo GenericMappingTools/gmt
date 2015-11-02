@@ -156,27 +156,24 @@ documentation, has many (not so trivial) examples on usage og the MEX GMT API.
 
 .. code-block:: c
 
-  ProjectionRefPROJ4
-  ProjectionRefWKT
-  hdr
-  range
-  inc
-  dim
-  n_rows
-  n_columns
-  MinMax
-  NoDataValue
-  registration
-  title
-  remark
-  command
-  DataType
-  LayerCount
-  x
-  y
-  z
-  x_units
-  y_units
-  z_units
+  ProjectionRefPROJ4     % Projection string in PROJ4 syntax (Optional)
+  ProjectionRefWKT       % Projection string in WKT syntax (Optional)
+  range                  % 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+  inc                    % 1x2 vector with [x_inc y_inc]
+  n_rows                 % Number of rows in grid
+  n_columns              % Number of columns in grid
+  n_bands                % Not-yet used (always == 1)
+  registration           % Registration type: 0 -> Grid registration; 1 -> Pixel registration
+  NoDataValue            % The value of nodata
+  title                  % Title (Optional)
+  remark                 % Remark (Optional)
+  command                % Command used to create the grid (Optional) 
+  DataType               % 'float' or 'double'
+  x                      % [1 x n_columns] vector with XX coordinates
+  y                      % [1 x n_rows]    vector with YY coordinates
+  z                      % [n_rows x n_columns] grid array
+  x_units                % Units of XX axis (Optional)
+  y_units                % Units of YY axis (Optional)
+  z_units                % Units of ZZ axis (Optional)
 
 Definition of the *grid structure* that holds a grid and its metadata.
