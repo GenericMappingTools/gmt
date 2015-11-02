@@ -1019,7 +1019,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 		if (s[k][K_OPT] == '-') {	/* Key letter X missing: Means that option -Y, if given, changes the type of input|output */
 			/* Must first determine which data type we are dealing with via -T<type> */
 			if ((opt = GMT_Find_Option (API, s[k][K_FAMILY], head))) {	/* Found the -Y<type> option */
-				type = toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCIT) in GMTAPI_process_keys below */
+				type = (char)toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCIT) in GMTAPI_process_keys below */
 				if (!strchr ("DGCIT", type)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: INTERNAL ERROR: No or bad data type given to read|write (%c)\n", type);
 					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
@@ -4057,7 +4057,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
 		if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level)))	/* Yes, this object was added at this level, get rid of it; do not increment i */
-			GMTAPI_Unregister_IO (API, (int)S_obj->ID, GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
+			GMTAPI_Unregister_IO (API, (int)S_obj->ID, (unsigned int)GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */
 	}
@@ -4182,7 +4182,7 @@ int GMT_Destroy_Session (void *V_API) {
 	GMTAPI_free_sharedlibs (API);			/* Close shared libraries and free list */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
-	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, (int)API->object[i]->ID, GMT_NOTSET);
+	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	GMT_free (API->GMT, API->object);
 	GMT_end (API->GMT);	/* Terminate GMT machinery */
 	if (API->session_tag) free (API->session_tag);
@@ -5418,7 +5418,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 					GMTAPI_get_val = GMTAPI_select_get_function (API, M_obj->type);
 					for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
-						col_pos = gmt_pick_in_col_number (GMT, col);
+						col_pos = gmt_pick_in_col_number (GMT, (unsigned int)col);
 						ij = GMT_2D_to_index (S_obj->rec, col_pos, M_obj->dim);
 						GMTAPI_get_val (&(M_obj->data), ij, &(GMT->current.io.curr_rec[col]));
 					}
@@ -5458,7 +5458,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[0]);	/* For 1st column and probably all of them */
 					n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : S_obj->n_columns;
 					for (col = 0; col < n_columns; col++) {	/* We know the number of columns from registration */
-						col_pos = gmt_pick_in_col_number (GMT, col);
+						col_pos = gmt_pick_in_col_number (GMT, (unsigned int)col);
 						if (col_pos && V_obj->type[col_pos] != V_obj->type[col_pos-1]) GMTAPI_get_val = GMTAPI_select_get_function (API, V_obj->type[col_pos]);
 						GMTAPI_get_val (&(V_obj->data[col_pos]), S_obj->rec, &(GMT->current.io.curr_rec[col]));
 					}
@@ -5483,7 +5483,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 						case GMT_IO_DATA_RECORD:	/* Got a data record */
 							S_obj->status = GMT_IS_USING;		/* Mark this resource as currently being read */
 							for (col = 0; col < n_columns; col++) {	/* Copy from row to curr_rec */
-								col_pos = gmt_pick_in_col_number (GMT, col);
+								col_pos = gmt_pick_in_col_number (GMT, (unsigned int)col);
 								GMT->current.io.curr_rec[col] = DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->coord[col_pos][p[GMT_ROW]];
 							}
 							record = GMT->current.io.curr_rec;	/* We will return this double array */
@@ -6042,7 +6042,7 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 		unsigned int j;
 		void *address = API->object[item]->data;
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[family], object_ID);
-		if ((error = GMTAPI_Unregister_IO (API, (int)object_ID, GMT_NOTSET))) return_error (API, error);	/* Did not find object */
+		if ((error = GMTAPI_Unregister_IO (API, object_ID, (unsigned int)GMT_NOTSET))) return_error (API, error);	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) {
 			if (API->object[j]->data == address) API->object[j]->data = NULL;		/* Set repeated data references to NULL so we don't try to free twice */
 			if (API->object[j]->resource == address) API->object[j]->resource = NULL;	/* Set matching resources to NULL so we don't try to read from there again */
@@ -7096,7 +7096,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (deactivate_output && (k = GMTAPI_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
-		key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Since we got an explicit output file already */
+		key[k][K_DIR] = (char)tolower(key[k][K_DIR]);	/* Since we got an explicit output file already */
 
 	/* 3. Count the module options and any input files referenced via marker, then allocate info struct array */
 	for (opt = *head; opt; opt = opt->next) {
@@ -7128,7 +7128,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			}
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i so we dont add it later */
-			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
+			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = (char)tolower (key[k][K_DIR]);	/* Make sure required I becomes i and O becomes o so we dont add them later */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
@@ -7158,7 +7158,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			if (skip) {	/* Not an explicit reference after all but a regular option */
 				kind = GMT_FILE_NONE;
 				if (k >= 0 && !number) {	/* If this was a required input|output it has now been satisfied */
-					key[k][K_DIR] = tolower (key[k][K_DIR]);
+					key[k][K_DIR] = (char)tolower (key[k][K_DIR]);
 					satisfy = special_text[direction];
 				}
 				else	/* Nothing special about this option */
@@ -7170,7 +7170,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].family    = family;
 				info[n_items].geometry  = geometry;
 				info[n_items].direction = direction;
-				key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Change to lowercase i or o since option was provided, albeit implicitly */
+				key[k][K_DIR] = (char)tolower (key[k][K_DIR]);	/* Change to lowercase i or o since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
 				/* Excplicitly add the missing marker ($) to the option argument */
 				sprintf (txt, "%s%c", opt->arg, marker);
@@ -7186,7 +7186,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			kind = GMT_FILE_NONE;
 			if (k >= 0) {	/* If this was a required input|output it has now been satisfied */
 				/* Add check to make sure argument for input is an existing file! */
-				key[k][K_DIR] = tolower (key[k][K_DIR]);
+				key[k][K_DIR] = (char)tolower (key[k][K_DIR]);
 				satisfy = special_text[direction];
 			}
 			else	/* Nothing special about this option */
