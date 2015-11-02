@@ -92,6 +92,7 @@ EXTERN_MSC int GMT_Get_Row          (void *API, int rec_no, struct GMT_GRID *G, 
 EXTERN_MSC int GMT_Put_Row          (void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Set_Comment      (void *API, unsigned int family, unsigned int mode, void *arg, void *data);
 EXTERN_MSC int GMT_Get_ID           (void *API, unsigned int family, unsigned int direction, void *resource);
+EXTERN_MSC int GMT_Get_Family	    (void *API, unsigned int direction, struct GMT_OPTION *head);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 

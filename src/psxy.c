@@ -709,8 +709,8 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	bool get_rgb, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false;
 	bool default_outline, outline_active, geovector = false;
-	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
-	unsigned int i, n_total_read = 0, j, geometry, read_mode;
+	unsigned int n_needed, n_cols_start = 2, justify, tbl;
+	unsigned int i, n_total_read = 0, j, geometry;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR;
@@ -908,20 +908,12 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	in = GMT->current.io.curr_rec;
-	if (S.read_symbol_cmd) {	/* If symbol info is given we must process text records */
-		set_type  = GMT_IS_TEXTSET;
-		read_mode = GMT_READ_TEXT;
-	}
-	else {	/* Here we can process data records (ASCII or binary) */
-		set_type  = GMT_IS_DATASET;
-		read_mode = GMT_READ_DOUBLE;
-	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
 		Return (error);
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
 		bool periodic = false;
-		unsigned int n_warn[3] = {0, 0, 0}, warn, item, n_times;
+		unsigned int n_warn[3] = {0, 0, 0}, set_type, warn, item, n_times, read_mode;
 		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		double xpos[2], width = 0.0;
 
@@ -932,6 +924,17 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 
+		set_type = GMT_Get_Family (API, GMT_IN, options);
+		if (set_type == GMT_IS_TEXTSET)	/* Input memory objects are textsets */
+			read_mode = GMT_READ_TEXT;
+		else if (S.read_symbol_cmd) {	/* If symbol info is given we must process text records */
+			set_type  = GMT_IS_TEXTSET;
+			read_mode = GMT_READ_TEXT;
+		}
+		else {	/* Here we can process data records (ASCII or binary) */
+			set_type  = GMT_IS_DATASET;
+			read_mode = GMT_READ_DOUBLE;
+		}
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}

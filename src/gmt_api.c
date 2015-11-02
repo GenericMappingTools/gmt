@@ -4527,7 +4527,6 @@ int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *
 }
 #endif
 
-#if 0
  /*! . */
 int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head) {
 	/* Scan the registered module input|output resources to learn what their family is.
@@ -4538,24 +4537,29 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_OPTION *current = NULL;
-	int family = GMT_NOTSET;
+	int item, object_ID, family = GMT_NOTSET, flag= (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
+	unsigned int n_kinds = 0, k, counter[GMT_IS_PS];
+	enum GMT_enum_opt desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
+	GMT_memset (counter, GMT_IS_PS, unsigned int);	/* Initialize counter */
 	API->error = GMT_OK;	/* Reset in case it has some previous error */
-	current = head;	/* Start at the first argument */
-	desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE
-	while (current) {		/* Loop over the list and look for input files */
-		if (current->option == desired_option && if (GMT_File_Is_Memory (current->arg))) {	/* A memory resource; determine family */
-			<get object ID>
-			<get item number>
-			if ((API->object[item]->family & GMT_VIA_MODULE_INPUT))
-			switch (API->object[item]->family) {
-				
-			}
-		}
-		current = current->next;	/* Go to next option */
+	
+	for (current = head; current; current = current->next) {		/* Loop over the list and look for input files */
+		if (current->option != desired_option) continue;				/* Not a module resource argument */
+		if ((object_ID = GMTAPI_Decode_ID (current->arg)) == GMT_NOTSET) continue;	/* Not a registered resource */
+		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, direction, flag)) == GMT_NOTSET) continue;	/* Not the right attributes */
+		counter[(API->object[item]->family)]++;	/* Update counts of this family */
 	}
-	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Determined family to be %s\n", GMT_family[family]);
+	for (k = 0; k < GMT_IS_PS; k++) {	/* Determine which family we found, if any */
+		if (counter[k]) n_kinds++, family = k;
+	}
+	if (n_kinds != 1) {	/* Could not determine family */
+		family = GMT_NOTSET;
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Could not determine family\n");
+	}
+	else	/* Found a unique family */
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Get_Family: Determined family to be %s\n", GMT_family[family]);
 	return (family);
 }
 
@@ -4564,7 +4568,6 @@ int GMT_Get_Family_ (unsigned int direction, struct GMT_OPTION *head)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
 }
-#endif
 #endif
 
  /*! . */
