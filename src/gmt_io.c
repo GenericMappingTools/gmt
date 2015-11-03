@@ -7461,3 +7461,57 @@ void GMT_free_dir_list (struct GMT_CTRL *GMT, char ***addr)
 	}
 	GMT_free (GMT, list);
 }
+
+#if 0 /* Something we may do in 5.2 */
+/*! . */
+struct GMT_DATASET * GMT_Read_Dataset (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, const char *infile)
+{	/* Return the required dataset even if provided via TEXTSET input.
+ 	 * This applies to situations when using the API.  For normal command-line module use,
+	 * files are simply read in as data.  However, the API may have registered a TEXTSET
+	 * structure as input but the module requires DATASET.  Thus, we must parse the text
+	 * records into data records and return a DATASET structure instead.
+	 */
+	int actual_family = family;
+	uint64_t dim[4] = {0, 0, 0, 0}, tbl, seg, row, col, n_columns, n_total_read = 0;
+	struct GMT_TEXTSET *T = NULL;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *SD = NULL;
+	struct GMT_TEXTSEGMENT *ST = NULL;
+	struct GMT_CTRL *GMT = NULL;
+	
+	if (!infile) actual_family = GMT_Get_Family (API, GMT_IN);	/* Module input via one or more filenames or registered resources */
+	if (actual_family == GMT_IS_DATASET) return (GMT_Read_Data (API, family, method, geometry, mode, NULL, infile, NULL));
+	/* We get here when the user passed GMT_IS_TEXTSET resources */
+	API->error = GMT_NOERROR;
+	GMT = API->GMT;
+	n_columns = GMT_get_cols (GMT, GMT_IN);
+	if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, method, GMT_IS_NONE, GMT_READ_NORMAL, NULL, infile, NULL)) == NULL) return NULL;	/* Failure */
+	dim[GMT_TBL] = T->n_tables;	/* Same number of tables as input */
+	dim[GMT_COL] = n_columns;	/* Number of requested columns */
+	if ((D = GMT_Create_Data (API, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)  return NULL;	/* Failure */
+	for (tbl = 0; tbl < T->n_tables; tbl++) {
+		if (T->table[tbl]->n_headers) {	/* Pass along table headers */
+			unsigned int hdr;
+			D->table[tbl]->header = GMT_memory (GMT, NULL, T->table[tbl]->n_headers, char *);
+			for (hdr = 0; hdr < T->table[tbl]->n_headers; hdr++) D->table[tbl]->header[hdr] = strdup (T->table[tbl]->header[hdr]);
+			D->table[tbl]->n_headers = T->table[tbl]->n_headers;
+		}
+		D->table[tbl]->segment = GMT_memory (GMT, NULL, T->table[tbl]->n_segments, struct GMT_DATASEGMENT *);
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			ST = T->table[tbl]->segment[seg];
+			GMT_alloc_segment (GMT, SD, ST->n_rows, n_columns, true);	/* Allocate this segment */
+			D->table[tbl]->segment[seg] = SD;
+			if (ST->header) SD->header = strdup (ST->header);
+			for (row = 0; row < ST->n_rows; row++, n_total_read++) {
+				if (GMT_conv_intext2dbl (GMT, ST->record[row], n_columns)) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Input record %" PRIu64 " has bad x and/or y coordinates\n", n_total_read);
+				}
+				for (col = 0; col < n_columns; col++) SD->coord[col][row] = GMT->current.io.curr_rec[col];
+			}
+		}
+	}
+	GMT_Destroy_Data (API, &T);		/* Done with this resource */
+	GMT_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
+	return (D);
+}
+#endif
