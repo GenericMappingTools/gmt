@@ -247,19 +247,19 @@ int GMT_pssegyz_parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct G
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
 						Ctrl->Q.active[B_ID] = true;
-						Ctrl->Q.value[B_ID] = atof (opt->arg);
+						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
 					case 'u':	/* reduction velocity application */
 						Ctrl->Q.active[U_ID] = true;
-						Ctrl->Q.value[U_ID] = atof (opt->arg);
+						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
 						break;
 					case 'x': /* over-rides of header info */
 						Ctrl->Q.active[X_ID] = true;
-						Ctrl->Q.value[X_ID] = atof (opt->arg);
+						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
 						Ctrl->Q.active[Z_ID] = true;
-						Ctrl->Q.value[Z_ID] = atof (opt->arg);
+						Ctrl->Q.value[Z_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;

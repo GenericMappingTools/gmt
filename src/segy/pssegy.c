@@ -238,19 +238,19 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
 						Ctrl->Q.active[B_ID] = true;
-						Ctrl->Q.value[B_ID] = atof (opt->arg);
+						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
 					case 'u':	/* reduction velocity application */
 						Ctrl->Q.active[U_ID] = true;
-						Ctrl->Q.value[U_ID] = atof (opt->arg);
+						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
 						break;
 					case 'x': /* over-rides of header info */
 						Ctrl->Q.active[X_ID] = true;
-						Ctrl->Q.value[X_ID] = atof (opt->arg);
+						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
 						Ctrl->Q.active[Y_ID] = true;
-						Ctrl->Q.value[Y_ID] = atof (opt->arg);
+						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
@@ -557,7 +557,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		binhead.sr = bswap16 (binhead.sr);
 	}
 
-/* set parameters from the reel headers */
+	/* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
@@ -591,10 +591,9 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-
 	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
 
-	ix=0;
+	ix = 0;
 	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 		/* read traces one by one */
 		if (Ctrl->S.mode == PLOT_OFFSET) {
@@ -688,6 +687,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	PSL_plotbitimage (PSL, 0.0, 0.0, xlen, ylen, 1, bitmap, 8*bm_nx, bm_ny, trans, Ctrl->F.rgb);
 	/* have to multiply by 8 since postscriptlight version of ps_imagemask is based on a _pixel_ count, whereas pssegy uses _byte_ count internally */
 	GMT_map_clip_off (GMT);
+	GMT_map_basemap (GMT);
 
 	if (fpi != stdin) fclose (fpi);
 
