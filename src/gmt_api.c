@@ -4564,7 +4564,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 }
 
 #ifdef FORTRAN_API
-int GMT_Get_Family_ (unsigned int direction, struct GMT_OPTION *head)
+int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Family (GMT_FORTRAN, *direction, head));
 }
