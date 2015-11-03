@@ -90,6 +90,7 @@ struct PSPOLAR_CTRL {
 		double width, length, head;
 		double vector_shape;
 		struct GMT_FILL fill;
+		struct GMT_SYMBOL S;
 	} S2;
 	struct T {
 		bool active;
@@ -205,7 +206,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, n;
-	char txt[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
+	char txt[GMT_LEN64] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -271,23 +272,45 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 					case 's':	/* Get S polarity */
 						Ctrl->S2.active = true;
 						strncpy (txt, &opt->arg[2], GMT_LEN64);
-						n=0; while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++; txt[n]=0;
+						n = 0;
+						while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++;	/* Why all this if it stops at first '/'? */
+						txt[n] = 0;
 						Ctrl->S2.size = GMT_to_inch (GMT, txt);
 						if (strchr (&opt->arg[1], 'V')) {
-							Ctrl->S2.vector = true;
-							strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);
-							if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
-								Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
-								if (!GMT->current.setting.proj_length_unit) {
-									Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+							if (GMT_compat_check (GMT, 4) && (strchr (&txt[n+1], '/') && !strchr (&txt[n+1], '+'))) {	/* Old-style args */
+								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape>; use -QsV<vecpar> instead.\n");
+								Ctrl->S2.vector = true;
+								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);	/* Vector bit no sizes. Using defaults */
+								if (strncmp(txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen(txt) == 1) {
+									Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1;
+									Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+									if (!GMT->current.setting.proj_length_unit) {
+										Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25;
+										Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+									}
+								}
+								else {
+									sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
+									Ctrl->S2.width = GMT_to_inch (GMT, txt);
+									Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
+									Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
+									Ctrl->S2.vector_shape = atof(txt_d);
 								}
 							}
 							else {
-								sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
-								Ctrl->S2.width = GMT_to_inch (GMT, txt);
-								Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
-								Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
-								Ctrl->S2.vector_shape = atof(txt_d);
+								char symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);	/* But if -QsV...G|L things will screw here, no? */ 
+								if (txt[0] == '+') {	/* No size (use default), just attributes */
+									n_errors += GMT_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
+								}
+								else {	/* Size, plus possible attributes */
+									n = sscanf (txt, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+									if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+									Ctrl->S2.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+									n_errors += GMT_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
+								}
+								/* NOTE, THIS IS NOT GOING TO WORK BECAUSE VEC PARAMS ARE NOW IN Ctrl->S2.S  WHICH IS NOT USED BELOW
+								   WOULD A COPY TO THE CORRESPONDING MEMBERS OF Ctrl->S2 BE GOOD ENOUGH? */
 							}
 						}
 						if (strchr (opt->arg, 'G')) {
