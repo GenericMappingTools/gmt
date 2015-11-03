@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-pspolar [ *table* ] |-J|\ *parameters*
+pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size* |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
@@ -73,18 +73,18 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ longitude/latitude)
+**-D**\ *longitude/latitude*
     Maps the bubble at given longitude and latitude point.
 
 .. _-M:
 
-**-M**\ size)
+**-M**\ *size*
     Sets the size of the beach ball to plot polarities in. *Size* is in
     inch (unless **c**, **i**, **m**, or **p** is appended).
 
 .. _-S:
 
-**-S**\ <symbol\_type><size>)
+**-S**\ *<symbol_type><size>*
     Selects *symbol\_type* and symbol *size*. Size is in inch (unless
     **c**, **i**, **m**, or **p** is appended). Choose symbol type from
     st(\ *a*)r, (*c*)ircle, (*d*)iamond, (*h*)exagon, (*i*)nverted
@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ fill)
+**-E**\ fill
     Selects filling of symbols for stations in extensive quadrants. Set
     the color [Default is 250]. If **-E**\ *fill* is the same as
     **-F**\ *fill*, use **-e** to outline.
@@ -128,8 +128,7 @@ Optional Arguments
 .. _-N:
 
 **-N**
-    Does **not** skip symbols that fall outside map border [Default
-    plots points inside border only].
+    Does **not** skip symbols that fall outside map border [Default plots points inside border only].
 
 .. _-O:
 
@@ -144,25 +143,24 @@ Optional Arguments
 **-Q**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Qe**\ [pen])
-    Outline symbols in extensive quadrants using *pen* or the default
-    pen (see **-W**).
+**-Qe**\ [pen]
+    Outline symbols in extensive quadrants using *pen* or the default pen (see |-W|).
 
-**-Qf**\ [pen])
+**-Qf**\ [pen]
     Outline the beach ball using *pen* or the default pen (see **-W**).
 
-**-Qg**\ [pen])
+**-Qg**\ [pen]
     Outline symbols in compressional quadrants using *pen* or the
     default pen (see **-W**).
 
 **-Qh**
     Use special format derived from HYPO71 output
 
-**-Qs**\ *half-size*/[**V**\ [*v\_width/h\_length/h\_width/shape*\ ]][\ **G**\ *color*][**L**\ ]
+**-Qs**\ *half-size*/[**V**\ [*v\_width/h\_length/h_width/shape*]][\ **G**\ *color*][**L**]
     Plots S polarity azimuth. S polarity is in last column. It may be a
     vector (**V** option) or a segment. Give
-    half-size,v\_width,h\_length,h\_width in inch (unless **c**, **i**,
-    **m**, or **p** is appended). [**L**\ ] option is for outline.
+    half-size,v_width,h_length,h_width in inch (unless **c**, **i**,
+    **m**, or **p** is appended). [**L**] option is for outline.
 
 **-Qt**\ *pen*
     Set pen color to write station code. Default uses the default pen (see **-W**).
