@@ -7656,6 +7656,8 @@ void gmt_free_plot_array (struct GMT_CTRL *GMT) {
 void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	unsigned int i;
 	unsigned int V_level = GMT->current.setting.verbose;	/* Keep copy of currently selected level */
+	bool pass_changes_back;
+	struct GMT_DEFAULTS saved_settings;
 
 	if (GMT->current.proj.n_geodesic_approx) {
 		GMT_Report(GMT->parent, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n",
@@ -7665,6 +7667,9 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT_Garbage_Collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
+
+	pass_changes_back = (!strncmp (GMT->init.module_name, "gmtset", 6U));	/* gmtset is special as we want it to affect the session */
+	if (pass_changes_back) GMT_memcpy (&saved_settings, &(GMT->current.setting), 1U, struct GMT_DEFAULTS);
 
 	/* GMT_INIT */
 
@@ -7706,6 +7711,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/* Overwrite GMT with what we saved in GMT_begin_module */
 	GMT_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
+	if (pass_changes_back) GMT_memcpy (&(GMT->current.setting), &saved_settings, 1U, struct GMT_DEFAULTS);
 	GMT->current.setting.verbose = V_level;	/* Pass the currently selected level back up */
 
 	/* Now fix things that were allocated separately */

@@ -2,6 +2,7 @@
 #	$Id$
 #
 # Check gmt psmeca for plotting beach balls
+# Verified by K. Feigl on 2015/8/6.  Comments left below.
 
 ps=meca_5.ps
 
@@ -10,14 +11,10 @@ size=1.0c
 #THOUGHTS:
 #echo 2.0 1.0 0.0  90 90  90 270  0  90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
 #echo 2.0 1.0 0.0  90 90  90  90  0 -90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-#The previous two lines don't give the same result.. Maybe there could be a warning to not use the
-#same strike twice?  Answer via K. Feigl 2015/8/6: The -Sc option describes two planes with 6 numbers where 3 are enough.
+# Question: The previous two lines don't give the same result.. Maybe there could be a warning to not use the
+#same strike twice?
+# Answer via K. Feigl 2015/8/6: The -Sc option describes two planes with 6 numbers where 3 are enough.
 # So, no warning if two planes are not compatible, i.e., orthogonal.
-
-###THE FOLLOWING DOES NOT WORK
-###echo 2.0 1.0 0.0  90  4 270 5 0 0 Dip slip    | gmt psmeca -Sa${size}  -Gblack -R -J -K -O >> $ps
-#the rake should be within -180 to 180, leaving it as 270 breaks the rules but the plot is OK.. We dont bother with a warning.
-
 
 #TESTING AKI OPTION -Sa  - PURE STRIKE SLIP
 # Explosion
@@ -29,9 +26,6 @@ echo 1.0 1.0 0.0  0 90  0 5 0 0 Strike slip | gmt psmeca -Sa${size} -L1 -Gblack 
 # Rotated strike slip
 echo 1.0 0.0 0.0  45 90 180 5 0 0 Strike slip 45 deg | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
 # Dip slip
-#echo 2.0 1.0 0.0  90 90 90 5 0 0 Dip slip    | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-###THE FOLLOWING DOES NOT WORK
-###echo 2.0 1.0 0.0  90  4 270 5 0 0 Dip slip    | gmt psmeca -Sa${size}  -Gblack -R -J -K -O >> $ps
 echo 2.0 1.0 0.0  90  0 -90 5 0 0 Dip slip    | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
 # Dip slip
 #echo 2.0 0.0 0.0   0 90  90 5 0 0 Dip slip    | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
@@ -63,7 +57,6 @@ echo 1.0 1.0 0.0  90 90 180   0 90   0 4 23 0 0 Right Strike Slip | gmt psmeca -
 # Rotated strike slip
 echo 1.0 0.0 0.0  45 90 180 135 90   0 4 23 0 0 Strike slip 45 deg | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
 # Dip slip
-##The following two lines should look equal to the ones in the box above and below, but does not
 echo 2.0 1.0 0.0  90 90  90 270  0  90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
 # Dip slip
 echo 2.0 0.0 0.0   0 90  90 180  0  90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
