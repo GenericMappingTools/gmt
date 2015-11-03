@@ -19,11 +19,11 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-F|\ *color* ]
 [ |-E|\ *color* ]
-[ |-G|\ *fill* ]
+[ |-G|\ *color* ]
 [ |-K| ]
 [ |-L| ]
 [ |-N| ] [ |-O| ] [ |-P| ]
-[ |-S|\ *symbol*/*scale*/*conf*/*font\_size* ] [
+[ |-S|\ *symbol*/*scale*/*conf*/*font_size* ] [
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
@@ -69,99 +69,95 @@ Required Arguments
 
 Selects the meaning of the columns in the data file and the figure to be plotted.
 
-**-Se**\ *velscale/confidence/fontsize*.
+    **-Se**\ *velscale/confidence/fontsize*.
 
-Velocity ellipses in (N,E) convention. *Vscale* sets the scaling of the
-velocity arrows. This scaling gives inches (unless **c**, **i**, **m**,
-or **p** is appended). *Confidence* sets the 2-dimensional confidence
-limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *Fontsize*
-sets the size of the text in points. The ellipse will be filled with the
-color or shade specified by the **-G** option [default transparent]. The
-arrow and the circumference of the ellipse will be drawn with the pen
-attributes specified by the **-W** option. Parameters are expected to be
-in the following columns:
+        Velocity ellipses in (N,E) convention. *Vscale* sets the scaling of the
+        velocity arrows. This scaling gives inches (unless **c**, **i**, **m**,
+        or **p** is appended). *Confidence* sets the 2-dimensional confidence
+        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *Fontsize*
+        sets the size of the text in points. The ellipse will be filled with the
+        color or shade specified by the |-G| option [default transparent]. The
+        arrow and the circumference of the ellipse will be drawn with the pen
+        attributes specified by the |-W| option. Parameters are expected to be
+        in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude of station (**-:** option interchanges order)
-    **3**,\ **4**:
-    eastward, northward velocity (**-:** option interchanges order)
-    **5**,\ **6**:
-    uncertainty of eastward, northward velocities (1-sigma) (**-:**
-    option interchanges order)
-    **7**:
-    correlation between eastward and northward components
-    **8**:
-    name of station (optional).
+            **1**,\ **2**:
+            longitude, latitude of station (**-:** option interchanges order)
+            **3**,\ **4**:
+            eastward, northward velocity (**-:** option interchanges order)
+            **5**,\ **6**:
+            uncertainty of eastward, northward velocities (1-sigma) (**-:** option interchanges order)
+            **7**:
+            correlation between eastward and northward components
+            **8**:
+            name of station (optional).
 
-**-Sn**\ *barscale.*
+    **-Sn**\ *barscale.*
 
-Anisotropy bars. *Barscale* sets the scaling of the bars This scaling
-gives inches (unless **c**, **i**, **m**, or **p** is appended).
-Parameters are expected to be in the following columns:
+        Anisotropy bars. *Barscale* sets the scaling of the bars This scaling
+        gives inches (unless **c**, **i**, **m**, or **p** is appended).
+        Parameters are expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude of station (**-:** option interchanges order)
-    **3**,\ **4**:
-    eastward, northward components of anisotropy vector (**-:** option
-    interchanges order)
+            **1**,\ **2**:
+            longitude, latitude of station (**-:** option interchanges order)
+            **3**,\ **4**:
+            eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
-**-Sr**\ *velscale/confidence/fontsize*
+    **-Sr**\ *velscale/confidence/fontsize*
 
-Velocity ellipses in rotated convention. *Vscale* sets the scaling of
-the velocity arrows. This scaling gives inches (unless **c**, **i**,
-**m**, or **p** is appended). *Confidence* sets the 2-dimensional
-confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-*Fontsize* sets the size of the text in points. The ellipse will be
-filled with the color or shade specified by the **-G** option [default
-transparent]. The arrow and the circumference of the ellipse will be
-drawn with the pen attributes specified by the **-W** option. Parameters
-are expected to be in the following columns:
+        Velocity ellipses in rotated convention. *Vscale* sets the scaling of
+        the velocity arrows. This scaling gives inches (unless **c**, **i**,
+        **m**, or **p** is appended). *Confidence* sets the 2-dimensional
+        confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        *Fontsize* sets the size of the text in points. The ellipse will be
+        filled with the color or shade specified by the |-G| option [default
+        transparent]. The arrow and the circumference of the ellipse will be
+        drawn with the pen attributes specified by the |-W| option. Parameters
+        are expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude, of station (**-:** option interchanges order)
-    **3**,\ **4**:
-    eastward, northward velocity (**-:** option interchanges order)
-    **5**,\ **6**:
-    semi-major, semi-minor axes
-    **7**:
-    counter-clockwise angle, in degrees, from horizontal axis to major
-    axis of ellipse.
-    **8**:
-    name of station (optional)
+            **1**,\ **2**:
+            longitude, latitude, of station (**-:** option interchanges order)
+            **3**,\ **4**:
+            eastward, northward velocity (**-:** option interchanges order)
+            **5**,\ **6**:
+            semi-major, semi-minor axes
+            **7**:
+            counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
+            **8**:
+            name of station (optional)
 
-**-Sw**\ *wedge\_scale/wedge\_mag*.
+    **-Sw**\ *wedge\_scale/wedge\_mag*.
 
-Rotational wedges. *Wedge\_scale* sets the size of the wedges in inches
-(unless **c**, **i**, **m**, or **p** is appended). Values are
-multiplied by *Wedge\_mag* before plotting. For example, setting
-*Wedge\_mag* to 1.e7 works well for rotations of the order of 100
-nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
-and **-E** to set the color or shade for the uncertainty. Parameters are
-expected to be in the following columns:
+        Rotational wedges. *Wedge\_scale* sets the size of the wedges in inches
+        (unless **c**, **i**, **m**, or **p** is appended). Values are
+        multiplied by *Wedge\_mag* before plotting. For example, setting
+        *Wedge\_mag* to 1.e7 works well for rotations of the order of 100
+        nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
+        and **-E** to set the color or shade for the uncertainty. Parameters are
+        expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude, of station (**-:** option interchanges order)
-    **3**:
-    rotation in radians
-    **4**:
-    rotation uncertainty in radians
+            **1**,\ **2**:
+            longitude, latitude, of station (**-:** option interchanges order)
+            **3**:
+            rotation in radians
+            **4**:
+            rotation uncertainty in radians
 
-**-Sx**\ *cross\_scale*
+    **-Sx**\ *cross_scale*
 
-gives Strain crosses. *Cross\_scale* sets the size of the cross in
-inches (unless **c**, **i**, **m**, or **p** is appended). Parameters
-are expected to be in the following columns:
+        gives Strain crosses. *Cross\_scale* sets the size of the cross in
+        inches (unless **c**, **i**, **m**, or **p** is appended). Parameters
+        are expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude, of station (**-:** option interchanges order)
-    **3**:
-    eps1, the most extensional eigenvalue of strain tensor, with
-    extension taken positive.
-    **4**:
-    eps2, the most compressional eigenvalue of strain tensor, with
-    extension taken positive.
-    **5**:
-    azimuth of eps2 in degrees CW from North.
+            **1**,\ **2**:
+            longitude, latitude, of station (**-:** option interchanges order)
+            **3**:
+            eps1, the most extensional eigenvalue of strain tensor, with
+            extension taken positive.
+            **4**:
+            eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.
+            **5**:
+            azimuth of eps2 in degrees CW from North.
 
 Optional Arguments
 ------------------
@@ -169,9 +165,8 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *parameters*
-    Modify vector parameters. For vector heads, append vector head
-    *size* [Default is 9p]. See VECTOR ATTRIBUTES for specifying
-    additional attributes.
+    Modify vector parameters. For vector heads, append vector head *size* [Default is 9p].
+    See `Vector Attributes`_ for specifying additional attributes.
 
 .. _-B:
 
@@ -305,6 +300,9 @@ gray wedges to represent the 2-sigma uncertainties.
 See Also
 --------
 
+:doc:`psmeca`,
+:doc:`pspolar`,
+:doc:`pscoupe`,
 :doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
 
 References

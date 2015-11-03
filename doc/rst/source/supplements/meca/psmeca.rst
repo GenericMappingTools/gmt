@@ -392,10 +392,13 @@ The following file should give a normal-faulting CMT mechanism:
 See Also
 --------
 
+:doc:`pspolar`,
+:doc:`psvelo`,
+:doc:`pscoupe`,
 :doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 
@@ -416,8 +419,8 @@ Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press,
 W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical
 Recipes in C, Cambridge University press (routine jacobi)
 
-`Authors <#toc9>`_
-------------------
+Authors
+-------
 
 Genevieve Patau, `Laboratory of Seismogenesis <http://www.ipgp.fr/rech/sismogenese/>`,
 Institut de Physique du Globe de Paris, Departement de Sismologie, Paris, France
