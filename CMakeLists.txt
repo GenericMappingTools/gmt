@@ -77,6 +77,7 @@ include (ConfigCMake)
 # Find UNIX commands
 include (FindUnixCommands)
 find_program (SVN svn)
+find_program (GS gs gswin64)
 
 # Global test target
 add_custom_target (check
