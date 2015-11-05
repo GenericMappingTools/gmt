@@ -39,6 +39,7 @@
    The four horsemen of the GMT apocalypse: Remko Scharroo, Paul Wessel, Walter H.F. Smith,
    and Joaquim Luis at the GMT Developer Summit in Honolulu, Hawaii during February 14--18, 2011.
 
+
 Acknowledgments
 ===============
 
@@ -154,6 +155,7 @@ GMT depends on how well we can "sell" the idea to funding agencies and
 our superiors, letter-writing is one area where GMT users can affect
 such decisions by supporting the GMT project.
 
+
 Copyright and Caveat Emptor!
 ============================
 
@@ -185,6 +187,7 @@ Luis, Florian Wobbe or any other individuals involved in the design and
 maintenance of GMT are NOT responsible for any damage that may follow
 from correct or incorrect use of these programs.
 
+
 Preface
 =======
 
@@ -210,6 +213,7 @@ you should you have any suggestions for future enhancements and
 modification. Please send your comments to the GMT help list or create
 an issue in the bug tracker
 (see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
+
 
 New Features in GMT 5.2
 =======================
@@ -559,6 +563,7 @@ A few supplement modules have new features as well:
    prediction into several grids or as a record written to stdout.  Also gains the **-N** option
    used by other spotter tools to extend the model duration.
 
+
 New Features in GMT 5
 =====================
 
@@ -690,7 +695,7 @@ implemented by a series of new lower-case GMT common options:
 *  Programs that read data tables can now process the aspatial metadata
    in OGR/GMT files with the new **-a** option. These can be produced by
    **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
-   format. See Appendix `P. The GMT Vector Data Format for OGR Compatibility`_
+   format. See Chapter `The GMT Vector Data Format for OGR Compatibility`_
    for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via GMT comment lines these
    files can also be used in GMT 4 (the GIS metadata is simply
@@ -1046,7 +1051,7 @@ Finally, here is a list of numerous enhancements to individual programs:
 
 *  :doc:`psxy` and :doc:`psxyz` both support the revised custom symbol macro
    language which has been expanded considerably to allow for complicated,
-   multi-parameter symbols; see Appendix `M. Custom Plot Symbols`_
+   multi-parameter symbols; see Chapter :ref:`App-custom_symbols`
    for details. Finally, we allow the base for bars and columns optionally to be
    read from data file by not specifying the base value.
 
@@ -1865,6 +1870,7 @@ References
    data-independent management of multidimensional data, *EOS Trans.
    AGU*, 68(28), 633--635, 1987. `doi:10.1029/EO068i028p00633 <http://dx.doi.org/10.1029/EO068i028p00633>`_.
 
+
 GMT Overview and Quick Reference
 ================================
 
@@ -1915,6 +1921,7 @@ Finally, the rest of the GMT common options are given below:
 .. include:: std_opts.rst_
 
 .. _GMT_General_Features:
+
 
 General Features
 ================
@@ -2428,7 +2435,7 @@ The projections available in GMT are presented in Figure
 :ref:`gmt_projections`. For details on all GMT projections and the required
 parameters, see the :doc:`psbasemap` man page. We will also show examples of
 every projection in the next Chapters, and a quick summary of projection
-syntax was given in Chapter `GMT overview and quick reference`.
+syntax was given in Chapter `GMT Overview and Quick Reference`_.
 
 .. _gmt_projections:
 
@@ -3047,7 +3054,7 @@ OGR/GMT GIS i/o: The **-a** option
 GMT relies on external tools to translate geospatial files such as
 shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
 package can do such translations and preserve the aspatial metadata via
-a new OGR/GMT format specification (See Appendix `P. The GMT Vector Data Format for OGR Compatibility`_).
+a new OGR/GMT format specification (See Chapter `The GMT Vector Data Format for OGR Compatibility`_).
 For this to be useful we need a mechanism to associate certain metadata values with
 required input and output columns expected by GMT programs. The **-a**
 option allows you to supply one or more comma-separated associations
@@ -3070,7 +3077,7 @@ associate aspatial fields with other settings such as labels, fill
 colors, pens, and values used to look-up colors. Do so by letting the
 *col* value be one of **D**, **G**, **L**, **T**, **W**, or **Z**. This
 works analogously to how standard multi-segment files can pass such
-options via its segment headers (See Appendix `B. GMT file formats`_).
+options via its segment headers (See Chapter `GMT file formats`_).
 
 OGR/GMT output with **-a** option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3135,7 +3142,7 @@ name, where *var1*, *var2*, etc. are the names of the variables to be
 processed. No **-bi** option is needed in this case.
 
 Currently, netCDF tables can only be input, not output. For more
-information, see Appendix `B. GMT file formats`_.
+information, see Chapter `GMT file formats`_.
 
 Number of Copies: The **-c** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3187,7 +3194,7 @@ Data gap detection: The **-g** option
 
 GMT has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
-header records (see Appendix `B. GMT file formats`_). However, if key data columns contain a
+header records (see Chapter `GMT file formats`_). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
 segments. This behavior is modified by the parameter
 **IO_NAN_RECORDS** which by default is set to *skip*, meaning such
@@ -3461,8 +3468,8 @@ separating data segments. These are called "multi-segment files". For
 binary table data the **-h** option may specify how many bytes should be
 skipped before the data section is reached. Binary files may also
 contain segment-headers separating data segments. These segment-headers
-are simply data records whose fields are all set to NaN; see Appendix
-`B. GMT file formats`_ for complete documentation.
+are simply data records whose fields are all set to NaN; see Chapter
+`GMT file formats`_ for complete documentation.
 
 If filenames are given for reading, GMT programs will first look for
 them in the current directory. If the file is not found, the programs
@@ -3608,7 +3615,7 @@ with embedded printer directives. To produce Encapsulated
 PostScript (EPS) that can be imported into graphics programs such as
 **CorelDraw**, **Illustrator** or **InkScape** for further
 embellishment, simply run :doc:`psconvert`
-**-Te**. See Appendix `C. Including GMT Graphics into your Documents`_ for an extensive discussion of converting
+**-Te**. See Chapter `Including GMT Graphics into your Documents`_ for an extensive discussion of converting
 PostScript to other formats.
 
 .. _-Wpen_attrib:
@@ -3821,7 +3828,7 @@ pattern:
     *pattern* can either be a number in the range 1--90 or the name of a
     1-, 8-, or 24-bit Sun raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with GMT and
-    reproduced in Appendix `E. Predefined Bit and Hachure Patterns in GMT`_.
+    reproduced in Chapter `Predefined Bit and Hachure Patterns in GMT`_.
     The latter allows the user to create
     customized, repeating images using standard Sun raster files [18]_.
     The *dpi* parameter sets the resolution of this image on the page;
@@ -3840,7 +3847,7 @@ pattern:
 Due to PostScript implementation limitations the raster images used
 with **-G** must be less than 146 x 146 pixels in size; for larger
 images see :doc:`psimage`. The format of Sun
-raster files is outlined in Appendix `B. GMT file formats`_. Note that under
+raster files is outlined in Chapter `GMT file formats`_. Note that under
 PostScript Level 1 the patterns are filled by using the polygon as a
 *clip path*. Complex clip paths may require more memory than the
 PostScript interpreter has been assigned. There is therefore the
@@ -3892,7 +3899,7 @@ append **=**\ *pen* to the *fill* value in order to draw the text
 outline with the specified *pen*; if used you may optionally skip the
 filling of the text by setting *fill* to **-**. If any of the attributes
 is omitted their default or previous setting will be retained. See
-Appendix `G. PostScript fonts used by GMT`_ for a list of all fonts recognized by GMT.
+Chapter `PostScript fonts used by GMT`_ for a list of all fonts recognized by GMT.
 
 Stroke, Fill and Font Transparency
 ----------------------------------
@@ -4125,7 +4132,7 @@ interval [-1,+1]. These intensities are used to add "white" or "black"
 to the color as defined by the *z*-values and the CPT file. An intensity
 of zero leaves the color unchanged. Higher values will brighten the
 color, lower values will darken it, all without changing the original
-hue of the color (see Appendix `H. Color Space: The Final Frontier`_ for more details). The
+hue of the color (see Chapter `Color Space: The Final Frontier`_ for more details). The
 illumination is decoupled from the data grid file in that a separate
 grid file holding intensities in the [-1,+1] range must be provided.
 Such intensity files can be derived from the data grid using
@@ -4273,7 +4280,7 @@ GMT strings using the Standard+ encoding:
 The option in :doc:`pstext` to draw a
 rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
-Appendix `F. Chart of Octal Codes for Characters`_.
+Chapter `Chart of Octal Codes for Characters`_.
 
 .. _GMT_Embellishments:
 
@@ -5356,8 +5363,8 @@ such conversions:
 
 -  Map coordinate transformations
 
-The next chapter will be dedicated to GMT map projections in its
-entirety. Meanwhile, the present chapter will summarize the properties
+The next Chapter will be dedicated to GMT map projections in its
+entirety. Meanwhile, the present Chapter will summarize the properties
 of the Cartesian and Polar coordinate transformations available in
 GMT, list which parameters define them, and demonstrate how they are
 used to create simple plot axes. We will mostly be using
@@ -5653,6 +5660,7 @@ We used :doc:`grdcontour` to make a
 contour map of this data. Because the data file only contains values
 with :math:`2 \leq r \leq 4`, a donut shaped plot appears in
 Figure :ref:`Polar transformation <GMT_polar>`.
+
 
 GMT Map Projections
 ===================
@@ -6980,8 +6988,8 @@ Centered on the Dateline, the example below was created by this command:
 .. include:: examples_chapter.rst_
 
 
-A. GMT Supplemental Packages
-============================
+GMT Supplemental Packages
+=========================
 
 These packages are for the most part written and supported by us, but
 there are some exceptions. They provide extensions of GMT that are
@@ -7125,8 +7133,8 @@ Paul Wessel.
 
 .. _App-file-formats:
 
-B. GMT File Formats
-===================
+GMT File Formats
+================
 
 Table data
 ----------
@@ -7559,8 +7567,9 @@ translated into the right raster format.
 
 .. _include-gmt-graphics:
 
-C. Including GMT Graphics into your Documents
-=============================================
+
+Including GMT Graphics into your Documents
+==========================================
 
 
 Now that you made some nice graphics with GMT, it is time to add them
@@ -7590,7 +7599,7 @@ document.
 A large number of questions to the GMT-Help mailing list are related to
 these rendering issues, showing that something as seemingly
 straightforward as incorporating a PostScript file into a document is
-a far from trivial exercise. This Appendix will show how to include
+a far from trivial exercise. This Chapter will show how to include
 GMT graphics into documents and how to achieve the best quality results.
 
 Making GMT Encapsulated PostScript Files
@@ -7925,8 +7934,9 @@ above; they only represent our limited experience with adding
 PostScript to various types of documents. For other solutions and
 further help, please post messages to.
 
-E. Predefined Bit and Hachure Patterns in GMT
-=============================================
+
+Predefined Bit and Hachure Patterns in GMT
+==========================================
 
 
 GMT provides 90 different bit and hachure patterns that can be
@@ -7941,8 +7951,9 @@ below at 300 dpi using the default black and white shades.
 
 .. _Chart-Octal-Codes-for-Chars:
 
-F. Chart of Octal Codes for Characters
-======================================
+
+Chart of Octal Codes for Characters
+===================================
 
 The characters and their octal codes in the Standard and ISOLatin1
 encoded fonts are shown in
@@ -7977,8 +7988,8 @@ firmware will not know about the euro).
    Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
 
 
-G. PostScript Fonts Used by GMT
-=================================
+PostScript Fonts Used by GMT
+============================
 
 GMT uses the standard 35 fonts that come with most
 PostScript laserwriters. If your printer does not support some of
@@ -7993,7 +8004,7 @@ usually Courier). The following is a list of the GMT fonts:
 
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
-charts in Appendix `F. Chart of Octal Codes for Characters`_. When specifying fonts in GMT, you can
+charts in Chapter `Chart of Octal Codes for Characters`_. When specifying fonts in GMT, you can
 either give the entire font name *or* just the font number listed in
 this table. To change the fonts used in plotting basemap frames, see the
 man page for :doc:`gmt.conf`. For direct
@@ -8095,11 +8106,11 @@ codes, e.g., \\265 instead of μ. Note, that PostScript fonts support
 only a small range of glyphs and you may have to switch the
 :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
-H. Color Space: The Final Frontier
-==================================
 
+Color Space: The Final Frontier
+===============================
 
-In this Appendix, we are going to try to explain the relationship
+In this Chapter, we are going to try to explain the relationship
 between the RGB, CMYK, and HSV color systems so as to (hopefully) make
 them more intuitive. GMT allows users to specify colors in CPT files
 in either of these three systems. Interpolation between colors is
@@ -8327,7 +8338,7 @@ between two colors, instead of their respective R, G, and B values.
 
 The top row in Figure :ref:`Interpolating colors <color_interpolate>`
 illustrates two examples: a blue-white-red scale (the palette in
-Appendix `L. Of Colors and Color Legends`_) interpolated in RGB and the palette interpolated in
+Chapter `Of Colors and Color Legends`_) interpolated in RGB and the palette interpolated in
 HSV. The bottom row of the Figure demonstrates how things can go
 terribly wrong when you do the interpolation in the other system.
 
@@ -8412,8 +8423,9 @@ CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your PostScript file, set
 :ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the :doc:`gmt.conf` file to RGB, HSV, or CMYK.
 
-I. Filtering of Data in GMT
-===========================
+
+Filtering of Data in GMT
+========================
 
 The GMT programs :doc:`filter1d` (for
 tables of data indexed to one independent variable) and
@@ -8498,9 +8510,8 @@ the wavelength at which the transfer function equals 0.5 is about 5.34
    Transfer functions for 2-D (radial) GMT filters.
 
 
-J. The GMT High-Resolution Coastline Data
-=========================================
-
+The GMT High-Resolution Coastline Data
+======================================
 
 Starting with version 3.0, GMT use a completely new coastline database
 and the :doc:`pscoast` utility was been
@@ -8815,9 +8826,9 @@ reproduced by the single command:
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
 
-K. GMT on non-\ UNIX Platforms
-================================
 
+GMT on non-\ UNIX Platforms
+===========================
 
 Introduction
 ------------
@@ -8892,9 +8903,9 @@ the msys bash shell. As simple as that. Furthermore, GMT programs launch
 faster here than on Cygwin so this is the recommended way of running
 GMT on Windows.
 
-L. Of Colors and Color Legends
-==============================
 
+Of Colors and Color Legends
+===========================
 
 Built-in color palette tables (CPT)
 -----------------------------------
@@ -8931,8 +8942,8 @@ bar are built by using :doc:`makecpt`
 Labeled and non-equidistant color legends
 -----------------------------------------
 
-The use of color legends has already been introduced in
-Chapter [ch:7] (examples 2, 16, and 17). Things become a bit more
+The use of color legends has already been introduced in examples 2, 16, and 17.
+Things become a bit more
 complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
 accomplish that, one should add a semi-colon and the label name at the
@@ -8954,11 +8965,10 @@ and how to switch the color bar around (by using a negative length).
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_.
 
-
 .. _App-custom_symbols:
 
-M. Custom Plot Symbols
-======================
+Custom Plot Symbols
+===================
 
 Background
 ----------
@@ -9262,9 +9272,9 @@ levels deep), e.g.,
             }
     }
 
-N. Annotation of Contours and "Quoted Lines"
-============================================
 
+Annotation of Contours and "Quoted Lines"
+=========================================
 
 The GMT programs :doc:`grdcontour` (for
 data given as 2-dimensional grids) and
@@ -9276,7 +9286,7 @@ attach labels to these lines. Clever or optimal placements of labels is
 a very difficult topic, and GMT provides several algorithms for this
 placement as well as complete freedom in specifying the attributes of
 the labels. Because of the richness of these choices we present this
-Appendix which summarizes the various options and gives several examples
+Chapter which summarizes the various options and gives several examples
 of their use.
 
 Label Placement
@@ -9850,8 +9860,8 @@ with the complete illustration presented as Figure
    that New York will experience a large tsunami about 8 hours after the event.
 
 
-O. Special Operations
-=====================
+Special Operations
+==================
 
 .. _Isolation mode:
 
@@ -9931,9 +9941,8 @@ simply include that file in the script and the creation and the removal
 of the temporary directory is reduced to a single command.
 
 
-P. The GMT Vector Data Format for OGR Compatibility
-===================================================
-
+The GMT Vector Data Format for OGR Compatibility
+================================================
 
 Background
 ----------
@@ -10329,7 +10338,7 @@ Finally we show an example of a polygon file:
    for terms on redistribution and modifications.
 
 .. [3]
-   The tools can also be installed on other platforms (see Appendix `K. GMT on non-UNIX Platforms`_).
+   The tools can also be installed on other platforms (see Chapter `GMT on non-UNIX Platforms`_).
 
 .. [4]
    One public-domain RIP is ghostscript, available from `<http://www.gnu.org/>`_.
@@ -10396,7 +10405,7 @@ Finally we show an example of a polygon file:
    off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
 
 .. [17]
-   For an overview of color systems such as HSV, see Appendix `H. Color Space: The Final Frontier`_.
+   For an overview of color systems such as HSV, see Chapter `Color Space: The Final Frontier`_.
 
 .. [18]
    Convert other graphics formats to Sun ras format using GraphicsMagick's
