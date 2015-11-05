@@ -32,8 +32,9 @@ install (PROGRAMS
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
-option (BASH_COMPLETION_DIR "Install location for gmt bash completion file"
-etc/bash_completion.d)
+if (NOT DEFINED BASH_COMPLETION_DIR)
+	set (BASH_COMPLETION_DIR etc/bash_completion.d)
+endif (NOT DEFINED BASH_COMPLETION_DIR)
 
 if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 	install (PROGRAMS
