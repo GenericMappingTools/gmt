@@ -97,6 +97,16 @@ MATLAB Wrapper
 |    ml_wrapper      |
 +--------------------+
 
+Julia Wrapper
+=============
+
++--------------------+
+| .. toctree::       |
+|    :maxdepth: 2    |
+|                    |
+|    jl_wrapper      |
++--------------------+
+
 .. Include an hidden page with option's examples that can be referenced by individual programs
 
 .. toctree::
