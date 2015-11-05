@@ -77,7 +77,7 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
 Honolulu, HI, College Park, MD, Faro, Portugal, Darmstadt and
-Bremerhaven, Germany, March 2014
+Bremerhaven, Germany, November 2015
 
 
 A Reminder
@@ -215,7 +215,9 @@ New Features in GMT 5.2
 =======================
 
 While the GMT 5.1-series has seen bug-fixes since its release, new features were
-only added to the 5.2-series.  Here is a summary of these changes in six key areas:
+only added to the 5.2-series.  All in all, almost 200 new features (a combination
+of new programs, new options, and enhancements) have been implemented.
+Here is a summary of these changes in six key areas:
 
 New modules
 ------------
