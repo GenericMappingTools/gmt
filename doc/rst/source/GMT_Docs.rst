@@ -6180,7 +6180,7 @@ in this projection this point plots as the entire map perimeter:
    World map using the equidistant azimuthal projection.
 
 
-Gnomonic projection (**-Jf** **-JF**) :ref:`... <-Je_full>`
+Gnomonic projection (**-Jf** **-JF**) :ref:`... <-Jf_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Gnomonic azimuthal projection is a perspective projection from the
@@ -6231,7 +6231,7 @@ cylindrical equal-area, Miller, and cylindrical stereographic
 projections) stops. Each have a different way of spacing the meridians
 and parallels to obtain certain desirable cartographic properties.
 
-Mercator projection (**-Jm** **-JM**) :ref:`... <-Je_full>`
+Mercator projection (**-Jm** **-JM**) :ref:`... <-Jm_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Probably the most famous of the various map projections, the Mercator
