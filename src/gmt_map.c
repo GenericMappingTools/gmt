@@ -7222,6 +7222,9 @@ double GMT_azim_to_angle (struct GMT_CTRL *GMT, double lon, double lat, double c
 		}
 		return (angle);
 	}
+	else if (GMT->current.proj.projection == GMT_POLAR) {	/* r/theta */
+		return (azim);	/* Place holder - not correct yet but dont want to go into the below if r/theta */
+	}
 
 	/* Find second point c spherical degrees away in the azim direction */
 

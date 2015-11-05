@@ -37,20 +37,19 @@ Synopsis
 Description
 -----------
 
-**grdvector** reads two 2-D grid files which represents the x- and
-y-components of a vector field and produces a vector field plot by
+**grdvector** reads two 2-D grid files which represents the *x*\ - and
+*y*\ -components of a vector field and produces a vector field plot by
 drawing vectors with orientation and length according to the information
-in the files. Alternatively, polar coordinate components may be used (r,
-theta). **grdvector** is basically a short-hand for using 2 calls to
-:doc:`grd2xyz` and pasting the output through **psxy -SV**. 
+in the files. Alternatively, polar coordinate *r*, *theta* grids may be given
+instead.
 
 Required Arguments
 ------------------
 
 *compx.nc*
-    Contains the x-component of the vector field.
+    Contains the x-components of the vector field.
 *compy.nc*
-    Contains the y-component of the vector field. (See GRID FILE FORMATS below.) 
+    Contains the y-components of the vector field. (See GRID FILE FORMATS below.) 
 
 .. _-J:
 
@@ -63,8 +62,8 @@ Optional Arguments
 .. _-A:
 
 **-A**
-    Means grid files have polar (r, theta) components instead of
-    Cartesian (x, y). 
+    The grid files contain polar (r, theta) components instead of
+    Cartesian (x, y) [Default is Cartesian components]. 
 
 .. _-B:
 
@@ -137,8 +136,10 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Means azimuth of Cartesian data sets should be adjusted for different scales
-    in the x- and y-directions [Leave alone].
+    Means the azimuths of Cartesian data sets should be adjusted according to the
+    signs of the scales in the x- and y-directions [Leave alone].  This option can
+    be used to convert vector azimuths in cases when a negative scale is used in
+    one of both directions (e.g., positive down).
 
 .. _-U:
 
@@ -162,7 +163,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**
-    Means the angles provided are azimuths rather than direction (requires **-A**). 
+    The theta grid provided contains azimuths rather than directions (requires **-A**). 
 
 .. include:: explain_-c.rst_
 

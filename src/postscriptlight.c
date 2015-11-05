@@ -364,7 +364,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	if (PSL->init.magnify[1] == 0.0) PSL->init.magnify[1] = 1.0;	/* Default magnification global scales */
 	if (PSL->init.page_rgb[0] < 0.0) for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = 1.0;		/* Default paper color */
 
-	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories)
+	/* Determine SHAREDIR (directory containing the postscriptlight subdirectory)
 	 * but only if not passed via argument list */
 	if ((this_c = sharedir) == NULL) {
 		if (search && (this_c = getenv ("PSL_SHAREDIR")) == NULL) {
@@ -2958,9 +2958,9 @@ int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[])
 
 int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture)
 {
-	/* PSL_loadimage loads an image of any recognised type into memory
+	/* PSL_loadimage loads an image of any recognized type into memory
 	 *
-	 * Currently supported image types are:
+	 * Supported image types are:
 	 * - Sun Raster File
 	 * - (Encapsulated) PostScript File
 	 */
@@ -2971,14 +2971,14 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 
 	if ((fp = fopen (file, "rb")) == NULL) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Cannot open image file %s!\n", file);
-		PSL_exit (EXIT_FAILURE);
+		return (PSL_READ_FAILURE);
 	}
 
 	/* Read magic number to determine image type */
 
 	if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", file);
-		PSL_exit (EXIT_FAILURE);
+		return (PSL_READ_FAILURE);
 	}
 	fseek (fp, (off_t)0, SEEK_SET);
 
@@ -3005,21 +3005,21 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 			if (system (cmd)) {	/* convert failed, give up */
 				PSL_message (PSL, PSL_MSG_FATAL, "Automatic conversion of file %s to Sun rasterfile failed\n", file);
 				remove (tmp_file);	/* Remove the temp file */
-				PSL_exit (EXIT_FAILURE);
+				return (PSL_READ_FAILURE);
 			}
 		}
 		if ((fp = fopen (tmp_file, "rb")) == NULL) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Cannot open image file %s!\n", tmp_file);
-			PSL_exit (EXIT_FAILURE);
+			return (PSL_READ_FAILURE);
 		}
 		if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", tmp_file);
-			PSL_exit (EXIT_FAILURE);
+			return (PSL_READ_FAILURE);
 		}
 		fseek (fp, (off_t)0, SEEK_SET);
 		if (h->magic != RAS_MAGIC) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, tmp_file);
-			PSL_exit (EXIT_FAILURE);
+			return (PSL_READ_FAILURE);
 		}
 		code = psl_load_raster (PSL, fp, h, picture);
 		remove (tmp_file);	/* Remove the temp file */
@@ -3027,7 +3027,7 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 	}
 	else {
 		PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
-		PSL_exit (EXIT_FAILURE);
+		return (PSL_READ_FAILURE);
 	}
 
 	return (PSL_NO_ERROR);	/* Dummy return to satisfy some compilers */
@@ -3827,16 +3827,16 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 
 	if (psl_read_rasheader (PSL, fp, header, 0, 7)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading Sun rasterfile header!\n");
-		PSL_exit (EXIT_FAILURE);
+		return (PSL_READ_FAILURE);
 	}
 
 	if (header->magic != RAS_MAGIC) {	/* Not a Sun rasterfile */
 		PSL_message (PSL, PSL_MSG_FATAL, "Raster is not a Sun rasterfile (Magic # = 0x%x)!\n", header->magic);
-		PSL_exit (EXIT_FAILURE);
+		return (PSL_READ_FAILURE);
 	}
 	if (header->type < RT_OLD || header->type > RT_FORMAT_RGB) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Can only read Sun rasterfiles types %d - %d (your type = %d)!\n", RT_OLD, RT_FORMAT_RGB, header->type);
-		PSL_exit (EXIT_FAILURE);
+		return (PSL_READ_FAILURE);
 	}
 
 	buffer = entry = red = green = blue = (unsigned char *)NULL;
@@ -3848,7 +3848,7 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 1-bit Sun rasterfile!\n");
-			PSL_exit (EXIT_FAILURE);
+			return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 
@@ -4004,8 +4004,10 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		}
 		header->depth = 24;
 	}
-	else	/* Unrecognized format */
-		return (0);
+	else {	/* Unrecognized format */
+		PSL_message (PSL, PSL_MSG_FATAL, "Unrecognized file format!\n");
+		return (PSL_READ_FAILURE);
+	}
 
 	fclose (fp);
 
@@ -4757,7 +4759,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t si
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
-			PSL_exit (EXIT_FAILURE);
+			return (NULL);
 		}
 	}
 	else {
@@ -4767,7 +4769,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t si
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
-			PSL_exit (EXIT_FAILURE);
+			return (NULL);
 		}
 	}
 	return (tmp);

@@ -217,7 +217,7 @@ enum PSL_enum_fill {PSL_IS_STROKE = 0,
 
 enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */
 	PSL_BAD_JUST,		/* Bad text or paragraph justification */
-	PSL_READ_FAILURE,	/* Less than 3 points */
+	PSL_READ_FAILURE,	/* Read failure from a file */
 	PSL_NO_POLYGON,		/* Less than 3 points */
 	PSL_BAD_TEXT,		/* Text is too long */
 	PSL_BAD_WIDTH,		/* Negative line width */

@@ -375,31 +375,33 @@ void gmt_lab_to_rgb (double rgb[], double lab[]) {
  */
 
 /*! . */
-void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle) {
-	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
-		if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
-			if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
-				*angle += 180.0f;
-			else
-				*angle = 180.0f - (*angle);
-		}
-		else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
-			*angle = -*angle;
+void GMT_flip_azim_d (struct GMT_CTRL *GMT, double *azim) {
+	/* Adjust an azimuth for Cartesian axes pointing backwards/downwards */
+	if (GMT->current.proj.projection != GMT_LINEAR) return;	/* This only applies to Cartesian scaling */
+	/* Must check if negative scales were used */
+	if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
+		if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
+			*azim += 180.0;
+		else
+			*azim = -*azim;
 	}
+	else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
+		*azim = 180.0 - (*azim);
 }
 
 /*! . */
 void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle) {
-	if (GMT->current.proj.projection == GMT_LINEAR) {	/* Must check if negative scales were used */
-		if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
-			if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
-				*angle += 180.0;
-			else
-				*angle = 180.0 - (*angle);
-		}
-		else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
-			*angle = -*angle;
+	/* Adjust an angle for Cartesian axes pointing backwards/downwards */
+	if (GMT->current.proj.projection != GMT_LINEAR) return;	/* This only applies to Cartesian scaling */
+	/* Must check if negative scales were used */
+	if (!GMT->current.proj.xyz_pos[GMT_X]) {	/* Negative x scale */
+		if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale too */
+			*angle += 180.0;
+		else
+			*angle = 180.0 - (*angle);
 	}
+	else if (!GMT->current.proj.xyz_pos[GMT_Y])	/* Negative y-scale only */
+		*angle = -*angle;
 }
 
 /*! . */

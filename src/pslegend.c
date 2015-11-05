@@ -473,7 +473,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'I':	/* Image record [use GMT_psimage] */
 						sscanf (&line[2], "%s %s %s", image, size, key);
-						PSL_loadimage (PSL, image, &header, &dummy);
+						if (GMT_getdatapath (GMT, image, path, R_OK) == NULL) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
+							continue;
+						}
+						if (PSL_loadimage (PSL, path, &header, &dummy)) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", image);
+							continue;
+						}
 						height += GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
 						PSL_free (dummy);
 						column_number = 0;
@@ -794,7 +801,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
 							Return (EXIT_FAILURE);
 						}
-						PSL_loadimage (PSL, path, &header, &dummy);
+						if (PSL_loadimage (PSL, path, &header, &dummy)) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Trouble reading %s! - Skipping.\n", image);
+							continue;
+						}
 						PSL_free (dummy);
 						justify = GMT_just_decode (GMT, key, PSL_NO_DEF);
 						row_height = GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;

@@ -310,8 +310,8 @@ EXTERN_MSC void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo,
 EXTERN_MSC struct GMT_REFPOINT * GMT_get_refpoint (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A);
 EXTERN_MSC void GMT_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap);
+EXTERN_MSC void GMT_flip_azim_d (struct GMT_CTRL *GMT, double *azim);
 EXTERN_MSC void GMT_flip_angle_d (struct GMT_CTRL *GMT, double *angle);
-EXTERN_MSC void GMT_flip_angle_f (struct GMT_CTRL *GMT, float *angle);
 EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);
 EXTERN_MSC unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
