@@ -137,11 +137,6 @@ freeing no longer needed memory. We do that with this command:
 
    gmt('destroy')
 
-Sure, we could as well have shut down Matlab but calling *gmt('destroy')* serves also another purpose that at times
-may be quite important. What it does is to clear up the **GMT** session and remove it. We may want to force this
-when we call *gmt('gmtset')*. The subtle thing about it is that if we have a session running, calling *gmtset* wont
-do anything because that command is ignored. Only upon starting a session will the contents of *gmt('gmtset ...')*
-be taken into account.
 
 So that's basically how it works. When numeric data has to be sent *in* to **GMT** we use
 MATLAB variables holding the data in matrices or structures or cell arrays depending on the case. On
