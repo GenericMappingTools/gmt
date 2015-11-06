@@ -83,6 +83,7 @@ struct GMTREGRESS_CTRL {
 	struct F {	/* 	-Fxymrcsw */
 		bool active;
 		bool band;	/* True if c was given */
+		bool param;	/* True if only -Fp was given */
 		unsigned int n_cols;
 		char col[GMTREGRESS_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
@@ -158,6 +159,8 @@ static int GMT_gmtregress_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t         A value of 0 identifies an outlier.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is %s].\n", GMTREGRESS_FARGS);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Alternatively, choose -Fp to output only the model parameters:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     N meanX meanY angle misfit slope icept sigma_slope sigma_icept\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append desired misfit norm; choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1 : L-1 measure (mean absolute residuals).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2 : L-2 measure (mean squared residuals) [Default].\n");
@@ -233,6 +236,10 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 				break;
 			case 'F':	/* Select output columns */
 				Ctrl->F.active = true;
+				if (!strcmp (opt->arg, "p")) {	/* Just want to return model parameters */
+					Ctrl->F.param = true;
+					break;
+				}
 				for (j = 0, k = 0; opt->arg[j]; j++, k++) {
 					if (k < GMTREGRESS_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
@@ -313,6 +320,8 @@ int GMT_gmtregress_parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->A.active, "Syntax error -A: Cannot simultaneously specify -T.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->F.active, "Syntax error -A: Cannot simultaneously specify -F.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->C.active, "Syntax error -A: Cannot simultaneously specify -C.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->F.param, "Syntax error -Fp: Cannot simultaneously specify -C.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->F.param, "Syntax error -Fp: Cannot simultaneously specify -T.\n");
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least 2 columns.\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
@@ -666,7 +675,7 @@ double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[],
 	(void)gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
 	mx = GMT_mean_and_std (GMT, U, n, &sx);
 	my = GMT_mean_and_std (GMT, V, n, &sy);
-	fprintf (stderr, "mx and my should be zero: %g %g\n", mx, my);
+	//fprintf (stderr, "mx and my should be zero: %g %g\n", mx, my);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);
@@ -996,7 +1005,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 	int error = 0;
 	
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
-	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[GMTREGRESS_N_FARGS], *t = NULL;
+	double t_scale = 0.0, par[GMTREGRESS_NPAR], out[9], *t = NULL;
 	
 	char buffer[GMT_BUFSIZ];
 	
@@ -1036,13 +1045,17 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 		GMT_alloc_segment (GMT, Sa, n_try, n_columns, true);	/* Reallocate fixed temp space for this experiment */
 	}
 	else {	/* Work up best regression solution per input segment */
-		if (!Ctrl->F.active) {	/* Default output includes all possible columns */
-			char *s = GMTREGRESS_FARGS;
-			Ctrl->F.n_cols = GMTREGRESS_N_FARGS;
-			for (col = 0; col < n_columns; col++) Ctrl->F.col[col] = s[col];
-			Ctrl->F.band = true;
+		if (Ctrl->F.param)
+			n_columns = 9;
+		else {
+			if (!Ctrl->F.active) {	/* Default output includes all possible columns */
+				char *s = GMTREGRESS_FARGS;
+				Ctrl->F.n_cols = GMTREGRESS_N_FARGS;
+				for (col = 0; col < n_columns; col++) Ctrl->F.col[col] = s[col];
+				Ctrl->F.band = true;
+			}
+			n_columns = Ctrl->F.n_cols;
 		}
-		n_columns = Ctrl->F.n_cols;
 	}
 	
 	if (Ctrl->T.active) {	/* Evaluate solution for equidistant spacing instead of at the input locations */
@@ -1091,7 +1104,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 				n_alloc = S->n_rows;	/* New allocation limit */
 				for (k = GMT_X; k <= GMT_Z; k++)	/* Allocate a temporary array for each weight column in the input */
 					if (Ctrl->W.col[k]) w[k] = GMT_memory (GMT, w[k], n_alloc, double);
-				if (Ctrl->A.active) {	/* Addidional arrays are needed for the slope-scanning experiment */
+				if (Ctrl->A.active) {	/* Additional arrays are needed for the slope-scanning experiment */
 					U = GMT_memory (GMT, U, n_alloc, double);
 					V = GMT_memory (GMT, V, n_alloc, double);
 					W = GMT_memory (GMT, W, n_alloc, double);
@@ -1144,64 +1157,78 @@ int GMT_gmtregress (void *V_API, int mode, void *args)
 			else {	/* Here we are solving for the best regression */
 				bool outlier = false;
 				double *z_score = do_regression (GMT, S->coord[GMT_X], S->coord[GMT_Y], w, S->n_rows, Ctrl->E.mode, Ctrl->N.mode, par, 0);	/* The heavy work happens here */
-				/* Make segment header with the findings for best regression */
-				sprintf (buffer, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
-					par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
-				GMT_Report (API, GMT_MSG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
-				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
-
-				if (Ctrl->F.band)	/* For confidence band we need the student-T scale given the significance level and degrees of freedom */
-					t_scale = fabs (GMT_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), S->n_rows - 2.0));
-
-				if (Ctrl->T.active) {	/* Evaluate the model at the chosen equidistant output points */
-					if (Ctrl->T.reset) {	/* Got -T<n>, so must recompute a new increment for the present segment's x-range */
-						Ctrl->T.min = S->min[GMT_X];	Ctrl->T.max = S->max[GMT_X];
-						if (Ctrl->T.n) Ctrl->T.inc = GMT_get_inc (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.n, 0);	/* Protect against -T0 */
-					}
-					for (k = 0; k < Ctrl->T.n; k++)	/* Build new output x-coordinates */
-						t[k] = GMT_col_to_x (GMT, k, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, 0, Ctrl->T.n);
-					x = t;	/* Pass these coordinates as our "x" */
-					n_t = Ctrl->T.n;
-				}
-				else {	/* Use the given data abscissae instead */
-					x = S->coord[GMT_X];
-					n_t = S->n_rows;
-				}					
-				
-				/* 3. Evaluate the chosen output columns and write records */
-				
-				for (row = 0; row < n_t; row++) {
-					if (!Ctrl->T.active) outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
-					if (Ctrl->S.active) {	/* Restrict the output records */
-						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_GOOD && outlier) continue;	/* Dont want the outliers */
-						if (Ctrl->S.mode == GMTREGRESS_OUTPUT_BAD && !outlier) continue;	/* Only want the outliers */
-					}
-					for (col = 0; col < n_columns; col++) {	/* Loop over the chosen output columns (-F) */
-						switch (Ctrl->F.col[col]) {
-							case 'x':	/* Input (or equidistant) x */
-								out[col] = x[row];
-								break;
-							case 'y':	/* Input y */
-								out[col] = S->coord[GMT_Y][row];
-								break;
-							case 'm':	/* Model prediction */
-								out[col] = model (x[row], par);
-								break;
-							case 'r':	/* Residual */
-								out[col] = S->coord[GMT_Y][row] - model (x[row], par);
-								break;
-							case 'c':	/* Model confidence limit (add x and y uncertainties in quadrature since uncorrelated) */
-								out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
-								break;
-							case 'z':	/* Standardized residuals (z-scores) */
-								out[col] = z_score[row];
-								break;
-							case 'w':	/* RLS weights or outlier flags [0 or 1, with 0 meaning outlier] */
-								out[col] = (outlier) ? 0.0 : 1.0;
-								break;
-						}
-					}
+				if (Ctrl->F.param) {	/* Just print the model parameters */
+					out[0] = (double)S->n_rows;
+					out[1] = par[GMTREGRESS_XMEAN];
+					out[2] = par[GMTREGRESS_YMEAN];
+					out[3] = par[GMTREGRESS_ANGLE];
+					out[4] = par[GMTREGRESS_MISFT];
+					out[5] = par[GMTREGRESS_SLOPE];
+					out[6] = par[GMTREGRESS_ICEPT];
+					out[7] = par[GMTREGRESS_SIGSL];
+					out[8] = par[GMTREGRESS_SIGIC];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
+				}
+				else {
+					/* Make segment header with the findings for best regression */
+					sprintf (buffer, "Best regression: N: %" PRIu64 " x0: %g y0: %g angle: %g E: %g slope: %g icept: %g sig_slope: %g sig_icept: %g", S->n_rows, par[GMTREGRESS_XMEAN], par[GMTREGRESS_YMEAN],
+						par[GMTREGRESS_ANGLE], par[GMTREGRESS_MISFT], par[GMTREGRESS_SLOPE], par[GMTREGRESS_ICEPT], par[GMTREGRESS_SIGSL], par[GMTREGRESS_SIGIC]);
+					GMT_Report (API, GMT_MSG_VERBOSE, "%s\n", buffer);	/* Report results if verbose */
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
+
+					if (Ctrl->F.band)	/* For confidence band we need the student-T scale given the significance level and degrees of freedom */
+						t_scale = fabs (GMT_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), S->n_rows - 2.0));
+
+					if (Ctrl->T.active) {	/* Evaluate the model at the chosen equidistant output points */
+						if (Ctrl->T.reset) {	/* Got -T<n>, so must recompute a new increment for the present segment's x-range */
+							Ctrl->T.min = S->min[GMT_X];	Ctrl->T.max = S->max[GMT_X];
+							if (Ctrl->T.n) Ctrl->T.inc = GMT_get_inc (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.n, 0);	/* Protect against -T0 */
+						}
+						for (k = 0; k < Ctrl->T.n; k++)	/* Build new output x-coordinates */
+							t[k] = GMT_col_to_x (GMT, k, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, 0, Ctrl->T.n);
+						x = t;	/* Pass these coordinates as our "x" */
+						n_t = Ctrl->T.n;
+					}
+					else {	/* Use the given data abscissae instead */
+						x = S->coord[GMT_X];
+						n_t = S->n_rows;
+					}					
+				
+					/* 3. Evaluate the chosen output columns and write records */
+				
+					for (row = 0; row < n_t; row++) {
+						if (!Ctrl->T.active) outlier = (fabs (z_score[row]) > GMTREGRESS_ZSCORE_LIMIT);	/* Gotta exceed this threshold to be a bad boy */
+						if (Ctrl->S.active) {	/* Restrict the output records */
+							if (Ctrl->S.mode == GMTREGRESS_OUTPUT_GOOD && outlier) continue;	/* Dont want the outliers */
+							if (Ctrl->S.mode == GMTREGRESS_OUTPUT_BAD && !outlier) continue;	/* Only want the outliers */
+						}
+						for (col = 0; col < n_columns; col++) {	/* Loop over the chosen output columns (-F) */
+							switch (Ctrl->F.col[col]) {
+								case 'x':	/* Input (or equidistant) x */
+									out[col] = x[row];
+									break;
+								case 'y':	/* Input y */
+									out[col] = S->coord[GMT_Y][row];
+									break;
+								case 'm':	/* Model prediction */
+									out[col] = model (x[row], par);
+									break;
+								case 'r':	/* Residual */
+									out[col] = S->coord[GMT_Y][row] - model (x[row], par);
+									break;
+								case 'c':	/* Model confidence limit (add x and y uncertainties in quadrature since uncorrelated) */
+									out[col] = t_scale * hypot (par[GMTREGRESS_SIGIC], par[GMTREGRESS_SIGSL] * fabs (x[row] - par[GMTREGRESS_XMEAN]));
+									break;
+								case 'z':	/* Standardized residuals (z-scores) */
+									out[col] = z_score[row];
+									break;
+								case 'w':	/* RLS weights or outlier flags [0 or 1, with 0 meaning outlier] */
+									out[col] = (outlier) ? 0.0 : 1.0;
+									break;
+							}
+						}
+						GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this record to output */
+					}
 				}
 				GMT_free (GMT, z_score);	/* Done with this array */
 			}

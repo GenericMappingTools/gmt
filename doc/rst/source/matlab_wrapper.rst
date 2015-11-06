@@ -42,17 +42,17 @@ We have successfully built the MATLAB interface under OS X. However, due to the 
 it is a delicate process, with several caveats.  This may change over time as we work with MathWorks to straighten out the
 kinks.  The following works:
 
-# Install the GMT OS X Bundle
-# Run the gmt_prepmex.sh script in the bundle's share/tools directory.  This will duplicate
-  the GMT 5.2 installation into /opt/gmt and re-baptize all the shared libraries.
-# Use gmtswitch to make /opt/gmt the current active GMT version
-# Checkout the gmt-mex project via subversion into some directory, i.e.,
-  svn checkout svn://gmtserver.soest.hawaii.edu/gmt-mex gmt-mex
-# In gmt-mex/trunk, run autoconf then configure --enable-matlab (and maybe --enable-debug) is you
-  can help debug things.
-# Run make which builds the gmtmex.mexmaci64.  This executable is accessed by the gmt.m script.
-# Set your MATLAB path so these two can be found (or copy them to a suitable directory).
-# Make sure your gmt.conf file has the entry GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so.
+#. Install the GMT OS X Bundle
+#. Run the gmt_prepmex.sh script in the bundle's share/tools directory.  This will duplicate
+   the GMT 5.2 installation into /opt/gmt and re-baptize all the shared libraries.
+#. Use gmtswitch to make /opt/gmt the current active GMT version
+#. Checkout the gmt-mex project via subversion into some directory, i.e.,
+   svn checkout svn://gmtserver.soest.hawaii.edu/gmt-mex gmt-mex
+#. In gmt-mex/trunk, run autoconf then configure --enable-matlab (and maybe --enable-debug) is you
+   can help debug things.
+#. Run make which builds the gmtmex.mexmaci64.  This executable is accessed by the gmt.m script.
+#. Set your MATLAB path so these two can be found (or copy them to a suitable directory).
+#. Make sure your gmt.conf file has the entry GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so.
 
 You can also build your own bundle (see CMakeLists.txt in main GMT directory).  The above works
 with UNIX installations from fink or HomeBrew but fails for us if under MacPorts (then, MATLAB

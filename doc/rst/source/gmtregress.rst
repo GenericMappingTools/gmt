@@ -92,6 +92,8 @@ Optional Arguments
     **c** (symmetrical confidence interval on the regression; see **-C**
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
+    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the model
+    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept*.
 
 .. _-N:
 
@@ -169,6 +171,12 @@ x, y, and model prediction with 99% confidence intervals, try
    ::
 
     gmt regress points.txt -Fxymc -C99 > points_regressed.txt
+
+To just get the slope for the above regression, try 
+
+   ::
+
+    slope=`gmt regress points.txt -Fp -o5`
 
 To do a reweighted least-squares regression on the data rough.txt and return
 x, y, model prediction and the RLS weights, try 
