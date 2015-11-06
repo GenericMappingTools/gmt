@@ -9719,7 +9719,7 @@ int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 /*! Parser for -Sv|V, -S=, and -Sm */
 int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_SYMBOL *S) {
 
-	unsigned int pos = 0, k, f, end, error = 0;
+	unsigned int pos = 0, k, f = 0, end, error = 0;
 	size_t len;
 	bool p_opt = false, g_opt = false;
 	int j;

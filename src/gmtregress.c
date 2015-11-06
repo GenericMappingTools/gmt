@@ -675,7 +675,7 @@ double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[],
 	(void)gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
 	mx = GMT_mean_and_std (GMT, U, n, &sx);
 	my = GMT_mean_and_std (GMT, V, n, &sy);
-	//fprintf (stderr, "mx and my should be zero: %g %g\n", mx, my);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "mx and my should be zero: %g %g\n", mx, my);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);

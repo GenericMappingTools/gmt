@@ -960,7 +960,7 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_key_to_family: INTERNAL ERROR: key family (%c) not recognized\n", key[K_FAMILY]);
-			return -1;
+			return GMT_NOTSET;
 			break;
 	}
 
@@ -974,7 +974,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	 * We return the array of strings and its number (n_items) as well as two vars:
 	 * PS will be 1 if the module produces PostScript, else it is 0. */
 	size_t len, k, kk, n;
-	int o_id = -1;
+	int o_id = GMT_NOTSET;
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	*PS = 0;	/* No PostScript output indicated so far */
@@ -1051,7 +1051,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			else
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one magic key trying to change output type\n");
 			if (GMT_Find_Option (API, magic, head)) {	/* Got the magic option that changes output type */
-				if (o_id == -1)
+				if (o_id == GMT_NOTSET)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
 				if (*PS == 1) (*PS)--;			/* No longer PostScript producing module */
 				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Required output now implies this data type */
@@ -1080,12 +1080,12 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 }
 
 int GMTAPI_get_key (void *API, char option, char *keys[], int n_keys)
-{	/* Return the position in the keys array that matches this option, or -1 if not found */
+{	/* Return the position in the keys array that matches this option, or GMT_NOTSET if not found */
 	int k;
 	if (n_keys && keys == NULL)
 		GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_get_key: INTERNAL ERROR: keys array is NULL but n_keys = %d\n", n_keys);
 	for (k = 0; k < n_keys; k++) if (keys[k][K_OPT] == option) return (k);
-	return (-1);
+	return (GMT_NOTSET);
 }
 
 unsigned int GMTAPI_found_marker (char *text, char marker)
@@ -1781,7 +1781,7 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	return (object_ID);
 }
 
-/*! Sanity check that geometry and family are compatible; note they may be -1 hence the use of signed ints */
+/*! Sanity check that geometry and family are compatible; note they may be GMT_NOTSET hence the use of signed ints */
 bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry) {
 	bool problem = false;
 	GMT_UNUSED(API);
@@ -1870,7 +1870,7 @@ int GMTAPI_Get_Object (struct GMTAPI_CTRL *API, int sfamily, void *ptr)
 		if (sfamily != GMT_NOTSET && API->object[i]->family != family) continue;	/* Not the right family */
 		if (API->object[i]->data == ptr && object_ID == GMT_NOTSET) object_ID = API->object[i]->ID;	/* Found a matching data pointer */
 	}
-	return (object_ID);	/* Return ID or -1 if not found */
+	return (object_ID);	/* Return ID or GMT_NOTSET if not found */
 }
 
 /*! . */
@@ -1915,7 +1915,7 @@ int GMTAPI_get_objectID_from_data_ptr (struct GMTAPI_CTRL *API, void *ptr)
 		data = return_address (ptr, API->object[i]->family);	/* Get void* pointer to resource */
 		if (API->object[i]->data == data && object_ID == GMT_NOTSET) object_ID = API->object[i]->ID;	/* Found a matching data pointer */
 	}
-	return (object_ID);	/* Return ID or -1 if not found */
+	return (object_ID);	/* Return ID or GMT_NOTSET if not found */
 }
 
 /*! . */
@@ -1961,7 +1961,7 @@ int GMTAPI_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, 
 		if (resource && API->object[i]->resource == resource) item = API->object[i]->ID;	/* Yes: already registered PW: One of these may not be needed? */
 		if (resource && API->object[i]->data == resource) item = API->object[i]->ID;		/* Yes: already registered */
 	}
-	return (item);		/* The ID of the object (or -1) */
+	return (item);		/* The ID of the object (or GMT_NOTSET) */
 }
 
 /*! . */
@@ -3927,7 +3927,7 @@ struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, enu
 int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
 	/* Take comma-separated color entries and build a linear, continuous CPT table.
 	 * We check if color is valid then write the given entries verbatim.
-	 * Returns -1 on error, 0 if no CPT is created (str presumably holds a CPT name) and 1 otherwise.
+	 * Returns GMT_NOTSET on error, 0 if no CPT is created (str presumably holds a CPT name) and 1 otherwise.
 	*/
 	unsigned int pos = 0;
 	char *pch = NULL, last[GMT_BUFSIZ] = {""}, first[GMT_LEN64] = {""}, tmp_file[GMT_LEN256] = "";
@@ -3939,19 +3939,19 @@ int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
 	sprintf (tmp_file, "GMTAPI_Colors2CPT_%d.cpt", (int)getpid());
 	if ((fp = fopen (tmp_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	GMT_strtok (*str, ",", &pos, last);	/* Get first color entry */
 	strncpy (first, last, GMT_LEN64);	/* Make this the first color */
 	if (GMT_getrgb (API->GMT, first, rgb)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	while (GMT_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
 		if (GMT_getrgb (API->GMT, last, rgb)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", last);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);
 		strncpy (first, last, GMT_LEN64);	/* Make last the new first color */
@@ -4539,7 +4539,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	struct GMT_OPTION *current = NULL;
 	int item, object_ID, family = GMT_NOTSET, flag= (direction == GMT_IN) ? GMTAPI_MODULE_INPUT : GMT_NOTSET;
 	unsigned int n_kinds = 0, k, counter[GMT_IS_PS];
-	enum GMT_enum_opt desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
+	char desired_option = (direction == GMT_IN) ? GMT_OPT_INFILE : GMT_OPT_OUTFILE;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
 	GMT_memset (counter, GMT_IS_PS, unsigned int);	/* Initialize counter */
@@ -5591,7 +5591,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	 *   GMT_WRITE_TEXT:      Write an ASCII data record
 	 * For text: If record == NULL use internal current record or header.
 	 * Returns 0 if a record was written successfully (See what -s[r] can do).
-	 * If an error occurs we return -1 and set API->error.
+	 * If an error occurs we return GMT_NOTSET and set API->error.
 	 */
 	int error = 0;
 	uint64_t *p = NULL, col, ij;
@@ -5758,7 +5758,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE_VIA_MATRIX\n");
 				d = record;	/* Cast the void record to a double pointer */
 				if (GMT_skip_output (API->GMT, d, M_obj->n_columns))	/* Record was skipped via -s[a|r] */
-					error = -1;
+					error = GMT_NOTSET;
 				else {
 					for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
 						ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
@@ -5796,7 +5796,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
 				d = record;	/* Cast the void record to a double pointer */
 				if (GMT_skip_output (API->GMT, d, V_obj->n_columns))	/* Record was skipped via -s[a|r] */
-					error = -1;
+					error = GMT_NOTSET;
 				else {
 					for (col = 0; col < V_obj->n_columns; col++) {	/* Place the output items */
 						value = gmt_select_record_value (API->GMT, d, (unsigned int)col, (unsigned int)API->GMT->common.b.ncol[GMT_OUT]);
@@ -5827,7 +5827,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	}
 	S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
 
-	return ((error) ? -1 : 0);
+	return ((error) ? GMT_NOTSET : 0);
 }
 
 #ifdef FORTRAN_API
@@ -6098,7 +6098,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * pad sets the padding for grids and images, ignored for other resources.
 	 * Some default actions for grids:
 	 * range = NULL: Select current -R setting if present.
-	 * registration = -1: Gridline unless -r is in effect.
+	 * registration = GMT_NOTSET: Gridline unless -r is in effect.
 	 * Give -1 (GMT_NOTSET) to accept GMT default padding [2].
 	 *
 	 * For creating grids and images you can do it in one or two steps:
@@ -7038,8 +7038,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	unsigned int n_keys, direction = 0, PS, kind, pos, n_items = 0, ku;
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
-	int family;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
-	int geometry;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
+	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
+	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int k, n_in_added = 0, n_to_add, e;
 	bool deactivate_output = false;
 	size_t n_alloc, len;
@@ -7121,11 +7121,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* Note: All implicit options must be given after all implicit matrices have been listed */
 	for (opt = *head, implicit_pos = n_explicit; opt; opt = opt->next) {	/* Process options */
 		k = GMTAPI_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
-		family = geometry = -1;	/* Not set yet */
+		family = geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0)
 			direction = GMTAPI_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 		if (GMTAPI_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option, e.g., -G$, -R$ or -<$ */
-			if (k == -1) {
+			if (k == GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
@@ -7209,7 +7209,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			char str[2] = {0,0};
 			str[0] = marker;
 			direction = GMTAPI_key_to_family (API, key[ku], &family, &geometry);
-			n_to_add = (direction == GMT_OUT || n_in == -1) ? 1 : n_in - n_in_added;
+			n_to_add = (direction == GMT_OUT || n_in == GMT_NOTSET) ? 1 : n_in - n_in_added;
 			for (e = 0; e < n_to_add; e++) {
 				new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option(s) with filename "$" */
 				/* Append the new option to the list */
@@ -7265,7 +7265,7 @@ struct GMT_RESOURCE * GMT_Encode_Options_ (const char *module, char *marker, int
 /*! . */
 int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 {	/* Inquires if specified GMT option has been set and obtains current values for some of them, if par is not NULL.
-	 * Returns -1 if the option has not been specified.  Otherwise, returns the number of parameters
+	 * Returns GMT_NOTSET if the option has not been specified.  Otherwise, returns the number of parameters
 	 * it passed back via the par[] array.  Only some options passes back parameters; these are
 	 * -R, -I, -X, -Y, -b, -f, -i, -o, -r, -t, -:, while the others return 0.
 	 */
@@ -7398,7 +7398,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val)
 	if (!strncmp (keyword, "API_PAD", 7U)) {	/* Change the grid padding setting */
 		int pad = atoi (value);
 		if (pad >= 0) {
-			GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
+			GMT_set_pad (API->GMT, pad);	/* Change the default pad; give GMT_NOTSET to leave as is */
 			API->pad = pad;
 		}
 	}
@@ -7578,7 +7578,7 @@ int GMT_Report_ (void *V_API, unsigned int *level, const char *format, int len)
 int GMT_Get_Value (void *V_API, const char *arg, double par[])
 {	/* Parse any number of comma, space, tab, semi-colon or slash-separated values.
 	 * The array par must have enough space to hold all the items.
-	 * Function returns the number of items, or -1 if there was an error.
+	 * Function returns the number of items, or GMT_NOTSET if there was an error.
 	 * We can handle dimension units (c|i|p), distance units (d|m|s|e|f|k|M|n|u),
 	 * geographic coordinates, absolute dateTtime strings, and regular floats.
 	 *

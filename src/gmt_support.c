@@ -13081,10 +13081,10 @@ void GMT_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double
 
 unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, struct GMT_PEN *P)
 {	/* Recompute start and end points of line if offset trims are set */
-	uint64_t last, next, current, inc, n, new_n, start[2] = {0,0}, orig_start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
+	uint64_t last, next, current = 0, inc, n, new_n, start[2] = {0,0}, orig_start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
 	int increment[2] = {1, -1};
 	unsigned int k, proj_type, effect;
-	double *x = NULL, *y = NULL, dist, ds, f1, f2, x0, x1, y0, y1, offset;
+	double *x = NULL, *y = NULL, dist, ds = 0.0, f1, f2, x0, x1, y0, y1, offset;
 	
 	if (P == NULL) return 0;	/* No settings given */
 	if (GMT_IS_ZERO (P->end[BEG].offset) && GMT_IS_ZERO (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL) return 0;	/* No trims given */
