@@ -14,10 +14,9 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdproject** *in_grdfile* |-G|\ *out_grdfile* |-J|\ *parameters*
-[ |-A|\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ]
 [ |-C|\ [*dx/dy*] ]
 [ |-D|\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]] ]
-[ |-E|\ *dpi* ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ] [
+[ |-E|\ *dpi* ] [ |-F|\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**] ] [ |-I| ] [ |-M|\ **c**\ \|\ **i**\ \|\ **p** ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-n| ]
@@ -66,16 +65,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-A:
-
-**-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ]
-    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
-    actual projected meters [**e**\ ]. To specify other units, append
-    **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
-    mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
-    (point). Without **-A**, the output (or input, see **-I**) are in
-    the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see **-M**).
-
 .. _-C:
 
 **-C**\ [*dx/dy*\ ]
@@ -97,6 +86,16 @@ Optional Arguments
 **-E**\ *dpi*
     Set the resolution for the new grid in dots per inch.
 
+.. _-F:
+
+**-F**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ]
+    Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
+    actual projected meters [**e**\ ]. To specify other units, append
+    **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
+    mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
+    (point). Without **-F**, the output (or input, see **-I**) are in
+    the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see **-M**).
+
 .. _-I:
 
 **-I**
@@ -107,7 +106,7 @@ Optional Arguments
 **-Mc**\ \|\ **i**\ \|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-A**.
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-F**.
 
 .. _-R:
 
@@ -163,7 +162,7 @@ as the measure unit:
 
    ::
 
-    gmt grdproject data.nc -Jm/1:1 -I -A -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
+    gmt grdproject data.nc -Jm/1:1 -I -F -C-4/0 -Gdata_geo.nc -V --PROJ_ELLIPSOID=WGS-72
 
 Restrictions
 ------------
