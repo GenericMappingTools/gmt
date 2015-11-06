@@ -6,27 +6,15 @@
 
 **The Generic Mapping Tools**
 
-**The MATLAB Interface**
-
-**Pål (Paul) Wessel**
-
-**SOEST, University of Hawai'i at Manoa**
-
-**Walter H. F. Smith**
-
-**Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR**
-
-**Remko Scharroo**
-
-**EUMETSAT, Darmstadt, Germany**
+**The Julia Interface**
 
 **Joaquim F. Luis**
 
 **Universidade do Algarve, Faro, Portugal**
 
-**Florian Wobbe**
+**Pål (Paul) Wessel**
 
-**Alfred Wegener Institute, Germany**
+**SOEST, University of Hawai'i at Manoa**
 
 Introduction
 ============

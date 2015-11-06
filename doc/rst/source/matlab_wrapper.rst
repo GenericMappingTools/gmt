@@ -12,25 +12,18 @@
 
 **SOEST, University of Hawai'i at Manoa**
 
-**Walter H. F. Smith**
-
-**Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR**
-
-**Remko Scharroo**
-
-**EUMETSAT, Darmstadt, Germany**
-
 **Joaquim F. Luis**
 
 **Universidade do Algarve, Faro, Portugal**
 
-**Florian Wobbe**
-
-**Alfred Wegener Institute, Germany**
-
 Introduction
 ============
 
+The GMT MATLAB interface makes it possible to access all GMT modules from MATLAB.
+Users of MATLAB can write MATLAB scripts that call upon GMT modules to do any of the
+things GMT normally can do, and return the results (grids, data-tables, CPT files, text-files,
+and even final images via psconvert) to MATLAB variables.  MATLAB matrices can be given
+as input to GMT modules.  Examples below will give you the general idea.
 
 Installing
 ==========
@@ -42,11 +35,39 @@ Download the zip file and unzip it to a directory that is in the MATLAB path.
 Also make sure that the GMT5.2 binaries are in the Windows path so they will be found by MATLAB.
 If you want to (re)build the MEX file yourself, see the *compile_mex.bat* that comes along.
 
-Unix (OSX and Linux)
---------------------
+OS X
+----
 
-You are basically screwed and will have to temper your MATLAB installation so that the shared libs
-that it ships don't get in the way.
+We have successfully built the MATLAB interface under OS X. However, due to the way MATLAB handles shared libraries
+it is a delicate process, with several caveats.  This may change over time as we work with MathWorks to straighten out the
+kinks.  The following works:
+
+# Install the GMT OS X Bundle
+# Run the gmt_prepmex.sh script in the bundle's share/tools directory.  This will duplicate
+  the GMT 5.2 installation into /opt/gmt and re-baptize all the shared libraries.
+# Use gmtswitch to make /opt/gmt the current active GMT version
+# Checkout the gmt-mex project via subversion into some directory, i.e.,
+  svn checkout svn://gmtserver.soest.hawaii.edu/gmt-mex gmt-mex
+# In gmt-mex/trunk, run autoconf then configure --enable-matlab (and maybe --enable-debug) is you
+  can help debug things.
+# Run make which builds the gmtmex.mexmaci64.  This executable is accessed by the gmt.m script.
+# Set your MATLAB path so these two can be found (or copy them to a suitable directory).
+# Make sure your gmt.conf file has the entry GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so.
+
+You can also build your own bundle (see CMakeLists.txt in main GMT directory).  The above works
+with UNIX installations from fink or HomeBrew but fails for us if under MacPorts (then, MATLAB
+will complain about wrong shared HDF5 library and we crash).
+If you wish to help debug in XCode then see the gmt-mex wiki for more details.  You will have 
+to install the older Xcode (6.4) since MATLAB does not yet support version 7.
+We used the 2015b MATLAB version to build the interface but 2015a should also work.  Older
+version may also work but we have not attempted this since we only have access to those two.
+
+Unix/Linux)
+-----------
+
+Preliminary experiments indicate we will have to fight the shared library dilemma here as well.
+Volunteers on Linux wishing to run the GMT MATLAB interface are needed to make progress.
+
 
 Using
 =====
