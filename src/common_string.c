@@ -40,7 +40,7 @@
  *  stresep                 Like strsep but takes an additional argument esc in order
  *                          to ignore escaped chars (from NetBSD)
  *  match_string_in_file    Return true if a string is found in file
- *  GMT_basename            Extract the base portion of a pathname
+ *  basename                Extract the base portion of a pathname
  */
 
 /* CMake definitions: This must be first! */
@@ -144,7 +144,7 @@ void GMT_strrepc (char *string, int c, int r) {
 	assert (string != NULL); /* NULL pointer */
 	do {
 		if (*string == c)
-			*string = r;
+			*string = (char)r;
 	} while (*(++string)); /* repeat until \0 reached */
 }
 
@@ -196,11 +196,45 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 	return 1;
 }
 
+unsigned int GMT_get_modifier (const char *string, char modifier, char *token)
+{
+	/* Looks for modifier string in the form +<modifier>[arg] and if found
+	   returns 1 and places arg in token, else return 0.  Must ignore any
+	   +<modifier> found inside quotes as part of text. If token is NULL
+	   then we only return 1 or 0 and no string.
+	*/
+	bool quoted = false;
+	size_t k, len, start = 0;
+	
+	if (!string || string[0] == 0) return 0;	/* No hope */
+	len = strlen (string);
+	for (k = 0; start == 0 && k < (len-1); k++) {
+		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+		if (quoted) continue;		/* Not look inside quoted strings */
+		if (string[k] == '+' && string[k+1] == modifier)	/* Found the start */
+			start = k+2;
+	}
+	if (start == 0) return 0;	/* Not found */
+	k = start;
+	while (k < len) {
+		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+		if (quoted) continue;	/* Not look inside quoted strings */
+		if (string[k] == '+')	/* Found the end */
+			break;
+		k++;
+	}
+	len = k - start;
+	if (token) {	/* Only pass back when token is not NULL */
+		if (len) strncpy (token, &string[start], len);
+		token[len] = '\0';
+	}
+	return 1;
+}
+
 #ifdef WIN32
 /* Turn '/c/dir/...' paths into 'c:/dir/...'
  * Must do it in a loop since dir may be several ';'-separated dirs */
-void DOS_path_fix (char *dir)
-{
+void DOS_path_fix (char *dir) {
 	size_t n, k;
 
 	if (!dir || (n = strlen (dir)) < 2U)
@@ -227,9 +261,21 @@ void DOS_path_fix (char *dir)
 		dir[1] = ':';
 	}
 
-	/* Do same with dirs separated by ';' but do not replace '/c/j/...' with 'c:j:/...' */
-	for (k = 4; k < n-2; ++k) {
+	/* Do the same with dirs separated by ';' but do not replace '/c/j/...' with 'c:j:/...' */
+	for (k = 4; k < n-2; k++) {
 		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
+			dir[k] = dir[k+1];
+			dir[k+1] = ':';
+		}
+	}
+
+	/* Replace ...:C:/... by ...;C:/... as that was a multi-path set by a e.g. bash shell (msys or cygwin) */
+	for (k = 4; k < n-2; k++) {
+		if ((dir[k-1] == ':' && dir[k+1] == ':' && dir[k+2] == '/' && isalpha ((int)dir[k])) )
+			dir[k-1] = ';';
+		else if ((dir[k-1] == ':' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
+			/* The form ...:/C/... will become ...;C:/... */
+			dir[k-1] = ';';
 			dir[k] = dir[k+1];
 			dir[k+1] = ':';
 		}
@@ -264,33 +310,31 @@ void DOS_path_fix (char *dir)
    Note: This function does not work with multibyte strings!  */
 
 int strcasecmp (const char *s1, const char *s2) {
-  const unsigned char *p1 = (const unsigned char *) s1;
-  const unsigned char *p2 = (const unsigned char *) s2;
-  unsigned char c1, c2;
+	const unsigned char *p1 = (const unsigned char *) s1;
+	const unsigned char *p2 = (const unsigned char *) s2;
+	unsigned char c1, c2;
 
-  if (p1 == p2)
-    return 0;
+	if (p1 == p2) return 0;
 
-  do
-    {
-      c1 = TOLOWER (*p1);
-      c2 = TOLOWER (*p2);
+	do {
+		c1 = TOLOWER (*p1);
+		c2 = TOLOWER (*p2);
 
-      if (c1 == '\0')
-        break;
+		if (c1 == '\0')
+			break;
 
-      ++p1;
-      ++p2;
-    }
-  while (c1 == c2);
+		++p1;
+		++p2;
+	}
+	while (c1 == c2);
 
-  if (UCHAR_MAX <= INT_MAX)
-    return c1 - c2;
-  else
-    /* On machines where 'char' and 'int' are types of the same size, the
-       difference of two 'unsigned char' values - including the sign bit -
-       doesn't fit in an 'int'.  */
-    return (c1 > c2 ? 1 : c1 < c2 ? -1 : 0);
+	if (UCHAR_MAX <= INT_MAX)
+		return c1 - c2;
+	else
+		/* On machines where 'char' and 'int' are types of the same size, the
+		difference of two 'unsigned char' values - including the sign bit -
+		doesn't fit in an 'int'.  */
+		return (c1 > c2 ? 1 : c1 < c2 ? -1 : 0);
 }
 #endif /* !defined(HAVE_STRCASECMP) && !defined(HAVE_STRICMP) */
 
@@ -591,23 +635,24 @@ int match_string_in_file (const char *filename, const char *string) {
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* The GMT_basename() function returns the last component from the pathname
+/* The basename() function returns the last component from the pathname
  * pointed to by path, deleting any trailing `/' characters.  If path consists
  * entirely of `/' characters, a pointer to the string "/" is returned.  If
  * path is a null pointer or the empty string, a pointer to the string "." is
  * returned.
  *
- * On successful completion, GMT_basename() returns a pointer to the last
+ * On successful completion, basename() returns a pointer to the last
  * component of path.
  *
- * If GMT_basename() fails, a null pointer is returned and the global variable
+ * If basename() fails, a null pointer is returned and the global variable
  * errno is set to indicate the error.
  *
- * The GMT_basename() function returns a pointer to internal static storage
+ * The basename() function returns a pointer to internal static storage
  * space that will be overwritten by subsequent calls (not thread safe).  The
  * function does not modify the string pointed to by path. */
 
-char *GMT_basename(const char *path) {
+#ifndef HAVE_BASENAME
+char *basename(char *path) {
 #ifdef WIN32
 	static char path_fixed[PATH_MAX];
 #endif
@@ -668,3 +713,4 @@ char *GMT_basename(const char *path) {
 	bname[len] = '\0';
 	return (bname);
 }
+#endif

@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtwhich** *files* [ **-A** ] [ **-C** ] [ **-D** ] [ |SYN_OPT-V| ]
+**gmtwhich** *files* [ |-A| ] [ |-C| ] [ |-D| ] [ |SYN_OPT-V| ]
 
 |No-spaces|
 
@@ -39,15 +39,25 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     Only consider files that the user has permission to read [Default consider
     all files found].
+
+.. _-C:
+
 **-C**
     Instead of reporting the paths, print the confirmation Y if the file
     is found and N if it is not.
+
+.. _-D:
+
 **-D**
     Instead of reporting the paths, print the directories that contains
     the files. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

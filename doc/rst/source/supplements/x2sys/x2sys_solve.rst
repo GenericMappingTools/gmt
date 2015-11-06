@@ -13,11 +13,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_solve** **-C**\ *column* **-T**\ *TAG* **-E**\ *mode*
+**x2sys_solve** |-C|\ *column* |-T|\ *TAG* |-E|\ *mode*
 [ *COE_list.d* ]
 [ |SYN_OPT-V| ]
-[ **-W[u]** ]
+[ |-W|\ **[u]** ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
+[ |SYN_OPT-x| ]
 
 |No-spaces|
 
@@ -42,10 +44,15 @@ Required Arguments
 
 .. include:: explain_tag.rst_
 
+.. _-C:
+
 **-C**\ *column*
     Specify which data column you want to process. Needed for proper
     formatting of the output correction table and must match the same
     option used in **x2sys_list** when preparing the input data.
+
+.. _-E:
+
 **-E**\ *mode*
     The correction type you wish to model. Choose among the following
     functions f(*p*) , where *p* are the *m*
@@ -78,8 +85,12 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**
     Means that each input records has an extra column with the composite
@@ -90,12 +101,17 @@ Optional Arguments
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
 
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
+
+.. include:: ../../explain_core.rst_
+
 .. include:: ../../explain_help.rst_
 
 Notes
 -----
 
-Most of the model corrections in **-E** involve a constant offset.
+Most of the model corrections in |-E| involve a constant offset.
 Because crossovers are differences between values, any absolute level
 will cancel out and hence the constant offsets we obtain are relative
 to an undetermined absolute level.  To obtain a solvable solution we

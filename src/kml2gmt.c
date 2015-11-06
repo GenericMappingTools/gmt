@@ -27,10 +27,11 @@
 #define THIS_MODULE_NAME	"kml2gmt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract GMT table data from Google Earth KML files"
+#define THIS_MODULE_KEYS	"<TI,>DO"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:Vbh" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:Vbdh" GMT_OPT("HMm")
 
 #define POINT			0
 #define LINE			1
@@ -41,6 +42,11 @@ struct KML2GMT_CTRL {
 		bool active;
 		char *file;
 	} In;
+	struct F {	/* -F */
+		bool active;
+		unsigned int mode;
+		unsigned int geometry;
+	} F;
 	struct Z {	/* -Z */
 		bool active;
 	} Z;
@@ -66,17 +72,19 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [-Fs|l|p] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] > GMTdata.txt\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tinfile is the Google Earth KML file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more Google Earth KML files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  If no file(s) is given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Restrict feature type; choose from (s)symbol, (l)ine, or (p)olygon.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use to only output data for the selected feature type [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
-	GMT_Option (API, "V,bo,h,:,.");
+	GMT_Option (API, "V,bo,do,h,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -107,6 +115,26 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
+			case 'F':	/* Feature type */
+		 		Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 's':
+						Ctrl->F.mode = POINT;
+						break;
+					case 'l':
+						Ctrl->F.mode = LINE;
+						Ctrl->F.geometry = GMT_IS_LINE;
+						break;
+					case 'p':
+						Ctrl->F.mode = POLYGON;
+						Ctrl->F.geometry = GMT_IS_POLY;
+						break;
+					default:
+						GMT_Message (GMT->parent, GMT_TIME_NONE, "Bad feature type. Use s, l or p.\n");
+						n_errors++;
+						break;
+				}
+				break;
 			case 'Z':
  				Ctrl->Z.active = true;
 				break;
@@ -128,13 +156,14 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 
 int GMT_kml2gmt (void *V_API, int mode, void *args)
 {
-	unsigned int i, start, fmode = POINT, pos;
+	unsigned int i, start, fmode = POINT, n_features = 0, pos;
 	int error = 0, n_scan;
 	size_t length;
-	bool scan = true, first = true, single = false;
+	bool scan = true, first = true, skip, single = false;
 	
 	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""};
 	char word[GMT_LEN128] = {""}, description[GMT_BUFSIZ] = {""};
+	char *gm[3] = {"Point", "Line", "Polygon"};
 
 	double out[3];
 	
@@ -159,7 +188,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_kml2gmt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_kml2gmt_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_kml2gmt_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
@@ -197,6 +226,9 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Reading from standard input\n");
 		sprintf (buffer, "# kml2gmt: KML read from standard input\n");
 	}
+	if (Ctrl->F.active)
+		GMT_Report (API, GMT_MSG_VERBOSE, "Only output features with geometry: %s\n", gm[Ctrl->F.mode]);
+
 	/* Now we are ready to take on some input values */
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
@@ -213,6 +245,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		if (strstr (line, "<Point")) fmode = POINT;
 		if (strstr (line, "<LineString")) fmode = LINE;
 		if (strstr (line, "<Polygon")) fmode = POLYGON;
+		skip = (Ctrl->F.active && fmode != Ctrl->F.mode);
 		length = strlen (line);
 		if (strstr (line, "<name>")) {
 			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <name> */
@@ -221,11 +254,11 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			line[i] = '\0';
 			strncpy (name, &line[start], GMT_BUFSIZ);
 			GMT_chop (name);
-			if (first) {
+			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+				first = false;
 			}
-			first = false;
 		}
 		if (strstr (line, "<description>")) {
 			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <description> */
@@ -234,12 +267,13 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			line[i] = '\0';
 			strncpy (description, &line[start], GMT_BUFSIZ);
 			GMT_chop (description);
-			if (first) {
+			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
+				first = false;
 			}
-			first = false;
 		}
+		if (skip) continue;
 		if (name[0] || description[0]) {
 			GMT->current.io.segment_header[0] = 0;
 			if (name[0]) { strcat (GMT->current.io.segment_header, "-L\""); strcat (GMT->current.io.segment_header, name); strcat (GMT->current.io.segment_header, "\""); }
@@ -249,8 +283,16 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
-		single = (strstr (line, "</coordinates>") != NULL);	/* All on one line */
+		
+		if (fmode == POINT && strstr (line, "</coordinates>")) {	/* Process the single point */
+			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point");
+		}
+		else {
+			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next feature");
+		}
 		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
+
+		single = (strstr (line, "</coordinates>") != NULL);	/* All on one line */
 		
 		if (fmode == POINT && single) {	/* Process the single point from current record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
@@ -273,11 +315,14 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 		}
+		n_features++;
 	}
 	if (fp != stdin) fclose (fp);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
+	
+	GMT_Report (API, GMT_MSG_VERBOSE, "Found %u features with selected geometry\n", n_features);
 	
 	Return (GMT_OK);
 }

@@ -32,11 +32,12 @@
 #define THIS_MODULE_NAME	"blockmode"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mode estimation"
+#define THIS_MODULE_KEYS	"<DI,>DO,RG-"
 
 #include "gmt_dev.h"
 #include "block_subs.h"
 
-#define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("FH")
+#define GMT_PROG_OPTIONS "-:>RVabdfghior" GMT_OPT("FH")
 
 struct BIN_MODE_INFO {	/* Used for histogram binning */
 	double width;		/* The binning width used */
@@ -54,8 +55,8 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmode [<table>] %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q]\n\t[%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s]\nt\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q]\n\t[%s] [-W[i][o]] [%s] [%s] [%s]\n\t[%s] [%s]\nt\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -80,9 +81,9 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but reports sum (x,y,z[,s,l,h],w) Output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
 	GMT_Option (API, "a,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (API, "bo,f,h,i,o,r,:,.");
-	
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set).\n");
+	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
+
 	return (EXIT_FAILURE);
 }
 
@@ -113,7 +114,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 			case 'D':	/* Histogram mode estimate */
 				Ctrl->D.active = true;
 				Ctrl->D.width = atof (opt->arg);
-				if ((c = strchr (opt->arg, '+'))) {	/* Found modifiers */
+				if ((c = strchr (opt->arg, '+')) != NULL) {	/* Found modifiers */
 					while ((GMT_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
@@ -218,7 +219,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	B->n_bins = B->max - B->min + 1;
 	B->count = GMT_memory (GMT, NULL, B->n_bins, double);
 	B->mode_choice = (mode_choice == BLOCKMODE_DEF) ? BLOCKMODE_AVE : mode_choice;
-	
+
 	return (B);
 }
 
@@ -251,9 +252,9 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 		value = ((mode_bin + B->min) + B->o_offset) * B->width;
 		return (value);
 	}
-	
+
 	/* Here we found more than one mode and must choose according to settings */
-	
+
 	for (bin = 0, done = false; !done && bin < (int)B->n_bins; bin++) {	/* Loop over bin counts */
 		if (B->count[bin] < mode_count) continue;	/* Not one of the modes */
 		switch (B->mode_choice) {
@@ -349,8 +350,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 	   of the total sum of weights */
 
 	double top, bottom, p, p_max, mode;
-	uint64_t i, j, src = 0;
-
+	uint64_t i, j, src = 0, n_modes = 0;
 
 	/* Do some initializations */
 	wsum = 0.5 * wsum; /* Sets the 50% range */
@@ -378,12 +378,18 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 		}
 
 		p = top / bottom;
-		if (p > p_max) {
+		if (p > p_max) {	/* New maximum, get new best mode */
 			p_max = p;
 			mode = 0.5 * (d[i].a[k] + d[j].a[k]);
+			n_modes = 1;
 			if (index) src = (emode & BLK_DO_INDEX_HI) ? d[j].src_id : d[i].src_id;
 		}
+		else if (doubleAlmostEqual (p, p_max)) {	/* Same peak as previous best mode, get average of these modes */
+			mode += 0.5 * (d[i].a[k] + d[j].a[k]);
+			n_modes++;
+		}
 	}
+	if (n_modes > 1) mode /= n_modes;
 	if (emode && index) *index = src;
 	return (mode);
 }
@@ -431,7 +437,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_blockmode_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_blockmode_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the blockmode main code ----------------------------*/
 
@@ -443,7 +449,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	}
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 
 	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
@@ -490,7 +496,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	sid_col = (Ctrl->W.weighted[GMT_IN]) ? 4 : 3;	/* Column with integer source id [if -Es is set] */
 	n_read = n_pitched = 0;	/* Initialize counters */
 
-	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */
 
 	/* Read the input data */
 	is_integer = true;	/* Until proven otherwise */
@@ -504,7 +510,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 				break;
 		}
-		
+
 		if (GMT_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
 
@@ -546,7 +552,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	} while (true);
 
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}

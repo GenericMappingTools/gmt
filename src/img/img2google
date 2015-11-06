@@ -2,18 +2,18 @@
 #
 # $Id$
 #
-# Copyright (c) 2009 by David Sandwell and Paul Wessel
+# Copyright (c) 2009-2015 by David Sandwell and Paul Wessel
 # Credit to Joaquim Luis for adding KML output from ps2raster
 #
 # Shell script that will generate a Google Earth png tile from
-# Sandwell/Smith's 1x1 min Mercator topo.11.1img grid and add
+# Sandwell/Smith's 1x1 min Mercator topo.18.1img grid and add
 # a basic KML wrapper for use in any Google Earth version.
 
 # Change these only if you know what you are doing!  Note this script
 # is hardwired to do bathymetry.  You must change many things to have
 # it plot crustal ages or gravity.
 #------------------
-TOPO=topo.15.1.img
+TOPO=topo.18.1.img
 INC=1
 DPI=240
 #------------------
@@ -108,10 +108,10 @@ n=`echo $R | awk -F/ '{print $4}'`
 
 # Extend by two boundary rows/cols
 
-w2=`gmt math -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $w $INC 60 DIV 2 MUL SUB =`
-e2=`gmt math -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $e $INC 60 DIV 2 MUL ADD =`
-s2=`gmt math -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $s $INC 60 DIV 2 MUL SUB =`
-n2=`gmt math -Q -fg --OUTPUT_DEGREE_FORMAT=ddd:mm $n $INC 60 DIV 2 MUL ADD =`
+w2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $w $INC 60 DIV 2 MUL SUB =`
+e2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $e $INC 60 DIV 2 MUL ADD =`
+s2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $s $INC 60 DIV 2 MUL SUB =`
+n2=`gmt math -Q -fg --FORMAT_GEO_OUT=ddd:mm $n $INC 60 DIV 2 MUL ADD =`
 W=`gmt math -Q -fg $e2 $w2 SUB =`
 H=`gmt math -Q -fg $n2 $s2 SUB =`
 R2=-R$w2/$e2/$s2/$n2
@@ -120,7 +120,7 @@ R2=-R$w2/$e2/$s2/$n2
 #    NaNs were unconstrained, exclude NaNs, and capture points whose z < 0
 
 gmt img2grd $TOPO $R2 -T2 -S1 $V -G$$.tile.nc
-gmt grd2xyz $$.tile.nc -S -bod | gmt select -Z-15000/-2.0 -bi3d > $$.track.xyz
+gmt grd2xyz $$.tile.nc -s -bod | gmt select -Z-15000/-2.0 -bi3d > $$.track.xyz
 
 # 3. get the topo data, this time including unconstrained estimates
 
@@ -152,7 +152,7 @@ echo "-2000 C" > $$.int2000
 gmt makecpt -Ctopo -Z > $$.cpt
 gmt grdgradient $$.tile.nc $V -A340 -G$$.nc
 gmt grdmath $$.nc 12000 DIV = $$.tile_grad.nc
-gmt psclip $R -Jx1id -Y0 -X0 -P -K -N -T $V --PROJ_ELLIPSOID=WGS-84 --PS_MEDIA=Custom_${W}ix${H}i > $$.ps
+gmt psclip $R -Jx1id -Y0 -X0 -P -K -N -T $V --PROJ_ELLIPSOID=WGS-84 --PS_MEDIA=${W}ix${H}i > $$.ps
 #Set up (0,0) to match the even LL corner
 off=`gmt math -Q $INC 2 MUL 60 DIV NEG =`
 if [ X"$C" = "X" ]; then	# No clipping, just lay down image
@@ -161,8 +161,8 @@ else	# Use GSHHS high clip path to only show ocean areas
 	gmt pscoast $R -Jx1id Y$off -X$off -O -K $V --PROJ_ELLIPSOID=WGS-84 -Dh -Sc >> $$.ps
 	gmt grdimage $$.tile.nc -I$$.tile_grad.nc -C$$.cpt -J -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
 fi
-gmt psxy $$.track.xyz -J $R -Sc.005i -G00 $V -O -K --PROJ_ELLIPSOID=WGS-84 >> $$.ps
-gmt grdcontour $$.tile.nc -J -C$$.intervals -W1,80 -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
+gmt psxy $$.track.xyz -J $R -Sc.005i -Gblack $V -O -K --PROJ_ELLIPSOID=WGS-84 >> $$.ps
+gmt grdcontour $$.tile.nc -J -C$$.intervals -Wfaint,80 -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
 gmt grdcontour $$.tile.nc -J -C$$.int2000 -W1p,black -O -K $V --PROJ_ELLIPSOID=WGS-84 >> $$.ps
 if [ X"$C" = "X" ]; then
 	gmt psxy -R -J -O -K -T >> $$.ps
@@ -205,7 +205,7 @@ else
 	T=+t`echo $T | awk '{print substr($0,3)}'`
 fi
 mv -f $$.ps $name.ps
-gmt ps2raster $name.ps -E${DPI} -A- -TG -W+k${A}${F}${L}"${N}${T}"${U} $V
+gmt psconvert $name.ps -E${DPI} -A- -TG -W+k${A}${F}${L}"${N}${T}"${U} $V
 if [ ! "X$Z" = "X" ]; then	# zip up as one archive
 	zip -rq9 $name.kmz $name.kml $name.png
 	if [ "X$Z" = "X-Z+" ]; then

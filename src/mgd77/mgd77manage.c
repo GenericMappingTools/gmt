@@ -21,6 +21,7 @@
 #define THIS_MODULE_NAME	"mgd77manage"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
+#define THIS_MODULE_KEYS	""
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -155,7 +156,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t        [Default uses formula specified in the MGD77 header, or 4 if not valid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with distances (in km) in first column and data values in 2nd.  Only one cruise can be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with mathcing distance will have data assigned.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching distance will have data assigned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   D: Same as d but we interpolate between the dist,data pairs to fill in all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77.\n");
@@ -550,7 +551,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77manage_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77manage_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 

@@ -3,21 +3,21 @@
 #		$Id$
 #
 # Purpose:	Illustrate draping of an image over topography
-# GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
+# GMT progs:	grdcut, grdedit, grdgradient, grdconvert, grdtrack, grdview
 # GMT progs:	pscoast, pstext, psxyz
 # Unix progs:	cat, rm
 # Credits:	Original by Stephan Eickschen
 #
 ps=example_32.ps
 
-# Here we get and convert the flag of Europe directly from the web through grdreformat using
+# Here we get and convert the flag of Europe directly from the web through grdconvert using
 # GDAL support. We take into account the dimension of the flag (1000x667 pixels)
 # for a ratio of 3x2.
 # Because GDAL support will not be standard for most users, we have stored
 # the result, euflag.nc in this directory.
 
 Rflag=-R3/9/50/54
-# gmt grdreformat \
+# gmt grdconvert \
 #   http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd \
 #   euflag.nc=ns
 # gmt grdedit euflag.nc -fg $Rflag
@@ -58,7 +58,7 @@ cat << EOF > cities.txt
 07:07:03 50:43:09 Bonn
 EOF
 
-gmt grdtrack -Gtopo.nc -sa cities.txt | gmt psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred \
+gmt grdtrack -Gtopo.nc cities.txt | gmt psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred \
 	-K -O >> $ps
 gmt pstext $Rplot -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O cities.txt >> $ps
 

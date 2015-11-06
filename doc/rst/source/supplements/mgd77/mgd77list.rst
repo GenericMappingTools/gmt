@@ -13,20 +13,25 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77list** *NGDC-ids* **-F**\ *columns*\ [,\ *logic*][:\ *bittests*]
-[ **-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code* ]
-[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ]
-[ **-D**\ **A**\ \|\ **a**\ *startdate* ]
-[ **-D**\ **B**\ \|\ **b**\ *stopdate* ] [ **-E** ] [ **-Ga**\ *startrec* ]
-[ **-Gb**\ *stoprec* ] [ **-I**\ *ignore* ] [ **-L**\ [*corrtable*] ]
-[ **-Nd**\ \|\ **s**\ *unit* ]
-[ **-Q**\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ]
+**mgd77list** *NGDC-ids* |-F|\ *columns*\ [,\ *logic*][:\ *bittests*]
+[ |-A|\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code* ]
+[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
+[ |-D|\ **A**\ \|\ **a**\ *startdate* ]
+[ |-D|\ **B**\ \|\ **b**\ *stopdate* ]
+[ |-E| ]
+[ |-G|\ **a**\ *startrec* ]
+[ |-G|\ **b**\ *stoprec* ]
+[ |-I|\ *ignore* ]
+[ |-L|\ [*corrtable*] ]
+[ |-N|\ **d**\ \|\ **s**\ *unit* ]
+[ |-Q|\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ]
 [ |SYN_OPT-R| ]
-[ **-Sa**\ *startdist*\ [unit] ] [ **-Sb**\ *stopdist*\ [unit] ]
-[ **-T**\ [**m**\ \|\ **e**] ]
+[ |-S|\ **a**\ *startdist*\ [unit] ]
+[ |-S|\ **b**\ *stopdist*\ [unit] ]
+[ |-T|\ [**m**\ \|\ **e**] ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *weight* ]
-[ **-Z**\ *+*\ \|\ **-** ]
+[ |-W|\ *weight* ]
+[ |-Z|\ *+*\ \|\ **-** ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
 
@@ -58,6 +63,7 @@ Required Arguments
 
 .. include:: explain_ncid.rst_
 
+.. _-F:
 
 **-F**\ *columns*\ [,\ *logic*][:\ *bittests*]
     The required *columns* string must be a comma-separated list of
@@ -93,7 +99,7 @@ Required Arguments
     **twt**
         Two-Way Travel time (in s).
     **depth**
-        Corrected bathymetry (in m, positive below sealevel).
+        Corrected bathymetry (in m, positive below sea level).
     **mtf1**
         Magnetic Total Field intensity from sensor 1 (in nTesla).
     **mtf2**
@@ -232,6 +238,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*
     By default, corrected depth (**depth**), magnetic residual anomaly
     (**mag**), free-air gravity anomaly (**faa**), and the derived
@@ -321,15 +329,17 @@ Optional Arguments
     **-Amc<offset>[unit]** Apply a correction that tries to compensate
     the fact that the magnetic field was not acquired at the same
     position as the navigation refer (ship's position). This is
-    accomplished by reinterpolating the total magnetic field to what it
+    accomplished by re-interpolating the total magnetic field to what it
     would have had if it was measured at the ship's position (remember,
     it probably was measured <offset> meters behind). Due to this
     interpolation step, bad navigation, namely too many repeated points,
     may cause troubles. Measures are taken to minimize this effect but
     they aren't 100% full prof. The interpolation method is controlled
-    by the gmtdefaults GMT_INTERPOLANT. Append **e** for meter, **f**
+    by the GMT default GMT_INTERPOLANT. Append **e** for meter, **f**
     for feet, **k** for km, **m** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is e (meters)].
+
+.. _-C:
 
 **-C**\ **f**\ \|\ **g**\ \|\ **e**
     Append a one-letter code to select the procedure for along-track
@@ -341,6 +351,8 @@ Optional Arguments
 
     **e** Geodesic distances on current GMT ellipsoid.
 
+.. _-D:
+
 **-Da**\ *startdate*
     Do not list data collected before *startdate*
     (yyyy-mm-ddBD(T)[hh:mm:ss]) [Default is start of cruise]. Use
@@ -351,33 +363,52 @@ Optional Arguments
     (yyyy-mm-ddBD(T)[hh:mm:ss]). [Default is end of cruise]. Use **-DB**
     to exclude records whose time is undefined (i.e., NaN). [Default
     reports those records].
+
+.. _-E:
+
 **-E**
     Exact match: Only output records that match all the requested
     geophysical columns [Default outputs records that matches at least
     one of the observed columns].
+
+.. _-G:
+
 **-Ga**\ *startrec*
     Do not list records before *startrec* [Default is 0, the first
     record].
 **-Gb**\ *stoprec*
     Do not list data after *stoprec*. [Default is the last record].
+
+.. _-I:
+
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
-**-L**\ [*corrtable*\ ]
+
+.. _-L:
+
+**-L**\ [*corrtable*]
     Apply optimal corrections to columns where such corrections are
     available. Append the correction table to use [Default uses the
     correction table mgd77_corrections.txt in the **$MGD77_HOME**
     directory]. For the format of this file, see CORRECTIONS below.
+
 **-n**
     Issue a segment header record with cruise ID for each cruise.
+
+.. _-N:
+
 **-Nd**\ \|\ **s**\ *unit*
     Append **d** for distance or **s** for speed, then give the desired
     *unit* as **e** (meter or m/s), **f** (feet or feet/s), **k** (km or
     km/hr), **m** (miles or miles/hr), **n** (nautical miles or knots),
     or **u** (survey feet or sfeet/s). [Default is **-Ndk** **-Nse** (km
     and m/s)].
+
+.. _-Q:
+
 **-Qa**\ *min*/*max*
     Specify an accepted range (*min*/*max*) of azimuths. Records whose
     track azimuth falls outside this range are ignored [0/360].
@@ -391,8 +422,12 @@ Optional Arguments
     upper limit) of velocities. Records whose track speed falls outside
     this range are ignored [0/infinity]. 
 
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-S:
 
 **-Sa**\ *startdist*\ [unit]
     Do not list data that are less than *startdist* meter along track
@@ -404,6 +439,9 @@ Optional Arguments
     port of departure. Append **e** for meter, **f** for feet, **k** for
     km, **m** for miles, **n** for nautical miles, or **u** for survey
     feet [Default is end of track].
+
+.. _-T:
+
 **-T**\ [**m**\ \|\ **e**]
     Turns OFF the otherwise automatic adjustment of values based on
     correction terms that are stored in the MGD77+ file and used to
@@ -413,14 +451,21 @@ Optional Arguments
     Append **m** or **e** to limit the option to the MGD77 or extended
     columns set only [Default applies to both]. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *weight*
     Set the weight for these data. Weight output option must be set in
     **-F**. This is useful if the data are to be processed with the
     weighted averaging techniques offered by **blockmean**,
     **blockmedian**, and **blockmode** [1].
+
+.. _-Z:
+
 **-Z**\ *+*\ \|\ **-**
     Append the sign you want for **depth**, **carter**, and **msd**
     values below sea level (**-Z-** gives negative bathymetry) [Default

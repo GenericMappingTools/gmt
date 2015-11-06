@@ -6,19 +6,24 @@ sphdistance
 
 .. only:: not man
 
-    sphdistance - Make grid of distances to nearest points on a sphere
+    sphdistance - Make Voronoi distance, node, or nearest-neighbor grid on a sphere
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-E** ]
+**sphdistance** [ *table* ] |-G|\ *grdfile*
+[ |-C| ]
+[ |-E|\ **d**\ \|\ **n**\ \|\ **z**\ [*dist*] ]
 [ |SYN_OPT-I| ]
-[ **-L**\ *unit* ] [ **-Q**\ *voronoi.txt* ]
+[ |-L|\ *unit* ]
+[ |-N|\ *nodetable* ]
+[ |-Q|\ *voronoi.txt* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ **-r** ]
@@ -41,6 +46,8 @@ triangularization.
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *grdfile*
     Name of the output grid to hold the computed distances.
 
@@ -50,17 +57,31 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-C:
+
 **-C**
     For large data sets you can save some memory (at the expense of more
     processing) by only storing one form of location coordinates
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
     in memory]. Not applicable with **-Q**.
-**-E**
-    Instead of computing distances, return the ID numbers of the Voronoi
-    polygons that each grid node is inside [Default computes distances].
+
+.. _-E:
+
+**-Ed**\ \|\ **n**\ \|\ **z**\ [*dist*]
+    Specify the quantity that should be assigned to the grid nodes.  By
+    default we compute distances to the nearest data point [**-Ed**].
+    Use **-En** to assign the ID numbers of the Voronoi polygons that each
+    grid node is inside, or use **-Ez** for a nearest-neighbor grid where
+    we assign all nodes inside the polygon the z-value of the center node.
+    Optionally, append the resampling interval along Voronoi arcs in spherical
+    degrees [1].
+
+.. _-I:
 
 .. include:: explain_-I.rst_
+
+.. _-L:
 
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
@@ -69,11 +90,15 @@ Optional Arguments
     approximation is used unless :ref:`PROJ_ELLIPSOID <Projection Parameters>` is set to an actual
     ellipsoid.
 
-**-N**
+.. _-N:
+
+**-N**\ *nodetable*
     Read the information pertaining to each Voronoi
     polygon (the unique node lon, lat and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
     headers of the output file]. Required if binary input via **-Q** is used.
+
+.. _-Q:
 
 **-Q**\ *voronoi.txt*
     Append the name of a file with pre-calculated Voronoi polygons
@@ -81,8 +106,12 @@ Optional Arguments
     binary data **-bi** you must specify the node
     information separately (via **-N**).
 
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -92,6 +121,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_

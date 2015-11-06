@@ -64,10 +64,12 @@
         plot-distance units. An exception occurs for a linear projection in
         which we assume the ellipse axes are given in the same units as **-R**.
 	For degenerate ellipses (circles) with diameter given in km, use **-SE-**.
+	The diameter is excepted to be given in column 4.  Alternatively, append
+	the desired diameter in km to **-SE-** and this fixed diameter is used instead.
 
     **-Sf**
         **f**\ ront.
-        **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*].
+        **-Sf**\ *gap*\ [/*size*\ ][**+l**\ \|\ **+r**][**+b+c+f+s+t**][\ **+o**\ *offset*][**+p**\ [*pen*]].
         Supply distance gap between symbols and symbol size. If *gap* is
         negative, it is interpreted to mean the number of symbols along the
         front instead. If *size* is missing it is set to 30% of the *gap*, except
@@ -77,8 +79,12 @@
         specify which symbol to plot: **b**\ ox, **c**\ ircle, **f**\ ault,
         **s**\ lip, or **t**\ riangle. [Default is **f**\ ault]. Slip means
         left-lateral or right-lateral strike-slip arrows (centered is not an
-        option). Append **+o**\ *offset* to offset the first symbol from the
-        beginning of the front by that amount [0]. Note: By placing **-Sf**
+        option). The **+s** modifier optionally accepts the angle used to draw
+	the vector [30].  Append **+o**\ *offset* to offset the first symbol from the
+        beginning of the front by that amount [0]. The chosen symbol is drawn
+	with the same pen as set for the line (i.e., via **-W**).  The use an
+	alternate pen, append **+p**\ *pen*.  To skip the outline, just use
+	**+p**.  Note: By placing **-Sf**
         options in the segment header you can change the front types on a
         segment-by-segment basis.
 
@@ -166,7 +172,7 @@
             contour when the cumulative along-contour distance equals *fraction
             \* dist* [0.25].
             **f**\ *ffile.d*
-            Reads the ascii file *ffile.d* and places labels at locations in the
+            Reads the ASCII file *ffile.d* and places labels at locations in the
             file that matches locations along the quoted lines. Inexact matches
             and points outside the region are skipped.
             **l\|L**\ *line1*\ [,*line2*,...]
@@ -357,3 +363,86 @@
         must be found in columns 4 and 5. The *size* is the length of the
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
         for specifying attributes.
+
+    **-S~**
+        decorated line, i.e., lines with symbols along them. Append
+        [**d**\ \|\ **D**\ \|\ **f**\ \|\ **l**\ \|\ **L**\ \|\ **n**\ \|\ **N**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ \|\ **X**]\ *info*\ [:*symbolinfo*].
+        The required argument controls the placement of symbols along the decorated
+        lines. Choose among six controlling algorithms:
+
+            **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
+                For lower case **d**, give distances between symbols on the plot in
+                your preferred measurement unit **c** (cm), **i** (inch), or **p**
+                (points), while for upper case **D**, specify distances in map units
+                and append the unit; choose among **e** (m), **f** (foot), **k**
+                (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
+                and **d** (arc degree), **m** (arc minute), or **s** (arc second).
+                [Default is 10\ **c** or 4\ **i**]. As an option, you can append
+                /*fraction* which is used to place the very first symbol for each
+                line when the cumulative along-line distance equals *fraction
+                \* dist* [0.25].
+
+            **f**\ *ffile.d*
+                Reads the ASCII file *ffile.d* and places symbols at locations in the
+                file that matches locations along the decorated lines. Inexact matches
+                and points outside the region are skipped.
+
+            **l**\ \|\ **L**\ *line1*\ [,\ *line2*,...]
+                Give the coordinates of the end points for one or more comma-separated straight line segments.
+                Symbols will be placed where these lines intersect the decorated lines.
+                The format of each *line* specification is *start_lon*/*start_lat*/*stop_lon*/*stop_lat*.
+                Both *start_lon*/*start_lat* and *stop_lon*/*stop_lat* can be replaced by a 2-character key
+                that uses the justification format employed in **pstext** to indicate a point on the frame or
+                center of the map, given as [LCR][BMT].
+                **L** will interpret the point pairs as defining great circles [Default is straight line].
+
+            **n**\ \|\ **N**\ *n_symbol*
+                Specifies the number of equidistant symbols for decorated lines
+                [1]. Upper case **N** starts placing symbols exactly at the start of the
+                line [Default centers them along the line]. **N**-1 places one symbol
+                at start, while **N**\ +1 places one symbol
+                at the end of decorated lines. Optionally, append
+                /*min_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
+                minimum distance separation between successive symbols is enforced.
+
+            **s**\ \|\ **S**\ *n_symbol*
+                Same as **n**\ \|\ **N**\ *n_symbol* but implies that the input data are
+		first to be converted into a series of 2-point line segments before plotting.
+
+            **x**\ \|\ **X**\ *xfile.d*
+                Reads the multisegment file *xfile.d* and places symbols at the
+                intersections between the decorated lines and the lines in *xfile.d*.
+                **X** will resample the lines first along great-circle arcs.
+
+            The optional *symbolinfo* controls the specifics of the symbol selection and
+            formatting and consists of a concatenated string made up of any of
+            the following control arguments:
+
+            **+a**\ *angle*
+                For symbols at a fixed angle, **+an** for line-normal, or
+                **+ap** for line-parallel [Default].
+
+            **+d**
+                Turns on debug which will draw helper points and lines to illustrate
+                the workings of the decorated line setup.
+
+            **+g**\ [*fill*\ ]
+                Sets the symbol fill [no fill].
+
+            **+n**\ *dx*\ [/*dy*]
+                Nudges the placement of symbols by the specified amount (append
+                **c**\ \|\ **i**\ \|\ **p** to specify the units). Increments
+                are considered in the coordinate system defined by the
+                orientation of the line; use **+N** to force increments in the
+                plot x/y coordinates system [no nudging].
+
+            **+p**\ [*pen*\ ]
+                Draws the outline of symbols [Default is no outline];
+                optionally specify pen for outline [Default is width = 0.25p,
+                color = black, style = solid].
+            **+w**
+                Specifies how many (*x*,\ *y*) points will be used to estimate
+                symbol angles [Default is 10].
+
+        Note: By placing **-S~** options in the segment header you can change
+        the decorated lines on a segment-by-segment basis.

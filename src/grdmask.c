@@ -29,15 +29,16 @@
 #define THIS_MODULE_NAME	"grdmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create mask grid from polygons or point coverage"
+#define THIS_MODULE_KEYS	"<DI,GGORGi"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:RVabfghirs" GMT_OPT("FHMm")
+#define GMT_PROG_OPTIONS "-:RVabdfghirs" GMT_ADD_x_OPT GMT_OPT("FHMm")
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 
 struct GRDMASK_CTRL {
-	struct A {	/* -A[m|p|step] */
+	struct A {	/* -A[m|p|x|y|step] */
 		bool active;
 		unsigned int mode;
 		double step;
@@ -85,9 +86,10 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
+		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT,
+		GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -95,8 +97,9 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output mask grid file.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting points using great circle arcs, i.e., connect by straight lines,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting geographic points using great circle arcs, i.e., connect by straight lines,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to connect first in x, then y, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -S is used since input data are then considered to be points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set <out>/<edge>/<in> to use if node is outside, on the path, or inside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
@@ -111,8 +114,8 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
-	GMT_Option (API, "V,a,bi2,f,g,h,i,r,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to assume <table> contains polygons and use inside/outside searching].\n");
+	GMT_Option (API, "V,a,bi2,di,f,g,h,i,r,s,x,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -147,8 +150,8 @@ int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct G
 			case 'A':	/* Turn off draw_arc mode */
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
-					case 'm': Ctrl->A.mode = 1; break;
-					case 'p': Ctrl->A.mode = 2; break;
+					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
+					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
 #ifdef DEBUG
 					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature; requires step in degrees */
 #endif
@@ -269,10 +272,11 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdmask_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdmask_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -326,7 +330,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	
 	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
-	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+	GMT_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 
 	/* Initialize all nodes (including pad) to the 'outside' value */
 
@@ -345,7 +349,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 	D = Din;	/* The default is to work with the input data as is */
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
-		if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY)
+		if (D->alloc_mode == GMT_ALLOC_EXTERNALLY)
 			D = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC + GMT_ALLOC_NORMAL, Din);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
@@ -386,6 +390,9 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 						last_radius = radius;
 					}
 					
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,ij,distance) shared(Grid,row_0,d_row,ny,col_0,d_col,nx,xtmp,S,grd_x0,grd_y0,radius,mask_val)
+#endif
 					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
 						if (row < 0 || row >= ny) continue;
 						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
@@ -439,8 +446,12 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 						continue;
 
 					/* Here we will have to consider the x coordinates as well */
+#ifdef _OPENMP
+#pragma omp parallel for private(col,xx,side,ij) shared(Grid,nx,do_test,yy,S,row,Ctrl,z_value,mask_val)
+#endif
 					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
+						side = 0;
 						if (do_test && (side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
 

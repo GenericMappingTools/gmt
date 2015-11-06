@@ -27,6 +27,11 @@
  * definitions otherwise.
  */
 
+/*!
+ * \file gmt_notposix.h
+ * \brief Contains ifdefs to tell us if this system has functions not in POSIX but part of ANSI C
+ */
+
 #ifndef _GMT_NOTPOSIX_H
 #define _GMT_NOTPOSIX_H
 
@@ -52,19 +57,13 @@
 
 #ifdef HAVE_BASENAME
 #	include <libgen.h>
-#else
-#	define basename GMT_basename
 #endif
 
 #ifdef HAVE_CTYPE_H_
 #	include <ctype.h>
 #endif
 
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif
+#include <stdbool.h>
 
 #ifdef HAVE_SYS_TYPES_H_
 #	include <sys/types.h>
@@ -91,17 +90,8 @@
 #	include <unistd.h>
 #endif
 
-#ifdef HAVE_STDINT_H_          /* VS 2010 has stdint.h */
-#	include <stdint.h>
-#else
-#	include "compat/stdint.h"    /* msinttypes for VC++ */
-#endif /* HAVE_STDINT_H_ */
-
-#ifdef HAVE_INTTYPES_H_
-#	include <inttypes.h>         /* Exact-width integer types */
-#else
-#	include "compat/inttypes.h"  /* msinttypes for VC++ */
-#endif /* HAVE_INTTYPES_H_ */
+#include <stdint.h>
+#include <inttypes.h>         /* Exact-width integer types */
 
 /* Size prefixes for printf/scanf for size_t and ptrdiff_t */
 #ifdef _MSC_VER
@@ -183,6 +173,10 @@
 #	ifdef _MSC_VER
 		/* Suppress Visual Studio deprecation warnings */
 #		pragma warning( disable : 4996 )
+		/* Suppress Visual Studio W4 warnings */
+#		pragma warning( disable : 4127 )	/* conditional expression is constant */
+#		pragma warning( disable : 4706 )	/* assignment within conditional expression */
+#		pragma warning( disable : 4204 )	/* nonstandard extension used : non-constant aggregate initializer */
 		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
 /*#		pragma warning( once : 4244 4267 ) */
 #	 	if (_MSC_VER <= 1600)
@@ -560,11 +554,6 @@
 #	define strtok_r strtok_s
 #elif !defined HAVE_STRTOK_R
 /* define custom function */
-#endif
-
-/* If GLIBC compatible qsort_r is not available */
-#ifndef HAVE_QSORT_R_GLIBC
-#	include "compat/qsort.h"
 #endif
 
 #endif /* _GMT_NOTPOSIX_H */

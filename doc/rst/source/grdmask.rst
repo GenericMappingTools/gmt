@@ -13,18 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdmask** *pathfiles* **-G**\ *mask_grd_file*]
+**grdmask** *pathfiles* |-G|\ *mask_grd_file*]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**m**\ \|\ **p**] ]
-[ **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
-[ **-S**\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
+[ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
+[ |-N|\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
+[ |-S|\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ **-r** ]
+[ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -33,12 +35,12 @@ Description
 -----------
 
 **grdmask** can operate in two different modes. 1. It reads one or more
-xy-files that each define a closed polygon. The nodes defined by the
+*pathfiles* that each define a closed polygon. The nodes defined by the
 specified region and lattice spacing will be set equal to one of three
 possible values depending on whether the node is outside, on the polygon
 perimeter, or inside the polygon. The resulting mask may be used in
 subsequent operations involving **grdmath** to mask out data from
-polygonal areas. 2. The xy-files simply represent data point locations
+polygonal areas. 2. The *pathfiles* simply represent data point locations
 and the mask is set to the inside or outside value depending on whether
 a node is within a maximum distance from the nearest data point. If the
 distance specified is zero then only the nodes nearest each data point
@@ -51,10 +53,16 @@ Required Arguments
     The name of 1 or more ASCII [or binary, see
     **-bi**] files holding the polygon(s) or data points.
 
+.. _-G:
+
 **-G**\ *mask_grd_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -62,12 +70,19 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**m**\ \|\ **p**]
-    If the input data are geographic (as indicated by **-fi**) then the
+.. _-A:
+
+**-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
+    If the input data are geographic (as indicated by **-f**) then the
     sides in the polygons will be approximated by great circle arcs.
     When using the **-A** sides will be regarded as straight lines.
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then meridians.
+    For Cartesian data, points are simply connected, unless you append
+    **x** or **y** to construct stair-case paths whose first move is along 
+    *x* or *y*, respectively.
+
+.. _-N:
 
 **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values*
     Sets the *out/edge/in* that will be assigned to nodes that are
@@ -83,6 +98,8 @@ Optional Arguments
     **-N**\ **z**\ \|\ **Z**\ \|\ **p**\ \|\ **P** cannot be used in
     conjunction with **-S**; they also all optionally accept /*out* [0].
 
+.. _-S:
+
 **-S**\ *search\_radius*\ [*unit*]
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
@@ -91,11 +108,16 @@ Optional Arguments
     individual radii from the 3rd input column. If **-S** is not set
     then we consider the input data to define closed polygon(s) instead.
  
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -110,6 +132,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 

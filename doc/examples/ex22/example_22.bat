@@ -58,8 +58,8 @@ echo V 0 1p >> neis.legend
 echo S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km) >> neis.legend
 echo S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km) >> neis.legend
 echo S 0.1i c 0.1i blue 0.25p 0.2i Very deep (> 300 km) >> neis.legend
-echo V 0 1p >> neis.legend
 echo D 0 1p >> neis.legend
+echo V 0 1p >> neis.legend
 echo N 7 >> neis.legend
 echo V 0 1p >> neis.legend
 echo S 0.1i c 0.06i - 0.25p 0.3i M 3 >> neis.legend
@@ -69,8 +69,8 @@ echo S 0.1i c 0.12i - 0.25p 0.3i M 6 >> neis.legend
 echo S 0.1i c 0.14i - 0.25p 0.3i M 7 >> neis.legend
 echo S 0.1i c 0.16i - 0.25p 0.3i M 8 >> neis.legend
 echo S 0.1i c 0.18i - 0.25p 0.3i M 9 >> neis.legend
-echo V 0 1p >> neis.legend
 echo D 0 1p >> neis.legend
+echo V 0 1p >> neis.legend
 echo N 1 >> neis.legend
 
 REM Put together a reasonable legend text, and add logo and user's name:
@@ -88,7 +88,7 @@ echo L 12 6 LB %me% >> neis.legend
 REM OK, now we can actually run gmt pslegend.  We center the legend below the map.
 REM Trial and error shows that 1.7i is a good legend height:
 
-gmt pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+glightyellow neis.legend >> %ps%
+gmt pslegend -DjCB+o0/0.4i+w7i/1.7i+jTC -R -J -O -F+p+glightyellow neis.legend >> %ps%
 
 REM Clean up after ourselves:
 

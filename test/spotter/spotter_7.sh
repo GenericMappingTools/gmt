@@ -9,7 +9,7 @@ ps=spotter_7.ps
 # transform, Geochem. Geophys. Geosyst., 9(Q08004), doi:10.1029/2008GC002058.
 # Coarsened to speed up calculations.
 
-APM=${src}/../../src/spotter/WK97.d
+APM=${src}/../../src/spotter/WK97.txt
 
 gmt grdspotter pac_residual_topo.nc -E$APM -Gcva_bathy.nc -R200/210/15/25 -I5m -r -N140 -S -Tt
 gmt makecpt -Chot -T0/100/10 -Z > h.cpt
@@ -30,6 +30,6 @@ info=`gmt grdinfo -C -M cva_bathy.nc`
 x=`echo $info | cut -f14 -d' '`
 y=`echo $info | cut -f15 -d' '`
 echo $x $y | gmt psxy -R -J -O -K -Sx0.2i -W2p >> $ps
-gmt psscale -Ch.cpt -D3/-0.4/4i/0.125h -O -K -Bxa20f10+u% -By+l"CVA" -I0.5 >> $ps
+gmt psscale -Ch.cpt -D3i/-0.4i+w4i/0.125i+h+jTC -O -K -Bxa20f10+u% -By+l"CVA" -I0.5 >> $ps
 gmt psxy -R -J -O -T >> $ps
 

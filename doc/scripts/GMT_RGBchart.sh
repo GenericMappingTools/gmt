@@ -37,11 +37,11 @@ labels=$GMT_TMPDIR/labels.tmp
 gmt gmtset PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
-W=`gmt gmtmath -Q $WIDTH $COL DIV 0.95 MUL =`
-H=`gmt gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL =`
-textheight=`gmt gmtmath -Q 1 $rectheight SUB =`
-fontsize=`gmt gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
-fontsizeL=`gmt gmtmath -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
+W=`gmt math -Q $WIDTH $COL DIV 0.95 MUL =`
+H=`gmt math -Q $HEIGHT $ROW DIV $rectheight MUL =`
+textheight=`gmt math -Q 1 $rectheight SUB =`
+fontsize=`gmt math -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
+fontsizeL=`gmt math -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
 
 # Produce $allinfo from color and name files
 egrep -v "^#|grey" "${GMT_SOURCE_DIR}"/src/Colors.txt | $AWK -v COL=$COL -v ROW=$ROW \
@@ -62,13 +62,10 @@ gmt pstext -R -J -O -K $blacktags -F+f --FONT=black >> $ps
 gmt pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
 
 # Put logo in top left corner
-scale=`gmt gmtmath -Q $WIDTH $COL DIV 0.95 MUL 2 DIV =`
-xoff=`gmt gmtmath -Q $WIDTH $COL DIV 0.05 MUL 2 DIV =`
-yoff=`gmt gmtmath -Q $HEIGHT $ROW DIV $ROW 1 SUB MUL $scale 2 DIV SUB =`
-gmtlogo $xoff $yoff $scale >> $ps
+gmt logo -R -J -O -K -Dg0.5/1+jMC+w$W >> $ps
 
-H=`gmt gmtmath -Q $HEIGHT $ROW DIV =`
-gmt pslegend -O -Dx0/0/$WIDTH/$H/BL >> $ps <<END
+height=`gmt math -Q $HEIGHT $ROW DIV =`
+gmt pslegend -O -R -J -DjBR+w$WIDTH >> $ps <<END
 L $fontsizeL 1 R Values are R/G/B. Names are case-insensitive.
 L $fontsizeL 1 R Optionally, use GREY instead of GRAY.
 END

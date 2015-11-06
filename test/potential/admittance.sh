@@ -3,6 +3,7 @@
 #
 # Compute admittance for synthetic model and data.
 ps=admittance.ps
+gmt set GMT_FFT kiss
 order=4
 # 1. Create a bathymetry data set with 3 circular Gaussian seamounts
 gmt grdseamount -R0/512/0/512 -I4 -r -Gz.nc -Z-5000 << EOF

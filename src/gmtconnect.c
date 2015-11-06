@@ -30,10 +30,11 @@
 #define THIS_MODULE_NAME	"gmtconnect"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Connect individual lines whose end points match within tolerance"
+#define THIS_MODULE_KEYS	"<DI,>DO,CDo,LTo,QTo"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vabfghios" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>Vabdfghios" GMT_OPT("HMm")
 
 /* Control structure for gmtconnect */
 
@@ -58,7 +59,7 @@ struct GMTCONNECT_CTRL {
 		bool active;
 		char *file;
 	} Q;
-	struct T {	/* -T<cutoff[unit][/<nn_dist]> */
+	struct T {	/* -T[<cutoff[unit][/<nn_dist>]] */
 		bool active[2];
 		int mode;
 		double dist[2];
@@ -113,13 +114,12 @@ void Free_gmtconnect_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level)
-{
+static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconnect [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[%s[/<nn_dist>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -138,15 +138,15 @@ static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <nn_dist> which adds the requirement that the second closest\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no arguments are given the we close all polygons regardless of the gaps.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
-	GMT_Option (API, "a,bi2,bo,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "a,bi2,bo,d,f,g,h,i,o,s,:,.");
 
 	return (EXIT_FAILURE);
 }
 
-static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtconnect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -195,12 +195,16 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 				break;
 			case 'T':	/* Set threshold distance */
 				Ctrl->T.active[0] = true;
-				n = sscanf (opt->arg, "%[^/]/%s", A, B);
-				Ctrl->T.mode = GMT_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
-				if (n == 2) {
-					Ctrl->T.dist[1] = atof (B);
-					Ctrl->T.active[1] = true;
+				if (opt->arg[0]) {
+					n = sscanf (opt->arg, "%[^/]/%s", A, B);
+					Ctrl->T.mode = GMT_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
+					if (n == 2) {
+						Ctrl->T.dist[1] = atof (B);
+						Ctrl->T.active[1] = true;
+					}
 				}
+				else
+					Ctrl->T.dist[0] = DBL_MAX;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -230,8 +234,7 @@ static int found_a_near_segment (struct LINK *S, uint64_t id, int order, double 
 	return (false);							/* Failed all tests */
 }
 
-static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
-{
+static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end) {
 	uint64_t row_in, row_out, col;
 	int64_t inc;
 	bool done = false;
@@ -250,10 +253,9 @@ static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASE
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtconnect_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_gmtconnect_Ctrl (GMT, Ctrl); if (segment) GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconnect (void *V_API, int mode, void *args)
-{
+int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	bool save_type = false, first, wrap_up = false, done, closed, *skip = NULL;
@@ -295,7 +297,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtconnect_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
-	if ((error = GMT_gmtconnect_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtconnect_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtconnect main code ----------------------------*/
 
@@ -612,19 +614,19 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 		for (iseg = 0; iseg < ns; iseg++) {	/* Loop over open segments */
 			G = segment[iseg].group;	L = segment[iseg].pos;	/* Short hand notation */
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
-			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
+			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name[j]; j++) if (name[j] == ' ') name[j] = '\0';		/* Just truncate after 1st word */
 			} else sprintf (name, "%" PRIu64, segment[iseg].orig_id);
 			G = segment[segment[iseg].buddy[0].id].group;	L = segment[segment[iseg].buddy[0].id].pos;
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
-			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
+			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name0, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name0[j]; j++) if (name0[j] == ' ') name0[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name0, "%" PRIu64, segment[iseg].buddy[0].orig_id);
 			G = segment[segment[iseg].buddy[1].id].group;	L = segment[segment[iseg].buddy[1].id].pos;
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
-			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
+			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L")) != NULL) {
 				strncpy (name1, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name1, "%" PRIu64, segment[iseg].buddy[1].orig_id);

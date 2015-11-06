@@ -28,6 +28,7 @@
 #define THIS_MODULE_NAME	"grdimage"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Project grids or images and plot them on maps"
+#define THIS_MODULE_KEYS	"<GI,CCi,IGi,>XO,RG-,AIA"
 
 #include "gmt_dev.h"
 
@@ -36,47 +37,47 @@
 /* Control structure for grdimage */
 
 struct GRDIMAGE_CTRL {
-	struct In {
+	struct GRDIMG_In {
 		bool active;
 		bool do_rgb;
 		char *file[3];
 	} In;
-	struct C {	/* -C<cptfile> */
+	struct GRDIMG_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct D {	/* -D to read GDAL file */
+	struct GRDIMG_D {	/* -D to read GDAL file */
 		bool active;
 		bool mode;	/* Use info of -R option to reference image */
 	} D;
-	struct A {	/* -A to write a GDAL file */
+	struct GRDIMG_A {	/* -A to write a GDAL file */
 		bool active;
 		char *file;
 		char *driver;
 	} A;
-	struct E {	/* -Ei|<dpi> */
+	struct GRDIMG_E {	/* -Ei|<dpi> */
 		bool active;
 		bool device_dpi;
 		unsigned int dpi;
 	} E;
-	struct G {	/* -G[f|b]<rgb> */
+	struct GRDIMG_G {	/* -G[f|b]<rgb> */
 		bool active;
 		double f_rgb[4];
 		double b_rgb[4];
 	} G;
-	struct I {	/* -I<intensfile>|<value> */
+	struct GRDIMG_I {	/* -I<intensfile>|<value> */
 		bool active;
 		bool constant;
 		double value;
 		char *file;
 	} I;
-	struct M {	/* -M */
+	struct GRDIMG_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct GRDIMG_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q */
+	struct GRDIMG_Q {	/* -Q */
 		bool active;
 	} Q;
 };
@@ -102,8 +103,7 @@ void Free_grdimage_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef HAVE_GDAL
@@ -120,7 +120,7 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grd_z> is data set to be plotted.  Its z-values are in user units and will be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the cpt file.  Alternatively, give three separate\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT file.  Alternatively, give three separate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  grid files that contain the red, green, and blue components in the 0-255 range.\n");
 #ifdef HAVE_GDAL
 	GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
@@ -133,8 +133,10 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
 #endif
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb.  Optionally, instead give name of a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
+    GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 #ifdef HAVE_GDAL
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
 #endif
@@ -155,8 +157,7 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdimage and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -400,7 +401,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
-	struct GDALWRITE_CTRL *to_GDALW = NULL;
+	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 #endif
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -417,7 +418,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdimage_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdimage_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdimage main code ----------------------------*/
 
@@ -512,7 +513,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 	if (!GMT->common.R.active && n_grids) GMT_memcpy (GMT->common.R.wesn, Grid_orig[0]->header->wesn, 4, double);
 
-	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
 	/* Determine if grid is to be projected */
 
@@ -743,7 +744,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 
 
-	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file only apply to -T\n");
+	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT file only apply to -T\n");
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate pixel colors\n");
 
 	NaN_rgb = (P) ? P->patch[GMT_NAN].rgb : GMT->current.setting.color_patch[GMT_NAN];
@@ -876,7 +877,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (Ctrl->A.active) {
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
-		to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
+		to_GDALW = GMT_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 		to_GDALW->driver = Ctrl->A.driver;
 		to_GDALW->type = strdup("byte");
 		to_GDALW->P.ProjectionRefPROJ4 = NULL;

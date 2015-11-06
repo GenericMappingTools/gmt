@@ -13,12 +13,16 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**segy2grd** *segyfile* **-G**\ *grdfile*
+**segy2grd** *segyfile* |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**n**\ \|\ **z**] ]
-[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
-[ **-M**\ [*flags*\ ] ] [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
+[ |-A|\ [**n**\ \|\ **z**] ]
+[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ |-L|\ [*nsamp*\ ] ]
+[ |-M|\ [*ntraces*\ ] ]
+[ |-N|\ *nodata* ]
+[ |-Q|\ *<mode><value>* ]
+[ |-S|\ [*header*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-:| ]
@@ -41,11 +45,18 @@ Required Arguments
 
 *segyfile* is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.
 
+.. _-G:
+
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file.
+
+.. _-I:
+
 **-I**
     *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
-    to indicate minutes or **c** to indicate seconds.
+    to indicate minutes or **s** to indicate seconds.
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
@@ -53,33 +64,53 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**n**\ \|\ **z**]
     Add up multiple values that belong to the same node (same as
     **-Az**). Append **n** to simply count the number of data points
     that were assigned to each node. [Default (no **-A** option) will
     calculate mean value]. Not used for simple mapping.
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark*
-    Give values for *xname*, *yname*, *zname*, *scale*, *offset*,
-    *title*, and *remark*. To leave some of these values untouched,
-    specify = as the value.
-**-M**\ [*flags*\ ]
+
+.. _-D:
+
+.. include:: ../../explain_-D_cap.rst_
+
+.. _-L:
+
+**-L**
+    Let *nsamp* override number of samples in each trace.
+
+.. _-M:
+
+**-M**\ [*ntraces*\ ]
     Fix number of traces to read in. Default tries to read 10000 traces.
-    **-M**\ 0 will read number in binary header, **-M**\ *n* will
+    **-M**\ 0 will read number in binary header, **-M**\ *ntraces* will
     attempt to read only *n* traces.
+
+.. _-N:
+
 **-N**\ *nodata*
     No data. Set nodes with no input sample to this value [Default is
     NaN].
-**-S**\ [*zfile*\ ]
-    set variable spacing *header* is c for cdp, o for offset, b<number>
-    for 4-byte float starting at byte number If -S not set, assumes even
-    spacing of samples at the dx, dy supplied with -I
-**-L**
-    Override number of samples in each trace
-**-X**
-    applies scalar *x-scale* to coordinates in trace header to match the
-    coordinates specified in -R
-**-Y**
-    Specifies sample interval as *s_int* if incorrect in the SEGY file
+
+.. _-Q:
+
+**-Q**\ *<mode><value>*
+    Can be used to change two different settings depending on *mode*:
+       **-Qx**\ *x-scale* applies scalar *x-scale* to coordinates in trace
+       header to match the coordinates specified in -R.
+
+       **-Qy**\ *s_int* specifies sample interval as *s_int* if incorrect in the SEGY file.
+
+.. _-S:
+
+**-S**\ [*header*\ ]
+    Set variable spacing; *header* is **c** for cdp, **o** for offset, or **b**\ *number*
+    for 4-byte float starting at byte *number*. If **-S** not set, assumes even
+    spacing of samples at the *x_inc, y_inc* supplied with **-I**.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -107,7 +138,7 @@ sample interval is 0.1, try
 
    ::
 
-    gmt segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -X0.1 -Y0.1
+    gmt segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -Qx0.1 -Qy0.1
 
 Because the grid interval is larger than the SEGY file sampling, the
 individual samples will be averaged in bins

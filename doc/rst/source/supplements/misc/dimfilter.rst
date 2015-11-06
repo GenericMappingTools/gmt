@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**dimfilter** *input_file.nc* **-D**\ *distance_flag*
-**-F**\ *<filtertype><width>*\ [*mode*] **-G**\ *output_file.nc*
-**-N**\ *<filtertype><n_sectors>* [ **-Q**\ *cols* ]
+**dimfilter** *input_file.nc* |-D|\ *distance_flag*
+|-F|\ *<filtertype><width>*\ [*mode*] |-G|\ *output_file.nc*
+|-N|\ *<filtertype><n_sectors>* [ |-Q|\ *cols* ]
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ **-T** ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -41,7 +41,7 @@ mode and only requires the total number of columns in the input file,
 which contains the filtered depths. Finally, one should know that
 **dimfilter** will not produce a smooth output as other spatial filters
 do because it returns a minimum median out of *N* medians of *N*
-sectors. The output can be rought unless the input data is noise-free.
+sectors. The output can be rough unless the input data is noise-free.
 Thus, an additional filtering (e.g., Gaussian via **grdfilter**) of the
 DiM-filtered data is generally recommended.
 
@@ -50,6 +50,9 @@ Required Arguments
 
 *input\_file.nc*
     The data grid to be filtered.
+
+.. _-D:
+
 **-D**\ *distance\_flag*
     Distance *flag* tells how grid (x,y) relates to filter *width*, as follows:
 
@@ -67,6 +70,8 @@ Required Arguments
 
     *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
     calculation.
+
+.. _-F:
 
 **-F**\ *<filtertype><width>*\ [*mode*]
     Sets the primary filter type. Choose among convolution and
@@ -88,6 +93,8 @@ Required Arguments
     value. Append - or + to the filter width if you rather want to
     return the smallest or largest of the modal values.
 
+.. _-N:
+
 **-N**\ *<filtertype><n_sectors>*
     Sets the secondary filter type and the number of bow-tie sectors.
     *n\_sectors* must be integer and larger than 0. When *n\_sectors* is
@@ -104,11 +111,15 @@ Required Arguments
 
     (**p**) Mode: Return the mode of all filtered values.
 
+.. _-G:
+
 **-G**\ *output\_file.nc*
     *output\_file.nc* is the output of the filter.
 
 Optional Arguments
 ------------------
+
+.. _-I:
 
 **-I**
     *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
@@ -116,13 +127,22 @@ Optional Arguments
     *x\_inc*, *y\_inc* are NOT integer multiples of the old ones (in the
     input data), filtering will be considerably slower. [Default: Same
     as input.]
+
+.. _-R:
+
 **-R**
     *west*, *east*, *south*, and *north* defines the Region of the
     output points. [Default: Same as input.]
+
+.. _-T:
+
 **-T**
     Toggle the node registration for the output grid so as to become the
     opposite of the input grid [Default gives the same registration as
     the input grid].
+
+.. _-Q:
+
 **-Q**\ *cols*
     *cols* is the total number of columns in the input text table file.
     For this mode, it expects to read depths consisted of several
@@ -132,6 +152,7 @@ Optional Arguments
     the regional component and the column with the MADs is used to
     conduct the error analysis.
 
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

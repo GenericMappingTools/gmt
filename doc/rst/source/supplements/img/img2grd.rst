@@ -13,13 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**img2grd** *imgfile* **-G**\ *grdfile*
+**img2grd** *imgfile* |-G|\ *grdfile*
 |SYN_OPT-R|
-**-T**\ *type* [ **-C** ]
-[ **-D**\ [*minlat/maxlat*] ] [ **-E** ] [ **-I**\ *minutes* ]
-[ **-M** ] [ **-N**\ *navg* ] [ **-S**\ [*scale*] ]
+|-T|\ *type*
+[ |-C| ]
+[ |-D|\ [*minlat/maxlat*] ] [ |-E| ] [ |-I|\ *minutes* ]
+[ |-M| ] [ |-N|\ *navg* ] [ |-S|\ [*scale*] ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *maxlon* ]
+[ |-W|\ *maxlon* ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -42,8 +43,13 @@ Required Arguments
     Sandwell and Smith. If the user has set an environment variable
     **$GMT_DATADIR**, then **img2grd** will try to find *imgfile* in
     **$GMT_DATADIR**; else it will try to open *imgfile* directly.
+
+.. _-G:
+
 **-G**\ *grdfile*
     *grdfile* is the name of the output grid file.
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
@@ -51,14 +57,22 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**
     Set the x and y Mercator coordinates relative to projection center
     [Default is relative to lower left corner of grid]. Requires **-M**.
+
+.. _-D:
+
 **-D**\ [*minlat/maxlat*\ ]
     Use the extended latitude range -80.738/+80.738. Alternatively,
     append *minlat/maxlat* as the latitude extent of the input img file.
     [Default is -72.006/72.006]. Not usually required since we can
     determine the extent from inspection of the file size.
+
+.. _-E:
+
 **-E**
     Can be used when **-M** is not set to force the final grid to have
     the exact same region as requested with **-R**. By default, the
@@ -70,10 +84,16 @@ Optional Arguments
     grid must match the requested region and have x_inc = y_inc. In
     this case the region set by **-R** must be given in multiples of the
     increment (.e.g, **-R**\ 0/45/45/72).
+
+.. _-I:
+
 **-I**
     Indicate *minutes* as the width of an input img pixel in minutes of
     longitude. [Default is 2.0]. Not usually required since we can
     determine the pixel size from inspection of the size.
+
+.. _-M:
+
 **-M**
     Output a Spherical Mercator grid [Default is a geographic lon/lat
     grid]. The Spherical Mercator projection of the img file is
@@ -85,8 +105,11 @@ Optional Arguments
     the adjusted **-R**. By setting the default **PROJ_ ELLIPSOID** =
     Sphere, the user can make overlays with the adjusted **-R** so that
     they match. See **EXAMPLES** below. The adjusted **-R** is also
-    written in the grdheader remark, so it can be found later. See
+    written in the grid header remark, so it can be found later. See
     **-C** to set coordinates relative to projection center.
+
+.. _-N:
+
 **-N**\ *navg*
     Average the values in the input img pixels into *navg* by *navg*
     squares, and create one output pixel for each such square. If used
@@ -95,15 +118,21 @@ Optional Arguments
     NaN according to whether average constraint is > 0.5. *navg* must
     evenly divide into the dimensions of the imgfile in pixels. [Default
     *1* does no averaging].
+
+.. _-S:
+
 **-S**\ [*scale*\ ]
     Multiply the img file values by *scale* before storing in grid file.
     [Default is 1.0]. For recent img files: img topo files are stored in
     (corrected) meters [**-S**\ 1]; free-air gravity files in mGal\*10
     [**-S**\ 0.1 to get mGal]; vertical deflection files in
-    microradians\*10 [**-S**\ 0.1 to get microradians], vertical gravity
+    micro-radians\*10 [**-S**\ 0.1 to get micro-radians], vertical gravity
     gradient files in Eotvos\*50 [**-S**\ 0.02 to get Eotvos, or
     **-S**\ 0.002 to get mGal/km]). If no *scale* is given we try to
     determine the scale by examining the file name for clues.
+
+.. _-T:
+
 **-T**\ *type*
     *type* handles the encoding of constraint information. *type* = 0
     indicates that no such information is encoded in the img file (used
@@ -115,9 +144,13 @@ Optional Arguments
     interpolated points; **-T**\ *3* gets 1 at constrained points and 0
     at interpolated points [Default is 1].
 
+.. _-V:
+
 .. |Add_-V| replace:: Particularly recommended here, as it is
     helpful to see how the coordinates are adjusted.
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *maxlon*
     Indicate *maxlon* as the maximum longitude extent of the input img
@@ -235,7 +268,7 @@ illumination file for this using :doc:`grdgradient </grdgradient>`:
 
     gmt grdgradient merc_grav_2.nc -Gillum.nc -A0/270 -Ne0.6
 
-and if we also have a cpt file called "grav.cpt" we can create a color
+and if we also have a CPT file called "grav.cpt" we can create a color
 shaded relief map like this:
 
    ::

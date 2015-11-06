@@ -2,6 +2,7 @@
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
+ *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
@@ -14,18 +15,19 @@
  *
  * Author:	Genevieve Patau
  * Date:	19-OCT-1995 (psprojstations)
- * Version:	4
- * Roots:	heavily based on psxy.c
+ * Version:	5
+ * Roots:	heavily based on psxy.c; ported to GMT5 by P. Wessel
  *
  */
 
 #define THIS_MODULE_NAME	"pspolar"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot polarities on the inferior focal half-sphere on maps"
+#define THIS_MODULE_KEYS	"<DI,>XO,RG-"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYchixy"
+#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYcdhixy"
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 
@@ -88,6 +90,7 @@ struct PSPOLAR_CTRL {
 		double width, length, head;
 		double vector_shape;
 		struct GMT_FILL fill;
+		struct GMT_SYMBOL S;
 	} S2;
 	struct T {
 		bool active;
@@ -135,9 +138,9 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[i/c] -S<symbol><size>[i/c] [-A] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>] [-F<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-N] [-O] [-P] [-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>/[V[<v_width>/<h_length>/<h_width>/<shape>]][G<fill>][L] [-Qt<pen>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Qh] [-Qs<half-size>/[V[<vecpar>]][G<fill>][L] [-Qt<pen>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -179,7 +182,7 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     Azimuth of S polarity is in last column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     It may be a vector (V option) or a segment. Give half-size in cm.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     L option is for outline\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -s<half-size>/[V[<v_width>/<h_length></h_width>/<shape>]][G<fill>][L]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -s<half-size>/[V[<vecpar>]][G<fill>][L]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default definition of v is 0.075/0.3/0.25/1\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Outline is current pen\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t Set pen attributes to write station codes [default is current pen].\n");
@@ -188,7 +191,7 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is 0.0/0/5/12].\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,c,h,i,.");
+	GMT_Option (API, "X,c,di,h,i,.");
 
 	return (EXIT_FAILURE);
 }
@@ -203,7 +206,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, n;
-	char txt[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
+	char txt[GMT_LEN64] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -269,23 +272,45 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 					case 's':	/* Get S polarity */
 						Ctrl->S2.active = true;
 						strncpy (txt, &opt->arg[2], GMT_LEN64);
-						n=0; while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++; txt[n]=0;
+						n = 0;
+						while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++;	/* Why all this if it stops at first '/'? */
+						txt[n] = 0;
 						Ctrl->S2.size = GMT_to_inch (GMT, txt);
 						if (strchr (&opt->arg[1], 'V')) {
-							Ctrl->S2.vector = true;
-							strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);
-							if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
-								Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
-								if (!GMT->current.setting.proj_length_unit) {
-									Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+							if (GMT_compat_check (GMT, 4) && (strchr (&txt[n+1], '/') && !strchr (&txt[n+1], '+'))) {	/* Old-style args */
+								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape>; use -QsV<vecpar> instead.\n");
+								Ctrl->S2.vector = true;
+								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);	/* Vector bit no sizes. Using defaults */
+								if (strncmp(txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen(txt) == 1) {
+									Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1;
+									Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+									if (!GMT->current.setting.proj_length_unit) {
+										Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25;
+										Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+									}
+								}
+								else {
+									sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
+									Ctrl->S2.width = GMT_to_inch (GMT, txt);
+									Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
+									Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
+									Ctrl->S2.vector_shape = atof(txt_d);
 								}
 							}
 							else {
-								sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
-								Ctrl->S2.width = GMT_to_inch (GMT, txt);
-								Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
-								Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
-								Ctrl->S2.vector_shape = atof(txt_d);
+								char symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);	/* But if -QsV...G|L things will screw here, no? */ 
+								if (txt[0] == '+') {	/* No size (use default), just attributes */
+									n_errors += GMT_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
+								}
+								else {	/* Size, plus possible attributes */
+									n = sscanf (txt, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
+									if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
+									Ctrl->S2.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+									n_errors += GMT_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
+								}
+								/* NOTE, THIS IS NOT GOING TO WORK BECAUSE VEC PARAMS ARE NOW IN Ctrl->S2.S  WHICH IS NOT USED BELOW
+								   WOULD A COPY TO THE CORRESPONDING MEMBERS OF Ctrl->S2 BE GOOD ENOUGH? */
 							}
 						}
 						if (strchr (opt->arg, 'G')) {
@@ -356,7 +381,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ");
+					GMT_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 			default:	/* Report bad options */
@@ -388,9 +413,9 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 	char pol, stacode[GMT_LEN64] = {""};
 
 	struct PSPOLAR_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;				/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;				/* General PSL internal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -407,12 +432,12 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pspolar_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pspolar_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pspolar_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pspolar main code ----------------------------*/
 
 	GMT_memset (col, GMT_LEN64*4, char);
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
  	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -559,6 +584,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 			sincosd (azS, &si, &co);
 			if (Ctrl->S2.vector) {
 				double dim[PSL_MAX_DIMS];
+				GMT_memset (dim, PSL_MAX_DIMS, double);
 				dim[0] = plot_x + Ctrl->S2.size*si; dim[1] = plot_y + Ctrl->S2.size*co;
 				dim[2] = Ctrl->S2.width; dim[3] = Ctrl->S2.length; dim[4] = Ctrl->S2.head;
 				dim[5] = GMT->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;

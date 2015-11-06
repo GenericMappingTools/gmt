@@ -13,18 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] **-C**\ [+]\ *cptfile* **-J**\ *parameters*
+**pscontour** [ *table* ] |-C|\ [+]\ *cpt* |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
+[ |-A|\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
-[ **-D**\ [*template*] ] 
-[ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
-[ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] 
-[ **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
-[ **-S**\ [\ *p*\ \|\ *t*] ]
-[ **-T**\ [\ **+\|-**][\ *gap/length*][\ **:**\ [\ *labels*]] ]
+[ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
+[ |-G|\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
+[ |-I| ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ] 
+[ |-L|\ *pen* ] [ |-N| ]
+[ |-O| ] [ |-P| ] [ |-Q|\ *cut* ]
+[ |-S|\ [\ *p*\ \|\ *t*] ]
+[ |-T|\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ] 
-[ |SYN_OPT-V| ] [ **-W**\ [**+**]\ *pen* ] 
+[ |SYN_OPT-V| ]
+[ |-W|\ [**+**]\ *pen* ] 
 [ |SYN_OPT-X| ] 
 [ |SYN_OPT-Y| ] 
 [ |SYN_OPT-b| ]
@@ -40,31 +42,33 @@ Synopsis
 Description
 -----------
 
-**pscontour** reads an ASCII [or binary] xyz-file and produces a raw
+**pscontour** reads an ASCII [or binary] *table* and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk's [1996] or Watson's
 [1982] method as selected during GMT installation; type **pscontour
 -** to see which method is selected), but the user may optionally
 provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
-between contours may be painted according to the color palette file.
+between contours may be painted according to the CPT file.
 Alternatively, the x/y/z positions of the contour lines may be saved to
 one or more output files (or stdout) and no plot is produced. 
 
 Required Arguments
 ------------------
 
-**-C**\ [+]\ *cont\_int*
+.. _-C:
+
+**-C**\ [+]\ *cont_int*
     The contours to be drawn may be specified in one of three possible ways:
 
     (1) If *cont_int* has the suffix ".cpt" and can be opened as a
-        file, it is assumed to be a color palette table. The color
-        boundaries are then used as contour levels. If the cpt-file has
+        file, it is assumed to be a CPT file. The color
+        boundaries are then used as contour levels. If the CPT file has
         annotation flags in the last column then those contours will be
         annotated. By default all contours are labeled; use **-A-** to
         disable all annotations.
 
-    (2) If *cont_int* is a file but not a cpt-file, it is expected to
+    (2) If *cont_int* is a file but not a CPT file, it is expected to
         contain contour levels in column 1 and a
         C(ontour) OR A(nnotate) in
         col 2. The levels marked C (or c) are contoured, the levels marked A
@@ -81,10 +85,15 @@ Required Arguments
         equal to the specified annotation interval.
 
     If a file is given and **-T** is set, then only contours marked with
-    upper case C or A will have tickmarks. In all cases the contour
+    upper case C or A will have tick-marks. In all cases the contour
     values have the same units as the file.
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -98,7 +107,9 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-**-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*]
+.. _-A:
+
+**-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
     *annot_int* is annotation interval in data units; it is ignored if
     contour levels are given in a file. [Default is no annotations]. Append
     **-** to disable all annotations implied by **-C**. Alternatively prepend
@@ -108,38 +119,66 @@ Optional Arguments
 
 .. include:: explain_clabelinfo.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
 
-**-D**\ [*template*\ ]
+.. _-D:
+
+**-D**\ [*template*]
 
 .. include:: explain_contdump.rst_
+
+.. _-E:
+
+**-E**\ *indexfile*
+    Give name of file with network information. Each record must contain
+    triplets of node numbers for a triangle [Default computes these
+    using Delaunay triangulation (see **triangulate**)].
+
+.. _-G:
 
 **-G**
 
 .. include:: explain_contlabel.rst_
 
+.. _-I:
+
 **-I**
-    Color the triangles using the color palette table. 
+    Color the triangles using the CPT file. 
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *pen* :ref:`(more ...) <set-pens>`
     Draw the underlying triangular mesh using the specified pen
     attributes [Default is no mesh].
+
+.. _-N:
+
 **-N**
     Do NOT clip contours or image at the boundaries [Default will clip
     to fit inside region **-R**]. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
-**-Q**\ *indexfile*
-    Give name of file with network information. Each record must contain
-    triplets of node numbers for a triangle [Default computes these
-    using Delaunay triangulation (see **triangulate**)].
+.. _-Q:
+
+**-Q**\ *cut*
+    Do not draw contours with less than *cut* number of points [Draw all contours]. 
+
+.. _-S:
 
 **-S**\ [\ *p*\ \|\ *t*]
     Skip all input *xyz* points that fall outside the region [Default
@@ -147,36 +186,46 @@ Optional Arguments
     to skip triangles whose three vertices are all outside the region.
     **-S** with no modifier is interpreted as **-Sp**.
 
-**-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]]
-    Will draw tickmarks pointing in the downward direction every *gap*
-    along the innermost closed contours. Append *gap* and tickmark
-    length (append units as **c**, **i**, or **p**) or use defaults
+.. _-T:
+
+**-T**\ [**+\|-**][**+d**\ *gap*\ [/*length*]][\ **+l**\ [*labels*]]
+    Will draw tick marks pointing in the downward direction every *gap*
+    along the innermost closed contours. Append **+d**\ *gap* and optionally tick
+    mark *length* (append units as **c**, **i**, or **p**) or use defaults
     [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
     lows by specifying **-T+** or **-T-**, respectively. Append
-    **:**\ *labels* to annotate the centers of closed innermost contours
-    (i.e, the local lows and highs). If no *labels* is appended we use -
-    and + as the labels. Appending two characters, **:LH**, will plot
-    the two characters (here, L and H) as labels. For more elaborate
-    labels, separate the two label strings by a comma (e.g.,
-    **:**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
-    then only contours marked with upper case C or A will have tickmarks
-    [and annotation]. 
+    **+l**\ *labels* to annotate the centers of closed innermost contours
+    (i.e., the local lows and highs). If no *labels* is appended we use -
+    and + as the labels. Appending exactly two characters, e.g., **+l**\ *LH*,
+    will plot the two characters (here, L and H) as labels. For more elaborate
+    labels, separate the low and hight label strings with a comma (e.g.,
+    **+l**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
+    then only contours marked with upper case C or A will have tick marks
+    [and annotations]. 
+
+.. _-U:
 
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-W:
+
 **-W**\ [**+**\ ]\ *pen* :ref:`(more ...) <set-pens>`
     Select contouring and set contour pen attributes. If the **+** flag
     is prepended then the color of the contour lines are taken from the
-    cpt file (see **-C**). If the **-** flag is prepended then the color
-    from the cpt file is applied both to the contours and the contour
+    CPT file (see **-C**). If the **-** flag is prepended then the color
+    from the CPT file is applied both to the contours and the contour
     annotations. 
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
-.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-Q**). 
+.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**). 
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 3 output columns]. 
@@ -202,7 +251,7 @@ Examples
 --------
 
 To make a raw contour plot from the file topo.xyz and drawing the
-contours (pen = 2) given in the color palette file topo.cpt on a Lambert
+contours (pen = 2) given in the CPT file topo.cpt on a Lambert
 map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
    ::

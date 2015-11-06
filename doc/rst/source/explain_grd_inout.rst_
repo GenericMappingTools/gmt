@@ -11,9 +11,11 @@ offset, the user should add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. When reading grids, the format is generally automatically
+data. In case the two characters *id* is not provided, as in **=/**\ *scale*
+than a *id*\ **=**\ *nf* is assumed.
+When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See :doc:`grdreformat </grdreformat>` and Section
+names. See :doc:`grdconvert </grdconvert>` and Section
 :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information.
 
@@ -26,6 +28,6 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-:doc:`grdreformat </grdreformat>` and Section :ref:`grid-file-format` of the GMT
-Technical Reference and Cookbook for more information, particularly on
+:doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and :ref:`grid-file-format`
+of the GMT Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.

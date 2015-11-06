@@ -27,6 +27,7 @@
 #define THIS_MODULE_NAME	"grdhisteq"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Perform histogram equalization for a grid"
+#define THIS_MODULE_KEYS	"<GI,GGO,DTo,RG-"
 
 #include "gmt_dev.h"
 
@@ -91,7 +92,7 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
-	GMT_Message (API, GMT_TIME_NONE, "[%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
 	
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -273,15 +274,13 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	return (0);
 }
 
-int compare_indexed_floats (const void *point_1, const void *point_2)
-{
+int compare_indexed_floats (const void *point_1, const void *point_2) {
 	if (((struct INDEXED_DATA *)point_1)->x < ((struct INDEXED_DATA *)point_2)->x) return (-1);
 	if (((struct INDEXED_DATA *)point_1)->x > ((struct INDEXED_DATA *)point_2)->x) return (+1);
 	return (0);
 }
 
-int compare_indices (const void *point_1, const void *point_2)
-{
+int compare_indices (const void *point_1, const void *point_2) {
 	if (((struct INDEXED_DATA *)point_1)->i < ((struct INDEXED_DATA *)point_2)->i) return (-1);
 	if (((struct INDEXED_DATA *)point_1)->i > ((struct INDEXED_DATA *)point_2)->i) return (1);
 	return (0);
@@ -337,8 +336,7 @@ int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdhisteq_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdhisteq (void *V_API, int mode, void *args)
-{
+int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	double wesn[4];
@@ -363,7 +361,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdhisteq_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdhisteq_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
@@ -384,6 +382,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			int out_ID;
+			/* Must register Ctrl->D.file first since we are going to writing rec-by-rec */
 			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->D.file)) == GMT_NOTSET) {
 				Return (EXIT_FAILURE);
 			}
@@ -397,7 +396,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
+		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active)) != 0) Return (EXIT_FAILURE);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was true */
 	}
 	if (Ctrl->G.active) {

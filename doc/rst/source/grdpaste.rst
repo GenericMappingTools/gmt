@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdpaste** *file_a.nc file_b.nc* **-G**\ *outfile.nc*
+**grdpaste** *file_a.nc file_b.nc* |-G|\ *outfile.nc*
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -37,11 +37,16 @@ Required Arguments
     One of two files to be pasted together.
 *file_b.nc*
     The other of two files to be pasted together.
+
+.. _-G:
+
 **-G**\ *outfile.nc*
     The name for the combined output.
 
 Optional Arguments
 ------------------
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

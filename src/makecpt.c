@@ -21,9 +21,9 @@
  * Date:	1-JAN-2010
  * Version:	5 API
  *
- * Brief synopsis: Reads an existing cpt table and desired output grid
- * and produces a GMT cpt file.  Can be inverted [-I] or made to be
- * continuous [-Z].  Discrete color jumps in cpt tables are handled
+ * Brief synopsis: Reads an existing CPT file and desired output grid
+ * and produces a GMT CPT file.  Can be inverted [-I] or made to be
+ * continuous [-Z].  Discrete color jumps in CPT files are handled
  * correctly.  Default color table is "rainbow".
  *
  */
@@ -31,10 +31,11 @@
 #define THIS_MODULE_NAME	"makecpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
+#define THIS_MODULE_KEYS	">CO"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->Vh"
+#define GMT_PROG_OPTIONS "->Vbdhi"
 
 unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
@@ -50,7 +51,7 @@ struct MAKECPT_CTRL {
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -58,6 +59,10 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int mode;
 	} D;
+	struct E {	/* -E<nlevels> */
+		bool active;
+		unsigned int levels;
+	} E;
 	struct F {	/* -F[r|R|h|c] */
 		bool active;
 		unsigned int model;
@@ -114,8 +119,8 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-G<zlo>/<zhi>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>]\n\t[%s] [-Z] [%s]\n", GMT_V_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c] [-G<zlo>/<zhi>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "	[-I] [-M] [-N] [-Q[i|o]] [-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -123,8 +128,12 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
 	if (GMT_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies we read data from given command-line files [or stdin] to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   determine data range (use -i to select a data column, else last column is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <nlevels> is not set we use the number of color slices in the chosen CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
@@ -140,14 +149,14 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>, <z_max>, and <z_inc> for colorscale in z-units,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or filename with custom z-values.  If no -T option is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then the range in the master cptfile will be used.  If no increment\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then the range in the master CPT file will be used.  If no increment\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   is given we match the number of entries in the master CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., constant color intervals].\n");
-	GMT_Option (API, "h,.");
+	GMT_Option (API, "bi,di,h,i,.");
 
 	return (EXIT_FAILURE);
 }
@@ -190,6 +199,13 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
+				break;
+			case 'E':	/* Use n levels */
+				Ctrl->E.active = true;
+				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
+					n_errors++;
+				}
 				break;
 			case 'F':	/* Sets format for color reporting */
 				Ctrl->F.active = true;
@@ -250,12 +266,13 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0, "Syntax error: No input files expected\n");
+	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active, "Syntax error: No input files expected unless -E is used\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high || Ctrl->T.inc < 0.0), "Syntax error -T option: Give start < stop and inc > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.file && GMT_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -270,7 +287,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 
 	double *z = NULL;
 
-	char CPT_file[GMT_BUFSIZ] = {""}, *file = NULL, *l = NULL;
+	char *l = NULL;
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;
@@ -293,7 +310,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_makecpt_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_makecpt_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the makecpt main code ----------------------------*/
 
@@ -306,22 +323,19 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
-	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK), "Error: Cannot find colortable %s\n", Ctrl->C.file);
-	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	/* OK, we can now do the resampling */
 
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
-	file = CPT_file;
-
-	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, NULL)) == NULL) {
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 	
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
+	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
 
 	/* Set up arrays */
 
@@ -366,7 +380,26 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 		z = GMT_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = Ctrl->T.low + i * Ctrl->T.inc;	/* Desired z values */
 	}
-	else {	/* Just copy what was in the cpt file */
+	else if (Ctrl->E.active) {
+		struct GMT_DATASET *D = NULL;
+		double inc;
+		unsigned int col;
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+			Return (API->error);
+		}
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			Return (API->error);
+		}
+		col = (unsigned int)(D->n_columns - 1);	/* Use the last column of the input as z */
+		nz = Ctrl->E.levels;
+		inc = (D->max[col] - D->min[col]) / (nz - 1);
+		z = GMT_memory (GMT, NULL, nz, double);
+		for (i = 0; i < nz; i++) z[i] = D->min[col] + i * inc;	/* Desired z values */
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
+			Return (API->error);
+		}
+	}
+	else {	/* Just copy what was in the CPT file */
 		nz = Pin->n_colors + 1;
 		z = GMT_memory (GMT, NULL, nz, double);
 		if (Ctrl->I.active) {
@@ -381,7 +414,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 
 	if (Ctrl->Q.mode == 2) for (i = 0; i < nz; i++) z[i] = d_log10 (GMT, z[i]);	/* Make log10(z) values for interpolation step */
 
-	/* Now we can resample the cpt table and write out the result */
+	/* Now we can resample the CPT file and write out the result */
 
 	Pout = GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 

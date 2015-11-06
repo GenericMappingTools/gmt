@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of a DEM grid
-# GMT progs:    gmt gmtset, gmt gmtmath, gmt grdgradient, gmt makecpt, gmt grdimage gmt psxy, gmt ps2raster
+# GMT progs:    gmt gmtset, gmt gmtmath, gmt grdgradient, gmt makecpt, gmt grdimage gmt psxy, gmt psconvert
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
@@ -38,7 +38,7 @@ while [ ${frame} -lt ${n_frames} ]; do
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
 #	RIP to TIFF at specified dpi
-	gmt ps2raster -E${dpi} -Tt $$.ps
+	gmt psconvert -E${dpi} -Tt $$.ps
 	mv -f $$.tif $$/${file}.tif
 	echo "Frame ${file} completed"
 	frame=`gmt_set_framenext ${frame}`

@@ -22,12 +22,13 @@
  *
  * Author:	Tim Henstock (then@noc.soton.ac.uk)
  * Date:	30-JUN-2002
- * Version:	3.4.1
+ * Version:	3.4.1, ported to GMT5 by P. Wessel
  */
  
 #define THIS_MODULE_NAME	"segy2grd"
 #define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Converting SEGY data to a GMT grid"
+#define THIS_MODULE_KEYS	"GGO,RG-"
 
 #include "gmt_dev.h"
 #include "segy_io.h"
@@ -121,28 +122,29 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: segy2grd <segyfile> -G<grdfile> %s\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[n|z]]\n\t[%s] [-L<nsamp>]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>][-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>] [-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G to name the output grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I specifies grid size(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name the output grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid size(s).\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A (or -Az): Add multiple entries at the same node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D to enter header information.  Specify '=' to get default value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L<nsamp> to override number of samples\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<ntraces> to fix number of traces. Default reads all traces.\n\t\t-M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N set value for nodes without corresponding input sample [Default is NaN]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q<mode><value> can be used to change two different settings:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qx<scl> applies scalar x-scale to coordinates in trace header to match the coordinates specified in -R\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qy<s_int> specifies sample interval as <s_int> if incorrect in the SEGY file\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S<header> to set variable spacing\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tIf -S not set, assumes even spacing of samples at dx, dy supplied with -I\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Enter grid information; leave field blank to get default value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Let <nsamp> override number of samples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Fix number of traces. Default reads all traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without corresponding input sample [Default is NaN].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change either of two different settings:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<scl> applies scalar x-scale to coordinates in trace header to match the coordinates specified in -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<s_int> specifies sample interval as <s_int> if incorrect in the SEGY file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Append <header> to set variable spacing\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -S not set, assumes even spacing of samples at dx, dy supplied with -I.\n");
 	GMT_Option (API, "V,r,.");
 	
 	return (EXIT_FAILURE);
@@ -167,7 +169,7 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -191,7 +193,7 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 				Ctrl->D.text = strdup (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -218,11 +220,11 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 				switch (opt->arg[0]) {
 					case 'x': /* over-rides of header info */
 						Ctrl->Q.active[X_ID] = true;
-						Ctrl->Q.value[X_ID] = atof (opt->arg);
+						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
 						Ctrl->Q.active[Y_ID] = true;
-						Ctrl->Q.value[Y_ID] = atof (opt->arg);
+						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
@@ -314,7 +316,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_segy2grd_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_segy2grd_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the segy2grd main code ----------------------------*/
 
@@ -334,7 +336,6 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
 	idy = 1.0 / Grid->header->inc[GMT_Y];
-	ij = -1;	/* Will be incremented to 0 or set first time around */
 
 	/* read in reel headers from segy file */
 	if (Ctrl->In.active) {
@@ -411,7 +412,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->nx;
 		}
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 			if (swap_bytes) {
 /* need to permanently byte-swap number of samples in the trace header */
 				header->num_samps = bswap32 (header->num_samps);
@@ -420,7 +421,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 			data = get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace or set to number in reel header */
-			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
+			if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
 			if ((n_samp - ij0) > (uint64_t)Grid->header->ny) n_samp = Grid->header->ny + ij0;
@@ -447,7 +448,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	else {
 		/* Get trace data and position by headers */
 		ix = 0;
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 			/* read traces one by one */
 			if (Ctrl->S.mode == PLOT_OFFSET) {
 				/* plot traces by offset, cdp, or input order */
@@ -491,7 +492,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 			data = get_segy_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 			   or set to number in reel header */
-			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
+			if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			if (swap_bytes) {
 				/* need to swap the order of the bytes in the data even though assuming IEEE format */

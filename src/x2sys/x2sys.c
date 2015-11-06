@@ -29,7 +29,7 @@
  * x2sys_read_mgd77file : Specifically reads an ASCII MGD77 file
  * x2sys_read_mgd77ncfile : Specifically reads an netCDF MGD77+ file
  * x2sys_read_ncfile	: Specifically reads an COARDS netCDF file
- * x2sys_read_list	: Read an ascii list of track names
+ * x2sys_read_list	: Read an ASCII list of track names
  * x2sys_dummytimes	: Make dummy times for tracks missing times
  * x2sys_n_data_cols	: Gives number of data columns in this data set
  * x2sys_fopen		: Opening files with error message and exit
@@ -39,7 +39,7 @@
  * x2sys_pick_fields	: Decodes the -F<fields> flag of desired columns
  * x2sys_free_info	: Frees the information structure
  * x2sys_free_data	: Frees the data matrix
- * x2sys_read_coe_dbase : Reads into memory the entire COE ascii database
+ * x2sys_read_coe_dbase : Reads into memory the entire COE ASCII database
  * x2sys_free_coe_dbase : Free the array of COE structures
  *------------------------------------------------------------------
  * Core crossover functions are part of GMT:
@@ -178,12 +178,19 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	fclose (fp);
 }
 
+void gmtmggpath_free (struct GMT_CTRL *GMT) {
+	int k;
+	for (k = 0; k < n_gmtmgg_paths; k++)
+		GMT_free (GMT, gmtmgg_path[k]);
+	n_gmtmgg_paths = 0;
+}
+
 int get_first_year (struct GMT_CTRL *GMT, double t)
 {
 	/* obtain yyyy/mm/dd and return year */
 	int64_t rd;
 	double s;
-	struct GMT_gcal CAL;
+	struct GMT_GCAL CAL;
 	GMT_dt2rdc (GMT, t, &rd, &s);
 	GMT_gcal_from_rd (GMT, rd, &CAL);
 	return (CAL.year);
@@ -240,7 +247,7 @@ int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode)
 	int k;
 	char file[GMT_BUFSIZ] = {""};
 	x2sys_path (GMT, fname, file);
-	if ((k = access (file, mode))) {	/* Not in X2SYS_HOME directory */
+	if ((k = access (file, mode)) != 0) {	/* Not in X2SYS_HOME directory */
 		k = access (fname, mode);	/* Try in current directory */
 	}
 	return (k);
@@ -253,8 +260,7 @@ int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp)
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s)
-{
+void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s) {
 	unsigned int i;
 	char line[GMT_BUFSIZ] = {""};
 
@@ -274,8 +280,7 @@ void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s)
 	}
 }
 
-int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I)
-{
+int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_IO *G,  struct X2SYS_INFO **I) {
 	/* Reads the format definition file and sets all information variables */
 
 	unsigned int i = 0;
@@ -398,8 +403,8 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X)
-{	/* Free allcoated memory */
+void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
+	/* Free allcoated memory */
 	unsigned int id;
 	if (X2SYS_HOME) GMT_free (GMT, X2SYS_HOME);
 	if (!X) return;
@@ -409,6 +414,8 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X)
 	free (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free (GMT, x2sys_datadir[id]);
+	gmtmggpath_free (GMT);
+	
 	MGD77_end (GMT, &M);
 }
 
@@ -491,14 +498,12 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_free_info (struct GMT_CTRL *GMT, struct X2SYS_INFO *s)
-{
+void x2sys_free_info (struct GMT_CTRL *GMT, struct X2SYS_INFO *s) {
 	GMT_free (GMT, s->info);
 	GMT_free (GMT, s);
 }
 
-void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struct X2SYS_FILE_INFO *p)
-{
+void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struct X2SYS_FILE_INFO *p) {
 	unsigned int i;
 
 	for (i = 0; i < n; i++) {
@@ -508,8 +513,7 @@ void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struc
 	if (p->ms_rec) GMT_free (GMT, p->ms_rec);
 }
 
-double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n)
-{
+double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n) {
 	uint64_t i;
 	double *t;
 
@@ -524,7 +528,7 @@ double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n)
 
 /*
  * x2sys_data_read:  Read subroutine for x2_sys data input.
- * This function will read one logical record of ascii or
+ * This function will read one logical record of ASCII or
  * binary data from the open file, and return with a double
  * array called data[] with each data value in it.
  */
@@ -696,8 +700,8 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
-{
+int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s,
+                        struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec) {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
 	 * pointer data.  The input file format is the venerable GMT
@@ -754,8 +758,9 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	z = GMT_memory (GMT, NULL, 6, double *);
-	for (i = 0; i < 6; i++) z[i] = GMT_memory (GMT, NULL, p->n_rows, double);
+	/* Only return the data fields requested */
+	z = GMT_memory (GMT, NULL, s->n_out_columns, double *);
+	for (i = 0; i < (int)s->n_out_columns; i++) z[i] = GMT_memory (GMT, NULL, p->n_rows, double);
 
 	for (j = 0; j < p->n_rows; j++) {
 
@@ -764,12 +769,16 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
-		z[0][j] = record.time * GMT->current.setting.time_system.i_scale + t_off;	/* To get GMT time keeping */
-		z[1][j] = record.lat * MDEG2DEG;
-		z[2][j] = record.lon * MDEG2DEG;
-		z[3][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0];
-		z[4][j] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1];
-		z[5][j] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2];
+		for (i = 0; i < (int)s->n_out_columns; i++) {
+			switch (s->out_order[i]) {
+				case 0: z[i][j] = record.time * GMT->current.setting.time_system.i_scale + t_off; break;	/* To get GMT time keeping */
+				case 1: z[i][j] = record.lat * MDEG2DEG; break;
+				case 2: z[i][j] = record.lon * MDEG2DEG; break;
+				case 3: z[i][j] = (record.gmt[0] == GMTMGG_NODATA) ? NaN : 0.1 * record.gmt[0]; break;
+				case 4: z[i][j] = (record.gmt[1] == GMTMGG_NODATA) ? NaN : record.gmt[1]; break;
+				case 5: z[i][j] = (record.gmt[2] == GMTMGG_NODATA) ? NaN : record.gmt[2]; break;
+			}
+		}
 
 	}
 
@@ -1548,7 +1557,7 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file)
 	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
 
-/* Functions dealing with the reading of the COE ascii database */
+/* Functions dealing with the reading of the COE ASCII database */
 
 uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *nt)
 {
@@ -1667,7 +1676,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			for (k = 0; !skip && k < n_ignore; k++) if (!strcmp (trk[0], ignore[k]) || !strcmp (trk[1], ignore[k])) skip = true;
 		}
 		if (skip) {	/* Skip this pair's data records */
-			while ((t = fgets (line, GMT_BUFSIZ, fp)) && line[0] != '>') rec_no++;
+			while ((t = fgets (line, GMT_BUFSIZ, fp)) != NULL && line[0] != '>') rec_no++;
 			more = (t != NULL);
 			continue;	/* Back to top of loop */
 		}
@@ -1688,12 +1697,13 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		/* Sanity check - make sure we dont already have this pair */
 		for (p = 0, skip = false; !skip && p < n_pairs; p++) {
 			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Pair %s and %s appear more than once - skipped [line %" PRIu64 "]\n", trk[0], trk[1], rec_no);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, 
+				            "Warning: Pair %s and %s appear more than once - skipped [line %" PRIu64 "]\n", trk[0], trk[1], rec_no);
 				skip = true;
 			}
 		}
 		if (skip) {
-			while ((t = fgets (line, GMT_BUFSIZ, fp)) && line[0] != '>') rec_no++;	/* Skip this pair's data records */
+			while ((t = fgets (line, GMT_BUFSIZ, fp)) != NULL && line[0] != '>') rec_no++;	/* Skip this pair's data records */
 			more = (t != NULL);
 			continue;	/* Back to top of loop */
 		}
@@ -1732,7 +1742,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		n_alloc_x = GMT_SMALL_CHUNK;
 		P[p].COE = GMT_memory (GMT, NULL, n_alloc_x, struct X2SYS_COE);
 		k = 0;
-		while ((t = fgets (line, GMT_BUFSIZ, fp)) && !(line[0] == '>' || line[0] == '#')) {	/* As long as we are reading data records */
+		while ((t = fgets (line, GMT_BUFSIZ, fp)) != NULL && !(line[0] == '>' || line[0] == '#')) {	/* As long as we are reading data records */
 			rec_no++;
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
@@ -1843,7 +1853,8 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 
 	/* Backwards checking for :list in addition to the new 9as in mgd77) =list mechanism */
-	for (opt = options; !list && opt; opt = opt->next) if (opt->option == GMT_OPT_INFILE && (opt->arg[0] == ':' || opt->arg[0] == '=')) list = opt;
+	for (opt = options; !list && opt; opt = opt->next)
+		if (opt->option == GMT_OPT_INFILE && (opt->arg[0] == ':' || opt->arg[0] == '=')) list = opt;
 
 	if (list) {	/* Got a file with a list of filenames */
 		*cmdline = false;
@@ -1874,7 +1885,8 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 	/* Strip off any extensions */
 
 	for (i = 0; i < A; i++) {
-		if ((p = strchr (file[i], '.'))) file[i][(size_t)(p-file[i])] = '\0';
+		if ((p = strchr (file[i], '.')) != NULL)
+			file[i][(size_t)(p-file[i])] = '\0';
 	}
 
 	return (A);
@@ -1932,7 +1944,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
 	n_items = MGD77_Scan_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, &item_names, 0);
-	if (aux && (n_aux = separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist))) {	/* Determine which auxillary columns are requested (if any) */
+	if (aux && (n_aux = separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist)) != 0) {	/* Determine which auxillary columns are requested (if any) */
 		aux_name = GMT_memory (GMT, NULL, n_aux, char *);
 		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
 	}

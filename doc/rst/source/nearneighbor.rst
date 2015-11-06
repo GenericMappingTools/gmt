@@ -13,14 +13,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**nearneighbor** [ *table* ] **-G**\ *out_grdfile*
+**nearneighbor** [ *table* ] |-G|\ *out_grdfile*
 |SYN_OPT-I|
-**-N**\ *sectors*\ [/*min_sectors*]
+|-N|\ *sectors*\ [/*min_sectors*]
 |SYN_OPT-R|
-[ **-S**\ *search_radius*\ [*unit*\ ] [ **-E**\ *empty* ]
+[ |-S|\ *search_radius*\ [*unit*\ ]
+[ |-E|\ *empty* ]
 [ |SYN_OPT-V| ]
-[ **-W** ]
+[ |-W| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -46,24 +48,34 @@ supplied].
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *out_grdfile*
     Give the name of the output grid file. 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-N:
 
 **-N**\ *sectors*\ [/*min_sectors*]
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
     one value inside each of at least *min_sectors* of the sectors for a given
     node. Nodes that fail this test are assigned the value NaN (but see
-    **-E**). If *Imin_sectors* is omitted it is set to be at least 50%
+    **-E**). If *min_sectors* is omitted it is set to be at least 50%
     of *sectors* (i.e., rounded up to next integer).  [Default is a quadrant
     search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
     that only the nearest value per sector enters into the averaging; the
     more distant points are ignored. 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-S**\ *search_radius*\ [*unit*]
     Sets the *search_radius* that determines which data points are
@@ -75,21 +87,30 @@ Optional Arguments
 *table*
     3 [or 4, see **-W**] column ASCII file(s) [or binary, see
     **-bi**] holding (x,y,z[,w]) data values. If
-    no file is specified, **nearneighbor** will read from standard
-    input.
+    no file is specified, **nearneighbor** will read from standard input.
+
+.. _-E:
+
 **-E**\ *empty*
     Set the value assigned to empty nodes [NaN]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-W:
+
 **-W**
-    Input data have a 4th column containing observation point weights.
-    These are multiplied with the geometrical weight factor to determine
-    the actual weights used in the calculations. 
+   Input data have a 4th column containing observation point weights.
+   These are multiplied with the geometrical weight factor to determine
+   the actual weights used in the calculations. 
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -100,11 +121,11 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-    Append **+b**\ *BC* to set any boundary conditions to be used,
-    adding **g** for geographic, **p** for periodic, or **n** for
-    natural boundary conditions. For the latter two you may append **x**
-    or **y** to specify just one direction, otherwise both are assumed.
-    [Default is geographic if grid is geographic]. 
+   Append **+b**\ *BC* to set any boundary conditions to be used,
+   adding **g** for geographic, **p** for periodic, or **n** for
+   natural boundary conditions. For the latter two you may append **x**
+   or **y** to specify just one direction, otherwise both are assumed.
+   [Default is geographic if grid is geographic]. 
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_

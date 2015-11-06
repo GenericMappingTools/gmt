@@ -14,10 +14,16 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **splitxyz** [ *table* ] 
-[ **-A**\ *azimuth*/*tolerance* ] [**-C**\ *course_change*] [ **-D**\ *minimum_distance* ]
-[ **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ]
-[ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ]
+[ |-A|\ *azimuth*/*tolerance* ]
+[ |-C|\ *course_change*]
+[ |-D|\ *minimum_distance* ]
+[ |-F|\ *xy\_filter*/*z\_filter* ]
+[ |-N|\ *template* ]
+[ |-Q|\ *flags* ]
+[ |-S| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -54,17 +60,29 @@ Optional Arguments
     non-decreasing, specify the **-S** option; default expects (x,y,z)
     only. If no files are specified, **splitxyz** will read from
     standard input.
+
+.. _-A:
+
 **-A**\ *azimuth*/*tolerance*
     Write out only those segments which are within +/- *tolerance*
     degrees of *azimuth* in heading, measured clockwise from North, [0 -
     360]. [Default writes all acceptable segments, regardless of
     orientation].
+
+.. _-C:
+
 **-C**\ *course\_change*
     Terminate a segment when a course change exceeding *course\_change*
     degrees of heading is detected [ignore course changes].
+
+.. _-D:
+
 **-D**\ *minimum\_distance*
     Do not write a segment out unless it is at least *minimum\_distance*
     units long [0]
+
+.. _-F:
+
 **-F**\ *xy\_filter*/*z\_filter*
     Filter the z values and/or the x,y values, assuming these are
     functions of d coordinate. *xy\_filter* and *z\_filter* are filter
@@ -81,6 +99,9 @@ Optional Arguments
     filtered separately. This may introduce edge effects at the ends of
     each segment, but prevents a low-pass x,y filter from rounding off
     the corners of track segments. [Default = no filtering].
+
+.. _-N:
+
 **-N**\ *template*
     Write each segment to a separate output file [Default writes a
     multiple segment file to stdout]. Append a format template for the
@@ -92,12 +113,18 @@ Optional Arguments
     **-bo**]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
+
+.. _-Q:
+
 **-Q**\ *flags*
     Specify your desired output using any combination of *xyzdh*, in any
     order. Do not space between the letters. Use lower case. The output
     will be ASCII (or binary, see **-bo**)
     columns of values corresponding to *xyzdh* [Default is
     **-Q**\ *xyzdh* (**-Q**\ *xydh* if only 2 input columns)].
+
+.. _-S:
+
 **-S**
     Both d and h are supplied. In this case, input contains x,y,z,d,h.
     [Default expects (x,y,z) input, and d,h are computed from delta x,
@@ -106,7 +133,9 @@ Optional Arguments
     in kilometers, and angles are actually azimuths. Otherwise,
     distances are Cartesian in same units as x,y and angles are
     counter-clockwise from horizontal].
-    
+
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
@@ -115,6 +144,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**]. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

@@ -41,6 +41,7 @@
  *  GMT_nc_update_grd_info: Update header in existing file
  *  GMT_nc_write_grd_info:  Write header to new file
  *  GMT_nc_write_grd:       Write header and data set to new file
+ *  GMT_grid_flip_vertical  Reverses the grid vertically (flipud)
  *
  * Private functions:
  *  setup_chunk_cache:      Change the default HDF5 chunk cache settings
@@ -48,7 +49,6 @@
  *  unpad_grid:             Remove padding from a grid
  *  padding_copy:           Fill padding by replicating the border cells
  *  padding_zero:           Fill padding with zeros
- *  grid_flip_vertical      Reverses the grid vertically
  *  n_chunked_rows_in_cache Determines how many chunks to read at once
  *  io_nc_grid              Does the actual netcdf I/O
  *  netcdf_libvers          returns the netCDF library version
@@ -109,7 +109,7 @@ int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Open the file and look for the required variable */
 	if (GMT_access (GMT, header->name, F_OK))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
-	if (nc_open (header->name, NC_NOWRITE, &ncid))
+	if ((err = nc_open (header->name, NC_NOWRITE, &ncid)))
 		return (GMT_GRDIO_OPEN_FAILED);
 	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
 		/* Old style GMT netCDF grid */
@@ -263,7 +263,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 	nc_type z_type;
 
 	/* Dimension ids, variable ids, etc.. */
-	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars, ndims = 0;
+	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, gm_id = -1, dims[5], nvars, ndims = 0;
 	size_t lens[5], item[2];
 
 	/* If not yet determined, attempt to get the layer IDs from the variable name */
@@ -363,6 +363,9 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		if (nc_inq_varid (ncid, "LatLon", &i) == NC_NOERR) nc_get_var_int (ncid, i, header->xy_dim);
 		header->nx = (int) lens[header->xy_dim[0]];
 		header->ny = (int) lens[header->xy_dim[1]];
+
+		/* Check if the grid_mapping variable exists */
+		if (nc_inq_varid (ncid, "grid_mapping", &i) == NC_NOERR) gm_id = i;
 	} /* if (job == 'r' || job == 'u') */
 	else {
 		/* Define dimensions of z variable */
@@ -411,10 +414,21 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 	if (job == 'r') {
 		/* Get global information */
 		if (GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
-		    GMT_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
+			GMT_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
 		if (GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
-		    GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
+			GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
 		GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+
+		if (gm_id > 0) {
+			size_t len;
+			char *pch;
+			GMT_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
+			if (header->ProjRefWKT) free(header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
+			pch = GMT_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
+			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
+			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			GMT_free(GMT, pch);
+		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
 		xy = GMT_memory (GMT, NULL, MAX(header->nx,header->ny), double);
@@ -426,7 +440,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			/* If actual range differs from end-points of vector then we have a pixel grid */
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ? GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
+			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?
+			                       GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 		}
 		else if (!j) {	/* Got node vector, so default to gridline registration */
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
@@ -547,6 +562,47 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		}
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
+
+#ifdef HAVE_GDAL
+		/* If we have projection information create a container variable named "grid_mapping" with an attribute
+		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */ 
+		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
+			int id[1], dim[1];
+
+			if (header->ProjRefWKT == NULL) {				/* Must convert from proj4 string to WKT */
+				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL); 
+
+				if (!strncmp(header->ProjRefPROJ4, "+unavailable", 4) || strlen(header->ProjRefPROJ4) <= 5) {	/* Silently jump out of here */
+					OSRDestroySpatialReference(hSRS);
+					goto L100;
+				}
+				GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "Proj4 string to be converted to WKT:\n\t%s\n", header->ProjRefPROJ4);
+				if (OSRImportFromProj4(hSRS, header->ProjRefPROJ4) == CE_None) {
+					char *pszPrettyWkt = NULL;
+					OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, false);
+					header->ProjRefWKT = strdup(pszPrettyWkt);
+					CPLFree(pszPrettyWkt);
+					GMT_Report(GMT->parent, GMT_MSG_LONG_VERBOSE, "WKT converted from proj4 string:\n%s\n", header->ProjRefWKT);
+				}
+				else {
+					header->ProjRefWKT = NULL;
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_nc_grd_info failed to convert the proj4 string\n%s\n to WKT\n", 
+							header->ProjRefPROJ4);
+				}
+				OSRDestroySpatialReference(hSRS);
+			}
+
+			if (header->ProjRefWKT != NULL) {			/* It may be NULL if the above conversion failed */
+				if (nc_inq_varid(ncid, "grid_mapping", &id[0]) != NC_NOERR) {
+					GMT_err_trap(nc_def_dim(ncid, "grid_mapping", 12U, &dim[0])); 
+					GMT_err_trap(nc_def_var(ncid, "grid_mapping", NC_CHAR,  1, dim, &id[0]));
+				}
+				GMT_err_trap(nc_put_att_text(ncid, id[0], "spatial_ref", strlen(header->ProjRefWKT), header->ProjRefWKT));
+				GMT_err_trap(nc_put_att_text(ncid, z_id, "grid_mapping", 12U, "grid_mapping"));	/* Create attrib in z variable */
+			}
+		}
+L100:
+#endif
 
 		/* Avoid NaN increments */
 		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
@@ -864,7 +920,7 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 }
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
+void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
 	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
 	unsigned row;
@@ -1281,18 +1337,22 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	header->z_min = DBL_MAX;
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (row = 0; row < height; ++row) {
 		float *p_data = pgrid + row * (header->stride ? header->stride : width);
 		unsigned col;
 		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == header->nan_value) {
 				p_data[col] = (float)NAN;
+				header->has_NaNs = GMT_GRID_HAS_NANS;
 				continue;
 			}
 			else if (!isnan (p_data[col])) {
 				header->z_min = MIN (header->z_min, p_data[col]);
 				header->z_max = MAX (header->z_max, p_data[col]);
 			}
+			else
+				header->has_NaNs = GMT_GRID_HAS_NANS;
 		}
 	}
 	/* check limits */
@@ -1315,7 +1375,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
+		GMT_grid_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	// pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
@@ -1419,7 +1479,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
+		GMT_grid_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
 
 	/* get stats */
 	header->z_min = DBL_MAX;

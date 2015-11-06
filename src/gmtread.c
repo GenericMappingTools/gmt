@@ -24,9 +24,10 @@
  *
  */
 
-#define THIS_MODULE_NAME	"read"
+#define THIS_MODULE_NAME	"gmtread"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Read GMT objects into external API"
+#define THIS_MODULE_KEYS	"<?I,>?O,-T-"
 
 #include "gmt_dev.h"
 
@@ -149,7 +150,7 @@ int GMT_gmtread_parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct G
 
 EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-int GMT_read (void *V_API, int mode, void *args)
+int GMT_gmtread (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	struct GMTREAD_CTRL *Ctrl = NULL;
@@ -171,7 +172,7 @@ int GMT_read (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtread_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtread_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtread_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtread main code ----------------------------*/
 

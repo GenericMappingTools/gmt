@@ -13,11 +13,11 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77convert** *NGDC-ids* **-Fa**\ \|\ **c**\ \|\ **m** \|\ **t**
-**-T**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
-[ **-C** ]
-[ **-D** ]
-[ **-L**\ [**w**][**e**][**+**] ]
+**mgd77convert** *NGDC-ids* |-F|\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
+|-T|\ [**+**]\ **a**\ \|\ **c**\ \|\ **m**\ \|\ **t**
+[ |-C| ]
+[ |-D| ]
+[ |-L|\ [**w**][**e**][**+**] ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -34,6 +34,8 @@ Required Arguments
 
 .. include:: explain_ncid.rst_
 
+.. _-F:
+
 **-Fa**\ \|\ **c**\ \|\ **m** \|\ **t**
     Specifies the format of the input (From) files. Choose from **a**
     for standard MGD77 ASCII table (with extension .mgd77), **c** for
@@ -42,7 +44,10 @@ Required Arguments
     plain ASCII tab-separated table dump (with extension .dat). Use
     **-FC** to recover the original MGD77 setting from the MGD77+ file
     [Default will apply any E77 corrections encoded in the file].
-**-T**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
+
+.. _-T:
+
+**-T**\ [**+**]\ **a**\ \|\ **c**\ \|\ **m** \|\ **t**
     Specifies the format of the output (To) files. Choose from **a** for
     standard MGD77 ASCII table (with extension .mgd77), **c** for the
     new MGD77+ netCDF format (with extension .nc), **m** for the
@@ -54,10 +59,15 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**
     Convert from NGDC two-file data sets \*.h77, \*.a77 to single file
     \*.mgd77. No other options (except **-V**) are allowed. Give one or
     more names of \*.h77 files, \*.a77 files, or just the file prefixes.
+
+.. _-D:
+
 **-D**
     By default, the storage types used in a MGD77+ netCDF file greatly
     exceed the precision imposed by the ASCII MGD77 format. However, for
@@ -67,11 +77,16 @@ Optional Arguments
     these items will need to be stored as 4-byte ints which would allow
     precisions of 10 fTesla, 1 nGal, and 0.01 mm, respectively. This
     option activates such storage [Default uses 2-byte integers].
+
+.. _-L:
+
 **-L**\ [**w**\ ][**e**\ ][**+**\ ]
     Set the level of verification reporting [none] and where to send
     such reports [stderr]. Append a combination of **w** for warnings,
     **e** for errors, and **+** to send such log information to stdout.
  
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
     
@@ -125,7 +140,7 @@ geophysical data to and from the NGDC data center. Normally, only the
 ship-operations people and the cruise PI might be involved in *making*
 an MGD77 ASCII file for transmission to NGDC; users are more interested
 in *reading* such files. (2) The MGD77+ netCDF format was developed to
-fascilitate the use of MGD77 data by scientists. It contains all the
+facilitate the use of MGD77 data by scientists. It contains all the
 information of the original MGD77 file and if you convert back and forth
 you end up with the original. However, file sizes are typically ~30% of
 the original ASCII format and is much faster to operate on. (3) The

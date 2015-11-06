@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdcut** *ingrid* **-G**\ *outgrid*
+**grdcut** *ingrid* |-G|\ *outgrid*
 |SYN_OPT-R|
-[ **-N**\ [*nodata*] ]
-[ **-S**\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
+[ |-N|\ [*nodata*] ]
+[ |-S|\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ [\ **n**\ \|\ **r**]\ *min/max* ]
+[ |-Z|\ [\ **n**\ \|\ **r**]\ *min/max* ]
 [ |SYN_OPT-f| ]
 
 |No-spaces|
@@ -40,18 +40,26 @@ Required Arguments
 *ingrid*
     This is the input grid file.
 
+.. _-G:
+
 **-G**\ *outgrid*
     This is the output grid file.
 
 Optional Arguments
 ------------------
 
+.. _-N:
+
 **-N**\ [*nodata*]
     Allow grid to be extended if new **-R** exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
 
+.. _-R:
+
 .. |Add_-R| replace:: This defines the subregion to be cut out.
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-S**\ [**n**]\ *lon/lat/radius*\ [*unit*]
     Specify an origin and radius; append a distance unit (see UNITS) and
@@ -59,8 +67,12 @@ Optional Arguments
     nodes on or inside the circle are contained in the subset. If
     **-Sn** is used we set all nodes outside the circle to NaN. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ [\ **n**\ \|\ **r**]\ *min/max*
     Determine the new rectangular region so that all nodes *outside* this

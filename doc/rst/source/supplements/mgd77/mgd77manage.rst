@@ -14,14 +14,17 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77manage** *NGDC-ids*
-[ **-A**\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
-[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ]
-[ **-D**\ *abbrev1*,\ *abbrev2*,...) ] [ **-E**\ *empty* ] [ **-F** ]
-[ **-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
-[ **-N**\ *unit* ]
+[ |-A|\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
+[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ]
+[ |-D|\ *abbrev1*,\ *abbrev2*,...) ]
+[ |-E|\ *empty* ]
+[ |-F| ]
+[ |-I|\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
+[ |-N|\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -50,6 +53,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*
     Add a new data column. If an existing column with the same
     abbreviation already exists in the file we will cowardly refuse to
@@ -72,7 +77,7 @@ Optional Arguments
     to use [1]). For gravity we choose the reference field based on the
     parameter Gravity Theoretical Formula Code in the cruise's MGD77
     header. If this is not set or is invalid we default to the IGF 1980.
-    You can override this behaviour by appending the desired code: 1 =
+    You can override this behavior by appending the desired code: 1 =
     Heiskanen 1924, 2 = International 1930, 3 = IGF1967, or 4 = IGF1980.
 
     **d** Append filename of a two-column table with the first column
@@ -142,6 +147,8 @@ Optional Arguments
     case **T** instead and we will interpolate the column at all record
     times.
 
+.. _-C:
+
 **-C**\ **f**\ \|\ **g**\ \|\ **e**
     Append a one-letter code to select the procedure for along-track
     distance calculation when using **-Ad**\ \|\ **D** (see **-N** for
@@ -153,6 +160,8 @@ Optional Arguments
 
     **e** Geodesic distances on current GMT ellipsoid.
 
+.. _-D:
+
 **-D**\ *abbrev1*,\ *abbrev2*,...)
     Give a comma-separated list of column abbreviations that you want to
     delete from the MGD77+ files. Do NOT use this option to remove
@@ -162,13 +171,22 @@ Optional Arguments
     successfully created we temporarily rename the old file, change the
     new filename to the old filename, and finally remove the old,
     renamed file.
+
+.. _-E:
+
 **-E**\ *empty*
     Give a single character that will be repeated to fill empty string
     values, e.g., "9" will yield a string like "99999..." [9].
+
+.. _-F:
+
 **-F**
     Force mode. When this mode is active you are empowered to delete or
     replace even the standard MGD77 set of columns. You better know what
     you are doing!
+
+.. _-I:
+
 **-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment*
     In addition to file information we must specify additional
     information about the extra column. Specify a short (16 char or
@@ -184,12 +202,19 @@ Optional Arguments
     Furthermore, the discussion on interpolation does not apply and the
     NaN value becomes a "no string" value (see **-E** for what this is).
     Place quotes around terms with more than one word (e.g., "Corrected Depth").
+
+.. _-N:
+
 **-N**\ *unit*
     Append the distance unit (see UNITS). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\ \|\ **i** is selected. 
 
+.. _-R:
+
 .. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected. 
 .. include:: ../../explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -199,6 +224,9 @@ Optional Arguments
     of the **-A** options. The binary input option is only available for
     numerical data columns. 
 .. include:: ../../explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
 
 .. include:: ../../explain_-n.rst_
 
@@ -262,7 +290,7 @@ ideas and steps you need to take to maintain your files.
 Our starting point is the MGD77 ASCII data files distributed from NGDC
 on CD-ROMS, DVD-ROMS, and via FTP. Using Geodas to install the files
 locally we choose the "Carter corrected depth" option which will fill in
-the depth column using the two-way traveltimes and the Carter tables if
+the depth column using the two-way travel-times and the Carter tables if
 twt is present. This step yields ~5000 individual cruise files. Place
 these in one or more sub-directories of your choice, list these
 sub-directories (one per line) in the file mgd77_paths.txt, and place

@@ -13,13 +13,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdblend** [ *blendfile* \| *grid1* *grid2* ... ] **-G**\ *outgrid*
+**grdblend** [ *blendfile* \| *grid1* *grid2* ... ] |-G|\ *outgrid*
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
-[ **-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ] [ **-N**\ *nodata* ]
-[ **-Q** ] [ **-Z**\ *scale* ]
+[ |-C|\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ] [ |-N|\ *nodata* ]
+[ |-Q| ] [ |-Z|\ *scale* ]
 [ |SYN_OPT-V| ]
-[ **-W** ]
+[ |-W|\ [**z**] ]
 [ |SYN_OPT-f| ]
 [ **-r** ]
 
@@ -42,13 +42,19 @@ netCDF and native binary grid formats for both input and output.
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *outgrid*
     *outgrid* is the name of the binary output grid file. (See GRID FILE
     FORMATS below). Only netCDF and native binary grid formats are can
     be written directly. Other output format choices will be handled by
     reformatting the output once blending is complete. 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -78,8 +84,9 @@ Optional Arguments
     mechanism to work. Any grid that is not co-registered with the
     desired output layout implied by **-R**, **-I** (and **-r**) will
     first be resampled via **grdsample**. Also, grids that are not in
-    netCDF or native binary format will first be reformatted via
-    **grdreformat**.
+    netCDF or native binary format will first be reformatted via **grdconvert**.
+
+.. _-C:
 
 **-C**
     Clobber mode: Instead of blending, simply pick the value of one of
@@ -91,19 +98,29 @@ Optional Arguments
     contributes to the final result. Weights and cosine tapering are not
     considered when clobber mode is active.
 
+.. _-N:
+
 **-N**\ *nodata*
     No data. Set nodes with no input grid to this value [Default is NaN].
+
+.. _-Q:
 
 **-Q**
     Create a header-less grid file suitable for use with **grdraster**.
     Requires that the output grid file is a native format (i.e., not netCDF). 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**
-    Do not blend, just output the weights used for each node. This
-    option is valid when only one input grid is provided [Default makes the blend].
+.. _-W:
+
+**-W**\ [**z**]
+    Do not blend, just output the weights used for each node [Default makes the blend].
+    Append **z** to write the weight*z sum instead.
+
+.. _-Z:
 
 **-Z**\ *scale*
     Scale output values by *scale* before writing to file. [1]. 
@@ -119,7 +136,6 @@ Optional Arguments
 .. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
-
 
 Tapering
 --------

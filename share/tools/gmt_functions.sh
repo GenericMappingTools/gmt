@@ -1,3 +1,4 @@
+#!/bin/bash
 # $Id$
 #
 # Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo,
@@ -16,24 +17,10 @@
 # check for bash
 [ -z "$BASH_VERSION" ] && return
 
-gmt_modules="backtracker blockmean blockmedian blockmode dimfilter filter1d \
-fitcircle gmt2kml gmtconvert gmtdefaults gmtget gmtgravmag3d gmtinfo gmtmath \
-gmtselect gmtset gmtsimplify gmtspatial gmtstitch gmtvector gmtwhich gravfft \
-grd2cpt grd2rgb grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft \
-grdfilter grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask \
-grdmask grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdreformat \
-grdrotater grdsample grdseamount grdspotter grdtrack grdtrend grdvector \
-grdview grdvolume greenspline gshhg hotspotter img2grd kml2gmt makecpt \
-mapproject mgd77convert mgd77info mgd77list mgd77magref mgd77manage mgd77path \
-mgd77sniffer mgd77track minmax nearneighbor originator project ps2raster \
-psbasemap psclip pscoast pscontour pscoupe pshistogram psimage pslegend \
-psmask psmeca pspolar psrose psscale pssegy pssegyz pstext psvelo pswiggle \
-psxy psxyz rotconverter sample1d segy2grd spectrum1d sph2grd sphdistance \
-sphinterpolate sphtriangulate splitxyz surface trend1d trend2d triangulate \
-x2sys_binlist x2sys_cross x2sys_datalist x2sys_get x2sys_init x2sys_list \
-x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd"
+gmt_modules=`gmt --show-modules`
+compat_modules="minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster"
 
-for module in ${gmt_modules}; do
-  eval "function ${module} () { gmt ${module} \"\$@\"; }"
-  eval "export -f ${module}"
+for module in ${gmt_modules} ${compat_modules}; do
+	eval "function ${module} () { gmt ${module} \"\$@\"; }"
+ 	eval "export -f ${module}"
 done

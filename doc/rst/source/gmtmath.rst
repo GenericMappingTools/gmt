@@ -13,12 +13,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ **-A**\ *t_f(t).d*\ [**+s**\ \|\ **r**] ] [ **-C**\ *cols* ]
-[ **-E**\ *eigen* ] [ **-I** ]
-[ **-N**\ *n\_col*\ [/*t_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
-] [ **-T**\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
+**gmtmath** [ |-A|\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**] ]
+[ |-C|\ *cols* ]
+[ |-E|\ *eigen* ] [ |-I| ]
+[ |-N|\ *n\_col*\ [/*t_col*] ]
+[ |-Q| ] [ |-S|\ [**f**\ \|\ **l**] ]
+[ |-T|\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -66,14 +69,24 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ *t_f(t).d*
+.. _-A:
+
+**-A**\ *t_f(t).d*\ [**+e**]\ [**+s**\ \|\ **w**]
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
     (see **-N**).  If used with operators LSQFIT and SVDFIT you can
-    optionally append the modifiers **+s** or **+r** which will write
-    out the model solution or the residuals, respectively [Default
-    writes one column with model coefficients].
+    optionally append the modifier **+e** which will instead evaluate
+    the solution and write a data set with four columns: t, f(t), the
+    model solution at t, and the the residuals at t, respectively
+    [Default writes one column with model coefficients].  Append **+w**
+    if *t_f(t).d* has a third column with weights, or append **+s** if
+    *t_f(t).d* has a third column with 1-sigma.  In those two cases we
+    find the weighted solution.  The weights (or sigmas) will be output
+    as the last column when **+e** is in effect.
+
+.. _-C:
+
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are
@@ -82,28 +95,44 @@ Optional Arguments
     columns, including time column, while **-Cr** reverses (toggles) the
     current choices.  When **-C** is in effect it also controls which
     columns from a file will be placed on the stack.
+
+.. _-E:
+
 **-E**\ *eigen*
     Sets the minimum eigenvalue used by operators LSQFIT and SVDFIT [1e-7].
     Smaller eigenvalues are set to zero and will not be considered in the
     solution.
+
+.. _-I:
+
 **-I**
-    Reverses the output row sequence from ascending time to descending
-    [ascending].
+    Reverses the output row sequence from ascending time to descending [ascending].
+
+.. _-N:
+
 **-N**\ *n_col*\ [/*t_col*]
     Select the number of columns and optionally the column number that
     contains the "time" variable [0]. Columns are numbered starting at 0
     [2/0]. If input files are specified then **-N** will add any missing
     columns.
+
+.. _-Q:
+
 **-Q**
-    Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0
-    **-T**\ 0/0/1.
+    Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
+
+.. _-S:
+
 **-S**\ [**f**\ \|\ **l**]
     Only report the first or last row of the results [Default is all
     rows]. This is useful if you have computed a statistic (say the
     **MODE**) and only want to report a single number instead of
     numerous records with identical values. Append **l** to get the last
     row and **f** to get the first row only [Default].
-**-T**\ *t\_min*/*t\_max*/*t\_inc*\ [**+**\ ]\|\ *tfile*
+
+.. _-T:
+
+**-T**\ *t_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile*
     Required when no input files are given. Sets the t-coordinates of
     the first and last point and the equidistant sampling interval for
     the "time" column (see **-N**). Append **+** if you are specifying
@@ -111,6 +140,8 @@ Optional Arguments
     (only data columns), give **-T** with no arguments; this also
     implies **-Ca**. Alternatively, give the name of a file whose first
     column contains the desired t-coordinates which may be irregular. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -120,6 +151,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input, but see **-o**] 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -141,7 +175,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 143 operators. "args" are the number of input
+Choose among the following 146 operators. "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -173,6 +207,10 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ATANH**       | 1 1    | atanh (A)                                                                                  |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **BCDF**        | 3 1    | Binomial cumulative distribution function for p = A, n = B, and x = C                      |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **BPDF**        | 3 1    | Binomial probability density function for p = A, n = B, and x = C                          |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **BEI**         | 1 1    | bei (A)                                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **BER**         | 1 1    | ber (A)                                                                                    |
@@ -193,11 +231,15 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **CEIL**        | 1 1    | ceil (A) (smallest integer >= A)                                                           |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **CHICRIT**     | 2 1    | Critical value for chi-squared-distribution, with alpha = A and n = B                      |
+| **CHICRIT**     | 2 1    | Chi-squared distribution critical value for alpha = A and nu = B                           |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **CHIDIST**     | 2 1    | chi-squared-distribution P(chi2,n), with chi2 = A and n = B                                |
+| **CHICDF**      | 2 1    | Chi-squared cumulative distribution function for chi2 = A and nu = B                       |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **CHIPDF**      | 2 1    | Chi-squared probability density function for chi2 = A and nu = B                           |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **COL**         | 1 1    | Places column A on the stack                                                               |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **COMB**        | 2 1    | Combinations n_C_r, with n = A and r = B                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **CORRCOEFF**   | 2 1    | Correlation coefficient r(A, B)                                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -215,8 +257,6 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **CSCD**        | 1 1    | csc (A) (A in degrees)                                                                     |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **CPOISS**      | 2 1    | Cumulative Poisson distribution F(x,lambda), with x = A and lambda = B                     |
-+-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DDT**         | 1 1    | d(A)/dt Central 1st derivative                                                             |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **D2DT2**       | 1 1    | d^2(A)/dt^2 2nd derivative                                                                 |
@@ -230,6 +270,12 @@ and output arguments.
 | **DIV**         | 2 1    | A / B                                                                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **DUP**         | 1 2    | Places duplicate of A on the stack                                                         |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ECDF**        | 2 1    | Exponential cumulative distribution function for x = A and lambda = B                      |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ECRIT**       | 2 1    | Exponential distribution critical value for alpha = A and lambda = B                       |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **EPDF**        | 2 1    | Exponential probability density function for x = A and lambda = B                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ERF**         | 1 1    | Error function erf (A)                                                                     |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -245,15 +291,17 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **FACT**        | 1 1    | A! (A factorial)                                                                           |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **FCRIT**       | 3 1    | Critical value for F-distribution, with alpha = A, n1 = B, and n2 = C                      |
+| **FCDF**        | 3 1    | F cumulative distribution function for F = A, nu1 = B, and nu2 = C                         |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **FDIST**       | 3 1    | F-distribution Q(F,n1,n2), with F = A, n1 = B, and n2 = C                                  |
+| **FCRIT**       | 3 1    | F distribution critical value for alpha = A, nu1 = B, and nu2 = C                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **FLIPUD**      | 1 1    | Reverse order of each column                                                               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **FLOOR**       | 1 1    | floor (A) (greatest integer <= A)                                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **FMOD**        | 2 1    | A % B (remainder after truncated division)                                                 |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **FPDF**        | 3 1    | F probability density function for F = A, nu1 = B, and nu2 = C                             |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **GE**          | 2 1    | 1 if A >= B, else 0                                                                        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -297,6 +345,10 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **KURT**        | 1 1    | Kurtosis of A                                                                              |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **LCDF**        | 1 1    | Laplace cumulative distribution function for z = A                                         |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **LCRIT**       | 1 1    | Laplace distribution critical value for alpha = A                                          |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LE**          | 2 1    | 1 if A <= B, else 0                                                                        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LMSSCL**      | 1 1    | LMS scale estimate (LMS STD) of A                                                          |
@@ -310,6 +362,8 @@ and output arguments.
 | **LOG2**        | 1 1    | log2 (A) (base 2)                                                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LOWER**       | 1 1    | The lowest (minimum) value of A                                                            |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **LPDF**        | 1 1    | Laplace probability density function for z = A                                             |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **LRAND**       | 2 1    | Laplace random noise with mean A and std. deviation B                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -347,6 +401,12 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **OR**          | 2 1    | NaN if B == NaN, else A                                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **PCDF**        | 2 1    | Poisson cumulative distribution function for x = A and lambda = B                          |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **PERM**        | 2 1    | Permutations n_P_r, with n = A and r = B                                                   |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **PPDF**        | 2 1    | Poisson distribution P(x,lambda), with x = A and lambda = B                                |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **PLM**         | 3 1    | Associated Legendre polynomial P(A) degree B order C                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **PLMg**        | 3 1    | Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)   |
@@ -369,7 +429,15 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RAND**        | 2 1    | Uniform random values between A and B                                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RCDF**        | 1 1    | Rayleigh cumulative distribution function for z = A                                        |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RCRIT**       | 1 1    | Rayleigh distribution critical value for alpha = A                                         |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RINT**        | 1 1    | rint (A) (round to integral value nearest to A)                                            |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **RPDF**        | 1 1    | Rayleigh probability density function for z = A                                            |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ROLL**        | 2 0    | Cyclicly shifts the top A stack items by an amount B                                       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ROTT**        | 2 1    | Rotate A by the (constant) shift B in the t-direction                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -413,11 +481,19 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **TN**          | 2 1    | Chebyshev polynomial Tn(-1<A<+1) of degree B                                               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **TCRIT**       | 2 1    | Critical value for Student's t-distribution, with alpha = A and n = B                      |
+| **TCRIT**       | 2 1    | Student's t distribution critical value for alpha = A and nu = B                           |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **TDIST**       | 2 1    | Student's t-distribution A(t,n), with t = A, and n = B                                     |
+| **TPDF**        | 2 1    | Student's t probability density function for t = A, and nu = B                             |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **TCDF**        | 2 1    | Student's t cumulative distribution function for t = A, and nu = B                         |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **UPPER**       | 1 1    | The highest (maximum) value of A                                                           |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **WCDF**        | 3 1    | Weibull cumulative distribution function for x = A, scale = B, and shape = C               |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **WCRIT**       | 3 1    | Weibull distribution critical value for alpha = A, scale = B, and shape = C                |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **WPDF**        | 3 1    | Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C        |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **XOR**         | 2 1    | B if A == NaN, else A                                                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -427,9 +503,11 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **YN**          | 2 1    | Bessel function of A (2nd kind, order B)                                                   |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **ZCRIT**       | 1 1    | Critical value for the normal-distribution, with alpha = A                                 |
+| **ZCDF**        | 1 1    | Normal cumulative distribution function for z = A                                          |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **ZDIST**       | 1 1    | Cumulative normal-distribution C(x), with x = A                                            |
+| **ZPDF**        | 1 1    | Normal probability density function for z = A                                              |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **ZCRIT**       | 1 1    | Normal distribution critical value for alpha = A                                           |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ROOTS**       | 2 1    | Treats col A as f(t) = 0 and returns its roots                                             |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -439,23 +517,33 @@ Symbols
 
 The following symbols have special meaning:
 
-+-------------+----------------------------+
-| **PI**      | 3.1415926...               |
-+-------------+----------------------------+
-| **E**       | 2.7182818...               |
-+-------------+----------------------------+
-| **EULER**   | 0.5772156...               |
-+-------------+----------------------------+
-| **TMIN**    | Minimum t value            |
-+-------------+----------------------------+
-| **TMAX**    | Maximum t value            |
-+-------------+----------------------------+
-| **TINC**    | t increment                |
-+-------------+----------------------------+
-| **N**       | The number of records      |
-+-------------+----------------------------+
-| **T**       | Table with t-coordinates   |
-+-------------+----------------------------+
++-------------+-----------------------------------------+
+| **PI**      | 3.1415926...                            |
++-------------+-----------------------------------------+
+| **E**       | 2.7182818...                            |
++-------------+-----------------------------------------+
+| **EULER**   | 0.5772156...                            |
++-------------+-----------------------------------------+
+| **EPS_F**   | 1.192092896e-07 (sgl. prec. eps)        |
++-------------+-----------------------------------------+
+| **EPS_D**   | 2.2204460492503131e-16 (dbl. prec. eps) |
++-------------+-----------------------------------------+
+| **TMIN**    | Minimum t value                         |
++-------------+-----------------------------------------+
+| **TMAX**    | Maximum t value                         |
++-------------+-----------------------------------------+
+| **TRANGE**  | Range of t values                       |
++-------------+-----------------------------------------+
+| **TINC**    | t increment                             |
++-------------+-----------------------------------------+
+| **N**       | The number of records                   |
++-------------+-----------------------------------------+
+| **T**       | Table with t-coordinates                |
++-------------+-----------------------------------------+
+| **TNORM**   | Table with normalized t-coordinates     |
++-------------+-----------------------------------------+
+| **TROW**    | Table with row numbers 1, 2, ..., N-1   |
++-------------+-----------------------------------------+
 
 .. include:: explain_precision.rst_
 
@@ -536,13 +624,13 @@ piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
    ::
 
-    process1 | gmt gmtmath STDIN SQRT = | process3
+    process1 | gmt math STDIN SQRT = | process3
 
 To take log10 of the average of 2 data files, use
 
    ::
 
-    gmt gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
+    gmt math file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
 
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor
 depth in m, use the relation depth(in m) = 2500 + 350 \* sqrt (age) to
@@ -550,27 +638,27 @@ print the depth anomalies:
 
    ::
 
-    gmt gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
+    gmt math samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
 
 To take the average of columns 1 and 4-6 in the three data sets sizes.1,
 sizes.2, and sizes.3, use
 
    ::
 
-    gmt gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
+    gmt math -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
 
 To take the 1-column data set ages.d and calculate the modal value and
 assign it to a variable, try
 
    ::
 
-    gmt set mode_age = `gmt gmtmath -S -T ages.d MODE =`
+    gmt set mode_age = `gmt math -S -T ages.d MODE =`
 
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 
    ::
 
-    gmt gmtmath -Tt.d T DILOG = dilog.d
+    gmt math -Tt.d T DILOG = dilog.d
 
 To demonstrate the use of stored variables, consider this sum of the
 first 3 cosine harmonics where we store and repeatedly recall the
@@ -578,7 +666,7 @@ trigonometric argument (2\*pi\*T/360):
 
    ::
 
-    gmt gmtmath -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD \
+    gmt math -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD \
                 @kT 3 MUL COS ADD = harmonics.d
 
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no
@@ -588,7 +676,7 @@ cos (60)) and store the result in the shell variable z:
 
    ::
 
-    set z = `gmt gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
+    set z = `gmt math -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
 
 To use **gmtmath** as a general least squares equation solver, imagine
 that the current table is the augmented matrix [ A \| b ] and you want
@@ -603,7 +691,7 @@ calculation becomes
 
    ::
 
-    gmt gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
+    gmt math -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
 
 Note we use the **-C** option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
@@ -615,11 +703,11 @@ solution is simply
 
    ::
 
-    gmt gmtmath -T lsqsys.d LSQFIT = solution.d
+    gmt math -T lsqsys.d LSQFIT = solution.d
 
 Users must be aware that when **-C** controls which columns are to be
 active the control extends to placing columns from files as well.
-Constrast the different result obtained by these very similar commands:
+Contrast the different result obtained by these very similar commands:
 
 ::
 

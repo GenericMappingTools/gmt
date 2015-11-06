@@ -13,9 +13,10 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gshhg** *binaryfile.b* [ **-A**\ *min* ] [ **-G** ] [ **-I**\ *id* ]
-[ **-L** ] [ **-N**\ *level* ] [ **-Qe**\ \|\ **i** ]
+**gshhg** *binaryfile.b* [ |-A|\ *min* ] [ |-G| ] [ |-I|\ *id* ]
+[ |-L| ] [ |-N|\ *level* ] [ |-Q|\ **e**\ \|\ **i** ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-o| ] > *asciifile.txt*
 
 |No-spaces|
@@ -52,22 +53,39 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *min*
     Only output information for the polygon if its area equals or
     exceeds *min* [Default outputs all polygons].
+
+.. _-G:
+
 **-G**
     Write output that can be imported into GNU Octave or Matlab by
     ending segments with a NaN-record.
+
+.. _-I:
+
 **-I**\ *id*
     Only output information for the polygon that matches *id*. Use
     **-Ic** to get all the continents only [Default outputs all
     polygons].
+
+.. _-L:
+
 **-L**
     Only output a listing of polygon or line segment headers [Default
     outputs headers and data records].
+
+.. _-N:
+
 **-N**
     Only output features whose level matches the given *level* [Default
     will output all levels].
+
+.. _-Q:
+
 **-Qe**\ \|\ **i**
     Control what to do with river-lakes (river sections large enough to
     be stored as closed polygons). Use **-Qe** to exclude them and
@@ -77,13 +95,16 @@ Optional Arguments
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
 
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-do.rst_
+
 .. include:: ../../explain_-ocols.rst_
 
 Examples
 --------
 
 To convert the entire intermediate GSHHG binary data to ASCII files for
-Octave/Mathlab, run
+Octave/Matlab, run
 
    ::
 
@@ -111,7 +132,7 @@ custom programs should consult the gshhg.c and gshhg.h source code and
 familiarize themselves with the data format and how various information
 flags are packed into a single 4-byte integer. While we do not maintain
 any Octave/Matlab code to read these files we are aware that both
-Mathworks and IDL have made such tools available to their users.
+MathWorks and IDL have made such tools available to their users.
 However, they tend not to update their code and our file structure has
 evolved considerably over time, breaking their code. Here, some general
 technical comments on the binary data files are given.

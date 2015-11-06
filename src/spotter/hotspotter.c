@@ -15,8 +15,8 @@
  *   Contact info: www.soest.hawaii.edu/pwessel
  *--------------------------------------------------------------------*/
 /*
- * HOTSPOTTER will (1) read ascii file(s) with records for each seamount
- * (2) read an ascii file with stage or total reconstruction rotations,
+ * HOTSPOTTER will (1) read ASCII file(s) with records for each seamount
+ * (2) read an ASCII file with stage or total reconstruction rotations,
  * (3) convolve the flowline of each seamount with its gravimetric shape, and
  * (4) build a cumulative volcano amplitude (CVA) grid.  The grid is
  * written out in GMT format and can be processed and plotted with GMT.
@@ -126,10 +126,11 @@
 #define THIS_MODULE_NAME	"hotspotter"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Create CVA image from seamount locations"
+#define THIS_MODULE_KEYS	"<DI,ETI,GGO,RG-"
 
 #include "spotter.h"
 
-#define GMT_PROG_OPTIONS "-:>RVbghirs" GMT_OPT("FHMm")
+#define GMT_PROG_OPTIONS "-:>RVbdghirs" GMT_OPT("FHMm")
 
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -190,8 +191,8 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: hotspotter [<table>] -E[+]<rottable> -G<CVAgrid> %s\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-D<factor>] [-N<upper_age>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_bi_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -206,13 +207,12 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
-	GMT_Option (API, "V,bi5,h,i,r,:,.");
+	GMT_Option (API, "V,bi5,di,h,i,r,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to hotspotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -251,7 +251,7 @@ int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, st
 					n_errors++;
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -293,8 +293,7 @@ int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_hotspotter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_hotspotter (void *V_API, int mode, void *args)
-{
+int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	uint64_t n_smts;		/* Number of seamounts read */
 	uint64_t n_track;		/* Number of points along a single flowline */
@@ -355,7 +354,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_hotspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_hotspotter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_hotspotter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the hotspotter main code ----------------------------*/
 

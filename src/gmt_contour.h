@@ -24,16 +24,21 @@
    This include file defines structures and functions used.
 */
 
+/*!
+ * \file gmt_contour.h
+ * \brief Structures and variables needed for contour labels.
+ */
+
 #ifndef _GMT_CONTOUR_H
 #define _GMT_CONTOUR_H
 
-/* Various settings for contour label placements at crossing lines */
+/*! Various settings for contour label placements at crossing lines */
 enum GMT_enum_contline {
 	GMT_CONTOUR_NONE = 0,	/* No contour/line crossing  */
 	GMT_CONTOUR_XLINE,	/* Contour labels where crossing straight lines (via key points) */
 	GMT_CONTOUR_XCURVE};	/* Contour labels where crossing arbitrary lines (via file) */
 
-/* Various settings for quoted line/contour label types */
+/*! Various settings for quoted line/contour label types */
 enum GMT_enum_label {
 	GMT_LABEL_IS_NONE = 0,	/* No contour/line crossing  */
 	GMT_LABEL_IS_CONSTANT,	/* Label is constant, given by +l<label> */
@@ -45,7 +50,8 @@ enum GMT_enum_label {
 	GMT_LABEL_IS_SEG,	/* Label is computed from segment number, via +Ln */
 	GMT_LABEL_IS_FSEG};	/* Label is computed from file and segment number, via +LN */
 
-struct GMT_XOVER {		/* Structure with info on all track cross-over */
+/*! Structure with info on all track cross-over */
+struct GMT_XOVER {
 	double *x;		/* x or Longitude */
 	double *y;		/* y or Latitude */
 	double *xnode[2];	/* Decimal Node index at cross-over along track 1 and 2 */
@@ -84,8 +90,6 @@ struct GMT_CONTOUR {
 	double label_isolation;		/* Only have one label inside a circle of this radius */
 	double label_dist_spacing;	/* Min distance between labels */
 	double label_dist_frac;		/* Fraction of Min distance between labels offset for closed labels [0.25] */
-	double d_scale;			/* Scale to yield correct units */
-	double L_d_scale;		/* Scale to yield correct units for label content only*/
 	double min_radius;		/* Do not place labels if the radius of curvature drops below this value [0] */
 	double min_dist;		/* Do not place labels closer than this value [0] */
 	double slop;			/* slop distance in being close to points */
@@ -94,13 +98,9 @@ struct GMT_CONTOUR {
 	double clearance[2];		/* Spacing between text and textbox */
 	double nudge[2];		/* Shift between calculated and desired text placement */
 	double rgb[4];			/* Opaque box fill */
-	uint64_t current_seg_no;	/* Number (0->) of current segment in current data file */
-	unsigned int current_file_no;	/* Number (0->) of current input data file */
 	unsigned int line_type;	/* Kind of line: contour (1) or line (0) */
 	unsigned int dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
 	unsigned int dist_unit;	/* Units for labelled distances along tracks [cip] */
-	unsigned int proj_type;	/* type of scaling */
-	unsigned int L_proj_type;	/* type of scaling for label content only */
 	unsigned int half_width;	/* Number of points to use in smoothing the angle [10/2] */
 	unsigned int n_cont;		/* Number of labels per segment */
 	enum GMT_enum_contline crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
@@ -120,6 +120,7 @@ struct GMT_CONTOUR {
 	int hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	bool annot;			/* true if we want labels */
 	bool isolate;		/* true if we have a limit on how close labels may appear (see below) */
+	bool segmentize;	/* true if we should segmentize input lines before plotting */
 	bool spacing;		/* true if we have spacing constraints to apply */
 	bool number;			/* true if we have constraints on the number of labels to apply */
 	bool do_interpolate;		/* true if we must resample the crossing lines */
@@ -131,6 +132,7 @@ struct GMT_CONTOUR {
 	bool data_col;		/* true if there is data in the zz arrays passed, false if they are NULL */
 	bool debug;			/* true of we want to draw helper lines/points */
 	bool delay;			/* true of we want to delay the actual annotation plotting until later */
+	bool crossect;			/* For SqN2 only: if true we want to add special suffixes to the 2 labels */
 	size_t n_alloc;			/* How many allocated so far */
 	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
@@ -138,6 +140,7 @@ struct GMT_CONTOUR {
 	char label_file[GMT_BUFSIZ];	/* Output files for text dump of label locations */
 	char unit[GMT_LEN64];	/* Unit for labels */
 	char prefix[GMT_LEN64];	/* prefix for labels */
+	char crossect_tag[2][GMT_LEN64];	/* suffix for crossection beginning and end labels */
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
 	char **f_label;			/* Array for fixed labels */

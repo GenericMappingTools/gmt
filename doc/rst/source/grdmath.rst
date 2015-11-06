@@ -14,16 +14,20 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdmath**
+[ |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+ag**\ \|\ **i**\ \|\ **s** \|\ **S**][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ |-D|\ *resolution*\ [**+**] ]
 [ |SYN_OPT-I| ]
-[ **-M** ] [ **-N** ]
+[ |-M| ] [ |-N| ]
 [ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-i| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
-[ **-r** ] *operand* [ *operand* ] **OPERATOR** [ *operand* ]
+[ **-r** ]
+[ |SYN_OPT-x| ]
+*operand* [ *operand* ] **OPERATOR** [ *operand* ]
 **OPERATOR** ... **=** *outgrdfile*
 
 |No-spaces|
@@ -59,7 +63,25 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+.. |Add_-A| replace:: (**-A** is only relevant to the **LDISTG** operator)
+.. include:: explain_-A.rst_
+
+.. _-D:
+
+**-D**\ *resolution*\ [**+**]
+    Selects the resolution of the data set to use with the operator LDISTG
+    ((**f**)ull, (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
+    resolution drops off by 80% between data sets [Default is **l**].
+    Append **+** to automatically select a lower resolution should the one
+    requested not be available [abort if not found].
+
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-M:
 
 **-M**
     By default any derivatives calculated are in z_units/ x(or
@@ -67,13 +89,19 @@ Optional Arguments
     in degrees of longitude,latitude into meters using a flat Earth
     approximation, so that gradients are in z_units/meter.
 
+.. _-N:
+
 **-N**
     Turn off strict domain match checking when multiple grids are
     manipulated [Default will insist that each grid domain is within
     1e-4 \* grid_spacing of the domain of the first grid listed].
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -82,6 +110,9 @@ Optional Arguments
     only applies to the data files needed by operators **LDIST**,
     **PDIST**, and **INSIDE**.
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -99,12 +130,14 @@ Optional Arguments
 .. |Add_nodereg| replace:: Only used with **-R** **-I**.
 .. include:: explain_nodereg.rst_
 
+.. include:: explain_core.rst_
+
 .. include:: explain_help.rst_
 
 Operators
 ---------
 
-Choose among the following 161 operators. "args" are the number of input
+Choose among the following 169 operators. "args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -124,6 +157,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **AND**       | 2 1   | B if A == NaN, else A                                                                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ARC**       | 2 1   | return arc(A,B) on [0 pi]                                                                              |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ASEC**      | 1 1   | asec (A)                                                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ASIN**      | 1 1   | asin (A)                                                                                               |
@@ -135,6 +170,10 @@ and output arguments.
 | **ATAN2**     | 2 1   | atan2 (A, B)                                                                                           |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ATANH**     | 1 1   | atanh (A)                                                                                              |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **BCDF**      | 3 1   | Binomial cumulative distribution function for p = A, n = B, and x = C                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **BPDF**      | 3 1   | Binomial probability density function for p = A, n = B, and x = C                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BEI**       | 1 1   | bei (A)                                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -156,15 +195,21 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CAZ**       | 2 1   | Cartesian azimuth from grid nodes to stack x,y (i.e., A, B)                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **CBAZ**      | 2 1   | Cartesian backazimuth from grid nodes to stack x,y (i.e., A, B)                                        |
+| **CBAZ**      | 2 1   | Cartesian back-azimuth from grid nodes to stack x,y (i.e., A, B)                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CDIST**     | 2 1   | Cartesian distance between grid nodes and stack x,y (i.e., A, B)                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **CDIST2**    | 2 1   | As CDIST but only to nodes that are != 0                                                               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CEIL**      | 1 1   | ceil (A) (smallest integer >= A)                                                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **CHICRIT**   | 2 1   | Critical value for chi-squared-distribution, with alpha = A and n = B                                  |
+| **CHICRIT**   | 2 1   | Chi-squared critical value for alpha = A and nu = B                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **CHIDIST**   | 2 1   | chi-squared-distribution P(chi2,n), with chi2 = A and n = B                                            |
+| **CHICDF**    | 2 1   | Chi-squared cumulative distribution function for chi2 = A and nu = B                                   |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **CHIPDF**    | 2 1   | Chi-squared probability density function for chi2 = A and nu = B                                       |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **COMB**      | 2 1   | Combinations n_C_r, with n = A and r = B                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CORRCOEFF** | 2 1   | Correlation coefficient r(A, B)                                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -177,8 +222,6 @@ and output arguments.
 | **COT**       | 1 1   | cot (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **COTD**      | 1 1   | cot (A) (A in degrees)                                                                                 |
-+---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **CPOISS**    | 2 1   | Cumulative Poisson distribution F(x,lambda), with x = A and lambda = B                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CSC**       | 1 1   | csc (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -206,6 +249,12 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **DUP**       | 1 2   | Places duplicate of A on the stack                                                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ECDF**      | 2 1   | Exponential cumulative distribution function for x = A and lambda = B                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ECRIT**     | 2 1   | Exponential distribution critical value for alpha = A and lambda = B                                   |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **EPDF**      | 2 1   | Exponential probability density function for x = A and lambda = B                                      |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ERF**       | 1 1   | Error function erf (A)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ERFC**      | 1 1   | Complementary Error function erfc (A)                                                                  |
@@ -222,9 +271,9 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **EXTREMA**   | 1 1   | Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **FCRIT**     | 3 1   | Critical value for F-distribution, with alpha = A, n1 = B, and n2 = C                                  |
+| **FCDF**      | 3 1   | F cumulative distribution function for F = A, nu1 = B, and nu2 = C                                     |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **FDIST**     | 3 1   | F-distribution Q(F,n1,n2), with F = A, n1 = B, and n2 = C                                              |
+| **FCRIT**     | 3 1   | F distribution critical value for alpha = A, nu1 = B, and nu2 = C                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FLIPLR**    | 1 1   | Reverse order of values in each row                                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -233,6 +282,8 @@ and output arguments.
 | **FLOOR**     | 1 1   | floor (A) (greatest integer <= A)                                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FMOD**      | 2 1   | A % B (remainder after truncated division)                                                             |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **FPDF**      | 3 1   | F probability density function for F = A, nu1 = B, and nu2 = C                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **GE**        | 2 1   | 1 if A >= B, else 0                                                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -278,9 +329,15 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **KURT**      | 1 1   | Kurtosis of A                                                                                          |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LCDF**      | 1 1   | Laplace cumulative distribution function for z = A                                                     |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LCRIT**     | 1 1   | Laplace distribution critical value for alpha = A                                                      |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LDIST**     | 1 1   | Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LDIST2**    | 2 1   | As LDIST, from lines in ASCII file B but only to nodes where A != 0                                    |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LDISTG**    | 0 1   | As LDIST, but operates on the GSHHG dataset (see -A, -D for options).                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LE**        | 2 1   | 1 if A <= B, else 0                                                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -295,6 +352,8 @@ and output arguments.
 | **LMSSCL**    | 1 1   | LMS scale estimate (LMS STD) of A                                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LOWER**     | 1 1   | The lowest (minimum) value of A                                                                        |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **LPDF**      | 1 1   | Laplace probability density function for z = A                                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **LRAND**     | 2 1   | Laplace random noise with mean A and std. deviation B                                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -330,17 +389,25 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **OR**        | 2 1   | NaN if B == NaN, else A                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **PCDF**      | 2 1   | Poisson cumulative distribution function for x = A and lambda = B                                      |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PDIST**     | 1 1   | Compute minimum distance (in km if -fg) from points in ASCII file A                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PDIST2**    | 2 1   | As PDIST, from points in ASCII file B but only to nodes where A != 0                                   |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **POP**       | 1 0   | Delete top element from the stack                                                                      |
+| **PERM**      | 2 1   | Permutations n_P_r, with n = A and r = B                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PLM**       | 3 1   | Associated Legendre polynomial P(A) degree B order C                                                   |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PLMg**      | 3 1   | Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **POINT**     | 1 2   | Compute mean x and y from ASCII file A and place them on the stack                                     |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **POP**       | 1 0   | Delete top element from the stack                                                                      |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **POW**       | 2 1   | A ^ B                                                                                                  |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **PPDF**      | 2 1   | Poisson distribution P(x,lambda), with x = A and lambda = B                                            |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **PQUANT**    | 2 1   | The B'th Quantile (0-100%) of A                                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -356,17 +423,27 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RAND**      | 2 1   | Uniform random values between A and B                                                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RCDF**      | 1 1   | Rayleigh cumulative distribution function for z = A                                                    |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RCRIT**     | 1 1   | Rayleigh distribution critical value for alpha = A                                                     |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **RINT**      | 1 1   | rint (A) (round to integral value nearest to A)                                                        |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **RPDF**      | 1 1   | Rayleigh probability density function for z = A                                                        |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ROLL**      | 2 0   | Cyclicly shifts the top A stack items by an amount B                                                   |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTX**      | 2 1   | Rotate A by the (constant) shift B in x-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ROTY**      | 2 1   | Rotate A by the (constant) shift B in y-direction                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) :ref:`(...) <SDIST>` |
+| **SDIST**     | 2 1   | Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) |ex_SDIST|           |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **SDIST2**    | 2 1   | As SDIST but only to nodes that are != 0                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SAZ**       | 2 1   | Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **SBAZ**      | 2 1   | Spherical backazimuth from grid nodes to stack lon, lat (i.e., A, B)                                   |
+| **SBAZ**      | 2 1   | Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)                                  |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **SEC**       | 1 1   | sec (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -408,13 +485,23 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **TAPER**     | 2 1   | Unit weights cosine-tapered to zero within A and B of x and y grid margins                             |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **TCDF**      | 2 1   | Student's t cumulative distribution function for t = A, and nu = B                                     |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **TCRIT**     | 2 1   | Student's t distribution critical value for alpha = A and nu = B                                       |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **TN**        | 2 1   | Chebyshev polynomial Tn(-1<t<+1,n), with t = A, and n = B                                              |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **TCRIT**     | 2 1   | Critical value for Student's t-distribution, with alpha = A and n = B                                  |
-+---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **TDIST**     | 2 1   | Student's t-distribution A(t,n), with t = A, and n = B                                                 |
+| **TPDF**      | 2 1   | Student's t probability density function for t = A, and nu = B                                         |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **UPPER**     | 1 1   | The highest (maximum) value of A                                                                       |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **WCDF**      | 3 1   | Weibull cumulative distribution function for x = A, scale = B, and shape = C                           |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **WCRIT**     | 3 1   | Weibull distribution critical value for alpha = A, scale = B, and shape = C                            |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **WPDF**      | 3 1   | Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C                    |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **WRAP**      | 1 1   | wrap A in radians onto [-pi,pi]                                                                        |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **XOR**       | 2 1   | 0 if A == NaN and B == NaN, NaN if B == NaN, else A                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -428,9 +515,11 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **YN**        | 2 1   | Bessel function of A (2nd kind, order B)                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **ZCRIT**     | 1 1   | Critical value for the normal-distribution, with alpha = A                                             |
+| **ZCDF**      | 1 1   | Normal cumulative distribution function for z = A                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **ZDIST**     | 1 1   | Cumulative normal-distribution C(x), with x = A                                                        |
+| **ZPDF**      | 1 1   | Normal probability density function for z = A                                                          |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **ZCRIT**     | 1 1   | Normal distribution critical value for alpha = A                                                       |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 
 Symbols
@@ -445,9 +534,13 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **EULER**   | 0.5772156...                                    |
 +-------------+-------------------------------------------------+
+| **EPS_F**   | 1.192092896e-07 (single precision epsilon       |
++-------------+-------------------------------------------------+
 | **XMIN**    | Minimum x value                                 |
 +-------------+-------------------------------------------------+
 | **XMAX**    | Maximum x value                                 |
++-------------+-------------------------------------------------+
+| **XRANGE**  | Range of x values                               |
 +-------------+-------------------------------------------------+
 | **XINC**    | x increment                                     |
 +-------------+-------------------------------------------------+
@@ -457,6 +550,8 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **YMAX**    | Maximum y value                                 |
 +-------------+-------------------------------------------------+
+| **YRANGE**  | Range of y values                               |
++-------------+-------------------------------------------------+
 | **YINC**    | y increment                                     |
 +-------------+-------------------------------------------------+
 | **NY**      | The number of y nodes                           |
@@ -465,9 +560,13 @@ The following symbols have special meaning:
 +-------------+-------------------------------------------------+
 | **Y**       | Grid with y-coordinates                         |
 +-------------+-------------------------------------------------+
-| **Xn**      | Grid with normalized [-1 to +1] x-coordinates   |
+| **XNORM**   | Grid with normalized [-1 to +1] x-coordinates   |
 +-------------+-------------------------------------------------+
-| **Yn**      | Grid with normalized [-1 to +1] y-coordinates   |
+| **YNORM**   | Grid with normalized [-1 to +1] y-coordinates   |
++-------------+-------------------------------------------------+
+| **XCOL**    | Grid with column numbers 0, 1, ..., NX-1        |
++-------------+-------------------------------------------------+
+| **YROW**    | Grid with row numbers 0, 1, ..., NY-1           |
 +-------------+-------------------------------------------------+
 
 Notes On Operators
@@ -484,6 +583,13 @@ Notes On Operators
    geodesics are used in calculations of distances, which can be slow.
    You can trade speed with accuracy by changing the algorithm used to
    compute the geodesic (see :ref:`PROJ_GEODESIC <Projection Parameters>`).
+
+   The operator **LDISTG** is a version of **LDIST** that operates on the GSHHG data. Instead of reading an ASCII file,
+   it directly accesses one of the GSHHG data sets as determined by the **-D** and **-A** options.
+
+#. The operator **POINT** reads a ASCII table, computes the mean x and mean
+   y values and places these on the stack.  If geographic data then we use
+   the mean 3-D vector to determine the mean location.
 
 #. The operator **PLM** calculates the associated Legendre polynomial
    of degree L and order M (0 <= M <= L), and its argument is the sine of
@@ -529,6 +635,10 @@ Notes On Operators
    24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
    bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
 
+#. When OpenMP support is compiled in, a few operators will take advantage
+   of the ability to spread the load onto several cores.  At present, the
+   list of such operators is: **LDIST**.
+
 .. include:: explain_float.rst_
 
 .. include:: explain_grd_inout.rst_
@@ -536,6 +646,8 @@ Notes On Operators
 .. include:: explain_grd_coord.rst_
 
 .. include:: explain_sto_rcl_clr.rst_
+
+.. include:: explain_gshhs.rst_
 
 Macros
 ------
@@ -559,7 +671,11 @@ is required that the optional comment flag (:) must be followed by a space.
 Examples
 --------
 
-.. include:: grdmath_examples.rst_
+To compute all distances to north pole:
+
+    ::
+
+     gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
 
 To take log10 of the average of 2 files, use
 
@@ -627,3 +743,17 @@ See Also
 :doc:`gmt`, :doc:`gmtmath`,
 :doc:`grd2xyz`, :doc:`grdedit`,
 :doc:`grdinfo`, :doc:`xyz2grd`
+
+.. ------------------------------------- Examples per option -------------------
+
+.. |ex_SDIST| raw:: html
+
+   <a href="#openModal">Example</a>
+   <div id="openModal" class="modalDialog">
+    <div>
+        <a href="#close" title="Close" class="close">X</a>
+        <h2>To compute all distances to north pole:</h2>
+        <p>gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br></p>
+    </div>
+   </div>
+   <link type="text/css" rel="stylesheet" href="_static/overlaypopup.css" />

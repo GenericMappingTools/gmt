@@ -13,12 +13,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*]\|\ *vector* ] 
-[ **-C**\ [**i**\ \|\ **o**] ] 
-[ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
-[ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
+**gmtvector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ] 
+[ |-C|\ [**i**\ \|\ **o**] ] 
+[ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
+[ |-T|\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **s**\ \|\ **x**] ] 
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -33,7 +34,7 @@ Description
 
 **gmtvector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
-standard input [or *infiles*]. If **-fg** is selected and only two items
+standard input [or one or more *tables*]. If **-fg** is selected and only two items
 are read (i.e., lon, lat) then these coordinates are converted to
 Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless **-Ci** is in effect. If no file is found we expect a
@@ -61,15 +62,19 @@ Optional Arguments
     if **-Ci** is given). If no file is specified, **gmtvector**, will
     read from standard input.
 
+.. _-A:
+
 **-A**\ **m**\ [*conf*\ ]\|\ *vector*
-    Specify a single, primary vector instead of reading *infiles*; see
-    *infiles* for possible vector formats. Alternatively, append **m**
-    to read *infiles* and set the single, primary vector to be the mean
+    Specify a single, primary vector instead of reading *tables*; see
+    *tables* for possible vector formats. Alternatively, append **m**
+    to read *tables* and set the single, primary vector to be the mean
     resultant vector first. We also compute the confidence ellipse for
     the mean vector (azimuth of major axis, major axis, and minor axis;
     for geographic data the axes will be reported in km). You may
     optionally append the confidence level in percent [95]. These three
     parameters are reported in the final three output columns.
+
+.. _-C:
 
 **-C**\ [**i**\ \|\ **o**]
     Select Cartesian coordinates on input and output. Append **i** for
@@ -77,19 +82,27 @@ Optional Arguments
     will be assumed to be Cartesian [Default is polar r/theta for 2-D
     data and geographic lon/lat for 3-D].
 
+.. _-E:
+
 **-E**
     Convert input geographic coordinates from geodetic to geocentric and
     output geographic coordinates from geocentric to geodetic. Ignored
     unless **-fg** is in effect, and is bypassed if **-C** is selected.
 
+.. _-N:
+
 **-N**
     Normalize the resultant vectors prior to reporting the output [No
     normalization]. This only has an effect if **-Co** is selected.
+
+.. _-S:
 
 **-S**\ [*vector*]
     Specify a single, secondary vector in the same format as the first
     vector. Required by operations in **-T** that need two vectors
     (average, bisector, dot product, cross product, and sum).
+
+.. _-T:
 
 **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **R**\ \|\ **x**]
     Specify the vector transformation of interest. Append **a** for
@@ -105,11 +118,16 @@ Optional Arguments
     output is determined by other options such as **-A**, **-C**,
     **-E**, and **-N**. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 or 3 input columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -130,8 +148,8 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+`Examples`
+----------
 
 Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the
@@ -139,54 +157,54 @@ location 133/34. Try
 
    ::
 
-    gmt gmtvector points.txt -S133/34 -TD -fg > angles.txt
+    gmt vector points.txt -S133/34 -TD -fg > angles.txt
 
 To rotate the same points 35 degrees around a pole at 133/34, and output
 Cartesian 3-D vectors, use
 
    ::
 
-    gmt gmtvector points.txt -Tr133/34/35 -Co -fg > reconstructed.txt
+    gmt vector points.txt -Tr133/34/35 -Co -fg > reconstructed.txt
 
 To rotate the point 65/33 by all rotations given in file rots.txt, use
 
    ::
 
-    gmt gmtvector rots.txt -TR -S64/33 -fg > reconstructed.txt
+    gmt vector rots.txt -TR -S64/33 -fg > reconstructed.txt
 
 To compute the cross-product between the two Cartesian vectors 0.5/1/2
 and 1/0/0.4, and normalizing the result, try
 
    ::
 
-    gmt gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
+    gmt vector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
 
 To rotate the 2-D vector, given in polar form as r = 2 and theta = 35,
 by an angle of 120, try
 
    ::
 
-    gmt gmtvector -A2/35 -Tr120 > rotated.txt
+    gmt vector -A2/35 -Tr120 > rotated.txt
 
 To find the mid-point along the great circle connecting the points 123/35 and -155/-30, use
 
    ::
 
-    gmt gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
+    gmt vector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
 
 To find the mean location of the geographical points listed in
 points.txt, with its 99% confidence ellipse, use
 
    ::
 
-    gmt gmtvector points.txt -Am99 -fg > centroid.txt
+    gmt vector points.txt -Am99 -fg > centroid.txt
 
 To find the pole corresponding to the great circle that goes through
 the point -30/60 at an azimuth of 105 degrees, use
 
    ::
 
-    gmt gmtvector -A-30/60 -Tp105 -fg > pole.txt
+    gmt vector -A-30/60 -Tp105 -fg > pole.txt
 
 Rotations
 ---------

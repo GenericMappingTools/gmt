@@ -13,13 +13,18 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
-[ **-C**\ *n/wavelength/mean\_depth/tbw* ] [ **-D**\ *density* ] [ **-E**\ *n_terms* ]
-[ **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ] [ **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ *te/rl/rm/rw*\ [**+m**] ]
+**gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
+[ |-C|\ *n/wavelength/mean\_depth/tbw* ]
+[ |-D|\ *density*\ \|\ *rhogrid* ]
+[ |-E|\ *n_terms* ]
+[ |-F|\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**] ]
+[ |-I|\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k** ]
+[ |-N|\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+[ |-Q| ]
+[ |-T|\ *te/rl/rm/rw*\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ *zm*\ [*zl*] ]
+[ |-W|\ *wd*]
+[ |-Z|\ *zm*\ [*zl*] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -27,15 +32,20 @@ Synopsis
 Description
 -----------
 
-**gravfft** can be used into two main modes. First one computes the
-gravity/geoid response of a bathymetry file. It will take the 2-D
-forward FFT of a bathymetry grid and compute it's gravity/geoid response
-using full Parker's method applied to the chosen model. The available
+**gravfft** can be used into three main modes. Mode 1: Simply
+compute the geopotential due to the surface given in the topo.grd file.
+Requires a density contrast (**-D**) and possibly a different observation
+level (**-W**).  It will take the 2-D
+forward FFT of the grid and 
+use the full Parker's method up to the chosen terms.  Mode 2: Compute the
+geopotential response due to flexure of the topography file. It will take the 2-D
+forward FFT of the grid and use the  full Parker's method applied to the chosen
+isostatic model.  The available
 models are the "loading from top", or elastic plate model, and the
 "loading from below" which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
 them). In both cases, the model parameters are set with **-T** and
-**-Z** options. Second mode computes the admittance or coherence between
+**-Z** options. Mode 3: compute the admittance or coherence between
 two grids. The output is the average in the radial direction.
 Optionally, the model admittance may also be calculated. The horizontal
 dimensions of the grdfiles are assumed to be in meters. Geographical
@@ -45,7 +55,7 @@ this to meters using :doc:`grdedit </grdedit>` or scale the output with
 :doc:`grdmath </grdmath>`.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
-are doing.
+are doing; see the examples for further guidance.
 
 Required Arguments
 ------------------
@@ -53,12 +63,17 @@ Required Arguments
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
     For cross-spectral operations, also give the second grid file *ingrd2*.
+
+.. _-G:
+
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
 
 Optional Arguments
 ------------------
+
+.. _-C:
 
 **-C**\ *n/wavelength/mean\_depth/tbw*
     Compute only the theoretical admittance curves of the selected model
@@ -67,26 +82,41 @@ Optional Arguments
     depth. Append dataflags (one or two) of *tbw* in any order. *t* =
     use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
-**-D**\ *density*
+
+.. _-D:
+
+**-D**\ *density*\ \|\ *rhogrid*
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-N+h**.
+    do not use **-T**. It also implicitly sets **-N+h**.  Alternatively,
+    specify a co-registered grid with density contrasts if a variable
+    density contrast is required.
+
+.. _-E:
+
 **-E**\ *n_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 3]
-**-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
+
+.. _-F:
+
+**-F**\ [**f**\ [**+**]\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
 
-       **f** = Free-air anomalies (mGal) [Default].
+       **f** = Free-air anomalies (mGal) [Default].  Append **+** to add
+       in the slab implied when removing the mean value from the topography.
+       This requires zero topography to mean no mass anomaly.
 
        **g** = Geoid anomalies (m).
 
-       **v** = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
+       **v** = Vertical Gravity Gradient (VGG; 1 Eotvos = 0.1 mGal/km).
 
        **e** = East deflections of the vertical (micro-radian).
 
        **n** = North deflections of the vertical (micro-radian).
+
+.. _-I:
 
 **-I**\ **w**\ \|\ **b**\ \|\ **c**\ \|\ **t** \|\ **k**
     Use *ingrd2* and *ingrd1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
@@ -98,23 +128,31 @@ Optional Arguments
     three) from **w**\ \|\ **b**\ \|\ **c**\ \|\ **t**.
     **w** writes wavelength instead of wavenumber, **k**
     selects km for wavelength unit [m], **c** computes coherence instead of
-    admittance, **b** writes a forth column with "loading from below"
-    theoretical admittance, and **t** writes a forth column with "elastic
+    admittance, **b** writes a fourth column with "loading from below"
+    theoretical admittance, and **t** writes a fourth column with "elastic
     plate" theoretical admittance.
 
 .. include:: ../../explain_fft.rst_
+
+.. _-Q:
 
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
     (and output by **-G**). That is the "gravimetric Moho". **-Q**
     implicitly sets **-N+h**
+
+.. _-S:
+
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
     necessary parameters are set within **-T** and **-Z** options. The
     number of powers in Parker expansion is restricted to 1.
     See an example further down.
+
+.. _-T:
+
 **-T**\ *te/rl/rm/rw*\ [**+m**]
     Compute the isostatic compensation from the topography load (input grid file) on
     an elastic plate of thickness *te*. Also append densities for load, mantle, and
@@ -123,10 +161,20 @@ Optional Arguments
     computed from *te* and Young modulus). Optionally, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
     If *te* = 0 then the Airy response is returned. **-T+m** implicitly sets **-N+h**
+
+.. _-W:
+
+**-W**\ *wd*
+    Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
+
+.. _-Z:
+
 **-Z**\ *zm*\ [*zl*]
     Moho [and swell] average compensation depths. For the "load from
     top" model you only have to provide *zm*, but for the "loading from
     below" don't forget *zl*.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -183,9 +231,9 @@ in Parker expansion):
 
 Now subtract it to your free-air anomaly faa.grd and you will get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
-After all the Bouger anomaly pretends to correct the mass deficiency
+After all the Bouguer anomaly pretends to correct the mass deficiency
 presented by the water layer, so we should add because water is less
-dense than the rocks below. The answer relyies on the way gravity
+dense than the rocks below. The answer relies on the way gravity
 effects are computed by the Parker's method and practical aspects of
 using the FFT.
 
@@ -198,9 +246,9 @@ it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
 2700 and a mantle with 3300 density we could repeat the command used to
 compute the water layer anomaly, using 600 (3300 - 2700) as the density
 contrast. But we now have a problem because we need to know the mean
-moho depth. That is when the scale/offset that can be appended to the grid's name
+Moho depth. That is when the scale/offset that can be appended to the grid's name
 comes in hand. Notice that we didn't need to do that before because mean water
-depth was computed directly from data. (notice also the negative sign of the
+depth was computed directly from data (notice also the negative sign of the
 offset due to the fact that *z* is positive up):
 
    ::
@@ -214,7 +262,7 @@ Now, subtract it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
     gmt grdmath water_g.grd moho_g.grd SUB = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
-7 km, density of 2700, over a mantle of density 3300, at an averge depth
+7 km, density of 2700, over a mantle of density 3300, at an average depth
 of 9 km
 
    ::
@@ -252,7 +300,7 @@ depth and the same densities as before?
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
-mean thickness with 10 km efective elastic thickness in a region of 3 km
+mean thickness with 10 km effective elastic thickness in a region of 3 km
 mean water depth:
 
    ::
@@ -279,9 +327,10 @@ References
 ----------
 
 Luis, J.F. and M.C. Neves. 2006, The isostatic compensation of the
-Azores Plateau: a 3D admittance and coherence analysis. J. Geotermal
-Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
+Azores Plateau: a 3D admittance and coherence analysis. J. Geothermal
+Volc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
+Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 31, 447-455.
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431-19,441,
 `http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_

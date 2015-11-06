@@ -13,22 +13,26 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psrose** [ *table* ] [ **-A**\ [**r**]*sector\_width* ]
+**psrose** [ *table* ] [ |-A|\ [**r**]\ *sector_width* ]
 [ |SYN_OPT-B| ]
-[ **-C**\ [*mode_file*] ]
-[ **-D** ] [ **-I** ] [ **-G**\ *fill* ] [ **-I** ] [ **-K** ]
-[ **-L**\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ] [ **-M**\ *parameters* ]
-[ **-O** ] [ **-P** ]
-[ **-R**\ *r0*/*r1*/*az_0*/*az_1* ]
-[ **-S**\ [**n**]*radial\_scale* ] [ **-T** ]
+[ |-C|\ [*mode_file*] ]
+[ |-D| ]
+[ |-G|\ *fill* ] [ |-I| ] [ |-K| ]
+[ |-L|\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ]
+[ |-M|\ *parameters* ]
+[ |-O| ] [ |-P| ]
+[ |-R|\ *r0*/*r1*/*az_0*/*az_1* ]
+[ |-S|\ [**n**]*radial\_scale* ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**v**]\ *pen* ]
+[ |-W|\ [**v**]\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z**\ **u**\ \|\ *scale* ]
+[ |-Z|\ **u**\ \|\ *scale* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
@@ -61,34 +65,54 @@ Optional Arguments
     actual lengths to unity as well).
 .. include:: explain_intables.rst_
 
-**-A**\ [**r**]*sector\_width*
+.. _-A:
+
+**-A**\ [**r**]\ *sector_width*
     Gives the sector width in degrees for sector and rose diagram.
     [Default 0 means windrose diagram]. Use **-Ar** to draw rose
     diagram instead of sector diagram. 
+
+.. _-B:
 
 .. include:: explain_-B.rst_
 |
 |   Remember that "x" here is
 |   radial distance and "y" is azimuth. The ylabel may be used to plot a figure caption.
 
+.. _-C:
+
 **-C**\ [*mode_file*]
     Plot vectors showing the principal directions given in the *modes*
     file. If no file is given, compute and plot mean direction. See
     **-M** to control vector attributes.
+
+.. _-D:
+
 **-D**
     Shift sectors so that they are centered on the bin interval (e.g.,
     first sector is centered on 0 degrees).
+
+.. _-F:
+
 **-F**
-    Do not draw the scale length bar [Default plots scale in lower right
-    corner]
+    Do not draw the scale length bar [Default plots scale in lower right corner]
+
+.. _-G:
+
 **-G**\ *fill*
-    Selects shade, color or pattern for filling the sectors [Default is
-    no fill].
+    Selects shade, color or pattern for filling the sectors [Default is no fill]K.
+
+.. _-I:
+
 **-I**
     Inquire. Computes statistics needed to specify useful **-R**. No
     plot is generated. 
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ [*wlabel*/*elabel*/*slabel*/*nlabel*]
     Specify labels for the 0, 90, 180, and 270 degree marks. For
@@ -96,45 +120,67 @@ Optional Arguments
     half-circle the default is 90W/90E/-/0. A - in any entry disables
     that label. Use **-L** with no argument to disable all four labels
 
+.. _-M:
+
 **-M**\ *parameters*
     Used with **-C** to modify vector parameters. For vector heads,
     append vector head *size* [Default is 0, i.e., a line]. See VECTOR
     ATTRIBUTES for specifying additional attributes. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-R:
 
 **-R**\ *r0*/*r1*/*az\_0*/*az\_1*
     Specifies the 'region' of interest in (r,azimuth) space. r0 is 0, r1
     is max length in units. For azimuth, specify either -90/90 or 0/180
     for half circle plot or 0/360 for full circle.
 
+.. _-S:
+
 **-S**\ [**n**]*radial_scale*
-    Specifies radius of circle. Use **-Sn** to normalize input radii to
-    go from 0 to 1.
+    Specifies radius of circle. Use **-Sn** to normalize input radii to go from 0 to 1.
+
+.. _-T:
 
 **-T**
     Specifies that the input data is orientation data (has a 180 degree
     ambiguity) instead of true 0-360 degree directions [Default]. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
     (requires **-C**) [Default is same as sector outline]. 
 
+.. _-X:
+
 .. include:: explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**\ *scale*
     Multiply the data radii by *scale*. E.g., use **-Z**\ 0.001 to
     convert your data from m to km. To exclude the radii from
     consideration, set them all to unity with **-Zu** [Default is no
     scaling].
+
 **-:**
     Input file has (azimuth,radius) pairs rather than the expected
     (radius,azimuth). 
@@ -143,6 +189,9 @@ Optional Arguments
 .. include:: explain_-bi.rst_
 
 .. include:: explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
@@ -171,8 +220,8 @@ azimuth, and shown in Portrait orientation, use:
 
    ::
 
-    gmt psrose fault_segments.az_r -R0/150/-90/90 -B50g25:"Fault
-               length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
+    gmt psrose fault_segments.az_r -R0/150/-90/90 -Bx50g25+l"Fault length"
+               -Byg30 -B+t"Rose diagram"-S3i -Ar10 -Glightblue
                -W0.75p,red -Z0.001 -C -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
@@ -183,7 +232,7 @@ orientation with UNIX timestamp and command line plotted, use:
 
    ::
 
-    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose diagram": -W0.5p -Uc | lpr
+    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
 
 Bugs
 ----

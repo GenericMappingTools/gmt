@@ -16,13 +16,22 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_gdalread.h
+ * \brief Define structures to interface with gdalread|write
+ */
+
+#ifndef _GMT_GDALREAD_H
+#define _GMT_GDALREAD_H
+
 #include <gdal.h>
 #include <ogr_srs_api.h>
 #include <cpl_string.h>
 #include <cpl_conv.h>
 
-/* Structure to control which options are transmited to GMT_gdalwrite */
-struct GDALWRITE_CTRL {
+/*! Structure to control which options are transmited to GMT_gdalwrite */
+struct GMT_GDALWRITE_CTRL {
+#ifdef HAVE_GDAL		/* Otherwise this is just an empty struct but that wont change ABI of structs including this */
 	char *driver;		/* The GDAL diver name */
 	char *type;			/* Data type */
 	char *command;		/* command line */
@@ -48,10 +57,12 @@ struct GDALWRITE_CTRL {
 		int	active;
 		char	*ProjectionRefPROJ4;
 	} P;
+#endif
 };
 
-/* Structure to control which options are transmited to GMT_gdalread */
-struct GDALREAD_CTRL {
+/*! Structure to control which options are transmited to GMT_gdalread */
+struct GMT_GDALREAD_IN_CTRL {
+#ifdef HAVE_GDAL		/* Otherwise this is just an empty struct but that wont change ABI of structs including this */
 	struct GD_B {	/* Band selection */
 		int active;
 		char *bands;
@@ -65,6 +76,10 @@ struct GDALREAD_CTRL {
 	struct GD_M {	/* Metadata only */
 		int active;
 	} M;
+	struct GD_O {	/* Three chars code to specify the array layout in memory */
+		/* first char T(op)|B(ot), second R(ow)|C(ol), third L(eft)|R(ight), fourth P(ix)|L(ine)|S(equencial) */
+		char mem_layout[4];
+	} O;
 	struct GD_N {	/* For floats, replace this value by NaN */
 		float nan_value;
 	} N;
@@ -109,20 +124,22 @@ struct GDALREAD_CTRL {
 		char side[1];		/* If array is going to pasted (grdpaste), tell in what side 'lrtb' */
 		int offset;
 	} mini_hdr;
+#endif
 };
 
-/* Structure to hold metadata info in a per bands basis read */
+/*! Structure to hold metadata info in a per bands basis read */
 struct GDAL_BAND_FNAMES {
-	char		*DataType;
-	int	XSize;
-	int	YSize;
-	double		nodata;
-	double		MinMax[2];
-	double		ScaleOffset[2];
+	char   *DataType;
+	int     XSize;
+	int     YSize;
+	double  nodata;
+	double  MinMax[2];
+	double  ScaleOffset[2];
 };
 
-/* Structure with the output data transmited by GMT_gdalread */
-struct GD_CTRL {
+/*! Structure with the output data transmited by GMT_gdalread */
+struct GMT_GDALREAD_OUT_CTRL {
+#ifdef HAVE_GDAL		/* Otherwise this is just an empty struct but that wont change ABI of structs including this */
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */
 		int active;
@@ -162,10 +179,11 @@ struct GD_CTRL {
 	const char	*DriverLongName;
 	const char	*ColorInterp;
 	int	*ColorMap;
+	int nIndexedColors; /* Number of colors in a paletted image */
 	int	RasterXsize;
 	int	RasterYsize;
-	int	RasterCount;	/* Total number of bands in file */
-	int	nActualBands;	/* Number of bands that were actually sent back */
+	int	RasterCount;    /* Total number of bands in file */
+	int	nActualBands;   /* Number of bands that were actually sent back */
 	struct Corners {
 		double LL[2], UL[2], UR[2], LR[2];
 	} Corners;
@@ -174,4 +192,7 @@ struct GD_CTRL {
 	} GEOGCorners;
 
 	struct GDAL_BAND_FNAMES *band_field_names;
+#endif
 };
+
+#endif  /* _GMT_GDALREAD_H */

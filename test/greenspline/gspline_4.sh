@@ -5,7 +5,7 @@
 ps=gspline_4.ps
 
 # Figure 5 in Wessel, P. (2009), A general-purpose Green's function-based
-#	interpolator, Computers & Geosciences, 35, 1247–1254.
+#	interpolator, Computers & Geosciences, 35, 1247-1254.
 
 T=Table_5_23.d
 R3D=5/40/-5/10/5/16

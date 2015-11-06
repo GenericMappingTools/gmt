@@ -13,12 +13,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtinfo** [ *table* ] [ **-A**\ **a**\ \|\ **f**\ \|\ **s** ] [ **-C** ]
-[ **-D**\ [*dx*\ [/*dy*\ ]] ] [ **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
-[ **-I**\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
-[ **-S**\ [**x**\ ][**y**] ] [ **-T**\ *dz*\ [/*col*] ]
+**gmtinfo** [ *table* ] [ |-A|\ **a**\ \|\ **f**\ \|\ **s** ]
+[ |-C| ]
+[ |-D|\ [*dx*\ [/*dy*\ ]] ] [ |-E|\ **L**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ]
+[ |-I|\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
+[ |-S|\ [**x**\ ][**y**] ]
+[ |-T|\ *dz*\ [/*col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -54,25 +57,39 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ **a**\ \|\ **f**\ \|\ **s**
     Specify how the range should be reported. Choose **-Aa** for the
     range of all files combined, **-Af** to report the range for each
     file separately, and **-As** to report the range for each segment
     (in multisegment files) separately. [Default is **-Aa**].
+
+.. _-C:
+
 **-C**
     Report the min/max values per column in separate columns [Default
     uses <min/max> format]. When used, users may also use **-o** to
     limit which output columns should be reported [all].
+
+.. _-D:
+
 **-D**
     Modifies results obtained by **-I** by shifting the region to better
     align with the center of the data.  Optionally, append granularity
     for this shift [Default performs an exact shift].
+
+.. _-E:
+
 **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col*
     Returns the record whose column *col* contains the minimum
     (**l**) or maximum (**h**) value. Upper case
     (**L\|H**) works on absolute value of the data. In case of multiple
     matches, only the first record is returned. If *col* is not
     specified we default to the last column in the data.
+
+.. _-I:
+
 **-I**\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...]
     Report the min/max of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes),
@@ -88,8 +105,10 @@ Optional Arguments
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
-    If *dx* is given as - then the actual min/max of the input is given
-    in the **-R** string.
+    If *dx* is given as - then the actual min/max of the input is given in the **-R** string.
+
+.. _-S:
+
 **-S**\ [**x**][**y**]
     Add extra space for error bars. Useful together with **-I** option
     and when later plotting with **psxy** **-E**. **-Sx** leaves space
@@ -98,17 +117,24 @@ Optional Arguments
     bars using the values in third (2) column. **-S**
     or **-Sxy** leaves space for both error bars using the values in
     third and fourth (2 and 3) columns.
+
+.. _-T:
+
 **-T**\ *dz*\ [/*col*]
     Report the min/max of the first (0'th) column to the nearest
     multiple of *dz* and output this in the form **-T**\ *zmin/zmax/dz*.
-    To use another column, append /\ *col*. Only works when **-I** is
-    selected. 
+    To use another column, append /\ *col*. Only works when **-I** is selected. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -120,6 +146,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_-ocols.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_

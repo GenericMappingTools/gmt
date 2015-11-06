@@ -13,15 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psbasemap** **-J**\ *parameters*
+**psbasemap** |-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]]
-[ **-K** ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
-**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
-[ **-O** ] [ **-P** ]
+[ |-A|\ [*file*] ]
+[ |-D|\ *insert box* ]
+[ |-F|\ *box* ]
+[ |-K| ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-L|\ *ruler* ]
+[ |-O| ]
+[ |-P| ]
 [ |SYN_OPT-U| ]
-[ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
+[ |-T|\ *rose* ]
+[ |-T|\ *mag_rose* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -37,18 +42,19 @@ Description
 
 **psbasemap** creates PostScript code that will produce a basemap.
 Several map projections are available, and the user may specify separate
-tickmark intervals for boundary annotation, ticking, and [optionally]
+tick-mark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
-At least one of the options **-B**,
-**-L**\ [**f**][**x**]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**],
-or
-**-T**\ [**f**\ \|\ **m**][**x**]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
-must be specified. 
+At least one of the options **-B**, **-L**, or **-T** must be specified.
 
 Required Arguments
 ------------------
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -59,42 +65,105 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
+**-A**\ [*file*]
+    No plotting is performed.  Instead, we determine the geographical coordinates of the polygon outline
+    for the (possibly oblique) rectangular map domain.  The plot domain must be given via
+    **-R** and **-J**, with no other options allowed.  The sampling interval is controlled via
+    **MAP_LINE_STEP** parameter.  The coordinates are written to *file* or to standard output if no file
+    is specified.
+
+.. _-B:
+
 .. include:: explain_-B.rst_
 
-**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*\ [/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+g**\ *fill*]
-    Draw a simple map insert box on the map.  Specify the box in one of three ways:
+.. _-D:
+
+**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**][**+s**\ *file*] \| **-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+w**\ *width*\ [/*height*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]][**+s**\ *file*]
+    Draw a simple map insert box on the map.  Requires **-F**.  Specify the box in one of three ways:
     (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
     and meridians; append **r** if the coordinates instead are the lower left and
     upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
     of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
-    (c) Give [**u**]\ *width*\ [/*height*] of bounding rectangle and use **+c** to set
-    box center. Append any combination of the following modifiers to draw the insert box:
-    **+c**\ *lon/lat* to specify box center.
-    **+g**\ *fill* to paint a insert [no fill].
-    **+p**\ *pen* to draw the insert outline [no outline].
+    (c) Give the reference point on the map for the insert using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).
+    Append **+w**\ *width*\ [/*height*] of bounding rectangle or box in plot coordinates (inches, cm, etc.).
+    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
+    Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
+    If you need access to the placement of the lower left corner of the map insert and
+    its dimensions in the current map unit, use **s**\ *file* to write this information
+    to *file*.
+    Specify insert box attributes via the **-F** option [outline only].
+
+.. _-F:
+
+**-F**\ [**d**\ \|\ **l**\ \|\ **t**][\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around any map insert (**-D**),
+    map scale (**-L**) or map rose (**-T**) using
+    **MAP_FRAME_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the logo box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between logo and border.
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
+    Used in combination with **-D**, **-L** or **-T**. To specify separate parameters
+    for the various map features, append  **d**\ \|\ **l**\ \|\ **t** to **-F**
+    to specify panel parameters for just that panel [Default uses the same panel
+    parameters for all selected map features].
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 .. include:: explain_-L_scale.rst_
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
+.. _-T:
+
 .. include:: explain_-T_rose.rst_
+
+.. _-U:
 
 .. include:: explain_-U.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
 .. include:: explain_-c.rst_
 
-.. |Add_-f| replace:: This applies only to the coordinates specified in the **-R** option. 
+.. |Add_-f| replace:: This applies only to the coordinates specified in the **-R** option.
 .. include:: explain_-f.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
@@ -124,14 +193,14 @@ annotating every 2, and using xlabel = "Distance" and ylabel = "No of samples", 
 
    ::
 
-    gmt psbasemap -R0/9/0/5 -Jx1 -Bf1a2:Distance:/:"No of samples":WeSn > linear.ps
+    gmt psbasemap -R0/9/0/5 -Jx1 -Bf1a2 -Bx+lDistance -By+l"No of samples" -BWeSn > linear.ps
 
 Log-log plot
 ~~~~~~~~~~~~
 
 To make a log-log frame with only the left and bottom axes, where the
 x-axis is 25 cm and annotated every 1-2-5 and the y-axis is 15 cm and
-annotated every power of 10 but has tickmarks every 0.1, run
+annotated every power of 10 but has tick-marks every 0.1, run
 
    ::
 
@@ -180,7 +249,7 @@ plotted as
 
    ::
 
-    gmt psbasemap -R90/180/-50/50 -Jm0.025i -Bafg -B+tMercator -Lx1i/1i/0/5000 > mercator.ps
+    gmt psbasemap -R90/180/-50/50 -Jm0.025i -Bafg -B+tMercator -Lx1i/1i+c0+w5000k > mercator.ps
 
 Miller
 ~~~~~~
@@ -218,7 +287,7 @@ global basemap centered on the 130E meridian is made by
 
    ::
 
-    gmt psbasemap -R-50/310/-90/90 -JQ130/25c -Bafg -B+t"Equidistant Cylindrical" > cyl\_eqdist.ps
+    gmt psbasemap -R-50/310/-90/90 -JQ130/25c -Bafg -B+t"Equidistant Cylindrical" > cyl_eqdist.ps
 
 Universal Transverse Mercator [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -279,7 +348,7 @@ A basemap for north America may be created by
 
    ::
 
-    gmt psbasemap -R-180/-20/0/90 -JPoly/4i -Bafg -B+t"Polyconic" > polyconic.ps
+    gmt psbasemap -R-180/-20/0/90 -JPoly/4i -Bafg -B+tPolyconic > polyconic.ps
 
 Azimuthal Map Projections
 -------------------------
@@ -470,7 +539,7 @@ contains all the information about annotations, ticks, and even
 gridlines. Each record is of the form *coord* *type* [*label*\ ], where
 *coord* is the coordinate for this annotation (or tick or gridline),
 *type* is one or more letters from **a** (annotation), **i** interval
-annotation, **f** tickamrk, and **g** gridline. Note that **a** and
+annotation, **f** tickmark, and **g** gridline. Note that **a** and
 **i** are mutually exclusive and cannot both appear in the same
 *intfile*. Both **a** and **i** requires you to supply a *label* which
 is used as the plot annotation. If not given then a regular formatted

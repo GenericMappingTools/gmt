@@ -13,20 +13,25 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
-**-E**\ *dpi* ] [ **-C**\ *xpos*/*ypos*\ [/*justify*] ] [ **-F**\ *pen*
-] [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [
-**-J**\ *parameters* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-M** ] [ **-N**\ *nx*\ [/*ny*] ] [ **-O** ] [ **-P** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-c**\ *copies* ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+**psimage** *imagefile*
+[ |-D|\ *refpoint* ]
+[ |-F|\ *box* ]
+[ |-G|\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ]
+[ |-I| ]
+[ |-J|\ *parameters* ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-K| ]
+[ |-M| ]
+[ |-O| ]
+[ |-P| ]
+[ |SYN_OPT-Rz| ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
@@ -46,7 +51,7 @@ be made transparent. The user may also choose to replicate the image
 which, when preceded by appropriate clip paths, may allow larger
 custom-designed fill patterns to be implemented (the **-Gp** mechanism
 offered in most GMT programs is limited to rasters smaller than 146
-by 146). 
+by 146).
 
 Required Arguments
 ------------------
@@ -55,47 +60,82 @@ Required Arguments
     This must be an Encapsulated PostScript (EPS) file or a raster
     image. An EPS file must contain an appropriate BoundingBox. A raster
     file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
-    If GDAL was not configured during GMT installation then only
-    Sun raster files are supported natively.
-**-E**\ *dpi*
-    Sets the dpi of the image in dots per inch, or use **-W**.
-**-W**\ [**-**]\ *width*\ [/*height*]
-    Sets the width (and height) of the image in plot coordinates
-    (inches, cm, etc.). If *height* is not given, the original aspect
-    ratio of the image is maintained. If *width* is negative we use the
-    absolute value and interpolate image to the device resolution using
-    the PostScript image operator. Alternatively, use **-E**.
+    Note: If GDAL was not configured during GMT installation then only
+    Sun raster files are supported natively.  You must then convert other
+    formats to Sun raster files before use.
 
 Optional Arguments
 ------------------
 
-**-C**\ *xpos*/*ypos*\ [/*justify*]
-    Sets position of the image in plot coordinates (inches, cm, etc.)
-    from the current origin of the plot. By default, this defines the
-    position of the lower left corner of the image, but this can be
-    changed by specifying justification [0/0/BL].
-**-F**\ *pen*
-    Draws a rectangular frame around the image with the given pen [no
-    frame]. 
+.. _-D:
+
+**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+e**\ *dpi*\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
+    Sets reference point on the map for the image using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`pstext`).
+    Note: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
+    Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
+    Specify image size in one of two ways:
+    Use **+e**\ *dpi* to set the dpi of the image in dots per inch, or use
+    **+w**\ [**-**]\ *width*\ [/*height*] to
+    set the width (and height) of the image in plot coordinates
+    (inches, cm, etc.). If *height* is not given, the original aspect
+    ratio of the image is maintained. If *width* is negative we use the
+    absolute value and interpolate image to the device resolution using
+    the PostScript image operator. Optionally, use **+n**\ *nx*\ [/*ny*] to
+    replicate the image *nx* times horizontally and *ny* times
+    vertically. If *ny* is omitted, it will be identical to *nx* [Default is 1/1].
+
+.. _-F:
+
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*]][\ **+s**\ [[*dx*/*dy*/][*shade*]]]
+    Without further options, draws a rectangular border around the image using
+    **MAP_FRAME_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the image box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between scale and border.
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the **MAP_DEFAULTS_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
+
+.. _-J:
 
 .. |Add_-J| replace:: (Used only with **-p**)
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-M:
 
 **-M**
     Convert color image to monochrome grayshades using the (television)
     YIQ-transformation.
-**-N**\ *nx*\ [/*ny*]
-    Replicate the image *nx* times horizontally and *ny* times
-    vertically. If *ny* is omitted, it will be identical to *nx*
-    [Default is 1/1]. 
+
+.. _-O:
 
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-R:
 
 .. |Add_-R| replace:: (Used only with **-p**)
 .. include:: explain_-R.rst_
@@ -103,10 +143,16 @@ Optional Arguments
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -114,6 +160,8 @@ Optional Arguments
 
 These options are for 1-bit images only. They have no effect when
 plotting other images or PostScript files.
+
+.. _-G:
 
 **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color*
     **-Gb**
@@ -132,32 +180,22 @@ no effect when plotting 1-bit images or PostScript files.
 **-Gt**
     Assigns the color that is to be made transparent. Sun Raster files
     do not support transparency, so indicate here which color to be made
-    transparent. 
+    transparent.
 
-.. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning). 
+.. |Add_perspective| replace:: (Requires **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
 
-Examples
---------
-
-To plot the image contained in the 8-bit raster file scanned_face.ras,
-scaling it to 8 by 10 cm (thereby possibly changing the aspect ratio),
-and making the white color transparent, use
-
-   ::
-
-    gmt psimage scanned_face.ras -W8c/10c -Gtwhite > image.ps
-
+:doc:`gmt`, :doc:`pslegend`,
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
 accordingly), and outline with a thin, blue pen, use
 
    ::
 
-    gmt psimage logo.jpg -W1i -Fthin,blue > image.ps
+    gmt psimage logo.jpg -Dx0/0+w1i -F+pthin,blue > image.ps
 
 To include an Encapsulated PostScript file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
@@ -166,7 +204,7 @@ aspect ratio, use
 
    ::
 
-    gmt psimage tiger.eps -C2i/1i/TR -W3i > image.ps
+    gmt psimage tiger.eps -Dx2i/1i+jTR+w3i > image.ps
 
 To replicate the 1-bit raster image template 1_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
@@ -174,12 +212,13 @@ to be 1 cm wide, use
 
    ::
 
-    gmt psimage 1_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
+    gmt psimage 1_bit.ras -Gbbrown -Gfred -Dx0/0+w1c+n5 > image.ps
 
 See Also
 --------
 
 :doc:`gmt`,
-:doc:`gmtcolors`,
+:doc:`gmtcolors`, :doc:`gmtlogo`
+:doc:`pslegend`, :doc:`psscale`
 :doc:`psxy`,
 :manpage:`convert(1)`

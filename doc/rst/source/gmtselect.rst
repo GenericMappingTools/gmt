@@ -14,17 +14,19 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmtselect** [ *table* ]
-[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+as**\ ][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
-[ **-C**\ *dist*\ [*unit*]/\ *ptfile* ]
-[ **-D**\ *resolution*\ [**+**] ] [ **-E**\ [**fn**] ]
-[ **-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
-[ **-J**\ *parameters* ]
-[ **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
-[ **-N**\ *maskvalues* ]
+[ |-A|\ *min\_area*\ [/*min_level*/*max_level*][\ **+ag**\ \|\ **i**\ \|\ **s**\ \|\ **S**][**+r**\ \|\ **l**][**p**\ *percent*] ]
+[ |-C|\ *dist*\ [*unit*]/\ *ptfile* ]
+[ |-D|\ *resolution*\ [**+**] ]
+[ |-E|\ [**fn**] ]
+[ |-F|\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
+[ |-J|\ *parameters* ]
+[ |-L|\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
+[ |-N|\ *maskvalues* ]
 [ |SYN_OPT-R| ]
-[ **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*] ]
+[ |-Z|\ *min*\ [/*max*]\ [**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -60,8 +62,12 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 .. |Add_-A| replace:: Ignored unless **-N** is set.
 .. include:: explain_-A.rst_
+
+.. _-C:
 
 **-C**\ *dist*\ [*unit*]/\ *ptfile*
     Pass all records whose location is within *dist* of any of the
@@ -74,6 +80,8 @@ Optional Arguments
     inch, or points, as determined by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) before
     Cartesian distances are compared to *dist*.
 
+.. _-D:
+
 **-D**\ *resolution*\ [**+**]
     Ignored unless **-N** is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
@@ -84,6 +92,8 @@ Optional Arguments
     differ in details it is not guaranteed that a point will remain
     inside [or outside] when a different resolution is selected.
 
+.. _-E:
+
 **-E**\ [**fn**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
@@ -91,12 +101,16 @@ Optional Arguments
     **-F** and **-N** options, respectively, so that boundary points are
     considered to be outside.
 
+.. _-F:
+
 **-F**\ *polygonfile*
     Pass all records whose location is within one of the closed polygons
     in the multiple-segment file *polygonfile*. For spherical polygons
     (lon, lat), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
     ASCII regardless of whether **-bi** is used.
+
+.. _-I:
 
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
@@ -113,8 +127,13 @@ Optional Arguments
     (and **-A**, **-D**).
 
     **z** select records NOT within the range specified by **-Z**.
-     
+
+.. _-J:
+ 
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-L:
 
 **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile*
     Pass all records whose location is within *dist* of any of the line
@@ -131,6 +150,8 @@ Optional Arguments
     within the segments endpoints [Default considers points "beyond" the
     line's endpoints.
 
+.. _-N:
+
 **-N**\ *maskvalues*
     Pass all records whose location is inside specified geographical
     features. Specify if records should be skipped (s) or kept (k) using
@@ -142,11 +163,17 @@ Optional Arguments
 
     [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land]. 
 
+.. _-R:
+
 .. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. 
 .. include:: explain_-R.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*]
     Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range
@@ -164,6 +191,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -191,7 +221,7 @@ Optional Arguments
 This note applies to ASCII output only in combination with binary or
 netCDF input or the **-:** option. See also the note below.
 
-Note On Processing Ascii Input Records
+Note On Processing ASCII Input Records
 --------------------------------------
 
 Unless you are using the **-:** option, selected ASCII input records are
@@ -222,7 +252,10 @@ Note On Segments
 
 Segment headers in the input files are copied to output if one or more
 records from a segment passes the test. Selection is always done point
-by point, not by segment.
+by point, not by segment.  That means only points from a segment that
+pass the test will be included in the output.  If you wish to clip the lines
+and include the new boundary points at the segment ends you must use
+gmtspatial instead.
 
 Examples
 --------
@@ -232,7 +265,7 @@ points in pts.d but more than 100 km away from the lines in lines.d, run
 
    ::
 
-    gmt gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
+    gmt select lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
@@ -242,21 +275,21 @@ points on land (as determined by the high-resolution coastlines), use
 
    ::
 
-    gmt gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
+    gmt select data.d -R120/121/22/24 -Dh -Nk/s > subset
 
 To return all points in quakes.d that are inside or on the spherical
 polygon lonlatpath.d, try
 
    ::
 
-    gmt gmtselect quakes.d -Flonlatpath.d -fg > subset1
+    gmt select quakes.d -Flonlatpath.d -fg > subset1
 
 To return all points in stations.d that are within 5 cm of the point in
 origin.d for a certain projection, try
 
    ::
 
-    gmt gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c \
+    gmt select stations.d -C5/origin.d -R20/50/-10/20 -JM20c \
     --PROJ_LENGTH_UNIT=cm > subset2
 
 .. include:: explain_gshhs.rst_

@@ -24,13 +24,14 @@
 #define THIS_MODULE_NAME	"mgd77sniffer"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
+#define THIS_MODULE_KEYS	""
 
 #include "mgd77.h"
 #include "gmt_dev.h"
 #include "mgd77sniffer.h"
 #include "gmt_internals.h"
 
-#define GMT_PROG_OPTIONS "-VRbn" GMT_OPT("Q")
+#define GMT_PROG_OPTIONS "-VRbdn" GMT_OPT("Q")
 
 /*
 #define HISTOGRAM_MODE 0
@@ -374,7 +375,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file> ] [-N]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -460,7 +461,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-V Run in verbose mode.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-b Output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
-	GMT_Option (API, "n,.");
+	GMT_Option (API, "do,n,.");
 	GMT_Message (API, GMT_TIME_NONE, "\tMGD77 FIELD INFO:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tField\t\t\tAbbreviation\t\tUnits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTwo-way Travel Time\ttwt\t\t\tsec\n");
@@ -484,7 +485,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t\t\tgrd             0       -       -       -\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t\ti2              2       -       -       32767\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tgrdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "E77 ERROR OUTPUT\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tE77 ERROR OUTPUT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tError output is divided into (1) a header containing information globally\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tapplicable to the cruise and (2) individual error records summarizing all\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tall  errors  encountered in each cruise record.\n");
@@ -597,7 +598,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	struct MGD77_ERROR *E = NULL;
 	struct tm *systemTime;
 	struct MGD77_CARTER C;
-	struct GMT_gcal cal;
+	struct GMT_GCAL cal;
 
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

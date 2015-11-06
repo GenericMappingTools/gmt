@@ -23,6 +23,11 @@
  * Version: 5
  */
 
+/*!
+ * \file common_sighandler.h
+ * \brief Prototype of a signal-handling function
+ */
+
 #pragma once
 #ifndef _COMMON_SIGHANDLER_H
 #define _COMMON_SIGHANDLER_H

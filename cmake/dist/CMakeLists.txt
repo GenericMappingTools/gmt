@@ -162,6 +162,11 @@ if (WIN32 AND NOT CYGWIN)
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 
+	if (OMP_DLL_LOC)
+		# Install vcomp120.dll
+		install (PROGRAMS ${OMP_DLL_LOC} DESTINATION ${GMT_BINDIR} COMPONENT Runtime)
+	endif (OMP_DLL_LOC)
+
 	# Fix bundle:
 	install (CODE "
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages\")

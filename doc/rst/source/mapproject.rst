@@ -13,24 +13,29 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**mapproject** [ *table* ] **-J**\ *parameters*
+**mapproject** [ *tables* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*] ]
-[ **-C**\ [*dx*/*dy*] ] [ **-Dc**\ \|\ **i**\ \|\ **p** ]
-[ **-E**\ [*datum*\ ] ] [ **-F**\ [*unit*\ ] ]
-[ **-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ]
-[ **-I** ]
-[ **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**] ]
-[ **-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
-[ **-Q**\ [**d**\ \|\ **e** ] [ **-S** ]
-[ **-T**\ [**h**\ ]\ *from*\ [/*to*] ]
+[ |-A|\ **b**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*] ]
+[ |-C|\ [*dx*/*dy*] ]
+[ |-D|\ **c**\ \|\ **i**\ \|\ **p** ]
+[ |-E|\ [*datum*\ ] ] [ |-F|\ [*unit*\ ] ]
+[ |-G|\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ]
+[ |-I| ]
+[ |-L|\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**] ]
+[ |-N|\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
+[ |-Q|\ [**d**\ \|\ **e** ]
+[ |-S| ]
+[ |-T|\ [**h**\ ]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [**w**\ \|\ **h**] ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-p| ]
 [ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 
@@ -39,7 +44,7 @@ Synopsis
 Description
 -----------
 
-**mapproject** reads (longitude, latitude) positions from *infiles* [or
+**mapproject** reads (longitude, latitude) positions from *tables* [or
 standard input] and computes (x,y) coordinates using the specified map
 projection and scales. Optionally, it can read (x,y) positions and
 compute (longitude, latitude) values doing the inverse transformation.
@@ -54,7 +59,12 @@ read (latitude,longitude) files.
 Required Arguments
 ------------------
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| replace:: Special case for the UTM
     projection: If **-C** is used and **-R** is not given then the
@@ -68,6 +78,8 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*]
     **-Af** calculates the (forward) azimuth from fixed point *lon/lat*
     to each data point. Use **-Ab** to get back-azimuth from data points
@@ -77,6 +89,9 @@ Optional Arguments
     (assuming the current ellipsoid is not a sphere). If no fixed point
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.
+
+.. _-C:
+
 **-C**\ [*dx*/*dy*]
     Set center of projected coordinates to be at map projection center
     [Default is lower left corner]. Optionally, add offsets in the
@@ -86,9 +101,15 @@ Optional Arguments
     the offsets is the plot distance unit in effect (see
     :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) unless **-F** is used, in which case the
     offsets are in meters.
+
+.. _-D:
+
 **-Dc**\ \|\ **i**\ \|\ **p**
     Temporarily override :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` and use **c** (cm),
     **i** (inch), or **p** (points) instead. Cannot be used with **-F**.
+
+.. _-E:
+
 **-E**\ [*datum*\ ]
     Convert from geodetic (lon, lat, height) to Earth Centered Earth
     Fixed (ECEF) (x,y,z) coordinates (add **-I** for the inverse
@@ -97,12 +118,18 @@ Optional Arguments
     ID (see **-Qe**) or given as *a*\ [,*inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84.
+
+.. _-F:
+
 **-F**\ [*unit*\ ]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see UNITS). Without **-F**, the output (or input, see **-I**)
     are in the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see
     **-D**).
+
+.. _-G:
+
 **-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**]
     Calculate distances along track *or* to the optional point set with
     **-G**\ *x0/y0*. Append the distance unit (see UNITS), including
@@ -112,8 +139,14 @@ Optional Arguments
     we calculate cumulate distances along track. Append **-** to obtain
     incremental distance between successive points. Append **+** to
     specify the 2nd point via two extra columns in the input file.
+
+.. _-I:
+
 **-I**
     Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
+
+.. _-L:
+
 **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**\ ]
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
@@ -124,6 +157,9 @@ Optional Arguments
     unit requires **-R** and **-J** to be set. Finally, append **+** to
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.
+
+.. _-N:
+
 **-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**]
     Convert from geodetic latitudes (using the current ellipsoid; see
     :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) to one of four different auxiliary latitudes
@@ -131,11 +167,20 @@ Optional Arguments
     **c**\ onformal, **g**\ eocentric, and **m**\ eridional latitudes
     [geocentric]. Use **-I** to convert from auxiliary latitudes to
     geodetic latitudes.
+
+.. _-Q:
+
 **-Q**\ [**d**\ \|\ **e**
     List all projection parameters. To only list datums, use **-Qd**. To
     only list ellipsoids, use **-Qe**.
+
+.. _-S:
+
 **-S**
     Suppress points that fall outside the region.
+
+.. _-T:
+
 **-T**\ [**h**\ ]\ *from*\ [/*to*]
     Coordinate conversions between datums *from* and *to* using the
     standard Molodensky transformation. Use **-Th** if 3rd input column
@@ -150,14 +195,26 @@ Optional Arguments
     after the inverse projection). Make sure that the
     :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` setting is correct for your case. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
+
+**-W**\ [**w**\ \|\ **h**]
+    Prints map width and height on standard output.  No input files are read.
+    To only output the width or the height, append **w** or **h**, respectively.
+    The units of the dimensions may be changed via **-D**.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -172,6 +229,9 @@ Optional Arguments
 
 .. include:: explain_-ocols.rst_
 
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
@@ -185,6 +245,14 @@ Optional Arguments
 
 Examples
 --------
+
+To convert UTM coordinates in meters to geographic locations, given
+a file utm.txt and knowing the UTM zone (and zone or hemisphere), try
+
+   ::
+
+    gmt mapproject utm.txt -Ju+11/1:1 -C -I -F
+
 
 To transform a file with (longitude,latitude) into (x,y) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree, run

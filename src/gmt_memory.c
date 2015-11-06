@@ -34,6 +34,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_internals.h"
 
 #ifdef HAVE_MEMALIGN
 #	include <malloc.h>

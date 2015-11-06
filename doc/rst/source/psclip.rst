@@ -13,18 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psclip** [ *table* ] **-J**\ *parameters*
+**psclip** [ *table* ] |-J|\ *parameters* |-C|\ [\ *n*]
 |SYN_OPT-Rz|
-[ **-A**\ [**m**\ \|\ **p**] ]
+[ |-A|\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**] ]
 [ |SYN_OPT-B| ]
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-N** ] [ **-O** ]
-[ **-P** ] [ **-T** ]
+|-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-K| ] [ |-N| ] [ |-O| ]
+[ |-P| ] [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -32,8 +34,6 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
-
-**psclip** **-C**\ [\ *n*] [ **-K** ] [ **-O** ]
 
 |No-spaces|
 
@@ -57,6 +57,8 @@ against these paths, the clipping may be deactivated by running
 Required Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ [\|\ *n*]
     Mark end of existing clip path(s). No input file will be processed.
     No projection information is needed unless **-B** has been selected
@@ -65,8 +67,13 @@ Required Arguments
     clipping path by passing that as the argument.
     Remember to supply
     **-X** and **-Y** settings if you have moved since the clip started.
-    
+
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -80,27 +87,44 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-**-A**\ [**m**\ \|\ **p**]
-    By default line segments are connected as great circle arcs. To connect them as
+.. _-A:
+
+**-A**\ [**m**\ \|\ **p**\ \|\ **x**\ \|\ **y**]
+    By default, geographic line segments are connected as great circle arcs. To connect them as
     straight lines, use the **-A** flag. Alternatively, add **m** to connect
     the line by first following a meridian, then a parallel. Or append **p**
     to start following a parallel, then a meridian. (This can be practical
     to connect lines along parallels, for example). 
+    For Cartesian data, points are simply connected, unless you append
+    **x** or **y** to construct stair-case paths whose first move is along 
+    *x* or *y*, respectively.
+
+.. _-B:
 
 .. include:: explain_-B.rst_
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-N:
 
 **-N**
     Invert the sense of what is inside and outside. For example, when
     using a single path, this means that only points outside that path
     will be shown. Cannot be used together with **-B**. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-T:
 
 **-T**
     Rather than read any input files, simply turn on clipping for the
@@ -108,10 +132,16 @@ Optional Arguments
     **psclip** with the arguments **-N** /dev/null (or, under Windows,
     **-N** NUL). Cannot be used together with **-B**. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -119,6 +149,9 @@ Optional Arguments
 .. include:: explain_-bi.rst_
 
 .. include:: explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

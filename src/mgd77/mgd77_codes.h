@@ -7,6 +7,11 @@
  * See README file for copying and redistribution conditions.
  */
 
+/*!
+ * \file mgd77_codes.h
+ * \brief  
+ */
+
 #define MGD77_N_AGENCIES 53
 #define MGD77_N_VESSELS 444
 

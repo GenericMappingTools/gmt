@@ -1,12 +1,13 @@
 .. _-bo_full:
 
-**-bo**\ [*ncols*][*type*]
-    Select binary output. Append one or more comma-separated
-    combinations of *ncols*/*type*, where *ncols* is the actual number
-    of data columns and *type* must be one of **c**, **u**, **h**,
+**-bo**\ [*ncols*][*type*][w][\ **+L**\ \|\ **+B**]
+    Select native binary output. Here, *ncols* is the actual number
+    of data columns of type **t**, which must be one of **c**, **u**, **h**,
     **H**, **i**, **I** (capital i), **l** (lower case elle), **L**, **f**, and **d** (see **-bi**).
-    Append **w** or **+L**\ \|\ **B** for byte-swapping. *ncols* is the
-    number of each item in the binary file. If no *ncols* is specified
-    we assume that *type* applies to all columns and that *ncols* is
-    implied by the default output of the program. NetCDF file output is
+    For a mixed-type output record, append additional comma-separated
+    combinations of *ncols*/\ **t**.
+    Append **w** to any item to force byte-swapping or **+L**\ \|\ **B**
+    for byte-swapping of the entire record. If *ncols* is not specified
+    we assume that **t** applies to all columns and that *ncols* is
+    implied by the default output of the program. Note: NetCDF file output is
     not supported.

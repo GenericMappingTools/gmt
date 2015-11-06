@@ -7,7 +7,6 @@ T=0.56
 L=0.10
 C=1.04
 R=1.98
-gmt gmtset PS_SCALE_X 0.8 PS_SCALE_Y 0.8
 gmt pstext -R0/3/0/1.5 -Jx1i -P -K -N -C0 -Wthin,- -F+f36p,Helvetica-Bold+jLB << EOF > GMT_pstext_justify.ps
 0.1	0.2	My Text
 EOF

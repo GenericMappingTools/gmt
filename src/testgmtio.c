@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_CTRL *GMT = NULL;
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 	GMT = API->GMT;
 
 	/* 2. Convert command line arguments to local linked option list */
@@ -47,12 +47,12 @@ int main (int argc, char *argv[]) {
 
 	/* 4. Initializing data input via stdin */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) exit (EXIT_FAILURE);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) exit (EXIT_FAILURE);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data input */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) exit (EXIT_FAILURE);	/* Establishes data output */
 	
 	/* 5. Read individual records until end of data set */
-	/*    The GMT_FILE_BREAK in GMT_Get_Record means we will return a special EOF marker at the end of each
+	/*    The GMT_READ_FILEBREAK in GMT_Get_Record means we will return a special EOF marker at the end of each
 	 *    data table when there are more tables to process.  The end of the last file yields the actual EOF.
 	 *    This lets us do special processing after a file has been fully read. */
 
@@ -62,7 +62,7 @@ int main (int argc, char *argv[]) {
 	
 	do {	/* Keep returning records until we reach EOF */
 		mode = GMT_WRITE_DOUBLE;	/* Normally we treat data as double precision values */
-		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
+		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_READ_FILEBREAK, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) {	/* This check kicks in if the data has bad formatting, text etc */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Error found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				API->print_func (stdout, "E: ");
@@ -94,8 +94,8 @@ int main (int argc, char *argv[]) {
 			}
 		}
 		if (GMT_REC_IS_DATA (GMT)) {	/* Found a data record */
-			if ((error = GMT_set_cols (GMT, GMT_IN, n_fields))) exit (EXIT_FAILURE);
-			if ((error = GMT_set_cols (GMT, GMT_OUT, n_fields))) exit (EXIT_FAILURE);
+			if ((error = GMT_set_cols (GMT, GMT_IN, n_fields)) != 0) exit (EXIT_FAILURE);
+			if ((error = GMT_set_cols (GMT, GMT_OUT, n_fields)) != 0) exit (EXIT_FAILURE);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 			API->print_func (stdout, "D: ");
 		}

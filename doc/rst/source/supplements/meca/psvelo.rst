@@ -13,19 +13,24 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**psvelo** [ *table* ] **-J**\ *parameters*
+**psvelo** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
-[ **-A**\ *parameters* ]
+[ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
-[ **-F**\ *color* ] [ **-E**\ *color* ] [ **-G**\ *fill* ] [ **-K** ]
-[ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ]
-[ **-S**\ *symbol*/*scale*/*conf*/*font\_size* ] [
+[ |-F|\ *color* ]
+[ |-E|\ *color* ]
+[ |-G|\ *color* ]
+[ |-K| ]
+[ |-L| ]
+[ |-N| ] [ |-O| ] [ |-P| ]
+[ |-S|\ *symbol*/*scale*/*conf*/*font_size* ] [
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -48,131 +53,144 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-S:
+
 **-S**
 
-Selects the meaning of the columns in the data file and the figure to be
-plotted.
+Selects the meaning of the columns in the data file and the figure to be plotted.
 
-**-Se**\ *velscale/confidence/fontsize*.
+    **-Se**\ *velscale/confidence/fontsize*.
 
-Velocity ellipses in (N,E) convention. *Vscale* sets the scaling of the
-velocity arrows. This scaling gives inches (unless **c**, **i**, **m**,
-or **p** is appended). *Confidence* sets the 2-dimensional confidence
-limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *Fontsize*
-sets the size of the text in points. The ellipse will be filled with the
-color or shade specified by the **-G** option [default transparent]. The
-arrow and the circumference of the ellipse will be drawn with the pen
-attributes specified by the **-W** option. Parameters are expected to be
-in the following columns:
+        Velocity ellipses in (N,E) convention. *Vscale* sets the scaling of the
+        velocity arrows. This scaling gives inches (unless **c**, **i**, **m**,
+        or **p** is appended). *Confidence* sets the 2-dimensional confidence
+        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *Fontsize*
+        sets the size of the text in points. The ellipse will be filled with the
+        color or shade specified by the |-G| option [default transparent]. The
+        arrow and the circumference of the ellipse will be drawn with the pen
+        attributes specified by the |-W| option. Parameters are expected to be
+        in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude of station (**-:** option interchanges order)
-    **3**,\ **4**:
-    eastward, northward velocity (**-:** option interchanges order)
-    **5**,\ **6**:
-    uncertainty of eastward, northward velocities (1-sigma) (**-:**
-    option interchanges order)
-    **7**:
-    correlation between eastward and northward components
-    **8**:
-    name of station (optional).
+            **1**,\ **2**:
+            longitude, latitude of station (**-:** option interchanges order)
+            **3**,\ **4**:
+            eastward, northward velocity (**-:** option interchanges order)
+            **5**,\ **6**:
+            uncertainty of eastward, northward velocities (1-sigma) (**-:** option interchanges order)
+            **7**:
+            correlation between eastward and northward components
+            **8**:
+            name of station (optional).
 
-**-Sn**\ *barscale.*
+    **-Sn**\ *barscale.*
 
-Anisotropy bars. *Barscale* sets the scaling of the bars This scaling
-gives inches (unless **c**, **i**, **m**, or **p** is appended).
-Parameters are expected to be in the following columns:
+        Anisotropy bars. *Barscale* sets the scaling of the bars This scaling
+        gives inches (unless **c**, **i**, **m**, or **p** is appended).
+        Parameters are expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude of station (**-:** option interchanges order)
-    **3**,\ **4**:
-    eastward, northward components of anisotropy vector (**-:** option
-    interchanges order)
+            **1**,\ **2**:
+            longitude, latitude of station (**-:** option interchanges order)
+            **3**,\ **4**:
+            eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
-**-Sr**\ *velscale/confidence/fontsize*
+    **-Sr**\ *velscale/confidence/fontsize*
 
-Velocity ellipses in rotated convention. *Vscale* sets the scaling of
-the velocity arrows. This scaling gives inches (unless **c**, **i**,
-**m**, or **p** is appended). *Confidence* sets the 2-dimensional
-confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-*Fontsize* sets the size of the text in points. The ellipse will be
-filled with the color or shade specified by the **-G** option [default
-transparent]. The arrow and the circumference of the ellipse will be
-drawn with the pen attributes specified by the **-W** option. Parameters
-are expected to be in the following columns:
+        Velocity ellipses in rotated convention. *Vscale* sets the scaling of
+        the velocity arrows. This scaling gives inches (unless **c**, **i**,
+        **m**, or **p** is appended). *Confidence* sets the 2-dimensional
+        confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        *Fontsize* sets the size of the text in points. The ellipse will be
+        filled with the color or shade specified by the |-G| option [default
+        transparent]. The arrow and the circumference of the ellipse will be
+        drawn with the pen attributes specified by the |-W| option. Parameters
+        are expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude, of station (**-:** option interchanges order)
-    **3**,\ **4**:
-    eastward, northward velocity (**-:** option interchanges order)
-    **5**,\ **6**:
-    semi-major, semi-minor axes
-    **7**:
-    counter-clockwise angle, in degrees, from horizontal axis to major
-    axis of ellipse.
-    **8**:
-    name of station (optional)
+            **1**,\ **2**:
+            longitude, latitude, of station (**-:** option interchanges order)
+            **3**,\ **4**:
+            eastward, northward velocity (**-:** option interchanges order)
+            **5**,\ **6**:
+            semi-major, semi-minor axes
+            **7**:
+            counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
+            **8**:
+            name of station (optional)
 
-**-Sw**\ *wedge\_scale/wedge\_mag*.
+    **-Sw**\ *wedge\_scale/wedge\_mag*.
 
-Rotational wedges. *Wedge\_scale* sets the size of the wedges in inches
-(unless **c**, **i**, **m**, or **p** is appended). Values are
-multiplied by *Wedge\_mag* before plotting. For example, setting
-*Wedge\_mag* to 1.e7 works well for rotations of the order of 100
-nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
-and **-E** to set the color or shade for the uncertainty. Parameters are
-expected to be in the following columns:
+        Rotational wedges. *Wedge\_scale* sets the size of the wedges in inches
+        (unless **c**, **i**, **m**, or **p** is appended). Values are
+        multiplied by *Wedge\_mag* before plotting. For example, setting
+        *Wedge\_mag* to 1.e7 works well for rotations of the order of 100
+        nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
+        and **-E** to set the color or shade for the uncertainty. Parameters are
+        expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude, of station (**-:** option interchanges order)
-    **3**:
-    rotation in radians
-    **4**:
-    rotation uncertainty in radians
+            **1**,\ **2**:
+            longitude, latitude, of station (**-:** option interchanges order)
+            **3**:
+            rotation in radians
+            **4**:
+            rotation uncertainty in radians
 
-**-Sx**\ *cross\_scale*
+    **-Sx**\ *cross_scale*
 
-gives Strain crosses. *Cross\_scale* sets the size of the cross in
-inches (unless **c**, **i**, **m**, or **p** is appended). Parameters
-are expected to be in the following columns:
+        gives Strain crosses. *Cross\_scale* sets the size of the cross in
+        inches (unless **c**, **i**, **m**, or **p** is appended). Parameters
+        are expected to be in the following columns:
 
-    **1**,\ **2**:
-    longitude, latitude, of station (**-:** option interchanges order)
-    **3**:
-    eps1, the most extensional eigenvalue of strain tensor, with
-    extension taken positive.
-    **4**:
-    eps2, the most compressional eigenvalue of strain tensor, with
-    extension taken positive.
-    **5**:
-    azimuth of eps2 in degrees CW from North.
+            **1**,\ **2**:
+            longitude, latitude, of station (**-:** option interchanges order)
+            **3**:
+            eps1, the most extensional eigenvalue of strain tensor, with
+            extension taken positive.
+            **4**:
+            eps2, the most compressional eigenvalue of strain tensor, with extension taken positive.
+            **5**:
+            azimuth of eps2 in degrees CW from North.
 
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *parameters*
-    Modify vector parameters. For vector heads, append vector head
-    *size* [Default is 9p]. See VECTOR ATTRIBUTES for specifying
-    additional attributes.
+    Modify vector parameters. For vector heads, append vector head *size* [Default is 9p].
+    See `Vector Attributes`_ for specifying additional attributes.
+
+.. _-B:
 
 .. include:: ../../explain_-B.rst_
+
+.. _-D:
 
 **-D**\ *Sigma\_scale*
     can be used to rescale the uncertainties of velocities (**-Se** and
     **-Sr**) and rotations (**-Sw**). Can be combined with the *confidence* variable.
 
+.. _-F:
+
 **-F**\ *fill*
     Sets the color or shade used for frame and annotation. [Default is black]
+
+.. _-E:
 
 **-E**\ *fill*
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
     **-E** is not specified, the uncertainty regions will be transparent.]
+
+.. _-G:
 
 **-G**\ *fill*
     Specify color (for symbols/polygons) or pattern (for polygons)
@@ -180,31 +198,56 @@ Optional Arguments
     **-Gp**\ *icon\_size/pattern*, where *pattern* gives the number of
     the image pattern (1-90) OR the name of a icon-format file.
     *icon\_size* sets the unit size in inches. To invert black and white
-    pixels, use **-GP** instead of **-Gp**. See **pspatterns** for
+    pixels, use **-GP** instead of **-Gp**. See the CookBook for
     information on individual patterns.
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-L:
 
 **-L**
     Draw lines. Ellipses and fault planes will have their outlines drawn
     using current pen (see **-W**).
+
+.. _-N:
+
 **-N**
     Do **NOT** skip symbols that fall outside the frame boundary
     specified by **-R**. [Default plots symbols inside frame only].
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**
     Set pen attributes for velocity arrows, ellipse circumference and
     fault plane edges. [Defaults: width = default, color = black, style = solid].
 
+.. _-X:
+
 .. include:: ../../explain_-XY.rst_
 .. include:: ../../explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
+
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
@@ -257,6 +300,9 @@ gray wedges to represent the 2-sigma uncertainties.
 See Also
 --------
 
+:doc:`psmeca`,
+:doc:`pspolar`,
+:doc:`pscoupe`,
 :doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
 
 References

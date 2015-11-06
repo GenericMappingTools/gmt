@@ -17,14 +17,14 @@
  *--------------------------------------------------------------------*/
 /*
  * Brief synopsis: grd2cpt reads a 2d binary gridded grdfile and creates a continuous-color-
- * palette cpt file, with a non-linear histogram-equalized mapping between
+ * palette CPT file, with a non-linear histogram-equalized mapping between
  * hue and data value.  (The linear mapping can be made with grd2cpt.)
  *
  * Creates a cumulative distribution function f(z) describing the data
  * in the grdfile.  f(z) is sampled at z values supplied by the user
  * [with -S option] or guessed from the sample mean and standard deviation.
  * f(z) is then found by looping over the grd array for each z and counting
- * data values <= z.  Once f(z) is found then a master cpt table is resampled
+ * data values <= z.  Once f(z) is found then a master CPT file is resampled
  * based on a normalized f(z).
  *
  * Author:	Walter H. F. Smith
@@ -36,6 +36,7 @@
 #define THIS_MODULE_NAME	"grd2cpt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Make linear or histogram-equalized color palette table from grid"
+#define THIS_MODULE_KEYS	"<GI,>CO,RG-"
 
 #include "gmt_dev.h"
 
@@ -56,7 +57,7 @@ struct GRD2CPT_CTRL {
 		unsigned int mode;
 		double value;
 	} A;
-	struct C {	/* -C<cpt> */
+	struct C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
@@ -144,8 +145,8 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0].\n");
 	if (GMT_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k)\n");
@@ -211,7 +212,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 				if (opt->arg[0] == '+') Ctrl->A.mode = 1;
 				Ctrl->A.value = 0.01 * atof (&opt->arg[Ctrl->A.mode]);
 				break;
-			case 'C':	/* Get cpt table */
+			case 'C':	/* Get CPT file */
 				Ctrl->C.active = true;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
@@ -341,7 +342,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
-	char CPT_file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, *file = NULL, *l = NULL, **grdfile = NULL;
+	char format[GMT_BUFSIZ] = {""}, *l = NULL, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd;
 
@@ -372,32 +373,28 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2cpt_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grd2cpt_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
-
 	if (Ctrl->C.active) {
-		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
+		if ((l = strstr (Ctrl->C.file, ".cpt")) != NULL) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
 		Ctrl->C.active = true;
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file, R_OK), "Error: Cannot find colortable %s\n", Ctrl->C.file);
-	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
-
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
 	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
-	file = CPT_file;
-	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, NULL)) == NULL) {
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
@@ -484,7 +481,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	sd /= ngood;
 	sd = sqrt (sd - mean * mean);
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		sprintf (format, "Mean and S.D. of data are %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Mean and S.D. of data are %s %s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, mean, sd);
 	}
 
@@ -580,7 +578,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, format, cdf_cpt[j].z, cdf_cpt[j].f);
 	}
 
-	/* Now the cdf function has been found.  We now resample the chosen cptfile  */
+	/* Now the cdf function has been found.  We now resample the chosen CPT file  */
 
 	z = GMT_memory (GMT, NULL, Ctrl->E.levels, double);
 	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;

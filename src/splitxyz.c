@@ -27,10 +27,11 @@
 #define THIS_MODULE_NAME	"splitxyz"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Split xyz[dh] data tables into individual segments"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbfghis" GMT_OPT("H")
+#define GMT_PROG_OPTIONS "-:>Vbdfghis" GMT_OPT("H")
 
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
@@ -144,16 +145,15 @@ void Free_splitxyz_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: splitxyz [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -161,13 +161,12 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of <azimuth> [Default = All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is within +/- <tolerance>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   degrees of <azimuth> [Default = All].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change> [ignore course changes].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use negative width to highpass.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.  Use negative width for high-pass filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Write individual segments to separate files [Default writes one\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%d) that represents\n");
@@ -183,13 +182,12 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
 	GMT_Option (API, "V,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
-	GMT_Option (API, "bo,f,g,h,i,s,:,.");
+	GMT_Option (API, "bo,d,f,g,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to splitxyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -302,8 +300,7 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_splitxyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_splitxyz (void *V_API, int mode, void *args)
-{
+int GMT_splitxyz (void *V_API, int mode, void *args) {
 	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0;
 	int error = 0;
@@ -340,7 +337,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_splitxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_splitxyz_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_splitxyz_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
@@ -351,7 +348,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_FILE_BREAK, NULL, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_FILEBREAK, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -593,7 +590,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 
 	/* Must set coord pointers to NULL since they were not allocated */
 	for (seg = 0; seg < seg2; seg++) for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
-	GMT_free_segment (GMT, &S_out, GMT_ALLOCATED_BY_GMT);
+	GMT_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 	if (Ctrl->F.active) GMT_free (GMT, fwork);
 	GMT_free (GMT, rec);
 

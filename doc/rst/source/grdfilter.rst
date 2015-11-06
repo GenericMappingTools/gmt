@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdfilter** *ingrid* **-D**\ *distance\_flag*
-**-Fx**\ *width*\ [/*width2*][*mode*][\ **+q**\ *quantile*]
-**-G**\ *outgrid*
+**grdfilter** *ingrid* |-D|\ *distance_flag*
+|-F|\ **x**\ *width*\ [/*width2*][*modifiers*]
+|-G|\ *outgrid*
 [ |SYN_OPT-I| ]
-[ **-N**\ **i**\ \|\ **p**\ \|\ **r** ]
-[ |SYN_OPT-R| ] [ **-T** ]
+[ |-N|\ **i**\ \|\ **p**\ \|\ **r** ]
+[ |SYN_OPT-R| ] [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -27,14 +27,14 @@ Synopsis
 Description
 -----------
 
-**grdfilter** will filter a *.nc* file in the time domain using one of
+**grdfilter** will filter a grid file in the time domain using one of
 the selected convolution or non-convolution isotropic or rectangular
 filters and compute distances using Cartesian or Spherical geometries.
-The output *.nc* file can optionally be generated as a sub-region of the
+The output grid file can optionally be generated as a sub-region of the
 input (via **-R**) and/or with new increment (via **-I**) or
 registration (via **-T**). In this way, one may have "extra space" in
 the input data so that the edges will not be used and the output can be
-within one-half- width of the input edges. If the filter is low-pass,
+within one half-width of the input edges. If the filter is low-pass,
 then the output may be less frequently sampled than the input. 
 
 Required Arguments
@@ -42,7 +42,10 @@ Required Arguments
 
 *ingrid*
     The grid file of points to be filtered. (See GRID FILE FORMATS below).
-**-D**\ *distance\_flag*
+
+.. _-D:
+
+**-D**\ *distance_flag*
     Distance *flag* tells how grid (x,y) relates to filter *width* as
     follows:
 
@@ -70,11 +73,14 @@ Required Arguments
     *flag* = 5: grid (x,y) in Mercator **-Jm**\ 1 img units, *width* in
     km, Spherical distance calculation.
 
-**-Fx**\ *width*\ [/*width2*][*mode*\ ]
+.. _-F:
+
+**-Fx**\ *width*\ [/*width2*][*modifiers*\ ]
     Sets the filter type. Choose among convolution and non-convolution
     filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
-    for a rectangular filter (requires **-Dp** or **-D0**).
+    for a rectangular filter (requires **-Dp** or **-D0**).  Some filters
+    allow for optional arguments and modifiers.
 
     Convolution filters (and their codes) are:
 
@@ -103,9 +109,16 @@ Required Arguments
 
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
-    value. Append **-** or **+** to the filter width if you rather want
-    to return the smallest or largest of the modal values. By mode we mean
-    the least median of squares approximation to the mode.
+    value. Append **+l** or **+u** if you rather want
+    to return the lowermost or uppermost of the modal values.
+
+    (**h**) Histogram mode (another mode estimator): Return the modal
+    value as the center of the dominant peak in a histogram. Append /*binwidth* to
+    specify the binning interval.  Use modifier **+c** to center the
+    bins on multiples of *binwidth* [Default has bin edges that are
+    multiples of *binwidth*].  If more than one mode is found we return their average
+    value. Append **+l** or **+u** if you rather want
+    to return the lowermost or uppermost of the modal values.
 
     (**l**) Lower: Return the minimum of all values.
 
@@ -118,11 +131,15 @@ Required Arguments
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return NaN.
 
+.. _-G:
+
 **-G**\ *outgrid*
     *outgrid* is the output grid file of the filter. (See GRID FILE FORMATS below).
 
 Optional Arguments
 ------------------
+
+.. _-I:
 
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
     *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
@@ -130,6 +147,9 @@ Optional Arguments
     the new *x\_inc*, *y\_inc* are NOT integer multiples of the old ones
     (in the input data), filtering will be considerably slower.
     [Default: Same as input.]
+
+.. _-N:
+
 **-N**\ **i**\ \|\ **p**\ \|\ **r**
     Determine how NaN-values in the input grid affects the filtered
     output: Append **i** to ignore all NaNs in the calculation of
@@ -138,13 +158,21 @@ Optional Arguments
     if both grids are co-registered), and **p** which will force the
     filtered value to be NaN if any grid-nodes with NaN-values are found
     inside the filter circle.
+
+.. _-R:
+
 **-R**
     *west*, *east*, *south*, and *north* defines the Region of the
     output points. [Default: Same as input.]
+
+.. _-T:
+
 **-T**
     Toggle the node registration for the output grid so as to become the
     opposite of the input grid [Default gives the same registration as
     the input grid]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

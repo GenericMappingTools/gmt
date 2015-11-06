@@ -14,7 +14,7 @@ REM Prefix of two .nc files
 
 set G=grav.V18.par.surf.1km.sq
 set T=mb.par.surf.1km.sq
-gmt gmtset FONT_TITLE 14p
+gmt gmtset FONT_TITLE 14p GMT_FFT kiss
 
 gmt makecpt -Crainbow -T-5000/-3000/100 -Z > z.cpt
 gmt makecpt -Crainbow -T-50/25/5 -Z > g.cpt

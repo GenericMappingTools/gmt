@@ -13,15 +13,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**xyz2grd** [ *table* ] **-G**\ *grdfile*
+**xyz2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
-[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
-[ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
+[ |-A|\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
+[ |-D|\ *xname*/*yname*/*zname*/*scale*/*offset*/*invalid*/*title*/*remark* ]
+[ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ [*flags*\ ] ]
+[ |-Z|\ [*flags*\ ] ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -44,11 +45,17 @@ of formats, see **-Z** below.)
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file. (See GRID FILE
     FORMAT below.) 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -59,8 +66,10 @@ Optional Arguments
 *table*
     One or more ASCII [or binary, see **-bi**]
     files holding z or (x,y,z) values. The xyz triplets do not have to
-    be sorted. One-column z tables must be sorted and the **-Z** must be
-    set.
+    be sorted. One-column z tables must be sorted and the **-Z** must be set.
+
+.. _-A:
+
 **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use **-A** to change this behavior, except it is
@@ -69,22 +78,27 @@ Optional Arguments
     **l** or **u** to find the lowest (minimum) or upper (maximum) value
     at each node, respectively. Append **m** or **r** to compute mean or
     RMS value at each node, respectively. Append **n** to simply count
-    the number of data points that were assigned to each node. Append
+    the number of data points that were assigned to each node (this only
+    requires two input columns *x* and *y* as *z* is not consulted). Append
     **z** to sum multiple values that belong to the same node.
+
+.. _-D:
 
 .. include:: explain_-D_cap.rst_
 
-**-N**\ *nodata*
-    No data. Set nodes with no input xyz triplet to this value [Default
-    is NaN]. For z-tables, this option is used to replace z-values that
-    equal *nodata* with NaN.
+.. _-S:
+
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
     (or stdout if not supplied). 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**\ [*flags*]
     Read a 1-column ASCII [or binary] table. This assumes that all the
@@ -139,6 +153,10 @@ Optional Arguments
     to xyz input files; see **-Z** for z tables. 
 .. include:: explain_-bi.rst_
 
+.. |Add_-di| replace:: Also sets nodes with no input xyz triplet to this value
+    [Default is NaN].
+.. include:: explain_-di.rst_
+
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
@@ -184,11 +202,11 @@ scanline-oriented data raw.b, use
     gmt xyz2grd raw.b -Dm/m/m/1/0 -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
-scanline-oriented data topo30. on the NGDC global relief Data CD-ROM,
+scanline-oriented data topo30.b on the NGDC global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
-reverse the byte-order. On such machines (like Sun, use
+reverse the byte-order. On such machines (like Sun), use
 
-    gmt xyz2grd topo30. -Dm/m/m/1/0 -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
+    gmt xyz2grd topo30.b -Dm/m/m/1/0 -Gustopo.nc -R234/294/24/50 -I30s -di-9999 -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can
@@ -202,4 +220,4 @@ See Also
 :doc:`gmt`,
 :doc:`grd2xyz`,
 :doc:`grdedit`,
-:doc:`grdreformat`
+:doc:`grdconvert`

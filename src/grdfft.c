@@ -30,6 +30,7 @@
 #define THIS_MODULE_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Do mathematical operations on grids in the wavenumber (or frequency) domain"
+#define THIS_MODULE_KEYS	"<GI,GGO,RG-,GDE"
 
 #include "gmt_dev.h"
 
@@ -457,9 +458,6 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
-		return (GMT->parent->error);
-	}
 	GMT_free (GMT, X_pow);
 	GMT_free (GMT, nused);
 	if (GridY) {
@@ -596,7 +594,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   wavelength in km (geographic grids only) [m].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      frequencies outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");
@@ -838,7 +836,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options))) Return (error);
+	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
@@ -959,7 +957,8 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		}
 	}
 
-	for (k = 0; k < Ctrl->In.n_grids; k++) GMT_free (GMT, FFT_info[k]);
+	for (k = 0; k < Ctrl->In.n_grids; k++)
+		GMT_FFT_Destroy (API, &(FFT_info[k]));
 
 	Return (EXIT_SUCCESS);
 }

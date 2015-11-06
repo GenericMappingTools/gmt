@@ -16,6 +16,22 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/* NOTE: This is a new version for dual Antarctica polygons.
+ * The general idea of GSHHG 2.3.x is that there are two sets of Antarctica continents and
+ * island polygons, and only one can be active at any given time. The two candidates are
+ * Source ID = 2: Antarctica ice-line [this is similar to old GSHHG 2.2.x lines but more accurate].
+ * Source ID = 3: Antarctica shelf ice grounding line.
+ * By default we use GSHHS_ANTARCTICA_ICE but users may select -A..+ag to pick the grounding line
+ * [GSHHS_ANTARCTICA_GROUND] or even -A..+as to skip Antarctica entirely (to make it easier to plot
+ * custom shorelines via psxy).
+ * Because the grounding line polygons are always entirely inside a ice-shelf polygon, we have
+ * given the grounding-line polygons a level of 6.  Of course, when these are used their levels are
+ * reset to 1 and all the ice-shelf polygons are skipped.  The node corners of the underlying grid
+ * are suitable for the ice-shelf line but if grounding line is selected a different array of node
+ * corner values is used.  This means the GSHHG file is backwards compatible with earlier GMT versions
+ * since the grounding-line related information is stored in a separate array.
+ */
+
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "gshhg_version.h"
@@ -25,6 +41,7 @@
  *
  * The PUBLIC functions are:
  *
+ * int GMT_set_levels :		Modifies what items to extract from GSHHG database
  * GMT_init_shore :		Opens selected shoreline database and initializes structures
  * GMT_get_shore_bin :		Returns all selected shore data for this bin
  * GMT_init_br :		Opens selected border/river database and initializes structures
@@ -39,14 +56,21 @@
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
- * Version:	5.x
+ * Version:	5.2.x
  *
  */
 
 #define GSHHG_SITE "ftp://ftp.soest.hawaii.edu/gshhg/"
 
-#define RIVERLAKE	5				/* Fill array id for riverlakes */
-#define get_level(arg) (((arg) >> 6) & 7)		/* Extract level from bit mask */
+#define RIVERLAKE		5	/* Fill array id for riverlakes */
+#define ANT_LEVEL_ICE		5
+#define ANT_LEVEL_GROUND	6
+
+#define get_exit(arg) ((arg) & 7)		/* Extract exit  (0-4) from bits 1-3 */
+#define get_entry(arg) (((arg) >> 3) & 7)	/* Extract entry (0-4) from bits 4-6 */
+#define get_level(arg) (((arg) >> 6) & 7)	/* Extract level (0-4) from bits 7-9 */
+#define get_source(arg) (((arg) >> 9) & 7)	/* Extract source (0-7) from bits 10-12 */
+#define get_np(arg) ((arg) >> 9)		/* Extract number of points from bits 10-64 */
 
 /* ---------- LOWER LEVEL FUNCTIONS CALLED BY THE ABOVE ------------ */
 
@@ -275,6 +299,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 				sprintf (path, "%s/%s%s", dir, stem, ".nc");
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
 				if ( access (path, R_OK) == 0) {	/* File can be read */
+L1:
 					if ( gshhg_require_min_version (path, version) ) {
 						fclose (fp);
 						/* update invalid GMT->session.GSHHGDIR */
@@ -286,8 +311,13 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 					else
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Failure, could not access %s\n", path);
 				}
-				else
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+				else {
+					/* Before giving up, try the old .cdf file names */
+					sprintf(path, "%s/%s%s", dir, stem, ".cdf");
+					if (access(path, R_OK) == 0)	/* Yes, old .cdf version found */
+						goto L1;
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Found %s but cannot read it due to wrong permissions\n", path);
+				}
 			}
 			fclose (fp);
 		}
@@ -364,11 +394,14 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 {	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
-	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;	/* Skip Antarctica data south of 60S */
+	if (strstr (info, "+as"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP;		/* Skip Antarctica data south of 60S */
+	else if (strstr (info, "+aS"))  I->antarctica_mode = GSHHS_ANTARCTICA_SKIP_INV;	/* Skip everything BUT Antarctica data south of 60S */
+	else if (strstr (info, "+ai"))  I->antarctica_mode = GSHHS_ANTARCTICA_ICE;	/* Use Antarctica ice boundary as coastline */
+	else if (strstr (info, "+ag"))  I->antarctica_mode = GSHHS_ANTARCTICA_GROUND;	/* Use Antarctica shelf ice grounding line as coastline */
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
-	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
-		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
+	if ((p = strstr (info, "+p")) != NULL) {	/* Requested percentage limit on small features */
+		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert percent to integer microfraction */
 	}
 	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
@@ -380,13 +413,55 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	return (GMT_OK);
 }
 
+#define GMT_CRUDE_THRESHOLD	1e8
+#define GMT_LOW_THRESHOLD	5e7
+#define GMT_INT_THRESHOLD	1e7
+#define GMT_HIGH_THRESHOLD	5e6
+#define GMT_FULL_THRESHOLD	1e6	/* Not used */
+
 int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt)
 {
 	/* Decodes the -D<res> option and returns the base integer value */
 
 	int base;
+	char *choice = "fhilc";
 
 	switch (*res) {
+		case 'a':	/* Automatic selection via -J or -R, of possible */
+			if (GMT->common.J.active) {	/* Use map scale xxxx as in 1:xxxx */
+				double i_scale = 1.0 / (0.0254 * GMT->current.proj.scale[GMT_X]);
+				if (i_scale > GMT_CRUDE_THRESHOLD)
+					base = 4;	/* crude */
+				else if (i_scale > GMT_LOW_THRESHOLD)
+					base = 3;	/* low */
+				else if (i_scale > GMT_INT_THRESHOLD)
+					base = 2;	/* intermediate */
+				else if (i_scale > GMT_HIGH_THRESHOLD)
+					base = 1;	/* high */
+				else
+					base = 0;	/* full */
+			}
+			else if (GMT->common.R.active) {	/* No scale, based on region only */
+				double area, earth_area = 360 * 180; /* Flat Earth squared degrees */
+				area = (GMT->common.R.wesn[GMT_XHI] - GMT->common.R.wesn[GMT_XLO]) * (GMT->common.R.wesn[GMT_YHI] - GMT->common.R.wesn[GMT_YLO]); /* Squared degrees */
+				if (area > (pow (0.6, 2.0) * earth_area))
+					base = 4;	/* crude */
+				else if (area > (pow (0.6, 4.0) * earth_area))
+					base = 3;	/* low */
+				else if (area >  (pow (0.6, 6.0) * earth_area))
+					base = 2;	/* intermediate */
+				else if (area >  (pow (0.6, 8.0) * earth_area))
+					base = 1;	/* high */
+				else
+					base = 0;	/* full */
+			}
+			else {	/* No basis - select low */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-%c option: Cannot select automatic resolution without -R or -J [Default to low]\n");
+				base = 3;	/* low */
+			}
+			*res = choice[base];
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "-%c option: Selected resolution -%c%c\n", opt, opt, *res);
+			break;
 		case 'f':	/* Full */
 			base = 0;
 			break;
@@ -425,8 +500,8 @@ char GMT_shore_adjust_res (struct GMT_CTRL *GMT, char res) {	/* Returns the high
 
 int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
 	/* Opens the netcdf file and reads in all top-level attributes, IDs, and variables for all bins overlapping with wesn */
-	int i, nb, idiv, iw, ie, is, in, this_south, this_west, this_north, err;
-	bool int_areas = false;
+	int i, nb, idiv, iw, ie, is, in, i_ant, this_south, this_west, this_north, err;
+	bool int_areas = false, two_Antarcticas = false;
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
@@ -443,6 +518,8 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	/* Open shoreline file */
 	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "NetCDF Library Version: %s\n", nc_inq_libvers());
+	
 	/* Get global attributes */
 	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "version", c->version));
 	GMT_err_trap (nc_get_att_text (c->cdfid, NC_GLOBAL, "title", c->title));
@@ -457,8 +534,8 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	GMT_err_trap (nc_inq_varid (c->cdfid, "N_points_in_file", &c->n_pt_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_segment_in_a_bin", &c->bin_firstseg_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin", &c->bin_info_id));
-	GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_npts_levels_exit_entry_for_a_segment", &c->seg_info_id));
+	GMT_err_trap (nc_inq_varid (c->cdfid, "N_segments_in_a_bin", &c->bin_nseg_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_first_point_in_a_segment", &c->seg_start_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_longitude_from_SW_corner_of_bin", &c->pt_dx_id));
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Relative_latitude_from_SW_corner_of_bin", &c->pt_dy_id));
@@ -475,6 +552,11 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
+	}
+	if (nc_inq_varid (c->cdfid, "Embedded_node_levels_in_a_bin_ANT", &c->bin_info_id_ANT) == NC_NOERR) {	/* New file with two Antarcticas */
+		GMT_err_trap (nc_inq_varid (c->cdfid, "Embedded_ANT_flag", &c->seg_info_id_ANT));
+		two_Antarcticas = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GSHHG with two Antarcticas, read in extra ANT flgs.\n");
 	}
 
 	/* Get attributes */
@@ -493,15 +575,18 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	c->fraction = info->fraction;
 	c->skip_feature = info->flag;
+	c->ant_mode = info->antarctica_mode;
 	c->min_area = info->area;	/* Limit the features */
 	c->min_level = info->low;
 	c->max_level = (info->low == info->high && info->high == 0) ? GSHHS_MAX_LEVEL : info->high;	/* Default to all if not set */
 	c->flag = info->flag;
+	c->two_Antarcticas = (two_Antarcticas) ? 1 : 0;
 	c->ant_mode = info->antarctica_mode;
 	c->res = res;
 
 	c->scale = (c->bin_size / 60.0) / 65535.0;
 	c->bsize = c->bin_size / 60.0;
+	info->bin_size = c->bsize;	/* To make bin size in degrees accessible elsewhere */
 
 	c->bins = GMT_memory (GMT, NULL, c->n_bin, int);
 
@@ -511,13 +596,15 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
 	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
 	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
+	i_ant = 90 - irint (floor ((90.0 - GSHHS_ANTARCTICA_LIMIT) / c->bsize) * c->bsize);
 	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
-		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));
+		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));	/* South limit of this bin */
 		if (this_south < is || this_south >= in) continue;
 		this_north = this_south + irint (c->bsize);
-		if (info->antarctica_mode == GSHHS_ANTARCTICA_SKIP && this_north <= GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
+		if (c->ant_mode == GSHHS_ANTARCTICA_SKIP && this_north <= GSHHS_ANTARCTICA_LIMIT) continue;	/* Does not want Antarctica in output */
+		else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV && this_south > i_ant) continue;	/* Does not want anything but Antarctica in output */
 		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
@@ -556,7 +643,12 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	count[0] = c->n_bin;
 	stmp = GMT_memory (GMT, NULL, c->n_bin, short);
 
-	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp));
+	if (c->ant_mode == GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
+		GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp));
+	}
+	else {	/* Get node levels relevant for grounding line */
+		GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id_ANT, start, count, stmp));
+	}
 	for (i = 0; i < c->nb; i++) c->bin_info[i] = stmp[c->bins[i]];
 
 	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
@@ -581,12 +673,14 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	size_t start[1], count[1];
 	int *seg_info = NULL, *seg_start = NULL, *seg_ID = NULL;
 	int s, i, k, ny, err, level, inc[4], ll_node, node, ID, *seg_skip = NULL;
+	unsigned short corner[4], bitshift[4] = {9, 6, 3, 0};
+	signed char *seg_info_ANT = NULL;
 	double w, e, dx;
 
-	c->node_level[0] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 9) & 7, c->max_level);
-	c->node_level[1] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 6) & 7, c->max_level);
-	c->node_level[2] = (unsigned char)MIN (((unsigned short)c->bin_info[b] >> 3) & 7, c->max_level);
-	c->node_level[3] = (unsigned char)MIN ((unsigned short)c->bin_info[b] & 7, c->max_level);
+	for (k = 0; k < 4; k++) {	/* Extract node corner levels */
+		corner[k] = ((unsigned short)c->bin_info[b] >> bitshift[k]) & 7;
+		c->node_level[k] = (unsigned char)MIN (corner[k], c->max_level);
+	}
 	dx = c->bin_size / 60.0;
 	c->lon_sw = (c->bins[b] % c->bin_nx) * dx;
 	ny = (c->bins[b] / c->bin_nx) + 1;
@@ -630,6 +724,10 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_GSHHS_ID_id, start, count, seg_ID));
+	if (c->two_Antarcticas) {	/* Read the flag that identifies Antarctica polygons */
+		seg_info_ANT = GMT_memory (GMT, NULL, c->bin_nseg[b], signed char);
+		GMT_err_trap (nc_get_vara_schar (c->cdfid, c->seg_info_id_ANT, start, count, seg_info_ANT));
+	}
 
 	/* First tally how many useful segments */
 
@@ -637,15 +735,25 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	for (i = 0; i < c->bin_nseg[b]; i++) {
 		seg_skip[i] = true;	/* Reset later to false if we pass all the tests to follow next */
 		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
-		if (fabs (c->GSHHS_area[seg_ID[i]]) < c->min_area) continue;		/* Too small. NOTE: Use fabs() since double-lined-river lakes have negative area */
+		if (fabs (c->GSHHS_area[seg_ID[i]]) < c->min_area) continue;	/* Too small. NOTE: Use fabs() since double-lined-river lakes have negative area */
 		level = get_level (seg_info[i]);
-		if (level < c->min_level) continue;
+		if (c->two_Antarcticas) {	/* Can apply any -A+ag|i check based on Antarctica source. Note if -A+as was used we may have already skipped this bin but it depends on resolution chosen */
+			if (seg_info_ANT[i]) level = ANT_LEVEL_ICE;	/* Replace the 1 with 5 so Ant polygons now have levels 5 (ice) or 6 (ground) */
+			if (level == ANT_LEVEL_ICE || level == ANT_LEVEL_GROUND) {	/* Need more specific checking */
+				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) continue;	/* Dont want anything to do with Antarctica */
+				else if (level == ANT_LEVEL_GROUND && c->ant_mode == GSHHS_ANTARCTICA_ICE) continue;	/* Don't use the Grounding line */
+				else if (level == ANT_LEVEL_ICE && c->ant_mode == GSHHS_ANTARCTICA_GROUND && seg_ID[i] == GSHHS_ANTARCTICA_ICE_ID) continue;	/* Use grounding line so skip ice-shelf Antractica continent */
+				level = 1;	/* Reset either shelf-ice or grounding line polygon level to land */
+			}
+			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) continue;	/* Wants nothing but Antarctica */
+		}
+		if (level < c->min_level) continue;	/* Test if level range was set */
 		if (level > c->max_level) continue;
 		if (level == 2 && c->GSHHS_area[seg_ID[i]] < 0 && c->flag == GSHHS_NO_RIVERLAKES) continue;
 		if (level == 2 && c->GSHHS_area[seg_ID[i]] > 0 && c->flag == GSHHS_NO_LAKES) continue;
-		seg_skip[i] = false;	/* OK, so this was needed afterall */
+		seg_skip[i] = false;	/* OK, so this was needed after all */
 	}
-	if (c->skip_feature) {	/* Must ensure that we skip all features inside a skipped riverlake/lake */
+	if (c->skip_feature) {	/* Must ensure that we skip all features contained by a skipped riverlake/lake */
 		int j, feature;
 		if (c->flag == GSHHS_NO_LAKES && c->node_level[0] == c->node_level[1] && c->node_level[2] == c->node_level[3] && c->node_level[0] == c->node_level[3] && c->node_level[0] == 2) {	/* Bin is entirely inside a lake */
 			for (i = 0; i < c->bin_nseg[b]; i++) seg_skip[i] = true;	/* Must skip all segments in the lake */
@@ -654,7 +762,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		else {	/* Must find all level 3 and 4 features whose parent is level 2 and has been skipped. Then these level 3/4 features must be skipped too */
 			for (feature = 3; feature <= 4; feature++) {	/* Must check twice; first for islands-in-lakes (3), then ponds in such islands (4) */
 				for (i = 0; i < c->bin_nseg[b]; i++) {	/* Go through entire segment list */
-					if (get_level (seg_info[i]) != feature) continue;		/* We are only looking for levels 3 or 4 here */
+					if (get_level (seg_info[i]) != feature) continue;	/* We are only looking for levels 3 or 4 here, so does not matter if level is 5,6 */
 					/* Here segment i is a level 3 (or 4) feature */
 					for (j = 0; j < c->bin_nseg[b]; j++) {	/* Go through entire segment list again */
 						if (get_level (seg_info[j]) != (feature-1)) continue;	/* We are looking for the containing polygon here which is one level up */
@@ -689,6 +797,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		GMT_free (GMT, seg_info);
 		GMT_free (GMT, seg_start);
 		GMT_free (GMT, seg_ID);
+		if (c->two_Antarcticas) GMT_free (GMT, seg_info_ANT);
 		return (GMT_NOERROR);
 	}
 
@@ -696,9 +805,10 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 
 	for (s = 0; s < c->ns; s++) {
 		c->seg[s].level = get_level (seg_info[s]);
-		c->seg[s].n = (short)(seg_info[s] >> 9);
-		c->seg[s].entry = (seg_info[s] >> 3) & 7;
-		c->seg[s].exit = seg_info[s] & 7;
+		if (c->seg[s].level > 4) c->seg[s].level = 1;	/* Reset Antarctica segments to level 1 */
+		c->seg[s].n = (short)get_np (seg_info[s]);
+		c->seg[s].entry = get_entry (seg_info[s]);
+		c->seg[s].exit  = get_exit (seg_info[s]);
 		c->seg[s].fid = (c->GSHHS_area[seg_ID[s]] < 0) ? RIVERLAKE : c->seg[s].level;
 		c->seg[s].dx = GMT_memory (GMT, NULL, c->seg[s].n, short);
 		c->seg[s].dy = GMT_memory (GMT, NULL, c->seg[s].n, short);
@@ -712,6 +822,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	GMT_free (GMT, seg_info);
 	GMT_free (GMT, seg_start);
 	GMT_free (GMT, seg_ID);
+	if (c->two_Antarcticas) GMT_free (GMT, seg_info_ANT);
 
 	return (GMT_NOERROR);
 }
@@ -834,7 +945,6 @@ int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 	int s, i, err;
 	unsigned int k;
 	bool skip;
-	
 
 	c->lon_sw = (c->bins[b] % c->bin_nx) * c->bin_size / 60.0;
 	c->lat_sw = 90.0 - ((c->bins[b] / c->bin_nx) + 1) * c->bin_size / 60.0;
@@ -859,7 +969,7 @@ int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 			skip = false;
 		else {
 			for (k = 0, skip = true; skip && k < n_levels; k++)
-				if ((s_level = level[k]) == seg_level[i]) skip = false;
+				if ((s_level = (short)level[k]) == seg_level[i]) skip = false;
 		}
 		if (skip) continue;
 		if (!c->seg) c->seg = GMT_memory (GMT, NULL, c->ns, struct GMT_BR_SEGMENT);
@@ -885,14 +995,16 @@ int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 }
 
 int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool assemble, double west, double east, struct GMT_GSHHS_POL **pol)
-/* assemble: true if polygons is needed, false if we just want to draw or dump outlines */
-/* edge: Edge test for shifting of longitudes to avoid wraps */
+/* assemble: true if polygons is needed, false if we just want to draw or dump outlines.  Note: if true then the resulting
+ * polygons are only contained within each tile for fill purposes; we are not reconstructing Australia, etc.
+ * edge: Edge test for shifting of longitudes to avoid wraps.
+ */
 {
 	struct GMT_GSHHS_POL *p = NULL;
-	int start_side, next_side, id, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL;
+	int start_side, next_side, id, wet_or_dry, use_this_level, high_seg_level = GSHHS_MAX_LEVEL, k;
 	int cid, nid, add, first_pos, entry_pos, n, low_level, high_level, fid, nseg_at_level[GSHHS_MAX_LEVEL+1];
 	bool completely_inside, more, skip = false;
-	unsigned int P = 0, k;
+	unsigned int P = 0, ku;
 	size_t n_alloc, p_alloc;
 	double *xtmp = NULL, *ytmp = NULL, plon, plat;
 
@@ -905,7 +1017,12 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			p[P].lat = GMT_memory (GMT, NULL, c->seg[id].n, double);
 			p[P].n = gmt_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 			if (c->ant_special) {	/* Discard any pieces south of 60S */
-				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
+				if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+					for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
+				}
+				else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+					for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] < -60.0) skip = false;
+				}
 			}
 			if (skip) {
 				GMT_free (GMT, p[P].lon);
@@ -919,7 +1036,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 				P++;
 			}
 		}
-		if (P < c->ns) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
+		if (P < (unsigned int)c->ns) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
 		*pol = p;
 		return (P);
 	}
@@ -978,7 +1095,6 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 		p[P].lat = GMT_memory (GMT, NULL, n_alloc, double);
 		n = gmt_copy_to_shore_path (p[P].lon, p[P].lat, c, id);			/* Creates a lon-lat path from the segment */
 		if ((int)c->seg[id].level < low_level) low_level = c->seg[id].level;	/* Update the lowest level involved */
-
 		more = true;	/* Until we are done with all segments */
 		first_pos = gmt_shore_get_position (start_side, c->seg[id].dx[0], c->seg[id].dy[0]);	/* This is the relative starting position (0-65535) on the start side for current segment */
 		/* Remember, the segments have been sorted along each side according to entry position */
@@ -989,7 +1105,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			if (id < 0) {	/* Found a corner */
 				cid = id + 4;	/* ID of the corner */
 				nid = (dir == 1) ? (cid + 1) % 4 : cid;	/* Next corner [I think] */
-				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp)) != 0) {
 					/* Add the bin-border segment from last point in the growing polygon to the specified corner */
 					n_alloc += add;
 					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
@@ -1003,7 +1119,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 			else {	/* Found a segment to add to our polygon */
 				gmt_shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);	/* Get lon,lat of start of segment */
-				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp)) != 0) {
 					/* Connect the last point in the growing polygon with the starting point of this next segment */
 					n_alloc += add;
 					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
@@ -1030,7 +1146,12 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 		}
 		if (c->ant_special) {	/* Discard any pieces south of 60S */
-			for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] > -60.0) skip = false;
+			if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+				for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] > -60.0) skip = false;
+			}
+			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+				for (k = 0, skip = true; skip && k < n; k++) if (p[P].lat[k] < -60.0) skip = false;
+			}
 		}
 		if (skip) {
 			GMT_free (GMT, p[P].lon);
@@ -1062,7 +1183,12 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 		p[P].lat = GMT_memory (GMT, NULL, n_alloc, double);
 		p[P].n = gmt_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 		if (c->ant_special) {	/* Discard any pieces south of 60S */
-			for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
+			if (c->ant_mode == GSHHS_ANTARCTICA_SKIP) {
+				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] > -60.0) skip = false;
+			}
+			else if (c->ant_mode == GSHHS_ANTARCTICA_SKIP_INV) {
+				for (k = 0, skip = true; skip && k < p[P].n; k++) if (p[P].lat[k] < -60.0) skip = false;
+			}
 		}
 		if (skip) {
 			GMT_free (GMT, p[P].lon);
@@ -1086,10 +1212,81 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 
 	if (c->ns > 0) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);	/* Trim memory */
 
-	for (k = 0; k < P; k++) gmt_shore_path_shift2 (p[k].lon, p[k].n, west, east, c->leftmost_bin);	/* Deal with possible longitude -/+360 issues */
+	for (ku = 0; ku < P; ku++) gmt_shore_path_shift2 (p[ku].lon, p[ku].n, west, east, c->leftmost_bin);	/* Deal with possible longitude -/+360 issues */
 
 	*pol = p;
 	return (P);	/* Return list of polygons found */
+}
+
+struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], char res, struct GMT_SHORE_SELECT *A)
+{
+	/* Return a dataset with GSHHS lines (not polygons) */
+
+	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
+	unsigned int base = GMT_set_resolution (GMT, &res, 'D');
+	int ind, err, np, k;
+	size_t n_alloc = GMT_CHUNK;
+	uint64_t tbl = 0, seg, n_seg = 0;
+	double west_border, east_border;
+	struct GMT_SHORE c;
+	struct GMT_GSHHS_POL *p = NULL;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
+
+	if (GMT_init_shore (GMT, res, &c, wesn, A)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		return (NULL);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract data from GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
+	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
+
+	D = GMT_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
+	D->table = GMT_memory (GMT, NULL, c.nb, struct GMT_DATATABLE *);
+
+	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
+
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\r", c.bins[ind]);
+		if ((err = GMT_get_shore_bin (GMT, ind, &c)) != 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			return (NULL);
+		}
+		n_seg = 0;
+		if (c.ns > 0) {	/* Assemble one or more encoded segments into lon/lat lines */
+			if ((np = GMT_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) continue;
+			for (k = 0; k < np; k++) if (p[k].n) n_seg++;	/* Count number of segments needed */
+		}
+		if (n_seg) {	/* We have a known number of line segments in this bin; this constitutes this table */
+			if ((D->table[tbl] = GMT_create_table (GMT, 0U, 0U, 2U, false)) == NULL) return (NULL);
+			D->table[tbl]->segment = GMT_memory (GMT, NULL, n_seg, struct GMT_DATASEGMENT *);
+			D->table[tbl]->n_segments = n_seg;
+			for (seg = k = 0; k < np; k++) {	/* For each line segment from GSHHS */
+				if (p[k].n == 0) continue;	/* One of the ones to skip anyway */
+				/* Allocate segment to hold this line segment and memcpy over the coordinates */
+				S = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
+				GMT_alloc_segment (GMT, S, p[k].n, 2U, true);
+				GMT_memcpy (S->coord[GMT_X], p[k].lon, S->n_rows, double);
+				GMT_memcpy (S->coord[GMT_Y], p[k].lat, S->n_rows, double);
+				D->table[tbl]->segment[seg++] = S;	/* Hook onto dataset structure */
+				D->table[tbl]->n_records += S->n_rows;	/* Add up records in this table */
+			}
+			GMT_free_shore_polygons (GMT, p, np);
+			GMT_free (GMT, p);
+			D->n_segments += D->table[tbl]->n_segments;	/* Sum up total number of segments across the data set */
+			D->n_records  += D->table[tbl]->n_records;	/* Sum up total number of records across the data set */
+			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Avoid longitude adjustments: longitudes are guaranteed to be correct; rounding errors only messes things up */
+			GMT_set_tbl_minmax (GMT, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
+			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	/* Reset X column to be longitudes */
+		}
+		GMT_free_shore (GMT, &c);	/* Done with this GSHHS bin */
+	}
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\n", c.bins[c.nb-1]);
+	if (tbl < n_alloc) D->table = GMT_memory (GMT, D->table, tbl, struct GMT_DATATABLE *);
+	D->n_tables = tbl;
+
+	GMT_shore_cleanup (GMT, &c);	/* Done with the GSHHS database */
+
+	return (D);
 }
 
 int GMT_assemble_br (struct GMT_CTRL *GMT, struct GMT_BR *c, bool shift, double edge, struct GMT_GSHHS_POL **pol)

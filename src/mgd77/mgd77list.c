@@ -35,11 +35,12 @@
 #define THIS_MODULE_NAME	"mgd77list"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Extract data from MGD77 files"
+#define THIS_MODULE_KEYS	">DO,RG-"
 
 #include "gmt_dev.h"
 #include "mgd77.h"
 
-#define GMT_PROG_OPTIONS "-:RVbh"
+#define GMT_PROG_OPTIONS "-:RVbdh"
 
 #define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
 #define MGD77_ALL  "drt,id,time,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
@@ -165,7 +166,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [-h] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [%s] [-h] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -198,7 +199,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     vel:     Ship velocity (m/s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   >Geophysical Observations:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     twt:     Two-way traveltime (s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     twt:     Two-way travel-time (s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     depth:   Corrected bathymetry (m) [Also see -Z].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     mtf2:    Magnetic Total Field Sensor 2 (gamma, nTesla).\n");
@@ -318,7 +319,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set weight for these data [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
-	GMT_Option (API, "bo");
+	GMT_Option (API, "bo,do");
 	GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
 	GMT_Option (API, ":,.");
 	
@@ -744,7 +745,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;
 	struct MGD77_AUX_INFO aux[N_MGD77_AUX];
-	struct GMT_gcal cal;
+	struct GMT_GCAL cal;
 	struct MGD77_CARTER Carter;
 	struct MGD77_CORRTABLE **CORR = NULL;
 	struct MGD77_AUXLIST auxlist[N_MGD77_AUX] = {
@@ -789,7 +790,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77list_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77list_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the mgd77list main code ----------------------------*/
 

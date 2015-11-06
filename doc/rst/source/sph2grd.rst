@@ -13,15 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sph2grd** [ *table* ] **-G**\ *grdfile*
+**sph2grd** [ *table* ] |-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-D**\ [**g**\ \|\ **n**] ]
-[ **-E** ] [ **-F**\ [**k**]\ *filter* ] [ **-N**\ [*norm*] ] [ **-Q** ] [ |SYN_OPT-V| ]
+[ |-D|\ [**g**\ \|\ **n**] ]
+[ |-E| ]
+[ |-F|\ [**k**]\ *filter* ]
+[ |-N|\ [*norm*] ]
+[ |-Q| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ **-r** ]
+[ |SYN_OPT-x| ]
 
 |No-spaces|
 
@@ -34,10 +39,16 @@ L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.) 
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -50,12 +61,21 @@ Optional Arguments
     files holding the spherical harmonic coefficients. We expect the
     first four columns to hold the degree L, the order M, followed by
     the cosine and sine coefficients.
+
+.. _-D:
+
 **-D**\ [**g**\ \|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
     to compute the geoid [Add **-E** for anomalies on the ellipsoid].
+
+.. _-E:
+
 **-E**
     Evaluate expansion on the current ellipsoid [Default is sphere].
+
+.. _-F:
+
 **-F**\ [**d**]\ *filter*
     Filter coefficients according to one of two kinds of filter
     specifications:.  Select **-Fk** if values are given in km
@@ -66,11 +86,16 @@ Optional Arguments
     low-pass filter.  b) Gaussian band-pass: Append two wavelengths
     *lo/hi* where filter amplitudes = 0.5.  Replace wavelength by -
     to skip, e.g., **-F**\ 70/- is a high-pass Gaussian filter.
+
+.. _-N:
+
 **-N**\ [*norm*]
     Normalization used for coefficients.  Choose among **m**: Mathematical
     normalization - inner products summed over surface equal 1 [Default].
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -85,6 +110,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 

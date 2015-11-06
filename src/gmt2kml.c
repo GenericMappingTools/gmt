@@ -29,11 +29,12 @@
 #define THIS_MODULE_NAME	"gmt2kml"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert GMT data tables to KML files for Google Earth"
+#define THIS_MODULE_KEYS	"<DI,>TO"
 
 #include "gmt_dev.h"
 #include <stdarg.h>
 
-#define GMT_PROG_OPTIONS "-:>KOVabfghi" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>KOVabdfghi" GMT_OPT("HMm")
 
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
 void GMT_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
@@ -178,8 +179,7 @@ void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -188,17 +188,17 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N-|+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W-|<pen>] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Altitude mode, choose among three modes:\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t      a Absolute altitude.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t      g Altitude relative to sea surface or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t      s Altitude relative to seafloor or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t    Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a Absolute altitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g Altitude relative to sea surface or ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to seafloor or ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Append color palette name to color symbols by third column z-value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend feature down to the ground [no extrusion].\n");
@@ -221,7 +221,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Supply extended named data columns via <name1>,<name2>,... [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Control the feature labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Specify -N- if the first non-coordinate column of the data record should be used as single-word label (-Fe|s|t only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. Specify -N- if first non-coordinate column of data record is a single-word label (-Fe|s|t only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. Append a string that may contain the format %%d for a running feature count.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   4. Give no argument to indicate no labels.\n");
@@ -233,7 +233,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -O and -K to organize features into groups.\n");
 	GMT_Option (API, "V");
-	GMT_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].");
+	GMT_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give width in pixels and append p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading + applies cpt color (-C) to both polygon fill and outline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading - applies cpt color (-C) to the outline only.\n");
@@ -246,13 +246,12 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     to transparent [no fading].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +v turns off visibility [feature is visible].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o open document or folder when loaded [closed].\n");
-	GMT_Option (API, "a,bi2,f,g,h,i,:,.");
+	GMT_Option (API, "a,bi2,di,f,g,h,i,:,.");
 
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmt2kml and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -427,7 +426,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'T':	/* Title [and folder] */
 				Ctrl->T.active = true;
-				if ((c = strchr (opt->arg, '/'))) {	/* Got both title and folder */
+				if ((c = strchr (opt->arg, '/')) != NULL) {	/* Got both title and folder */
 					if (c[1]) Ctrl->T.folder = strdup (&c[1]);
 					*c = '\0';
 					if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
@@ -441,7 +440,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				if (opt->arg[k] == '-') {Ctrl->W.mode = 1; k++;}
 				if (opt->arg[k] == '+') {Ctrl->W.mode = 2; k++;}
 				if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
+					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 0);
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
@@ -522,8 +521,7 @@ int kml_print (struct GMTAPI_CTRL *API, int ntabs, char *format, ...)
 	return (GMT_NOERROR);
 }
 
-int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
-{
+int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat) {
 	if (*lat < GMT->common.R.wesn[YLO] || *lat > GMT->common.R.wesn[YHI]) return (true);
 	if (*lon < GMT->common.R.wesn[XLO]) *lon += 360.0;
 	if (*lon > GMT->common.R.wesn[XHI]) *lon -= 360.0;
@@ -531,8 +529,7 @@ int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
 	return (false);
 }
 
-void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode, int ntabs)
-{
+void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode, int ntabs) {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) kml_print (API, ntabs, "<extrude>1</extrude>\n");
 	if (fmode) kml_print (API, ntabs, "<tessellate>1</tessellate>\n");
@@ -540,8 +537,7 @@ void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, int altmode
 	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) kml_print (API, ntabs, "<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
 }
 
-void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs)
-{
+void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs) {
 	char X[GMT_LEN256] = {""}, Y[GMT_LEN256] = {""}, Z[GMT_LEN256] = {""};
 	GMT_ascii_format_col (API->GMT, X, out[GMT_X], GMT_OUT, GMT_X);
 	GMT_ascii_format_col (API->GMT, Y, out[GMT_Y], GMT_OUT, GMT_Y);
@@ -549,8 +545,7 @@ void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs)
 	kml_print (API, ntabs, "%s,%s,%s\n", X, Y, Z);
 }
 
-void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], double max[], int N)
-{
+void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], double max[], int N) {
 	char text[GMT_LEN256] = {""};
 	if (GMT_360_RANGE (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
 	kml_print (API, N++, "<Region>\n");
@@ -594,16 +589,14 @@ void set_iconstyle (struct GMTAPI_CTRL *API, double *rgb, double scale, char *ic
 	kml_print (API, --N, "</IconStyle>\n");
 }
 
-void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_PEN *pen, double *rgb, int N)
-{
+void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_PEN *pen, double *rgb, int N) {
 	kml_print (API, N++, "<LineStyle>\n");
 	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	kml_print (API, N, "<width>%ld</width>\n", lrint (pen->width));
 	kml_print (API, --N, "</LineStyle>\n");
 }
 
-void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int active, int N)
-{
+void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int active, int N) {
 	kml_print (API, N++, "<PolyStyle>\n");
 	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	kml_print (API, N, "<fill>%d</fill>\n", !active);
@@ -715,7 +708,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmt2kml_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmt2kml_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
@@ -897,7 +890,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 			if (!strcmp (file[GMT_IN], "<stdin>"))
 				kml_print (API, N, "<name>stdin</name>\n");
 			else
-				kml_print (API, N, "<name>%s</name>\n", GMT_basename (file[GMT_IN]));
+				kml_print (API, N, "<name>%s</name>\n", basename (file[GMT_IN]));
 		}
 		for (seg = 0; seg < n_segments; seg++) {	/* Process each segment in this table */
 			pnt_nr = 0;

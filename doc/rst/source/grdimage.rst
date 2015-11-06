@@ -14,14 +14,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdimage** *grd_z* \| *grd_r grd_g grd_b*
-[ **-A**\ *out_img*\ **=**\ *driver* ] [ **-C**\ *cptfile* ]
-[ **-D**\ [**r**\ ] ] **-J**\ *parameters*
-[ |SYN_OPT-U| ]
-[ **-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile*\ \|\ *intensity* ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-M** ] [ **-N** ]
-[ **-O** ] [ **-P** ] [ **-Q** ]
+[ |-A|\ *out_img*\ **=**\ *driver* ] [ |-C|\ *cpt* ]
+[ |-D|\ [**r**\ ] ] [ |-E|\ **i**\ [\|\ *dpi*] ] |-J|\ *parameters*
+[ |-G|\ [**f**\ \|\ **b**]\ *color* ] [ |-I|\ *intensfile*\ \|\ *intensity* ]
+[ |-J|\ **z**\ \|\ **-Z**\ *parameters* ] [ |-K| ] [ |-M| ] [ |-N| ]
+[ |-O| ] [ |-P| ] [ |-Q| ]
 [ |SYN_OPT-Rz| ]
-[ **-T** ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -75,14 +74,19 @@ Required Arguments
     2-D gridded data set (or red, green, blue grids) to be imaged (See
     GRID FILE FORMATS below.) 
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 Optional Arguments
 ------------------
 
-**-A**\ *out\_img*\ **=**\ *driver*
+.. _-A:
+
+**-A**\ *out_img*\ **=**\ *driver*
     With GDAL aware versions: save image in a raster format instead of
-    PostScript. Append *out\_img*\ **=**\ *driver* to select the file
+    PostScript. Append *out_img*\ **=**\ *driver* to select the file
     name and image format. The *driver* is the driver code name used by
     GDAL. For example, **-A**\ img.tif=GTiff will write a GeoTiff image
     if the subset of GMT syntax projections that is currently possible
@@ -91,11 +95,20 @@ Optional Arguments
 
 .. include:: explain_-B.rst_
 
-**-C**\ *cptfile*
-    Name of the color palette table (for *grd\_z* only). Alternatively,
+.. _-C:
+
+**-C**\ *cpt*
+    Name of the CPT file (for *grd_z* only). Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdimage** automatically determine a 16-level continuous CPT from
     the grid's z-range.
+    Yet another option is to specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous CPT from those colors automatically.  
+    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).
+
+.. _-D:
+
 **-D**\ [**r**]
     Specifies that the grid supplied is an image file to be read via
     GDAL. Obviously this option will work only with GMT versions
@@ -111,18 +124,26 @@ Optional Arguments
     assigned the limits of a global domain. The interest of this mode is
     that you can project a raw image (an image without referencing
     coordinates).
-**-Ei**\ [\|*dpi*]
+
+.. _-E:
+
+**-Ei**\ [\|\ *dpi*]
     Sets the resolution of the projected grid that will be created if a
     map projection other than Linear or Mercator was selected [100]. By
     default, the projected grid will be of the same size (rows and
     columns) as the input file. Specify **i** to use the PostScript
     image operator to interpolate the image at the device resolution.
+
+.. _-G:
+
 **-G**\ [**f**\ \|\ **b**]\ *color*
     This option only applies when the resulting image otherwise would
     consist of only two colors: black (0) and white (255). If so, this
     option will instead use the image as a transparent mask and paint
-    the mask (or its inverse, with **-Gb**) with the given color
-    combination.
+    the mask (or its inverse, with **-Gb**) with the given color combination.
+
+.. _-I:
+
 **-I**\ *intensfile*\ \|\ *intensity*
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere.
@@ -130,22 +151,37 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-M:
 
 **-M**
     Force conversion to monochrome image using the (television) YIQ
     transformation. Cannot be used with **-Q**.
+
+.. _-N:
+
 **-N**
     Do not clip the image at the map boundary (only relevant for
     non-rectangular maps). 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Make grid nodes with z = NaN transparent, using the colormasking
     feature in PostScript Level 3 (the PS device must support PS Level 3). 
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -155,12 +191,17 @@ Optional Arguments
     smaller region than specified in the grid file will result in a
     subset of the grid [Default is the region given by the grid file].
 .. include:: explain_-Rz.rst_
-    
+
+.. _-U:
 
 .. include:: explain_-U.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 

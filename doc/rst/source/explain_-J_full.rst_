@@ -18,7 +18,7 @@ option is used. The default standard parallel is the equator.
 The ellipsoid used in the map projections is user-definable by editing
 the **gmt.conf** file in your home directory. 73 commonly used
 ellipsoids and spheroids are currently supported, and users may also
-specify their own custum ellipsoid parameters [Default is WGS-84].
+specify their own custom ellipsoid parameters [Default is WGS-84].
 Several GMT parameters can affect the projection: :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`,
 :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>`, :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`, and
 :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the :doc:`gmt.conf` man page for details.
@@ -69,15 +69,16 @@ projection names stands for Equal-Area and Conformal, respectively):
 
         Typically used with **-R**\ *LLx/LLy/URx/URy*\ **r** or with projected coordinates.  Specify one of:
 
-        **-Jo**\ [**a**\ ]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\ ]\ *lon0/lat0/azimuth/width*
+        **-Jo**\ [**a**\ \|\ **A**]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\ \|\ **A**]\ *lon0/lat0/azimuth/width*
             Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
-        **-Jo**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale*
+        **-Jo**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ \|\ **B**]\ *lon0/lat0/lon1/lat1/scale*
             Set projection center *lon0/lat0*, another point on the oblique
             equator *lon1/lat1*, and *scale*.
-        **-Joc**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ *lon0/lat0/lonp/latp/scale*
+        **-Joc**\ \|\ **C**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ \|\ **C**\ *lon0/lat0/lonp/latp/scale*
             Set projection center *lon0/lat0*, pole of oblique projection
             *lonp/latp*, and *scale*.
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
+	    The upper-case **A**\ \|\ **B**\ \|\ **C** to removes enforcement of a northern hemisphere pole.
 
 .. _-Jq_full:
 

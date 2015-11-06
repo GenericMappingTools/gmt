@@ -13,10 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**spectrum1d** [ *table* ] **-S**\ *segment\_size*] [
-**-C**\ [**xycnpago**\ ] ] [ **-D**\ *dt* ] [ **-L**\ [**h**\ \|\ **m**]
-] [ **-N**\ [**+**\ ]\ *name\_stem* ] [ |SYN_OPT-b| ] [ **-W** ]
+**spectrum1d** [ *table* ] |-S|\ *segment_size*]
+[ |-C|\ [**xycnpago**] ] [ |-D|\ *dt* ] [ |-L|\ [**h**\ \|\ **m**] ]
+[ |-N|\ [\ *name_stem* ] ] [ |-T| ] [ |-W| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -38,41 +39,45 @@ using standard error estimates from Bendat and Piersol.
 The output files have 3 columns: f or w, p, and e. f or w is the
 frequency or wavelength, p is the spectral density estimate, and e is
 the one standard deviation error bar size. These files are named based
-on *name\_stem*. If the **-C** option is used, up to eight files are
+on *name_stem*. If the **-C** option is used, up to eight files are
 created; otherwise only one (xpower) is written. The files (which are
 ASCII unless **-bo** is set) are as follows:
 
-*name\_stem*.xpower
+*name_stem*.xpower
     Power spectral density of X(t). Units of X \* X \* *dt*.
-*name\_stem*.ypower
+*name_stem*.ypower
     Power spectral density of Y(t). Units of Y \* Y \* *dt*.
-*name\_stem*.cpower
+*name_stem*.cpower
     Power spectral density of the coherent output. Units same as ypower.
-*name\_stem*.npower
+*name_stem*.npower
     Power spectral density of the noise output. Units same as ypower.
-*name\_stem*.gain
-    Gain spectrum, or modulus of the transfer function. Units of (Y /
-    X).
-*name\_stem*.phase
+*name_stem*.gain
+    Gain spectrum, or modulus of the transfer function. Units of (Y / X).
+*name_stem*.phase
     Phase spectrum, or phase of the transfer function. Units are
     radians.
-*name\_stem*.admit
+*name_stem*.admit
     Admittance spectrum, or real part of the transfer function. Units of
     (Y / X).
-*name\_stem*.coh
+*name_stem*.coh
     (Squared) coherency spectrum, or linear correlation coefficient as a
     function of frequency. Dimensionless number in [0, 1]. The
     Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5. 
 
+In addition, a single file with all of the above as individual columns will
+be written to *stdout* (unless disabled via **-T**).
+
 Required Arguments
 ------------------
 
-**-S**\ *segment\_size*]
-    *segment\_size* is a radix-2 number of samples per window for
+.. _-S:
+
+**-S**\ *segment_size*]
+    *segment_size* is a radix-2 number of samples per window for
     ensemble averaging. The smallest frequency estimated is
-    1.0/(\ *segment\_size* \* *dt*), while the largest is 1.0/(2 \*
+    1.0/(\ *segment_size* \* *dt*), while the largest is 1.0/(2 \*
     *dt*). One standard error in power spectral density is approximately
-    1.0 / sqrt(\ *n\_data* / *segment\_size*), so if *segment\_size* =
+    1.0 / sqrt(\ *n_data* / *segment_size*), so if *segment_size* =
     256, you need 25,600 data to get a one standard error bar of 10%.
     Cross-spectral error bars are larger and more complicated, being a
     function also of the coherency.
@@ -85,7 +90,9 @@ Optional Arguments
     files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
     no files are specified, **spectrum1d** will read from standard input.
 
-**-C**\ [**xycnpago**\ ]
+.. _-C:
+
+**-C**\ [**xycnpago**]
     Read the first two columns of input as samples of two time-series,
     X(t) and Y(t). Consider Y(t) to be the output and X(t) the input in
     a linear system with noise. Estimate the optimum frequency response
@@ -96,21 +103,35 @@ Optional Arguments
     default [all]. **x** = xpower, **y** = ypower, **c** = cpower, **n**
     = npower, **p** = phase, **a** = admit, **g** = gain, **o** = coh.
 
+.. _-D:
+
 **-D**\ *dt*
     *dt* Set the spacing between samples in the time-series [Default = 1].
+
+.. _-L:
 
 **-L**
     Leave trend alone. By default, a linear trend will be removed prior
     to the transform. Alternatively, append **m** to just remove the
     mean value or **h** to remove the mid-value.
 
-**-N**\ [**+**]\ *name\_stem*
-    *name\_stem* Supply the name stem to be used for output files
-    [Default = "spectrum"]. To place all the computed output columns in
-    a single table, use **-N+**. 
+.. _-N:
+
+**-N**\ [*name\_stem*]
+    Supply an alternate name stem to be used for output files [Default = "spectrum"].
+    Giving no argument will disable the writing of individual output files.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-T:
+
+**-T**
+    Disable the writing of a single composite results file to stdout.
+
+.. _-W:
 
 **-W**
     Write Wavelength rather than frequency in column 1 of the output
@@ -121,6 +142,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 2 output columns]. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -154,7 +178,7 @@ data.g as output, use
 
    ::
 
-    paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C
+    paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C > results.txt
 
 Tutorial
 --------
@@ -251,10 +275,8 @@ See Also
 References
 ----------
 
-Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed.,
-John Wiley & Sons.
+Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley & Sons.
 
 Welch, P. D., 1967, The use of Fast Fourier Transform for the estimation
 of power spectra: a method based on time averaging over short, modified
-periodograms, IEEE Transactions on Audio and Electroacoustics, Vol
-AU-15, No 2.
+periodograms, IEEE Transactions on Audio and Electroacoustics, Vol AU-15, No 2.

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13154 [64-bit] Document from grdcontour
+%%Title: GMT v5.2.0_r13683 [64-bit] Document from grdcontour
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon May 26 11:11:38 2014
+%%CreationDate: Wed Nov 12 06:51:21 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -291,15 +291,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -513,6 +541,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -557,7 +588,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -636,7 +667,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour -A200 -C100 -Gd4 xz-temp.nc -Jx0.4c/0.4c -Ba5f1 -BWNse -Wathin,grey -Wcdefault,grey -R-100/-60/3/21.02 -P -K -Y1.5c
-%%PROJ: xy -100.00000000 -60.00000000 3.00000000 21.02000000 -100.000 -60.000 3.000 21.020 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -100.00000000 -60.00000000 3.00000000 21.02000000 -100.000 -60.000 3.000 21.020 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -671,7 +702,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 0.96 1.77 2.51 3.28 ] def
+/PSL_label_angle [ 0.98 1.81 2.58 3.34 ] def
 /PSL_label_str [
 	(200)
 	(400)
@@ -963,7 +994,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour -A200 -C100 -Gd4 xz-temp.nc -Jx0.4c/0.4c -Ba5f1 -BWNse -Wathin,grey -Wcdefault,grey -R-100/-60/3/20 -O -K -Y9c
-%%PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -997,7 +1028,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 0.96 1.77 2.51 3.28 ] def
+/PSL_label_angle [ 0.98 1.81 2.58 3.34 ] def
 /PSL_label_str [
 	(200)
 	(400)
@@ -1282,7 +1313,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour -Ccont.dat xz-temp.nc -Jx0.4c/0.4c -R-100/-60/3/20 -Ba5f1 -BWNse -Gd4 -Wathin,grey -Wcdefault,grey -O -Y9c
-%%PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy -100.00000000 -60.00000000 3.00000000 20.00000000 -100.000 -60.000 3.000 20.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1316,7 +1347,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 0.96 1.77 2.51 3.28 ] def
+/PSL_label_angle [ 0.98 1.81 2.58 3.34 ] def
 /PSL_label_str [
 	(200)
 	(400)

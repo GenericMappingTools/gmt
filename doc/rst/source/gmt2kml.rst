@@ -14,17 +14,21 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt2kml** [ *table* ]
-[ **-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
-[ **-C**\ *cpt* ] [ **-D**\ *descriptfile* ] [ **-E**\ [*altitude*] ]
-[ **-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p** ]
-[ **-G**\ **f\|n**\ **-**\ \|\ *fill* ] [ **-I**\ *icon* ] [ **-K**]
-[ **-L**\ *col1:name1*,\ *col2:name2*,... ]
-[ **-N**\ [+\|*name\_template*\ \|\ *name*] ] [ **-O**]
-[ **-Ra**\ \|\ *w/e/s/n* ] [ **-S**\ **c**\ \|\ **n**\ *scale*] ]
-[ **-T**\ *title*\ [/*foldername*] ]
+[ |-A|\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
+[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ] [ |-E|\ [*altitude*] ]
+[ |-F|\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p** ]
+[ |-G|\ **f\|n**\ **-**\ \|\ *fill* ]
+[ |-I|\ *icon* ] [ **-K**]
+[ |-L|\ *col1:name1*,\ *col2:name2*,... ]
+[ |-N|\ [+\|*name\_template*\ \|\ *name*] ] [ **-O**]
+[ |-R|\ **a**\ \|\ *w/e/s/n* ]
+[ |-S|\ **c**\ \|\ **n**\ *scale*] ]
+[ |-T|\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**]\ *pen* ] [ **-Z**\ *args* ]
+[ |-W|\ [**-**\ \|\ **+**]\ *pen* ]
+[ |-Z|\ *args* ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -62,6 +66,8 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the feature: **a** absolute
@@ -73,20 +79,28 @@ Optional Arguments
     is appended, the altitude (in m) is read from the 3rd column of the
     input file. [By default the features are clamped to the sea surface or ground].
 
+.. _-C:
+
 **-C**\ *cpt*
-    Use color palette for assigning colors to the symbol, event, or
+    Use the CPT file for assigning colors to the symbol, event, or
     timespan icons, based on the value in the 3rd column of the input
     file. For lines or polygons we examine the segment header for
     -Z<value> statements and obtain the color via the cpt lookup. Note
     only discrete colors are possible.
+
+.. _-D:
 
 **-D**\ *descriptfile*
     File with HTML snippets that will be included as part of the main
     description content for the KML file [no description]. See SEGMENT
     INFORMATION below for feature-specific descriptions.
 
+.. _-E:
+
 **-E**\ [*altitude*]
     Extrude feature down to ground level [no extrusion].
+
+.. _-F:
 
 **-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**
     Sets the feature type. Choose from points (**e**\ vent,
@@ -102,11 +116,15 @@ Optional Arguments
     indicate unbounded time limits. If used, times should be in ISO
     format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format (see **-f**).
 
+.. _-G:
+
 **-G**\ **f\|n**\ *fill*
     Set fill color for symbols, extrusions and polygons (**-Gf**)
     [Default is light orange at 75% transparency] or text labels
     (**-Gn**) [Default is white]. Optionally, use **-Gf-** to turn off
     polygon fill, and **-Gn-** to disable labels.
+
+.. _-I:
 
 **-I**\ *icon*
     Specify the URL to an alternative icon that should be used for the
@@ -116,8 +134,12 @@ Optional Arguments
     to the name. To turn off icons entirely (e.g., when just wanting a
     text label), use **-I**-. [Default is a local icon with no directory path].
 
+.. _-K:
+
 **-K**
     Allow more KML code to be appended to the output later [finalize the KML file].
+
+.. _-L:
 
 **-L**\ *name1*,\ *name2*,...
     Extended data given. Append one or more column names separated by
@@ -126,6 +148,8 @@ Optional Arguments
     in the KML file as Extended Data sets, whose attributes will be
     available in the Google Earth balloon when the item is selected.
     This option is not available unless input is an ASCII file.
+
+.. _-N:
 
 **-N**\ [-\|+\|\ *name\_template*\ \|\ *name*]
     By default, if segment headers contain a **-L**"label string" then
@@ -148,8 +172,12 @@ Optional Arguments
     appear before the extended data columns.  Also note that options
     (1) and (2) are not available unless input is an ASCII file.
 
+.. _-O:
+
 **-O**
     Appended KML code to an existing KML file [initialize a new KML file].
+
+.. _-R:
 
 **-Ra**\ \|\ *w/e/s/n*
     Issue a single Region tag. Append *w/e/s/n* to set a particular
@@ -157,9 +185,13 @@ Optional Arguments
     determine and use the actual domain of the data (single file only)
     [no region tags issued].
 
+.. _-S:
+
 **-S**\ **c**\ \|\ **n**\ *scale*]
     Scale icons or labels. Here, **-Sc** sets a scale for the symbol
     icon, whereas **-Sn** sets a scale for the name labels [1 for both].
+
+.. _-T:
 
 **-T**\ *title*\ [/*foldername*]
     Sets the document title [default is unset]. Optionally, append
@@ -168,8 +200,12 @@ Optional Arguments
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, or Polygon].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**-**\ \|\ **+**]\ *pen*
     Set pen attributes for lines or polygon outlines. Append pen
@@ -180,6 +216,9 @@ Optional Arguments
     outline. Note that for KML the pen width is given as integer pixel
     widths so you must specify pen width as *n*\ **p**, where *n* is an
     integer.
+
+.. _-Z:
+
 **-Z**\ *args*
     Set one or more attributes of the Document and Region tags. Append
     **+a**\ *alt\_min/alt\_max* to specify limits on visibility based on
@@ -192,6 +231,9 @@ Optional Arguments
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -355,4 +397,4 @@ See Also
 
 :doc:`gmt` , :doc:`gmt.conf`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`kml2gmt` , :doc:`ps2raster`
+:doc:`kml2gmt` , :doc:`psconvert`

@@ -1,0 +1,8 @@
+.. _-d_full:
+
+**-d**\ [**i**\ \|\ **o**]\ *nodata*
+    Control how user-coded missing z data values are translated to official
+    NaN values in GMT.  For input data we replace any value that equals
+    *nodata* with NaN. For output data we replace any NaN with the chosen
+    *nodata* value.  Use **-di** or **-do** to only affect input or output.
+    

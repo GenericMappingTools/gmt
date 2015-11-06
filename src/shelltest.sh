@@ -42,12 +42,6 @@ gmt grdmath -R0/50/10/90 -I10 X Y MUL = $GMT_TMPDIR/crap.nc
 R=`gmt_get_gridregion $GMT_TMPDIR/crap.nc`
 gmt_message "Found the grid region to be $R"
 
-w=`gmt_map_width -Rg -JG200/-30/5.5i`
-gmt_message "Map width given -Rg -JG200/-30/5.5i is $w"
-
-h=`gmt_map_height -R-20/30/-10/9 -JM10c`
-gmt_message "Map height given -R-20/30/-10/9 -JM10c is $h"
-
 PS=`gmt_set_psfile $0`
 
 gmt_message "PS name is $PS"

@@ -24,10 +24,11 @@
  * or (by using the -D option), get the site GMT default settings.
  *
  */
- 
+
 #define THIS_MODULE_NAME	"gmtdefaults"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"List current GMT default parameters"
+#define THIS_MODULE_KEYS	""
 
 #include "gmt_dev.h"
 
@@ -51,7 +52,7 @@ void *New_gmtdefaults_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_gmtdefaults_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);	
+	GMT_free (GMT, C);
 }
 
 int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
@@ -59,13 +60,13 @@ int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdefaults [-D[s|u]]\n\n");
-	
+
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the GMT default settings.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of defaults.\n");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -119,9 +120,9 @@ int GMT_gmtdefaults_parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, 
 int GMT_gmtdefaults (void *V_API, int mode, void *args)
 {
 	int error;
-	
+
 	char path[GMT_LEN256] = {""};
-	
+
 	struct GMTDEFAULTS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -143,12 +144,12 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtdefaults_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtdefaults_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtdefaults_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
 	if (Ctrl->D.active) {
-		GMT_getsharepath (GMT, "conf", "gmt", (Ctrl->D.mode == 's') ? "_SI" : (Ctrl->D.mode == 'u') ? "_US" : ".conf", path, R_OK);
+		GMT_getsharepath (GMT, "conf", "gmt", (Ctrl->D.mode == 's') ? "_SI.conf" : (Ctrl->D.mode == 'u') ? "_US.conf" : ".conf", path, R_OK);
 		GMT_loaddefaults (GMT, path);
 	}
 

@@ -16,12 +16,13 @@ Synopsis
 **blockmedian** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-C** ]
-[ **-E**\ [**b**] ] [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
-[ **-T**\ *quantile* ]
+[ |-C| ]
+[ |-E|\ [**b**] ] [ |-E|\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
+[ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**i**\ \|\ **o**] ]
+[ |-W|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -63,9 +64,15 @@ Optional Arguments
     (*x*,\ *y*,\ *z*\ [,\ *w*]) data values. [\ *w*] is an optional weight
     for the data. If no file is specified, **blockmedian** will read
     from standard input.
+
+.. _-C:
+
 **-C**
     Use the center of the block as the output location [Default uses the
-    median x and median y as location (but see **-Q**)]..
+    median x and median y as location (but see **-Q**)].
+
+.. _-E:
+
 **-E**\ [**b**\ ]
     Provide Extended report which includes **s** (the L1 scale of the
     median), **l**, the lowest value, and **h**, the high value for each
@@ -85,16 +92,25 @@ Optional Arguments
     specified. For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
+
+.. _-Q:
+
 **-Q**
     (Quicker) Finds median *z* and (*x*,\ *y*) at that the median *z*
-    [Default finds median *x*, median *y* independent of *z*]. Also see
-    **-C**.
+    [Default finds median *x*, median *y* independent of *z*]. Also see **-C**.
+
+.. _-T:
+
 **-T**\ *quantile*
     Sets the *quantile* of the distribution to be returned [Default is
     0.5 which returns the median *z*]. Here, 0 < *quantile* < 1.
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**i**\ \|\ **o**]
     Weighted modifier[s]. Unweighted input and output has 3 columns
@@ -110,6 +126,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

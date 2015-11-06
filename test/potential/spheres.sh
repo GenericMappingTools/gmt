@@ -14,8 +14,8 @@ gmt sample1d li -Fl -I1 > li1.dat
 gmt gmtgravmag3d -Tr"${src:-.}"/sphere.raw -C$ro -Fli1.dat > ptodos_g.dat
 
 # xyzokb solution
-$AWK '{print $1, $3}' ptodos_g.dat | gmt psxy -R-50/50/0/0.125 -JX14c/10c -Bx10f5 -By.01 -BWSne+t"Anomaly (mGal)" -W1p -P -K > $ps
-$AWK '{print $1, $3}' ptodos_g.dat | gmt psxy -R -JX -Sc.1c -G0 -O -K >> $ps
+gmt psxy ptodos_g.dat -i0,2 -R-50/50/0/0.125 -JX14c/10c -Bx10f5 -By.01 -BWSne+t"Anomaly (mGal)" -W1p -P -K > $ps
+gmt psxy ptodos_g.dat -i0,2 -R -JX -Sc.1c -G0 -O -K >> $ps
 
 
 # Profile of analytic anomaly

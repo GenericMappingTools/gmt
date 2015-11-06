@@ -6,7 +6,7 @@ gmt_shell_functions.sh
 
 .. only:: not man
 
-    gmt_shell_functions.sh - Practical functions to be used in GMT bourne shell scripts
+    gmt_shell_functions.sh - Practical functions to be used in GMT Bourne Again shell scripts
 
 Synopsis
 --------

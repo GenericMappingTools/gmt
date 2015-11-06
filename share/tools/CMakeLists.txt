@@ -24,13 +24,17 @@ configure_file (gmt5syntax.in gmt5syntax @ONLY)
 install (PROGRAMS
 	gmt_functions.sh
 	gmt_aliases.csh
+	gmt_links.sh
+	gmt_prepmex.sh
+	gmt_uninstall.sh
 	ncdeflate
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
-option (BASH_COMPLETION_DIR "Install location for gmt bash completion file"
-etc/bash_completion.d)
+if (NOT DEFINED BASH_COMPLETION_DIR)
+	set (BASH_COMPLETION_DIR etc/bash_completion.d)
+endif (NOT DEFINED BASH_COMPLETION_DIR)
 
 if (GMT_INSTALL_TRADITIONAL_FOLDERNAMES)
 	install (PROGRAMS

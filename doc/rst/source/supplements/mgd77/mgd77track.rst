@@ -15,18 +15,24 @@ Synopsis
 
 **mgd77track** *NGDC-ids*
 |SYN_OPT-R|
-**-J**\ *parameters*
-[ **-A**\ [**c**][*size*][,\ *spacing*] ]
+|-J|\ *parameters*
+[ |-A|\ [**c**][*size*][,\ *spacing*] ]
 [ |SYN_OPT-B| ]
-[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
-[ **-Db**\ *stopdate* ] [ **-F** ] [ **-G**\ **d**\ \|\ **t**\ *gap* ]
-[ **-I**\ *ignore* ] [ **-K** ] [ **-L**\ *trackticks* ] [ **-O** ]
-[ **-P** ] [ **-Sa**\ *startdist*\ [**u**] ]
-[ **-Sb**\ *stopdist*\ [**u**] ]
-[ **-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
+[ |-C|\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
+[ |-D|\ **b**\ *stopdate* ]
+[ |-F| ]
+[ |-G|\ **d**\ \|\ **t**\ \|\ **n**\ *gap* ]
+[ |-I|\ *ignore* ]
+[ |-K| ]
+[ |-L|\ *trackticks* ]
+[ |SYN_OPT-O| ]
+[ |SYN_OPT-P| ]
+[ |-S|\ **a**\ *startdist*\ [**u**] ]
+[ |-S|\ **b**\ *stopdist*\ [**u**] ]
+[ |-T|\ **T**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**][*pen*] ]
+[ |-W|\ [**-**\ \|\ **+**][*pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
@@ -47,13 +53,20 @@ Required Arguments
 
 .. include:: explain_ncid.rst_
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
  
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 Optional Arguments
 ------------------
+
+.. _-A:
 
 **-A**\ [**c**][*size*][,\ *spacing*]
     Append **c** to annotate using the MGD77 cruise ID [Default uses the
@@ -63,35 +76,57 @@ Optional Arguments
     Alternatively, append ,\ *spacing* to place this label every
     *spacing* units apart along the track. Append one of the units **k**
     (km), **n** (nautical mile), **d** (day), or **h** (hour).
-    
+
+.. _-B:
+
 .. include:: ../../explain_-B.rst_
+
+.. _-C:
 
 **-C**\ **f**\ \|\ **g**\ \|\ **e**
     Select procedure for along-track distance calculation:
         **f** Flat Earth distances.
         **g** Great circle distances [Default].
         **e** Geodesic distances on current GMT ellipsoid.
+
+.. _-D:
+
 **-Da**\ *startdate*
     Do not plot data collected before *startdate*
-    (yyyy-mm-ddBD(T)[hh:mm:ss]) [Default is first day].
+    (yyyy-mm-dd\ **T**\ [hh:mm:ss]) [Default is first day].
 **-Db**\ *stopdate*
     Do not plot data collected after *stopdate*
-    (yyyy-mm-ddBD(T)[hh:mm:ss]). [Default is last day].
+    (yyyy-mm-dd\ **T**\ [hh:mm:ss]). [Default is last day].
+
+.. _-F:
+
 **-F**
     Do not apply the error bit flags if present in a MGD77+ file
     [Default will apply these flags upon reading the data].
-**-G**\ **d**\ \|\ **t**\ *gap*
+
+.. _-G:
+
+**-G**\ **d**\ \|\ **t**\ \|\ **n**\ *gap*
     Let successive point separations exceeding **d**\ *gap* (km) or
     **t**\ *gap* (minutes) indicate a break in the track where we should
     not draw a line [no gaps recognized]. Repeat to use both types of
-    gap checking.
+    gap checking. The **n**\ *N* form is used to plot only one every other *N* points.
+    This is useful to reduce plot file size bat cannot be used (will be ignored)
+    with the other two gap types.
+
+.. _-I:
+
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain table
     files, respectively. The option may be repeated to ignore more than
     one format. [Default ignores none].
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *trackticks*
     To put time/distance log-marks on the track. E.g.
@@ -100,9 +135,15 @@ Optional Arguments
     (**t**)ickmarks every 500 km and 6 hours. Alternatively you may use
     the modifiers **d** (days) and **n** (nautical miles).
 
+.. _-O:
+
 .. include:: ../../explain_-O.rst_
 
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-S:
 
 **-Sa**\ *startdist*\ [**u**]
     Do not plot data that are less than *startdist* meter along track
@@ -112,6 +153,9 @@ Optional Arguments
     Do not plot data that are more than *stopdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
     **n** for nautical miles [Default is end of track].
+
+.. _-T:
+
 **-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc*
     Controls the attributes of the three kinds of markers (**T** for the
     first time marker in a new day, **t** for additional time markers in
@@ -119,8 +163,12 @@ Optional Arguments
     can specify the 5 comma-separated attributes *markersize*,
     *markercolor*, *markerfontsize*, *markerfont*, and
     *markerfontcolor*. Repeat the **-T** option for each marker type.
-    
+
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-W:
 
 **-W**\ [**-**\ \|\ **+**][*pen*]
     Append *pen* used for the trackline. [Defaults:
@@ -129,8 +177,12 @@ Optional Arguments
     pen color, while a leading **-** will set outline pen color and turn
     off symbol fill. 
 
+.. _-X:
+
 .. include:: ../../explain_-XY.rst_
- 
+
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
  

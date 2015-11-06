@@ -84,6 +84,7 @@
 #define THIS_MODULE_NAME	"grdtrend"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Fit trend surface to grids and compute residuals"
+#define THIS_MODULE_KEYS	"<GI,DGo,TGo,WGo,RG-"
 
 #include "gmt_dev.h"
 
@@ -175,7 +176,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -184,7 +185,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case 'D':
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->D.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -197,7 +198,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->T.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -512,7 +513,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdtrend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdtrend_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdtrend_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdtrend main code ----------------------------*/
 

@@ -16,10 +16,15 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
+/*!
+ * \file gmt_plot.h
+ * \brief 
+ */
+
 #ifndef _GMT_PLOT_H
 #define _GMT_PLOT_H
 
-/* Identifier for GMT_plane_perspective. The others come from GMT_io.h */
+/*! Identifier for GMT_plane_perspective. The others come from GMT_io.h */
 
 #define GMT_ZW	3
 
@@ -56,6 +61,7 @@
 #define GMT_SYMBOL_ZDASH	((int)'z')
 #define GMT_SYMBOL_PLUS		((int)'+')
 #define GMT_SYMBOL_XDASH	((int)'-')
+#define GMT_SYMBOL_DECORATED_LINE	((int)'~')
 
 #define GMT_SYMBOL_MOVE		((int)'M')
 #define GMT_SYMBOL_DRAW		((int)'D')
@@ -74,7 +80,7 @@
 
 #define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map [in inches] */
 
-/* FRONT symbols */
+/*! FRONT symbols */
 
 enum GMT_enum_front {GMT_FRONT_FAULT = 0,
 	GMT_FRONT_TRIANGLE,
@@ -82,23 +88,34 @@ enum GMT_enum_front {GMT_FRONT_FAULT = 0,
 	GMT_FRONT_CIRCLE,
 	GMT_FRONT_BOX};
 
-/* Direction of FRONT symbols: */
+/*! Direction of FRONT symbols: */
 
 enum GMT_enum_frontdir {GMT_FRONT_RIGHT = -1,
 	GMT_FRONT_CENTERED,
 	GMT_FRONT_LEFT};
 
-struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
+/*! A sub-symbol for symbols along a front */
+struct GMT_FRONTLINE {
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
 	double f_off;		/* Offset of first symbol from start of front in inches */
+	double f_angle;		/* Angle of the slip vector hook [30] */
 	int f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
 	int f_symbol;	/* Which symbol to draw along the front line */
+	int f_pen;	/* -1 for no outline (+p), 0 for default outline [-1], +1 if +p<pen> was used to set separate pen for outline */
+	struct GMT_PEN pen;	/* Pen for outline of front symbol [-W] */
 };
 
-/* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
+/* Vector symbols */
 
-enum GMT_enum_vecattr {GMT_VEC_BEGIN = 1,	/* Place vector head at beginning of vector. Add GMT_VEC_BEGIN_L for left only, GMT_VEC_BEGIN_R for right only */
+/* NOTE: GMT_enum_vecattr must mirror similar settings in postscriptlight.h: PSL_enum_vecattr */
+
+enum GMT_enum_vecattr {
+	GMT_VEC_ARROW		= 0,		/* Default head symbol is arrow */
+	GMT_VEC_TERMINAL	= 1,		/* Cross-bar normal to vector */
+	GMT_VEC_CIRCLE		= 2,		/* Circle as vector head */
+	GMT_VEC_SQUARE		= 3,		/* Square as vector head */
+	GMT_VEC_BEGIN		= 1,		/* Place vector head at beginning of vector. Add GMT_VEC_BEGIN_L for left only, GMT_VEC_BEGIN_R for right only */
 	GMT_VEC_END		= 2,		/* Place vector head at end of vector.  Add GMT_VEC_END_L for left only, and GMT_VEC_END_R for right only */
 	GMT_VEC_HEADS		= 3,		/* Mask for either head end */
 	GMT_VEC_BEGIN_L		= 4,		/* Left-half head at beginning */
@@ -116,7 +133,12 @@ enum GMT_enum_vecattr {GMT_VEC_BEGIN = 1,	/* Place vector head at beginning of v
 	GMT_VEC_FILL		= 8192,		/* Fill vector head using default fill */
 	GMT_VEC_FILL2		= 16384,	/* Fill vector head using supplied v_fill) */
 	GMT_VEC_MARC90		= 32768,	/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_SCALE		= 65536};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
+	GMT_VEC_OFF_BEGIN	= 65536,	/* Starting point of vector should be moved a distance along the line */
+	GMT_VEC_OFF_END		= 131072,	/* End point of vector should be moved a distance along the line */
+	GMT_VEC_MID_FWD		= 262144,	/* Place mid-point vector head facing forwards  */
+	GMT_VEC_MID_BWD		= 524288,	/* Place mid-point vector head facing backwards  */
+	GMT_VEC_COMPONENTS	= 1048576,	/* Not needed in postscriptlight: Got vector dx, dy Cartesian components */
+	GMT_VEC_SCALE		= 2097152};	/* Not needed in postscriptlight: If not set we determine the required inch-to-degree scale */
 
 /* Make sure the next three macros are in sync with any changes to GMT_enum_vecattr above! */
 
@@ -130,6 +152,7 @@ enum GMT_enum_vecattr {GMT_VEC_BEGIN = 1,	/* Place vector head at beginning of v
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
 	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	unsigned int v_kind[2];	/* Type of vector heads */
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
@@ -139,6 +162,8 @@ struct GMT_VECT_ATTR {
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
+	float comp_scale;	/* Converts hypot (dx, dy) to inches */
+	float v_trim[2];	/* Offsets from begin/end point in inches */
 	struct GMT_PEN pen;	/* Pen for outline of head */
 	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
 };
@@ -154,13 +179,13 @@ struct GMT_SYMBOL {
 	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	unsigned int justify;	/* Justification of text item for -Sl symbol [PSL_MC = centered] */
 	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	unsigned int read_symbol_cmd;	/* 1 when -S indicated we must read symbol type from file, 2 with -SK is used */
 	bool u_set;		/* true if u was set */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
-	bool read_symbol_cmd;	/* true when -S indicated we must read symbol type from file */
 	bool read_size;	/* true when we must read symbol size from file for the current record */
 	bool shade3D;	/* true when we should simulate shading of 3D symbols cube and column */
 	bool fq_parse;	/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
@@ -183,6 +208,7 @@ struct GMT_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL *custom;	/* pointer to a custom symbol */
 
 	struct GMT_CONTOUR G;	/* For quoted lines */
+	struct GMT_DECORATE D;	/* For decorated lines */
 };
 
 #endif /* _GMT_PLOT_H */

@@ -13,8 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**kml2gmt** [ *kmlfiles* ] [ |SYN_OPT-V| ] [ **-Z** ]
+**kml2gmt** [ *kmlfiles* ]
+[ |-F|\ **s**\ \|\ **l**\ \|\ **p** ]
+[ |SYN_OPT-V| ]
+[ |-Z| ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -42,15 +46,29 @@ Optional Arguments
 *kmlfiles*
     Name of one or more KML files to work on. If not are given, then
     standard input is read.
+
+.. _-F:
+
+**-F**\ **s**\ \|\ **l**\ \|\ **p**
+    Specify a particular feature type to output. Choose from points (**s**),
+    **l**\ ine, or **p**\ olygon.  By default we output all geometries.
+
+.. _-Z:
+
 **-Z**
     Output the altitude coordinates as GMT z coordinates [Default will
     output just longitude and latitude]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do.rst_
 
 .. include:: explain_colon.rst_
 
@@ -63,9 +81,15 @@ To extract the lon,lat values from the KML file google.kml, try
 
     gmt kml2gmt google.kml -V > google.txt
 
+
+To separate the point and polygon geometries from the KML file google.kml, try
+
+    gmt kml2gmt google.kml -Fp -V > polygons.txt
+    gmt kml2gmt google.kml -Fs -V > points.txt
+
 See Also
 --------
 
 :doc:`gmt`, :doc:`gmt.conf`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`ps2raster`, :doc:`gmt2kml`
+:doc:`psconvert`, :doc:`gmt2kml`

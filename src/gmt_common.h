@@ -15,7 +15,7 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
- 
+
 /*
  * Holds current selections for the family of common GMT options.
  *
@@ -23,11 +23,16 @@
  * Date:	01-JAN-2011
  * Version:	5 API
  */
- 
+
+/*!
+ * \file gmt_common.h
+ * \brief Holds current selections for the family of common GMT options
+ */
+
 #ifndef _GMT_COMMON_H
 #define _GMT_COMMON_H
 
-/* Constants related to detecting data gaps which should be treated as segment boundaries */
+/*! Constants related to detecting data gaps which should be treated as segment boundaries */
 enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current column value exceeds <gap> */
 	GMT_POSGAP_IN_COL,			/* Check if current minus previous column value exceeds <gap> */
 	GMT_ABSGAP_IN_COL,			/* Check if |current minus previous column value| exceeds <gap> */
@@ -42,11 +47,12 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 
 #define MAX_ASPATIAL 64		/* No more than 64 aspatial options in -a */
 
+//#define GMT_SHORTHAND_OPTIONS	"BJRXxYcp"	/* All of the shorthand options */
 #define GMT_SHORTHAND_OPTIONS	"BJRXYcp"	/* All of the shorthand options */
-#define GMT_CRITICAL_OPT_ORDER "-VJfRb"		/* If given options among these must be parsed first and in this order */
+#define GMT_CRITICAL_OPT_ORDER "-VJfrRb"	/* If given options among these must be parsed first and in this order */
 
+/*! Structure with all information given via the common GMT command-line options -R -J .. */
 struct GMT_COMMON {
-	/* Structure with all information given via the common GMT command-line options -R -J .. */
 	struct synopsis {	/* \0 (zero) or ^ */
 		bool active;
 		bool extended;	/* + to also show non-common options */
@@ -55,20 +61,20 @@ struct GMT_COMMON {
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
 		int mode;	/* 5 = GMT 5 syntax, 4 = GMT 4 syntax, 1 = Either, -1 = mix (error), 0 = not set yet */
 		char string[2][GMT_LEN256];
-	} B;	
+	} B;
 	struct API_I {	/* -I<xinc>[/<yinc>] grids only, and for API use only */
 		bool active;
 		double inc[2];
-	} API_I;	
+	} API_I;
 	struct J {	/* -J<params> */
 		bool active, zactive;
 		unsigned int id;
 		double par[6];
 		char string[GMT_LEN256];
-	} J;		
+	} J;
 	struct K {	/* -K */
 		bool active;
-	} K;	
+	} K;
 	struct O {	/* -O */
 		bool active;
 	} O;
@@ -126,6 +132,11 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int copies;
 	} c;
+	struct d {	/* -d[i][o]<nan_proxy> */
+		bool active[2];
+		bool is_zero[2];
+		double nan_proxy[2];
+	} d;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
 	} f;
@@ -133,9 +144,9 @@ struct GMT_COMMON {
 		bool active;
 		unsigned int n_methods;			/* How many different criteria to apply */
 		uint64_t n_col;				/* Largest column-number needed to be read */
-		bool match_all;			/* If true then all specified criteria must be met to be a gap [default is any of them] */
+		bool match_all;				/* If true then all specified criteria must be met to be a gap [default is any of them] */
 		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
-		uint64_t col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
+		int64_t col[GMT_N_GAP_METHODS];		/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *GMT, uint64_t);	/* Pointers to functions that compute those distances */
 	} g;
@@ -147,8 +158,8 @@ struct GMT_COMMON {
 		char *title;
 		char *remark;
 		char *colnames;	/* Not set by -h but maintained here */
-	} h;	
-	struct i {	/* -i<col>|<colrange>,.. */
+	} h;
+	struct i {	/* -i<col>|<colrange>,... */
 		bool active;
 		uint64_t n_cols;
 	} i;
@@ -161,7 +172,7 @@ struct GMT_COMMON {
 		char BC[4];		/* For BC settings via +bg|n[x|y]|p[x|y] */
 		double threshold;	/* Defaults to 0.5 */
 	} n;
-	struct o {	/* -o<col>|<colrange>,.. */
+	struct o {	/* -o<col>|<colrange>,... */
 		bool active;
 		uint64_t n_cols;
 	} o;
@@ -179,6 +190,10 @@ struct GMT_COMMON {
 		bool active;
 		double value;
 	} t;
+	struct x {	/* -x[[-]<n>] */
+		bool active;
+		int n_threads;
+	} x;
 	struct colon {	/* -:[i|o] */
 		bool active;
 		bool toggle[2];

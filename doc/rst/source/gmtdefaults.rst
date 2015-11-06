@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtdefaults** [ **-D**\ [**u**\ \|\ **s**] ]
+**gmtdefaults** [ |-D|\ [**u**\ \|\ **s**] ]
 
 |No-spaces|
 
@@ -22,11 +22,11 @@ Description
 
 **gmtdefaults** lists the GMT parameter defaults if the option
 **-D** is used. There are three ways to change some of the settings: (1)
-Use the command :doc:`gmtset`, (2) use any texteditor to edit the file
+Use the command :doc:`gmtset`, (2) use any text editor to edit the file
 :doc:`gmt.conf` in your home, ~/.gmt or current directory (if you do not
 have this file, run :doc:`gmtset` **-D** to get one with the system default
 settings), or (3) override any parameter by specifying one
-or more **-**\ **-PARAMETER**\ =\ *VALUE* statements on the commandline of any
+or more **-**\ **-PARAMETER**\ =\ *VALUE* statements on the command line of any
 GMT command (**PARAMETER** and *VALUE* are any combination listed
 below). The first two options are permanent changes until explicitly
 changed back, while the last option is ephemeral and only applies to the
@@ -40,6 +40,8 @@ None.
 
 Optional Arguments
 ------------------
+
+.. _-D:
 
 **-D**
     Print the system GMT defaults to standard output. Append **u**
@@ -68,7 +70,7 @@ To get a copy of the GMT parameter defaults in your home directory, run
 
    ::
 
-    gmt gmtdefaults -D > ~/gmt.conf
+    gmt defaults -D > ~/gmt.conf
 
 You may now change the settings by editing this file using a text editor
 of your choice, or use **gmtset** to change specified parameters on the

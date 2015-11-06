@@ -967,8 +967,9 @@ double GMT_sinc (struct GMT_CTRL *GMT, double x) {
 /* GMT_factorial (n) calculates the factorial n! */
 
 double GMT_factorial (struct GMT_CTRL *GMT, int n) {
+	static int ntop = 8;	/* Initial portion filled in below */
+	static double a[33] = {1.0, 1.0, 2.0, 6.0, 24.0, 120.0, 720.0, 5040.0, 40320.0};
 	int i;
-	double val = 1.0;
 
 	if (n < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 in GMT_factorial(n)\n");
@@ -976,9 +977,42 @@ double GMT_factorial (struct GMT_CTRL *GMT, int n) {
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
 	}
+	if (n > 32) return (gmt_ln_gamma (GMT, n+1.0));
+	while (ntop < n) {
+		i = ntop++;
+		a[ntop] = a[i] * ntop;
+	}
+	return (a[n]);
+}
 
-	for (i = 1; i <= n; i++) val *= ((double)i);
-	return (val);
+double gmt_factln (struct GMT_CTRL *GMT, int n)
+{	/* returns log(n!) */
+	static double a[101];	/* Automatically initialized to zero */
+	if (n < 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 in gmt_factln(n)\n");
+		return (GMT->session.d_NaN);
+	}
+	if (n <= 1) return 0.0;
+	if (n <= 100) return (a[n] ? a[n] : (a[n] = gmt_ln_gamma (GMT, n+1.0)));
+	else return gmt_ln_gamma (GMT, n+1.0);
+}
+
+double GMT_permutation (struct GMT_CTRL *GMT, int n, int r)
+{	/* Compute Permutations n_P_r */
+	if (n < 0 || r < 0 || r > n) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 or r < 0 or r > n in GMT_permutation(n,r)\n");
+		return (GMT->session.d_NaN);
+	}
+	return (floor (0.5 + exp (gmt_factln (GMT, n) - gmt_factln (GMT, n-r))));
+}
+
+double GMT_combination (struct GMT_CTRL *GMT, int n, int r)
+{	/* Compute Combinations n_C_r */
+	if (n < 0 || r < 0 || r > n) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: n < 0 or r < 0 or r > n in GMT_combination(n,r)\n");
+		return (GMT->session.d_NaN);
+	}
+	return (floor (0.5 + exp (gmt_factln (GMT, n) - gmt_factln (GMT, r) - gmt_factln (GMT, n-r))));
 }
 
 double GMT_dilog (struct GMT_CTRL *GMT, double x)
@@ -1076,6 +1110,33 @@ double GMT_erfinv (struct GMT_CTRL *GMT, double y)
 	return (x);
 }
 
+double gmt_beta (struct GMT_CTRL *GMT, double z, double w) {
+	double g1, g2, g3;
+	gmt_ln_gamma_r (GMT, z,   &g1);
+	gmt_ln_gamma_r (GMT, w,   &g2);
+	gmt_ln_gamma_r (GMT, z+w, &g3);
+	return exp (g1 + g2 - g3);
+}
+
+double GMT_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
+{
+	/* Probability density distribution for F */
+	double y;
+	
+	y = sqrt (pow (nu1 * F, (double)nu1) * pow ((double)nu2, (double)nu2) / pow (nu1 * F + nu2, (double)(nu1+nu2))) / (F * gmt_beta (GMT, 0.5*nu1, 0.5*nu2));
+	return (y);
+}
+
+double GMT_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
+{
+	/* Cumulative probability density distribution for F */
+	double y;
+	
+	gmt_inc_beta (GMT, 0.5*nu1, 0.5*nu2, F*nu1/(F*nu1+nu2), &y);
+	
+	return (y);
+}
+
 int GMT_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, double chisq2, uint64_t nu2, double *prob)
 {
 	/* Routine to compute Q(F, nu1, nu2) = 1 - P(F, nu1, nu2), where nu1
@@ -1130,6 +1191,17 @@ int GMT_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, double chisq2, u
 		return (-1);
 	}
 	return (0);
+}
+
+double GMT_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu)
+{
+	/* Probability density distribution for Student t */
+	double y, n = nu + 1.0, g1, g2;
+	
+	gmt_ln_gamma_r (GMT, 0.5*n, &g1);
+	gmt_ln_gamma_r (GMT, 0.5*nu, &g2);
+	y = exp (g1 - g2) * pow (1.0 + t*t/nu, -0.5*n) / sqrt (M_PI * nu);
+	return (y);
 }
 
 int GMT_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, double *prob)
@@ -1227,6 +1299,70 @@ int GMT_student_t_a (struct GMT_CTRL *GMT, double t, uint64_t n, double *prob)
 	return (0);
 }
 
+double GMT_t_cdf (struct GMT_CTRL *GMT, double t, uint64_t nu)
+{
+	double p;
+	/* Cumulative Student t distribution */
+	GMT_UNUSED(GMT);
+	GMT_student_t_a (GMT, fabs (t), nu, &p);
+	p = 0.5 * p + 0.5;
+	if (t < 0.0)
+		p = 1.0 - p;
+	return (p);
+}
+
+double GMT_weibull_pdf (struct GMT_CTRL *GMT, double x, double scale, double shape)
+{
+	double p, z;
+	GMT_UNUSED(GMT);
+	/* Weibull distribution */
+	if (x < 0.0) return 0.0;
+	z = x / scale;
+	p = (shape/scale) * pow (z, shape-1.0) * exp (-pow(z,shape));
+	return (p);
+}
+
+double GMT_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double shape)
+{
+	double p, z;
+	GMT_UNUSED(GMT);
+	/* Cumulative Weibull distribution */
+	if (x < 0.0) return 0.0;
+	z = x / scale;
+	p = 1.0 - exp (-pow (z, shape));
+	return (p);
+}
+
+double GMT_weibull_crit (struct GMT_CTRL *GMT, double p, double scale, double shape)
+{
+	double z;
+	GMT_UNUSED(GMT);
+	/* Critical values for Weibull distribution */
+	z = scale * pow (-log (1.0 - p), 1.0/shape);
+	return (z);
+}
+
+double GMT_binom_pdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
+{
+	double c;
+	/* Binomial distribution */
+	c = GMT_combination (GMT, (int)n, (int)x) * pow (p, (int)x) * pow (1.0-p, (int)(n-x));
+	return (c);
+}
+
+double GMT_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p)
+{	/* Cumulative Binomial distribution */
+	double c = 0.0;
+	if (n > 12)	/* Use Numerical Recipes fast way for larger n */
+		gmt_inc_beta (GMT, (double)x, (double)(n-x+1), p, &c);
+	else {	/* Do the sum instead */
+		uint64_t j;
+		for (j = 0; j <= x; j++)
+			c += GMT_binom_pdf (GMT, j, n, p);
+	}
+	return (c);
+}
+
 double GMT_zdist (struct GMT_CTRL *GMT, double x)
 {
 	/* Cumulative Normal (z) distribution */
@@ -1295,6 +1431,16 @@ double GMT_tcrit (struct GMT_CTRL *GMT, double alpha, double nu)
 		}
 	}
 	return (sign * t_mid);
+}
+
+double GMT_chi2_pdf (struct GMT_CTRL *GMT, double c, uint64_t nu)
+{
+	/* Probability density distribution for chi-squared */
+	double g, y;
+	
+	gmt_ln_gamma_r (GMT, 0.5*nu, &g);
+	y = pow (c, 0.5*nu - 1.0) * exp (-0.5 * c - g) / pow (2.0, 0.5 * nu);
+	return (y);
 }
 
 double GMT_chi2crit (struct GMT_CTRL *GMT, double alpha, double nu)
@@ -1471,10 +1617,15 @@ void GMT_chi2 (struct GMT_CTRL *GMT, double chi2, double nu, double *prob) {
 	*prob = gmt_gammq (GMT, 0.5 * nu, 0.5 * chi2);
 }
 
-void GMT_cumpoisson (struct GMT_CTRL *GMT, double k, double mu, double *prob) {
+double GMT_poissonpdf (struct GMT_CTRL *GMT, double k, double lambda)
+{	/* Evaluate PDF for Poisson Distribution */
+	return pow (lambda, k) * exp (-lambda) / GMT_factorial (GMT, irint (k));
+}
+
+void GMT_poisson_cdf (struct GMT_CTRL *GMT, double k, double mu, double *prob) {
 	/* evaluate Cumulative Poisson Distribution */
 
-	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (GMT, k, mu);
+	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (GMT, k+1.0, mu);
 }
 
 double GMT_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *std)
@@ -1596,7 +1747,7 @@ int GMT_median (struct GMT_CTRL *GMT, double *x, uint64_t n, double xmin, double
 
 int compare_observation (const void *a, const void *b)
 {
-	const struct OBSERVATION *obs_1 = a, *obs_2 = b;
+	const struct GMT_OBSERVATION *obs_1 = a, *obs_2 = b;
 
 	/* Sorts observations into ascending order based on obs->value */
 	if (obs_1->value < obs_2->value)
@@ -1606,7 +1757,22 @@ int compare_observation (const void *a, const void *b)
 	return 0;
 }
 
-double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n, double quantile)
+double GMT_mean_weighted (struct GMT_CTRL *GMT, double *x, double *w, uint64_t n)
+{
+	/* Return the weighted mean of x given weights w */
+	uint64_t k;
+	double sum_xw = 0.0, sum_w = 0.0;
+	
+	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mean */
+	for (k = 0; k < n; k++) {
+		sum_w  += w[k];
+		sum_xw += x[k] * w[k];
+	}
+	if (sum_w == 0.0) return (GMT->session.d_NaN);	/* No weights, so no defined mean */
+	return (sum_xw / sum_w);
+}
+
+double GMT_median_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, double quantile)
 {
 	uint64_t k;
 	double weight_half = 0.0, weight_count;
@@ -1615,7 +1781,7 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 
 	/* First sort data on z */
 
-	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+	qsort (data, n, sizeof (struct GMT_OBSERVATION), compare_observation);
 
 	/* Find weight sum, then get half-value */
 
@@ -1630,7 +1796,7 @@ double GMT_median_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint
 	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
 }
 
-double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64_t n)
+double GMT_mode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n)
 {
 	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
@@ -1643,7 +1809,7 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined mode */
 
 	/* First sort data on z */
-	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+	qsort (data, n, sizeof (struct GMT_OBSERVATION), compare_observation);
 
 	/* Compute the total weight */
 	for (wsum = 0.0, i = 0; i < n; i++) wsum += data[i].weight;
@@ -1678,7 +1844,7 @@ double GMT_mode_weighted (struct GMT_CTRL *GMT, struct OBSERVATION *data, uint64
 	return (mode);
 }
 
-int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)
+int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est)
 {
 	uint64_t i, istop;
 	unsigned int multiplicity;
@@ -1736,7 +1902,7 @@ int GMT_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 	return (0);
 }
 
-int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, unsigned int mode_selection, unsigned int *n_multiples, double *mode_est)
+int GMT_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sort, int mode_selection, unsigned int *n_multiples, double *mode_est)
 {
 	uint64_t i, istop;
 	unsigned int multiplicity;
@@ -2279,3 +2445,6 @@ void GMT_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsig
 		pq[QV_IM] = a[1]*M_SQRT_PI*(A[GMT_IM] - B[GMT_IM])/2.0;
 	}
 }
+
+bool GMT_is_fnan_func (float value) { return (GMT_is_fnan (value)); }
+bool GMT_is_dnan_func (double value) { return (GMT_is_dnan (value)); }

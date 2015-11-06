@@ -27,6 +27,7 @@
 #define THIS_MODULE_NAME	"gmtget"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get individual GMT default parameters"
+#define THIS_MODULE_KEYS	">TO"
 
 #include "gmt_dev.h"
 
@@ -96,7 +97,7 @@ int GMT_gmtget_parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Optional defaults file on input and output */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -143,13 +144,13 @@ int GMT_gmtget (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtget_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtget_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtget main code ----------------------------*/
 
 	/* Read the supplied default file or the users defaults to override system settings */
 
-	if (Ctrl->G.active) GMT_getdefaults (GMT, Ctrl->G.file);
+	if (Ctrl->G.active || API->mode) GMT_getdefaults (GMT, Ctrl->G.file);	/* Update defaults if using external API */
 
 	error = GMT_pickdefaults (GMT, Ctrl->L.active, options);		/* Process command line arguments */
 

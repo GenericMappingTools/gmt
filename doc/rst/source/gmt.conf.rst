@@ -95,12 +95,12 @@ fonts can be found in the :doc:`gmt` man page.
 .. _COLOR_MODEL:
 
 **COLOR_MODEL**
-    Selects in which color space a color palette should be interpolated.
+    Selects in which color space a CPT should be interpolated.
     By default, color interpolation takes place directly on the RGB
     values which can produce some unexpected hues, whereas interpolation
     directly on the HSV values better preserves those hues. The choices
     are: **none** (default: use whatever the COLOR_MODEL setting in the
-    color palette file demands), **rgb** (force interpolation in RGB),
+    CPT file demands), **rgb** (force interpolation in RGB),
     **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
     in CMYK but interpolates in RGB).
 
@@ -217,7 +217,7 @@ fonts can be found in the :doc:`gmt` man page.
     strings in data fields. See **FORMAT_DATE_OUT** for details. In
     addition, you may use a single o instead of mm (to plot month name)
     and u instead of W[-]ww to plot "Week ##". Both of these text
-    strings will be affected by the **TIME_LANGUAGE**,
+    strings will be affected by the **GMT_LANGUAGE**,
     **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP**
     setting. [yyyy-mm-dd].
 
@@ -302,7 +302,9 @@ fonts can be found in the :doc:`gmt` man page.
     *cols*:*format* specifications, where *cols* can be specific columns
     (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
     3-7). The last specification without column information will
-    override the format for all other columns.
+    override the format for all other columns.  Alternatively, you can
+    list N space-separated formats and these apply to the first N
+    columns.
 
 .. _FORMAT_TIME_PRIMARY_MAP:
 
@@ -338,6 +340,13 @@ fonts can be found in the :doc:`gmt` man page.
     options for a prior major release.  Specify either 4 or 5. If 4 is
     set we will parse obsolete GMT 4 options and issue warnings; if 5
     is set then parsing GMT 4 only syntax will result in errors [4].
+
+.. _GMT_EXPORT_TYPE:
+
+**GMT_EXPORT_TYPE**
+    This setting is only used by external interfaces and controls the
+    data type used for table entries.  Choose from double,
+    single, [u]long, [u]int, [u]short, and [u]char [double].
 
 .. _GMT_EXTRAPOLATE_VAL:
 
@@ -400,6 +409,48 @@ fonts can be found in the :doc:`gmt` man page.
     spline (cubic) or no interpolation (none) should be used for 1-D
     interpolations in various programs [akima].
 
+.. _GMT_LANGUAGE:
+
+**GMT_LANGUAGE**
+    Language to use when plotting calendar and map items such as months and
+    days, map annotations and cardinal points. Select from:
+
+    * CN1 Simplified Chinese
+    * CN2 Traditional Chinese
+    * DE German
+    * DK Danish
+    * EH Basque
+    * ES Spanish
+    * FI Finnish
+    * FR French
+    * GR Greek
+    * HI Hawaiian
+    * HU Hungarian
+    * IE Irish
+    * IL Hebrew
+    * IS Icelandic
+    * IT Italian
+    * JP Japanese
+    * KR Korean
+    * NL Dutch
+    * NO Norwegian
+    * PL Polish
+    * PT Portuguese
+    * RU Russian
+    * SE Swedish
+    * SG Scottish Gaelic
+    * TO Tongan
+    * TR Turkish
+    * UK British English
+    * US US English
+
+    If your language is not supported, please examine the
+    **$GMT_SHAREDIR**/localization/gmt_us.locale file and make a similar file. Please
+    submit it to the GMT Developers for official inclusion. Custom
+    language files can be placed in directories **$GMT_SHAREDIR**/localization
+    or ~/.gmt. Note: Some of these languages may require you to also
+    change the **PS_CHAR_ENCODING** setting.
+
 .. _GMT_TRIANGULATE:
 
 **GMT_TRIANGULATE**
@@ -431,30 +482,26 @@ fonts can be found in the :doc:`gmt` man page.
 **IO_GRIDFILE_FORMAT**
     Default file format for grids, with optional scale, offset and
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
-    2-letter format indicator can be one of
-    [**abcegnrs**][**bsifd**]. See
-    :doc:`grdreformat` and Section 4.20 of the
+    2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
+    :doc:`grdconvert` and Section :ref:`grid-file-format` of the
     GMT Technical Reference and Cookbook for more information. The
     *scale* and *offset* modifiers may be left empty to select default
     values (scale = 1, offset = 0), or you may specify *a* for
     auto-adjusting the scale and/or offset of packed integer grids
     (=\ *id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
-    the appropriate value for the given format is used (NaN or largest
-    negative). [nf].
+    the appropriate value for the given format is used (NaN or largest negative). [nf].
 
 .. _IO_GRIDFILE_SHORTHAND:
 
 **IO_GRIDFILE_SHORTHAND**
     If true, all grid file names are examined to see if they use the
-    file extension shorthand discussed in Section 4.17 of the GMT
-    Technical Reference and Cookbook. If false, no filename expansion is
-    done [false].
+    file extension shorthand discussed in Section :ref:`grid-file-format` of the GMT
+    Technical Reference and Cookbook. If false, no filename expansion is done [false].
 
 .. _IO_HEADER:
 
 **IO_HEADER**
-    (**-h**) Specifies whether input/output ASCII files have header
-    record(s) or not [false].
+    (**-h**) Specifies whether input/output ASCII files have header record(s) or not [false].
 
 .. _IO_LONLAT_TOGGLE:
 
@@ -463,8 +510,7 @@ fonts can be found in the :doc:`gmt` man page.
     contain (latitude,longitude) or (y,x) rather than the expected
     (longitude,latitude) or (x,y). false means we have (x,y) both on
     input and output. true means both input and output should be (y,x).
-    IN means only input has (y,x), while OUT means only output should be
-    (y,x). [false].
+    IN means only input has (y,x), while OUT means only output should be (y,x). [false].
 
 .. _IO_N_HEADER_RECS:
 
@@ -512,6 +558,15 @@ fonts can be found in the :doc:`gmt` man page.
     higher compression levels further reduce the data size, they do so
     at the cost of extra processing time. This parameter does not
     apply to classic netCDF files. [3]
+
+.. _IO_SEGMENT_BINARY:
+
+**IO_SEGMENT_BINARY**
+    Determines how binary data records with all values set to NaN are
+    interpreted.  Such records are considered to be encoded segment
+    headers in binary files provided the number of columns equals or
+    exceeds the current setting of IO_SEGMENT_BINARY [2].  Specify 0
+    or "off" to deactivate the segment header determination.
 
 .. _IO_SEGMENT_MARKER:
 
@@ -815,7 +870,7 @@ fonts can be found in the :doc:`gmt` man page.
 |     *International-1967*: Worldwide use (1967)
 |     *Kaula*: From satellite tracking (1961)
 |     *Krassovsky*: Used in the (now former) Soviet Union (1940)
-|     *Lerch*: For geoid modelling (1979)
+|     *Lerch*: For geoid modeling (1979)
 |     *Maupertius*: Really old ellipsoid used in France (1738)
 |     *Mercury-1960*: Same as Fischer-1960 (1960)
 |     *MERIT-83*: United States Naval Observatory (1983)
@@ -868,6 +923,15 @@ fonts can be found in the :doc:`gmt` man page.
     **mapproject** can also specify specific datums; see the
     :doc:`mapproject` man page for further details and how to view
     ellipsoid and datum parameters.
+
+.. _PROJ_GEODESIC:
+
+**PROJ_GEODESIC**
+    Selects the algorithm to use for geodesic calculations. Choose between
+    **Vincenty** [Default], **Rudoe**, or **Andoyer**. The **Andoyer**
+    algorithm is only approximate (to within a few tens of meters) but is
+    up to 5 times faster.  The **Rudoe** is given for legacy purposes.
+    The default **Vincenty** is accurate to about 0.5 mm.
 
 .. _PROJ_LENGTH_UNIT:
 
@@ -1080,47 +1144,13 @@ fonts can be found in the :doc:`gmt` man page.
     **TIME_IS_INTERVAL** = off then that date is interpreted to mean
     1999-12-01T00:00:00.0 (start of December) [off].
 
-.. _TIME_LANGUAGE:
+.. _TIME_REPORT:
 
-**TIME_LANGUAGE**
-    Language to use when plotting calendar items such as months and
-    days. Select from:
-
-    * BR Brazilian Portuguese
-    * CN1 Simplified Chinese
-    * CN2 Traditional Chinese
-    * DE German
-    * DK Danish
-    * EH Basque
-    * ES Spanish
-    * FI Finnish
-    * FR French
-    * GR Greek
-    * HI Hawaiian
-    * HU Hungarian
-    * IE Irish
-    * IL Hebrew
-    * IS Icelandic
-    * IT Italian
-    * JP Japanese
-    * NL Dutch
-    * NO Norwegian
-    * PL Polish
-    * PT Portuguese
-    * RU Russian
-    * SE Swedish
-    * SG Scottish Gaelic
-    * TO Tongan
-    * TR Turkish
-    * UK British English
-    * US US English
-
-    If your language is not supported, please examine the
-    **$GMT_SHAREDIR**/time/us.d file and make a similar file. Please
-    submit it to the GMT Developers for official inclusion. Custom
-    language files can be placed in directories **$GMT_SHAREDIR**/time
-    or ~/.gmt. Note: Some of these languages may require you to also
-    change the **PS_CHAR_ENCODING** setting.
+**TIME_REPORT**
+    Controls if a time-stamp should be issued at start of all progress
+    reports.  Choose among **TIMER_CLOCK** (absolute time stamp),
+    **TIMER_ELAPSED** (time since start of session), or **TIMER_NONE**
+    [Default].
 
 .. _TIME_SYSTEM:
 

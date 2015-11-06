@@ -26,7 +26,7 @@ echo 135  blue   225 blue   >> pal.cpt
 echo 225  yellow 315 yellow >> pal.cpt
 
 gmt grdimage aspect.nc -JX10c -Cpal.cpt -P -K -B2 -BWSne -Xc > $ps
-gmt psscale -D11c/5c/6c/0.6c -Cpal.cpt -B90+u"\\312" -O -K -E+n >> $ps
+gmt psscale -D11c/5c+w6c/0.6c+jML+e+n -Cpal.cpt -B90+u"\\312" -O -K >> $ps
 gmt makecpt -Cjet -T0/1/0.1 > t.cpt
 gmt grdimage piramide.nc -J -O -K -Ct.cpt -B2 -BWSne -Y13c >> $ps
-gmt psscale -D11c/5c/8c/0.6c -Ct.cpt -O >> $ps
+gmt psscale -D11c/5c+w8c/0.6c+jML -Ct.cpt -O >> $ps

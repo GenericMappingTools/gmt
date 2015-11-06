@@ -13,9 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtsimplify** [ *table* ] **-T**\ *tolerance*\ [*unit*]
+**gmtsimplify** [ *table* ] |-T|\ *tolerance*\ [*unit*]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -39,6 +40,8 @@ insight on how the algorithm works
 Required Arguments
 ------------------
 
+.. _-T:
+
 **-T**\ *tolerance*\ [*unit*]
     Specifies the maximum mismatch tolerance in the user units. If the
     data is not Cartesian then append the distance unit (see UNITS).
@@ -49,6 +52,8 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
@@ -58,6 +63,9 @@ Optional Arguments
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
  
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
+
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
@@ -86,14 +94,14 @@ To reduce the geographic line segment.d using a tolerance of 2 km, run
 
    ::
 
-    gmt gmtsimplify segment.d -T2k > new_segment.d
+    gmt simplify segment.d -T2k > new_segment.d
 
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45 and
 write the reduced lines to file new_xylines.d, run
 
    ::
 
-    gmt gmtsimplify xylines.d -T0.45 > new_xylines.d
+    gmt simplify xylines.d -T0.45 > new_xylines.d
 
 Notes
 -----

@@ -6,10 +6,10 @@
  * PROGRAM:	gshhg.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
- * DATE:	JULY 1, 2014
- * PURPOSE:	To extract ASCII data from the binary GSHHG shoreline data
+ * DATE:	JAN 1, 2015
+ * PURPOSE:	To extract ASCII data from the binary GSHHG geography databas
  *		as described in the 1996 Wessel & Smith JGR Data Analysis Note.
- * VERSION:	1-JUL-2014.  For use with GSHHG version 2.3.1
+ * VERSION:	1-JAN-2015.  For use with GSHHG version 2.3.4
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -25,11 +25,12 @@
 #define THIS_MODULE_NAME	"gshhg"
 #define THIS_MODULE_LIB		"gshhg"
 #define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
+#define THIS_MODULE_KEYS	">DO,>TL"
 
 #include "gmt_dev.h"
 #include "gmt_gshhg.h"
 
-#define GMT_PROG_OPTIONS "-:Vbo"
+#define GMT_PROG_OPTIONS "-:Vbdo"
 
 struct GSHHG_CTRL {
 	struct In {	/* <file> */
@@ -84,7 +85,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -92,14 +93,14 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
         GMT_Message (API, GMT_TIME_NONE, "\t-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by MATLAB or GNU Octave.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L List header records only (no data records will be written).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all polygons].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Output features whose level matches <level> [Default outputs all levels].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default outputs all polygons].\n");
-	GMT_Option (API, "V,bo2,o,:,.");
+	GMT_Option (API, "V,bo2,do,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -232,7 +233,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gshhg_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gshhg_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 

@@ -13,21 +13,27 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psxyz** [ *table* ] **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters*
+**psxyz** [ *table* ] |-J|\ *parameters*
+|-J|\ **z**\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 [ |SYN_OPT-B| ]
-[ **-D**\ *dx*/*dy*\ [/*dz*] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
-[ **-K** ] [ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] 
-[ **-S**\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ] 
+[ |-D|\ *dx*/*dy*\ [/*dz*] ]
+[ |-G|\ *fill* ]
+[ |-I|\ *intens* ] 
+[ |-K| ]
+[ |-L|\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*] ] 
+[ |-N| ] [ |-O| ] [ |-P| ] [ |-Q| ] 
+[ |-S|\ [*symbol*][\ *size*\ [**unit**]][/*size_y*] ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**][*pen*] ] 
+[ |-W|\ [**-**\ \|\ **+**][*pen*] ] 
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ] 
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -57,9 +63,14 @@ respectively. The PostScript code is written to standard output.
 Required Arguments
 ------------------
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -73,54 +84,110 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
 
-**-C**\ *cptfile*
-    Give a color palette file. If **-S** is set, let symbol fill color be
+.. _-C:
+
+**-C**\ *cpt*
+    Give a CPT file or specify -Ccolor1,color2[,color3,...]
+    to build a linear continuous CPT from those colors automatically.  
+    In this case *color*\ **n** can be a r/g/b triplet, a color name,
+    or an HTML hexadecimal color (e.g. #aabbcc ).
+    If **-S** is set, let symbol fill color be
     determined by the t-value in the fourth column. Additional fields are
     shifted over by one column (optional size would be in 5th rather than
     4th field, etc.). If **-S** is not set, then **psxyz** expects the user
     to supply a multisegment file (where each segment header contains a
     **-Z**\ *val* string. The *val* will control the color of the line or
-    polygon (if **-L** is set) via the cpt file.
+    polygon (if **-L** is set) via the CPT file.
+
+.. _-D:
 
 **-D**\ *dx*/*dy*\ [/*dz*]
     Offset the plot symbol or line locations by the given amounts
     *dx/dy*\ [*dz*\ ] [Default is no offset].
+
+.. _-G:
 
 **-G**\ *fill*
     Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that **psxyz** will search for **-G** and **-W** strings in all the
     segment headers and let any values thus found over-ride the command line settings.
 
+.. _-I:
+
 **-I**\ *intens*
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
     modulate the fill color by simulating illumination [none]. 
 
+.. _-K:
+
 .. include:: explain_-K.rst_
 
-**-L**
-    Force closed polygons: connect the endpoints of the line-segment(s) and
-    draw polygons. Also, in concert with **-C** and any **-Z** settings in
-    the headers will use the implied color for polygon fill [Default is
-    polygon pen color]. **-N** Do NOT skip symbols that fall outside map
-    border [Default plots points inside border only]. 
+.. _-L:
+
+**-L**\ [**+b**\ \|\ **d**\ \|\ **D**][**+xl**\ \|\ **r**\ \|\ *x0*][**+yl**\ \|\ **r**\ \|\ *y0*][**+p**\ *pen*]
+    Force closed polygons.  Alternatively, append modifiers to build a polygon from a line segment.
+    Append **+d** to build symmetrical envelope around y(x) using deviations dy(x) given in extra column 4.
+    Append **+D** to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from extra columns 4-5.
+    Append **+b** to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from extra columns 4-5.
+    Append **+xl**\ \|\ **r**\ \|\ *x0* to connect first and last point to anchor points at either xmin, xmax, or x0, or
+    append **+yb**\ \|\ **t**\ \|\ *y0* to connect first and last point to anchor points at either ymin, ymax, or y0.
+    Polygon may be painted (**-G**) and optionally outlined by adding **+p**\ *pen* [no outline].
+    All constructed polygons are assumed to have a constant z value.
+
+.. _-N:
+
+**-N**\ [**c**\ \|\ **r**]
+    Do NOT clip symbols that fall outside map border [Default plots points
+    whose coordinates are strictly inside the map border only]. The option does not apply to lines and polygons
+    which are always clipped to the map region. For periodic (360-longitude)
+    maps we must plot all symbols twice in case they are clipped by the repeating
+    boundary. The **-N** will turn off clipping and not plot repeating symbols.
+    Use **-Nr** to turn off clipping but retain the plotting of such repeating symbols, or
+    use **-Nc** to retain clipping but turn off plotting of repeating symbols.
+
+.. _-O:
 
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Turn off the automatic sorting of items based on their distance from the
     viewer. The default is to sort the items so that items in the foreground
     are plotted after items in the background. 
 
+.. _-S:
+
 .. include:: explain_symbols2.rst_
+
+.. _-T:
+
+**-T**
+    Ignore all input files, including standard input. This is the same
+    as specifying /dev/null (or NUL for Windows users) as input file.
+    Use this to activate only the options that are not related to
+    plotting of lines or symbols, such as **psxyz** **-R** **-J** **-O**
+    **-T** to terminate a sequence of GMT plotting commands without
+    producing any plotting output. 
+
+.. _-U:
 
 .. include:: explain_-U.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**-**\ \|\ **+**][*pen*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for lines or the outline of symbols [Defaults:
@@ -128,6 +195,8 @@ Optional Arguments
     use the lookup color (via **-C**) for both symbol fill and outline
     pen color, while a leading **-** will set outline pen color and turn
     off symbol fill. 
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -137,6 +206,9 @@ Optional Arguments
 .. include:: explain_-bi.rst_
 
 .. include:: explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -149,8 +221,8 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
-    Select perspective view.
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
 
@@ -171,7 +243,7 @@ southeast at 30 degree elevation, use:
    ::
 
     gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
-              -Gblue -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 \
+              -Gblue -Bx2+lXLABEL -By2+lYLABEL -Bz10+lZLABEL -B+t"3-D PLOT" -p135/30 \
               -Uc -W -P > heights.ps
 
 Segment Header Parsing
@@ -195,7 +267,7 @@ Segment header records may contain one of more of the following options:
 **-Z**\ *zval* 
     Obtain fill via cpt lookup using z-value *zval*
 **-Z**\ *NaN* 
-    Get the NaN color from the cpt file
+    Get the NaN color from the CPT file
 
 Custom Symbols
 --------------
@@ -228,10 +300,6 @@ north pole. For such a polygon, make a copy and split it into two and
 make each explicitly contain the polar point. The two polygons will
 combine to give the desired effect when filled; to draw outline use the
 original polygon.
-
-The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the PostScript output with :doc:`ps2raster` **-A**
-to obtain the correct BoundingBox.
 
 See Also
 --------

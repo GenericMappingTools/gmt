@@ -126,6 +126,20 @@
 # Set location of ZLIB (can be root directory or path to header file) [auto]:
 #set (ZLIB_ROOT "zlib_install_prefix")
 
+# Set location of GLIB component gthread [auto].  This is an optional (and
+# experimental) option which you need to enable:
+#set (GMT_USE_THREADS TRUE)
+# If pkg-config is not installed (e.g. on Windows) you need to specify these:
+#set (GLIB_INCLUDE_DIR c:/path/to/glib-dev/include/glib-2.0)
+#set (GLIB_LIBRARIES c:/path/to/glib-dev/lib/glib-2.0.lib)
+
+# Set location of pthreads-win32 (only Windows); needs GMT_USE_THREADS:
+#set (PTHREADS_WIN32_ROOT c:/prefix/of/pthreads-win32)
+#set (GMT_USE_THREADS TRUE)
+
+# Set LAPACK location. Use this when want to link with LAPACK and it's not found automatically
+#set (LAPACK_LIBRARY "V:/lapack-3.5.0/build/lib/liblapack.lib")
+
 ##
 ## Section 3: GMT features
 ##
@@ -148,6 +162,12 @@
 
 # Build GMT shared lib with supplemental modules [TRUE]:
 #set (BUILD_SUPPLEMENTS FALSE)
+
+# Build/Install GMT Developer include files [FALSE]:
+# This installs the extra include files and configured files needed by 3rd-party
+# developers.  Until we build a separate gmt-devel we include them in the main
+# Distribution.
+set (BUILD_DEVELOPER TRUE)
 
 ##
 ## Section 4: Advanced tweaking
@@ -177,7 +197,7 @@
 
 # List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes
 # that link against the full gmt libs (not just the API; for building codes
-# that only need the GMT API, see the gmtextension project).
+# that only need the GMT API, see the gmt-custom project).
 #set (EXTRA_BUILD_DIRS apidemo)
 
 # Directory in which to install the release sources per default
@@ -235,6 +255,7 @@
 
 # If want to rename the DLLs to something else than the default (e.g. to
 # append the bitness - Windows only)
+# WARNING: if using this option it is mandatory that the suffix starts with an underscore.
 #if (WIN32)
 # set (BITAGE 32)
 # # Detect if we are building a 32 or 64 bits version

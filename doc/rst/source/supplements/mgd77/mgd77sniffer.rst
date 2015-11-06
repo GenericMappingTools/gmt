@@ -13,18 +13,22 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77sniffer** *NGDC-ids* [ **-A**\ *fieldabbrev*,\ *scale*,\ *offset* ]
-[ **-C**\ *maxspd* ]
-[ **-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
-[ **-G**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or
-**-G**\ *fieldabbrev*,\ *grid* ] [ **-H** ]
-[ **-I**\ *fieldabbrev*,\ *rec1*,\ *recN* ] [ **-K** ]
-[ **-L**\ *custom-limits-file* ] [ **-N** ]
+**mgd77sniffer** *NGDC-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
+[ |-C|\ *maxspd* ]
+[ |-D|\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
+[ |-G|\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or |-G|\ *fieldabbrev*,\ *grid* ]
+[ |-H| ]
+[ |-I|\ *fieldabbrev*,\ *rec1*,\ *recN* ]
+[ |-K| ]
+[ |-L|\ *custom-limits-file* ]
+[ |-N| ]
 [ |SYN_OPT-R| ]
-[ **-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ]
+[ |-S|\ **d**\ \|\ **s**\ \|\ **t** ]
+[ |-T|\ *gap* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
+[ |-W|\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -60,15 +64,21 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *fieldabbrev*,\ *scale*,\ *offset*
     Apply scale factor and DC adjustment to specified data field. Allows
     adjustment of cruise data prior to along-track analysis. CAUTION:
     data must be thoroughly examined before applying these global data
     adjustments. May not be used for multiple cruises.
 
+.. _-C:
+
 **-C**\ *maxspd*
     Set maximum ship speed in m/s, or knots with **-N** option. Ship
     speeds exceeding 10 m/s (~20 knots) are flagged as excessive by default.
+
+.. _-D:
 
 **-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*]
     Suppress default warning output and only dump cruise data row-by-row
@@ -133,6 +143,8 @@ Optional Arguments
 
     See below for **MGD77 FIELD INFO**.
 
+.. _-G:
+
 **-G**\ *information*
     Compare cruise data to GMT or IMG grids. Use one of the formats below.
     **-G**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode*
@@ -166,6 +178,8 @@ Optional Arguments
     bathymetry with predicted bathymetry grids also activates a
     "navigation crossing over land" check.
 
+.. _-H:
+
 **-H**
     (with **-G**\ \|\ **g** only) disable (or force) decimation during
     RLS analysis of ship and gridded data. By default mgd77sniffer
@@ -178,11 +192,15 @@ Optional Arguments
 
     **-Hf** to force data decimation.
 
+.. _-I:
+
 **-I**\ *fieldabbrev*,\ *rec1*,\ *recN*
     Append a field abbreviation and the first and last record in a range
     of records that should be flagged as bad (and set to NaN prior to
     the analysis). Repeat as many times as needed. May not be used for
     multiple cruises.
+
+.. _-K:
 
 **-K**
     Reverse navigation quality flags (good to bad and vice versa). May
@@ -190,6 +208,8 @@ Optional Arguments
     flagged bad, which can happen when a cruise's first navigation fix
     is extremely erroneous. Caution! This will affect sniffer output and
     should only be attempted after careful manual navigation review.
+
+.. _-L:
 
 **-L**\ *custom-limits-file*
     Override mgd77sniffer default error detection limits. Supply path
@@ -221,16 +241,23 @@ Optional Arguments
     Use a dash '-' to retain a default limit. Hint: to test your custom
     limits, try: mgd77sniffer **-Dl** **-L**\ <yourlimitsfile>
 
+.. _-N:
+
 **-N**
     Use nautical units.
 
+.. _-P:
+
 **-P**
     Flag regression statistics that are outside the specified confidence
-    level. (i.e., -P5 flags coefficients m, b, rms, and r that fall
-    outside 95%.) 
+    level. (i.e., -P5 flags coefficients m, b, rms, and r that fall outside 95%.) 
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-S:
 
 **-S**\ **d**\ \|\ **s**\ \|\ **t**
     Specify gradient type for along-track excessive slope checking.
@@ -241,9 +268,13 @@ Optional Arguments
     **-St** Calculate time gradients (dz/dt) [default]. Output is given
     in geophysical units per second along the survey track, e.g., mGal/sec.
 
+.. _-T:
+
 **-T**\ *gap*
     Adjusts mgd77sniffer gap handling. By default, data gaps greater
     than 5 km are skipped. Set to zero to de-activate gap skipping.
+
+.. _-W:
 
 **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x**
     Print out only certain warning types for verbose error messages.
@@ -254,11 +285,16 @@ Optional Arguments
     warning summaries. By default ALL warning messages are printed.Not
     compatible with any **-D** options. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bo| replace:: Output binary data for **-D**\ d\|f\|s\|v option.
 .. include:: ../../explain_-bo.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-do.rst_
 
 .. include:: ../../explain_-n.rst_
 
@@ -296,7 +332,7 @@ Mgd77 Field Info
 Grid File Info
 --------------
 
-For **-G** the grids must eitehr be in the format used by Sandwell & Smith,
+For |-G| the grids must eitehr be in the format used by Sandwell & Smith,
 which is a spherical Mercator 2-byte grid with no header, or any grid type
 supported by GMT and therefore must
 contain a GMT header. A correctly formatted \*.i2 grid file can be

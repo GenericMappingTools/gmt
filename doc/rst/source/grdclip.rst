@@ -13,10 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdclip** *ingrid* **-G**\ *outgrid*
+**grdclip** *ingrid* |-G|\ *outgrid*
 [ |SYN_OPT-R| ]
-[ **-Sa**\ *high/above* ]
-[ **-Sb**\ *low/below* ] [ **-Si**\ *low/high/between* ] [ **-Sr**\ *old/new* ]
+[ |-S|\ **a**\ *high/above* ]
+[ |-S|\ **b**\ *low/below* ] [ |-S|\ **i**\ *low/high/between* ] [ |-S|\ **r**\ *old/new* ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -40,16 +40,22 @@ Required Arguments
 *ingrid*
     The input 2-D binary grid file.
 
+.. _-G:
+
 **-G**\ *outgrid*
     *outgrid* is the modified output grid file.
 
 Optional Arguments
 ------------------
 
+.. _-R:
+
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-Sa**\ *high/above*
     Set all data[i] > *high* to *above*.
@@ -62,6 +68,8 @@ Optional Arguments
     Set all data[i] == *old* to *new*.  This is mostly useful when
     your data are known to be integer values.  Repeat the option
     for as many replacements as are needed.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

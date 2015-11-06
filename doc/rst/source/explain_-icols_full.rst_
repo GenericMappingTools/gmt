@@ -2,9 +2,10 @@
 
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
     Select specific data columns for input, in arbitrary order. Columns
-    not listed will be skipped. Give columns (or column ranges)
-    separated by commas [Default reads all columns in order, starting 
-    with the first column (0)]. To each column, optionally add any of 
+    not listed will be skipped. Give individual columns (or column ranges
+    in the format *start*\ [:*inc* \]:*stop*, where *inc* defaults to 1 if
+    not specified) separated by commas [Default reads all columns in order, starting 
+    with the first column (0)]. Columns may not be repeated.  To each column, optionally add any of 
     the following, in this order: **l** takes the **log10** of the input
     values first; **s**\ *scale*, subsequently multiplies by a given 
     scale factor; **o**\ *offset*, finally adds a given offset.

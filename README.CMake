@@ -20,8 +20,8 @@ Build and runtime prerequisites
 
 1. Software:
   You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5
-  support mandatory).  Optionally install Sphinx, PCRE, GDAL, and FFTW (single
-  precision version).
+  support mandatory).  Optionally install Sphinx, PCRE, GDAL, LAPACK
+  and FFTW (single precision version).
 2. Data:
   You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)
 
@@ -86,9 +86,9 @@ CMake supports out-of-source builds and puts generated files in a completely
 separate directory, so that the source tree is unchanged. Trying to run CMake
 in the source tree will result in an error. CMake will first check for the
 minimal required version and then search for required and optional libraries
-(netCDF, PCRE, GDAL) in the default locations. The configuration step will
-fail if dependencies are not met. You have to ensure that CMake can find the
-required resources by configuring *cmake/ConfigUser.cmake*.
+(netCDF, PCRE, GDAL, LAPACK) in the default locations. The configuration step
+will fail if dependencies are not met. You have to ensure that CMake can find
+the required resources by configuring *cmake/ConfigUser.cmake*.
 
 Finding GSHHG:
 ~~~~~~~~~~~~~~
@@ -101,7 +101,7 @@ Finding DCW:
 ~~~~~~~~~~~~~~
 
 DCW (Digital Chart of the World) country polygons are searched at compile time.
-The DCW data are optional; they are currently used in pscoast -F for painting
+The DCW data are optional; they are currently used in pscoast -E for painting
 individual countries only.  If CMake cannot auto-find DCW for you then you can
 configure _DCW_ROOT_ in cmake/ConfigUser.cmake.
 

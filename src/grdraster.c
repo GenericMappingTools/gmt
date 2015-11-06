@@ -33,11 +33,12 @@
 #define THIS_MODULE_NAME	"grdraster"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a binary raster and save as a GMT grid"
+#define THIS_MODULE_KEYS	"GGO,TDo,RG-"
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"
 
-#define GMT_PROG_OPTIONS "-JRVbh"
+#define GMT_PROG_OPTIONS "-JRVbdh"
 
 void GMT_str_toupper (char *string);
 
@@ -643,7 +644,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdraster <file number>|<text> %s [-G<outgrid>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<table>] [%s]\n\t[%s] [%s]\n", GMT_Id_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<table>] [%s] [%s]\n\t[%s] [%s]\n", GMT_Id_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<file number> (#) or <text> corresponds to one of the datasets listed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[<text> can be a unique substring of the description].\n\n");
@@ -666,12 +667,12 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the filename for output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify the sampling interval of the grid [Default is raster spacing].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Idx or -Idx/dy if dy not equal dx.  Append m for minutes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I<xinc> or -I<xinc>/<yinc> if <yinc> not equal <xinc>.  Append m for minutes or s for seconds.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-I does not do any filtering; it just sub-samples the raster.)\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the filename for output ASCII table with xyz triplets.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To get binary triplets, see -bo.  Cannot be used with -G.\n");
-	GMT_Option (API, "V,bo3,h,o,.");
+	GMT_Option (API, "V,bo3,do,h,o,.");
 
 	return (EXIT_FAILURE);
 }
@@ -733,10 +734,9 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); if (rasinfo) GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdraster (void *V_API, int mode, void *args)
-{
+int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
 	unsigned int ijras, jseek, jras2, iras2;
 	uint64_t n_nan;
@@ -784,11 +784,11 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	GMT_set_geographic (GMT, GMT_OUT);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdraster_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdraster_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 
-	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN))) Return (EXIT_FAILURE);
+	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN)) != 0) Return (EXIT_FAILURE);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d data sets in grdraster.info\n", nrasters);
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
@@ -855,7 +855,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	/* OK, here we have a recognized dataset ID */
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, -1, NULL)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
@@ -888,7 +888,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	}
 
 	if (GMT->common.R.oblique && GMT->current.proj.projection != GMT_NO_PROJ) {
-		GMT_err_fail (GMT, GMT_map_setup (GMT, Grid->header->wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 		Grid->header->wesn[XLO] = floor (GMT->common.R.wesn[XLO] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];

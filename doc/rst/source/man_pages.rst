@@ -27,6 +27,7 @@ Core modules
    gmtinfo
    gmtlogo
    gmtmath
+   gmtregress
    gmtselect
    gmtset
    gmtsimplify
@@ -40,6 +41,7 @@ Core modules
    grdblend
    grdclip
    grdcontour
+   grdconvert
    grdcut
    grdedit
    grdfft
@@ -54,7 +56,6 @@ Core modules
    grdpaste
    grdproject
    grdraster
-   grdreformat
    grdsample
    grdtrack
    grdtrend
@@ -68,15 +69,15 @@ Core modules
    mapproject
    nearneighbor
    project
-   ps2raster
    psbasemap
    psclip
    pscoast
    pscontour
+   psconvert
    pshistogram
    psimage
    pslegend
-   pslib
+   postscriptlight
    psmask
    psrose
    psscale
@@ -119,11 +120,15 @@ Supplementary modules
    supplements/mgd77/mgd77sniffer
    supplements/mgd77/mgd77track
    supplements/misc/dimfilter
+   supplements/potential/gmtflexure
    supplements/potential/gmtgravmag3d
    supplements/potential/gravfft
+   supplements/potential/grdflexure
    supplements/potential/grdgravmag3d
    supplements/potential/grdredpol
    supplements/potential/grdseamount
+   supplements/potential/talwani2d
+   supplements/potential/talwani3d
    supplements/segy/pssegy
    supplements/segy/pssegyz
    supplements/segy/segy2grd

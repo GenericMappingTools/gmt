@@ -13,18 +13,18 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdview** *relief_file* **-J**\ *parameters*
+**grdview** *relief_file* |-J|\ *parameters*
 [ |SYN_OPT-B| ]
-[ **-C**\ [*cptfile*]]
-[ **-G**\ *drapefile* \| **-G**\ *grd_r*,\ *grd_g*,\ *grd_b* ]
-[ **-I**\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-N**\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
-[ **-Q**\ *args*\ [**+m**] ]
+[ |-C|\ [*cpt*]]
+[ |-G|\ *drapefile* \| |-G|\ *grd_r*,\ *grd_g*,\ *grd_b* ]
+[ |-I|\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
+[ |-N|\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
+[ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
-[ **-S**\ *smooth* ]
-[ **-T**\ [**s**][\ **o**\ [*pen*]] ]
+[ |-S|\ *smooth* ]
+[ |-T|\ [**s**][\ **o**\ [*pen*]] ]
 [ |SYN_OPT-U| ]
-[ **-W**\ **type**\ *pen* ]
+[ |-W|\ **type**\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
@@ -51,6 +51,9 @@ Required Arguments
     2-D gridded data set to be imaged (the relief of the surface). (See
     GRID FILE FORMAT below.) 
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
 .. include:: explain_-Jz.rst_
@@ -58,10 +61,14 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-B:
+
 .. include:: explain_-B.rst_
 
-**-C**\ [*cptfile*]
-    name of the color palette file. Must be present if you want
+.. _-C:
+
+**-C**\ [*cpt*]
+    name of the CPT file. Must be present if you want
     (1) mesh plot with contours (**-Qm**), or
     (2) shaded/colored perspective image (**-Qs** or
     **-Qi**). For **-Qs**: You can specify that you want to skip a
@@ -70,21 +77,31 @@ Optional Arguments
     Alternatively, supply the name of a GMT color master CPT [rainbow] and let
     **grdview** automatically determine a 16-level continuous CPT from
     the grid's z-range.
+
+.. _-G:
+
 **-G**\ *drapefile* \| **-G**\ *grd_r*,\ *grd_g*,\ *grd_b*
     Drape the image in *drapefile* on top of the relief provided by
     *relief_file*. [Default is *relief_file*]. Note that **-Jz** and
     **-N** always refers to the *relief_file*. The *drapefile* only
     provides the information pertaining to colors, which is looked-up
-    via the cpt file (see **-C**). Alternatively, give three grid files
+    via the CPT file (see **-C**). Alternatively, give three grid files
     separated by commas. These files must contain the red, green, and
-    blue colors directly (in 0-255 range) and no cpt file is needed. The
+    blue colors directly (in 0-255 range) and no CPT file is needed. The
     *drapefile* may be of higher resolution than the *relief_file*.
+
+.. _-I:
+
 **-I**\ *intensfile*\ \|\ *intensity*
     Gives the name of a grid file with intensities in the (-1,+1) range,
     or a constant intensity to apply everywhere.
     [Default is no illumination]. 
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-N:
 
 **-N**\ *level*\ [**+g**\ *fill*]
     Draws a plane at this z-level. If the optional *color* is provided
@@ -92,22 +109,29 @@ Optional Arguments
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-p:
 
 .. include:: explain_-P.rst_
 
+.. _-Q:
+
 **-Q**\ *args*\ [**+m**]
-    Select one of four settings: 1. Specify **m** for mesh plot
-    [Default], and optionally append *color* for a different mesh paint
-    [white]. 2. Specify **s** for surface plot, and optionally append
-    **m** to have mesh lines drawn on top of surface. 3. Specify **i**
-    for image plot, and optionally append the effective dpi resolution
-    for the rasterization [100]. 4. Specify **c**. Same as **-Qi** but
-    will make nodes with z = NaN transparent, using the colormasking
-    feature in PostScript Level 3 (the PS device must support PS Level
-    3). For any of these choices, you may force a monochrome image by
-    appending the modifier **+m**. Colors are then converted to shades
-    of gray using the (monochrome television) YIQ transformation. 
+    Select one of following settings. For any of these choices, you may force
+    a monochrome image by appending the modifier **+m**. Colors are then
+    converted to shades of gray using the (monochrome television) YIQ transformation
+
+    #. Specify **m** for mesh plot [Default], and optionally append *color* for a different mesh paint [white].
+    #. Specify **mx** or **my** for waterfall plots (row or column profiles). Specify color as for plain **m**
+    #. Specify **s** for surface plot, and optionally append **m** to have mesh lines drawn on top of surface.
+    #. Specify **i** for image plot, and optionally append the effective dpi resolution for the rasterization [100].
+    #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
+       feature in PostScript Level 3 (the PS device must support PS Level 3). . 
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -119,9 +143,13 @@ Optional Arguments
     specified in the *relief_file* will result in a subset of the grid.
 .. include:: explain_-Rz.rst_
 
+.. _-S:
+
 **-S**\ *smooth*
-    Smooth the contours before plotting (see **grdcontour**) [Default is
-    no smoothing].
+    Smooth the contours before plotting (see **grdcontour**) [Default is no smoothing].
+
+.. _-t:
+
 **-T**\ [**s**\ ][\ **o**\ [*pen*]]
     Plot image without any interpolation. This involves converting each
     node-centered bin into a polygon which is then painted separately.
@@ -129,13 +157,18 @@ Optional Arguments
     categorical data where interpolating between values is meaningless.
     Optionally, append **o** to draw the tile outlines, and specify a
     custom pen if the default pen is not to your liking. As this option
-    produces a flat surface it cannot be combined with **-JZ** or
-    **-Jz**. 
+    produces a flat surface it cannot be combined with **-JZ** or **-Jz**. 
+
+.. _-U:
 
 .. include:: explain_-U.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ **type**\ *pen*
 
@@ -151,6 +184,8 @@ Optional Arguments
         Sets the pen attributes used for the facade. [Default: width =
         0.25p, color = black, style = solid]. You must also select **-N**
         for the facade outline to be drawn. 
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -173,7 +208,7 @@ Examples
 --------
 
 To make a mesh plot from the file hawaii_grav.nc and drawing the
-contours given in the color palette file hawaii.cpt on a Lambert map at
+contours given in the CPT file hawaii.cpt on a Lambert map at
 1.5 cm/degree along the standard parallels 18 and 24, with vertical
 scale 20 mgal/cm, and looking at the surface from SW at 30 degree
 elevation, run
@@ -184,7 +219,7 @@ elevation, run
                 -Jz0.05c -Qm -N-100 -p225/30 -Wc > hawaii_grav_image.ps
 
 To create a illuminated color perspective plot of the gridded data set
-image.nc, using the color palette file color.rgb, with linear scaling at
+image.nc, using the CPT file color.rgb, with linear scaling at
 10 cm/x-unit and tickmarks every 5 units, with intensities provided by
 the file intens.nc, and looking from the SE, use
 
@@ -199,7 +234,7 @@ To make the same plot using the rastering option with dpi = 50, use
     gmt grdview image.nc -Jx10.0c -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc > image3D.ps
 
 To create a color PostScript perspective plot of the gridded data set
-magnetics.nc, using the color palette file mag_intens.cpt, draped over
+magnetics.nc, using the CPT file mag_intens.cpt, draped over
 the relief given by the file topography.nc, with Mercator map width of 6
 inch and tickmarks every 1 degree, with intensities provided by the file
 topo_intens.nc, and looking from the SE, run

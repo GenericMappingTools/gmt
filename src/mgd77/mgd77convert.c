@@ -24,6 +24,7 @@
 #define THIS_MODULE_NAME	"mgd77convert"
 #define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Convert MGD77 data to other file formats"
+#define THIS_MODULE_KEYS	""
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -143,7 +144,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 					case 'm':		/* New ASCII MGD77T file */
 						Ctrl->F.format = MGD77_FORMAT_M7T;
 						break;
-					case 't':		/* Plain ascii dat table */
+					case 't':		/* Plain ASCII dat table */
 						Ctrl->F.format = MGD77_FORMAT_TBL;
 						break;
 					default:
@@ -157,7 +158,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 				code_pos = 0;
 				if (opt->arg[code_pos] == '+') Ctrl->T.mode = true, code_pos++;	/* Force overwriting existing files */
 				switch (opt->arg[code_pos]) {									
-					case 'a':		/* Standard ascii MGD77 file */
+					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->T.format = MGD77_FORMAT_M77;
 						break;
 					case 'c':
@@ -166,7 +167,7 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 					case 'm':		/* New ASCII MGD77T file */
 						Ctrl->T.format = MGD77_FORMAT_M7T;
 						break;
-					case 't':		/* Plain ascii dat table */
+					case 't':		/* Plain ASCII dat table */
 						Ctrl->T.format = MGD77_FORMAT_TBL;
 						break;
 					default:
@@ -237,7 +238,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77convert_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77convert_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 

@@ -13,10 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphtriangulate** [ *table* ] [ **-A** ] [ **-C** ] [ **-D** ]
-[ **-L**\ *unit* ] [ **-N**\ *nfile* ] [ **-Q**\ **d**\ \|\ **v** ]
-[ **-T** ] [ |SYN_OPT-V| ]
+**sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
+[ |-L|\ *unit* ] [ |-N|\ *nfile* ] [ |-Q|\ **d**\ \|\ **v** ]
+[ |-T| ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -47,10 +48,14 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**
     Compute the area of the spherical triangles (**-Qd**) or polygons
     (**-Qv**) and write the areas (in chosen units; see **-L**) in the
     output segment headers [no areas calculated].
+
+.. _-C:
 
 **-C**
     For large data set you can save some memory (at the expense of more
@@ -58,10 +63,14 @@ Optional Arguments
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays in memory].
 
+.. _-D:
+
 **-D**
-    Used with **-m** to skip the last (repeated) input vertex at the end
+    Used to skip the last (repeated) input vertex at the end
     of a closed segment if it equals the first point in the segment.
-    Requires **-m** [Default uses all points].
+    [Default uses all points].
+
+.. _-L:
 
 **-L**\ *unit*
     Specify the unit used for distance and area calculations. Choose
@@ -72,20 +81,30 @@ Optional Arguments
     latitudes before calculating areas. When degree is selected the
     areas are given in steradians.
 
+.. _-N:
+
 **-N**\ *nfile*
-    Write the information pertaining to each polygon (for Delaunay: the
+    Write the information pertaining to each polygon. For Delaunay: the
     three node number and the triangle area (if **-A** was set); for
     Voronoi the unique node lon, lat and polygon area (if **-A** was
     set)) to a separate file. This information is also encoded in the
-    segment headers of ASCII output files]. Required if binary output is needed.
+    segment headers of ASCII output files. Required if binary output is needed.
 
-**d**\ \|\ **v**
-    Select between **d**\ elaunay or **v**\ oronoi mode [Delaunay].
+.. _-Q:
+
+**-Q**\ **d**\ \|\ **v**
+    Append **d** for Delaunay triangles or **v** for Voronoi polygons [Delaunay].
+    If **-bo** is used then **-N** may be used to specify a separate file where the
+    polygon information normally is written.
+
+.. _-T:
 
 **-T**
     Write the unique arcs of the construction [Default writes fillable
     triangles or polygons]. When used with **-A** we store arc length in
     the segment header in chosen unit (see **-L**).
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -95,6 +114,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_

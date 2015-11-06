@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: gmtinfo.c will read ascii or binary tables and report the
+ * Brief synopsis: gmtinfo.c will read ASCII or binary tables and report the
  * extreme values for all columns
  *
  * Author:	Paul Wessel
@@ -27,10 +27,11 @@
 #define THIS_MODULE_NAME	"gmtinfo"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get information about data tables"
+#define THIS_MODULE_KEYS	"<DI,>TO,>DC"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbfghiors" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("HMm")
 
 int gmt_geo_C_format (struct GMT_CTRL *GMT);
 unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
@@ -111,8 +112,8 @@ int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -130,7 +131,7 @@ int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behaviour, use -Ip<dx>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behavior, use -Ip<dx>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");
@@ -141,7 +142,7 @@ int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
-	GMT_Option (API, "V,bi2,f,g,h,i,o,r,s,:,.");
+	GMT_Option (API, "V,bi2,d,f,g,h,i,o,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -285,7 +286,7 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 int GMT_gmtinfo (void *V_API, int mode, void *args)
 {
 	bool got_stuff = false, first_data_record, give_r_string = false;
-	bool brackets = false, work_on_abs_value, do_report, done;
+	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
 	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode, save_range;
 	uint64_t col, ncol = 0, n = 0;
@@ -315,7 +316,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtinfo_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtinfo_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
@@ -340,7 +341,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 		}
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 	o_mode = (Ctrl->C.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
@@ -365,7 +366,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 	first_data_record = true;
 	done = false;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
-		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, NULL);
+		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_READ_FILEBREAK, NULL);
 		do_report = false;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
@@ -417,9 +418,22 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 					}
 				}
 				if (GMT_is_geographic (GMT, GMT_IN)) {
-					if (east < west) east += 360.0;
-					if (south < -90.0) south = -90.0;
-					if (north > +90.0) north = +90.0;
+					if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+						if (south < -90.0) {
+							south = -90.0;
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+						}
+						if (north > 90.0) {
+							north = 90.0;
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+						}
+						if (fabs (east - west) > 360.0) {
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+							west = (west < 0.0) ? -180.0 : 0.0;
+							east = (west < 0.0) ? +180.0 : 360.0;
+							full_range = true;
+						}
+					}
 				}
 				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting nx/ny */
 					unsigned int sub, add, in_dim[2], out_dim[2];
@@ -437,9 +451,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 				}
 			}
 			if (give_r_string) {	/* Return -R string */
-				sprintf (record, "-R");
-				i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
-				i = strip_blanks_and_output (GMT, buffer, east, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+				if (full_range)
+					sprintf (record, "-R%g/%g/", west, east);
+				else {
+					sprintf (record, "-R");
+					i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+					i = strip_blanks_and_output (GMT, buffer, east, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
+				}
 				i = strip_blanks_and_output (GMT, buffer, south, GMT_Y);	strcat (record, &buffer[i]);	strcat (record, "/");
 				i = strip_blanks_and_output (GMT, buffer, north, GMT_Y);	strcat (record, &buffer[i]);
 			}
@@ -453,7 +471,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
 				int sep = 0;
-				if (GMT->common.b.active[GMT_IN]) {	/* Make ascii record */
+				if (GMT->common.b.active[GMT_IN]) {	/* Make ASCII record */
 					GMT_memset (chosen, GMT_BUFSIZ, char);
 					for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
 						GMT_add_to_record (GMT, chosen, dchosen[col], col, sep);
@@ -569,7 +587,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args)
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
-			if (Ctrl->C.active && (error = GMT_set_cols (GMT, GMT_OUT, 2*ncol))) Return (error);
+			if (Ctrl->C.active && (error = GMT_set_cols (GMT, GMT_OUT, 2*ncol)) != 0) Return (error);
 		}
 
 		/* Process all columns and update the corresponding minmax arrays */

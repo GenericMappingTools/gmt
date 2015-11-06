@@ -28,6 +28,7 @@
 #define THIS_MODULE_NAME	"x2sys_list"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
+#define THIS_MODULE_KEYS	"LTi,ITi,>DO,RG-"
 
 #include "x2sys.h"
 
@@ -115,7 +116,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S[+]<track>]\n\t[%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S[+]<track>]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -125,7 +126,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<COEdbase> File with crossover error data base [stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(nright + n_left) [1, i.e., use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(n_right + n_left) [1, i.e., use all tracks].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
@@ -156,7 +157,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
-	GMT_Option (API, "bo,.");
+	GMT_Option (API, "bo,do,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -201,7 +202,7 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->I.active = GMT_check_filearg (GMT, 'I', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->I.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -265,19 +266,23 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
 	}
-	n_errors += GMT_check_condition (GMT, mixed && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
+	/* GMT->parent->mode means we are calling from mex or Python and dont want to get textsets back */
+	n_errors += GMT_check_condition (GMT, (mixed || GMT->parent->mode) && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first)
+void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first, char *record)
 {	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
 	 * col is used to set the format, and first is true for first item per record.
 	 */
 	int i;
+	char text[GMT_LEN64] = {""};
+	if (first) record[0] = 0;
 	for (i = 0; i < n; i++) {
-		if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], val[i], col);
+		if (!first) strcat (record, GMT->current.setting.io_col_separator);
+		GMT_ascii_format_col (GMT, text, val[i], GMT_OUT, col);
+		strcat (record, text);
 		first = false;
 	}
 }
@@ -288,6 +293,7 @@ void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool fi
 int GMT_x2sys_list (void *V_API, int mode, void *args)
 {
 	char **trk_name = NULL, **weight_name = NULL, *tofrom[2] = {"stdin", "stdout"}, *from = NULL;
+	char record[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
@@ -296,7 +302,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	unsigned int n_weights = 0, coe_kind, n_out;
+	unsigned int n_weights = 0, coe_kind, n_out, n_output, o_mode;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -320,7 +326,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_list_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_list_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 
@@ -484,65 +490,126 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	}
 	/* Time to issue output */
 
+	n_output = (unsigned int)n_items;	/* But some items represent a pair */
+	for (i = 0; i < n_items; i++) {
+		switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
+			case 'd':	/* Distance along track */
+			case 'h':	/* Heading along track */
+			case 'n':	/* Names of the track(s) */
+			case 'N':	/* ID numbers of tracks */
+			case 't':	/* Time along track */
+			case 'T':	/* Time along track since beginning of the track */
+			case 'v':	/* Speed along track */
+			case 'z':	/* Observed value along track */
+				if (both) ++n_output;
+				break;
+		}
+	}
+
+	o_mode = (mixed) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
+	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	GMT_set_cols (GMT, GMT_OUT, n_output);
+	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+	GMT_set_tableheader (GMT, GMT_OUT, true);
+	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
-		fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
+		sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		cmd = GMT_Create_Cmd (API, options);
-		fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
+		sprintf (record, " Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 		GMT_free (GMT, cmd);
-
-		fprintf (GMT->session.std[GMT_OUT], "#");
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, "");
+		record[0] = 0;	/* Clean slate */
 		for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
-			if (i > 0) fprintf (GMT->session.std[GMT_OUT], "\t");
+			if (i > 0) strcat (record, GMT->current.setting.io_col_separator);
 			switch (Ctrl->F.flags[i]) {	/* acdhintTvxyz */
 				case 'a':	/* Angle between tracks */
-					fprintf (GMT->session.std[GMT_OUT], "angle");
+					strcat (record, "angle");
 					break;
 				case 'c':	/* Crossover value */
-					fprintf (GMT->session.std[GMT_OUT], "%s_x", Ctrl->C.col);
+					strcat (record, Ctrl->C.col); strcat (record, "_x");
 					break;
 				case 'd':	/* Distance along track */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "dist_1\tdist_2") : fprintf (GMT->session.std[GMT_OUT], "dist");
+					if (both) {
+						strcat (record, "dist_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "dist_2");
+					}
+					else
+						strcat (record, "dist");
 					break;
 				case 'h':	/* Heading along track */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "head_1\thead_2") : fprintf (GMT->session.std[GMT_OUT], "head");
+					if (both) {
+						strcat (record, "head_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "head_2");
+					}
+					else
+						strcat (record, "head");
 					break;
 				case 'I':	/* Time interval (unsigned) */
-					fprintf (GMT->session.std[GMT_OUT], "u_tint");
+					strcat (record, "u_tint");
 					break;
 				case 'i':	/* Time interval (signed) */
-					fprintf (GMT->session.std[GMT_OUT], "s_tint");
+					strcat (record, "s_tint");
 					break;
 				case 'n':	/* Names of the track(s) [need this case to fall through] */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "track_1\ttrack_2") : fprintf (GMT->session.std[GMT_OUT], "track");
+					if (both) {
+						strcat (record, "track_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "track_2");
+					}
+					else
+						strcat (record, "track");
 					break;
 				case 'N':	/* ID numbers of tracks */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "ID_1\tID_2") : fprintf (GMT->session.std[GMT_OUT], "ID");
+					if (both) {
+						strcat (record, "ID_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "ID_2");
+					}
+					else
+						strcat (record, "ID");
 					break;
 				case 't':	/* Time along track */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "t_1\tt_2") : fprintf (GMT->session.std[GMT_OUT], "t");
+					if (both) {
+						strcat (record, "t_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "t_2");
+					}
+					else
+						strcat (record, "t");
 					break;
 				case 'T':	/* Time along track since beginning of the first year of the track */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "T_1\tT_2\n") : fprintf (GMT->session.std[GMT_OUT], "T");
+					if (both) {
+						strcat (record, "T_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "T_2");
+					}
+					else
+						strcat (record, "T");
 					break;
 				case 'v':	/* Speed along track */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "vel_1\tvel_2") : fprintf (GMT->session.std[GMT_OUT], "vel");
+					if (both) {
+						strcat (record, "vel_1");	strcat (record, GMT->current.setting.io_col_separator);	strcat (record, "vel_2");
+					}
+					else
+						strcat (record, "vel");
 					break;
 				case 'w':	/* Composite weight of crossover */
 					fprintf (GMT->session.std[GMT_OUT], "weight");
 					break;
 				case 'x':	/* x coordinate of crossover */
-					(s->geographic) ? fprintf (GMT->session.std[GMT_OUT], "lon") : fprintf (GMT->session.std[GMT_OUT], "x");
+					(s->geographic) ? strcat (record, "lon") : strcat (record, "x");
 					break;
 				case 'y':	/* y coordinate of crossover */
-					(s->geographic) ? fprintf (GMT->session.std[GMT_OUT], "lat") : fprintf (GMT->session.std[GMT_OUT], "y");
+					(s->geographic) ? strcat (record, "lat") : strcat (record, "y");
 					break;
 				case 'z':	/* Observed value along track */
-					(both) ? fprintf (GMT->session.std[GMT_OUT], "%s_1\t%s_2", Ctrl->C.col, Ctrl->C.col) : fprintf (GMT->session.std[GMT_OUT], "%s", Ctrl->C.col);
+					if (both) {
+						strcat (record, Ctrl->C.col);	strcat (record, "_1");	strcat (record, GMT->current.setting.io_col_separator);
+						strcat (record, Ctrl->C.col);	strcat (record, "_2");
+					}
+					else
+						strcat (record, Ctrl->C.col);
 					break;
 			}
 		}
-		fprintf (GMT->session.std[GMT_OUT], "\n");
+		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	}
 	
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
@@ -550,9 +617,10 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 		if (Ctrl->A.active && (fabs (trk_symm[P[p].id[0]]) > Ctrl->A.value || fabs (trk_symm[P[p].id[1]]) > Ctrl->A.value)) continue;	/* COEs not distributed symmatrically */
 		np_use++;
 		nx_use += P[p].nx;
-		if (Ctrl->E.active)	/* Write segment header with information */
-			fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %d\n",
-					GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
+		if (Ctrl->E.active) {	/* Write segment header with information */
+			sprintf (record, "%s - %s nx = %d", P[p].trk[0], P[p].trk[1], P[p].nx);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
+		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
 		if (Ctrl->S.active) {	/* May have to flip which is track one and two */
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
@@ -562,14 +630,14 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 		for (k = 0; k < P[p].nx; k++) {	/* For each crossover */
 			/* First check if this record has a non-NaN COE */
 			if (check_for_NaN && (GMT_is_dnan (P[p].COE[k].data[one][COE_Z]) || GMT_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;
-			
+			record[0] = 0;	/* Clean slate */
 			for (i = j = 0, first = true; i < n_items; i++, j++) {
 				switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
 					case 'a':	/* Angle between tracks */
 						val[0] = fabs (P[p].COE[k].data[0][COE_H] - P[p].COE[k].data[1][COE_H]);
 						while (val[0] >= 180.0) val[0] -= 180.0;
 						out[j] = (val[0] > 90.0) ? 180.0 - val[0] : val[0];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'c':	/* Crossover value */
 					 	if (Ctrl->L.active) {
@@ -577,57 +645,57 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 							corr[two] = MGD77_Correction_Rec (GMT, CORR[P[p].id[two]][COE_Z].term, P[p].COE[k].data[two], NULL);
 						}
 						out[j] = val[0] = (P[p].COE[k].data[one][COE_Z] - corr[one]) - (P[p].COE[k].data[two][COE_Z] - corr[two]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'd':	/* Distance along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_D];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_D];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'h':	/* Heading along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_H];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_H];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'i':	/* Time interval in current TIME_UNIT */
 						out[j] = val[0] = sec_2_unit * (P[p].COE[k].data[one][COE_T] - P[p].COE[k].data[two][COE_T]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'I':	/* Time interval in current TIME_UNIT */
 						out[j] = val[0] = sec_2_unit * fabs (P[p].COE[k].data[one][COE_T] - P[p].COE[k].data[two][COE_T]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);
 						break;
 					case 'n':	/* Names of the track(s) */
 						if (both) {
-							if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-							fprintf (GMT->session.std[GMT_OUT], "%s", P[p].trk[0]);
-							fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-							fprintf (GMT->session.std[GMT_OUT], "%s", P[p].trk[1]);
+							if (!first) strcat (record, GMT->current.setting.io_col_separator);
+							strcat (record, P[p].trk[0]);
+							strcat (record, GMT->current.setting.io_col_separator);
+							strcat (record, P[p].trk[1]);
 						}
 						else {
-							if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-							fprintf (GMT->session.std[GMT_OUT], "%s", P[p].trk[two]);
+							if (!first) strcat (record, GMT->current.setting.io_col_separator);
+							strcat (record, P[p].trk[two]);
 						}
 						break;
 					case 'N':	/* ID numbers of tracks */
 						out[j] = val[0] = (double)P[p].id[one];
 						if (both) out[++j] = val[1] = (double)P[p].id[two];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 't':	/* Time along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_T];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_T];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_T, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_T, n_out, first, record);
 						break;
 					case 'T':	/* Time along track since beginning of the track */
 						out[j] = val[0] = sec_2_unit * (P[p].COE[k].data[one][COE_T] - P[p].start[one]);
 						if (both) out[++j] = val[1] = sec_2_unit * (P[p].COE[k].data[two][COE_T] - P[p].start[two]);
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'v':	/* Speed along track */
 						out[j] = val[0] = P[p].COE[k].data[one][COE_V];
 						if (both) out[++j] = val[1] = P[p].COE[k].data[two][COE_V];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 					case 'w':	/* Weight for this crossover */
 						if (weights) {	/* Weightfile was given; compute composite weight for this COE */
@@ -644,15 +712,15 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 						}
 						else
 							out[j] = fixed_weight;
-						if (mixed) {val[0] = out[j];	dump_ascii_cols (GMT, val, GMT_Z, 1, first);}
+						if (mixed) {val[0] = out[j];	dump_ascii_cols (GMT, val, GMT_Z, 1, first, record);}
 						break;
 					case 'x':	/* x coordinate of crossover */
 						out[j] = val[0] = P[p].COE[k].data[0][COE_X];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_X, 1, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_X, 1, first, record);
 						break;
 					case 'y':	/* y coordinate of crossover */
 						out[j] = val[0] = P[p].COE[k].data[0][COE_Y];
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Y, 1, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Y, 1, first, record);
 						break;
 					case 'z':	/* Observed value along track */
 						if (Ctrl->L.active) corr[one] = MGD77_Correction_Rec (GMT, CORR[P[p].id[one]][COE_Z].term, P[p].COE[k].data[one], NULL);
@@ -661,16 +729,19 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 							if (Ctrl->L.active) corr[two] = MGD77_Correction_Rec (GMT, CORR[P[p].id[two]][COE_Z].term, P[p].COE[k].data[two], NULL);
 							out[++j] = val[1] = P[p].COE[k].data[two][COE_Z] - corr[two];
 						}
-						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
+						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first, record);
 						break;
 				}
 				first = false;
 			}
 			if (mixed)
-				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			else
-				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], (unsigned int)j, out);
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 		}
+	}
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
 	

@@ -78,7 +78,7 @@ example.
    be trivial or a serious scripting exercise depending on what you want
    to show. We will give a few examples with increasing complexity. Once
    the PostScript plot is created you need to rasterize it; we
-   recommend you use :doc:`ps2raster </ps2raster>` to
+   recommend you use :doc:`psconvert </psconvert>` to
    generate a TIFF image at the agreed-upon resolution. We also
    recommend that you place all frame images in a sub-directory. You may
    increment your frame counter using **gmt_set_framenext**.

@@ -2,9 +2,37 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2015-01-08	pwessel
+	* gmtregress.c		New tool for a variety of 1-D line regression.
+
+2014-12-03	pwessel
+	* grdconvert.c		The new name of grdreformat, backwards compatible.
+
 2014-09-08	pwessel
 	* ps2raster.c:		For non-PDF output, only handled transparency via @<transp>
 				and not via -t<transp> option.
+
+2014-08-10	pwessel
+	* gmt_init.c:		Allow UTM projections to not set the zone; if so then the
+				zone is automatically determined from the region
+	* gmt_map.c:		Determine best UTM zone from region if no zone is set.
+	* gmt_parse.c:		Allow new -R flavor for grid creation: -R[L|C|R][T|M|B]<x0>/<y0>/<nx>/<ny>,
+				where one specifies a fixed point relative to a rectangular
+				domain using the justification codes, and then adds the
+				dimensions of the new grid.  The grid spacings must be
+				set via the -I option.
+	* psxy[z].c:		Added optional arg to -Sv|m +b+e modifiers to set the kind
+				of arrow head to use.  Choose from t (termimal line),
+				c (circle) or a (arrow) [Default].
+	* grdvector.c:		---"---
+	
+2014-07-17	pwessel
+	* psxy[z].c:		Added modifier +p[<pen>] to the front specification so that
+				one can specify an alternate symbol outline, or no outline
+				at all (by not specifying <pen>).
+
+2014-06-07	pwessel
+	* ps2raster.c:		Added new device -Ts for SVG (scalable vector graphics).
 
 2014-05-30	pwessel
 	* grdtrack.c:		Did not properly handle the distance units specified in -E.
@@ -29,9 +57,20 @@
 				lines (contours) and text.  No more different clip off types
 				in psclip.
 
+2014-05-20	remko
+	* *.[ch]:		Renamed TIME_LANGUAGE to GMT_LANGUAGE. Introduced language-
+				dependent names and abbreviations of cardinal points.
+
 2014-05-08	remko
 	* gmt_plot.c:		Fix bug in treatment of variable text introduced on 2014-05-04.
 				This addresses issue #554.
+
+2014-05-07	pwessel, remko
+	* gmt_support.c:	Added support for both variables and constants on both sides
+				of the operator in the conditional tests used for custom symbols;
+				see issue # 554.
+	* gmt_plot.c:		---"---
+	* gmt_symbol.h:		___"___
 
 2014-05-04	pwessel
 	* gmt_plot.c:		Fix treatment of text and font attributes in custom symbols
@@ -40,6 +79,22 @@
 2014-04-24	pwessel
 	* grdcut.c:		Needed to extend -Z to also consider -Zr so that -Zn
 				would return a NaN-free subset.
+
+2014-04-05	pwessel
+	* xyz2grd.c:		Replaced -N<nodata> with common option -di<nodata>, but
+				left -N for backwards compatibility under 4.
+	* grd2xyz.c:		Replaced -N[i]<nodata> with common option -d[i]<nodata>, but
+				left -N for backwards compatibility under 4.
+
+2014-04-04	pwessel
+	* psbasemap.c:		Added new option -A[file] which instead of plotting a map
+				will write the coordinates of the plot domain outline to
+				the given file (or stdout).
+
+2014-04-03	pwessel
+	* gmt_init.c:		Added new common GMT option -d[i|o]<nodata>, which can be
+				used anywhere to convert users <nodata> values to NaN, and to do
+				the reverse on output.
 
 2014-04-02	pwessel
 	* spotter/backtracker.c:	Merge -e with -E to simplify operations and to
@@ -53,6 +108,7 @@
 2014-03-03	pwessel
 	* pslegend.c:		The flush_paragraph was not reset to false before 2nd loop,
 				causing the text (T) option to fail if it was the first item.
+
 -----------------------------------------------------------------------------------------
 2014-03-01	pwessel
 	GMT 5.1.1 finalized and released.
@@ -80,7 +136,12 @@
 2014-02-10	pwessel
 	*gmt2kml.c:		Make sure the default style IDs are unique for each process.
 
+2014-02-06	pwessel
+	* psxy.c:		New modifier -Ex[+]y[+] to do asymmetrical error bars.
+
 2014-02-03	pwessel
+	* gmtconvert.c:		New option -C to limit output to segments whose record count
+				matches our criteria.
 	* pslib.c:		Auto-widen paragraph width to at least fit widest word.
 
 2014-01-26	pwessel
@@ -92,9 +153,17 @@
 2014-01-22	pwessel
 	* pscoast.c:		The processing of -I -N levels and pens could get out of sync
 				so that the wrong pen was used for the specified feature.
+
 2014-01-16	remko
 	* pslib.c:		Take superscripts and subscripts into account when determining
 				dimensions of text box.
+
+2014-01-14	remko
+	* gmt_shore.c:		Do not adjust longitudes in determining min/max, they are
+				always in same quadrant inside bins.
+
+2014-01-12	remko/pwessel
+	* grdmath.c:		New function LDISTG does LDIST while using GSHHG directly.
 
 2014-01-10	pwessel
 	* grdmath.c:		We consider the change in SDIST, PDIST to return degrees instead
@@ -107,6 +176,7 @@
 2014-01-09	pwessel
 	* gmt_vector.c:		Add protection against introduced longitude-jumps produced
 				by resampling in GMT_fix_up_path.
+
 2014-01-09	remko
 	* gmt_vector.c:		Add protection against introduced longitude-jumps produced
 				by resampling in GMT_fix_up_path.
@@ -128,6 +198,14 @@
 2013-12-08	remko
 	* psimage.c:		Now properly plots transparent images and makes -Gt work.
 
+2013-12-06	pwessel
+	* gmtspatial.c:		Enhanced -Q to force interpretation of lines or polygons, plus
+				changed the single + to +h [but backwards compatible].
+
+2013-12-01	pwessel
+	* potential/gravfft.c:	Added approximate flex solution when rhoi != rhol
+	* potential/grdseamount.c:	Added shapes parabola and disc
+
 2013-11-26	pwessel
 	* gmt_io.c:		GMT would crash on a blank line with no newline at end at all.
 	* pstext.c:		pstext did not process GMT4-style input properly.
@@ -137,6 +215,7 @@
 				Let users select the -N+l (leave trend alone). That is, do not overwrite with default mode.
 				Let the default detrend be remove MID point.
 				Explicitly set -N+a in gravfft command to avoid failures due to coming changes in gravfft.
+
 2013-11-25	pwessel
 	* grdlandmask.c:	Failed to fill partial bins with no coastlines when the region
 				crossed Greenwich [issue #451].
@@ -173,6 +252,8 @@
 	* gmt_support.c:	Fix symbol-size issue in psxy -Sc [issue #435].
 
 2013-11-09	pwessel
+	* gmt_shore.c:		Extended -A option with modifiers to handle various
+				Antarctica options available via GSHHG 2.3.0
 	* grdvector.c:		Did not convert direction to azimuths for geo vectors.
 
 2013-11-08	pwessel

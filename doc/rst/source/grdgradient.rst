@@ -13,12 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdgradient** *in_grdfile* **-G**\ *out_grdfile*
-[ **-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**c**][**o**][**n**] ]
-[ **-E**\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*] ] 
-[ **-L**\ *flag* ] 
-[ **-N**\ [**e**\ ][**t**][*amp*][/\ *sigma*\ [/*offset*]] ]
-[ |SYN_OPT-R| ] [ **-S**\ *slopefile* ]
+**grdgradient** *in_grdfile* |-G|\ *out_grdfile*
+[ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
+[ |-E|\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*] ] 
+[ |-L|\ *flag* ] 
+[ |-N|\ [**e**\ ][**t**][*amp*][/\ *sigma*\ [/*offset*]] ]
+[ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ **-fg** ]
 [ |SYN_OPT-n| ]
 
@@ -38,14 +38,18 @@ Required Arguments
 ------------------
 
 *in_grdfile*
-    2-D grid file from which to compute directional derivative. (See
-    GRID FILE FORMATS below).
-**-G**\ *out\_grdfile*
+    2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).
+
+.. _-G:
+
+**-G**\ *out_grdfile*
     Name of the output grid file for the directional derivative. (See
     GRID FILE FORMATS below).
 
 Optional Arguments
 ------------------
+
+.. _-A:
 
 **-A**\ *azim*\ [/*azim2*]
     Azimuthal direction for a directional derivative; *azim* is the
@@ -62,15 +66,21 @@ Optional Arguments
     retained; this is useful for illuminating data with two directions
     of lineated structures, e.g., **-A**\ *0*/*270* illuminates from the
     north (top) and west (left).
-**-D**\ [**c**][**o**][**n**]
-    Find the direction of the gradient of the data. By default, the
-    directions are measured clockwise from north, as *azim* in **-A**
+
+.. _-D:
+
+**-D**\ [**a**][**c**][**o**][**n**]
+    Find the direction of the positive (up-slope) gradient of the data.
+    To instead find the aspect (the down-slope direction), use **-Da**.
+    By default, directions are measured clockwise from north, as *azim* in **-A**
     above. Append **c** to use conventional Cartesian angles measured
     counterclockwise from the positive x (east) direction. Append **o**
     to report orientations (0-180) rather than directions (0-360).
     Append **n** to add 90 degrees to all angles (e.g., to give
-    orientation of lineated features).  Unlike **-A**, here we return
-    the up-slope direction of the gradient.
+    local strikes of the surface ).
+
+.. _-E:
+
 **-E**\ [**s\|p**]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
     Compute Lambertian radiance appropriate to use with :doc:`grdimage` and :doc:`grdview`.
     The Lambertian Reflection assumes an ideal surface that
@@ -89,12 +99,18 @@ Optional Arguments
     algorithm; in this case the *azim* and *elev* are hardwired to 315
     and 45 degrees. This means that even if you provide other values
     they will be ignored.)
+
+.. _-L:
+
 **-L**\ *flag*
     Boundary condition *flag* may be *x* or *y* or *xy* indicating data
     is periodic in range of x or y or both, or *flag* may be *g*
     indicating geographical conditions (x and y are lon and lat).
     [Default uses "natural" conditions (second partial derivative normal
     to edge is zero).]
+
+.. _-N:
+
 **-N**\ [**e**][**t**][*amp*][/\ *sigma*\ [/*offset*]]
     Normalization. [Default: no normalization.] The actual gradients *g*
     are offset and scaled to produce normalized gradients *gn* with a
@@ -110,14 +126,20 @@ Optional Arguments
     *sigma*) where *sigma* is estimated using the L2 norm of (*g* -
     *offset*) if it is not given. 
 
+.. _-R:
+
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of *in\_grdfile* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 
+.. _-S:
+
 **-S**\ *slopefile*
     Name of output grid file with scalar magnitudes of gradient vectors.
     Requires **-D** but makes **-G** optional. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

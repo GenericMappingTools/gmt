@@ -13,15 +13,16 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness* ]
-[ **-F**\ *xy_file* ]
-[ **-G**\ *outputgrid.nc* ]
-[ **-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip* ]
-[ **-L**\ *z_observation* ]
-|SYN_OPT-V|
-[ **-S**\ *radius* ]
-[ **-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file* ]
-[ **-Z**\ *level* ]
+**gmtgravmag3d** |-T|\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*
+[ |-C|\ *density* ]
+[ |-D| ]
+[ |-E|\ *thickness* ]
+[ |-F|\ *xy_file* ]
+[ |-G|\ *outputgrid* ]
+[ |-H|\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip* ]
+[ |-L|\ *z_observation* ]
+[ |-S|\ *radius* ]
+[ |-Z|\ *level* ]
 [ |SYN_OPT-V| ]
 [ **-fg**\ ]
 
@@ -38,45 +39,36 @@ but allows computing the anomaly of arbitrarily complex shapes.
 Required Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *density*
     Sets body density in SI. This option is mutually exclusive with **-H**.
 
+.. _-H:
+
 **-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip*
-    Sets parameters for computing a magnetic anomally. Use
+    Sets parameters for computing a magnetic anomaly. Use
     *f_dec*/*f_dip* to set the geomagnetic declination/inclination in
     degrees. *m_int*/*m_dec*/*m_dip* are the body magnetic intensity
     declination and inclination.
+
+.. _-F:
 
 **-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
     option is mutually exlusive with **-G**.
 
-**-G**\ *outgrid.nc*
+.. _-G:
+
+**-G**\ *outgrid*
     Output the gravity or magnetic anomaly at nodes of this grid file.
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
-Optional Arguments
-------------------
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
-
-**-E**\ [*thickness*]
-    give layer thickness in m [Default = 0 m]. Use this option only when
-    the triangles describe a non-closed surface and you want the anomaly
-    of a constant thickness layer.
-
-**-L**\ [*z_observation*]
-    sets level of observation [Default = 0]. That is the height (z) at
-    which anomalies are computed.
-
-**-S**\ *radius*
-    search radius in km. Triangle centroids that are further away than
-    *radius* from current output point will not be taken into account.
-    Use this option to speed up computation at expenses of a less
-    accurate result.
+.. _-T:
 
 **-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*]
     Give either names of xyz[m] and *vertex* files or of a *raw* or
@@ -95,14 +87,45 @@ Optional Arguments
     rows (one per triangle) and 9 columns corresponding to the x,y,x
     coordinates of each of the three vertex of each triangle.
     Alternatively, the **s** flag indicates that the surface file is in
-    the ascii STL (Stereo Lithographic) format. These two type of files
+    the ASCII STL (Stereo Lithographic) format. These two type of files
     are used to provide a closed surface.
+
+Optional Arguments
+------------------
+
+.. _-V:
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. _-E:
+
+**-E**\ [*thickness*]
+    give layer thickness in m [Default = 0 m]. Use this option only when
+    the triangles describe a non-closed surface and you want the anomaly
+    of a constant thickness layer.
+
+.. _-L:
+
+**-L**\ [*z_observation*]
+    sets level of observation [Default = 0]. That is the height (z) at
+    which anomalies are computed.
+
+.. _-S:
+
+**-S**\ *radius*
+    search radius in km. Triangle centroids that are further away than
+    *radius* from current output point will not be taken into account.
+    Use this option to speed up computation at expenses of a less
+    accurate result.
+
+.. _-Z:
 
 **-Z**\ [*level*]
     level of reference plane [Default = 0]. Use this option when the
-    triangles describe a non-closed surface and the volume is deffined
+    triangles describe a non-closed surface and the volume is defined
     from each triangle and this reference level. An example will be the
-    whater depth to compute a Bouguer anomaly.
+    hater depth to compute a Bouguer anomaly.
 
 **-fg**
    Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -128,7 +151,9 @@ Suppose you ...
 See Also
 --------
 
-:doc:`gmt </gmt>`, :doc:`grdgravmag3d`
+:doc:`gmt </gmt>`, :doc:`grdgravmag3d`,
+:doc:`talwani2d </supplements/potential/talwani2d>`,
+:doc:`talwani3d </supplements/potential/talwani3d>`
 
 Reference
 ---------

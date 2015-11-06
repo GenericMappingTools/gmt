@@ -13,22 +13,29 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscoast** **-J**\ *parameters*
+**pscoast** |-J|\ *parameters*
 |SYN_OPT-R|
-[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+as**\ ][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ |-A|\ *area* ]
 [ |SYN_OPT-B| ]
-[ **-C**\ [**l**\ \|\ **r**/]\ *fill* ]
-[ **-D**\ *resolution*\ [**+**] ]
-[ **-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]]
-[ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/\ *pen*] ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
-[ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ]
-[ **-Q** ] [ **-S**\ *fill*\ \|\ **c** ]
-[ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
+[ |-C|\ [**l**\ \|\ **r**/]\ *fill* ]
+[ |-D|\ *resolution*\ [**+**] ]
+[ |-E|\ *dcw* ]
+[ |-F|\ *box* ]
+[ |-G|\ *fill*\ \|\ **c** ]
+[ |-I|\ *river*\ [/\ *pen*] ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ] [ |-K| ]
+[ |-L|\ *ruler* ]
+[ |-M| ]
+[ |-N|\ *border*\ [/*pen*] ]
+[ |-O| ]
+[ |-P| ]
+[ |-Q| ]
+[ |-S|\ *fill*\ \|\ **c** ]
+[ |-T|\ *rose* ]
+[ |-T|\ *mag_rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [*level*/]\ *pen* ]
+[ |-W|\ [*level*/]\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
@@ -60,7 +67,12 @@ The PostScript code is written to standard output.
 Required Arguments
 ------------------
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
@@ -71,10 +83,16 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 .. |Add_-A| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-A.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**\ [**l**\ \|\ **r**/]\ *fill*
     Set the shade, color, or pattern for lakes and river-lakes [Default
@@ -82,14 +100,20 @@ Optional Arguments
     separate fills by prepending **l/** for lakes and **r/** for
     river-lakes, repeating the **-C** option as needed.
 
+.. _-D:
+
 **-D**\ *resolution*\ [**+**]
     Selects the resolution of the data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets [Default is **l**].
     Append **+** to automatically select a lower resolution should the one
     requested not be available [abort if not found].
+    Alternatively, choose (**a**)uto to automatically select the best
+    resolution given the chosen map scale.
 
-**-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
+.. _-E:
+
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
     Select painting or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the 2-character
@@ -106,14 +130,38 @@ Optional Arguments
     outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
-    specified unless **+r**, **+R**, or **-M** is in effect, and only one **-F** option can be given.
-    To plot multiple countries in different colors, call pscoast multiple times.
+    specified unless **+r**, **+R**, or **-M** is in effect, and only one **-E** option can be given.
+    You may repeat **-E** to give different groups of items separate pen/fill settings.
     If modifiers **+r** or **+R** are used and neither **-J** nor **-M** is set then
     we just print the **-R**\ *wesn* string.
+
+.. _-F:
+
+**-F**\ [\ **+c**\ *clearances*][\ **+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around the map scale or rose using
+    :ref:`MAP_FRAME_PEN <MAP_FRAME_PEN>`; specify a different pen with **+p**\ *pen*.
+    Add **+g**\ *fill* to fill the logo box [no fill].
+    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
+    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
+    x- and y-direction, or individual side spacings between logo and border. 
+    Append **+i** to draw a secondary, inner border as well. We use a uniform
+    *gap* between borders of 2\ **p** and the :ref:`MAP_DEFAULT_PEN <MAP_DEFAULT_PEN>`
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
+    Requires **-L** or **-T**.  If both **-L** or **-T**, you may repeat **-F**
+    after each of these.
+
+.. _-G:
 
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or use **-Gc** for clipping [Default is no fill].
+
+.. _-I:
 
 **-I**\ *river*\ [/*pen*]
     Draw rivers. Specify the type of rivers and [optionally] append pen
@@ -161,17 +209,25 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
 
+.. _-L:
+
 .. include:: explain_-L_scale.rst_
+
+.. _-M:
 
 **-M**
     Dumps a single multisegment ASCII (or binary, see
     **-bo**) file to standard output. No plotting
-    occurs. Specify one of **-F**, **-I**, **-N** or **-W**.
-    Note: if **-M** is used with **-F** then **-R** or the **+r** modifier
-    to **-F** are not required as we automatically determine the region
+    occurs. Specify one of **-E**, **-I**, **-N** or **-W**.
+    Note: if **-M** is used with **-E** then **-R** or the **+r** modifier
+    to **-E** are not required as we automatically determine the region
     given the selected geographic entities.
+
+.. _-N:
 
 **-N**\ *border*\ [/*pen*]
     Draw political boundaries. Specify the type of boundary and
@@ -189,24 +245,40 @@ Optional Arguments
 
     a = All boundaries (1-3)
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
+.. _-Q:
+
 **-Q**
     Mark end of existing clip path. No projection information is needed.
-    Also supply **-X** and **-Y** settings if you have moved since the
-    clip started.
+    Also supply **-X** and **-Y** settings if you have moved since the clip started.
+
+.. _-S:
+
 **-S**\ *fill*\ \|\ **c**
     Select filling or clipping of "wet" areas. Append the shade, color,
     or pattern; or use **-Sc** for clipping [Default is no fill].
 
+.. _-T:
+
 ..  include:: explain_-T_rose.rst_
+
+.. _-U:
 
 .. include:: explain_-U.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [*level*/]\ *pen* :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
@@ -216,6 +288,8 @@ Optional Arguments
     lakeshore, island-in-lake shore, and lake-in-island-in-lake shore.
     Repeat **-W** as needed. When specific level pens are set, those not
     listed will not be drawn [Default draws all levels; but see **-A**].
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -261,6 +335,21 @@ gridded topography is only seen over land, using a Mercator map at scale
     gmt grdimage -Jm0.1i etopo5.nc -Ccolors.cpt -O -K >> africa.ps
     gmt pscoast  -Q -O >> africa.ps
 
+To plot Great Britain, Italy, and France in blue with a red outline and
+Spain, Portugal and Greece in yellow (no outline), and pick up the plot
+domain form the extents of these countries, use
+
+   ::
+
+    gmt pscoast  -JM6i -P -Baf -EGB,IT,FR+gblue+p0.25p,red+r -EES,PT,GR+gyellow > map.ps
+
+To extract a high-resolution coastline data table for Iceland to be used
+in your analysis, try
+
+   ::
+
+    gmt pscoast -R-26/-12/62/68 -Dh -W -M > iceland.txt
+
 **pscoast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
 for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain
@@ -295,11 +384,11 @@ time this occurs.
 Some users of **pscoast** will not be satisfied with what they find for
 the Antarctic shoreline. In Antarctica, the boundary between ice and
 ocean varies seasonally and inter-annually. There are some areas of
-permanent sea ice. In addition to these time-varying ice-ocean
-boundaries, there are also ice grounding lines where ice goes from
+permanent shelf ice. In addition to these time-varying ice-ocean
+boundaries, there are also shelf ice grounding lines where ice goes from
 floating on the sea to sitting on land, and lines delimiting areas of
 rock outcrop. For consistency's sake, we have used the World Vector
-Shoreline throughout the world in pscoast, as described in the GMT
+Shoreline throughout the world in **pscoast**, as described in the GMT
 Cookbook Appendix K. Users who need specific boundaries in Antarctica
 should get the Antarctic Digital Database, prepared by the British
 Antarctic Survey, Scott Polar Research Institute, World Conservation

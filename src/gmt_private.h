@@ -25,27 +25,18 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_private.h
+ * \brief Private parts of the GMTAPI_CTRL which we will not expose to the API users 
+ */
+
 #ifndef _GMTAPI_PRIVATE_H
 #define _GMTAPI_PRIVATE_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-/*
- * Visual C++ only implements C90, which has no bool type. C99 added support
- * for bool via the <stdbool.h> header, but Visual C++ does not support this.
- */
-#ifndef __bool_true_false_are_defined
-#	if defined _MSC_VER
-#		define bool _Bool
-#		define true 1
-#		define false 0
-#		define __bool_true_false_are_defined 1
-#	else
-#		include <stdbool.h>
-#	endif /* _MSC_VER */
-#endif /* !__bool_true_false_are_defined */
+#include <stdbool.h>
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -69,7 +60,6 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 	GMTAPI_NODE};		/* ipar[7] = 1 for pixel registration, 0 for node */
 #endif
 
-
 /*=====================================================================================
  *	GMT API STRUCTURE DEFINITIONS
  *===================================================================================*/
@@ -79,7 +69,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
 	 * needed while reading/writing from a table (file or array) */
-	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VETOR only] */
+	uint64_t rec;				/* Current rec to read [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
+	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VECTOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
@@ -91,11 +82,12 @@ struct GMTAPI_DATA_OBJECT {
 	bool region;				/* true if wesn was passed, false otherwise */
 	bool no_longer_owner;			/* true if the data pointed to by the object was passed on to another object */
 	bool messenger;				/* true for output objects passed from the outside to receive data from GMT. If true we destroy data pointer before writing */
+	bool module_input;			/* true for input objects that will serve as module input(s) and not option inputs */
 	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
-	enum GMT_io_enum direction;		/* GMT_IN or GMT_OUT */
+	enum GMT_enum_std direction;		/* GMT_IN or GMT_OUT */
 	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GRID|MATRIX|VECTOR|COORD} */
 	enum GMT_enum_family actual_family;	/* May be GMT_IS_MATRIX|VECTOR when one of the others are created via those */
-	unsigned method;		/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
+	unsigned method;			/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} or sum with enum GMT_enum_via (GMT_VIA_{NONE,VECTOR,MATRIX,OUTPUT}); using unsigned type because sum exceeds enum GMT_enum_method */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered filename, memory location, etc., where data can be obtained from with GMT_Get_Data. */
@@ -103,14 +95,14 @@ struct GMTAPI_DATA_OBJECT {
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
 	void * (*import) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
-#ifdef DEBUG
+	/* Start of temporary variables for API debug - They are only set when building with /DEBUG */
 	struct GMT_GRID *G;
 	struct GMT_DATASET *D;
 	struct GMT_TEXTSET *T;
 	struct GMT_PALETTE *C;
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
-#endif
+	/* End of temporary variables for API debug - will be removed eventually */
 #ifdef HAVE_GDAL
 	struct GMT_IMAGE *I;
 #endif
@@ -126,13 +118,16 @@ struct GMTAPI_CTRL {
 	unsigned int unique_ID;			/* Used to create unique IDs for duration of session */
 	unsigned int session_ID;		/* ID of this session */
 	unsigned int unique_var_ID;		/* Used to create unique object IDs (grid,dataset, etc) for duration of session */
-	unsigned int current_item[2];		/* Array number of current dataset being processed (in and out)*/
+	int current_item[2];			/* Array number of current dataset being processed (in and out)*/
 	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
-	unsigned int mode;			/* 1 if called via external API (Matlab, Python) [0] */
+	unsigned int mode;			/* 1 if called via external API (MATLAB, Python) [0] */
+	enum GMT_enum_fmt shape;		/* GMT_IS_COL_FORMAT (1) if column-major (MATLAB, Fortran), GMT_IS_ROW_FORMAT (0) if row-major (Python, C/C++) [0] */
 	unsigned int leave_grid_scaled;		/* 1 if we dont want to unpack a grid after we packed it for writing [0] */
+	unsigned int n_cores;			/* Number of available cores on this system */
 	unsigned int verbose;			/* Used until GMT is set up */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
+	bool module_input;			/* true when we are about to read inputs to the module (command line) */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
@@ -141,6 +136,7 @@ struct GMTAPI_CTRL {
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
+	char *tmp_dir;				/* System tmp_dir (NULL if not found) */
 	bool internal;				/* true if session was initiated by gmt.c */
 	bool deep_debug;			/* temporary for debugging */
 	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */

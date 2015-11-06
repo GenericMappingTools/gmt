@@ -13,7 +13,7 @@
         very first label for each contour when the cumulative
         along-contour distance equals *fraction \* dist* [0.25].
     **f**\ *ffile.d*
-        Reads the ascii file *ffile.d* and places labels at locations in
+        Reads the ASCII file *ffile.d* and places labels at locations in
         the file that matches locations along the quoted lines. Inexact
         matches and points outside the region are skipped.
     **l\|L**\ *line1*\ [,\ *line2*,...]

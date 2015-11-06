@@ -13,12 +13,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**hotspotter** [*table*\ ] **-E**\ *rotfile* **-G**\ *CVAgrid*
+**hotspotter** [*tables*\ ] |-E|\ *rotfile* |-G|\ *CVAgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-N**\ *upper_age* ] [ **-S** ] [ **-T** ]
+[ |-N|\ *upper_age* ]
+[ |-S| ] [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
@@ -30,7 +32,7 @@ Description
 -----------
 
 **hotspotter** reads (longitude, latitude, amplitude, radius, age)
-records from *infiles* [or standard input] and calculates flowlines
+records from *tables* [or standard input] and calculates flowlines
 using the specified stage or total reconstruction rotations. These
 flowlines are convolved with the shape of the seamount (using a Gaussian
 shape given amplitude and radius = 6 sigma) and added up to give a
@@ -42,6 +44,8 @@ Required Arguments
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
+
+.. _-E:
 
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
@@ -67,10 +71,16 @@ Required Arguments
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
 
+.. _-G:
+
 **-G**\ *CVAgrid*
     Specify name for output grid file.
 
+.. _-I:
+
 .. include:: ../../explain_-I.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
@@ -78,27 +88,40 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *factor*
     Modify the sampling interval along flowlines. Default [0.5] gives
     approximately 2 points within each grid box. Smaller factors gives
     higher resolutions at the expense of longer processing time.
 
+.. _-N:
+
 **-N**\ *upper_age*
     Set the upper age to assign seamounts whose crustal age is unknown
     (i.e., NaN) [no upper age].
 
+.. _-S:
+
 **-S**
     Normalize the resulting CVA grid to percentages of the CVA maximum.
+
+.. _-T:
 
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no
     truncation].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_
@@ -125,6 +148,13 @@ seamounts.d, using the DC85.d Euler poles, run
     gmt hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
 This file can then be plotted with :doc:`grdimage </grdimage>`.
+
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
 
 See Also
 --------

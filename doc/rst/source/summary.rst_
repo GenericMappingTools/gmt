@@ -1,0 +1,159 @@
++-----------------------+---------------------------------------------------------------------+
+|                       |                                                                     |
++=======================+=====================================================================+
+| :doc:`blockmean`      | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`blockmedian`    | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`filter1d`       | Filter 1-D table data sets (time series)                            |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmt2kml`        | Like :doc:`psxy` but plots KML for use in Google Earth              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtconnect`     | Connect segments into more complete lines or polygons               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtconvert`     | Convert data tables from one format to another                      |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtdefaults`    | List the current default settings                                   |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtget`         | Retrieve selected parameters in current ``gmt.conf`` file           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtinfo`        | Get information about table data files                              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtlogo`        | Plot the GMT logo on maps                                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtmath`        | Mathematical operations on table data                               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtselect`      | Select subsets of table data based on multiple spatial criteria     |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtset`         | Change selected parameters in current ``gmt.conf`` file             |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtsimplify`    | Line reduction using the Douglas-Peucker algorithm                  |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtspatial`     | Geospatial operations on lines and polygons                         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtvector`      | Basic operations on vectors in 2-D and 3-D                          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`gmtwhich`       | Find full path to specified data files                              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grd2cpt`        | Make color palette table from a grid files                          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grd2rgb`        | Convert Sun raster or grid file to red, green, blue component grids |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grd2xyz`        | Conversion from 2-D grid file to table data                         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdblend`       | Blend several partially over-lapping grid files onto one grid       |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdclip`        | Limit the *z*-range in gridded data sets                            |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdcontour`     | Contouring of 2-D gridded data sets                                 |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdconvert`     | Converts grid files into other grid formats                         |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdcut`         | Cut a sub-region from a grid file                                   |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdedit`        | Modify header information in a 2-D grid file                        |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdfft`         | Perform operations on grid files in the frequency domain            |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdfilter`      | Filter 2-D gridded data sets in the space domain                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdgradient`    | Compute directional gradient from grid files                        |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdhisteq`      | Histogram equalization for grid files                               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdimage`       | Produce images from 2-D gridded data sets                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdinfo`        | Get information about grid files                                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdlandmask`    | Create masking grid files from shoreline data base                  |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdmask`        | Reset grid nodes in/outside a clip path to constants                |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdmath`        | Mathematical operations on grid files                               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdpaste`       | Paste together grid files along a common edge                       |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdproject`     | Project gridded data sets onto a new coordinate system              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdsample`      | Resample a 2-D gridded data set onto a new grid                     |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdtrack`       | Sampling of 2-D gridded data set(s) along 1-D track                 |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdtrend`       | Fits polynomial trends to grid files                                |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdvector`      | Plotting of 2-D gridded vector fields                               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdview`        | 3-D perspective imaging of 2-D gridded data sets                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`grdvolume`      | Calculate volumes under a surface within specified contour          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`greenspline`    | Interpolation with Green's functions for splines in 1--3 D          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`kml2gmt`        | Extracts coordinates from Google Earth KML files                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`makecpt`        | Make color palette tables                                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`mapproject`     | Transformation of coordinate systems for table data                 |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`nearneighbor`   | Nearest-neighbor gridding scheme                                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`project`        | Project table data onto lines or great circles                      |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psbasemap`      | Create a basemap plot                                               |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psclip`         | Use polygon files to define clipping paths                          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`pscoast`        | Plot (and fill) coastlines, borders, and rivers on maps             |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`pscontour`      | Contour or image raw table data by triangulation                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psconvert`      | Crop and convert PostScript files to raster images, EPS, and PDF    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`pshistogram`    | Plot a histogram                                                    |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psimage`        | Plot Sun raster files on a map                                      |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`pslegend`       | Plot a legend on a map                                              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psmask`         | Create overlay to mask out regions on maps                          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psrose`         | Plot sector or rose diagrams                                        |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psscale`        | Plot gray scale or color scale on maps                              |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`pstext`         | Plot text strings on maps                                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`pswiggle`       | Draw table data time-series along track on maps                     |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psxy`           | Plot symbols, polygons, and lines on maps                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`psxyz`          | Plot symbols, polygons, and lines in 3-D                            |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`sample1d`       | Resampling of 1-D table data sets                                   |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`spectrum1d`     | Compute various spectral estimates from time-series                 |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`sph2grd`        | Compute grid from spherical harmonic coefficients                   |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`sphdistance`    | Make grid of distances to nearest points on a sphere                |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`sphinterpolate` | Spherical gridding in tension of data on a sphere                   |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`sphtriangulate` | Delaunay or Voronoi construction of spherical lon,lat data          |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`splitxyz`       | Split *xyz* files into several segments                             |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`surface`        | A continuous curvature gridding algorithm                           |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`trend1d`        | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`trend2d`        | Fits polynomial trends to :math:`z = f(x,y)` series                 |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`triangulate`    | Perform optimal Delauney triangulation and gridding                 |
++-----------------------+---------------------------------------------------------------------+
+| :doc:`xyz2grd`        | Convert an equidistant table *xyz* file to a 2-D grid file          |
++-----------------------+---------------------------------------------------------------------+

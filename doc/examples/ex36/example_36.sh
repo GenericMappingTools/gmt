@@ -18,4 +18,4 @@ gmt sphinterpolate mars370.txt -Rg -I1 -Q3 -Gtt.nc
 gmt grdimage tt.nc -J -Bag -Ctt.cpt  -Y-3.25i -O -K >> $ps
 gmt psxy -Rg -J -O -T >> $ps
 # cleanup
-rm -f gmt.conf tt.cpt tt.nc
+rm -f tt.cpt tt.nc

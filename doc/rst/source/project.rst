@@ -13,14 +13,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**project** [ *table* ] **-C**\ *cx*/*cy* [ **-A**\ *azimuth* ] [
-**-E**\ *bx*/*by* ] [ **-F**\ *flags* ]
-[ **-G**\ *dist*\ [/*colat*][**+**] ]
-[ **-L**\ [**w**\ ][\ *l\_min*/*l\_max*] ] [ **-N** ] [ **-Q** ] [ **-S** ]
-[ **-T**\ *px*/*py* ]
+**project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
+[ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
+[ |-G|\ *dist*\ [/*colat*][**+**] ]
+[ |-L|\ [**w**\ ][\ *l\_min*/*l\_max*] ]
+[ |-N| ] [ |-Q| ] [ |-S| ]
+[ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *w\_min*/*w\_max* ]
+[ |-W|\ *w\_min*/*w\_max* ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -34,7 +36,7 @@ Description
 -----------
 
 **project** reads arbitrary (*x*, *y*\ [,\ *z*]) data from standard input
-[or *infile* ] and writes to standard output any combination of (*x*,
+[or *table* ] and writes to standard output any combination of (*x*,
 *y*, *z*, *p*, *q*, *r*, *s*), where (*p*, *q*) are the coordinates in
 the projection, (*r*, *s*) is the position in the (*x*, *y*) coordinate
 system of the point on the profile (*q* = 0 path) closest to (*x*, *y*),
@@ -101,6 +103,8 @@ xyzpqrs letters in **-flags**.
 Required Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ *cx*/*cy*
     *cx/cy* sets the origin of the projection, in Definition 1 or 2. If
     Definition 3 is used (**-T**), then *cx/cy* are the coordinates of a
@@ -113,10 +117,18 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ *azimuth*
     *azimuth* defines the azimuth of the projection (Definition 1).
+
+.. _-E:
+
 **-E**\ *bx*/*by*
-    *bx/by* defines the end point of the projection path (Definition 2).
+   *bx/by* defines the end point of the projection path (Definition 2).
+
+.. _-F:
+
 **-F**\ *flags*
     Specify your desired output using any combination of *xyzpqrs*, in
     any order. Do not space between the letters. Use lower case. The
@@ -125,6 +137,9 @@ Optional Arguments
     input and output are using ASCII format then the *z* data are
     treated as textstring(s). If the **-G** option is selected, the
     output will be *rsp*.
+
+.. _-G:
+
 **-G**\ *dist*\ [/*colat*]
     Generate mode. No input is read. Create (*r*, *s*, *p*) output
     points every *dist* units of *p*. See **-Q** option. Alternatively,
@@ -134,27 +149,46 @@ Optional Arguments
     in this case the center and end point cannot be farther apart than
     2\*\|\ *colat*\ \|. Finally, if you append **+** the we will report
     the position of the pole as part of the segment header [no header].
+
+.. _-L:
+
 **-L**\ [**w**\ ][\ *l\_min*/*l\_max*]
     Length controls. Project only those points whose *p* coordinate is
     within *l\_min* < *p* < *l\_max*. If **-E** has been set, then you
     may use **-Lw** to stay within the distance from **C** to **E**.
+
+.. _-N:
+
 **-N**
     Flat Earth. Make a Cartesian coordinate transformation in the plane.
     [Default uses spherical trigonometry.]
+
+.. _-Q:
+
 **-Q**
     Map type units, i.e., project assumes *x*, *y*, *r*, *s* are in
     degrees while *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*,
     *w\_max* are in km. If **-Q** is not set, then all these are assumed
     to be in the same units.
+
+.. _-S:
+
 **-S**
     Sort the output into increasing *p* order. Useful when projecting
     random data into a sequential profile.
+
+.. _-T:
+
 **-T**\ *px*/*py*
     *px/py* sets the position of the rotation pole of the projection.
     (Definition 3). 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *w\_min*/*w\_max*
     Width controls. Project only those points whose *q* coordinate is
@@ -165,6 +199,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is given by **-F** or **-G**]. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

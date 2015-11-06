@@ -44,10 +44,11 @@
 #define THIS_MODULE_NAME	"gmtselect"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Select data table subsets based on multiple spatial criteria"
+#define THIS_MODULE_KEYS	"<DI,CDi,FDi,LDi,>DO,RG-"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>JRVabfghios" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>JRVabdfghios" GMT_OPT("HMm")
 
 #define GMTSELECT_N_TESTS	6				/* Number of specific tests available */
 #define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
@@ -149,8 +150,7 @@ void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int compare_x (const void *point_1, const void *point_2)
-{
+int compare_x (const void *point_1, const void *point_2) {
 	const struct GMTSELECT_DATA *p1 = point_1, *p2 = point_2;
 
 	if (p1->x < p2->x) return (-1);
@@ -159,8 +159,7 @@ int compare_x (const void *point_1, const void *point_2)
 }
 
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
-void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out)
-{
+void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
 	unsigned int col, k, n_aspatial = 0;
 	size_t len;
 	char text[GMT_LEN64] = {""};
@@ -213,30 +212,30 @@ void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out)
 	}
 }
 
-int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>]\n\t[%s] [%s] [%s]\n\t[-Z<min>[/<max>][+c<col>]] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>[/<max>][+c<col>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "<,A");
+	GMT_Option (API, "<");
+	GMT_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t   (ignored  unless -N is set).\n");
 	GMT_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f - full resolution (may be very slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h - high resolution (may be slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
@@ -244,12 +243,12 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Supply a combination of cflrz where each flag means:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c will pass locations beyond the minimum distance to the points in -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f will pass locations outside the polygons in -F.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l will pass locations beyond the minimum distance to the lines in -L.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r will pass locations outside the region given in -R [and -J].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s will pass locations that otherwise would be skipped in -N.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z will pass locations outside the range given in -Z.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c will pass locations beyond the minimum distance to the points in -C.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f will pass locations outside the polygons in -F.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l will pass locations beyond the minimum distance to the lines in -L.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     r will pass locations outside the region given in -R [and -J].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s will pass locations that otherwise would be skipped in -N.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     z will pass locations outside the range given in -Z.\n");
 	GMT_Option (API, "J");
 	GMT_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
@@ -259,8 +258,8 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information with s or k using 1 of 2 formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -N<wet>/<dry>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
@@ -270,13 +269,12 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   The -Z option is repeatable.\n");
 	GMT_Option (API, "a,bi0");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 input columns (3 if -Z is used).\n");
-	GMT_Option (API, "bo,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "bo,d,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -482,8 +480,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtselect_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtselect (void *V_API, int mode, void *args)
-{
+int GMT_gmtselect (void *V_API, int mode, void *args) {
 	int err;	/* Required by GMT_err_fail */
 	unsigned int base = 3, np[2] = {0, 0}, r_mode;
 	unsigned int side, col, id;
@@ -522,7 +519,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtselect_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtselect_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
@@ -554,7 +551,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 				GMT->common.R.wesn[XHI] += 360.0;
 			}
 		}
-		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
@@ -686,7 +683,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	}
 	
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
 
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
@@ -705,7 +702,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
-	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle && !GMT->common.s.active);
+	just_copy_record = (GMT_is_ascii_record (GMT, options) && !shuffle && !GMT->common.s.active);
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */

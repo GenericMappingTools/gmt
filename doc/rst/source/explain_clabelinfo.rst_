@@ -57,6 +57,6 @@
         labels].
     **+w**
         Specifies how many (*x*,\ *y*) points will be used to estimate
-        label angles [Default is 10].
+        label angles [automatic].
     **+=**\ *prefix*
         Prepends *prefix* to all contour labels. [Default is no prefix].

@@ -73,10 +73,11 @@
 #define THIS_MODULE_NAME	"backtracker"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Generate forward and backward flowlines and hotspot tracks"
+#define THIS_MODULE_KEYS	"<DI,>DO,EDI,FDi"
 
 #include "spotter.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbfghios" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>Vbdfghios" GMT_OPT("HMm")
 
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -152,8 +153,8 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] -E[+]<rottable>|<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<driftfile] [-Lf|b<d_km>] [-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -186,7 +187,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt will output lon,lat,time,az,major,minor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wa will output lon,lat,angle,az,major,minor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D to specify which direction to rotate [forward in time].\n");
-	GMT_Option (API, "bi3,bo,h,i,o,s,:,.");
+	GMT_Option (API, "bi3,bo,d,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -283,7 +284,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 				break;
 
 			case 'F':	/* File with hotspot motion history */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->F.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -434,7 +435,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_backtracker_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_backtracker_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_backtracker_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the backtracker main code ----------------------------*/
 	

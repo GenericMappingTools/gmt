@@ -333,6 +333,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* Cannot have nans in a raster */
 
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		ij = imag_offset + (j2 + pad[3]) * width_out + pad[XLO];
@@ -512,7 +513,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	if (stat (header->name, &buf))
 		return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
 	strncpy (t_head.name, header->name, GMT_LEN256);
-	if ((status = GMT_native_read_grd_info (GMT, &t_head)))
+	if ((status = GMT_native_read_grd_info (GMT, &t_head)) != 0)
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
 	if (t_head.nx <= 0 || t_head.ny <= 0 || !(t_head.registration == GMT_GRID_NODE_REG || t_head.registration == GMT_GRID_PIXEL_REG))
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
@@ -645,6 +646,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
@@ -656,7 +658,10 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			grid[kk] = (float) ival;
 			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
-			if (GMT_is_fnan (grid[kk])) continue;
+			if (GMT_is_fnan (grid[kk])) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
+				continue;
+			}
 			/* Update z min/max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -887,6 +892,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread (tmp, size, n_expected, fp) < n_expected)
 			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
@@ -895,7 +901,10 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
-			if (GMT_is_fnan (grid[kk])) continue;
+			if (GMT_is_fnan (grid[kk])) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
+				continue;
+			}
 			/* Update z_min, z_max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -1369,14 +1378,20 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		if (first_row && fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
+	header->z_min = DBL_MAX;
+	header->z_max = -DBL_MAX;
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
+
 	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
 		if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
-			if (grid[kk] >= header->nan_value)
+			if (grid[kk] >= header->nan_value) {
+				header->has_NaNs = GMT_GRID_HAS_NANS;
 				grid[kk] = GMT->session.f_NaN;
+			}
 			else {	/* Update z_min, z_max */
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
 				header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -1524,7 +1539,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
  *		GMT_gdal_write_grd_info, GMT_gdal_read_grd, GMT_gdal_write_grd
  *-----------------------------------------------------------*/
 
-static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GD_CTRL *from_gdalread) {
+static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;
 	if (from_gdalread->ColorMap)
 		GMT_free (GMT, from_gdalread->ColorMap);
@@ -1539,8 +1554,8 @@ static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GD_CTRL *from
 }
 
 int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 
 	if (!strcmp (header->name, "=")) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Pipes cannot be used within the GDAL interface.\n");
@@ -1548,8 +1563,8 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	/* Allocate new control structures */
-	to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+	to_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+	from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	to_gdalread->M.active = true;		/* Metadata only */
 
@@ -1576,6 +1591,20 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		header->z_add_offset   = 0.0;
 	}
 
+	if (header->ProjRefPROJ4) {			/* Make sure we don't leak due to a previous copy */
+		free(header->ProjRefPROJ4);
+		header->ProjRefPROJ4 = NULL;
+	}
+	if (header->ProjRefWKT) {
+		free(header->ProjRefWKT);
+		header->ProjRefWKT = NULL;
+	}
+	if (from_gdalread->ProjectionRefPROJ4)
+		/* Need to strdup because from_gdalread is freed later */
+		header->ProjRefPROJ4 = strdup(from_gdalread->ProjectionRefPROJ4);
+	if (from_gdalread->ProjectionRefWKT)
+		header->ProjRefWKT   = strdup(from_gdalread->ProjectionRefWKT);
+
 	GMT_free (GMT, to_gdalread);
 	free_from_gdalread (GMT, from_gdalread);
 
@@ -1596,15 +1625,15 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	struct GDALREAD_CTRL *to_gdalread = NULL;
-	struct GD_CTRL *from_gdalread = NULL;
+	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
+	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 	int nBand, subset;
 	uint64_t i, j, row, col;
 	char strR[128];
 
 	/* Allocate new control structures */
-	to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
-	from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
+	to_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+	from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (complex_mode & GMT_GRID_IS_COMPLEX_MASK) {
 		to_gdalread->Z.active = true;		/* Force reading into a compex array */
@@ -1722,6 +1751,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		}
 	}
 
+	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	if (from_gdalread->nodata && !GMT_is_dnan (from_gdalread->nodata)) {	/* Data has a nodata value */
 		/* Since all originally integer types were actually converted to float above, we can use
 		   the same test to search for nodata values other than NaN. Note that gmt_galread sets
@@ -1731,8 +1761,10 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		grid += (header->pad[YHI] * header->mx + header->pad[XLO]);	/* Position pointer at start of first row taking pad into acount */
 		for (row = 0; row < header->ny; row++) {
 			for (col = 0; col < header->nx; col++, grid++) {
-				if (*grid == (float)from_gdalread->nodata)
+				if (*grid == (float)from_gdalread->nodata) {
 					*grid = GMT->session.f_NaN;
+					header->has_NaNs = GMT_GRID_HAS_NANS;
+				}
 			}
 			grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
 		}
@@ -1771,7 +1803,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	unsigned short int *zu16 = NULL;
 	int *zi32 = NULL;
 	unsigned int *zu32 = NULL;
-	struct GDALWRITE_CTRL *to_GDALW = NULL;
+	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 	GMT_UNUSED(pad);
 	type[0] = '\0';
 
@@ -1784,11 +1816,14 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	sscanf (header->pocket, "%[^/]/%s", driver, type);
-	to_GDALW = GMT_memory (GMT, NULL, 1, struct GDALWRITE_CTRL);
+	to_GDALW = GMT_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);
 	to_GDALW->driver = strdup(driver);
 	to_GDALW->P.ProjectionRefPROJ4 = NULL;
 	to_GDALW->flipud = 0;
-	to_GDALW->geog = 0;
+	if (GMT_is_geographic (GMT, GMT_IN))
+		to_GDALW->geog = 1;
+	else
+		to_GDALW->geog = 0;
 	to_GDALW->nx = width_out;
 	to_GDALW->ny = height_out;
 	to_GDALW->nXSizeFull = header->mx;

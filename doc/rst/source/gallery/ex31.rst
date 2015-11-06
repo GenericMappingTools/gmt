@@ -10,7 +10,7 @@ PDF-file with Ghostscript. See also
 Appendix [sec:non-default-fonts] for further information. The script
 includes the following steps:
 
--  create a ``CUSTOM_font_info.d`` file;
+-  create a ``PSL_custom_fonts.txt`` file;
 
 -  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
 

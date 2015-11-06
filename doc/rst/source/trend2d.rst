@@ -13,10 +13,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**trend2d** [ *table* ] **-F**\ **xyzmrw** **-N**\ *n\_model*\ [**r**]
-[ *xyz[w]file* ] [ **-C**\ *condition\_number* ]
-[ **-I**\ [*confidence\_level*] ] [ |SYN_OPT-V| ] [ **-W** ] [
+**trend2d** [ *table* ] |-F|\ **xyzmrw** |-N|\ *n_model*\ [**r**]
+[ *xyz[w]file* ]
+[ |-C|\ *condition\_number* ]
+[ |-I|\ [*confidence\_level*] ]
+[ |SYN_OPT-V| ]
+[ |-W| ] [
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -50,11 +54,16 @@ a regional surface.
 Required Arguments
 ------------------
 
+.. _-F:
+
 **-F**\ **xyzmrw**
     Specify up to six letters from the set {**x y z m r w**\ } in any
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **z** = z, **m** = model f(x,y), **r** = residual z -
     **m**, **w** = weight used in fitting.
+
+.. _-N:
+
 **-N**\ *n\_model*\ [**r**\ ]
     Specify the number of terms in the model, *n\_model*, and append
     **r** to do a robust fit. E.g., a robust bilinear model is
@@ -67,12 +76,18 @@ Optional Arguments
     One or more ASCII [or binary, see **-bi**]
     files containing x,y,z [w] values in the first 3 [4] columns. If no
     files are specified, **trend2d** will read from standard input.
+
+.. _-C:
+
 **-C**\ *condition\_number*
     Set the maximum allowed condition number for the matrix solution.
     **trend2d** fits a damped least squares model, retaining only that
     part of the eigenvalue spectrum such that the ratio of the largest
     eigenvalue to the smallest eigenvalue is *condition\_#*. [Default:
     *condition\_#* = 1.0e06. ].
+
+.. _-I:
+
 **-I**\ [*confidence\_level*\ ]
     Iteratively increase the number of model parameters, starting at
     one, until *n\_model* is reached or the reduction in variance of the
@@ -81,8 +96,12 @@ Optional Arguments
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**
     Weights are supplied in input column 4. Do a weighted least squares
@@ -94,6 +113,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is 1-6 columns as set by **-F**]. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

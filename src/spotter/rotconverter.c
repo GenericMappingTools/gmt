@@ -65,6 +65,7 @@
 #define THIS_MODULE_NAME	"rotconverter"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Manipulate total reconstruction and stage rotations"
+#define THIS_MODULE_KEYS	">DO"
 
 #include "spotter.h"
 
@@ -326,7 +327,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_rotconverter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_rotconverter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_rotconverter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the rotconverter main code ----------------------------*/
 
@@ -451,7 +452,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 		spotter_total_to_stages (GMT, a, n_a, true, true);				/* To ensure we have the right kind of poles for output */
 		printf (record, "#longitude%slatitude%s%s%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, start_text[Ctrl->A.active], GMT->current.setting.io_col_separator, end_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	}
-	if (GMT->current.setting.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+	if (GMT->current.setting.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	
 	for (stage = 0; stage < n_a; stage++) {
 		if (Ctrl->T.active) a[stage].omega = -a[stage].omega;

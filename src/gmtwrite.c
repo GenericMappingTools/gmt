@@ -24,9 +24,10 @@
  *
  */
 
-#define THIS_MODULE_NAME	"write"
+#define THIS_MODULE_NAME	"gmtwrite"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Write GMT objects from external API"
+#define THIS_MODULE_KEYS	"<?I,>?O,-T-"
 
 #include "gmt_dev.h"
 
@@ -149,7 +150,7 @@ int GMT_gmtwrite_parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct
 
 EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-int GMT_write (void *V_API, int mode, void *args)
+int GMT_gmtwrite (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	struct GMTWRITE_CTRL *Ctrl = NULL;
@@ -171,7 +172,7 @@ int GMT_write (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtwrite_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtwrite_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtwrite_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtwrite main code ----------------------------*/
 

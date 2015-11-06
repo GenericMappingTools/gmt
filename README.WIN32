@@ -97,6 +97,25 @@ z:\software as well.
 - Create a file z:\software\src\gdal-1.9.0\nmake.local with the following
   content:
 
+
+LAPACK (optional)
+=================
+
+You need to install MinGW/MSYS and run the cmake from within the MSYS shell.
+Path to the gfortran compiler must also be adapted to ones particular case.
+Note also that the liblapack.dll will introduce by itself new dependencies on:
+libblas.dll, libgfortran-3.dll, libgcc_s_seh-1.dll and libquadmath-0.dll
+It's up to the user to make all these dependecies available to the system at runtime.
+
+Get LAPACK from http://netlib.org/lapack/lapack.tgz and extract lapack.tgz in
+z:\software\lapack-3.5.0\
+
+  cd z:\software\lapack-3.5.0\
+  mkdir build
+  cd build
+  cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=z:\software -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_GNUtoMS=ON -DCMAKE_Fortran_COMPILER=C:/MinGW64/mingw64/bin/gfortran.exe ..
+  nmake install
+
 --------8<-------------------------------------------------------
 
 MSVC_VER       = 1600

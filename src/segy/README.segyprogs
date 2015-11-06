@@ -40,7 +40,12 @@ Lesser GPL was given my author Tim Henstock: Email excerpt:
 >>>Cheers, Paul Wessel
 #------------------------------------------------------------------
 
-GMT 5 Released made these into modules.
+GMT 5 Released made these into modules.  Note: Some options conflicted with the GMT
+common options.  For instance, pssegy used -X -Y -B -U for various settings but that
+cannot be allowed in GMT 5.  I simply moved these to modifiers under a new option
+-Q, i.e., now use -Qx, -Qy, -Qu, and -Qb to set these parameters.
+This obviously makes GMT 4 scripts using segyprogs NOT backwards compatible but it
+cannot be helped.
 
 pssegy: program to plot segy files in postscript.
 the code was developed following a devious route from several programs in the GMT and
@@ -86,7 +91,7 @@ used for files with little-endian byte order.
 Authorship:
 
 The pssegy, pssegyz and segy2grd programs were written and are maintained by Tim Henstock,
-then@soc.soton.ac.uk, and I'm happy (well, not exactly happy
+then@noc.soton.ac.uk, and I'm happy (well, not exactly happy
 since I think I got most of the bugs) to have reports of unexpected behaviour.
 The routines which read the SEGY data are modified from the IRIS/PASSCAL
 software distribution.

@@ -1,10 +1,11 @@
 /*	$Id$
  *    Copyright (c) 1996-2012 by G. Patau
+ *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
  */
 
-#include "gmt_dev.h"	/* to have gmt environment */
+#include "gmt_dev.h"	/* to have gmt dev environment */
 #include "meca.h"
 #include "utilmeca.h"
 #include "nrutil.h"
@@ -593,7 +594,7 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 }
 
 /***************************************************************************************/
-double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace)
+double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno)
 {
 	int d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
 	int big_iso = 0;
@@ -845,13 +846,13 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 	}
 	else if (jp_flag == 1) {
-		fprintf (stderr, "Warning: big isotropic component, case not fully tested! \n");
+		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		GMT_setfill (GMT, F1, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		F1 = E, F2 = C;
 	}
 	else if (jp_flag == 2) {
-		fprintf (stderr, "Warning: big isotropic component, case not fully tested! \n");
+		fprintf (stderr, "Warning: big isotropic component for record %d, case not fully tested! \n", recno);
 		GMT_setfill (GMT, F1, true);
 		PSL_plotsymbol (PSL, x0, y0, ssize, GMT_SYMBOL_CIRCLE);
 		F2 = E, F1 = C;
@@ -1245,7 +1246,8 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[PSL_MAX_DIMS];
 	GMT_UNUSED(outline);
 
-	GMT_setpen (GMT, &pen);		/* Pen for segment line */
+	GMT_memset (dim, PSL_MAX_DIMS, double);
+	GMT_setpen (GMT, &pen);			/* Pen for segment line */
 	PSL_setfill (GMT->PSL, pen.rgb, 0);	/* Same color for arrow head fill with no outline */
 	sincosd (theta, &s, &c);
 

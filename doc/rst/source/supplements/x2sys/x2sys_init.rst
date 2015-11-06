@@ -13,13 +13,16 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_init** *TAG* **-D**\ *deffile*
-[ **-Cc**\ \|\ **f**\ \|\ **g**\ \|\ **e** ] [ **-E**\ *suffix* ] [ **-F** ]
-[ **-Gd**\ \|\ **g** ] [ **-I**\ *dx*\ [/*dy*] ]
-[ **-Nd**\ \|\ **s**\ *unit* ]
+**x2sys_init** *TAG* |-D|\ *deffile*
+[ |-C|\ **c**\ \|\ **f**\ \|\ **g**\ \|\ **e** ]
+[ |-E|\ *suffix* ]
+[ |-F| ]
+[ |-G|\ **d**\ \|\ **g** ]
+[ |-I|\ *dx*\ [/*dy*] ]
+[ |-N|\ **d**\ \|\ **s**\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ **-Wt**\ \|\ **d**\ *gap* ]
+[ |-W|\ **t**\ \|\ **d**\ *gap* ]
 
 |No-spaces|
 
@@ -53,6 +56,9 @@ Required Arguments
 
 *TAG*
     The unique name of this data type x2sys TAG.
+
+.. _-D:
+
 **-D**\ *deffile*
     Definition file prefix for this data set [See DEFINITION FILES below
     for more information]. Specify full path if the file is not in the
@@ -60,6 +66,8 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-C:
 
 **-Cc**\ \|\ **f**\ \|\ **g**\ \|\ **e**
     Select procedure for along-track distance calculation when needed by other programs:
@@ -72,13 +80,19 @@ Optional Arguments
 
     **e** Geodesic distances on current GMT ellipsoid.
 
+.. _-E:
+
 **-E**\ *suffix*
     Specifies the file extension (suffix) for these data files. If not
     given we use the definition file prefix as the suffix (see **-D**).
 
+.. _-F:
+
 **-F**
     Force creating new files if old ones are present [Default will abort
     if old TAG files are found].
+
+.. _-G:
 
 **-Gd**\ \|\ **g**
     Selects geographical coordinates. Append **d** for discontinuity at
@@ -86,11 +100,15 @@ Optional Arguments
     discontinuity at Greenwich (makes longitude go from 0 to 360
     [Default]). If not given we assume the data are Cartesian.
 
+.. _-I:
+
 **-I**\ *dx*\ [/*dy*]
     *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
     to indicate minutes or **c** to indicate seconds for geographic
     data. These spacings refer to the binning used in the track
     bin-index data base.
+
+.. _-N:
 
 **-Nd**\ \|\ **s**\ *unit*
     Sets the units used for distance and speed when requested by other
@@ -102,10 +120,14 @@ Optional Arguments
     **-Ndk** **-Nse** (km and m/s) if **-G** is set and **-Ndc** and
     **-Nsc** otherwise (Cartesian units)].
 
+.. _-R:
+
 .. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option bases the
     statistics on those COE that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -113,7 +135,7 @@ Optional Arguments
 **-Wt**\ \|\ **d**\ *gap*
     Give **t** or **d** and append the corresponding maximum time gap
     (in user units; this is typically seconds [Infinity]), or distance
-    (for units, see **-N**) gap [Infinity]) allowed between the two data
+    (for units, see |-N|) gap [Infinity]) allowed between the two data
     points immediately on either side of a crossover. If these limits
     are exceeded then a data gap is assumed and no COE will be determined.
 

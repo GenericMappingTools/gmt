@@ -28,6 +28,7 @@
 #define THIS_MODULE_NAME	"x2sys_report"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Report statistics from crossover data base"
+#define THIS_MODULE_KEYS	"LTi,ITi,>TO,RG-"
 
 #include "x2sys.h"
 
@@ -256,7 +257,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_report_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_report_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_report_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the x2sys_report main code ----------------------------*/
 
@@ -348,7 +349,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	GMT->current.setting.io_header[GMT_OUT] = true;	/* To output header records */
+	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	
 	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
@@ -384,7 +385,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 		sprintf (record, fmt, trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
- 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 	

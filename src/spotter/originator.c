@@ -107,10 +107,11 @@
 #define THIS_MODULE_NAME	"originator"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Associate seamounts with nearest hotspot point sources"
+#define THIS_MODULE_KEYS	"<DI,ETI,FDi,>DO"
 
 #include "spotter.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbhis" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>Vbdhis" GMT_OPT("HMm")
 
 double GMT_great_circle_dist_degree (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
 int GMT_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
@@ -196,8 +197,7 @@ void Free_originator_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int comp_hs (const void *p1, const void *p2)
-{
+int comp_hs (const void *p1, const void *p2) {
 	const struct HOTSPOT_ORIGINATOR *a = p1, *b = p2;
 
 	if (a->np_dist < b->np_dist) return (-1);
@@ -205,13 +205,12 @@ int comp_hs (const void *p1, const void *p2)
 	return (0);
 }
 
-int GMT_originator_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_originator_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -236,13 +235,12 @@ int GMT_originator_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
-	GMT_Option (API, "bi5,h,i,s,:,.");
+	GMT_Option (API, "bi5,d,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to originator and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -355,8 +353,7 @@ int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_originator_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_originator (void *V_API, int mode, void *args)
-{
+int GMT_originator (void *V_API, int mode, void *args) {
 	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np, n_expected_fields, n_out;
@@ -394,7 +391,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_originator_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_originator_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_originator_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the originator main code ----------------------------*/
 

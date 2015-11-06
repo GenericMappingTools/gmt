@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"grdlandmask"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create a \"wet-dry\" mask grid from shoreline data base"
+#define THIS_MODULE_KEYS	"GGO,RG-"
 
 #include "gmt_dev.h"
 
@@ -98,30 +99,32 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s\n\t%s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
 #ifdef DEBUG
-	GMT_Message (API, GMT_TIME_NONE, "\t[-+<bin>]\n");
+	GMT_Message (API, GMT_TIME_NONE, " [-+<bin>]");
 #endif
+	GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output mask grid file.\n");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "A");
+	GMT_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a - auto: select best resolution given selected region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f - full resolution (may be very slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h - high resolution (may be slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -N<wet>/<dry>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
 	GMT_Option (API, "V,r,.");
 #ifdef DEBUG
@@ -260,7 +263,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdlandmask_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdlandmask_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdlandmask main code ----------------------------*/
 
@@ -320,7 +323,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
 
 	GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
-	GMT_err_fail (GMT, GMT_map_setup (GMT, Grid->header->wesn), "");
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = GMT_grd_is_global (GMT, Grid->header);
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
@@ -366,7 +369,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 
 				if (p[k].n == 0) continue;
 
-				used_polygons = true;	/* At least som points made it to here */
+				used_polygons = true;	/* At least some points made it to here */
 
 				/* Find min/max of polygon in inches */
 
@@ -475,7 +478,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		Grid->header->wesn[XHI] -= 360.0;
 	}
 
-	sprintf (line, "Derived from the %s resolution shorelinen", shore_resolution[base]);
+	sprintf (line, "Derived from the %s resolution shorelines", shore_resolution[base]);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, line, Grid)) return (API->error);
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {

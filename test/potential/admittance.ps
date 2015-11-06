@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.1.2_r13154 [64-bit] Document from grdimage
+%%Title: GMT v5.2.0_r13683 [64-bit] Document from grdimage
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon May 26 11:11:12 2014
+%%CreationDate: Wed Nov 12 06:50:39 2014
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -291,15 +291,15 @@ end
     /PSL_m PSL_label_n psl_kk get def
     /PSL_x PSL_path_x psl_k PSL_n getinterval def
     /PSL_y PSL_path_y psl_k PSL_n getinterval def
-    /PSL_node PSL_label_node psl_p PSL_m getinterval def
-    /PSL_angle PSL_label_angle psl_p PSL_m getinterval def
-    /PSL_str PSL_label_str psl_p PSL_m getinterval def
-    /PSL_fnt PSL_label_font psl_p PSL_m getinterval def
+    /PSL_node_tmp PSL_label_node psl_p PSL_m getinterval def
+    /PSL_angle_tmp PSL_label_angle psl_p PSL_m getinterval def
+    /PSL_str_tmp PSL_label_str psl_p PSL_m getinterval def
+    /PSL_fnt_tmp PSL_label_font psl_p PSL_m getinterval def
     PSL_curved_path_label
     /psl_k psl_k PSL_n add def
     /psl_p psl_p PSL_m add def
   } for
-  PSL_clippath {PSL_clip} if N
+  PSL_clippath {PSL_eoclip} if N
 } def
 /PSL_curved_path_label
 {
@@ -307,6 +307,7 @@ end
   /PSL_m1 PSL_m 1 sub def
   PSL_CT_calcstringwidth
   PSL_CT_calclinedist
+  PSL_CT_excludelabels
   PSL_CT_addcutpoints
   /PSL_nn1 PSL_nn 1 sub def
   /n 0 def
@@ -343,11 +344,11 @@ end
   /n 0 def /k k 1 add def
 } def
 /PSL_CT_calcstringwidth
-{ /PSL_width PSL_m array def
+{ /PSL_width_tmp PSL_m array def
   0 1 PSL_m1
   { /i exch def
-    PSL_fnt i get cvx exec
-    PSL_width i PSL_str i get stringwidth pop put
+    PSL_fnt_tmp i get cvx exec
+    PSL_width_tmp i PSL_str_tmp i get stringwidth pop put
   } for
 } def
 /PSL_CT_calclinedist
@@ -367,6 +368,33 @@ end
     /dist dist dx dx mul dy dy mul add sqrt add def
     PSL_dist i dist put
   } for
+} def
+/PSL_CT_excludelabels
+{ /k 0 def
+  /PSL_width PSL_m array def
+  /PSL_angle PSL_m array def
+  /PSL_node PSL_m array def
+  /PSL_str PSL_m array def
+  /PSL_fnt PSL_m array def
+  /lastdist PSL_dist PSL_n1 get def
+  0 1 PSL_m1
+  { /i exch def
+    /dist PSL_dist PSL_node_tmp i get get def
+    /halfwidth PSL_width_tmp i get 2 div PSL_gap_x add def
+    /L_dist dist halfwidth sub def
+    /R_dist dist halfwidth add def
+    L_dist 0 gt R_dist lastdist lt and
+    {
+      PSL_width k PSL_width_tmp i get put
+      PSL_node k PSL_node_tmp i get put
+      PSL_angle k PSL_angle_tmp i get put
+      PSL_str k PSL_str_tmp i get put
+      PSL_fnt k PSL_fnt_tmp i get put
+      /k k 1 add def
+    } if
+  } for
+  /PSL_m k def
+  /PSL_m1 PSL_m 1 sub def
 } def
 /PSL_CT_addcutpoints
 { /k 0 def
@@ -466,7 +494,7 @@ end
       /dx x x1 sub def
       /dy y y1 sub def
     } ifelse
-    dx 0.0 ne dy 0.0 ne and
+    dx 0.0 eq dy 0.0 eq and not
     { /angle dy dx atan 90 add def} if
     /sina angle sin def
     /cosa angle cos def
@@ -513,6 +541,9 @@ end
       /psl_kk psl_i psl_start add def
       PSL_path_x psl_kk get PSL_path_y psl_kk get L
     } for
+    /psl_xclose PSL_path_x psl_kk get PSL_path_x psl_start get sub def
+    /psl_yclose PSL_path_y psl_kk get PSL_path_y psl_start get sub def
+    psl_xclose 0 eq psl_yclose 0 eq and { P } if
     S
     /psl_start psl_start PSL_n add def
   } for
@@ -557,7 +588,7 @@ end
       {PSL_ST_textbox_rect}
     ifelse
   } for
-  PSL_clip N
+  PSL_eoclip N
 } def
 /PSL_ST_prepare_text
 {
@@ -636,7 +667,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdimage z.nc -Cz.cpt -JX3i -P -Ba -BWSne -K -Y0.75i
-%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -773,7 +804,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdcontour moho_flex.nc -JX3i -O -K -C100 -A500
-%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -821,7 +852,7 @@ PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencod
 ] def
 /PSL_gap_x 22 def
 /PSL_gap_y 22 def
-/PSL_label_angle [ 10.55 55.34 83.68 284.07 31.39 ] def
+/PSL_label_angle [ 10.93 55.79 83.88 283.84 31.65 ] def
 /PSL_label_str [
 	(-13500)
 	(-13000)
@@ -857,8 +888,7 @@ PSL_path_pen 0 get cvx exec
 0 28 D
 8 28 D
 26 28 D
-5 4 D
-S
+P S
 PSL_path_pen 1 get cvx exec
 1983 2180 M
 28 4 D
@@ -892,8 +922,7 @@ PSL_path_pen 1 get cvx exec
 28 48 D
 32 34 D
 25 16 D
-28 12 D
-S
+P S
 PSL_path_pen 2 get cvx exec
 1955 2218 M
 28 9 D
@@ -934,8 +963,7 @@ PSL_path_pen 2 get cvx exec
 28 38 D
 28 28 D
 35 24 D
-22 10 D
-S
+P S
 PSL_path_pen 3 get cvx exec
 1983 2266 M
 28 2 D
@@ -987,8 +1015,7 @@ PSL_path_pen 3 get cvx exec
 28 22 D
 29 16 D
 28 12 D
-28 8 D
-S
+P S
 PSL_path_pen 4 get cvx exec
 1955 2293 M
 28 6 D
@@ -1042,8 +1069,7 @@ PSL_path_pen 4 get cvx exec
 30 28 D
 18 14 D
 28 19 D
-57 24 D
-S
+P S
 PSL_path_pen 5 get cvx exec
 1955 2325 M
 28 5 D
@@ -1103,8 +1129,7 @@ PSL_path_pen 5 get cvx exec
 36 24 D
 20 11 D
 29 13 D
-28 9 D
-S
+P S
 PSL_path_pen 6 get cvx exec
 1955 2355 M
 28 5 D
@@ -1174,8 +1199,7 @@ PSL_path_pen 6 get cvx exec
 28 18 D
 28 14 D
 34 12 D
-23 7 D
-S
+P S
 PSL_path_pen 7 get cvx exec
 1927 2377 M
 28 7 D
@@ -1249,8 +1273,7 @@ PSL_path_pen 7 get cvx exec
 27 18 D
 28 16 D
 28 13 D
-29 10 D
-S
+P S
 PSL_path_pen 8 get cvx exec
 1927 2407 M
 28 7 D
@@ -1324,8 +1347,7 @@ PSL_path_pen 8 get cvx exec
 28 20 D
 37 22 D
 47 21 D
-29 9 D
-S
+P S
 PSL_path_pen 9 get cvx exec
 1927 2437 M
 28 6 D
@@ -1398,8 +1420,7 @@ PSL_path_pen 9 get cvx exec
 36 27 D
 49 28 D
 27 13 D
-57 19 D
-S
+P S
 PSL_path_pen 10 get cvx exec
 1927 2467 M
 28 6 D
@@ -1476,8 +1497,7 @@ PSL_path_pen 10 get cvx exec
 40 28 D
 50 28 D
 37 17 D
-57 17 D
-S
+P S
 PSL_path_pen 11 get cvx exec
 1898 2491 M
 29 8 D
@@ -1556,8 +1576,7 @@ PSL_path_pen 11 get cvx exec
 50 28 D
 21 10 D
 50 18 D
-6 2 D
-S
+P S
 PSL_path_pen 12 get cvx exec
 1898 2524 M
 57 13 D
@@ -1640,8 +1659,7 @@ PSL_path_pen 12 get cvx exec
 56 35 D
 28 14 D
 61 24 D
-23 7 D
-S
+P S
 PSL_path_pen 13 get cvx exec
 1983 2574 M
 56 1 D
@@ -1723,8 +1741,7 @@ PSL_path_pen 13 get cvx exec
 56 29 D
 56 21 D
 57 15 D
-56 8 D
-S
+P S
 PSL_path_pen 14 get cvx exec
 1927 2602 M
 28 5 D
@@ -1810,8 +1827,7 @@ PSL_path_pen 14 get cvx exec
 21 11 D
 56 23 D
 56 17 D
-29 6 D
-S
+P S
 PSL_path_pen 15 get cvx exec
 1898 2636 M
 57 10 D
@@ -1895,8 +1911,7 @@ PSL_path_pen 15 get cvx exec
 22 12 D
 56 25 D
 61 20 D
-23 6 D
-S
+P S
 PSL_path_pen 16 get cvx exec
 1955 2689 M
 56 5 D
@@ -1993,8 +2008,7 @@ PSL_path_pen 16 get cvx exec
 64 26 D
 48 15 D
 28 7 D
-57 9 D
-S
+P S
 PSL_path_pen 17 get cvx exec
 2011 2742 M
 28 1 D
@@ -2083,8 +2097,7 @@ PSL_path_pen 17 get cvx exec
 28 8 D
 57 11 D
 56 7 D
-28 1 D
-S
+P S
 PSL_path_pen 18 get cvx exec
 2011 2799 M
 28 1 D
@@ -2185,8 +2198,7 @@ PSL_path_pen 18 get cvx exec
 56 16 D
 57 11 D
 67 6 D
-17 1 D
-S
+P S
 PSL_path_pen 19 get cvx exec
 1898 2857 M
 57 9 D
@@ -2286,8 +2298,7 @@ PSL_path_pen 19 get cvx exec
 57 26 D
 56 21 D
 56 17 D
-56 13 D
-S
+P S
 PSL_path_pen 20 get cvx exec
 1842 2940 M
 28 7 D
@@ -2391,8 +2402,7 @@ PSL_path_pen 20 get cvx exec
 56 31 D
 57 27 D
 84 32 D
-56 16 D
-S
+P S
 PSL_path_pen 21 get cvx exec
 2011 3137 M
 84 1 D
@@ -2497,8 +2507,7 @@ PSL_path_pen 21 get cvx exec
 55 16 D
 57 14 D
 85 12 D
-28 3 D
-S
+P S
 PSL_cliprestore
 U
 PSL_cliprestore
@@ -2510,7 +2519,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdimage faa_flex.nc -Cg.cpt -JX3i -O -K -Ba -BWSne -X3.5i
-%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -2691,7 +2700,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdimage faa_z.nc -Cg.cpt -JX3i -O -K -Ba -BWsne -X-3.5i -Y3.25i
-%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -2847,7 +2856,7 @@ O0
 
 % PostScript produced by:
 %%GMT: grdimage faa_total.nc -Cg.cpt -JX3i -O -K -Ba -BWsne -X3.5i
-%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 0.00000000 512.00000000 0.00000000 512.00000000 0.000 512.000 0.000 512.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
@@ -3141,7 +3150,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K '-Bxa2g3+u km' -Byaf+lCoherence -BWSn -Sc0.05i -Gred -Ey0.2c/0.5p,red -X-3.25i -Y3.5i --FONT_LABEL=16p,Helvetica,red
-%%PROJ: xy 8.00000000 512.00000000 0.00000000 1.00000000 2.709 0.903 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 8.00000000 512.00000000 0.00000000 1.00000000 2.709 0.903 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
@@ -3794,7 +3803,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy adm.txt -i0,15 -R8/512/0/1 -JX-6il/2.75i -O -K -W0.5p,red
-%%PROJ: xy 8.00000000 512.00000000 0.00000000 1.00000000 2.709 0.903 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 8.00000000 512.00000000 0.00000000 1.00000000 2.709 0.903 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
@@ -3874,7 +3883,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy adm.txt -R8/512/0/70 -JX-6il/2.75i -O -Bxa2g3 '-Byaf+lAdmittance (mGal/km)' -BE -Sc0.05i -Ey0.2c/0.5p,blue -Gblue -K -i0,11s1000,12s1000 --FONT_LABEL=16p,Helvetica,blue
-%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -4438,7 +4447,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy adm.txt -R8/512/0/70 -JX-6il/2.75i -O -K -W0.5p,blue -i0,11s1000
-%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
@@ -4521,7 +4530,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy adm_t.txt -R8/512/0/70 -JX-6il/2.75i -O -K -W0.5p,green -i0,3s1000
-%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
@@ -4567,7 +4576,7 @@ O0
 
 % PostScript produced by:
 %%GMT: psxy -R8/512/0/70 -JX-6il/2.75i -O -T
-%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245
+%%PROJ: xy 8.00000000 512.00000000 0.00000000 70.00000000 2.709 0.903 0.000 70.000 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin

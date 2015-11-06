@@ -14,18 +14,24 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **greenspline** [ *table* ]
-[ **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile* ]
-[ **-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
-[ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*]] ] [ **-L** ] [ **-N**\ *nodefile* ]
-[ **-Q**\ *az*\ \|\ *x/y/z* ]
+[ |-A|\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile* ]
+[ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ]
+[ |-D|\ *mode* ]
+[ |-G|\ *grdfile* ]
+[ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
+[ |-L| ]
+[ |-N|\ *nodefile* ]
+[ |-Q|\ *az*\ \|\ *x/y/z* ]
 [ |SYN_OPT-Rz| ]
-[ **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
+[ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
-[ **-W** ]
+[ |-W| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -65,6 +71,9 @@ Optional Arguments
     The name of one or more ASCII [or binary, see
     **-bi**] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
+
+.. _-A:
+
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
     The solution will partly be constrained by surface gradients **v** =
     *v*\ \*\ **n**, where *v* is the gradient magnitude and **n** its
@@ -85,6 +94,9 @@ Optional Arguments
     **x**, **v**. **5**: records contain **x**, **n**, *v*. Append name
     of ASCII file with the surface gradients (following a comma if a
     format is specified).
+
+.. _-C:
+
 **-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
@@ -99,6 +111,9 @@ Optional Arguments
     Alternatively, use **-Cn** to select the *cut* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
+
+.. _-D:
+
 **-D**\ *mode*
     Sets the distance flag that determines how we calculate distances
     between data points. Select *mode* 0 for Cartesian 1-D spline
@@ -114,6 +129,9 @@ Optional Arguments
     arcs. Select *mode* 5 for Cartesian 3-D surface spline
     interpolation: **-D**\ 5 means (*x*,\ *y*,\ *z*) in user units,
     Cartesian distances.
+
+.. _-G:
+
 **-G**\ *grdfile*
     Name of resulting output file. (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce an equidistant output table. This
@@ -125,9 +143,14 @@ Optional Arguments
     **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
     **-C**\ 0 is given.
+
+.. _-I:
+
 **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]]
-    Specify equidistant sampling intervals, on for each dimension,
-    separated by slashes.
+    Specify equidistant sampling intervals, on for each dimension, separated by slashes.
+
+.. _-L:
+
 **-L**
     Do *not* remove a linear (1-D) or planer (2-D) trend when **-D**
     selects mode 0-3 [For those Cartesian cases a least-squares line or
@@ -135,6 +158,9 @@ Optional Arguments
     to the residuals]. However, in mixed cases with both data values and
     gradients, or for spherical surface data, only the mean data value
     is removed (and later and restored).
+
+.. _-N:
+
 **-N**\ *nodefile*
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
@@ -142,11 +168,17 @@ Optional Arguments
     specified]; see **-bo** for binary output
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.
+
+.. _-Q:
+
 **-Q**\ *az*\ \|\ *x/y/z*
     Rather than evaluate the surface, take the directional derivative in
     the *az* azimuth and return the magnitude of this derivative
     instead. For 3-D interpolation, specify the three components of the
     desired vector direction (the vector will be normalized before use).
+
+.. _-R:
+
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]]
     Specify the domain for an equidistant lattice where output
     predictions are required. Requires **-I** and optionally **-r**.
@@ -165,6 +197,8 @@ Optional Arguments
     *x*, *y* and *z* coordinates. See the 2-D section if your horizontal
     coordinates are geographical; note the shorthands **-Rg** and
     **-Rd** cannot be used if a 3-D domain is specified.
+
+.. _-S:
 
 **-S**\ **c\|t\|l\|r\|p\|q**\ [*pars*]
     Select one of six different splines. The first two are used for
@@ -188,13 +222,20 @@ Optional Arguments
     points to use in the spline setup [10001].  The finite Legendre sum has
     a truncation error [1e-6]; you can lower that by appending **+e**\ *limit*
     at the expense of longer run-time.
+
+.. _-T:
+
 **-T**\ *maskgrid*
     For 2-D interpolation only. Only evaluate the solution at the nodes
     in the *maskgrid* that are not equal to NaN. This option eliminates
     the need to specify options **-R**, **-I**, and **-r**. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**
    Expect data weights in the final input column, typically given as
@@ -207,6 +248,9 @@ Optional Arguments
     
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -221,6 +265,8 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
+.. include:: explain_core.rst_
+
 .. include:: explain_help.rst_
 
 1-d Examples
@@ -232,7 +278,7 @@ using a minimum cubic spline, try
 
    ::
 
-    gmt gmtmath -T0/10/1 0 1 NRAND = 1D.txt
+    gmt math -T0/10/1 0 1 NRAND = 1D.txt
     gmt psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
     gmt greenspline 1D.txt -R0/10 -I0.1 -Sc -V | psxy -R -J -O -Wthin >> 1D.ps
 
@@ -309,36 +355,43 @@ To do the same problem but applying tension of 0.85, use
 Considerations
 --------------
 
-(1) For the Cartesian cases we use the free-space Green functions, hence
-no boundary conditions are applied at the edges of the specified domain.
-For most applications this is fine as the region typically is
-arbitrarily set to reflect the extent of your data. However, if your
-application requires particular boundary conditions then you may
-consider using :doc:`surface` instead.
+#. For the Cartesian cases we use the free-space Green functions, hence
+   no boundary conditions are applied at the edges of the specified domain.
+   For most applications this is fine as the region typically is
+   arbitrarily set to reflect the extent of your data. However, if your
+   application requires particular boundary conditions then you may
+   consider using :doc:`surface` instead.
 
-(2) In all cases, the solution is obtained by inverting a *n* x *n*
-double precision matrix for the Green function coefficients, where *n*
-is the number of data constraints. Hence, your computer's memory may
-place restrictions on how large data sets you can process with
-`greenspline <greenspline.html>`. Pre-processing your data with `blockmean <blockmean.html>`,
-`blockmedian <blockmedian.html>`, or `blockmode <blockmode.html>` is recommended to avoid aliasing and
-may also control the size of *n*. For information, if *n* = 1024 then
-only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
-that `greenspline <greenspline.html>` is fully 64-bit compliant if compiled as such.
-For spherical data you may consider decimating using `gmtspatial <gmtspatial.html>`
-nearest neighbor reduction.
+#. In all cases, the solution is obtained by inverting a *n* x *n*
+   double precision matrix for the Green function coefficients, where *n*
+   is the number of data constraints. Hence, your computer's memory may
+   place restrictions on how large data sets you can process with
+   `greenspline <greenspline.html>`. Pre-processing your data with `blockmean <blockmean.html>`,
+   `blockmedian <blockmedian.html>`, or `blockmode <blockmode.html>` is recommended to avoid aliasing and
+   may also control the size of *n*. For information, if *n* = 1024 then
+   only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
+   that `greenspline <greenspline.html>` is fully 64-bit compliant if compiled as such.
+   For spherical data you may consider decimating using `gmtspatial <gmtspatial.html>`
+   nearest neighbor reduction.
 
-(3) The inversion for coefficients can become numerically unstable when
-data neighbors are very close compared to the overall span of the data.
-You can remedy this by pre-processing the data, e.g., by averaging
-closely spaced neighbors. Alternatively, you can improve stability by
-using the SVD solution and discard information associated with the
-smallest eigenvalues (see **-C**).
+#. The inversion for coefficients can become numerically unstable when
+   data neighbors are very close compared to the overall span of the data.
+   You can remedy this by pre-processing the data, e.g., by averaging
+   closely spaced neighbors. Alternatively, you can improve stability by
+   using the SVD solution and discard information associated with the
+   smallest eigenvalues (see **-C**).
 
-(4) The series solution implemented for **-Sq** was developed by
-Robert L. Parker, Scripps Institution of Oceanography, which we
-gratefully acknowledge.
+#. The series solution implemented for **-Sq** was developed by
+   Robert L. Parker, Scripps Institution of Oceanography, which we
+   gratefully acknowledge.
 
+#. If you need to fit a certain 1-D spline through your data
+   points you may wish to consider `sample1d <sample1d.html>` instead.
+   It will offer traditional splines with standard boundary conditions
+   (such as the natural cubic spline, which sets the curvatures at the ends
+   to zero).  In contrast, greenspline's 1-D spline, as is explained in
+   note 1, does *not* specify boundary conditions at the end of the data domain.
+   
 Tension
 -------
 

@@ -31,10 +31,11 @@
 #define THIS_MODULE_NAME	"x2sys_cross"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Calculate crossovers between track data files"
+#define THIS_MODULE_KEYS	"ATi,>DO,RG-"
 
 #include "x2sys.h"
 
-#define GMT_PROG_OPTIONS "->JRVb"
+#define GMT_PROG_OPTIONS "->JRVbd"
 
 /* Control structure for x2sys_cross */
 
@@ -105,7 +106,7 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-Il|a|c] [%s] [-Qe|i]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\n", GMT_bo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_bo_OPT, GMT_do_OPT);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n");
@@ -118,21 +119,21 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give list of file pairs that are ok to compare [Default is all combinations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print run time for each pair. Optionally append <fname> to save them in file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Set the interpolation mode.  Choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Acubic spline interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l Linear interpolation [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a Akima spline interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c Cubic spline interpolation.\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e for external crossovers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append i for internal crossovers [Default is all crossovers].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sl sets lower speed [Default is 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Su sets upper speed [Default is Infinity].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Sl sets lower speed [Default is 0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Sh no headings should be computed if velocity drops below this value [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Su sets upper speed [Default is Infinity].\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of crossover to use in interpolation [Default is 3].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
-	GMT_Option (API, "bo,.");
+	GMT_Option (API, "bo,do,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -161,7 +162,7 @@ int GMT_x2sys_cross_parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 			
 			case 'A':	/* Get list of approved filepair combinations to check */
-				if ((Ctrl->A.active = GMT_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_TEXTSET)))
+				if ((Ctrl->A.active = GMT_check_filearg (GMT, 'A', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->A.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -350,7 +351,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_cross_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_cross_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_cross_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_cross main code ----------------------------*/
 
@@ -477,13 +478,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
+	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
 	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
 		do_project = true;
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
-		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	GMT_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);

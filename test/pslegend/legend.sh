@@ -8,7 +8,7 @@ ps=legend.ps
 gmt makecpt -Cpanoply -T-8/8/1 > tt.cpt
 gmt gmtset FONT_ANNOT_PRIMARY 12p
 
-gmt pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/BL -C0.1i/0.1i -L1.2 -F+p+gazure1+r -B5f1 > $ps <<EOF
+gmt pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i+w5i+jBL+l1.2 -C0.1i/0.1i -F+p+gazure1+r -B5f1 > $ps <<EOF
 # Legend test for gmt pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 # H is ps=legend.ps
@@ -25,9 +25,9 @@ S 0.1i f 0.25i blue 0.25p 0.3i This is a fault
 S 0.1i - 0.15i - 0.25p,- 0.3i A contour
 S 0.1i v 0.25i magenta 0.5p 0.3i This is a vector
 S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
+D 0.2i 1p
 V 0 1p
 N 1
-D 0.2i 1p
 M 5 5 600+u f
 G 0.05i
 I ${src:-.}/SOEST_block4.ras 3i CT

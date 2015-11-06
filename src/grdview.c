@@ -30,7 +30,7 @@
  * As an option, a drape grid file can be specified.  Then, the colors
  * are calculated from that file while the topo file is used for shape.
  * Alternatively, give three drape files (red, green, blue components)
- * to bypass the z -> rgb via the cpt file.
+ * to bypass the z -> rgb via the CPT file.
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -40,6 +40,7 @@
 #define THIS_MODULE_NAME	"grdview"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Create 3-D perspective image or surface mesh from a grid"
+#define THIS_MODULE_KEYS	"<GI,CCi,GGi,IGi,>XO,RG-"
 
 #include "gmt_dev.h"
 
@@ -58,34 +59,36 @@
 #define GRDVIEW_MESH		0	/* Default */
 #define GRDVIEW_SURF		1
 #define GRDVIEW_IMAGE		2
+#define GRDVIEW_WATERFALL_X	3
+#define GRDVIEW_WATERFALL_Y	4
 
 struct GRDVIEW_CTRL {
-	struct In {
+	struct GRDVIEW_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C<cpt> */
+	struct GRDVIEW_C {	/* -C<cpt> or -C<color1>,<color2>[,<color3>,...] */
 		bool active;
 		char *file;
 	} C;
-	struct G {	/* -G<drapefile> */
+	struct GRDVIEW_G {	/* -G<drapefile> */
 		bool active;
 		bool image;
 		char *file[3];
 	} G;
-	struct I {	/* -I<intensfile>|<value> */
+	struct GRDVIEW_I {	/* -I<intensfile>|<value> */
 		bool active;
 		bool constant;
 		double value;
 		char *file;
 	} I;
-	struct N {	/* -N<level>[+g<fill>] */
+	struct GRDVIEW_N {	/* -N<level>[+g<fill>] */
 		bool active;
 		bool facade;
 		struct GMT_FILL fill;
 		double level;
 	} N;
-	struct Q {	/* -Q<type>[g] */
+	struct GRDVIEW_Q {	/* -Q<type>[g] */
 		bool active, special;
 		bool outline;
 		bool mask;
@@ -94,17 +97,17 @@ struct GRDVIEW_CTRL {
 		unsigned int dpi;
 		struct GMT_FILL fill;
 	} Q;
-	struct S {	/* -S<smooth> */
+	struct GRDVIEW_S {	/* -S<smooth> */
 		bool active;
 		unsigned int value;
 	} S;
-	struct T {	/* -T[s][o[<pen>]] */
+	struct GRDVIEW_T {	/* -T[s][o[<pen>]] */
 		bool active;
 		bool skip;
 		bool outline;
 		struct GMT_PEN pen;
 	} T;
-	struct W {	/* -W[+]<type><pen> */
+	struct GRDVIEW_W {	/* -W[+]<type><pen> */
 		bool active;
 		bool contour;
 		struct GMT_PEN pen[3];
@@ -126,8 +129,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value)
-{
+struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
 	if (!binij[bin].first_cont) binij[bin].first_cont = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
@@ -195,14 +197,13 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_p
 }
 #endif
 
-double get_intensity (struct GMT_GRID *I, uint64_t k)
-{
+double get_intensity (struct GMT_GRID *I, uint64_t k) {
 	/* Returns the average intensity for this tile */
 	return (0.25 * (I->data[k] + I->data[k+1] + I->data[k-I->header->mx] + I->data[k-I->header->mx+1]));
 }
 
-unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[])
-{	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
+unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *iy, uint64_t bin, int bin_inc[]) {
+	/* Returns true of the ip,jp point is inside the polygon defined by the tile */
 	unsigned int i, what;
 	double x[6], y[6];
 
@@ -215,8 +216,8 @@ unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *ix, int *i
 	return (what);
 }
 
-int quick_idist (int x1, int y1, int x2, int y2)
-{	/* Fast integer distance calculation */
+int quick_idist (int x1, int y1, int x2, int y2) {
+	/* Fast integer distance calculation */
 	if ((x2 -= x1) < 0) x2 = -x2;
 	if ((y2 -= y1) < 0) y2 = -y2;
 	return (x2 + y2 - (((x2 > y2) ? y2 : x2) >> 1));
@@ -288,7 +289,7 @@ void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PA
 
 	/* Now we must paint, with colors or patterns */
 
-	if ((index >= 0 && (f = P->range[index].fill)) || (index < 0 && (f = P->patch[index+3].fill)))	/* Pattern */
+	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
 		GMT_setfill (GMT, f, outline);
 	else {	/* Solid color/gray */
 		if (intens) GMT_illuminate (GMT, intensity, rgb);
@@ -321,17 +322,18 @@ void Free_grdview_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_PEN P;
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n",
+	             GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s] [%s]\n",
+	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -339,8 +341,10 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file.  Optionally, instead give name of a master cpt\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
+    GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Use <drapegrid> rather than <topogrid> for color-coding.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use <topogrid> as the relief and drape the image on top.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
@@ -349,28 +353,31 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity, just give the value instead.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>.  Append +g<fill> to paint\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. Append +g<fill> to paint\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the facade between the plane and the data perimeter.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default].  Append <color> for mesh paint [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
 		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface.  Append m to draw meshlines on the surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qmx or -Qmy do waterfall type plots (row or column profiles).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw mesh-lines on the surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to raster-image.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append +m.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
-	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n\t   Append o[<pen>] to draw tile outline [Default uses no outline].");
+	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
+	                "\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
+	                "\t   Append o[<pen>] to draw tile outline [Default uses no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.");
+	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -Qm or -Qsm to take effect.\n");
 	P.width *= 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t   c draw scontours on top of surface or mesh [Default is no contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c draw contours on top of surface or mesh [Default is no contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");
@@ -400,7 +407,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -459,7 +466,8 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (API, GMT_MSG_COMPAT,
+					            "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
 				}
 				else
@@ -469,18 +477,21 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					char colors[GMT_LEN64] = {""};
 					Ctrl->N.active = true;
-					if ((c = strstr (opt->arg, "+g"))) {	/* Gave modifier +g<fill> */
+					if ((c = strstr (opt->arg, "+g")) != NULL) {	/* Gave modifier +g<fill> */
 						c[0] = '\0';	/* Truncate string temporarily */
 						Ctrl->N.level = atof (opt->arg);
 						c[0] = '+';	/* Restore the + */
-						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &c[2], &Ctrl->N.fill), "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &c[2], &Ctrl->N.fill),
+						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
-					else if (GMT_compat_check (GMT, 4) && (c = strchr (opt->arg, '/'))) {	/* Deprecated <level>/<fill> */
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
+					else if (GMT_compat_check (GMT, 4) && (c = strchr (opt->arg, '/')) != NULL) {	/* Deprecated <level>/<fill> */
+						GMT_Report (API, GMT_MSG_COMPAT,
+						            "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */
 						n = sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
-						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, colors, &Ctrl->N.fill), "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, colors, &Ctrl->N.fill),
+						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 						c[0] = '/';	/* Restore the slash */
 					}
@@ -500,27 +511,42 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 					c[0] = '\0';	/* Chop off +m */
 				}
 				switch (opt->arg[0]) {
+					case 'c':	/* Image with colormask */
+						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
+						Ctrl->Q.mode = GRDVIEW_IMAGE;
+						Ctrl->Q.mask = true;
+						break;
+					case 't':	/* Image without color interpolation */
+						Ctrl->Q.special = true;
+						/* Deliberate fall-through */
+					case 'i':	/* Image with clipmask */
+						Ctrl->Q.mode = GRDVIEW_IMAGE;
+						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
+						break;
 					case 'm':	/* Mesh plot */
-						Ctrl->Q.mode = GRDVIEW_MESH;
-						if (opt->arg[1]) {	/* Appended /<color> or just <color> */
-							k = (opt->arg[1] == '/') ? 2 : 1;
-							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill), "Syntax error -Qm option: To give mesh color, use -Qm<color>\n");
+						n = 0;
+						if (opt->arg[1] && opt->arg[1] == 'x') {
+							Ctrl->Q.mode = GRDVIEW_WATERFALL_X;
+							Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = 1;	/* Default to white */
+							n = 1;
+						}
+						else if (opt->arg[1] && opt->arg[1] == 'y') {
+							Ctrl->Q.mode = GRDVIEW_WATERFALL_Y;
+							Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = 1;	/* Default to white */
+							n = 1;
+						}
+						else
+							Ctrl->Q.mode = GRDVIEW_MESH;
+
+						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
+							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
+							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
+							                                 "Syntax error -Qm option: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
 					case 's':	/* Color without contours */
 						Ctrl->Q.mode = GRDVIEW_SURF;
 						if (opt->arg[1] == 'm') Ctrl->Q.outline = true;
-						break;
-					case 't':	/* Image without color interpolation */
-						Ctrl->Q.special = true;
-					case 'i':	/* Image with clipmask */
-						Ctrl->Q.mode = GRDVIEW_IMAGE;
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
-						break;
-					case 'c':	/* Image with colormask */
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
-						Ctrl->Q.mode = GRDVIEW_IMAGE;
-						Ctrl->Q.mask = true;
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
@@ -548,7 +574,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 					Ctrl->T.outline = true;
 					k++;
 					if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
-						GMT_pen_syntax (GMT, 'T', " ");
+						GMT_pen_syntax (GMT, 'T', " ", 0);
 						n_errors++;
 					}
 				}
@@ -568,7 +594,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-					GMT_pen_syntax (GMT, 'W', " ");
+					GMT_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				if (j == 0)	/* Copy pen when using just -W */
@@ -582,14 +608,14 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Error: Piping of topofile not supported!\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->In.file && !strcmp (Ctrl->In.file, "="), "Error: Piping of topofile not supported!\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 
 	/* Gave more than one -Q setting */
 	n_errors += GMT_check_condition (GMT, q_set > 1, "Error: -Qm, -Qs, -Qc, and -Qi are mutually exclusive options\n");
 	/* Gave both -Q and -T */
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->Q.active, "Error: -Q and -T are mutually exclusive options\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_drape = Ctrl->G.image ? 3 : 1;
 	if (Ctrl->G.active) {
 		unsigned int i;
@@ -598,10 +624,14 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 		}
 		n_errors += GMT_check_condition (GMT, n_drape == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, "Syntax error -I option: Must specify intensity file or value\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) && !Ctrl->C.file && !Ctrl->G.image, "Syntax error: Must specify color palette table\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0, "Syntax error -Qi option: Must specify positive dpi\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set, "Syntax error -T option: Cannot specify -JZ|z\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file,
+	                                 "Syntax error -I option: Must specify intensity file or value\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
+	                                       !Ctrl->C.file && !Ctrl->G.image, "Syntax error: Must specify color palette table\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
+	                                 "Syntax error -Qi option: Must specify positive dpi\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
+	                                 "Syntax error -T option: Cannot specify -JZ|z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -622,6 +652,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	size_t max_alloc;
 
+	float *saved_data_pointer = NULL;
+	
 	double cval, x_left, x_right, y_top, y_bottom, small = GMT_CONV4_LIMIT, z_ave;
 	double inc2[2], wesn[4], z_val, x_pixel_size, y_pixel_size;
 	double this_intensity = 0.0, next_up = 0.0, xmesh[4], ymesh[4], rgb[4];
@@ -653,7 +685,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdview_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdview_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
@@ -698,7 +730,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		if (Ctrl->N.active && Ctrl->N.level > GMT->common.R.wesn[ZHI]) GMT->common.R.wesn[ZHI] = Ctrl->N.level;
 	}
 
-	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 
@@ -789,7 +821,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Now tracing contour interval %8g\r", cval);
 			/* Old version of loop below could give round-off since we kept subtracting the increments between successive contours.
-			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour. PW, 11/18/2011 */
+			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour.
+			   PW, 11/18/2011 */
 			GMT_grd_loop (GMT, Topo, row, col, ij) {
 				if (!GMT_is_fnan (Z_orig->data[ij])) Z->data[ij] = Z_orig->data[ij] - (float)cval;
 				if (Z->data[ij] == 0.0) Z->data[ij] += (float)small;
@@ -858,7 +891,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
 
-	for (row = 0; row < Topo->header->ny - 1; row++) {	/* Nodes part of tiles completely outside -R is set to NaN and thus not considered below */
+	for (row = 0; row < Topo->header->ny - 1; row++) {
+		/* Nodes part of tiles completely outside -R is set to NaN and thus not considered below */
 		ij = GMT_IJP (Topo->header, row, 0);
 		for (col = 0; col < Topo->header->nx - 1; col++, ij++) {
 			for (jj = n_out = 0; jj < 2; jj++) {	/* Loop over the 4 nodes making up one tile */
@@ -1001,7 +1035,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		float *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
-		if (Ctrl->C.active && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file will not work with -Qi\n");
+		if (Ctrl->C.active && P->has_pattern)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in CPT file will not work with -Qi\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "Get and store projected vertices\n");
 
 		PSL_comment (PSL, "Plot 3-D surface using scanline conversion of polygons to raster image\n");
@@ -1036,7 +1071,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 			GMT_free (GMT, x_drape);
 			GMT_free (GMT, y_drape);
 			if (use_intensity_grid) {	/* Reset intensity grid so that we have no boundary row/cols */
-				GMT_free_aligned (GMT, Intens->data);
+				saved_data_pointer = Intens->data;
 				Intens->data = int_drape;
 			}
 		}
@@ -1208,12 +1243,14 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating PostScript image ");
 		if (Ctrl->Q.monochrome) {
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[B/W image]\n");
-			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
+			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
+			                    x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
 			GMT_free (GMT, bitimage_8);
 		}
 		else {
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[color image]\n");
-			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
+			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
+			                    x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
 			GMT_free (GMT, bitimage_24);
 		}
 
@@ -1227,11 +1264,56 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_free (GMT, iy);
 	}
 
+	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_Y) {	/* Plot Y waterfall */
+		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
+		PSL_comment (PSL, "Start of waterfall plot\n");
+		GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		GMT_setfill (GMT, &Ctrl->Q.fill, true);
+		if (Ctrl->Q.monochrome)
+			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
+		for (i = i_start+1; i != i_stop; i += i_inc) {
+			for (k = 0, j = j_start-1; j != j_stop; j += j_inc, k++) {
+				ij  = GMT_IJP(Topo->header, j, i);
+				if (GMT_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
+				GMT_geoz_to_xy (GMT, xval[i], yval[j], (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
+			}
+			GMT_geoz_to_xy (GMT, xval[i], yval[j_start-1] + (k - 1) * (i_inc * Z->header->inc[GMT_Y]), z_base, &xx[k], &yy[k]);
+			GMT_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
+			PSL_plotpolygon (PSL, xx, yy, k+2);
+		}
+		GMT_free (GMT, xval);
+		GMT_free (GMT, yval);
+	}
+
+	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
+		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
+		PSL_comment (PSL, "Start of waterfall plot\n");
+		GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		GMT_setfill (GMT, &Ctrl->Q.fill, true);
+		if (Ctrl->Q.monochrome)
+			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
+		for (j = j_start-1; j != j_stop; j += j_inc) {
+			for (k = 0, i = i_start+1; i != i_stop; i += i_inc, k++) {
+				ij  = GMT_IJP(Topo->header, j, i);
+				if (GMT_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
+				GMT_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],		// i_inc = -1
+				                (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
+			}
+			GMT_geoz_to_xy (GMT, xval[i_start+1] + (k - 1) * (i_inc * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
+			GMT_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
+			PSL_plotpolygon (PSL, xx, yy, k+2);
+			//PSL_plotline (PSL, xx, yy, k+2, PSL_MOVE + PSL_STROKE);
+		}
+		GMT_free (GMT, xval);
+		GMT_free (GMT, yval);
+	}
+
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do mesh plot with mesh color %s\n", GMT_putcolor (GMT, Ctrl->Q.fill.rgb));
 		PSL_comment (PSL, "Start of mesh plot\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[1]);
-		if (Ctrl->Q.monochrome) Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
+		if (Ctrl->Q.monochrome)
+			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
 		for (j = j_start; j != j_stop; j += j_inc) {
 			y_bottom = yval[j];
 			y_top = y_bottom + abs (j_inc) * Z->header->inc[GMT_Y];
@@ -1642,7 +1724,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (col = Z->header->nx ; col > 0; col--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
+			for (col = Z->header->nx ; col > 0; col--, n++)
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
@@ -1651,7 +1734,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (row = Z->header->ny; row > 0; row--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (row = Z->header->ny; row > 0; row--, n++)
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[2])	{	/* Northern side */
@@ -1660,7 +1744,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (col = Z->header->nx; col > 0; col--, n++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
+			for (col = Z->header->nx; col > 0; col--, n++)
+				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/*	Western side */
@@ -1669,7 +1754,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
-			for (row = Z->header->ny; row > 0; row--, n++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+			for (row = Z->header->ny; row > 0; row--, n++)
+				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 	}
@@ -1707,6 +1793,10 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
 	if (use_intensity_grid) {
 		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
+		if (saved_data_pointer) {
+			GMT_free (GMT, Intens->data);
+			Intens->data = saved_data_pointer;
+		}
 	}
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);

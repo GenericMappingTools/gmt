@@ -3,6 +3,7 @@
 # Testing gmt grdfft -N+m mirror reflection and -N+e edge-point symmetry
 
 ps=out_taper.ps
+gmt set GMT_FFT kiss
 
 # Create a egg-carton input grid
 gmt grdmath -R0/300/0/200 -I1 X 5 MUL COSD Y 10 MUL SIND MUL = t.nc
@@ -47,5 +48,5 @@ gmt psxy -R -J -O -K -W2p,green << EOF >> $ps
 EOF
 echo "400 192 Point symmetry" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 100% outwardtaper" | gmt pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
-gmt psscale -Ct.cpt -D${x}i/${yoffe}i/4i/0.1ih -O -K -B0.5 >> $ps
+gmt psscale -Ct.cpt -D${x}i/${yoffe}i+w4i/0.1i+h+jTC -O -K -B0.5 >> $ps
 gmt psxy -R -J -O -T >> $ps

@@ -13,11 +13,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdpmodeler** *agegrdfile* **-E**\ *rot_file* **-G**\ *outgrdfile*
-**-S**\ **a**\ \|\ **d**\ \|\ **r**\ \|\ **w**\ \|\ **x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**
-[ **-F**\ *polygonfile* ] [ **-T**\ *age* ]
+**grdpmodeler** *agegrdfile* |-E|\ *rot_file* **-S**\ *flags*
+[ |-F|\ *polygonfile* ]
+[ |-G|\ *outgrdfile* ]
+[ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -37,8 +39,10 @@ Required Arguments
 ------------------
 
 *ingrdfile*
-    Name of a grid file in geographical (lon, lat) coordinates with ages
-    in Myr.
+    Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
+
+.. _-E:
+
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
@@ -64,34 +68,56 @@ Required Arguments
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
 
-**-G**\ *outgrdfile*
-    Name of output grid. This is the grid with the model predictions
-    given the specified rotations.
-**-S**\ **a**\ \|\ **d**\ \|\ **r**\ \|\ **w**\ \|\ **x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**
-    Type of model prediction. Choose from **a** for plate motion
-    azimuth, **d** for distance between current locations and their
-    origin at the ridge (in km), **r** for plate motion rate (in mm/yr),
-    **w** for plate rotation rate (degree/Myr), **x** change in
-    longitude relative to location of crust formation, **y** change in
-    latitude relative to location of crust formation, **X** longitude of
-    crust formation, and **Y** latitude of crust formation.
+.. _-S:
+
+**-S**\ *flags*
+    Type of model prediction(s). Append one or more items: choose from **a** for plate motion
+    azimuth, **d** for great-circle distance between current location and its
+    origin at the ridge (in km), **s** for plate motion model stage ID (1 is youngest),
+    **v** for plate motion rate (in mm/yr),
+    **w** for plate rotation rate (degree/Myr), **x** for change in
+    longitude relative to location of crust formation, **y** for change in
+    latitude relative to location of crust formation, **X** for longitude of
+    crust formation, and **Y** for latitude of crust formation.
+    If no arguments are given we default to all [**adsvwxyXY**].
 
 Optional Arguments
 ------------------
+
+.. _-F:
 
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
     area of the grid where the model should be evaluated; the outside
     will be set to NaN [Default evaluates model on the entire grid].
+
+.. _-G:
+
+**-G**\ *outgrdfile*
+    Name of output grid. This is the grid with the model predictions
+    given the specified rotations. Note: If you specified more than one
+    model prediction in **-S** then the filename *must* be a template
+    that contains the format %s; this will be replaced with the corresponding
+    tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
+    If the **-G** option is not used then we create no grids and instead
+    write *lon, lat, age, predictions* records to standard output.
+
+.. _-T:
+
 **-T**\ *age*
     Use a fixed age for model evaluation (i.e., override the ages in the
     age grid). This lets you evaluate the model at a snapshot in time.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-d.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
@@ -122,13 +148,13 @@ entire Pacific, try
     gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
                     -Gpac_dlat.nc -Sy
 
-To determine the plate motion rates in effect when the Pacific crust was
+To determine the plate motion velocities in effect when the Pacific crust was
 formed, try
 
    ::
 
     gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
-                    -Gpac_vel.nc -Sr
+                    -Gpac_vel.nc -Sv
 
 To determine how far the crust has moved since formation, try
 
@@ -136,6 +162,26 @@ To determine how far the crust has moved since formation, try
 
     gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
                     -Gpac_dist.nc -Sd
+
+To save the coordinates of the crust's formation to separate grids, try
+
+   ::
+
+    gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
+                    -Gpac_origin_%s.nc -SXY
+
+To repeat the same exercise but save output *lon,lat,age,xorigin,yorigin* to a table, use
+
+   ::
+
+    gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d -SXY > origin.txt
+
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
 
 See Also
 --------

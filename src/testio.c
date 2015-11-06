@@ -40,18 +40,18 @@ int main () {
 	struct GMT_GRID *G = NULL;
 	
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
-	Vi = GMT_create_vector (API->GMT, 3);
+	Vi = GMT_create_vector (API->GMT, 3U, GMT_IN);
 	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMT_FLOAT;
 	Vi->n_rows = 4;
 	Vi->data[0].f4 = x;	Vi->data[1].f4 = y;	Vi->data[2].f4 = z;
-	Vo = GMT_create_vector (API->GMT, 3);
+	Vo = GMT_create_vector (API->GMT, 3U, GMT_OUT);
 
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
 
 	Vo->type[0] = Vo->type[1] = Vo->type[2] = GMT_DOUBLE;
-	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
 
 	/* 4. Create command options for GMT_mapproject */
 
@@ -69,7 +69,7 @@ int main () {
 
 	/* 6. Create command options for GMT_xyz2grd */
 
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
@@ -100,9 +100,9 @@ int main () {
 
 	/* 6. Create command options for GMT_gmtselect */
 
-	Vo = GMT_create_vector (API->GMT, 3);
-	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
-	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
+	Vo = GMT_create_vector (API->GMT, 3U, GMT_OUT);
+	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, o_string, out_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (buffer, "-<%s -R0/3/0/3 ->%s", i_string, o_string);

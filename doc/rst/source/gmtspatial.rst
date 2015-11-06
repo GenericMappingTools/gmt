@@ -13,16 +13,19 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ]
-[ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
-[ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ]
-[ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
-[ **-Q**\ [**+**\ [*unit*\ ]] ]
+**gmtspatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
+[ |-C| ]
+[ |-D|\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
+[ |-E|\ **+**\ \|\ **-** ]
+[ |-F|\ [**l**] ] [ **-I**\ [**e**\ \|\ **i**] ]
+[ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
+[ |-Q|\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+h**\ ][**+l**\ ][**+p**\ ] ]
 [ |SYN_OPT-R| ]
-[ **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
-[ **-T**\ [*clippolygon*] ]
+[ |-S|\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
+[ |-T|\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -51,6 +54,8 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ [**a**\ *min_dist*][*unit*]
    Perform spatial nearest neighbor (NN) analysis: Determine the nearest
    neighbor of each point and report the NN distances and the point IDs
@@ -62,10 +67,14 @@ Optional Arguments
    average (the absolute ID value gives the ID of the first original point
    ID to be included in the average.)
 
+.. _-C:
+
 **-C**
     Clips polygons to the map region, including map boundary to the
     polygon as needed. The result is a closed polygon (see **-T** for
     truncation instead). Requires **-R**.
+
+.. _-D:
 
 **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*]
     Check for duplicates among the input lines or polygons, or, if
@@ -82,24 +91,38 @@ Optional Arguments
     single letter Y (exact match) or ~ (approximate match). If the two
     matching segments differ in length by more than a factor of 2 then
     we consider the duplicate to be either a subset (-) or a superset
-    (+). For polygons we also consider the fractional difference in
+    (+). Finally, we also note if two lines are the result of splitting
+    a continuous line across the Dateline (|).
+    For polygons we also consider the fractional difference in
     areas; duplicates must differ by less than *amax* [0.01]. By
-    default, we compute the mean line separation. Use **-+C**\ *cmin* to
+    default, we compute the mean line separation. Use **+C**\ *cmin* to
     instead compute the median line separation and therefore a robust
     closeness value. Also by default we consider all distances between
-    points on one line and another. Append **-+p** to limit the
+    points on one line and another. Append **+p** to limit the
     comparison to points that project perpendicularly to points on the
     other line (and not its extension).
+
+.. _-E:
 
 **-E**\ **+**\ \|\ **-** ]
     Reset the handedness of all polygons to match the given **+**
     (counter-clockwise) or **-** (clockwise). Implies **-Q+**.
+
+.. _-F:
+
+**-F**\ [**l**]
+   Force input data to become polygons on output, i.e., close them explicitly if not
+   already closed.  Optionally, append **l** to force line geometry.
+
+.. _-I:
 
 **-I**\ [**e**\ \|\ **i**]
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
     between paris of polygons) crossovers [Default is both].
+
+.. _-N:
 
 **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**]
     Determine if one (or all, with **+a**) points of each feature in the
@@ -116,20 +139,35 @@ Optional Arguments
     polygon are not written out. If more than one polygon contains the
     same segment we skip the second (and further) scenario.
 
-**-Q**\ [**+**\ [*unit*]]
+.. _-Q:
+
+**-Q**\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+h**\ ][**+l**\ ][**+p**\ ]
     Measure the area of all polygons or length of line segments. Use
-    **-Q+** to append the area to each polygons segment header [Default
+    **-Q+h** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see UNITS). Note that the area will depend on the current
-    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a recent ellipsoid to get
-    accurate results. 
+    setting of :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`; this should be a
+    recent ellipsoid to get accurate results. The centroid is computed
+    using the mean of the 3-D Cartesian vectors making up the polygon
+    vertices, while the area is obtained via an equal-area projection.
+    For line lengths you may prepend **-**\ \|\ **+** to the unit and
+    the calculation will use Flat Earth or Geodesic algorithms, respectively
+    [Default is great circle distances].
+    By default, we consider open polygons as lines.
+    Append **+p** to close open polygons and thus consider all input
+    as polygons, or append **+l** to consider all input as lines, even
+    if closed.
+
+.. _-R:
 
 .. |Add_-Rgeo| replace:: Clips polygons to the map
     region, including map boundary to the polygon as needed. The result
     is a closed polygon.
 .. include:: explain_-Rgeo.rst_
+
+.. _-S:
 
 **-S**\ **i**\ \|\ **j**\ \|\ **s**\ \|\ **u**
     Spatial processing of polygons. Choose from **-Si** which returns
@@ -138,12 +176,16 @@ Optional Arguments
     straddle the Dateline, and **-Sj** which will join polygons that
     were split by the Dateline.  Note: Only **-Ss** has been implemented.
 
+.. _-T:
+
 **-T**\ [*clippolygon*]
     Truncate polygons against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to **-T** we
     create a clipping polygon from **-R** which then is required. Note
     that when the **-R** clipping is in effect we will also look for
     polygons of length 4 or 5 that exactly match the **-R** clipping polygon. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -153,6 +195,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -178,25 +223,32 @@ Optional Arguments
 Example
 -------
 
-To compute the area of all geographic polygons in the multisegment file
-polygons.d, run
+To turn all lines in the multisegment file lines.txt into closed polygons,
+run
 
    ::
 
-    gmt gmtspatial polygons.d -Q > areas.d
+    gmt spatial lines.txt -F > polygons.txt
+
+To compute the area of all geographic polygons in the multisegment file
+polygons.txt, run
+
+   ::
+
+    gmt spatial polygons.txt -Q > areas.txt
 
 Same data, but now orient all polygons to go counter-clockwise and write
 their areas to the segment headers, run
 
    ::
 
-    gmt gmtspatial polygons.d -Q+ -E+ > areas.d
+    gmt spatial polygons.txt -Q+h -E+ > areas.txt
 
-To determine the intersections between the polygons A.d and B.d, run
+To determine the intersections between the polygons A.txt and B.txt, run
 
    ::
 
-    gmt gmtspatial A.d B.d -Ce > crossovers.d
+    gmt spatial A.txt B.txt -Ce > crossovers.txt
 
 See Also
 --------

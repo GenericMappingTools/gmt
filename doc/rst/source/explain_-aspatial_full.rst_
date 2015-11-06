@@ -2,7 +2,7 @@
 
 **-a**\ [*col*\ =\ ]\ *name*\ [*...*\ ]
     Control how aspatial data are handled in GMT during input and output.
-    Reading OGR/GMT-formatted files. To assign certain aspatial data
+    *Reading OGR/GMT-formatted files*: To assign certain aspatial data
     items to GMT data columns, give one or more comma-separated
     associations *col*\ =\ *name*, where *name* is the name of an
     aspatial attribute field in a OGR/GMT file and whose value we wish
@@ -13,7 +13,7 @@
     to look-up color via a CPT].  If you skip the leading "*col*\ =" in
     the argument then we supply (and automatically increment) a column
     value starting at 2.
-    Write OGR/GMT-formatted files. Give one or more comma-separated
+    *Writing OGR/GMT-formatted files*: Give one or more comma-separated
     associations *col*\ =\ *name*\ [:*type*], To write OGR/GMT-formatted
     files, give one or more comma-separated associations
     *col*\ =\ *name*\ [:*type*], with an optional data type from DOUBLE,

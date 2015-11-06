@@ -23,18 +23,93 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_types.h
+ * \brief Definitions of special types used by GMT.
+ */
+
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif
+#include <stdbool.h>
 #include <stdint.h>
 
 /*--------------------------------------------------------------------
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
+
+/*! Definition of MATH_MACRO used by grdmath and gmtmath */
+struct MATH_MACRO {
+	unsigned int n_arg;	/* How many commands this macro represents */
+	char *name;	/* The macro name */
+	char **arg;	/* List of those commands */
+};
+
+/*! Definition of structure use for finding optimal nx.ny for surface */
+struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
+	unsigned int nx;
+	unsigned int ny;
+	double factor;	/* Speed up by a factor of factor  */
+};
+
+/*! Definition of structure used for holding information of integer items to be selected */
+struct GMT_INT_SELECTION {	/* Used to hold array with items (0-n) that have been selected */
+	uint64_t *item;		/* Array with item numbers given (0 is first), sorted into ascending order */
+	uint64_t n;		/* Number of items */
+	uint64_t current;	/* Current item in item array */
+	bool invert;		/* Instead select the items NOT listed in item[] */
+};
+
+/*! Definition of structure used for holding information of text items to be selected */
+struct GMT_TEXT_SELECTION {	/* Used to hold array with items (0-n) that have been selected */
+	char **pattern;		/* Array with text items given, sorted into lexical order */
+	int ogr_item;		/* Used if ogr_match is true */
+	uint64_t n;		/* Number of items */
+	bool invert;		/* Instead select the items NOT listed in item[] */
+	bool *regexp;		/* Item is a regex expression */
+	bool *caseless;		/* Treat as caseless */
+	bool ogr_match;		/* Compare pattern to an OGR item */
+};
+
+/*! For weighted mean/mode */
+struct GMT_OBSERVATION {
+	float value;
+	float weight;
+};
+
+/*! For trend-fitting models */
+struct GMT_MODEL_TERM {	/* A single model term */
+	unsigned int kind;	/* GMT_POLYNOMIAL | GMT_COSINE | GMT_SINE | GMT_FOURIER */
+	unsigned int order[2];	/* Polygon or Fourier order */
+	unsigned int type;	/* 0-7 for which kind of sin/cos combination */
+};
+
+struct GMT_MODEL {	/* A model consists of n_terms */
+	bool robust;		/* True for L1 fitting [L2] */
+	bool chebyshev;		/* True if given polynomial of order n */
+	bool intercept;		/* True if given model has intercept */
+	bool got_origin[2];	/* True if we got origin(s) */
+	bool got_period[2];	/* True if we got periods(s) */
+	unsigned int dim;	/* 1 or 2 */
+	unsigned int type;	/* 1 = poly, 2 = Fourier, 3 = both */
+	unsigned int n_terms;	/* Terms in model */
+	double origin[2];	/* x (or t) and y origins */
+	double period[2];	/* x (or t) and y periods */
+	struct GMT_MODEL_TERM term[GMT_N_MAX_MODEL];
+};
+
+/*! For segments */
+struct GMT_SEGMENTIZE {	/* Information about segmentation */
+	unsigned int method;	/* Type of segmentation [0] */
+	unsigned int level;	/* Organized by segments (0), per table (1) or per dataset (2) [0] */
+	double origin[2];	/* Reference point for segmentation */
+};
+
+struct GMT_DIST {	/* Holds info for a particular distance calculation */
+	bool init;	/* true if we have initialized settings for this type via GMT_init_distaz */
+	bool arc;	/* true if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */
+	double (*func) (struct GMT_CTRL *, double, double, double, double);	/* pointer to function returning distance between two points points */
+	double scale;	/* Scale to convert function output to desired unit */
+};
 
 struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_PLOT_FRAME frame;		/* Everything about the frame parameters */
@@ -73,18 +148,60 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_DIST dist[3];		/* struct with pointers to functions/scales returning distance between two points points */
 	bool (*near_lines_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to nearest line among a set of lines */
 	bool (*near_a_line_func) (struct GMT_CTRL *, double, double, uint64_t, struct GMT_DATASEGMENT *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to line */
-	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, double);	/* Pointer to function returning distance to nearest point */	
+	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, double);	/* Pointer to function returning distance to nearest point */
 	unsigned int (*wrap_around_check) (struct GMT_CTRL *, double *, double, double, double, double, double *, double *, unsigned int *);	/* Does x or y wrap checks */
 	double (*azimuth_func) (struct GMT_CTRL *, double, double, double, double, bool);	/* Pointer to function returning azimuth between two points points */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */
+	double (*geodesic_meter) (struct GMT_CTRL *, double, double, double, double);	/* pointer to geodesic function returning distance between two points points in meter */
+	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */
+};
+
+struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */
+	int year;		/* signed; negative and 0 allowed  */
+	unsigned int month;	/* Always between 1 and 12  */
+	unsigned int day_m;	/* Day of month; always in 1 - 31  */
+	unsigned int day_y;	/* Day of year; 1 thru 366  */
+	unsigned int day_w;	/* Day of week; 0 (Sun) thru 6 (Sat)  */
+	int iso_y;		/* ISO year; not necessarily == year */
+	unsigned int iso_w;	/* ISO week of iso_y; must be in 1 -- 53  */
+	unsigned int iso_d;	/* ISO day of iso_w; uses 1 (Mon) thru 7 (Sun)  */
+	unsigned int hour;	/* 00 through 23  */
+	unsigned int min;	/* 00 through 59  */
+	double sec;		/* 00 through 59.xxxx; leap not yet handled  */
+};
+
+struct GMT_Y2K_FIX {	/* The issue that refuses to go away... */
+	unsigned int y2_cutoff;	/* The 2-digit offset year.  If y2 >= y2_cuttoff, add y100 else add y200 */
+	int y100;	/* The multiple of 100 to add to the 2-digit year if we are above the time_Y2K_offset_year */
+	int y200;	/* The multiple of 100 to add to the 2-digit year if we are below the time_Y2K_offset_year */
+};
+
+struct GMT_MOMENT_INTERVAL {
+	struct GMT_GCAL	cc[2];		
+	double dt[2];		
+	double sd[2];		/* Seconds since the start of the day.  */
+	int64_t rd[2];
+	unsigned int step;
+	char unit;
+};
+
+struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
+	struct GMT_MOMENT_INTERVAL T;
+	unsigned int direction;		/* 0 [+] to center on next interval, 1 [-] for previous interval */
 };
 
 struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 	struct GMT_TRUNCATE_TIME truncate;
 	struct GMT_Y2K_FIX Y2K_fix;		/* Used to convert 2-digit years to 4-digit years */
-	struct GMT_TIME_LANGUAGE language;	/* For time axis */
 	time_t tic;				/* Last system time marker */
 	int64_t today_rata_die;			/* The rata die of current day at start of program */
+};
+
+struct GMT_LANGUAGE {		/* Language-specific text strings for calendars, map annotations, etc. */
+	char month_name[4][12][GMT_LEN16];	/* Full, short, 1-char, and short (upper case) month names */
+	char day_name[3][7][GMT_LEN16];	/* Full, short, and 1-char weekday names */
+	char week_name[3][GMT_LEN16];	/* Full, short, and 1-char versions of the word Week */
+	char cardinal_name[3][4][GMT_LEN16];	/* Full, and abbreviated (map annot., direction) versions of compass directions */
 };
 
 struct GMT_INIT { /* Holds misc run-time parameters */
@@ -94,6 +211,7 @@ struct GMT_INIT { /* Holds misc run-time parameters */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	char *runtime_bindir;         /* Directory that contains the main exe at run-time */
 	char *runtime_libdir;         /* Directory that contains the main shared lib at run-time */
+	char *runtime_plugindir;      /* Directory that contains the main supplemental plugins at run-time */
 	char *history[GMT_N_UNIQUE];  /* The internal gmt.history information */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol; /* For custom symbol plotting in psxy[z]. */
 };
@@ -120,9 +238,13 @@ struct GMT_CURRENT {
 	struct GMT_MAP map;		/* Holds all projection-related parameters */
 	struct GMT_PLOT plot;		/* Holds all plotting-related parameters */
 	struct GMT_TIME_CONV time;	/* Holds all time-related parameters */
+	struct GMT_LANGUAGE language;	/* Holds all language-related parameters */
 	struct GMT_PS ps;		/* Hold parameters related to PS setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
+	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */ 
+	struct GMT_GDALREAD_OUT_CTRL gdal_read_out; /* Hold parameters related to options transmitted from gdalread */ 
+	struct GMT_GDALWRITE_CTRL    gdal_write;    /* Hold parameters related to options transmitted to gdalwrite */ 
 };
 
 struct GMT_INTERNAL {
@@ -133,9 +255,7 @@ struct GMT_INTERNAL {
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	double **mem_coord;		/* Columns of temp memory */
-#ifdef MEMDEBUG
-	struct MEMORY_TRACKER *mem_keeper;
-#endif
+	struct MEMORY_TRACKER *mem_keeper;	/* Only filled when #ifdef MEMDEBUG  */
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */
@@ -147,8 +267,8 @@ struct GMT_SESSION {
 	/* These are parameters that is set once at the start of a GMT session and
 	 * are essentially read-only constants for the duration of the session */
 	FILE *std[3];			/* Pointers for standard input, output, and error */
-	void * (*input_ascii) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ascii tables only */
-	int (*output_ascii) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ascii tables only */
+	void * (*input_ascii) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII tables only */
+	int (*output_ascii) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ASCII tables only */
 	unsigned int n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
 	unsigned int n_user_media;	/* Total number of user media returned by gmt_load_user_media */
 	size_t min_meminc;		/* with -DMEMDEBUG, sets min/max memory increments */

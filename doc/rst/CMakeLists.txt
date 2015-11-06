@@ -91,7 +91,7 @@ if (SPHINX_FOUND)
 			string (REPLACE ".pdf" "_pdf" _pdf_target ${_pdf_file})
 			set (_pdf_file "${CMAKE_CURRENT_BINARY_DIR}/latex/${_pdf_file}")
 			add_custom_target (_shrink_${_pdf_target}
-				COMMAND gs -sDEVICE=pdfwrite
+				COMMAND ${GS} -sDEVICE=pdfwrite
 				-dCompatibilityLevel=1.4
 				-dPDFSETTINGS=/prepress -dNOPAUSE -dQUIET -dBATCH
 				-sOutputFile=${_pdf_file}.shrink ${_pdf_file}

@@ -9,7 +9,7 @@
  *  Include file for mgd77.c
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
+ *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
  *		
  *  This include file contains initializations for the MGD77 system.
  *  MUST BE INCUDED AFTER mgd77.h IN mgd77.c
@@ -18,6 +18,11 @@
  *  Revised:	1-JAN-2006
  * 
  *-------------------------------------------------------------------------*/
+
+/*!
+ * \file mgd77_init.h
+ * \brief Include file for mgd77.c
+ */
 
 bool MGD77_format_allowed[MGD77_N_FORMATS] = {true, true, true, true};	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */
 

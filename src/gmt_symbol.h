@@ -15,7 +15,7 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
- 
+
 /*
  * Miscellaneous definitions and structures related to:
  * 1. Compass symbols used by pscbasemap and pscoast
@@ -27,6 +27,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_symbol.h
+ * \brief Miscellaneous definitions and structures related to symbols 
+ */
+
 #ifndef _GMT_SYMBOLS_H
 #define _GMT_SYMBOLS_H
 
@@ -35,12 +40,35 @@
 #define VECTOR_HEAD_WIDTH	7.0
 #define VECTOR_HEAD_LENGTH	9.0
 
+/* PANEL attributes are used by pslegend, psscale, psimage, gmtlogo */
+
+#define GMT_FRAME_CLEARANCE	4.0	/* In points */
+#define GMT_FRAME_GAP		2.0	/* In points */
+#define GMT_FRAME_RADIUS	6.0	/* In points */
+
+enum GMT_enum_panel {
+	GMT_PANEL_INNER		= 1,
+	GMT_PANEL_ROUNDED	= 2,
+	GMT_PANEL_SHADOW	= 4,
+	GMT_PANEL_FILL		= 8,
+	GMT_PANEL_OUTLINE	= 16
+};
+	
+/*! Definition of structure used for holding information about a reference point */
+struct GMT_REFPOINT {	/* Used to hold items relevant for a reference point */
+	double x;		/* X position of reference point */
+	double y;		/* Y position of reference point */
+	enum GMT_enum_refpoint mode;	/* Coordinate mode */
+	int justify;		/* Justification integer (1-11) for reference point (if given via -Dj) */
+	char *args;		/* Text representation of any additional arguments */
+};
+
 struct GMT_CUSTOM_SYMBOL_ITEM {
-	double x, y, p[3], const_val[2];
-	int action, operator, var;
+	double x, y, p[3], const_val[3];
+	int action, operator, var[3];	/* var[0] refers to variable on left hand side of operator, var[1] and var[2] to the right hand */
 	unsigned int conditional;
 	unsigned int justify;	/* For macro code l text justification [PSL_MC] */
-	bool negate;
+	bool negate, is_var[3];
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;
@@ -59,55 +87,73 @@ struct GMT_CUSTOM_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
-struct GMT_MAP_INSERT {	/* Used to plot a map insert box in psbasemap */
+/*! Plot a map panel behind scales, legends, images, logos */
+struct GMT_MAP_PANEL {
+	unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
+	double width, height;		/* Size of panel in inches */
+	double padding[4];		/* Extend panel by this clearance (inches) in the w/e/s/n directions [0/0/0/0] */
+	double radius;			/* Radius for rounded corner */
+	double off[2];			/* Offset for background shaded rectangle (+s) */
+	double gap;			/* Space between main and secondary frame */
+	struct GMT_PEN pen1, pen2;	/* Pen for main and secondary frame outline */
+	struct GMT_FILL fill;		/* Frame fill */
+	struct GMT_FILL sfill;		/* Background shade */
+	bool clearance;			/* Used by pslegend since it has the -C option as well */
+	bool debug;
+};
+
+/*! Plot a map insert box in psbasemap */
+struct GMT_MAP_INSERT {
 	/* -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */
-	bool center;		/* Gave center of insert */
+	int justify;		/* Gave center of insert */
 	bool plot;		/* true if we want to draw the insert */
-	bool boxdraw;		/* true if we want to plot a rectangle to indicate the insert */
-	bool boxfill;		/* true if we want to paint/fill the insert */
 	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */
 	char unit;		/* Unit of projected coordinates or 0 for geographic */
-	double x0, y0;		/* Center of insert, if given */
+	struct GMT_REFPOINT *refpoint;
 	double wesn[4];		/* Geographic or projected boundaries */
+	double off[2];		/* Offset from reference point */
 	double dim[2];		/* Width & height of box */
-	struct GMT_FILL fill;	/* Fill for insert */
-	struct GMT_PEN pen;	/* Pen for insert */
+	char *file;			/* Used to write insert location and dimensions [+s] */
+	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
-struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
-	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
-	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */
-	double scale_lon;	/* Point where scale should apply */
-	double scale_lat;	/* Point where scale should apply */
+/*! Plot a map scale in psbasemap and pscoast */
+struct GMT_MAP_SCALE {
+	struct GMT_REFPOINT *refpoint;
+	double origin[2];	/* Longitude/latitude where scale should apply */
+	double off[2];		/* Offset from reference point */
 	double length;		/* How long the scale is in measure units */
-	bool boxdraw;	/* true if we want to plot a rectangle behind the scale */
-	bool boxfill;	/* true if we want to paint/fill a rectangle behind the scale */
 	bool plot;		/* true if we want to draw the scale */
 	bool fancy;		/* true for a fancy map scale */
-	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	bool unit;		/* true if we should append distance unit to all annotations along the scale */
-	bool do_label;	/* true if we should plot a label for the scale */
-	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
-	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
-	char label[GMT_LEN64];	/* Alternative user-specified label */
-	struct GMT_FILL fill;	/* Fill to use for background rectangle */
-	struct GMT_PEN pen;	/* Pen to use for background rectangle */
+	bool do_label;		/* true if we should plot a label for the scale */
+	bool old_style;		/* true if we are using old syntax, pre-panel settings */
+	int justify;		/* Justification of anchor point */
+	char measure;		/* The unit, i.e., e|f|k|M|n|u */
+	char alignment;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
+	char label[GMT_LEN128];	/* Alternative user-specified label */
+	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
-struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and pscoast */
-	double lon, lat;	/* Location of center point of rose on the map in lon/lat space */
-	double x0, y0;		/* Location of center point of scale on the map in inches x/y */
+/*! Plot a map direction "rose" in psbasemap and pscoast */
+struct GMT_MAP_ROSE {
+	struct GMT_REFPOINT *refpoint;
 	double size;		/* Diameter of the rose in measure units */
+	double off[2];		/* Offset from reference point sensed by justify */
 	double declination;	/* Magnetic declination if needed */
 	double a_int[2];	/* Annotation interval for geographic and magnetic directions */
 	double f_int[2];	/* Tick (large) interval for geographic and magnetic directions */
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
 	bool plot;		/* true if we want to draw the rose */
-	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	bool do_label;		/* true if we should plot labels for the rose */
+	bool draw_circle[2];	/* True if we should draw the circle(s) */
+	int justify;		/* Gave justification of rose */
 	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_LEN256];	/* Magnetic declination label */
+	struct GMT_PEN pen[2];	/* Pens for main and secondary magrose circle outline */
+	struct GMT_MAP_PANEL *panel;	/* Everything about optional back panel */
 };
 
 #endif	/* _GMT_SYMBOLS_H */

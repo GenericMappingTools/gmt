@@ -12,8 +12,8 @@
  * applying the primary filter using a LS plane fit.
  *
  * Author: 	Paul Wessel with help from Caleb Fassett & Seung-Sep Kim
- * Date: 	25-MAR-2008
- * Version:	GMT 4
+ * Date: 	25-OCT-2015
+ * Version:	GMT 5
  *
  * For details, see Kim, S.-S., and Wessel, P. 2008, "Directional Median Filtering
  * for Regional-Residual Separation of Bathymetry, Geochem. Geophys. Geosyst.,
@@ -23,14 +23,15 @@
 #define THIS_MODULE_NAME	"dimfilter"
 #define THIS_MODULE_LIB		"misc"
 #define THIS_MODULE_PURPOSE	"Directional filtering of grids in the space domain"
+#define THIS_MODULE_KEYS	"<GI,GGO,RG-,>DQ"
 
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "-:RVfh"
 
 struct DIMFILTER_INFO {
-	int nx;		/* The max number of filter weights in x-direction */
-	int ny;		/* The max number of filter weights in y-direction */
+	int nx;			/* The max number of filter weights in x-direction */
+	int ny;			/* The max number of filter weights in y-direction */
 	int x_half_width;	/* Number of filter nodes to either side needed at this latitude */
 	int y_half_width;	/* Number of filter nodes above/below this point (ny_f/2) */
 	int d_flag;
@@ -52,14 +53,14 @@ struct DIMFILTER_CTRL {
 	} C;
 	struct D {	/* -D<distflag> */
 		bool active;
-		unsigned int mode;
+		int mode;
 	} D;
 	struct E {	/* -E */
 		bool active;
 	} E;
 	struct F {	/* <type><filter_width>*/
 		bool active;
-		unsigned int filter;	/* Id for the filter */
+		int filter;	/* Id for the filter */
 		double width;
 	} F;
 	struct G {	/* -G<file> */
@@ -73,7 +74,7 @@ struct DIMFILTER_CTRL {
 	struct N {	/* -N */
 		bool active;
 		unsigned int n_sectors;
-		unsigned int filter;	/* Id for the filter */
+		int filter;	/* Id for the filter */
 	} N;
 	struct Q {	/* -Q */
 		bool active;
@@ -114,7 +115,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -127,28 +128,28 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Next two options are slower; weights must be recomputed for each scan line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), cartesian Distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -D4 grid x,y in degrees, <filter_width> in km, spherical Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F sets the primary filter type and full (6 sigma) filter-width  Choose between\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets the primary filter type and full (6 sigma) filter-width  Choose between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (b)oxcar, (c)osine arch, (g)aussian, (m)edian filters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum liklihood Probability estimator -- a mode estimator)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output name for filtered grdfile\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N sets the secondary filter type and the number of sectors.  Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum likelihood Probability estimator -- a mode estimator).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output name for filtered grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets the secondary filter type and the number of sectors.  Choose between\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 #ifdef OBSOLETE
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Remove local planar trend from data, apply filter, then add back trend at filtered value.\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-I for new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is yinc = xinc.  Append an m [or c] to xinc or yinc to indicate minutes [or seconds];\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Sets new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is yinc = xinc.  Append an m [or s] to xinc or yinc to indicate minutes [or seconds];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q is for the error analysis mode and requires the total number of depth columns in the input file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select error analysis mode and requires the total number of depth columns in the input file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See documentation for how to prepare for using this option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R for new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-R Sets new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 #ifdef OBSOLETE
-	GMT_Message (API, GMT_TIME_NONE, "\t-S sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a statistical measure of deviations from the average value.  For the convolution filters this\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   yields the standard deviation while for the median/mode filters we use MAD\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   yields the standard deviation while for the median/mode filters we use MAD.\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_Option (API, "V,f,h,.");
 
 	return (EXIT_FAILURE);
@@ -175,7 +176,7 @@ int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, stru
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -222,7 +223,7 @@ int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, stru
 				Ctrl->F.width = atof (&opt->arg[1]);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -425,7 +426,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy);	/* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_dimfilter_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_dimfilter_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the dimfilter main code ----------------------------*/
 
@@ -968,7 +969,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 
 		FILE *ip = NULL;
 
-		/* check the crucial condition to run the program*/
+		/* Check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);

@@ -11,7 +11,7 @@ offset, the user should add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See :doc:`grdreformat` and Section
+data. See :doc:`grdconvert` and Section
 :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information.
 

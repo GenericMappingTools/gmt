@@ -24,25 +24,23 @@
 # most closely fitting the x,y points in "sat.xyg":
 #
 ps=example_03.ps
-gmt fitcircle sat.xyg -L2 > report
-cposx=`grep "L2 Average Position" report | cut -f1` 
-cposy=`grep "L2 Average Position" report | cut -f2` 
-pposx=`grep "L2 N Hemisphere" report | cut -f1` 
-pposy=`grep "L2 N Hemisphere" report | cut -f2` 
+gmt set GMT_FFT kiss
+cpos=`gmt fitcircle sat.xyg -L2 -Fm --IO_COL_SEPARATOR=/`
+ppos=`gmt fitcircle sat.xyg -L2 -Fn --IO_COL_SEPARATOR=/`
 #
 # Now we use "gmt project" to gmt project the data in both sat.xyg and ship.xyg
 # into data.pg, where g is the same and p is the oblique longitude around
 # the great circle.  We use -Q to get the p distance in kilometers, and -S
 # to sort the output into increasing p values.
 #
-gmt project  sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
-gmt project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
+gmt project  sat.xyg -C$cpos -T$ppos -S -Fpz -Q > sat.pg
+gmt project ship.xyg -C$cpos -T$ppos -S -Fpz -Q > ship.pg
 #
 # The gmtinfo utility will report the minimum and maximum values for all columns. 
 # We use this information first with a large -I value to find the appropriate -R
 # to use to plot the .pg data. 
 #
-R=`cat sat.pg ship.pg | gmt info -I100/25`
+R=`gmt info -I100/25 sat.pg ship.pg`
 gmt psxy $R -UL/-1.75i/-1.25i/"Example 3a in Cookbook" -BWeSn \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > example_03a.ps
@@ -104,7 +102,7 @@ gmt psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output 
 # data, we do this:
 # 
-gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C > /dev/null
+gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 # Now we want to plot the spectra. The following commands will plot the ship and sat 
 # power in one diagram and the coherency on another diagram, both on the same page.  
@@ -139,7 +137,7 @@ echo "0.5 0.4 Satellite" | gmt pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $p
 # save the weights on output.  Then we will plot the weights and see how things
 # look:
 #
-gmt trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
+gmt trend1d -Fxw -Np1+r samp_ship.pg > samp_ship.xw
 gmt psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
 	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-BWeSn -UL/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > example_03d.ps
@@ -150,14 +148,14 @@ gmt psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i 
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
 # and this time we also use gmt trend1d to return the residual from the model fit (the 
 # de-trended data):
-gmt trend1d -Fxrw -N2r samp_ship.pg | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
+gmt trend1d -Fxrw -Np1+r samp_ship.pg | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 	| gmt sample1d -Nsamp.x > samp2_ship.pg
-gmt trend1d -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
+gmt trend1d -Fxrw -Np1+r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 	| gmt sample1d -Nsamp.x > samp2_sat.pg
 #
 # We plot these to see how they look:
 #
-R=`cat samp2_sat.pg samp2_ship.pg | gmt info -I100/25`
+R=`gmt info -I100/25 samp2_sat.pg samp2_ship.pg`
 gmt psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
 	-Bxa500f100+l"Distance along great circle" -Bya50f25+l"Gravity anomaly (mGal)" \
 	-BWeSn -UL/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > example_03e.ps
@@ -167,7 +165,7 @@ gmt psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 # the previous one (example_03d.ps) we see that throwing out the large feature has reduced
 # the power in both data sets and reduced the coherency at wavelengths between 20--60 km.
 #
-gmt gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C > /dev/null
+gmt gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 # 
 gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn \
 	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \

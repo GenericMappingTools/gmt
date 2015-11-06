@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_ps.h
+ * \brief Definition of the structure with PostScript settings 
+ */
+
 #ifndef _GMT_PS_H
 #define _GMT_PS_H
 
@@ -49,7 +54,8 @@
  * that are parsed directly into the PSL internal variables.
  */
 
-struct GMT_PS {	/* PSL settings affected by GMT options -X -Y -U and clipping */
+/*! PSL settings affected by GMT options -X -Y -U and clipping */
+struct GMT_PS {
 	/* A structure pointer is passed to GMT_plotinit which calls ps_plotinit */
 	int nclip;				/* +1 if clipping will extend beyond current process, -1 if we terminate clipping */
 	int clip_level;		/* Sum total clip level, should be zero at end of command sequence */

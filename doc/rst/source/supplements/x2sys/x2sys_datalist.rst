@@ -13,13 +13,17 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [ **-E** ]
-[ **-F**\ *name1*,\ *name2*,...) ] [ **-I**\ [*list*] ]
-[ **-L**\ [*corrtable*] ]
+**x2sys_datalist** *track(s)* **-T**\ *TAG* 
+[ |-A| ]
+[ |-E| ]
+[ |-F|\ *name1*,\ *name2*,...) ]
+[ |-I|\ [*list*] ]
+[ |-L|\ [*corrtable*] ]
 [ |SYN_OPT-R| ]
-[ **-S** ] [
+[ |-S| ] [
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-do| ]
 [ |SYN_OPT-h| ]
 
 |No-spaces|
@@ -29,7 +33,7 @@ Description
 
 **x2sys_datalist** reads one or more files and produces a single ASCII
 [or binary] table. The files can be of any format, which must be
-described and passed with the **-T** option. You may limit the output to
+described and passed with the |-T| option. You may limit the output to
 a geographic region, and insist that the output from several files be
 separated by a multiple segment header. Only the named data fields will
 be output [Default selects all columns].
@@ -43,6 +47,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     Eliminate COEs by distributing the COE between the two tracks in
     proportion to track weight. These (dist, adjustment) spline knots
@@ -50,36 +56,57 @@ Optional Arguments
     and are expected to be in the **$X2SYS_HOME**/*TAG* directory. The
     adjustments are only applied if the corresponding adjust file can be
     found [No residual adjustments]
+
+.. _-E:
+
 **-E**
     Enhance ASCII output by writing GMT segment headers between data
     from each track [no segment headers].
+
+.. _-F:
+
 **-F**\ *name1*,\ *name2*,...)
     Give a comma-separated sub-set list of column names defined in the
     definition file. [Default selects all data columns].
-**-I**\ [*list*\ ]
+
+.. _-I:
+
+**-I**\ [*list*]
     Name of ASCII file with a list of track names (one per record) that
     should be excluded from consideration [Default includes all tracks].
-**-L**\ [*corrtable*\ ]
+
+.. _-L:
+
+**-L**\ [*corrtable*]
     Apply optimal corrections to columns where such corrections are
     available. Append the correction table to use [Default uses the
     correction table *TAG*\ \_corrections.txt which is expected to
     reside in the **$X2SYS_HOME**/*TAG* directory]. For the format of
     this file, see CORRECTIONS below.
 
+.. _-R:
+
 .. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to
     those that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-S:
+
 **-S**
     Suppress output records where all the data columns are NaN [Default
     will output all records].
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-do.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

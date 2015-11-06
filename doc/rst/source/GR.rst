@@ -12,6 +12,7 @@ GR
    grdblend
    grdclip
    grdcontour
+   grdconvert
    grdcut
    grdedit
    grdfft
@@ -26,7 +27,6 @@ GR
    grdpaste
    grdproject
    grdraster
-   grdreformat
    grdsample
    grdtrack
    grdtrend

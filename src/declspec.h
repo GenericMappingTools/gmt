@@ -19,6 +19,11 @@
  *--------------------------------------------------------------------
  */
 
+/*!
+ * \file declspec.h
+ * \brief Declarations for linking to DLLs
+ */
+
 #ifndef _DECLSPEC_H_
 #	define _DECLSPEC_H_
 

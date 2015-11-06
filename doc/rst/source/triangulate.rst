@@ -13,13 +13,21 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**triangulate** [ *table* ] [ **-Dx**\ \|\ **y** ] [ **-E**\ *empty* ]
-[ **-G**\ *grdfile* ]
+**triangulate** [ *table* ]
+[ |-D|\ **x**\ \|\ **y** ]
+[ |-E|\ *empty* ]
+[ |-G|\ *grdfile* ]
 [ |SYN_OPT-I| ]
-[ **-J**\ *parameters* ] [ **-M** ] [ **-N** ] [ **-Q** ]
-[ |SYN_OPT-R| ] [ **-S** ]
-[ |SYN_OPT-V| ] [ **-Z** ]
+[ |-J|\ *parameters* ]
+[ |-M| ]
+[ |-N| ]
+[ |-Q| ]
+[ |SYN_OPT-R| ]
+[ |-S| ]
+[ |SYN_OPT-V| ]
+[ |-Z| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -58,11 +66,19 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-D:
+
 **-Dx**\ \|\ **y**
     Take either the *x*- or *y*-derivatives of surface represented by
     the planar facets (only used when **-G** is set).
+
+.. _-E:
+
 **-E**\ *empty*
     Set the value assigned to empty nodes when **-G** is set [NaN].
+
+.. _-G:
+
 **-G**\ *grdfile*
     Use triangulation to grid the data onto an even grid (specified with
     **-R** **-I**). Append the name of the output grid file. The
@@ -70,34 +86,56 @@ Optional Arguments
     triangles are close to the poles you are better off projecting all
     data to a local coordinate system before using **triangulate** (this
     is true of all gridding routines).
+
+.. _-I:
+
 **-I**
     *x\_inc* [and optionally *y\_inc*] sets the grid size for optional
     grid output (see **-G**). Append **m** to indicate arc minutes or
     **s** to indicate arc seconds. 
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-M:
 
 **-M**
     Output triangulation network as multiple line segments separated by
     a segment header record.
+
+.. _-N:
+
 **-N**
     Used in conjunction with **-G** to also write the triplets of the
     ids of all the Delaunay vertices [Default only writes the grid].
+
+.. _-Q:
+
 **-Q**
     Output the edges of the Voronoi cells instead [Default is Delaunay
     triangle edges]. Requires **-R** and is only available if linked
     with the Shewchuk [1996] library. Note that **-Z** is ignored on
     output. 
 
+.. _-R:
+
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
+
+.. _-S:
 
 **-S**
     Output triangles as polygon segments separated by a segment header
     record. Requires Delaunay triangulation. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**
     Controls whether we read (x,y) or (x,y,z) data and if z should be
@@ -108,6 +146,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].  Node ids are stored as double triplets. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

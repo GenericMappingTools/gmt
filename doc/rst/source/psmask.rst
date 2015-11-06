@@ -15,19 +15,25 @@ Synopsis
 
 **psmask** [ *table* ]
 |SYN_OPT-I|
-**-J**\ *parameters*
+|-J|\ *parameters*
 |SYN_OPT-R|
 [ |SYN_OPT-B| ]
-[ **-D**\ *dumpfile* ]
-[ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
-[ **-S**\ *search\_radius*\ [*unit*] ] [ **-T** ]
+[ |-D|\ *dumpfile* ]
+[ |-F|\ [**l**\ \|\ **r**] ]
+[ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-K| ]
+[ |-L|\ [**+**\ \|\ **-**]\ *nodegrid* ]
+[ |-N| ] [ |-O| ]
+[ |-P| ] [ |-Q|\ *cut* ]
+[ |-S|\ *search\_radius*\ [*unit*] ]
+[ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
@@ -57,9 +63,16 @@ second call to **psmask** using the **-C** option.
 Required
 --------
 
+.. _-I:
+
 .. include:: explain_-I.rst_
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -73,12 +86,19 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**
     Mark end of existing clip path. No input file is needed. Implicitly
     sets **-O**. Also supply **-X** and **-Y** settings if you have
     moved since the clip started.
+
+.. _-D:
+
 **-D**\ *dumpfile*
     Dump the (x,y) coordinates of each clipping polygon to one or more
     output files (or *stdout* if *template* is not given). No plotting
@@ -89,39 +109,74 @@ Optional Arguments
     **-bo** is used. See **-Q** to exclude small
     polygons from consideration. 
 
-.. |Add_perspective| unicode:: 0x20 .. just an invisible code
-.. include:: explain_perspective.rst_
+.. _-F:
+
+**-F**\ [**l**\ \|\ **r**]
+    Force clip contours (polygons) to be oriented so that data points are to the
+    left (**-Fl** [Default]) or right (**-Fr**) as we move along the perimeter
+    [Default is arbitrary orientation]. Requires **-D**.
+
+.. _-G:
 
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is no fill]. 
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
+
+**-L**\ [**+**\ \|\ **-**]\ *nodegrid*
+    Save the internal grid with ones (data constraint) and zeros (no data) to
+    the named *nodegrid* [no grid saved].  Use **L+** to convert the no data
+    flags to NaNs before writing the grid, while **L-** will instead convert
+    the data flags to NaNs.
+
+.. _-N:
 
 **-N**
     Invert the sense of the test, i.e., clip regions where there is data coverage. 
 
+.. _-O:
+
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
+
+.. _-Q:
 
 **-Q**
     Do not dump polygons with less than *cut* number of points [Dumps
     all polygons]. Only applicable if **-D** has been specified.
+
+.. _-S:
+
 **-S**\ *search\_radius*\ [*unit*\ ]
     Sets radius of influence. Grid nodes within *radius* of a data point
     are considered reliable. [Default is 0, which means that only grid
-    cells with data in them are reliable]. Append the distance unit (see
-    UNITS).
+    cells with data in them are reliable]. Append the distance unit (see UNITS).
+
+.. _-T:
+
 **-T**
     Plot tiles instead of clip polygons. Use **-G** to set tile color or
     pattern. Cannot be used with **-D**. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-X:
 
 .. include:: explain_-XY.rst_
 
@@ -130,11 +185,15 @@ Optional Arguments
 
 .. include:: explain_-c.rst_
 
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
+
 .. |Add_-h| replace:: Not used with binary data.
 .. include:: explain_-h.rst_
     
 .. include:: explain_-icols.rst_
 
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code

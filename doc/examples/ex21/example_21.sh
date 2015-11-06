@@ -67,7 +67,7 @@ R="-R2004T/$e/$s/40"
 
 # Lay down the basemap, using Finnish annotations and place the insert in the upper right
 
-gmt psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glightblue -Bsx1Y \
+gmt psbasemap --GMT_LANGUAGE=fi $R -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glightblue -Bsx1Y \
 	-O -K -X3i -Y3i >> $ps
 
 # Again, plot close price as red line over yellow envelope of low/highs

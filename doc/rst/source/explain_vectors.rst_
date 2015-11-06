@@ -1,5 +1,5 @@
-`Vector Attributes <#toc15>`_
------------------------------
+Vector Attributes
+-----------------
 
 Several modifiers may be appended to the vector-producing options to
 specify the placement of vector heads, their shapes, and the
@@ -10,17 +10,28 @@ end point of the segment:
     **+a**\ *angle* sets the angle of the vector head apex [30].
 
     **+b** places a vector head at the beginning of the vector path [none].
-    Append **l**\|\ **r** to only draw the left or right side of this head
-    [both sides].
+    Optionally, append **t** for a terminal line, **c** for a circle, or
+    **a** for arrow [Default].
+    Further append **l**\|\ **r** to only draw the left or right
+    side of this head [both sides].
 
     **+e** places a vector head at the end of the vector path [none].
-    Append **l**\|\ **r** to only draw the left or right side of this head
-    [both sides].
+    Optionally, append **t** for a terminal line, **c** for a circle, or
+    **a** for arrow [Default].
+    Further append **l**\|\ **r** to only draw the left or right
+    side of this head [both sides].
 
     **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
     head fill [Default fill is used, which may be no fill].
 
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
+
+    **+m** places a vector head at the mid-point the vector path [none].
+    Append **f** or **r** for forward or reverse direction of the vector [forward].
+    Optionally, append **t** for a terminal line, **c** for a circle, or
+    **a** for arrow head [Default].
+    Further append **l**\|\ **r** to only draw the left or right
+    side of this head [both sides].  Cannot be combined with **+b** or **+e**.
 
     **+n**\ *norm* scales down vector attributes (pen thickness, head size)
     with decreasing length, where vectors shorter than *norm* will have
@@ -30,7 +41,7 @@ end point of the segment:
     **+o**\ *plon*\ /\ *plat* specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given.
 
-    **+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
+    **+p**\ [-][*pen*] sets the vector pen attributes. If *pen* has a
     leading - then the head outline is not drawn. [Default pen is used, and
     head outline is drawn]
 
@@ -39,6 +50,12 @@ end point of the segment:
 
     **+r** draws half-arrows, using only the right side of specified heads [both sides].
 
+    **t**\ [**b**\ \|\ **e**]\ *trim* will shift the beginning or end point (or both)
+    along the vector segment by the given *trim*; append suitable unit. If the modifiers
+    **b**\ \|\ **e** are not used then *trim* may be two values separated by a slash,
+    which is used to specify different trims for the two ends.  Positive trims
+    will shorted the vector while negative trims will lengthen it [no trim].
+
 In addition, all but circular vectors may take these modifiers:
 
     **+j**\ *just* determines how the input *x*,\ *y* point relates to the
@@ -46,3 +63,8 @@ In addition, all but circular vectors may take these modifiers:
 
     **+s** means the input *angle*, *length* is instead the *x*, *y*
     coordinates of the vector end point.
+
+Finally, Cartesian vectors may take these modifiers:
+
+    **+z**\ *scale*\ [*unit*] expects input *dx*,\ *dy* vector components and
+    uses the *scale* to convert to polar coordinates with length in given unit.

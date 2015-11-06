@@ -13,22 +13,28 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pshistogram** [ *table* ] **-Jx**\ \|\ **X**\ *parameters*
-**-W**\ *bin_width* [ **-A** ]
+**pshistogram** [ *table* ] |-J|\ **x**\ \|\ **X**\ *parameters*
+|-W|\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
+[ |-A| ]
 [ |SYN_OPT-B| ]
-[ **-C**\ *cptfile* ] [ **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
-[ **-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
-[ **-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] 
-[ **-N**\ [*mode*][**+p**\ *pen*] ] [ **-O** ] [**-P** ] [ **-Q** ]
+[ |-C|\ *cpt* ]
+[ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
+[ |-F| ]
+[ |-G|\ *fill* ] [ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-I|\ [**o**\ \|\ **O**] ]
+[ |-K| ] [ |-L|\ *pen* ] 
+[ |-N|\ [*mode*][**+p**\ *pen*] ]
+[ |-O| ] [|-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ **-S** ]
+[ |-S| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-Z**\ *type* ]
+[ |-Z|\ *type* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -49,10 +55,21 @@ histogram. A cumulative histogram may also be specified.
 Required Arguments
 ------------------
 
+.. _-J:
+
 **-Jx**
     *xscale[/yscale]* (Linear scale(s) in distance unit/data unit).
-**-W**\ *bin_width*
+
+.. _-W:
+
+**-W**\ *bin_width*\ [**+l**\ \|\ **h**\ \|\ **b**]
     Sets the bin width used for histogram calculations.
+    The modifiers specify the handling of extreme values that fall outside the range
+    set by **-R**.  By default these values are ignored.  Use **+b** to let
+    these values be included in the first or last bins.  To only include
+    extreme values below first bin into the first bin, use **+l**, and to
+    only include extreme values above the last bin into that last bin, use
+    **+h**.
 
 Optional Arguments
 ------------------
@@ -60,25 +77,43 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**
     Plot the histogram horizontally from x = 0 [Default is vertically
     from y = 0]. 
 
+.. _-B:
+
 .. include:: explain_-B.rst_
 
-**-C**\ *cptfile*
-    Give a color palette file. The mid x-value for each bar is used to
+.. _-C:
+
+**-C**\ *cpt*
+    Give a CPT file. The mid x-value for each bar is used to
     look-up the bar color.
+
+.. _-D:
+
 **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**]
     Annotate each bar with the count it represents.  Append any of the
     following modifiers: Use **+b** to place the labels beneath the bars
     instead of above; use **+f** to change to another font than the default
     annotation font; use **+o** to change the offset between bar and label [6p];
     use **+r** to rotate the labels from horizontal to vertical.
+
+.. _-F:
+
 **-F**
     Center bin on each value. [Default is left edge].
+
+.. _-G:
+
 **-G**\ *fill*
     Select filling of bars [Default is no fill].
+
+.. _-I:
+
 **-I**\ [**o**\ \|\ **O**]
     Inquire about min/max x and y after binning. The *xmin xmax ymin
     ymax* is output; no plotting is done. Append **o** to output an
@@ -87,10 +122,16 @@ Optional Arguments
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-L:
 
 **-L**\ *pen*
     Draw bar outline using the specified pen thickness. [Default is no outline]. 
+
+.. _-N:
 
 **-N**\ [*mode*][**+p**\ *pen*]
     Draw the equivalent normal distribution; append desired pen [0.5p,black].
@@ -102,12 +143,20 @@ Optional Arguments
 
     The **-N** option may be repeated to draw several of these curves.
 
+.. _-O:
+
 .. include:: explain_-O.rst_
+
+.. _-P:
 
 .. include:: explain_-P.rst_
 
+.. _-Q:
+
 **-Q**
     Draw a cumulative histogram. 
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -115,16 +164,26 @@ Optional Arguments
 .. |Add_-Rz| replace:: If not given, **pshistogram** will automatically find reasonable values for the region.
 .. include:: explain_-Rz.rst_
 
+.. _-S:
+
 **-S**
     Draws a stairs-step diagram which does not include the internal bars
     of the default histogram. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. _-X:
+
 .. include:: explain_-XY.rst_
+
+.. _-Z:
 
 **-Z**\ *type*
     Choose between 6 types of histograms: 
@@ -140,6 +199,9 @@ Optional Arguments
 .. include:: explain_-bi.rst_
 
 .. include:: explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -175,7 +237,7 @@ bars, run:
    ::
 
     gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c \
-                    -B2:Error:/100:Counts: -Gblack -i1 -V > plot.ps
+                    -Bx2+lError -By100+lCounts: -Gblack -i1 -V > plot.ps
 
 Since no y-range was specified, pshistogram will calculate ymax in even
 increments of 100.

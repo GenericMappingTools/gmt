@@ -21,7 +21,7 @@
  * Date:	1-JAN-2010
  * Version:	5.x
  */
- 
+
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
@@ -48,12 +48,12 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * destroyed by an earlier attempt to form the Cholesky decomposition of a.
  * On return, the super-diagonal elements are destroyed.  The diagonal and
  * sub-diagonal elements are unchanged.
- * d is returned as an n-vector containing the eigenvalues of a, sorted 
+ * d is returned as an n-vector containing the eigenvalues of a, sorted
  * so that d[i] >= d[j] when i < j.  d = diag(D).
  * v is returned as an n by n matrix, V, with row dimension m, and the
  * columns of v are the eigenvectors corresponding to the values in d.
  * b is an n-vector of workspace, used to keep a copy of the diagonal
- * elements which is updated only after a full sweep.  
+ * elements which is updated only after a full sweep.
  * z is an n-vector of workspace, used to accumulate the updates to
  * the diagonal values of a during each sweep.  This reduces round-
  * off problems.
@@ -66,12 +66,12 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * of steps, in each of which A_new = P-transpose * A_old * P, where P is
  * a plane-rotation matrix in the p,q plane, through an angle chosen to
  * zero A_new(p,q) and A_new(q,p).  The sum of the diagonal elements
- * of A is unchanged by these operations, but the sum of squares of 
+ * of A is unchanged by these operations, but the sum of squares of
  * diagonal elements of a is increased by 2 * |A_old(p,q)| at each step.
  * Although later steps make non-zero again the previously zeroed entries,
  * the sum of squares of diagonal elements increases with each rotation,
  * while the sum of squares of off-diagonals keeps decreasing, so that
- * eventually A_new is diagonal to machine precision.  This should 
+ * eventually A_new is diagonal to machine precision.  This should
  * happen in a few (3 to 7) sweeps.
  *
  * If only the eigenvalues are wanted then there are faster methods, but
@@ -80,7 +80,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * diagonalization followed by symmetric QR iterations), and this method
  * is numerically extremely stable.
  *
- * C G J Jacobi ("Ueber ein leichtes Vefahren, die in der Theorie der 
+ * C G J Jacobi ("Ueber ein leichtes Vefahren, die in der Theorie der
  * Saekularstoerungen vorkommenden Gelichungen numerisch aufzuloesen",
  * Crelle's Journal, v. 30, pp. 51--94, 1846) originally searched the
  * entire (half) matrix for the largest |A(p,q)| to select each step.
@@ -92,9 +92,9 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * functions of rotations - experiments concerning speed of diagonalization
  * of symmetric matrices using Jacobi's method", J Assoc. Comput. Mach.
  * v. 4, pp. 459--466, 1957) introduced a variant that skips small
- * elements on the first few sweeps.  The algorithm here was given by 
- * Heinz Rutishauser (1918--1970) and published in Numer. Math. v. 9, 
- * pp 1--10, 1966, and in Linear Algebra (the Handbook for Automatic 
+ * elements on the first few sweeps.  The algorithm here was given by
+ * Heinz Rutishauser (1918--1970) and published in Numer. Math. v. 9,
+ * pp 1--10, 1966, and in Linear Algebra (the Handbook for Automatic
  * Computation, v. II), by James Hardy Wilkinson and C. Reinsch (Springer-
  * Verlag, 1971).  It also appears in Numerical Recipes.
  *
@@ -107,7 +107,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * d[] is updated immediately in each rotation, and each new rotation
  * is computed based on d[], so that each rotation gets the benefit
  * of the previous ones.  However, z[] is also used to accumulate
- * the sum of all the changes in the diagonal elements during one sweep, 
+ * the sum of all the changes in the diagonal elements during one sweep,
  * and z[] is used to update b[] after each sweep.  Then b is copied
  * to d.  In this way, at the end of each sweep, d is reset to avoid
  * accumulating round-off.
@@ -115,7 +115,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
  * This routine determines whether y is small compared to x by testing
  * if (fabs(y) + fabs(x) == fabs(x) ).  It is assumed that the
  * underflow which may occur here is nevertheless going to allow this
- * expression to be evaluated as true or false and execution to 
+ * expression to be evaluated as true or false and execution to
  * continue.  If the run environment doesn't allow this, the routine
  * won't work properly.
  *
@@ -170,7 +170,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
 				g = 100.0 * fabs (a[pq]);
 
 				/* After four sweeps, if g is small relative
-					to a(p,p) and a(q,q), skip the 
+					to a(p,p) and a(q,q), skip the
 					rotation and set a(p,q) to zero.  */
 
 				if ((nsweeps > 3) && ((fabs (d[p])+g) == fabs (d[p])) && ((fabs (d[q])+g) == fabs (d[q]))) {
@@ -328,11 +328,11 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 				}
 			}
 			if (big<=DBL_EPSILON) iet=1;   /* test for div by 0 */
- 
+
 			line[i]=1;  /* selected unused line becomes used line */
 			isub[j]=i;  /* isub points to j-th row of tri. matrix */
- 
-			sum=1.0/(*(a+i*nstore+j)); 
+
+			sum=1.0/(*(a+i*nstore+j));
 
 			/*reduce matrix towards triangle */
 			for (k=0; k<n; k++) {
@@ -353,24 +353,24 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 				break;
 			}
 		}
- 
+
 	}
-		
+
 	/* start backsolving */
-	
+
 	for (i=0; i<n; i++) line[isub[i]] = i;  /* invert pointers. line(i) now gives row no in triang matrix of i-th row of actual matrix */
- 
+
 	for (j=0; j<n-1; j++) { /* transform the vector to match triang. matrix */
 		b=vec[isub[j]];
 		for( k=0; k<n; k++ ) {
 			if (line[k]>j) vec[k] -= (b*(*(a+k*nstore+j)));  /* skip elements outside of triangle */
 		}
 	}
- 
+
 	b = *(a+l1*nstore+(n-1));   /* apex of triangle */
 	if (fabs(b)<=DBL_EPSILON) ieb=2; /* check for div by zero in backsolving */
 	vec[isub[n-1]]=vec[isub[n-1]]/b;
- 
+
 	for (j1=n-1; j1>0; j1--) { /* backsolve rest of triangle*/
 		j = j1 - 1;
 		sum=vec[isub[j]];
@@ -394,98 +394,59 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 		vec[i] = b;
 		line[j] = line[i];
 	}
- 
+
 	GMT_free (GMT, isub);
 	GMT_free (GMT, line);
 	return (iet + ieb);   /* Return final error flag*/
 }
 
-/* Modified from similar function in Numerical Recipes */
-
-int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigned int ndim, double *b, unsigned int m_in, unsigned int mdim)
+void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n)
 {
-	int i, j, k, l, ll, *ipiv = NULL, *indxc = NULL, *indxr = NULL, irow = 0, icol = 0;
-	int n = n_in, m = m_in;
-	double big, dum, pivinv;
-	
-	ipiv  = GMT_memory (GMT, NULL, n, int);
-	indxc = GMT_memory (GMT, NULL, n, int);
-	indxr = GMT_memory (GMT, NULL, n, int);
-	
-	for (i = 0; i < n; i++) {
-		big = 0.0;
-		for (j = 0; j < n; j++) {
-			if (ipiv[j] != 1) {
-				for (k = 0; k < n; k++) {
-					if (ipiv[k] == 0) {
-						if ((dum = fabs (a[j*ndim+k])) >= big) {
-							big = dum;
-							irow = j;
-							icol = k;
-						}
-					}
-					else if (ipiv[k] > 1) {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gaussjordan: Singular matrix!\n");
-						GMT_free (GMT, ipiv);
-						GMT_free (GMT, indxc);
-						GMT_free (GMT, indxr);
-						return (1);
-					}
-				}
-			}
+	double *oa = (double *)malloc (sizeof(double)*n);
+
+	memcpy(oa, a+n*n1, sizeof(double)*n);
+	memcpy(a+n*n1, a+n*n2, sizeof(double)*n);
+	memcpy(a+n*n2, oa, sizeof(double)*n);
+
+	double_swap (b[n1], b[n2]);
+
+	free (oa);
+}
+
+int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b)
+{
+    int i, j, k, bad = 0, n = (int)nu;	/* Doing signed ints due to restriction from OpenMP on unsigned loop variables */
+    double c, d;
+
+    for (j = 0; j < (n-1); j++) { /* For all columns j */
+		/* Find j-th pivot */
+    	k = j; c = fabs(a[k*n+j]);
+		for (i = j + 1; i < n; i++) {
+			if ((d = fabs(a[i*n+j])) > c) k = i, c = d;
 		}
-		ipiv[icol]++;
-		
-		if (irow != icol) {
-			for (l = 0; l < n; l++) {
-				dum = a[irow*ndim+l];
-				a[irow*ndim+l] = a[icol*ndim+l];
-				a[icol*ndim+l] = dum;
-			}
-			for (l = 0; l < m; l++) {
-				dum = b[irow*mdim+l];
-				b[irow*mdim+l] = b[icol*mdim+l];
-				b[icol*mdim+l] = dum;
-			}
+		if (c < DBL_EPSILON) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gaussjordan given a singular matrix\n");
+			bad++;
 		}
-		
-		indxr[i] = irow;
-		indxc[i] = icol;
-		if (a[icol*ndim+icol] == 0.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gaussjordan: Singular matrix!\n");
-			GMT_free (GMT, ipiv);
-			GMT_free (GMT, indxc);
-			GMT_free (GMT, indxr);
-			return (1);
-		}
-		pivinv = 1.0 / a[icol*ndim+icol];
-		a[icol*ndim+icol] = 1.0;
-		for (l = 0; l < n; l++) a[icol*ndim+l] *= pivinv;
-		for (l = 0; l < m; l++)  b[icol*mdim+l] *= pivinv;
-		for (ll = 0; ll < n; ll++) {
-			if (ll != icol) {
-				dum = a[ll*ndim+icol];
-				a[ll*ndim+icol] = 0.0;
-				for (l = 0; l < n; l++) a[ll*ndim+l] -= a[icol*ndim+l] * dum;
-				for (l = 0; l < m; l++) b[ll*mdim+l] -= b[icol*mdim+l] * dum;
-			}
+		switchRows (a, b, j, k, n);	/* Pivot rows */
+#ifdef _OPENMP
+#pragma omp parallel for private(i,k,c) shared(GMT,a,b,j,n)
+#endif
+		for (i = j + 1; i < n; i++) {
+			c = a[i*n+j] / a[j*n+j];
+			for (k = j + 1; k < n; k++) a[i*n+k] -= c*a[j*n+k];
+			b[i] -= c*b[j];
 		}
 	}
-	for (l = n-1; l >= 0; l--) {
-		if (indxr[l] != indxc[l]) {
-			for (k = 0; k < n; k++) {
-				dum = a[k*ndim+indxr[l]];
-				a[k*ndim+indxr[l]] = a[k*ndim+indxc[l]];
-				a[k*ndim+indxc[l]] = dum;
-			}
-		}
+
+	b[n-1] /= a[n*n-1];
+	for (i = n-2; i >= 0; i--) {
+		c = 0;
+		for (j = i + 1; j < n; j++) c += a[i*n+j] * b[j];
+		b[i] = (b[i] - c) / a[i*n+i];
 	}
-	
-	GMT_free (GMT, ipiv);
-	GMT_free (GMT, indxc);
-	GMT_free (GMT, indxr);
-	
-	return (0);
+
+	return (bad);
 }
 
 /* Given a matrix a[0..m-1][0...n-1], this routine computes its singular
@@ -494,32 +455,33 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 	w[0...n-1].  The matrix V (Not V transpose) is output as
 	v[0...n-1][0....n-1].  m must be greater than or equal to n; if it is
 	smaller, then a should be filled up to square with zero rows.
-	
+
 	Modified from Numerical Recipes -> page 68.
 */
 
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
-int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
+/* Use version provided by DJ 2015-07-06 [SDSC] */
+int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
 {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
-	
+
 	int flag,i,its,j,jj,k,l=0,nm = 0, n = n_in, m = m_in;
 	double c,f,h,s,x,y,z;
 	double anorm=0.0,tnorm, g=0.0,scale=0.0;
 	double *rv1 = NULL;
-	
+
 	if (m < n) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: m < n augment A with additional rows\n");
 		return (EXIT_FAILURE);
 	}
-	
+
 	/* allocate work space */
-		
+
 	rv1 = GMT_memory (GMT, NULL, n, double);
-	
+
 	/* do householder reduction to bidiagonal form */
-		
+
 	for (i=0;i<n;i++) {
 		l=i+1;
 		rv1[i]=scale*g;
@@ -571,9 +533,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 		tnorm=fabs (w[i])+fabs (rv1[i]);
 		anorm=MAX(anorm,tnorm);
 	}
-						
+
 	/* accumulation of right-hand transforms */
-		
+
 	for (i=n-1;i>=0;i--) {
 		if (i < n-1) {
 			if (g) {
@@ -589,9 +551,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 		g=rv1[i];
 		l=i;
 	}
-	
+
 	/* accumulation of left-hand transforms */
-		
+
 	for (i=n-1;i>=0;i--) {
 		l=i+1;
 		g=w[i];
@@ -599,6 +561,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 		if (g) {
 			g=1.0/g;
 			if (i != n-1) {
+#ifdef _OPENMP
+#pragma omp parallel for private(j,k,f,s) shared(a,n,m,g,l)
+#endif
 				for (j=l;j<n;j++) {
 					for (s=0.0,k=l;k<m;k++) s += a[k*n+i]*a[k*n+j];	/* a[k][i] a[k][j] */
 					f=(s/a[i*n+i])*g;	/* a[i][i] */
@@ -612,9 +577,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 		}
 		++a[i*n+i];	/* a[i][i] */
 	}
-	
+
 	/* diagonalization of the bidiagonal form */
-		
+
 	for (k=n-1;k>=0;k--) {			/* loop over singular values */
 		for (its=1;its<=30;its++) {	/* loop over allowed iterations */
 			flag=1;
@@ -657,7 +622,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 			}
 			if (its == 30) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
+#ifndef _OPENMP
 				return (EXIT_FAILURE);
+#endif
 			}
 			x=w[l];		/* shift from bottom 2-by-2 minor */
 			nm=k-1;
@@ -667,9 +634,9 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 			f=((y-z)*(y+z)+(g-h)*(g+h))/(2.0*h*y);
 			g=hypot (f,1.0);
 			f=((x-z)*(x+z)+h*((y/(f+SIGN(g,f)))-h))/x;
-			
+
 				/* next QR transformation */
-			
+
 			c=s=1.0;
 			for (j=l;j<=nm;j++) {
 				i=j+1;
@@ -716,36 +683,47 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	return (GMT_NOERROR);
 }
 
-void gmt_mat_trans (double a[], unsigned int mrow, unsigned int ncol, double at[])
+int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
 {
-	/* Return the transpose of a */
-	unsigned int i, j;
-	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
-}
-
-void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[], unsigned int kcol, double c[])
-{
-	/* Matrix multiplication a * b = c */
-	
-	unsigned int i, j, k, ij;
-	
-	for (i = 0; i < kcol; i++) {
-		for (j = 0; j < mrow; j++) {
-			ij = j * kcol + i;
-			c[ij] = 0.0;
-			for (k = 0; k < ncol; k++) c[ij] += a[j * ncol + k] * b[k * kcol + i];
-		}
-	}
+	/* Front for SVD calculations */
+#ifdef HAVE_LAPACK
+/* Here we use Lapack */
+	int n = m_in, lda = m_in, info, lwork;
+	double wkopt, *work = NULL;
+	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
+	GMT_UNUSED(n_in);	/* Since we are actually only doing square matrices... */
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using Lapack dsyev\n");
+	/* Query and allocate the optimal workspace */
+        lwork = -1;
+        dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
+        lwork = (int)wkopt;
+	work = GMT_memory (GMT, NULL, lwork, double);
+        /* Solve eigenproblem */
+        dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
+        /* Check for convergence */
+        if (info > 0 ) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
+		return (EXIT_FAILURE);
+        }
+       /* Free workspace */
+        GMT_free (GMT, work);
+	/* No separate v matrix but stored in a, so... */
+	v = a;
+	return (GMT_NOERROR);
+#else
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_svdcmp: Using GMT's NR-based SVD\n");
+	return GMT_svdcmp_nr (GMT, a, m_in, n_in, w, v);
+#endif
 }
 
 /* Given the singular value decomposition of a matrix a[0...m-1][0...n-1]
-	solve the system of equations ax=b for x.  Input the matrices 
+	solve the system of equations ax=b for x.  Input the matrices
 	U[0....m-1][0...n-1],w[0...n-1], and V[0...n-1][0...n-1] determined from
 	svdcmp.  Also input the matrix b[0...m-1][0....k-1] and the solution vector
 	x[0....k-1][0....n-1] is output. Singular values whose ratio to the maximum
 	singular value are smaller than cutoff are zeroed out. The matrix U is
 	overwritten.
-	
+
 */
 
 int compare_singular_values (const void *point_1v, const void *point_2v)
@@ -760,24 +738,26 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
+int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
 {
-	double *ut = NULL, sing_max, total_variance, variance = 0.0, limit;
-	unsigned int i, j, n_use = 0;
+	double w_abs, sing_max, total_variance, variance = 0.0, limit;
+	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
+	double s, *tmp = GMT_memory (GMT, NULL, n, double);
+	GMT_UNUSED(m);	/* Since we are actually only doing square matrices... */
+	GMT_UNUSED(k);	/* Since we are actually only doing one rhs row here */
+#ifdef HAVE_LAPACK
+	GMT_UNUSED(v);	/* Not used when we solve via Lapack */
+#endif
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_solve_svd: Evaluate solution\n");
+	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
 
-	/* allocate work space */
-	
-	ut = GMT_memory (GMT, NULL, n*m, double);	/* space for the transpose */
-	
-	/* find maximum singular value and total variance */
-	
-	sing_max = w[0];
-	total_variance = w[0];
+	sing_max = total_variance = fabs (w[0]);
 	for (i = 1; i < n; i++) {
-		sing_max = MAX (sing_max, w[i]);
-		total_variance += w[i];
+		w_abs = fabs (w[i]);
+		sing_max = MAX (sing_max, w_abs);
+		total_variance += w_abs;
 	}
-	
+
 	if (mode) {
 		/* mode = 1: Find the m largest singular values needed to explain the specified variance level.
 		 * mode = 2: Find the m largest singular values, with m = limit.
@@ -788,10 +768,10 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			double value;
 			unsigned int order;
 		} *eigen;
-		unsigned int n_eigen = 0;
+		int n_eigen = 0;
 		eigen = GMT_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
-		for (i = 0; i < n; i++) {	/* Load in original order from w */
-			eigen[i].value = w[i];
+		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
+			eigen[i].value = fabs (w[i]);
 			eigen[i].order = i;
 		}
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), compare_singular_values);
@@ -812,43 +792,65 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	else {	/* Loop through singular values removing small ones (if limit is nonzero) */
 		limit = *cutoff;
 		for (i = 0; i < n; i++) {
-			if ((w[i]/sing_max) > limit) {
-				variance += w[i];
+			w_abs = fabs (w[i]);
+			if ((w_abs/sing_max) > limit) {
+				variance += w_abs;
 				w[i] = 1.0 / w[i];
 				n_use++;
 			}
 			else
 				w[i] = 0.0;
 		}
-	}		
+	}
 	*cutoff = (100.0 * variance / total_variance);	/* Actual explained variance level in % */
 	if (mode == 0)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Ratio limit %g gave %d singular values that explain %g %% of total variance %g\n", limit, n_use, *cutoff, total_variance);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "GMT_solve_svd: Ratio limit %g gave %d singular values that explain %g %% of total variance %g\n",
+		            limit, n_use, *cutoff, total_variance);
 	if (mode == 1)
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Found %d singular values needed to explain %g %% of total variance %g\n", n_use, *cutoff, total_variance);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "GMT_solve_svd: Found %d singular values needed to explain %g %% of total variance %g\n",
+		            n_use, *cutoff, total_variance);
 	else
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n", n_use, *cutoff, total_variance);
-	
-	/* multiply V by 1/w */
-	
-	for (i = 0; i < n; i++) for (j = 0; j < n; j++) v[j*n+i] *= w[i];
-			
-	/* get transpose of U */
-		
-	gmt_mat_trans (u, m, n, ut);
-	
-	/* multiply v(1/w)ut  -> this overwrites the matrix U */
-		
-	gmt_mat_mult (v, n, n, ut, m, u);
-	
-	/* multiply this result by b to get x */
-		
-	gmt_mat_mult (u, n, m, b, k, x);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "GMT_solve_svd: Selected %d singular values that explain %g %% of total variance %g\n",
+		            n_use, *cutoff, total_variance);
 
-	/* free work space */
+	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
 
-	GMT_free (GMT, ut);
-	
+#ifdef HAVE_LAPACK
+	/* New Lapack SVD evaluation */
+	for (j = 0; j < n; j++) {
+		if (w[j] == 0.0) continue;	/* No point adding up if multiplying the sum by zero */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += u[j*n+i]*b[i];	/* Calculate v'*b */
+		//s = cblas_ddot (n, &u[j*n], 1, b, 1);
+		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
+	}
+#pragma omp parallel for private(i,j,s) shared(u,tmp,n,x)
+	for (j = 0; j < n; j++) {	/* Now premultiply by v */
+		s = 0.0;
+		//s = cblas_ddot (n, &u[j], n, tmp, 1);
+		for (i = 0; i < n; i++) s += u[i*n+j]*tmp[i];
+		x[j] = s;
+	}
+#else
+	for (j = 0; j < n; j++) {
+		if (w[j] == 0.0) continue;	/* No point adding up if multiplying the sum by zero */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += u[i*n+j]*b[i];	/* Calculate v'*b */
+		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
+	}
+#pragma omp parallel for private(i,j,s) shared(v,tmp,n,x)
+	for (j = 0; j < n; j++) {	/* Now premultiply by v */
+		s = 0.0;
+		for (i = 0; i < n; i++) s += v[j*n+i]*tmp[i];
+		x[j] = s;
+	}
+#endif
+
+	GMT_free (GMT, tmp);
+	n_use = n;
 	return (n_use);
 }
 
@@ -1029,6 +1031,61 @@ void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *
 	if (degrees) *theta *= R2D;
 }
 
+void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mode)
+{
+	/* Sets the GMT->current.map.path_mode setting given -A and data type.
+	 * By default, path_mode = GMT_RESAMPLE_PATH = 0. */
+
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Geographic data: Default is to resample along great circles unless -A given */
+		if (active && mode == GMT_STAIRS_OFF) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+	}
+	else {	/* Cartesian data: Default is to leave alone unless -Ax|y was set */
+		if (!active) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
+	}
+}
+
+uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, unsigned int mode)
+{
+	/* Takes pointers to a list of <n> Cartesian x/y pairs and adds
+	 * auxiliary points to build a staircase curve.
+	 * If mode=1: staircase; first follows y, then x
+	 * If mode=2: staircase; first follows x, then y
+	 * Returns the new number of points (original plus auxiliary).
+	 */
+
+	uint64_t i, k, n_new = 2*n - 1;
+	double *x = NULL, *y = NULL;
+
+	x = *a_x;	y = *a_y;	/* Default is to return the input unchanged */
+	if (n < 2 || mode == 0) return n;		/* Nothing to do */
+
+	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate two tmp vectors */
+	/* Start at first point */
+	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];
+
+	for (i = k = 1; i < n; i++) {	/* For remaining points we must insert an intermediate node */
+		if (mode == GMT_STAIRS_X) {	/* First follow x, then y */
+			GMT->hidden.mem_coord[GMT_X][k] = x[i];
+			GMT->hidden.mem_coord[GMT_Y][k] = y[i-1];
+		}
+		else if (mode == GMT_STAIRS_Y) {	/* First follow y, then x */
+			GMT->hidden.mem_coord[GMT_X][k] = x[i-1];
+			GMT->hidden.mem_coord[GMT_Y][k] = y[i];
+		}
+		k++;
+		/* Then add original point */
+		GMT->hidden.mem_coord[GMT_X][k] = x[i];	GMT->hidden.mem_coord[GMT_Y][k] = y[i];
+		k++;
+	}
+
+	/* Destroy old allocated memory and put the new one in place */
+	GMT_free (GMT, x);	GMT_free (GMT, y);
+	*a_x = GMT_assign_vector (GMT, n_new, GMT_X);
+	*a_y = GMT_assign_vector (GMT, n_new, GMT_Y);
+
+	return (n_new);
+}
+
 uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
@@ -1042,13 +1099,12 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 
 	unsigned int k = 1;
 	bool meridian;
-#ifdef DEBUG
-	bool dump = false;
-#endif
 	uint64_t i, j, n_new, n_step = 0;
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i;
+
+	if (!GMT_is_geographic (GMT, GMT_IN)) return (gmt_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
@@ -1064,12 +1120,12 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	 * longitudes might be of different sign.  E.g., first may be +115 and the second is -165.
 	 * Naive math would find a jump of -280 degrees but really it is just 80.  The test below
 	 * tries to handle these artificial jumps. */
-	
+
 	for (i = 1; i < n; i++) {
 
 		GMT_geo_to_cart (GMT, lat[i], lon[i], b, true);	/* End point of current arc */
 
-		if (mode == 1) {	/* First follow meridian, then parallel */
+		if (mode == GMT_STAIRS_Y) {	/* First follow meridian, then parallel */
 			dlon = lon[i]-lon[i-1];	/* Beware of jumps due to sign differences */
 			if (fabs (dlon) > 180.0) dlon += copysign (360.0, -dlon);	/* Never more than  180 to next point */
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
@@ -1094,7 +1150,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			k = 0;
 		}
 
-		else if (mode == 2) {	/* First follow parallel, then meridian */
+		else if (mode == GMT_STAIRS_X) {	/* First follow parallel, then meridian */
 			theta = fabs (lat[i]-lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
@@ -1157,13 +1213,6 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	*a_lon = GMT_assign_vector (GMT, n_new, GMT_X);
 	*a_lat = GMT_assign_vector (GMT, n_new, GMT_Y);
 
-#ifdef DEBUG
-	if (dump) {
-		FILE *fp = fopen ("fixup.txt", "w");
-		for (j = 0; j < n_new; j++) fprintf (fp, "%g\t%g\n", GMT->hidden.mem_coord[GMT_X][j], GMT->hidden.mem_coord[GMT_Y][j]);
-		fclose (fp);
-	}
-#endif
 	return (n_new);
 }
 
@@ -1189,7 +1238,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
 	for (i = 1; i < n; i++) {
-		if (mode == 1) {	/* First follow x, then y */
+		if (mode == GMT_STAIRS_Y) {	/* First follow x, then y */
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
@@ -1208,7 +1257,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 			}
 			k = 0;
 		}
-		else if (mode == 2) {	/* First follow y, then x */
+		else if (mode == GMT_STAIRS_X) {	/* First follow y, then x */
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
@@ -1245,7 +1294,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	GMT_free (GMT, x);	GMT_free (GMT, y);
 	*a_x = GMT_assign_vector (GMT, n_new, GMT_X);
 	*a_y = GMT_assign_vector (GMT, n_new, GMT_Y);
-	
+
 	return (n_new);
 }
 
@@ -1268,7 +1317,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given bad mode %d\n", mode);
 		return (EXIT_FAILURE);
 	}
-	
+
 	if (mode < GMT_TRACK_SAMPLE_FIX) {
 		if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Gave an increment in arc length (degree, min, sec) */
 			step_out /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Get degrees */
@@ -1276,9 +1325,9 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 			step_out = (step_out / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get degrees */
 		return (GMT_fix_up_path (GMT, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
 	}
-	
+
 	dist_in = GMT_dist_array (GMT, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
-	
+
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 	/* Determine n_out, the number of output points */
 	if (mode == GMT_TRACK_SAMPLE_ADJ) {	/* Round to nearest multiple of step_out, then adjust step to match exactly */
@@ -1289,10 +1338,10 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 		n_out = lrint (floor (dist_in[n_in-1] / step_out));
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
-	
+
 	lon_out = GMT_memory (GMT, NULL, n_out, double);
 	lat_out = GMT_memory (GMT, NULL, n_out, double);
-	
+
 	lon_out[0] = lon_in[0];	lat_out[0] = lat_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
 		dist_out = row_out * step_out;	/* Rhe desired output distance */
@@ -1347,9 +1396,9 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 		}
 		last_row_in = row_in;
 	}
-	
+
 	/* Destroy old allocated memory and put the new one in place */
-	
+
 	GMT_free (GMT, lon_in);
 	GMT_free (GMT, lat_in);
 	GMT_free (GMT, dist_in);
@@ -1375,12 +1424,12 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given bad mode %d\n", mode);
 		return (EXIT_FAILURE);
 	}
-	
+
 	if (mode < GMT_TRACK_SAMPLE_FIX) return (gmt_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
-	
+
 	dist_in = GMT_dist_array (GMT, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
-	
+
 	/* Determine n_out, the number of output points */
 	if (mode == GMT_TRACK_SAMPLE_ADJ) {	/* Round to nearest multiples, then adjust step to match exactly */
 		n_out = lrint (dist_in[n_in-1] / step_out);
@@ -1390,10 +1439,10 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 		n_out = lrint (floor (dist_in[n_in-1] / step_out));
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
-	
+
 	x_out = GMT_memory (GMT, NULL, n_out, double);
 	y_out = GMT_memory (GMT, NULL, n_out, double);
-	
+
 	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
 		dist_out = row_out * step_out;	/* The desired output distance */
@@ -1412,9 +1461,9 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 		}
 		last_row_in = row_in;
 	}
-	
+
 	/* Destroy old allocated memory and put the new one in place */
-	
+
 	GMT_free (GMT, x_in);
 	GMT_free (GMT, y_in);
 	GMT_free (GMT, dist_in);
@@ -1449,10 +1498,10 @@ int GMT_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
-	triangular matrix b, the Cholesky decomposition 
+	triangular matrix b, the Cholesky decomposition
 	of a, so that a = bb'.
 	The elements of b over-write the diagonal and sub-
-	diagonal elements of a.  The diagonal elements of 
+	diagonal elements of a.  The diagonal elements of
 	a are saved in d, and a's super-diagonal elements
 	are unchanged, permitting reconstruction of a in
 	the event that the algorithm fails.
@@ -1508,7 +1557,7 @@ void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
 	b, a lower triangular Cholesky decomposition of a, so that b*b' = a.
 	If a is (numerically) not positive definite then GMT_chol_dcmp()
-	returns a negative integer nerr, indicating that the diagonal 
+	returns a negative integer nerr, indicating that the diagonal
 	elements of a from a(1,1) to a(-nerr, -nerr) and the sub-diagonal
 	elements in columns from 1 to abs(nerr)-1 have been overwritten,
 	but the Cholesky decomposition did not run to completion.  A vector
@@ -1516,7 +1565,7 @@ void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n
 	abs(nerr), in this case.
 
 	GMT_chol_recover() takes a and d and restores a so that some other
-	solution of a may be attempted.  
+	solution of a may be attempted.
 
 	If (donly != 0) then only the diagonal elements of a will be restored.
 	This might be enough if the next attempt will be to run GMT_jacobi()
@@ -1554,7 +1603,7 @@ void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n
 }
 
 void GMT_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int nr, int n) {
-	/* Given an n by n linear system ax = y, with a a symmetric, 
+	/* Given an n by n linear system ax = y, with a a symmetric,
 	positive-definite matrix, y a known vector, and x an unknown
 	vector, this routine finds x, if a holds the lower-triangular
 	Cholesky factor of a obtained from GMT_chol_dcmp().  nr is the

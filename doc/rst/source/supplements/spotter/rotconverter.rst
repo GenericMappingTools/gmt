@@ -14,9 +14,9 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
-[ **+**\ \|\ **-** *rotC* ] ... [ **-A** ] [ **-D** ] [
-**-E**\ [*fact*] ] [ **-F**\ *out* ] [ **-G** ] [ **-N** ] [ **-S** ]
-[ **-T** ] [ **-W** ]
+[ **+**\ \|\ **-** *rotC* ] ... [ |-A| ] [ |-D| ]
+[ |-E|\ [*fact*] ] [ |-F|\ *out* ] [ |-G| ] [ |-N| ] [ |-S| ]
+[ |-T| ] [ |-W| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-h| ]
 
@@ -53,16 +53,24 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**
     Indicate that times are actually just opening angles [times in Myr].
 
+.. _-D:
+
 **-D**
     Report longitudes use the -180/+180 range [Default is 0/360].
+
+.. _-E:
 
 **-E**\ [*fact*]
     Scale opening angles by *fact* on output [0.5]. 
     Typically used to get half-rates needed for flowlines.
     Requires stage pole output (see **-F**).
+
+.. _-F:
 
 **-F**\ *out*
     Specify the output format for rotations. The *out* flag must be
@@ -70,21 +78,32 @@ Optional Arguments
     respectively. [Default is **-Ft** (output contains total
     reconstruction rotations)].
 
+.. _-G:
+
 **-G**
     Output final rotations in the Plates4 format used by GPlates [Default is spotter format].
+
+.. _-N:
 
 **-N**
     Place all output poles in the northern hemisphere [Default reports positive rotation angles].
 
+.. _-S:
+
 **-S**
     Place all output poles in the southern hemisphere [Default reports positive rotation angles].
+
+.. _-T:
 
 **-T**
     Transpose the final result, i.e., change the sign of the rotation angles.
 
+.. _-W:
+
 **-W**
     Ensure all output rotations have negative opening angles [Default reports positive rotation angles].
 
+.. _-V:
 
 .. |Add_-V| replace:: Report statistics of extracted rotations.
 .. include:: ../../explain_-V.rst_
@@ -94,7 +113,7 @@ Optional Arguments
 Limitations
 -----------
 
-Note that only one of **-N**, **-S**, and **-W** can be used at the same time.
+Note that only one of |-N|, |-S|, and |-W| can be used at the same time.
 
 Examples
 --------
@@ -139,7 +158,14 @@ GPlates rotations database, try
 
    ::
 
-    gmt rotconverter IND-CIB CIB-ANT ANT-AFR > India_AFrica.RPM
+    gmt rotconverter IND-CIB CIB-ANT ANT-AFR > India_Africa.RPM
+
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
 
 See Also
 --------

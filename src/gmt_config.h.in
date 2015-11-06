@@ -47,12 +47,21 @@
 /* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
 
+/* compile with LAPACK support */
+#cmakedefine HAVE_LAPACK
+
 /* compile with FFTW3 support <fftw3.h> */
 #cmakedefine HAVE_FFTW3F
 #cmakedefine HAVE_FFTW3F_THREADS
 
 /* compile with ZLIB support <zlib.h> */
 #cmakedefine HAVE_ZLIB
+
+/* compile with GLIB GThread support <glib.h> */
+#cmakedefine HAVE_GLIB_GTHREAD
+
+/* compile with pthreads support <pthread.h> */
+#cmakedefine HAVE_PTHREAD
 
 /* shared library */
 #cmakedefine BUILD_SHARED_LIBS
@@ -134,6 +143,11 @@
 #cmakedefine DECLARED_STRDUP
 #cmakedefine DECLARED_STRSEP
 
+/* sysconf/sysctl */
+#cmakedefine HAVE_SC_NPROC_ONLN
+#cmakedefine HAVE_SC_NPROCESSORS_ONLN
+#cmakedefine HAVE_SYSCTL_HW_NCPU
+
 /* support for inline functions */
 #cmakedefine HAVE_C_inline
 #cmakedefine HAVE_C___inline
@@ -159,17 +173,6 @@
 #cmakedefine HAVE_CTYPE_H_
 #cmakedefine HAVE_STDDEF_H_
 #cmakedefine HAVE_SYS_TYPES_H_
-
-#cmakedefine HAVE_INTTYPES_H_
-#ifdef HAVE_INTTYPES_H_
-	/* avoid redefining msinttypes for VC++ */
-#	define _MSC_INTTYPES_H_
-#endif
-#cmakedefine HAVE_STDINT_H_
-#ifdef HAVE_STDINT_H_
-	/* avoid redefining msinttypes for VC++ */
-#	define _MSC_STDINT_H_
-#endif
 
 /* We prefer to use extensions (e.g., strdup, sincos) when available */
 #ifdef __GNUC__

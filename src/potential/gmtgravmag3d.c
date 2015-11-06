@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"gmtgravmag3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the gravity/magnetic anomaly of a body by the method of Okabe"
+#define THIS_MODULE_KEYS	"TDI,FDi,GGo,>DO"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"
@@ -92,10 +93,6 @@ struct XYZOKB_CTRL {
 	} box;
 };
 
-struct DATA {
-	double  x, y;
-} *data;
-
 struct TRIANG {
 	double  x, y, z;
 } *triang;
@@ -152,7 +149,6 @@ int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, doubl
 int read_t (struct GMT_CTRL *GMT, char *fname);
 int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
 int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
-int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy);
 void set_center (unsigned int n_triang);
 int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat);
 int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo);
@@ -161,33 +157,32 @@ int check_triang_cw (unsigned int n, unsigned int type);
 int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [%s]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-C<density>] [-G<outgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>] [%s] [-fg] [%s]\n", 
-		GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<level>] [%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-H sets parameters for computation of magnetic anomaly\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C sets body density in SI\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F pass locations where anomaly is going to be computed\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G name of the output grdfile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int></m_dec></m_dip> -> body magnetic intensity/declination/inclination.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body <density> in SI units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes locations where anomaly is going to be computed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grdfile.\n");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L sets level of observation [Default = 0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 0 m]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 0 m].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S search radius in km\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Give either names of xyz[m] and vertex files or of a file defining a close surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives either names of xyz[m] and vertex files or of a file defining a close surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' immediately after -T and before the file name.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Sets z level of reference plane [Default = 0].\n");
 	GMT_Option (API, "bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, "r,:,.");
 
 	return (EXIT_FAILURE);
@@ -241,7 +236,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -276,6 +271,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 				break;
 	 		case 't':		/* For backward compat of pre GMT version */
 			case 'T': 		/* Selected input mesh format */
+				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'd':	/* Surface computed by triangulate */
 						j = 0;
@@ -302,7 +298,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 							j++;
 						}
 						if (j != 2 && j != 3) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
+							GMT_Report(API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
 							n_errors++;
 						}
 						Ctrl->T.triangulate = true;
@@ -329,16 +325,17 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
-					 "Syntax error: Radius is NaN or negative\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active && !Ctrl->F.active , "Error: Must specify either -G or -F options\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->I.active , "Error: Must specify -I option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
-					"Error: Must specify either -Cdensity or -H<stuff>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-	j = GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
-	if (GMT_check_condition (GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
+	n_errors += GMT_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
+	                                "Syntax error: Radius is NaN or negative\n");
+	n_errors += GMT_check_condition(GMT, !Ctrl->T.active, "Error: Option -T is mandatory\n");
+	n_errors += GMT_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Error: Must specify either -G or -F options\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Error: Must specify -I option\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
+	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
+	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	j = GMT_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	if (GMT_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
 
 	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
@@ -351,7 +348,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 
 int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
-	bool bat = true, switch_xy = false, DO = true;
+	bool bat = true, DO = true;
 	unsigned int row, col, i, j, k, kk, ndata_r = 0;
 	unsigned int ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
 	unsigned int z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
@@ -369,11 +366,13 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	struct	BODY_DESC body_desc;
 	struct	XYZOKB_CTRL *Ctrl = NULL;
 	struct	GMT_GRID *Gout = NULL;
+	struct  GMT_DATASET *Cin = NULL;
+	struct  GMT_DATATABLE *point = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct	GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	data = NULL, triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
+	triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
 	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;
 	body_desc.n_v = NULL, body_desc.ind = NULL;
 
@@ -394,7 +393,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtgravmag3d_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtgravmag3d_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtgravmag3d main code ----------------------------*/
 	
@@ -410,20 +409,26 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	/* ---- Read files section ---------------------------------------------------- */
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
-		if ( (retval = read_poly (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
-			return (EXIT_FAILURE);
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL)
+			Return (API->error);
+		if (Cin->n_columns < 2) {	/* Trouble */
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n",
+			            Ctrl->F.file);
+			Return (EXIT_FAILURE);
 		}
-		ndata_p = retval;
+		point   = Cin->table[0];	/* Can only be one table since we read a single file */
+		ndata_p = (unsigned int)point->n_records;
+		if (point->n_segments > 1) /* case not dealt (or ignored) and should be tested here */
+			GMT_Report(API, GMT_MSG_NORMAL, "Warning: multi-segment files are not used in gmtgravmag3d. Using first segment only\n");
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
-		if ( (retval = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
+		if ((retval = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
 			return (EXIT_FAILURE);
 		}
 		/* read vertex file */
-		if ( (retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
+		if ((retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->T.t_file);
 			return (EXIT_FAILURE);
 		}
@@ -453,7 +458,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	if (n_swap > 0)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d triangles had ccw order\n", n_swap);
-/* ---------------------------------------------------------------------------- */
+	/* --------------------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -465,11 +470,9 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		x = GMT_memory (GMT, NULL, Gout->header->nx, double);
 		y = GMT_memory (GMT, NULL, Gout->header->ny, double);
 		for (i = 0; i < Gout->header->nx; i++)
-			x[i] = (i == (Gout->header->nx-1)) ? Gout->header->wesn[XHI] :
-				(Gout->header->wesn[XLO] + i * Gout->header->inc[GMT_X]);
+			x[i] = (i == (Gout->header->nx-1)) ? Gout->header->wesn[XHI] : (Gout->header->wesn[XLO] + i * Gout->header->inc[GMT_X]);
 		for (j = 0; j < Gout->header->ny; j++)
-			y[j] = (j == (Gout->header->ny-1)) ? -Gout->header->wesn[YLO] :
-				-(Gout->header->wesn[YHI] - j * Gout->header->inc[GMT_Y]);
+			y[j] = (j == (Gout->header->ny-1)) ? -Gout->header->wesn[YLO] : -(Gout->header->wesn[YHI] - j * Gout->header->inc[GMT_Y]);
 	}
 
 	nx_p = (!Ctrl->F.active) ? Gout->header->nx : ndata_p;
@@ -481,9 +484,12 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	body_verts = GMT_memory (GMT, NULL, 18, struct BODY_VERTS);
 
 	if (Ctrl->F.active) { /* Need to compute observation coords only once */
-		for (i = 0; i < ndata_p; i++) {
-			x_obs[i] = (Ctrl->box.is_geog) ? (data[i].x-lon_0)*Ctrl->box.d_to_m*cos(data[i].y*D2R) : data[i].x;
-			y_obs[i] = (Ctrl->box.is_geog) ? -(data[i].y-lat_0)*Ctrl->box.d_to_m : data[i].y; /* - because y positive 'south' */
+		size_t row;
+		for (row = 0; row < ndata_p; row++) {
+			x_obs[row] = (Ctrl->box.is_geog) ? (point->segment[0]->coord[GMT_X][row] - lon_0) *
+				Ctrl->box.d_to_m*cos(point->segment[0]->coord[GMT_Y][row] * D2R) : point->segment[0]->coord[GMT_X][row];
+			y_obs[row] = (Ctrl->box.is_geog) ? -(point->segment[0]->coord[GMT_Y][row] - lat_0) *
+				Ctrl->box.d_to_m : -point->segment[0]->coord[GMT_Y][row]; /* - because y positive 'south' */
 		}
 		g = GMT_memory (GMT, NULL, nm, float);
 	}
@@ -491,12 +497,12 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
 		body_desc.n_f = 5;		/* Number of prism facets */
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, unsigned int);
+		body_desc.n_v = GMT_memory(GMT, NULL, body_desc.n_f, unsigned int);
 		body_desc.n_v[0] = 3;	body_desc.n_v[1] = 3;
 		body_desc.n_v[2] = 4;	body_desc.n_v[3] = 4;
 		body_desc.n_v[4] = 4;
-		body_desc.ind = GMT_memory (GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
-			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), unsigned int);
+		body_desc.ind = GMT_memory(GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
+		                           body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), unsigned int);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;	/* top triang */
 		body_desc.ind[3] = 3;	body_desc.ind[4] = 5; 	body_desc.ind[5] = 4;	/* bot triang */
 		body_desc.ind[6] = 1;	body_desc.ind[7] = 4; 	body_desc.ind[8] = 5;	body_desc.ind[9] = 2;
@@ -593,7 +599,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		}
 	}
 
-/* ---------------> Now start computing <------------------------------------- */
+	/* ---------------> Now start computing <------------------------------------- */
 	one_100 = (float)(n_triang / 100.);
 	s_rad2 = Ctrl->S.radius*Ctrl->S.radius;
 
@@ -682,8 +688,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		strcpy (save, GMT->current.setting.format_float_out);
 		strcpy (GMT->current.setting.format_float_out, "%.9g");	/* Make sure we use enough decimals */
 		for (k = 0; k < ndata_p; k++) {
-			out[GMT_X] = data[k].x;
-			out[GMT_Y] = data[k].y;
+			out[GMT_X] = point->segment[0]->coord[GMT_X][k];
+			out[GMT_Y] = point->segment[0]->coord[GMT_Y][k];
 			out[GMT_Z] = g[k];
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
@@ -699,7 +705,6 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	GMT_free (GMT, z_obs);
 	GMT_free (GMT, x_obs);
 	GMT_free (GMT, y_obs);
-	if (data) GMT_free (GMT, data);
 	if (triang) GMT_free (GMT, triang);
 	if (raw_mesh) GMT_free (GMT, raw_mesh);
 	if (t_center) GMT_free (GMT, t_center);
@@ -940,38 +945,6 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	}
 	fclose(fp);
 	return (ndata_s);
-}
-
-/* -----------------------------------------------------------------*/
-int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
-	/* Read file with xy points where anomaly is going to be computed*/
-	unsigned int ndata, ix = 0, iy = 1;
-	size_t n_alloc;
-	double in[2];
-	char line[GMT_LEN256] = {""};
-	FILE *fp = NULL;
-
-	if ((fp = fopen (fname, "r")) == NULL) return (-1);
-
-	n_alloc = GMT_CHUNK;
-	ndata = 0;
-	if (switch_xy) {iy = 0; ix = 1;}
-
-	data = GMT_memory (GMT, NULL, n_alloc, struct DATA);
-
-	while (fgets (line, GMT_LEN256, fp)) {
-		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
-		if (ndata == n_alloc) {
-			n_alloc <<= 1;
-			data = GMT_memory (GMT, data, n_alloc, struct DATA);
-		}
-		data[ndata].x = in[ix];
-		data[ndata].y = in[iy];
-		ndata++;
-	}
-	fclose(fp);
-	return (ndata);
 }
 
 /* -----------------------------------------------------------------*/

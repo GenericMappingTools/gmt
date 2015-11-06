@@ -34,14 +34,26 @@ several other options are available:
 **-**\ **-help**
     List and description of GMT modules.
 
-**-**\ **-version**
-    Print version and exit.
-
-**-**\ **-show-datadir**
-    Show data directory and exit.
+**-**\ **-show-cores**
+    Show number of available cores.
 
 **-**\ **-show-bindir** 
     Show directory of executables and exit.
+
+**-**\ **-show-datadir**
+    Show data directory/ies and exit.
+
+**-**\ **-show-modules**
+    List module names on stdout and exit.
+
+**-**\ **-show-plugindir**
+    Show plugin directory and exit.
+
+**-**\ **-show-sharedir**
+    Show share directory and exit.
+
+**-**\ **-version**
+    Print version and exit.
 
 **=**
     Check if that module exist and if so the
@@ -89,15 +101,18 @@ The Common GMT Options
 |SYN_OPT-Y|
 |SYN_OPT-a|
 |SYN_OPT-b|
+|SYN_OPT-d|
 |SYN_OPT-f|
 |SYN_OPT-g|
 |SYN_OPT-h|
 |SYN_OPT-i|
+|SYN_OPT-n|
 |SYN_OPT-o|
 |SYN_OPT-p|
 **-r**
 |SYN_OPT-s|
 |SYN_OPT-t|
+|SYN_OPT-x|
 |SYN_OPT-:|
 
 Description
@@ -137,7 +152,14 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-c_full.rst_
 
-.. include:: explain_colon_full.rst_
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d_full.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di_full.rst_
+
+.. |Add_-do| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-do_full.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f_full.rst_
@@ -161,6 +183,10 @@ programs. No space between the option flag and the associated arguments.
 .. include:: explain_-s_full.rst_
 
 .. include:: explain_-t_full.rst_
+
+.. include:: explain_core_full.rst_
+
+.. include:: explain_colon_full.rst_
 
 .. include:: explain_help.rst_
 

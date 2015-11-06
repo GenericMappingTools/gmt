@@ -13,13 +13,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile* [ **-A**\ *azimuth* ]
-[ **-C**\ *zlevel* ] [ **-D**\ [*scale*\ \|\ **g**] ]
-[ **-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]] ]
-[ **-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
-[ **-I**\ [*scale*\ \|\ **g**] ]
-[ **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]] ]
-[ **-S**\ *scale* ]
+**grdfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
+[ |-A|\ *azimuth* ]
+[ |-C|\ *zlevel* ]
+[ |-D|\ [*scale*\ \|\ **g**] ]
+[ |-E|\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]] ]
+[ |-F|\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
+[ |-I|\ [*scale*\ \|\ **g**] ]
+[ |-N|\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]] ]
+[ |-S|\ *scale* ]
 [ |SYN_OPT-V| ]
 [ **-fg** ]
 
@@ -51,13 +53,19 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-A:
+
 **-A**\ *azimuth*
     Take the directional derivative in the *azimuth* direction measured
     in degrees CW from north.
 
+.. _-C:
+
 **-C**\ *zlevel*
     Upward (for *zlevel* > 0) or downward (for *zlevel* < 0) continue
     the field *zlevel* meters.
+
+.. _-D:
 
 **-D**\ [*scale*\ \|\ **g**]
     Differentiate the field, i.e., take d(field)/dz. This is equivalent
@@ -66,6 +74,8 @@ Optional Arguments
     Alternatively, append **g** to indicate that your data are geoid
     heights in meters and output should be gravity anomalies in mGal.
     [Default is no scale].
+
+.. _-E:
 
 **-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]]
     Estimate power spectrum in the radial direction [**r**\ ]. Place
@@ -80,6 +90,8 @@ Optional Arguments
     Append **w** to write wavelength instead of frequency. If your grid
     is geographic you may further append **k** to scale wavelengths from
     meter [Default] to km.
+
+.. _-F:
 
 **-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params*
     Filter the data. Place **x** or **y** immediately after **-F** to
@@ -117,6 +129,8 @@ Optional Arguments
         using a 2nd-order Butterworth filter, with half-weight at 30, while
         **-F**\ 400/-/2 will highpass the data.
 
+.. _-I:
+
 **-I**\ [*scale*\ \|\ **g**]
     Integrate the field, i.e., compute integral\_over\_z (field \* dz).
     This is equivalent to divide by kr in the frequency domain (kr is
@@ -127,9 +141,13 @@ Optional Arguments
 
 .. include:: explain_fft.rst_
 
+.. _-S:
+
 **-S**\ *scale*
     Multiply each element by *scale* in the space domain (after the
     frequency domain operations). [Default is 1.0]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -214,4 +232,5 @@ See Also
 :doc:`gmt`, :doc:`grdedit`,
 :doc:`grdfilter`,
 :doc:`grdmath`,
-:doc:`grdproject`
+:doc:`grdproject`,
+:doc:`gravfft <supplements/potential/gravfft>`

@@ -9,12 +9,17 @@
  *  Include file for programs that plan to read/write MGD77[+] files
  *
  *  Authors:    Paul Wessel, Primary Investigator, SOEST, U. of Hawaii
- *				Michael Chandler, Ph.D. Student, SOEST, U. of Hawaii
+ *		Michael Chandler, Affiliate Researcher, SOEST, U. of Hawaii
  *		
  *  Version:	1.4
  *  Revised:	15-MAR-2006
  * 
  *-------------------------------------------------------------------------*/
+
+/*!
+ * \file mgd77.h
+ * \brief Include file for programs that plan to read/write MGD77[+] files.
+ */
 
 #ifndef _MGD77_H
 #define _MGD77_H
@@ -425,7 +430,7 @@ struct MGD77_CONTROL {
 	int nc_id;					/* netCDF ID for current open file (MGD77+ only) */
 	int nc_recid;					/* netCDF ID for dimension of records (time) */
 	uint64_t rec_no;				/* Current record to read/write for record-based i/o */
-	int format;					/* -1 if not set, 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ascii table */
+	int format;					/* -1 if not set, 0 if any file format, 1 if MGD77, and 2 if netCDF, 3 if ASCII table */
 	/* Format-related issues */
 	unsigned int time_format;			/* Either GMT_IS_ABSTIME or GMT_IS_RELTIME */
 	struct GMT_TIME_SYSTEM utime;			/* All the information about the Unix time system */
@@ -524,7 +529,7 @@ EXTERN_MSC int MGD77_Write_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_C
 
 /* Secondary user functions */
 
-EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);		/* Hardwired write of ascii/MGD77 header */
+EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);		/* Hardwired write of ASCII/MGD77 header */
 
 /* These are only for developers */
 
@@ -548,12 +553,12 @@ EXTERN_MSC double MGD77_Theoretical_Gravity (struct GMT_CTRL *GMT, double lon, d
 EXTERN_MSC void MGD77_IGF_text (struct GMT_CTRL *GMT, FILE *fp, int version);
 EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date);
 EXTERN_MSC double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time);
-EXTERN_MSC double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_gcal *cal);
+EXTERN_MSC double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_GCAL *cal);
 EXTERN_MSC bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, uint64_t nrec);
 EXTERN_MSC double MGD77_utime2time (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double unix_time);
 EXTERN_MSC double MGD77_time2utime (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double gmt_time);
 EXTERN_MSC double MGD77_rdc2dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, int64_t rd, double secs);
-EXTERN_MSC void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal);
+EXTERN_MSC void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, struct GMT_GCAL *cal);
 EXTERN_MSC double MGD77_Eotvos (struct GMT_CTRL *GMT, double lat, double velocity, double heading);
 
 #ifdef USE_CM4 

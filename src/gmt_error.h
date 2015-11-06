@@ -24,6 +24,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_error.h
+ * \brief Include file for GMT error codes
+ */
+
 #ifndef GMT_ERROR_H
 #define GMT_ERROR_H
 
@@ -116,7 +121,7 @@ static inline char* __source_line_func (const char* src_line, const char* func) 
 	const char *c = src_line;
 	size_t len;
   *str = '\0';
-	while ((c = strpbrk (c, "/\\"))) /* get basename of src_line */
+	while ((c = strpbrk (c, "/\\")) != NULL) /* get basename of src_line */
 		src_line = ++c;
 	strncat (str, src_line, 255);
 	len = strlen (src_line);

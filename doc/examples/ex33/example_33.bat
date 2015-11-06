@@ -32,4 +32,4 @@ gmt psxy -R -J -O -K -W3p stack.txt >> %ps%
 echo 0 -2000 MEDIAN STACKED PROFILE | gmt pstext -R -J -O -K -Gwhite -F+jTC+f14p -Dj0.1i >> %ps%
 gmt psxy -R -J -O -T >> %ps%
 REM cleanup
-del gmt.conf z.cpt spac_int.nc ridge.txt table.txt env.txt stack.txt
+del z.cpt spac_int.nc ridge.txt table.txt env.txt stack.txt

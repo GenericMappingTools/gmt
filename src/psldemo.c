@@ -11,7 +11,7 @@
 
 #include "gmt_notposix.h"
 
-#include "pslib.h"
+#include "postscriptlight.h"
 #include "psldemo.h"
 
 int main (int argc, char **argv) {

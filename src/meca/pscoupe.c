@@ -2,6 +2,7 @@
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
+ *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
@@ -15,18 +16,19 @@ PostScript code is written to stdout.
 
  Author:	Genevieve Patau
  Date:		9 September 1992
- Version:	4
- Roots:		based on psxy.c version 3.0
+ Version:	5
+ Roots:		based on psxy.c version 3.0,   Ported to GMT 5 by P. Wessel
 
  */
 
 #define THIS_MODULE_NAME	"pscoupe"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
+#define THIS_MODULE_KEYS	"<DI,>XO,RG-"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYchixy"
+#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYcdhixy"
 
 #include "meca.h"
 #include "utilmeca.h"
@@ -105,7 +107,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<cptfile> */
+	struct Z {	/* -Z<cpt> */
 		bool active;
 		char *file;
 	} Z;
@@ -440,7 +442,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_c_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -453,7 +455,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_fill_syntax (API->GMT, 'E', "Set color used for extensive parts. [default is white]\n");
+	GMT_fill_syntax (API->GMT, 'E', "\tSet color used for extensive parts. [default is white]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Plot axis. Default symbols are circles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e Set color used for T_symbol [default as set by -E].\n");
@@ -475,7 +477,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose format between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t (c) Focal mechanisms in Harvard CMT convention\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike1, dip1, rake1, strike2, dip2, rake2, moment, event_title\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     with moment in 2 columns : mantiss and exponent corresponding to seismic moment in dynes-cm\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     with moment in 2 columns : mantissa and exponent corresponding to seismic moment in dynes-cm\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t (a) Focal mechanism in Aki & Richard's convention:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike, dip, rake, mag, event_title\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t (p) Focal mechanism defined with\n");
@@ -509,9 +511,9 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use CPT file to assign colors based on depth-value in 3rd column.\n");
 
-	GMT_Option (API, "X,c,h,i,:,.");
+	GMT_Option (API, "X,c,di,h,i,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -586,7 +588,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
 						strncpy (txt, &opt->arg[2], GMT_LEN256);
-						if ((p = strchr (txt, '/'))) p[0] = '\0';
+						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 						if (p) {
 							p++;
@@ -617,7 +619,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						Ctrl->P2.active = true;
 						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
-							GMT_pen_syntax (GMT, 'p', " ");
+							GMT_pen_syntax (GMT, 'p', " ", 0);
 							n_errors++;
 						}
 						break;
@@ -642,7 +644,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
 						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
-							GMT_pen_syntax (GMT, 't', " ");
+							GMT_pen_syntax (GMT, 't', " ", 0);
 							n_errors++;
 						}
 						break;
@@ -660,7 +662,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					GMT_pen_syntax (GMT, 'L', " ");
+					GMT_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -733,14 +735,14 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
-					GMT_pen_syntax (GMT, 'T', " ");
+					GMT_pen_syntax (GMT, 'T', " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ");
+					GMT_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -816,7 +818,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoupe_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pscoupe_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pscoupe_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pscoupe main code ----------------------------*/
 
@@ -838,7 +840,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 		if (GMT_IS_ZERO (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -929,7 +931,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 		else
 			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
 
- 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
+ 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
@@ -1106,12 +1108,12 @@ Definition of scalar moment.
 
 			if (Ctrl->S.plotmode == PLOT_TENSOR) {
 				GMT_setpen (GMT, &Ctrl->L.pen);
-				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace);
+				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace, n_rec);
 			}
 
 			if (Ctrl->S.zerotrace) {
 				GMT_setpen (GMT, &Ctrl->W.pen);
-				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true);
+				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
 			}
 
 			if (Ctrl->T.active) {

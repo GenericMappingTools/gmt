@@ -2,6 +2,7 @@
  *    $Id$
  *
  *    Copyright (c) 1996-2012 by G. Patau
+ *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
@@ -16,20 +17,21 @@ PostScript code is written to stdout.
 
  Author:	Kurt Feigl
  Date:		7 July 1998
- Version:	4
+ Version:	5
  Roots:		based on psxy.c
  Adapted to version 3.3 by Genevieve Patau (25 June 1999)
- Last modified : 18 February 2000
+ Last modified : 18 February 2000.  Ported to GMT 5 by P. Wessel
 
 */
 
 #define THIS_MODULE_NAME	"psvelo"
 #define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, and wedges on maps"
+#define THIS_MODULE_KEYS	"<DI,>XO,RG-"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYchixy"
+#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYcdhixy"
 
 #include "meca.h"
 #include "utilmeca.h"
@@ -124,10 +126,10 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psvelo [<table>] %s %s [-A<vecpar>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psvelo [<table>] %s %s [-A<vecpar>] [%s] [-D<sigscale>]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-L] [-N] [-O] [-P] [-S<symbol><scale><fontsize>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -137,7 +139,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:\n");
 	GMT_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale>. (Se and Sw only)i\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1) <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
@@ -154,7 +156,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
-	GMT_Option (API, "X,c,h,i,:,.");
+	GMT_Option (API, "X,c,di,h,i,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -280,7 +282,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ");
+					GMT_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -339,16 +341,17 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psvelo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psvelo_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_psvelo_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psvelo main code ----------------------------*/
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	GMT_memset (col, GMT_LEN64*12, char);
+	GMT_memset (dim, PSL_MAX_DIMS, double);
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 	if (Ctrl->E.active) Ctrl->L.active = true;
@@ -393,7 +396,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7], col[8], station_name);
 		}
-		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
+		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
@@ -483,6 +486,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
 					dim[5] = GMT->current.setting.map_vector_shape;
 					dim[6] = (double)Ctrl->A.S.v.status;
+					dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
 					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
 						GMT_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
 					else if (Ctrl->G.active)

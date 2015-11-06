@@ -1,0 +1,4 @@
+# Draw a circle with a center number taken from input column
+N: 1 s
+0 0 1 c
+0 0 0.7 $1 l

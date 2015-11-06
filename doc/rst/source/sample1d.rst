@@ -14,11 +14,15 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **sample1d** [ *table* ]
-[ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ] [ **-I**\ *inc*\ [*unit*] ]
-[ **-N**\ *knotfile* ] [ **-S**\ *start*\ [/*stop*] ] [ **-T**\ *col* ]
+[ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
+[ |-F|\ **l**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**] ]
+[ |-I|\ *inc*\ [*unit*] ]
+[ |-N|\ *knotfile* ]
+[ |-S|\ *start*\ [/*stop*] ]
+[ |-T|\ *col* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -31,7 +35,7 @@ Description
 -----------
 
 **sample1d** reads a multi-column ASCII [or binary] data set from file
-[or standard input] and interpolates the timeseries/profile at locations
+[or standard input] and interpolates the time-series or spatial profile at locations
 where the user needs the values. The user must provide the column number
 of the independent (monotonically increasing **or** decreasing)
 variable. Equidistant or arbitrary sampling can be selected. All columns
@@ -53,6 +57,9 @@ Optional Arguments
     independent variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
+
+.. _-A:
+
 **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
@@ -64,34 +71,53 @@ Optional Arguments
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
     **+l** if distances should be measured along rhumb lines (loxodromes).
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**
+
+.. _-F:
+
+**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**\ [**+1**\ \|\ **+2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
     :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
+    You may optionally evaluate the first or second derivative of the spline
+    by appending **1** or **2**, respectively.
+
+.. _-I:
+
 **-I**\ *inc*\ [*unit*]
     *inc* defines the sampling interval [Default is the separation
-    between the first and second abscissa point in the *infile*]. Append
+    between the first and second abscissa point in the *table*]. Append
     a distance unit (see UNITS) to indicate that the first two columns
     contain longitude, latitude and you wish to resample this path with
     a spacing of *inc* in the chosen units. For sampling of (x, y)
     Cartesian tracks, specify the unit as c. Use **-A** to control how
     path resampling is performed.
+
+.. _-N:
+
 **-N**\ *knotfile*
     *knotfile* is an optional ASCII file with the x locations where the
     data set will be resampled in the first column. Note: If **-H** is
-    selected it applies to both *infile* and *knotfile*. Also note that
+    selected it applies to both *table* and *knotfile*. Also note that
     **-i** never applies to *knotfile* since we always consider the
     first column only.
+
+.. _-S:
+
 **-S**\ *start*\ [*stop*] 
     For equidistant sampling, *start* indicates the location of the
     first output value. [Default is the smallest even multiple of *inc*
-    inside the range of *infile*]. Optionally, append /*stop* to
+    inside the range of *table*]. Optionally, append /*stop* to
     indicate the location of the last output value [Default is the
-    largest even multiple of *inc* inside the range of *infile*].
+    largest even multiple of *inc* inside the range of *table*].
+
+.. _-T:
+
 **-T**\ *col*
     Sets the column number of the independent variable [Default is 0
     (first)]. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -101,6 +127,9 @@ Optional Arguments
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -146,6 +175,13 @@ grav_pos.dg, using a cubic spline for the interpolation, use
    ::
 
     gmt sample1d depths.dt -Ngrav_pos.dg -Fc > new_depths.dt
+
+To resample the file points.txt every 0.01 from 0-6, using a cubic spline for the
+interpolation, but output the first derivative instead (the slope), try
+
+   ::
+
+    gmt sample1d points.txt S0/6 -I0.01 -Fc+1 > slopes.txt
 
 To resample the file track.txt which contains lon, lat, depth every 2
 nautical miles, use

@@ -24,24 +24,30 @@
  * Version:	5 API
  *
  */
+
+/*!
+ * \file gmt_project.h
+ * \brief Include file for programs that use the map-projections functions.
+ */
+
 #ifndef _GMT_PROJECT_H
 #define _GMT_PROJECT_H
 
 #define HALF_DBL_MAX (DBL_MAX/2.0)
 
-/* GMT_180 is used to see if a value really is exceeding it (beyond roundoff) */
+/*! GMT_180 is used to see if a value really is exceeding it (beyond roundoff) */
 #define GMT_180	(180.0 + GMT_CONV8_LIMIT)
-/* GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
+/*! GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
 #define GMT_WIND_LON(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
 
-/* Some shorthand notation for GMT specific cases */
+/*! Some shorthand notation for GMT specific cases */
 
 #define GMT_latg_to_latc(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C])
 #define GMT_latg_to_lata(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A])
 #define GMT_latc_to_latg(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G])
 #define GMT_lata_to_latg(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_A2G])
 
-/* Macros returns true if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
+/*! Macros returns true if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
 #define GMT_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON)
 #define GMT_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)
 #define GMT_is_geographic(C,way) (GMT_x_is_lon(C,way) && GMT_y_is_lat(C,way))
@@ -54,8 +60,9 @@
 */
 #define GMT_NO_PROJ		-1	/* Projection not specified (initial value) */
 
-/* Linear projections tagged 0-99 */
+/*! Linear projections tagged 0-99 */
 #define GMT_IS_LINEAR(C) (C->current.proj.projection / 100 == 0)
+
 enum GMT_enum_annot {GMT_LINEAR = 0,
 	GMT_LOG10,	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
 	GMT_POW,	/* while GMT->current.proj.projection = 0 */
@@ -65,8 +72,9 @@ enum GMT_enum_annot {GMT_LINEAR = 0,
 
 #define GMT_ZAXIS		50
 
-/* Cylindrical projections tagged 100-199 */
+/*! Cylindrical projections tagged 100-199 */
 #define GMT_IS_CYLINDRICAL(C) (C->current.proj.projection / 100 == 1)
+
 enum GMT_enum_cyl {GMT_MERCATOR = 100,
 	GMT_CYL_EQ,
 	GMT_CYL_EQDIST,
@@ -78,8 +86,9 @@ enum GMT_enum_cyl {GMT_MERCATOR = 100,
 	GMT_OBLIQUE_MERC = 150,
 	GMT_OBLIQUE_MERC_POLE};
 
-/* Conic projections tagged 200-299 */
+/*! Conic projections tagged 200-299 */
 #define GMT_IS_CONICAL(C) (C->current.proj.projection / 100 == 2)
+
 enum GMT_enum_conic {GMT_ALBERS = 200,
 	GMT_ECONIC,
 	GMT_POLYCONIC,
@@ -107,7 +116,7 @@ enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_ECKERT6,
 	GMT_WINKEL};
 
-/* The various GMT measurement units */
+/*! The various GMT measurement units */
 enum GMT_enum_units {GMT_IS_METER = 0,
 	GMT_IS_KM,
 	GMT_IS_MILE,
@@ -240,6 +249,7 @@ struct GMT_PROJ {
 	bool JZ_set;		/* true if -Jz|Z was set */
 	bool GMT_convert_latitudes;	/* true if using spherical code with authalic/conformal latitudes */
 	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
+	bool N_hemi;		/* true if we only allow northern hemisphere oblique Mercator poles */
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
@@ -451,6 +461,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int id;		/* 0 (x), 1(y), or 2(z) */
 	unsigned int type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
 	unsigned int special;		/* 0, GMT_CUSTOM, GMT_CPT */
+	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_LEN256];	/* Label of the axis */
@@ -468,7 +479,8 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool set;			/* true if -B was used to set any increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool paint;			/* true if -B +g<fill> was used */
-	bool draw_box;			/* true is a 3-D Z-box is desired */
+	bool draw_box;			/* true if a 3-D Z-box is desired */
+	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */
 	bool primary;			/* true if current axis is primary, false if secondary */
 	bool slash;			/* true if slashes were used in the -B argument */

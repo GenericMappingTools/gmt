@@ -13,13 +13,14 @@ sphinterpolate
 
 .. include:: common_SYN_OPTs.rst_
 
-**sphinterpolate** [ *table* ] **-G**\ *grdfile*
+**sphinterpolate** [ *table* ] |-G|\ *grdfile*
 [ |SYN_OPT-I| ]
-[ **-Q**\ *mode*\ [/*options*] ]
+[ |-Q|\ *mode*\ [/*options*] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ **-Z** ]
-[ |SYN_OPT-b| ]
+[ |-Z| ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ **-r** ]
@@ -41,6 +42,8 @@ criteria.
 Required Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *grdfile*
     Name of the output grid to hold the interpolation.
 
@@ -50,7 +53,11 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-I:
+
 .. include:: explain_-I.rst_
+
+.. _-Q:
 
 **-Q**\ *mode*\ [/*options*]
     Specify one of four ways to calculate tension factors to preserve
@@ -73,14 +80,22 @@ Optional Arguments
     squared error in a typical (scaled) data value, and *U* is Upper
     bound on weighted sum of squares of deviations from data.
 
+.. _-R:
+
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
+
+.. _-T:
 
 **-T**
     Use variable tension (ignored with **-Q**\ 0 [constant]
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-Z:
 
 **-Z**
     Before interpolation, scale data by the maximum data range [no
@@ -89,8 +104,8 @@ Optional Arguments
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is same as input].
-.. include:: explain_-bo.rst_
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_

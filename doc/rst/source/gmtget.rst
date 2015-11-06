@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtget** [ **-G**\ *defaultsfile* ] [ **-L** ] *PARAMETER1* [ *PARAMETER2* *PARAMETER3* ... ]
+**gmtget** [ |-G|\ *defaultsfile* ] [ |-L| ] *PARAMETER1* [ *PARAMETER2* *PARAMETER3* ... ]
 
 |No-spaces|
 
@@ -33,10 +33,15 @@ PARAMETER
 Optional Arguments
 ------------------
 
+.. _-G:
+
 **-G**\ *defaultsfile*
     Name of specific :doc:`gmt.conf` file to read [Default looks first in
     current directory, then in your home directory, then in ~/.gmt and
     finally in the system defaults].
+
+.. _-L:
+
 **-L**
     Return the values of the parameters on separate lines [Default
     returns all selected parameter values on one line separated by

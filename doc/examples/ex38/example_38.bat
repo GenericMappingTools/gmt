@@ -17,7 +17,7 @@ gmt grdimage topo.nc -Iitopo.nc -Ct.cpt -JM3i -Y5i -K -P -B5 -BWSne > %ps%
 echo 315 -10 Original | gmt pstext -Rtopo.nc -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> %ps%
 gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> %ps%
 echo 315 -10 Equalized | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> %ps%
-gmt psscale -D0i/-0.4i/5i/0.15ih -O -K -Ct.cpt -Ba500 -By+lm -E+n >> %ps%
+gmt psscale -Dx0i/-0.4i+jTC+w5i/0.15i+h+e+n -O -K -Ct.cpt -Ba500 -By+lm >> %ps%
 gmt grdhisteq topo.nc -Gout.nc -N
 gmt makecpt -Crainbow -T-3/3/0.1 -Z > c.cpt
 gmt grdimage out.nc -Cc.cpt -J -X-3.5i -Y-3.3i -K -O -B5 -BWSne >> %ps%
@@ -25,6 +25,6 @@ echo 315 -10 Normalized | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj
 gmt grdhisteq topo.nc -Gout.nc -N
 gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> %ps%
 echo 315 -10 Quadratic | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> %ps%
-gmt psscale -D0i/-0.4i/5i/0.15ih -O -Cc.cpt -Bx1 -By+lz -E+n >> %ps%
+gmt psscale -Dx0i/-0.4i+w5i/0.15i+h+jTC+e+n -O -Cc.cpt -Bx1 -By+lz >> %ps%
 REM Clean up
 del itopo.nc out.nc *.cpt

@@ -16,12 +16,13 @@ Synopsis
 **blockmode** [ *table* ]
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-C** ]
-[ **-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
-[ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
+[ |-C| ]
+[ |-D|\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
+[ |-E|\ **r**\ \|\ **s**\ [**-**] ] [ |-Q| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**i**\ \|\ **o**] ]
+[ |-W|\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-b| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -64,9 +65,13 @@ Optional Arguments
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmode** will read from standard input.
 
+.. _-C:
+
 **-C**
     Use the center of the block as the output location [Default uses the
     modal xy location (but see **-Q**)]. **-C** overrides **-Q**.
+
+.. _-D:
 
 **-D**\ [*width*]\ [**+c**][**+a**\ \|\ **+l**\ \|\ **+h** ]
     Perform unweighted mode calculation via histogram binning, using the
@@ -78,6 +83,8 @@ Optional Arguments
     contains integers. Also, for integer data and integer bin *width* we
     enforce bin centering (**+c**) and select the lowest mode (**+l**) if
     there are multiples. [Default mode is normally the Least Median of Squares (LMS) statistic].
+
+.. _-E:
 
 **-E**
     Provide Extended report which includes **s** (the L1 scale of the
@@ -94,12 +101,19 @@ Optional Arguments
     For **-E**\ **s** we expect input records of the form
     *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
+
+.. _-Q:
+
 **-Q**
     (Quicker) Finds mode *z* and mean (*x*,\ *y*) [Default finds mode
     *x*, mode *y*, mode *z*]. 
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [**i**\ \|\ **o**]
     Weighted modifier[s]. Unweighted input and output has 3 columns
@@ -107,14 +121,16 @@ Optional Arguments
     Weights can be used in input to construct weighted mean values in
     blocks. Weight sums can be reported in output for later combining
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
-    input only, **-Wo** for weighted output only. [Default uses
-    unweighted i/o]. 
+    input only, **-Wo** for weighted output only. [Default uses unweighted i/o]. 
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-Wi** is set)].
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

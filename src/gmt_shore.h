@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_shore.h
+ * \brief Include file for gmt_shore.c
+ */
+
 #ifndef _GMT_SHORE_H
 #define _GMT_SHORE_H
 
@@ -47,9 +52,11 @@ enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a uns
 	GSHHS_ANTARCTICA_LIMBO		= 7,	/* Level assigned to nodes between ice and grounding lines */
 	GSHHS_ANTARCTICA_ICE_SRC	= 2,	/* Source ID for Antarctica ice line */
 	GSHHS_ANTARCTICA_GROUND_SRC	= 3,	/* Source ID for Antarctica grounding line */
-	GSHHS_ANTARCTICA_GROUND		= 0,	/* Use Antarctica igrounding line as coastline [Default] */
-	GSHHS_ANTARCTICA_ICE		= 1,	/* Use Antarctica ice boundary as coastline */
-	GSHHS_ANTARCTICA_SKIP		= 2,	/* Skip Antarctica coastline */
+	GSHHS_ANTARCTICA_ICE		= 0,	/* Use Antarctica ice boundary as coastline */
+	GSHHS_ANTARCTICA_GROUND		= 1,	/* Use Antarctica grounding line as coastline [Default] */
+	GSHHS_ANTARCTICA_SKIP		= 2,	/* Skip Antarctica coastlines */
+	GSHHS_ANTARCTICA_SKIP_INV	= 3,	/* Skip everything BUT Antarctica coastlines */
+	GSHHS_ANTARCTICA_ICE_ID		= 4,	/* The GSHHG ID of the Antarctica ice-coastline polygon */
 	GSHHS_ANTARCTICA_LIMIT		= -60};	/* Data below 60S is Antarctica */
 
 struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
@@ -59,6 +66,7 @@ struct GMT_SHORE_SELECT {	/* Information on levels and min area to use */
 	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	int antarctica_mode;	/* If 1, we skip all data south of 60S, i.e. the Antarctica continent and islands */
 	double area;	/* Area of smallest geographical feature to include [0] */
+	double bin_size;	/* Current GSHHG bin size in degrees */
 };
 
 struct GMT_GSHHS_pol {	/* Information pertaining to each GSHHS polygon */
@@ -76,7 +84,7 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int min_level;	/* Lowest level to include [0] */
 	int max_level;	/* Highest level to include [4] */
 	int flag;		/* If riverlakes or lakes are to be excluded */
-	int has_source;		/* 1 if this GSHHG file contains feature source (0 for older files) */
+	int two_Antarcticas;	/* 1 if this GSHHG file contains two Antarctica solutions [v 2.2.x has one] */
 	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	double min_area;	/* Smallest feature to include in km^2 */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
@@ -139,9 +147,11 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 	int n_node_id;		/* Id for variable n_nodes */
 	int bin_firstseg_id;	/* Id for variable bin_firstseg */
 	int bin_info_id;	/* Id for variable bin_info */
+	int bin_info_id_ANT;	/* Id for variable bin_info */
 	int bin_nseg_id;	/* Id for variable bin_nseg */
 	
 	int seg_info_id;	/* Id for variable seg_info */
+	int seg_info_id_ANT;	/* Id for variable seg_info for Antarctica */
 	int seg_start_id;	/* Id for variable seg_start */
 	int seg_GSHHS_ID_id;	/* Id for variable seg_GSHHS_ID */
 	
@@ -234,7 +244,7 @@ struct GMT_GSHHS_POL {
 	int n;
 	int interior;	/* true if polygon is inside bin */
 	int level;
-	int fid;		/* Fill id; same as level but 5 if riverlake */
+	int fid;	/* Fill id; same as level but 5 if riverlake */
 	double *lon;
 	double *lat;
 };

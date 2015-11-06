@@ -78,6 +78,23 @@ if (FFTW3_FOUND)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${FFTW3F_LIBRARIES})
 endif (FFTW3_FOUND)
 
+find_package (LAPACK)
+if (LAPACK_FOUND)
+	set (HAVE_LAPACK TRUE CACHE INTERNAL "System has LAPACK")
+	set (GMT_CONFIG_LAPACK_MESSAGE "yes" CACHE INTERNAL "LAPACK config message")
+	include_directories (${LAPACK_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${LAPACK_LIBRARIES})
+else (LAPACK_FOUND)
+	if (LAPACK_LIBRARY)
+		# Set in ConfigUser.cmake
+		set (HAVE_LAPACK TRUE CACHE INTERNAL "System has LAPACK")
+		set (GMT_CONFIG_LAPACK_MESSAGE "yes" CACHE INTERNAL "LAPACK config message")
+		list (APPEND GMT_OPTIONAL_LIBRARIES ${LAPACK_LIBRARY})
+	else (LAPACK_LIBRARY)
+		set (GMT_CONFIG_LAPACK_MESSAGE "no" CACHE INTERNAL "LAPACK config message")
+	endif (LAPACK_LIBRARY)
+endif (LAPACK_FOUND)
+
 find_package (ZLIB)
 if (ZLIB_FOUND)
 	set (HAVE_ZLIB TRUE CACHE INTERNAL "System has ZLIB")
@@ -91,20 +108,89 @@ if (APPLE)
 	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
 endif (APPLE)
 
-find_package (OpenMP)
+set (GMT_OPENMP TRUE CACHE INTERNAL "Turn on GMT OpenMP")
+find_package (OpenMP) # OpenMP not used; disabled for now
 if (OPENMP_FOUND AND GMT_OPENMP)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 	set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_C_FLAGS}")
 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenMP_C_FLAGS}")
 	set (HAVE_OPENMP TRUE CACHE INTERNAL "OpenMP enabled." FORCE)
+	set (GMT_CONFIG_OPENMP_MESSAGE "enabled"
+		CACHE INTERNAL "OPENMP config message")
+	if (WIN32 AND OMP_DLL_LOC)
+		# UGLY AND RISKY PATCH FOR THE CPACK BUG OF NOT COPYING THE OMP DLL. tHIS PATCH RELIES
+		# ON THE SETING OF THE OMP_DLL_LOC VARIABLE IN ConfigUser.cmake. MINE HAS:
+		# set (OMP_DLL_LOC "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/redist/x64/Microsoft.VC120.OPENMP/vcomp120.dll")
+		install(FILES ${OMP_DLL_LOC} DESTINATION bin COMPONENT Libraries)
+	endif (WIN32 AND OMP_DLL_LOC)
 else (OPENMP_FOUND AND GMT_OPENMP)
 	set (HAVE_OPENMP FALSE CACHE INTERNAL "OpenMP disabled." FORCE)
+	set (GMT_CONFIG_OPENMP_MESSAGE "disabled"
+		CACHE INTERNAL "OPENMP config message")
 endif (OPENMP_FOUND AND GMT_OPENMP)
 if (OPENMP_FOUND AND NOT GMT_OPENMP)
 	message (STATUS "User variable GMT_OPENMP not set: disabling OpenMP.")
+	set (GMT_CONFIG_OPENMP_MESSAGE "disabled (GMT_OPENMP not set)"
+		CACHE INTERNAL "OPENMP config message")
 endif (OPENMP_FOUND AND NOT GMT_OPENMP)
 
-find_package (Threads)
+if (WIN32)
+	# find pthreads-win32
+	find_path (PTHREADS_INCLUDE_DIR pthread.h
+		HINTS ${PTHREADS_WIN32_ROOT}
+		PATH_SUFFIXES include)
+	find_library(PTHREADS_WIN32_LIBRARY
+		NAMES pthreadVC2
+		HINTS ${PTHREADS_WIN32_ROOT}
+		PATH_SUFFIXES lib)
+	if (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
+		set (Threads_FOUND TRUE)
+		set (CMAKE_THREAD_LIBS_INIT ${PTHREADS_WIN32_LIBRARY})
+		mark_as_advanced (
+			CMAKE_THREAD_LIBS_INIT
+			PTHREADS_INCLUDE_DIR
+			PTHREADS_WIN32_LIBRARY)
+		message (STATUS "Found pthreads-win32: ${PTHREADS_WIN32_LIBRARY}")
+	endif (PTHREADS_INCLUDE_DIR AND PTHREADS_WIN32_LIBRARY)
+	set (Threads_FOUND FALSE)
+else (WIN32)
+	# find pthreads
+  set (CMAKE_THREAD_PREFER_PTHREAD TRUE)
+  find_package (Threads)
+endif (WIN32)
+
+# build pthreads example
+if (Threads_FOUND)
+	set (HAVE_PTHREAD TRUE CACHE INTERNAL "System has pthread.h")
+	add_executable (pthreads_example pthreads_example.c)
+	include_directories(${PTHREADS_INCLUDE_DIR})
+	target_link_libraries(pthreads_example ${CMAKE_THREAD_LIBS_INIT})
+	set (GMT_CONFIG_PTHREAD_MESSAGE "enabled"
+		CACHE INTERNAL "PTHREAD config message")
+else (Threads_FOUND)
+	set (GMT_CONFIG_PTHREAD_MESSAGE "disabled"
+		CACHE INTERNAL "PTHREAD config message")
+endif (Threads_FOUND)
+
+find_package(GLIB COMPONENTS gthread)
+if (GLIB_FOUND AND GMT_USE_THREADS)
+	set (HAVE_GLIB_GTHREAD TRUE CACHE INTERNAL "System has GLIB component gthread")
+	include_directories (${GLIB_INCLUDE_DIRS})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${GLIB_LIBRARIES})
+	set (GMT_CONFIG_GTHREAD_MESSAGE "enabled"
+		CACHE INTERNAL "GTHREAD config message")
+endif (GLIB_FOUND AND GMT_USE_THREADS)
+if (GLIB_FOUND AND NOT GMT_USE_THREADS)
+	set (HAVE_GLIB_GTHREAD FALSE CACHE INTERNAL "User disabled threads")
+	message (STATUS "User variable GMT_USE_THREADS not set: disabling GThread.")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "disabled"
+		CACHE INTERNAL "GTHREAD config message")
+endif (GLIB_FOUND AND NOT GMT_USE_THREADS)
+if (GMT_USE_THREADS AND NOT GLIB_FOUND)
+	message (FATAL_ERROR "User variable GMT_USE_THREADS set but GLIB component gthread not found.")
+	set (GMT_CONFIG_GTHREAD_MESSAGE "unavailable"
+		CACHE INTERNAL "GTHREAD config message")
+endif (GMT_USE_THREADS AND NOT GLIB_FOUND)
 
 # check for math and POSIX functions
 include(ConfigureChecks)
@@ -142,13 +228,13 @@ else (NOT LICENSE_RESTRICTED) # on
 endif (NOT LICENSE_RESTRICTED)
 
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
-	fitcircle.c gmt2kml.c gmtconvert.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtconnect.c gmtvector.c gmtwhich.c grd2cpt.c grd2rgb.c
+	fitcircle.c gmt2kml.c gmtconvert.c gmtlogo.c gmtmath.c gmtselect.c gmtsimplify.c
+	gmtspatial.c gmtconnect.c gmtregress.c gmtvector.c gmtwhich.c grd2cpt.c grd2rgb.c
 	grd2xyz.c grdblend.c grdclip.c grdcut.c grdedit.c grdfft.c grdfilter.c
 	grdgradient.c grdhisteq.c grdinfo.c grdlandmask.c grdmask.c grdmath.c
-	grdpaste.c grdproject.c grdraster.c grdsample.c grdreformat.c grdtrack.c
+	grdpaste.c grdproject.c grdraster.c grdsample.c grdconvert.c grdtrack.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c makecpt.c mapproject.c
-	gmtinfo.c nearneighbor.c project.c ps2raster.c sample1d.c spectrum1d.c
+	gmtinfo.c nearneighbor.c project.c psconvert.c sample1d.c spectrum1d.c
 	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c
 	surface.c trend1d.c trend2d.c triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c grdcontour.c grdimage.c grdvector.c grdview.c psbasemap.c psclip.c
@@ -157,25 +243,25 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c filter1d.c
 
 # Legacy modules for which to install compatibility links via
 # install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp)
+set (GMT_COMPAT_MODULES minmax gmt2rgb gmtstitch gmtdp grdreformat ps2raster)
 
 # libpslib
-set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
+set (GMT_PSL_SRCS postscriptlight.c common_string.c common_string.h common_runpath.c
 	common_runpath.h declspec.h gmt_config.h gmt_notposix.h)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_sighandler.c common_string.h declspec.h getopt.h
-	gmt_dev.h gmt_calclock.h gmt_colors.h gmt_common.h gmt_constants.h
-	gmt_contour.h gmt_crossing.h gmt_customio.h gmt_dcw.h gmt_defaults.h
-	gmt_error.h gmt_gdalread.h gmt_grd.h gmt_grdio.h gmt_hash.h gmt_init.h
-	gmt_internals.h gmt_io.h gmt_macros.h gmt_map.h gmt_media_name.h
+	gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
+	gmt_contour.h gmt_customio.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
+	gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
+	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h
 	gmt_media_size.h gmt_mgg_header2.h gmt_sharedlibs.h gmt_memory.h
-	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_option.h gmt_pennames.h
-	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h
-	gmt_support.h gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h
-	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h pslib.h
-	s_rint.h triangle.h gmt.h gmt_resources.h gmt_define.h gmt_private.h
+	gmt_core_module.h gmt_nan.h gmt_notposix.h gmt_pennames.h
+	gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h
+	gmt_symbol.h gmt_synopsis.h gmt_texture.h gmt_time.h
+	gmt_types.h gmt_unique.h gmt_version.h gshhg_version.h postscriptlight.h
+	s_rint.h triangle.h gmt.h gmt_resources.h gmt_private.h
 	gmt_error_codes.h gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_compat.c
 	gmt_customio.c gmt_dcw.c gmt_error.c gmt_fft.c gmt_grdio.c gmt_io.c
 	gmt_memory.c gmt_nc.c gmt_notposix.c gmt_proj.c gmt_shore.c gmt_sph.c
@@ -282,17 +368,6 @@ set_source_files_properties (triangle.c
 	PROPERTIES
 	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 
-if (MSVC)
-	# Disable automatic manifest generation
-	string(REGEX REPLACE "/MANIFEST[^ ]*( |$)" ""
-		CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
-
-	# To expand the command line arguments in Windows, see:
-	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
-endif(MSVC)
-
 # libpslib
 add_library (pslib
 	${GMT_GEN_HDRS}
@@ -313,7 +388,7 @@ endif (HAVE_ZLIB)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
-	OUTPUT_NAME gmtpsl
+	OUTPUT_NAME postscriptlight
 	PREFIX "${LIB_PREFIX}"
 	IMPORT_PREFIX "${LIB_PREFIX}"
 	VERSION ${GMT_LIB_VERSION}
@@ -375,6 +450,14 @@ if (BUILD_SUPPLEMENTS)
 		gmtlib
 		pslib)
 
+	# Include any extra files that are listed in EXTRA_INCLUDE_GMTSUPPL defined in ConfigUser.cmake
+	# This include(s) will add new modules to the official GMT supplements
+	if (EXTRA_INCLUDE_GMTSUPPL)
+		foreach (_f ${EXTRA_INCLUDE_GMTSUPPL})
+			include (${_f})
+		endforeach(_f)
+	endif ()
+
 	set_target_properties (supplib
 		PROPERTIES
 		OUTPUT_NAME supplements
@@ -407,6 +490,15 @@ if (BUILD_SUPPLEMENTS)
 		COMPONENT Runtime)
 endif (BUILD_SUPPLEMENTS)
 
+# Include any extra files that are listed in EXTRA_INCLUDE_NEWSUPPL defined in ConfigUser.cmake
+# This include(s) will create new pluggins
+if (EXTRA_INCLUDE_NEWSUPPL)
+	foreach (_f ${EXTRA_INCLUDE_NEWSUPPL})
+		include (${_f})
+	endforeach(_f)
+endif ()
+
+
 # make UNIX PATH variable
 string (REPLACE ";" ":" GMT_BINARY_DIR_PATH "${GMT_BINARY_DIR_PATH}")
 set (GMT_BINARY_DIR_PATH ${GMT_BINARY_DIR_PATH} CACHE INTERNAL
@@ -424,7 +516,6 @@ add_dependencies (gmtlib pslib) # make gmtlib after pslib
 target_link_libraries (gmtlib
 	${NETCDF_LIBRARIES}
 	${GMT_OPTIONAL_LIBRARIES}
-	${CMAKE_THREAD_LIBS_INIT}
 	pslib)
 
 if (HAVE_M_LIBRARY)
@@ -499,6 +590,17 @@ else (BUILD_SUPPLEMENTS)
 	add_dependencies (check ${_gmt_progs} psldemo)
 endif (BUILD_SUPPLEMENTS)
 
+if (MSVC)
+	# Disable automatic manifest generation
+	string(REGEX REPLACE "/MANIFEST[^ ]*( |$)" ""
+		CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+
+	# To expand the command line arguments in Windows, see:
+	# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} setargv.obj")
+endif(MSVC)
+
 # add the install targets
 install (TARGETS gmtlib pslib gmt
 	ARCHIVE DESTINATION ${GMT_LIBDIR}
@@ -512,9 +614,26 @@ string (REPLACE ".c" "" _gmt_modules "${GMT_PROGS_SRCS}")
 install_module_symlink (${_gmt_modules} ${GMT_COMPAT_MODULES})
 
 # Install public headers
-install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h declspec.h
+install (FILES gmt.h gmt_resources.h declspec.h
 	DESTINATION ${GMT_INCLUDEDIR}
 	COMPONENT Runtime)
+
+if (BUILD_DEVELOPER)
+	# Install Developer headers [These are clean and have no #define HAVE_* configuration]
+	install (FILES postscriptlight.h common_math.h common_string.h gmt_common.h gmt_constants.h gmt_contour.h
+		gmt_dcw.h gmt_decorate.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_grd.h
+		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_nan.h gmt_notposix.h gmt_plot.h
+		gmt_private.h gmt_project.h gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
+		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h
+		gmt_core_module.h gmt_supplements_module.h
+		DESTINATION ${GMT_INCLUDEDIR}
+		COMPONENT Runtime)
+	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
+	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h
+		${PROJECT_BINARY_DIR}/src/gmt_dimensions.h ${PROJECT_BINARY_DIR}/src/gmt_version.h
+		DESTINATION ${GMT_INCLUDEDIR}
+		COMPONENT Runtime)
+endif (BUILD_DEVELOPER)
 
 # symlink to gmt-wrapper in bindir and libdir:
 if (UNIX AND GMT_INSTALL_NAME_SUFFIX)
@@ -530,11 +649,6 @@ endif (UNIX AND GMT_INSTALL_NAME_SUFFIX)
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/isogmt${GMT_INSTALL_NAME_SUFFIX}
 	${CMAKE_CURRENT_BINARY_DIR}/gmt-config${GMT_INSTALL_NAME_SUFFIX}
-	DESTINATION ${GMT_BINDIR}
-	COMPONENT Runtime)
-
-install (PROGRAMS gmtlogo
-	RENAME gmtlogo${GMT_INSTALL_NAME_SUFFIX}
 	DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 

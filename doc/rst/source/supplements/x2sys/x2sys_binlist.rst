@@ -13,7 +13,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_binlist** *track(s)* **-T**\ *TAG* [ **-D** ] [ **-E** ]
+**x2sys_binlist** *track(s)* |-T|\ *TAG*
+[ |-D| ]
+[ |-E| ]
 [ |SYN_OPT-V| ]
 
 |No-spaces|
@@ -27,13 +29,13 @@ header and one data record per bin crossed; these records contain *lon*,
 *lat*, *index*, *flags*\ [, *dist*], where *lon*, *lat* are the
 coordinates of the center of the bin, the *index* is the 1-D number of
 the bin, and *flags* is a bitflag that describes which data fields were
-available in this bin. The optional *dist* requires **-D**. The input
+available in this bin. The optional *dist* requires |-D|. The input
 files can be of any format, which must be described and passed with the
-**-T** option. The bin-index listing is a crude representation of where
+|-T| option. The bin-index listing is a crude representation of where
 the track goes and is used by the data archivist to build an x2sys track
 data base for miscellaneous track queries, such as when needing to
 determine which tracks should be compared in a crossover analysis. You
-must run **x2sys_init** to initialize the tag before you can run the
+must run :doc:`x2sys_init` to initialize the tag before you can run the
 indexing.
 
 Required Arguments
@@ -45,19 +47,26 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**
-    Calculate the length of trackline segments per bin [Default skips
+    Calculate the length of track-line segments per bin [Default skips
     this step]. The length fragments are given as the 5th output column
     (after the *flags*). The length units are obtained via the TAB
-    setting (see **x2sys_init**).
+    setting (see :doc:`x2sys_init`).
+
+.. _-E:
+
 **-E**
     Convert geographic data to a cylindrical equal-area projection prior
     to binning. Basically, we apply the projection
     **-JY**\ *lon0*/37:04:17.166076/360, where *lon0* is the
     mid-longitude of the region. Requires **-D**, geographical data, and
     a global region (e.g., **-Rg** or **-Rd**). This option is useful
-    for statistics related to trackline density but should not be used
+    for statistics related to track-line density but should not be used
     when preparing bin-index files for the x2sys track data bases.
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_

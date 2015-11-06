@@ -17,6 +17,7 @@ GM
    gmtinfo
    gmtlogo
    gmtmath
+   gmtregress
    gmtselect
    gmtset
    gmt_shell_functions.sh

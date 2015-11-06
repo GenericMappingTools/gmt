@@ -38,12 +38,12 @@ struct TESTAPI_CTRL {
 	struct I {	/* -I sets input method */
 		bool active;
 		unsigned int mode;
-		unsigned int via;
+		enum GMT_enum_via via;
 	} I;
 	struct W {	/* -W sets output method */
 		bool active;
 		unsigned int mode;
-		unsigned int via;
+		enum GMT_enum_via via;
 	} W;
 };
 
@@ -168,8 +168,7 @@ int GMT_testapi_parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct G
 #define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); bailout (code);}
 //#define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_testapi (void *V_API, int mode, void *args)
-{
+int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
 	int geometry[7] = {GMT_IS_POINT, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
 	uint64_t k;
@@ -209,7 +208,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	GMT = API->GMT;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_testapi_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_testapi_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the testapi main code ----------------------------*/
 
@@ -342,7 +341,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		if (GMT_Encode_ID (API, string, in_ID) != GMT_OK) {
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
-		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
+		sprintf (buffer, "%s -Dx0/0+w6i -P -F+p0.25p+c0 --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
 		if (GMT_Call_Module (API, "psimage", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Plot the image */
 			Return (API->error);
 		}
@@ -470,7 +469,7 @@ int main (int argc, char *argv[]) {
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_testapi (API, argc-1, (argv+1));

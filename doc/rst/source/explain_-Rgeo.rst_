@@ -5,6 +5,12 @@
     and upper right map coordinates are given instead of w/e/s/n. The
     two shorthands **-Rg** and **-Rd** stand for global domain (0/360
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
+    Alternatively for grid creation, give **R**\ *code*\ *lon*/*lat*/*nx*/*ny*, where
+    *code* is a 2-character combination of L, C, R (for left, center, or right)
+    and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
+    indicates which point on a rectangular region the *lon*/*lat* coordinate
+    refers to, and the grid dimensions *nx* and *ny* with grid spacings via
+    **-I** is used to create the corresponding region.
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing, if applicable) are copied from
     the grid. Using **-R**\ *unit* expects projected (Cartesian)

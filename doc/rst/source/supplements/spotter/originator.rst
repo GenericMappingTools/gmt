@@ -13,14 +13,19 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originator** [ *table* ] **-E**\ [**+**]\ *rotfile*
-**-F**\ [**+**]\ *hs_file* [ **-D**\ *d_km* ] [ **-L**\ [*flag*] ]
-[ **-N**\ *upper_age* ] [ **-Q**\ *r/t* ] [ **-S**\ [*n_hs*] ]
-[ **-T** ]
+**originator** [ *tables* ] |-E|\ [**+**]\ *rotfile*
+|-F|\ [**+**]\ *hs_file* 
+[ |-D|\ *d_km* ]
+[ |-L|\ [*flag*] ]
+[ |-N|\ *upper_age* ]
+[ |-Q|\ *r/t* ]
+[ |-S|\ [*n_hs*] ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *maxdist* ]
-[ **-Z** ]
+[ |-W|\ *maxdist* ]
+[ |-Z| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -31,7 +36,7 @@ Description
 -----------
 
 **originator** reads (longitude, latitude, height, radius, crustal_age)
-records from *infiles* [or standard input] and uses the given Absolute
+records from *tables* [or standard input] and uses the given Absolute
 Plate Motion (APM) stage or total reconstruction rotation file and the
 list of hotspot locations to determine the most likely origin (hotspot)
 for each seamount. It does so by calculating flowlines back in time and
@@ -45,6 +50,8 @@ radius, crustal_age) files.
 
 Required Arguments
 ------------------
+
+.. _-E:
 
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
@@ -71,6 +78,8 @@ Required Arguments
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found. Prepend **+** if you want to invert
     the rotations prior to use.
+
+.. _-F:
 
 **-F**\ *file*
     Give file with hotspot locations. This file must contain one record
@@ -107,40 +116,62 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-D:
+
 **-D**\ *d_km*
     Sets the flowline sampling interval in km. [Default is 5].
 
-**-L**\ [*flag*\ ]
+.. _-L:
+
+**-L**\ [*flag*]
     Output closest approach for nearest hotspot only (ignores **-S**).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
     (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
     *dist* in spherical degrees.
 
+.. _-N:
+
 **-N**\ *upper_age*
     Set the maximum age to extend the oldest stage back in time [no extension].
+
+.. _-Q:
 
 **-Q**\ *r/t*
     Input files only has (*x*,\ *y*,\ *z*); specify constant values for *r*,\ *t* that
     will be implied for each record.
 
+.. _-S:
+
 **-S**\ [*n_hs*\ ]
     Set the number of closest hotspots to report [Default is 1].
+
+.. _-T:
 
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *maxdist*
     Only report those seamounts whose flowlines came within *maxdist* to
     any hotspot [Default reports all seamounts].
+
+.. _-Z:
+
 **-Z**
     Use the hotspot ID number rather than the name tag in output records.
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_
@@ -182,6 +213,13 @@ the same exercise with a moving hotspot model, try
 
 Now the output is 80 -213.135 52.3. Negative distances means the closest
 approach was east of the hotspot.
+
+Notes
+-----
+
+GMT distributes the EarthByte rotation model Global_EarthByte_230-0Ma_GK07_AREPS.rot.
+To use an alternate rotation file, create an environmental parameters named
+**GPLATES_ROTATIONS** that points to an alternate rotation file.
 
 See Also
 --------

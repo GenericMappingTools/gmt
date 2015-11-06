@@ -23,6 +23,11 @@
  * Version: 5
  */
 
+/*!
+ * \file common_runpath.h
+ * \brief Prototypes of functions shared between GMT and PSL
+ */
+
 #pragma once
 #ifndef _COMMON_RUNPATH_H
 #define _COMMON_RUNPATH_H

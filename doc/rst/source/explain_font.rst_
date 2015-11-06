@@ -9,14 +9,17 @@
     (case sensitive!) of the font or its equivalent numerical ID (e.g.,
     Helvetica-Bold or 1). *fill* specifies the gray shade, color or
     pattern of the text (see `Specifying Fill`_ above). Optionally, you may
-    append **=**\ *pen* to the *fill* value in order to draw the text
-    outline; if used you may optionally skip the text fill by setting it
-    to **-**. If any of the attributes is omitted their default or
+    append **=**\ *pen* to the *fill* value in order to draw a text
+    outline. If you want to avoid that the outline partially obscures the text, append
+    append **=~**\ *pen* instead; in that case only half the linewidth is plotted
+    on the outside of the font only.  If an outline is requested, you may optionally
+    skip the text *fill* by setting it to **-**, in which case the full pen width
+    is always used. If any of the font attributes is omitted their default or
     previous setting will be retained.
 
     The 35 available fonts are:
 
-    0. Helvetica    
+    0. Helvetica
     1. Helvetica-Bold
     2. Helvetica-Oblique
     3. Helvetica-BoldOblique

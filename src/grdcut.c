@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"grdcut"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a grid"
+#define THIS_MODULE_KEYS	"<GI,GGO,RG-"
 
 #include "gmt_dev.h"
 
@@ -91,7 +92,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -100,6 +101,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The WESN you specify must be within the WESN of the input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
@@ -110,7 +112,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   all values outside this region are outside the range [-inf/+inf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs to be outside the range.  The resulting grid will be NaN-free.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs inrange instead [Default just ignores NaNs in decision].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zr to consider NaNs in range instead [Default just ignores NaNs in decision].\n");
 	GMT_Option (API, "f,.");
 	
 	return (EXIT_FAILURE);
@@ -254,7 +256,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdcut_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdcut_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdcut_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
@@ -348,7 +350,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - row1) * G->header->inc[GMT_Y];
 			wesn_new[YHI] = G->header->wesn[YHI] - row0 * G->header->inc[GMT_Y];
 		}
-		GMT_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
+		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
 		add_mode = GMT_IO_RESET;	/* Pass this to allow reading the data again. */
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */

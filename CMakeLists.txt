@@ -77,6 +77,7 @@ include (ConfigCMake)
 # Find UNIX commands
 include (FindUnixCommands)
 find_program (SVN svn)
+find_program (GS gs gswin64)
 
 # Global test target
 add_custom_target (check
@@ -142,6 +143,12 @@ else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
 endif (BUILD_SUPPLEMENTS)
 
+if (BUILD_DEVELOPER)
+	set (DEVEL "yes")
+else (BUILD_DEVELOPER)
+	set (DEVEL "no")
+endif (BUILD_DEVELOPER)
+
 if (BUILD_SHARED_LIBS)
 	set (BUILD_MODE "shared")
 else (BUILD_SHARED_LIBS)
@@ -172,12 +179,17 @@ message(
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  ZLIB library               : ${ZLIB_LIBRARY}\n"
 	"*  ZLIB include dir           : ${ZLIB_INCLUDE_DIR}\n"
+	"*  LAPACK library             : ${GMT_CONFIG_LAPACK_MESSAGE}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
+	"*  OpenMP support             : ${GMT_CONFIG_OPENMP_MESSAGE}\n"
+	"*  GLIB GTHREAD support       : ${GMT_CONFIG_GTHREAD_MESSAGE}\n"
+	"*  PTHREAD support            : ${GMT_CONFIG_PTHREAD_MESSAGE}\n"
 	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
+	"*  Build GMT Developer        : ${DEVEL}\n"
 	"*  Build proto supplements    : ${PROTO}\n"
 	"*\n"
 	"*  Locations:\n"

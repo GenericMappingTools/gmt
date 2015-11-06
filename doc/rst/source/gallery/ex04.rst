@@ -16,7 +16,7 @@ how to do it:
 .. literalinclude:: /_verbatim/example_04.txt
    :language: bash
 
-The purpose of the color palette file ``zero.cpt`` is to have the positive topography
+The purpose of the CPT file ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
 Figure shows the complete illustration.
 

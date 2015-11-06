@@ -30,6 +30,7 @@
 #define THIS_MODULE_NAME	"x2sys_get"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Get track listing from track index database"
+#define THIS_MODULE_KEYS	">TO,RG-"
 
 #include "x2sys.h"
 
@@ -175,8 +176,8 @@ int GMT_x2sys_get_parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
-{	/* Return track id # for this leg */
+int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
+	/* Return track id # for this leg */
 	unsigned int i;
 	
 	for (i = 0; i < n; i++) if (B->head[i].trackname && !strcmp (name, B->head[i].trackname)) return (i);
@@ -191,7 +192,6 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
-
 	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
 	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	
@@ -229,7 +229,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_get_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_get_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_get_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_get main code ----------------------------*/
 	
@@ -274,7 +274,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
-				if ((p = strchr (line, '.'))) line[(size_t)(p-line)] = '\0';	/* Remove extension */
+				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Leg %s not in the data base\n", line);
@@ -351,6 +351,13 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 		}
 	}
 
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		Return (API->error);
+	}
+	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {
 		for (id1 = 0, n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {
@@ -361,9 +368,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 				n_pairs++;
 				/* OK, print out pair, with lega alphabetically lower than legb */
 				if (strcmp (B.head[id1].trackname, B.head[id2].trackname) < 0)
-					printf ("%s%s%s\n", B.head[id1].trackname, GMT->current.setting.io_col_separator, B.head[id2].trackname);
+					sprintf (line, "%s%s%s\n", B.head[id1].trackname, GMT->current.setting.io_col_separator, B.head[id2].trackname);
 				else
-					printf ("%s%s%s\n", B.head[id2].trackname, GMT->current.setting.io_col_separator, B.head[id1].trackname);
+					sprintf (line, "%s%s%s\n", B.head[id2].trackname, GMT->current.setting.io_col_separator, B.head[id1].trackname);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 			}
 		}
 		GMT_free (GMT, matrix);
@@ -372,6 +380,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
+		char text[GMT_LEN64] = {""};
 		for (ii = n_tracks_found = 0; ii < n_tracks; ++ii) {
 			if (y_match[ii] == 1 && n_match[ii] == 0)
 				++n_tracks_found;
@@ -380,28 +389,38 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Found %d tracks\n", n_tracks_found);
 
 			if (!Ctrl->D.active) {
-				printf ("# Search command: %s", THIS_MODULE_NAME);
-				for (opt = options; opt; opt = opt->next)
-					(opt->option == GMT_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-				printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
-				for (ii = 0; ii < (s->n_fields-1); ii++)
-					printf ("%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
-				printf ("%s\n", s->info[s->n_fields-1].name);
+				sprintf (line, "Search command: %s", THIS_MODULE_NAME);
+				for (opt = options; opt; opt = opt->next) {
+					(opt->option == GMT_OPT_INFILE) ? sprintf (text, " %s", opt->arg) : sprintf (text, " -%c%s", opt->option, opt->arg);
+					strcat (line, text);
+				}
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
+				sprintf (line, "track_ID%s", GMT->current.setting.io_col_separator);
+				for (ii = 0; ii < (s->n_fields-1); ii++) {
+					sprintf (text, "%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
+					strcat (line, text);
+				}
+				strcat (line, s->info[s->n_fields-1].name);
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 			}
 
 			for (kk = 0; kk < n_tracks; kk++) {
 				if (y_match[kk] == 0 || n_match[kk] == 1) continue;
-				printf ("%s.%s", B.head[kk].trackname, s->suffix);
+				sprintf (line, "%s.%s%s", B.head[kk].trackname, s->suffix, GMT->current.setting.io_col_separator);
 				if (!Ctrl->D.active) {
 					for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
-						(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
+						(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? strcat (line, "Y") : strcat (line, "N");
 					}
 				}
-				printf ("\n");
+				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 			}
 		}
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Search found no tracks\n");
+	}
+	
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
 	}
 	
 	GMT_free (GMT, y_match);

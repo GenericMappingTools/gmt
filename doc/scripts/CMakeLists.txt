@@ -19,7 +19,7 @@
 # Scripts which have to be converted to verbatim (with comments)
 set (_scr_nostrip GMT_App_M_2.sh GMT_App_P_1.sh GMT_App_P_2.sh)
 
-# Scripts which have to be converted to verbatim (without comments)
+# Scripts which have to be cobnverted to verbatim (without comments)
 set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 	GMT_-B_time3.sh GMT_-B_time4.sh GMT_-B_time5.sh GMT_-B_time6.sh
 	GMT_-B_time7.sh GMT_albers.sh GMT_App_K_1.sh GMT_App_K_2.sh GMT_App_K_3.sh
@@ -43,11 +43,12 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 	GMT_App_E.sh GMT_App_F_dingbats.sh GMT_App_F_iso+.sh GMT_App_F_stand+.sh
 	GMT_App_F_stand+_iso+.sh GMT_App_F_symbol.sh GMT_App_F_symbol_dingbats.sh
 	GMT_App_G.sh GMT_App_J_1.sh GMT_App_J_2.sh GMT_App_J_3.sh GMT_App_M_1a.sh GMT_App_M_1b.sh
-	GMT_App_N_1.sh GMT_arrows.sh GMT_atan.sh GMT_color_interpolate.sh
-	GMT_chunking.sh GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh
-	GMT_Defaults_1c.sh GMT_linecap.sh GMT_nearneighbor.sh
-	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh
-	GMT_utm_zones.sh GMT_volcano.sh
+	GMT_App_N_1.sh GMT_arrows.sh GMT_arrows_types.sh GMT_atan.sh GMT_color_interpolate.sh
+	GMT_chunking.sh GMT_coverlogo.sh GMT_Defaults_1a.sh GMT_Defaults_1b.sh GMT_Defaults_1c.sh
+	GMT_bezier.sh GMT_linecap.sh GMT_lineoffset.sh GMT_nearneighbor.sh GMT_anchor.sh
+	GMT_pstext_clearance.sh GMT_pstext_justify.sh GMT_registration.sh GMT_obl_nz.sh
+	GMT_utm_zones.sh GMT_volcano.sh GMT_panel.sh GMT_mapscale.sh GMT_insert.sh GMT_linearrow.sh
+	GMT_dir_rose.sh GMT_images.sh GMT_colorbar.sh GMT_legend.sh GMT_mag_rose.sh
 	GMT_tut_1.sh GMT_tut_2.sh GMT_tut_3.sh GMT_tut_4.sh GMT_tut_5.sh
 	GMT_tut_6.sh GMT_tut_7.sh GMT_tut_8.sh GMT_tut_9.sh GMT_tut_10.sh
 	GMT_tut_11.sh GMT_tut_12.sh GMT_tut_13.sh GMT_tut_14.sh GMT_tut_15.sh
@@ -82,7 +83,7 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -93,7 +94,7 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			COMMAND
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
@@ -105,7 +106,7 @@ foreach (_fig ${_scripts_ps})
 			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert -A -P -Tf
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -115,7 +116,7 @@ foreach (_fig ${_scripts_ps})
 			_dummy_var=cmake_assumes_this_is_a_command # needed for spaces to be escaped correctly
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt psconvert
 			-A -P -E150 -TG -Qg4 -Qt4 -C-dDOINTERPOLATE
 			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}

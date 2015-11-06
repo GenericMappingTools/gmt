@@ -41,24 +41,8 @@ _gmt()
 
     opts=( --help --show-datadir --show-bindir --version )
 
-    progs=( 2kml backtracker blockmean blockmedian blockmode connect convert \
-        defaults dimfilter filter1d fitcircle get gmt2kml gmtconnect gmtconvert \
-        gmtdefaults gmtget gmtgravmag3d gmtinfo gmtmath gmtselect gmtset \
-        gmtsimplify gmtspatial gmtvector gmtwhich gravfft grd2cpt grd2rgb \
-        grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter \
-        grdgradient grdgravmag3d grdhisteq grdimage grdinfo grdlandmask grdmask \
-        grdmath grdpaste grdpmodeler grdproject grdraster grdredpol grdreformat \
-        grdrotater grdsample grdseamount grdspotter grdtrack grdtrend grdvector \
-        grdview grdvolume greenspline gshhg hotspotter img2grd info kml2gmt \
-        makecpt mapproject math mgd77convert mgd77info mgd77list mgd77magref \
-        mgd77manage mgd77path mgd77sniffer mgd77track nearneighbor originator \
-        project ps2raster psbasemap psclip pscoast pscontour pscoupe pshistogram \
-        psimage pslegend psmask psmeca pspolar psrose psscale pssegy pssegyz \
-        pstext psvelo pswiggle psxy psxyz rotconverter sample1d segy2grd select \
-        set simplify spatial spectrum1d sph2grd sphdistance sphinterpolate \
-        sphtriangulate splitxyz surface trend1d trend2d triangulate vector which \
-        x2sys_binlist x2sys_cross x2sys_datalist x2sys_get x2sys_init x2sys_list \
-        x2sys_merge x2sys_put x2sys_report x2sys_solve xyz2grd )
+    # strip off any leading "gmt" in module names:
+    progs=`gmt --show-modules | sed -e 's/^gmt//g'`
 
     # complete first arg
     if [[ ${COMP_CWORD} -eq 1 ]]; then
@@ -106,6 +90,9 @@ _gmt()
             gmtdefaults|defaults)
                 modopts=( -D -V )
                 ;;
+            gmtflexure|flexure)
+                modopts=( -A -C -D -F -S -T -V -W -Z -h )
+                ;;
             gmtget|get)
                 modopts=( -G -L -V \
                     $(gmt defaults | awk '/^[^#]/ {printf "%s ", $1}') )
@@ -117,6 +104,9 @@ _gmt()
                 ;;
             gmtinfo|info)
                 modopts=( -: -A -C -D -E -I -S -T -V -b -f -g -h -i -o -r -s )
+                ;;
+            gmtlogo|logo)
+                modopts=( -D -F -K -O -P -W -V -X -Y -c -t -x -y )
                 ;;
             gmtmath|math)
                 modopts=( -: -A -C -E -I -L -N -Q -S -T -V -b -f -g -h -i -o -s \
@@ -187,6 +177,9 @@ _gmt()
                 modopts=( -D -F -G -I -N -R -T -V -f )
                 fileopts=( -G )
                 ;;
+            grdflexure)
+                modopts=( -A -C -D -E -F -G -L -M -N -S -T -V -W -Z -f )
+                ;;
             grdgradient)
                 modopts=( -A -D -E -G -N -R -S -V -f )
                 fileopts=( -G -S )
@@ -238,7 +231,7 @@ _gmt()
                 modopts=( -C -E -F -G -M -N -R -T -V -W -Z )
                 fileopts=( -E -G -Z )
                 ;;
-            grdreformat)
+            grdconvert)
                 modopts=( -N -R -V -f )
                 ;;
             grdrotater)
@@ -336,7 +329,7 @@ _gmt()
             project)
                 modopts=( -: -A -C -E -F -G -L -N -Q -S -T -V -W -b -f -g -h -i -s )
                 ;;
-            ps2raster)
+            psconvert)
                 modopts=( -A -C -D -E -F -G -L -N -P -Q -S -TE -TF -TG -Tb -Te -Tf -Tg -Tj -Tm -Tt -V -W )
                 fileopts=( -D -G -L )
                 ;;

@@ -41,10 +41,11 @@
 #define THIS_MODULE_NAME	"gmtsimplify"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Line reduction using the Douglas-Peucker algorithm"
+#define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:>Vbfghio" GMT_OPT("HMm")
+#define GMT_PROG_OPTIONS "-:>Vbdfghio" GMT_OPT("HMm")
 
 /* Control structure for gmtsimplify */
 
@@ -80,8 +81,8 @@ int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtsimplify [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -90,7 +91,7 @@ int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify an output file [Default writes to stdout].\n");
-	GMT_Option (API, "V,bi2,bo,f,g,h,i,o,:,.");
+	GMT_Option (API, "V,bi2,bo,d,f,g,h,i,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -169,7 +170,7 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 	/* check for simple cases */
 
-	if (n_source < 3) {     /* one or two points */
+	if (n_source < 3) {     /* one or two points we return as is */
 		for (i = 0; i < n_source; i++) index[i] = i;
 		return (n_source);
 	}
@@ -279,8 +280,9 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 int GMT_gmtsimplify (void *V_API, int mode, void *args)
 {
 	int error;
-	bool geo, poly;
-	uint64_t tbl, col, row, seg, np_out, ns_in = 0, ns_out = 0, *index = NULL;
+	bool geo, poly, skip;
+	uint64_t tbl, col, row, seg_in, seg_out, np_out, ns_in = 0, ns_out = 0, n_in_tbl, *index = NULL;
+	uint64_t dim_out[4] = {1, 0, 0, 0}, n_saved;
 	
 	double tolerance;
 	
@@ -305,7 +307,7 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtsimplify_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtsimplify_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtsimplify_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtsimplify main code ----------------------------*/
 
@@ -326,8 +328,6 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	D[GMT_OUT] = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, D[GMT_IN]);	/* Allocate identical output tables; we reallocate memory below */
-
 	geo = GMT_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 
@@ -356,29 +356,50 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args)
 	}
 	
 	/* Process all tables and segments */
+	
+	dim_out[GMT_TBL] = D[GMT_IN]->n_tables;		/* Allocate at least as many tables as the input source */
+	dim_out[GMT_COL] = D[GMT_IN]->n_columns;	/* Allocate same number of columns tables as the input source */
+	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, D[GMT_IN]->geometry, 0, dim_out, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
+		Return (API->error);
+	}
+	
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
-		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {
-			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
-			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
+		n_in_tbl = 0;
+		D[GMT_OUT]->table[tbl]->segment = GMT_memory (GMT, NULL, D[GMT_IN]->table[tbl]->n_segments, struct GMT_DATASEGMENT *);	/* Inital (and max) allocation of segments */
+		for (seg_in = seg_out = 0; seg_in < D[GMT_IN]->table[tbl]->n_segments; seg_in++) {
+			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg_in];
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
 			poly = (!GMT_polygon_is_open (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows));
 			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
-			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, false);	/* Reallocate to get correct n_rows */
-			for (row = 0; row < np_out; row++) for (col = 0; col < S[GMT_IN]->n_columns; col++) {
-				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
+			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->coord[GMT_X][index[0]] == S[GMT_IN]->coord[GMT_X][index[1]] && S[GMT_IN]->coord[GMT_Y][index[0]] == S[GMT_IN]->coord[GMT_Y][index[1]]));
+			if (!skip) {	/* Must allocate output */
+				D[GMT_OUT]->table[tbl]->segment[seg_out] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
+				S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg_out];
+				GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_IN]->n_columns, true);	/* Allocate exact space needed */
+				for (row = 0; row < np_out; row++)
+					for (col = 0; col < S[GMT_IN]->n_columns; col++) {	/* Copy coordinates via index lookup */
+						S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
+					}
+				seg_out++;		/* Move on to next output segment */
+				ns_in++;		/* Input segment with points */
+				if (np_out) ns_out++;	/* Output segment with points */
+				n_in_tbl += np_out;
+				n_saved = np_out;
 			}
-			GMT_free (GMT, index);
-			if ((poly && np_out < 4) || (np_out == 2 && S[GMT_OUT]->coord[GMT_X][0] == S[GMT_OUT]->coord[GMT_X][1] && S[GMT_OUT]->coord[GMT_Y][0] == S[GMT_OUT]->coord[GMT_Y][1])) {
-				S[GMT_OUT]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped since nothing was returned */
-				np_out = 0;	/* Say nothing was returned */
-			}
-			ns_in++;		/* Input segment with points */
-			if (np_out) ns_out++;	/* Output segment with points */
-			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, np_out);
+			else
+				n_saved = 0;
+			if (np_out) GMT_free (GMT, index);	/* No longer needed */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
 		}
+		if (seg_out < D[GMT_IN]->table[tbl]->n_segments) D[GMT_OUT]->table[tbl]->segment = GMT_memory (GMT, D[GMT_OUT]->table[tbl]->segment, seg_out, struct GMT_DATASEGMENT *);	/* Reduce allocation to # of segments */
+		D[GMT_OUT]->table[tbl]->n_segments = seg_out;	/* Update segment count */
+		D[GMT_OUT]->table[tbl]->n_records = n_in_tbl;	/* Update table count */
+		D[GMT_OUT]->n_records += n_in_tbl;		/* Update dataset count of total records*/
+		D[GMT_OUT]->n_segments += seg_out;		/* Update dataset count of total segments*/
 	}
-
+	
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_IN]->geometry, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}

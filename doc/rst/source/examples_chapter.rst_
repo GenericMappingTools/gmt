@@ -108,7 +108,7 @@ Creating GMT Graphics
     :doc:`makecpt` to generate a linear color
     palette file ``geoid.cpt`` for the geoid and use
     :doc:`grd2cpt` to get a histogram-equalized
-    cpt file ``topo.cpt`` for the topography data. To emphasize the structures in the
+    CPT file ``topo.cpt`` for the topography data. To emphasize the structures in the
     data we calculate the slopes in the north-south direction using
     :doc:`grdgradient`; these will be used to
     modulate the color image. Next we run
@@ -184,7 +184,7 @@ Creating GMT Graphics
     .. literalinclude:: /_verbatim/example_04.txt
        :language: bash
 
-    The purpose of the color palette file ``zero.cpt`` is to have the positive topography
+    The purpose of the CPT file ``zero.cpt`` is to have the positive topography
     mesh painted light gray (the remainder is white). The left side of
     Figure shows the complete illustration.
 
@@ -416,7 +416,7 @@ Creating GMT Graphics
     values, and call :doc:`pscontour` to make a
     contour map and image directly from the raw data. Thus, in this example
     we do not actually make grid files but still are able to contour and
-    image the data. We use a color palette table ``topo.cpt`` (created via
+    image the data. We use a CPT table ``topo.cpt`` (created via
     :doc:`gmtinfo` and
     :doc:`makecpt`). The script becomes:
 
@@ -581,7 +581,7 @@ Creating GMT Graphics
     This example demonstrates how :doc:`pscoast`
     can be used to set up clip paths based on coastlines. This approach is
     well suited when different gridded data sets are to be merged on a plot
-    using different color palette files. Merging the files themselves may
+    using different CPT files. Merging the files themselves may
     not be doable since they may represent different data sets, as we show
     in this example. Here, we lay down a color map of the geoid field near
     India with :doc:`grdimage`, use
@@ -602,7 +602,7 @@ Creating GMT Graphics
     For this image it is appropriate to use the **-I** option in
     :doc:`psscale` so the legend gets shaded,
     similar to the geoid grid. See Appendix [app:M] to learn more about
-    color palettes and ways to draw color legends.
+    CPT files and ways to draw color legends.
 
     .. literalinclude:: /_verbatim/example_17.txt
        :language: bash
@@ -1087,7 +1087,7 @@ Creating GMT Graphics
     Appendix [sec:non-default-fonts] for further information. The script
     includes the following steps:
 
-    -  create a ``CUSTOM_font_info.d`` file;
+    -  create a ``PSL_custom_fonts.txt`` file;
 
     -  set the GMT parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
 
@@ -1127,7 +1127,7 @@ Creating GMT Graphics
     already done. First we get the EU flag directly from the web and convert
     it to a grid with values ranging from 0 to 255, where the higher values
     will become yellow and the lower values blue. This use of
-    :doc:`grdreformat` requires GDAL support.
+    :doc:`grdconvert` requires GDAL support.
     :doc:`grdedit` then adds the right grid dimension.
 
     The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
@@ -1146,7 +1146,7 @@ Creating GMT Graphics
 
     The script produces the plot in Figure :ref:`Example 32 <Fig_example_32>`. Note
     that the PNG image of the flag can be downloaded directly in the call
-    the :doc:`grdreformat`, but we have
+    the :doc:`grdconvert`, but we have
     commented that out in the example because it requires compilation with
     GDAL support. You will also see the
     :doc:`grdcut` command commented out because we
@@ -1284,13 +1284,29 @@ Creating GMT Graphics
 
     .. figure:: /_images/example_39.*
 
-    line simplification and area calculations
-    ----------------------------------------------
+    Line simplification and area calculations
+    -----------------------------------------
 
     .. literalinclude:: /_verbatim/example_40.txt
        :language: bash
 
     .. figure:: /_images/example_40.*
+
+    Advanced map legends
+    --------------------
+
+    .. literalinclude:: /_verbatim/example_41.txt
+       :language: bash
+
+    .. figure:: /_images/example_41.*
+
+    Antarctica and Stereographic Data
+    ---------------------------------
+
+    .. literalinclude:: /_verbatim/example_42.txt
+       :language: bash
+
+    .. figure:: /_images/example_42.*
 
 Creating GMT Animations
 =======================
@@ -1376,7 +1392,7 @@ Creating GMT Animations
        be trivial or a serious scripting exercise depending on what you want
        to show. We will give a few examples with increasing complexity. Once
        the PostScript plot is created you need to rasterize it; we
-       recommend you use :doc:`ps2raster` to
+       recommend you use :doc:`psconvert` to
        generate a TIFF image at the agreed-upon resolution. We also
        recommend that you place all frame images in a sub-directory. You may
        increment your frame counter using **gmt_set_framenext**.

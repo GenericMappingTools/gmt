@@ -13,11 +13,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ [**i**]\ *nodata* ]
+**grd2xyz** *grid* [ |-C|\ [**f**\ \|\ **i**] ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [*weight*] ] [ **-Z**\ [*flags*] ]
+[ |-W|\ [*weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-o| ]
@@ -46,6 +47,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**\ [**f**\ \|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
@@ -53,22 +56,25 @@ Optional Arguments
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
-**-N**\ [**i**]\ *nodata* 
-    Output this z-value where the latter equals NaN [Default writes NaN].
-    Alternatively prepend **i** to do the inverse. That is, to replace the
-    *nodata* values in grid with NaN. Useful to use with the **-s** option.
+.. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. 
 .. include:: explain_-R.rst_
 
+.. _-V:
+
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 ..  include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ [*weight*]
     Write out x,y,z,w, where w is the supplied *weight* (or 1 if not
     supplied) [Default writes x,y,z only].
+
+.. _-Z:
 
 **-Z**\ [*flags*]
     Write a 1-column ASCII [or binary] table. Output will be organized
@@ -80,7 +86,7 @@ Optional Arguments
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
     **B** to position first element in a row. For gridline registered
-    grids: If grid is periodic in x but the outcoming data should not
+    grids: If grid is periodic in x but the written data should not
     contain the (redundant) column at x = xmax, append **x**. For grid
     periodic in y, skip writing the redundant row at y = ymax by
     appending **y**. If the byte-order needs to be swapped, append
@@ -104,6 +110,9 @@ Optional Arguments
 .. |Add_-bo| replace:: [Default is 3]. This option
     only applies to xyz output; see **-Z** for z table output. 
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_-f| replace:: See also **TIME
     COORDINATES** below. **-h** Output 1 header record based on
@@ -154,5 +163,5 @@ See Also
 --------
 
 :doc:`gmt.conf`, :doc:`gmt`,
-:doc:`grdedit`, :doc:`grdreformat`,
+:doc:`grdedit`, :doc:`grdconvert`,
 :doc:`xyz2grd`

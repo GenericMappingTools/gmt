@@ -13,11 +13,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdinfo** *grdfiles* [ **-C** ] [ **-F** ]
-[ **-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**] ]
-[ **-L**\ [**0**\ \|\ **1**\ \|\ **2**] ] [ **-M** ]
+**grdinfo** *grdfiles* [ |-C| ] [ |-F| ]
+[ |-I|\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**] ]
+[ |-L|\ [**0**\ \|\ **1**\ \|\ **2**] ] [ |-M| ]
 [ |SYN_OPT-R| ]
-[ **-T**\ [**s**]\ *dz* ]
+[ |-T|\ [**s**]\ *dz* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 
@@ -44,6 +44,8 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-C:
+
 **-C**
     Formats the report using tab-separated fields on a single line. The
     output is *w e s n z0 z1 dx dy nx ny*\ [ *x0 y0 x1 y1* ] [ *med
@@ -52,16 +54,25 @@ Optional Arguments
     and **-M** are used, respectively. If the **-I** option is used, the
     output format is instead *NF w e s n z0 z1*, where *NF* is the total
     number of grids read and *w e s n* are rounded off (see **-I**).
+
+.. _-F:
+
 **-F**
     Report grid domain and x/y-increments in world mapping format
     [Default is generic]. Does not apply to the **-C** option.
-**-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**]
+
+.. _-I:
+
+**-I**\ [*dx*\ [/*dy*]\|\ **r**\ \|\ **b**]
     Report the min/max of the region to the nearest multiple of *dx* and
     *dy*, and output this in the form **-R**\ *w/e/s/n* (unless **-C**
-    is set). To report the actual grid region, select **-I-**. If no
+    is set). To report the actual grid region, select **-Ir**. If no
     argument is given then we report the grid increment in the form
     **-I**\ *xinc/yinc*. If **-Ib** is given we write each grid's
     bounding box polygon instead.
+
+.. _-L:
+
 **-L**\ [**0** \| **1** \| **2**]
     **-L0**
         Report range of z after actually scanning the data, not just
@@ -71,20 +82,29 @@ Optional Arguments
         Absolute Deviation (MAD)).
     **-L2**
         Report mean, standard deviation, and root-mean-square (rms) of z.
+
+.. _-M:
+
 **-M**
     Find and report the location of min/max z-values, and count and
     report the number of nodes set to NaN, if any. 
+
+.. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted.
 .. include:: explain_-R.rst_
 
+.. _-T:
+
 **-T**\ *dz*
     Determine min and max z-value, round off to multiples of *dz*, and
     report as the text string **-T**\ *zmin/zmax/dz* for use by
     **makecpt**. To get a symmetrical range about zero, using the max
     absolute multiple of *dz*, use **-Ts**\ *dz* instead. 
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_

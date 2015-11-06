@@ -36,11 +36,12 @@
 #define THIS_MODULE_NAME	"sphinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Spherical gridding in tension of data on a sphere"
+#define THIS_MODULE_KEYS	"<DI,GGO,RG-"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"
 
-#define GMT_PROG_OPTIONS "-:RVbhirs" GMT_OPT("F")
+#define GMT_PROG_OPTIONS "-:RVbdhirs" GMT_OPT("F")
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
@@ -77,8 +78,7 @@ void Free_sphinterpolate_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL 
 	GMT_free (GMT, C);	
 }
 
-int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
-{
+int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
 	int m;
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -92,14 +92,13 @@ int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 	return (m);
 }
 
-int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -109,7 +108,7 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achive the following [Default is no tension]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achieve the following [Default is no tension]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   1: Smooth interpolation with local gradient estimates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");
@@ -125,13 +124,12 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
-	GMT_Option (API, "bi3,h,i,r,s,:,.");
+	GMT_Option (API, "bi3,di,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sphinterpolate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -153,7 +151,7 @@ int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -248,7 +246,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_sphinterpolate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if ((error = GMT_sphinterpolate_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_sphinterpolate_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/
 

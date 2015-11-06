@@ -3,7 +3,7 @@
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set map Frame and Axes parameters. The Frame parameters are specified by
 
-    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+o**\ *lon/lat*][**+t**\ *title*]
+    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+n**][**+o**\ *lon/lat*][**+t**\ *title*]
 
     where *axes* selects which axes to plot. By default, all 4 map boundaries
     (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
@@ -17,6 +17,7 @@
     cube defined by **-R**; this modifier is also needed to display gridlines in
     the x-z, y-z planes. Note that for 3-D views the title, if given, will be
     suppressed. You can paint the interior of the canvas with **+g**\ *fill*.
+    Append **+n** to have no frame and annotations at all [Default is controlled by the codes].
     Optionally append **+o**\ *plon/plat* to draw oblique gridlines about
     specified pole [regular gridlines]. Ignored if gridlines are not
     requested (below) and disallowed for the oblique Mercator projection.
@@ -25,7 +26,7 @@
 
     The Axes parameters are specified by
 
-    **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+    **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [\ **+l**\ \|\ **L**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
     but you may also split this into two separate invocations for clarity, i.e.,
 
@@ -39,7 +40,8 @@
     or labels for the various axes then you must repeat the **B** option for
     each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
     to give settings for the vertical axis.).  To add a label to an axis,
-    just append **+l**\ *label* (Cartesian projections only). If the
+    just append **+l**\ *label* (Cartesian projections only). Use **+L** to
+    force a horizontal label for *y*-axes (useful for very short labels).  If the
     axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
@@ -78,7 +80,7 @@
 
     Note for geographic axes **m** and **s** instead mean arc minutes and arc seconds.
     All entities that are language-specific are under control
-    by :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`. Alternatively, for linear maps, we can omit *stride*, thus setting
+    by :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`. Alternatively, for linear maps, we can omit *stride*, thus setting
     *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at
     automatically determined intervals,
 
@@ -130,6 +132,6 @@
     :ref:`MAP_LINE_STEP <MAP_LINE_STEP>`, :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>`,
     :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`, :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`,
     :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, :ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>`,
-    :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
+    :ref:`GMT_LANGUAGE <GMT_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
     :ref:`MAP_TICK_LENGTH_PRIMARY <MAP_TICK_LENGTH_PRIMARY>`,
     and :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`; see the :doc:`gmt.conf` man page for details.

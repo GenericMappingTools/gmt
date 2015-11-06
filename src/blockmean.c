@@ -32,11 +32,12 @@
 #define THIS_MODULE_NAME	"blockmean"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L2 norm"
+#define THIS_MODULE_KEYS	"<DI,>DO,RG-"
 
 #include "gmt_dev.h"
 #include "block_subs.h"
 
-#define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("FH")
+#define GMT_PROG_OPTIONS "-:>RVabdfghior" GMT_OPT("FH")
 
 /* MEX: <DI >DO */
 
@@ -46,19 +47,17 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[p]] [-S[m|n|s|w]] [%s] [-W[i][o]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mean z-value [Default outputs the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (mean x, mean y) location].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   see -W regarding the weight w.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mean z-value [Default outputs (mean x, mean y) location]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default is (x,y,z[,w])]; see -W regarding the weight w.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ep is used we assume weights are 1/sigma^2 and s becomes the propagated error.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the quantity to be reported per block; choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm report mean values [Default].\n");
@@ -72,8 +71,8 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no weights used].\n");
 	GMT_Option (API, "a,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (API, "bo,f,h,i,o,r,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set), or 2 for -Sn.\n");
+	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -167,12 +166,12 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {GMT_Destroy_Data (API, &Grid); GMT_free (GMT, zw); if (xy) GMT_free (GMT, xy); if (np) GMT_free (GMT, np); if (slhg) GMT_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {GMT_Destroy_Data (API, &Grid); if (zw) GMT_free (GMT, zw); if (xy) GMT_free (GMT, xy); if (np) GMT_free (GMT, np); if (slhg) GMT_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_blockmean (void *V_API, int mode, void *args)
 {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
-	unsigned int row, col;
+	unsigned int row, col, n_input;
 	int error;
 	bool use_xy, use_weight, duplicate_col;
 
@@ -202,14 +201,14 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_blockmean_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_blockmean_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_blockmean_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the blockmean main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad */
+		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 
 	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
@@ -220,7 +219,8 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, uint64_t);
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
+	n_input = (Ctrl->S.mode == 3) ? 2 : 3;
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
 		Return (error);
 	}
 	if ((error = GMT_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active)) != GMT_OK) {

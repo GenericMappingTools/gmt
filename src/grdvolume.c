@@ -29,6 +29,7 @@
 #define THIS_MODULE_NAME	"grdvolume"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate grid volume and area constrained by a contour"
+#define THIS_MODULE_KEYS	"<GI,>DO,RG-"
 
 #include "gmt_dev.h"
 
@@ -298,12 +299,11 @@ void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high>] [-L<base>] [-S<unit>] [-T[c|h]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n\t[%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high>] [-L<base>] [-S<unit>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[c|h]] [%s] [%s] [-Z<fact>[/<shift>]] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -325,8 +325,7 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdvolume and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -344,7 +343,7 @@ int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, stru
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -431,8 +430,7 @@ int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdvolume_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdvolume (void *V_API, int mode, void *args)
-{
+int GMT_grdvolume (void *V_API, int mode, void *args) {
 	bool bad, cut[4];
 	int error = 0, ij_inc[5];
 	unsigned int row, col, c, k, pos, neg, nc, n_contours;
@@ -462,7 +460,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdvolume_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdvolume_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_grdvolume_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 

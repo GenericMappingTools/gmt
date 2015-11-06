@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: GMT_App_F_symbol.sh 11490 2013-05-16 06:26:21Z pwessel $
+#	$Id$
 #
 #	Makes the octal code charts in Appendix F
 #

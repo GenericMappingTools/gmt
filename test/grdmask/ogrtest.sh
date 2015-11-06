@@ -25,5 +25,5 @@ cat << EOF > mask.cpt
 EOF
 gmt grdimage ID.nc -Cmask.cpt -Jx0.5i -O -Ba2f1 -BWSne -K -Y5i >> $ps
 gmt psxy -RID.nc -J -O -K multihole.gmt -W0.25p,white >> $ps
-gmt psscale -Cmask.cpt -D5.75i/2i/2i/0.15i -O -Li0.05i >> $ps
+gmt psscale -Cmask.cpt -D5.75i/2i+w2i/0.15i+jML -O -Li0.05i >> $ps
 

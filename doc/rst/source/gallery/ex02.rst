@@ -35,7 +35,7 @@ files with bathymetry and geoid heights, respectively. We use
 :doc:`makecpt </makecpt>` to generate a linear color
 palette file ``geoid.cpt`` for the geoid and use
 :doc:`grd2cpt </grd2cpt>` to get a histogram-equalized
-cpt file ``topo.cpt`` for the topography data. To emphasize the structures in the
+CPT file ``topo.cpt`` for the topography data. To emphasize the structures in the
 data we calculate the slopes in the north-south direction using
 :doc:`grdgradient </grdgradient>`; these will be used to
 modulate the color image. Next we run

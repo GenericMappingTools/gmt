@@ -129,7 +129,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows, i_unused = 0;
-	int *msec, *mjdy, imon, idom, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
+	int *msec, *mjdy, imon = 0, idom = 0, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
 	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
 	double *mut, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;
@@ -2017,8 +2017,8 @@ void geocen(int ctyp, double re, double rp, double rm, double h, double clat, do
 
 void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r) {
 
-    int l, n, np, kd0, kd1, kd2, kp0, kp1, kp2, kq2, kq1, kq0, ksm2, ktm2, ksec, ktes, knnp, nd0sec;
-    int np1sec, nd0tes, nd1tes, np1tes, np2tes, nq0nnp, nq0msq;
+    int l, n, np = 0, kd0, kd1, kd2, kp0, kp1, kp2, kq2, kq1, kq0, ksm2 = 0, ktm2 = 0, ksec, ktes, knnp, nd0sec = 0;
+    int np1sec = 0, nd0tes = 0, nd1tes = 0, np1tes = 0, np2tes = 0, nq0nnp = 0, nq0msq = 0;
     double cscth2, costh2, sinth2, cscthe, cotthe, cthsth;
     double root3 = 1.732050807568877;
 

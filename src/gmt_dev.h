@@ -26,6 +26,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_dev.h
+ * \brief Main include file for the main development of gmt.
+ */
+
 /* Note on data type:  GMT will generally use double precision for
  * all floating point values except for grids which are held in single
  * precision floats.  All integer values are standard int (presumably
@@ -76,11 +81,16 @@ extern "C" {
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
+#if defined(HAVE_GLIB_GTHREAD) || defined(_OPENMP)
+/* This means we should enable the -x+a|[-]<ncores> common option */
+#define GMT_MP_ENABLED
+#endif
+
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
 /* Declaration for PSL */
-#include "pslib.h"
+#include "postscriptlight.h"
 
 /*--------------------------------------------------------------------
  *      SYSTEM HEADER FILES
@@ -112,7 +122,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_defaults.h"       /* Declarations of structure for GMT default settings */
 #include "gmt_ps.h"             /* Declarations of structure for GMT PostScript settings */
 #include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
-#include "gmt_crossing.h"       /* Declarations of structure for GMT map crossings */
 
 #ifdef HAVE_GDAL
 #	include "gmt_gdalread.h"      /* GDAL support */
@@ -130,16 +139,13 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_grd.h"            /* Define grd file header structure */
 #include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
 #include "gmt_io.h"             /* Defines structures and macros for table i/o */
-#include "gmt_colors.h"         /* Defines color/shading global structure */
 #include "gmt_shore.h"          /* Defines structures used when reading shore database */
 #include "gmt_dcw.h"            /* Defines structure and functions used when using DCW polygons */
-#include "gmt_calclock.h"       /* Calendar/time functions */
 #include "gmt_symbol.h"         /* Custom symbol functions */
 #include "gmt_contour.h"        /* Contour label structure and functions */
-#include "gmt_map.h"            /* extern functions defined in gmt_map.c */
+#include "gmt_decorate.h"       /* Decorated line structure */
 #include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
 #include "gmt_memory.h"         /* extern functions defined in gmt_memory.c */
-#include "gmt_support.h"        /* extern functions defined in gmt_support.c */
 #include "gmt_types.h"          /* GMT type declarations */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */
@@ -147,8 +153,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #endif
 
 #include "gmt_prototypes.h"     /* All GMT low-level API */
-#include "gmt_init.h"           /* extern functions defined in gmt_init.c */
-#include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
 #include "common_string.h"      /* All code shared between GMT and PSL */
 
 #ifdef __cplusplus

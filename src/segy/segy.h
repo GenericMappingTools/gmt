@@ -33,7 +33,14 @@
  *
  * Edit F. Wobbe: use unsigned types for values that are known to be positive
  */
-typedef struct SegyHead {      /*  Offset Description  */
+
+/*!
+ * \file sehy.h
+ * \brief Header for the PASSCAL SEGY trace data.
+ */
+
+/*!  Offset Description  */
+typedef struct SegyHead {
    int32_t  lineSeq;           /*   0 Sequence numbers within line */
    int32_t  reelSeq;           /*   4 Sequence numbers within reel */
    int32_t  event_number;      /*   8 Original field record number or trigger number */

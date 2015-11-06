@@ -5,7 +5,7 @@
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* pssegy program to plot segy files in postscript with variable trace spacing option
- * uses the GMT pslib imagemask routines to plot a
+ * uses the GMT postscriptlight imagemask routines to plot a
  * 1-bit depth bitmap which will not obliterate stuff underneath!
  *
  * Author:	Tim Henstock (then@noc.soton.ac.uk)
@@ -33,6 +33,7 @@
 #define THIS_MODULE_NAME	"pssegy"
 #define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Plot a SEGY file on a map"
+#define THIS_MODULE_KEYS	">XO,RG-"
 
 #include "gmt_dev.h"
 #include "segy_io.h"
@@ -137,38 +138,35 @@ int GMT_pssegy_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<segyfile> is an IEEE SEGY file [or standard input] \n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D<dev> to give deviation in X units of plot for 1.0 on scaled trace\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F<gray> to fill variable area with shade <gray>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F<color> to fill variable area with color\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	only a single color for the bitmap though!\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<segyfile> is an IEEE SEGY file [or standard input].\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set <dev> to give deviation in X units of plot for 1.0 on scaled trace.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Set <color> to fill variable area with a single color for the bitmap.\n");
 	GMT_Option (API, "JX,R");
-	GMT_Message (API, GMT_TIME_NONE, "\tNB units for y are s or km\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tNB units for y are s or km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A flips the default byte-swap state (default assumes data have a bigendian byte-order)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C<clip> to clip scaled trace excursions at <clip>, applied after bias\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E<error> slop to allow for -T. recommended in case of arithmetic errors!\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I to fill negative rather than positive excursions\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A flips the default byte-swap state (default assumes data have a bigendian byte-order).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Clip scaled trace excursions at <clip>, applied after bias.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set <error> slop to allow for -T. Rrecommended in case of arithmetic errors!\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Fill negative rather than positive excursions.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L<nsamp> to override number of samples\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M<ntraces> to fix number of traces. Default reads all traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N to trace normalize the plot\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	order of operations: [normalize][bias][clip](deviation)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <nsamp> to override number of samples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Fix the number of traces. Default reads all traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -M<ntraces> will attempt to read only <ntraces> traces.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Trace normalize the plot, with order of operations: [normalize][bias][clip](deviation).\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q<mode><value> can be used to change 4 different settings:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Qb<bias> to bias scaled traces (-B-0.1 subtracts 0.1 from values)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Qu<redvel> to apply reduction velocity (-ve removes reduction already present)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Qx<mult> to multiply trace locations by <mult>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Qy<dy> to override sample interval\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S<header> to set variable spacing\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	<header> is c for cdp or o for offset\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T<filename> to look in filename for a list of locations to select traces\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	(same units as header * X, ie values printed by previous -V run)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change any of 4 different settings:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qb<bias> to bias scaled traces (-B-0.1 subtracts 0.1 from values).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qu<redvel> to apply reduction velocity (-ve removes reduction already present).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<mult> to multiply trace locations by <mult>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<dy> to override sample interval.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Append <header> to set variable spacing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp or o for offset.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Look in <filename> for a list of locations to select traces\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (same units as header * X, i.e., values printed by previous -V run).\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W to plot wiggle trace (must specify either -W or -F)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Pot wiggle trace (must specify either -W or -F).\n");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z to suppress plotting traces whose rms amplitude is 0.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Suppress plotting traces whose rms amplitude is 0.\n");
 	GMT_Option (API, "c,p,t,.");
 
 	return (EXIT_FAILURE);
@@ -192,7 +190,7 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -240,19 +238,19 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'b':	/* Trace bias */
 						Ctrl->Q.active[B_ID] = true;
-						Ctrl->Q.value[B_ID] = atof (opt->arg);
+						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
 					case 'u':	/* reduction velocity application */
 						Ctrl->Q.active[U_ID] = true;
-						Ctrl->Q.value[U_ID] = atof (opt->arg);
+						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
 						break;
 					case 'x': /* over-rides of header info */
 						Ctrl->Q.active[X_ID] = true;
-						Ctrl->Q.value[X_ID] = atof (opt->arg);
+						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
 						Ctrl->Q.active[Y_ID] = true;
-						Ctrl->Q.value[Y_ID] = atof (opt->arg);
+						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
@@ -486,7 +484,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pssegy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pssegy_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_pssegy_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pssegy main code ----------------------------*/
 
@@ -528,7 +526,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	}
 
 	/* set up map projection and PS plotting */
-	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
+	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -559,7 +557,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		binhead.sr = bswap16 (binhead.sr);
 	}
 
-/* set parameters from the reel headers */
+	/* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
@@ -593,11 +591,10 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-
 	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
 
-	ix=0;
-	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi))) {
+	ix = 0;
+	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
 		/* read traces one by one */
 		if (Ctrl->S.mode == PLOT_OFFSET) {
 			/* plot traces by offset, cdp, or input order */
@@ -648,13 +645,13 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 		if (Ctrl->Q.value[U_ID]) {
 			toffset = (float) - (fabs ((double)(header->sourceToRecDist)) / Ctrl->Q.value[U_ID]);
-			GMT_Report (API, GMT_MSG_VERBOSE, "pssegy: time shifted by %f\n", toffset);
+			GMT_Report (API, GMT_MSG_VERBOSE, "time shifted by %f\n", toffset);
 		}
 
 		data = get_segy_data (fpi, header); /* read a trace */
 		/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 		or set to number in reel header */
-		if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
+		if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 		if (Ctrl->A.active) {
 			/* need to swap the order of the bytes in the data even though assuming IEEE format */
@@ -668,7 +665,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
 			scale = segy_rms (data, n_samp);
-			GMT_Report (API, GMT_MSG_VERBOSE, "pssegy: \t\t rms value is %f\n",scale);
+			GMT_Report (API, GMT_MSG_VERBOSE, "rms value is %f\n", scale);
 		}
 		for (iy = 0; iy < n_samp; iy++) { /* scale bias and clip each sample in the trace */
 			if (Ctrl->N.active) data[iy] /= scale;
@@ -678,7 +675,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 		}
 
 		if ((!Ctrl->Z.active || scale) && (plot_it || !n_tracelist)) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "pssegy: trace %d plotting at %f \n", ix+1, x0);
+			GMT_Report (API, GMT_MSG_VERBOSE, "trace %d plotting at %f \n", ix+1, x0);
 			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, bitmap, bm_nx, bm_ny);
 		}
 		free (data);
@@ -688,8 +685,9 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3); /* set a clip at the map boundary since the image space overlaps a little */
 	PSL_plotbitimage (PSL, 0.0, 0.0, xlen, ylen, 1, bitmap, 8*bm_nx, bm_ny, trans, Ctrl->F.rgb);
-	/* have to multiply by 8 since pslib version of ps_imagemask is based on a _pixel_ count, whereas pssegy uses _byte_ count internally */
+	/* have to multiply by 8 since postscriptlight version of ps_imagemask is based on a _pixel_ count, whereas pssegy uses _byte_ count internally */
 	GMT_map_clip_off (GMT);
+	GMT_map_basemap (GMT);
 
 	if (fpi != stdin) fclose (fpi);
 

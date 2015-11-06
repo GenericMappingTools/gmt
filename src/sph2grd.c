@@ -25,10 +25,11 @@
 #define THIS_MODULE_NAME	"sph2grd"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
+#define THIS_MODULE_KEYS	"<DI,GGO,RG-"
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->RVbhirs"
+#define GMT_PROG_OPTIONS "->RVbhirs" GMT_ADD_x_OPT
 
 #ifndef M_LN2
 #define M_LN2 0.69314718055994530942  /* log_e 2 */
@@ -96,12 +97,12 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Dg|n] [-E] [-F[k]<filter>] [-N<norm>] [-Q]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Dg|n] [-E] [-F[k]<filter>] [-N<norm>] [-Q]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grid file\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grid file.\n");
 	GMT_Option (API, "I,Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -122,7 +123,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
-	GMT_Option (API, "V,bi4,h,i,r,s,.");
+	GMT_Option (API, "V,bi4,h,i,r,s,x,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -225,9 +226,9 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 int GMT_sph2grd (void *V_API, int mode, void *args)
 {
 	bool ortho = false, duplicate_col;
-	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
-	unsigned int row, col, nx, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
-	uint64_t tbl, seg, drow, node, node_L, k;
+	int row, col, nx, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
+	unsigned int n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
+	uint64_t tbl, seg, drow, node, k;
 	char text[GMT_LEN32] = {""};
 	double lon, lat, sum, lo, hi, filter, percent_inc, percent = 0;
 	struct GMT_GRID *Grid = NULL;
@@ -254,10 +255,11 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sph2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sph2grd_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_sph2grd_parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the sph2grd main code ----------------------------*/
 
+	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Process input coefficients\n");
 	for (col = 0; col < 4; col++) GMT->current.io.col_type[GMT_IN][col] = GMT_IS_FLOAT;	/* Not reading lon,lat in this program */
 	
@@ -432,7 +434,10 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			GMT_ascii_format_col (GMT, text, lat, GMT_OUT, GMT_Y);
 			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
 		}
-		for (col = 0, node = node_L = GMT_IJP (Grid->header, row, 0); col < nx; col++, node++) {	/* For each longitude along this parallel */
+#ifdef _OPENMP
+#pragma omp parallel for private(col,node,sum,kk,L,M) shared(Grid,row,nx,L_min,L_max,P_lm,C,Cosm,S,Sinm)
+#endif
+		for (col = 0; col < nx; col++) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
 			kk = (L_min) ? LM_index (L_min, 0) : 0;	/* Set start index for P_lm packed array */
 			for (L = L_min; L <= L_max; L++) {	/* For all degrees */
@@ -440,9 +445,17 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 					sum += P_lm[kk] * (C[L][M] * Cosm[col][M] + S[L][M] * Sinm[col][M]);
 				}
 			}
+			node = GMT_IJP (Grid->header, row, col);
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast as float */
 		}
-		if (duplicate_col) Grid->data[node] = Grid->data[node_L];	/* Just copy over what we found on the western boundary */
+	}
+	if (duplicate_col) {	/* Just copy over what we found on the western boundary to the repeated eastern boundary */
+		uint64_t node_L, node_R;
+		GMT_row_loop (GMT, Grid, row) {	/* For each output latitude */
+			node_L = GMT_IJP (Grid->header, row, 0);	/* West */
+			node_R = node_L + Grid->header->nx - 1;		/* East */
+			Grid->data[node_R] = Grid->data[node_L];
+		}
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
 	

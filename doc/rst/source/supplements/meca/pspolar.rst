@@ -13,20 +13,25 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-pspolar [ *table* ] **-J**\ *parameters*
+pspolar [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
 |SYN_OPT-R|
-**-M**\ *size* **-S**\ *<symbol><size>*
+|-M|\ *size* |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ **-C**\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ] [ **-F**\ *color* ]
-[ **-G**\ *fill* ] [ **-K** ] [ **-L** ] [ **-N** ]
-[ **-O** ] [ **-Q**\ *mode*\ [*args*] ]
-[ **-T**\ *angle*/*form*/*justify*/*fontsize* ]
+[ |-C|\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ]
+[ |-E|\ *color* ]
+[ |-F|\ *color* ]
+[ |-G|\ *color* ]
+[ |-K| ] [ |-L| ] [ |-N| ]
+[ |-O| ]
+[ |-Q|\ *mode*\ [*args*] ]
+[ |-T|\ *angle*/*form*/*justify*/*fontsize* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ]
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -59,99 +64,140 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
+.. _-D:
 
-**-D**\ longitude/latitude)
+**-D**\ *longitude/latitude*
     Maps the bubble at given longitude and latitude point.
 
-**-M**\ size)
-    Sets the size of the beach ball to plot polarities in. *Size* is in
-    inch (unless **c**, **i**, **m**, or **p** is appended).
+.. _-M:
 
-**-S**\ <symbol\_type><size>)
-    Selects *symbol\_type* and symbol *size*. Size is in inch (unless
+**-M**\ *size*
+    Sets the size of the beach ball to plot polarities in. *Size* is in
+    default units (unless **c**, **i**, **m**, or **p** is appended).
+
+.. _-S:
+
+**-S**\ *<symbol_type><size>*
+    Selects *symbol_type* and symbol *size*. Size is in default inits (unless
     **c**, **i**, **m**, or **p** is appended). Choose symbol type from
-    st(\ *a*)r, (*c*)ircle, (*d*)iamond, (*h*)exagon, (*i*)nverted
+    st(*a*)r, (*c*)ircle, (*d*)iamond, (*h*)exagon, (*i*)nverted
     triangle, (*p*)oint, (*s*)quare, (*t*)riangle, (*x*)cross.
 
 Optional Arguments
 ------------------
 
+.. _-B:
+
 .. include:: ../../explain_-B.rst_
+
+.. _-C:
 
 **-C**
     Offsets focal mechanisms to the latitude and longitude specified in
     the last two columns of the input file.
 
-**-E**\ fill)
-    Selects filling of symbols for stations in extensive quadrants. Set
-    the color [Default is 250]. If **-E**\ *fill* is the same as
-    **-F**\ *fill*, use **-e** to outline.
+.. _-E:
 
-**-F**\ *fill*
+**-E**\ color
+    Selects filling of symbols for stations in extensive quadrants. Set
+    the color [Default is 250]. If **-E**\ *color* is the same as
+    **-F**\ *color*, use **-e** to outline.
+
+.. _-F:
+
+**-F**\ *color*
     Sets background color of the beach ball. Default is no fill.
 
-**-G**\ *fill*
+.. _-G:
+
+**-G**\ *color*
     Selects filling of symbols for stations in compressional quadrants.
     Set the color [Default is black].
 
+.. _-K:
+
 .. include:: ../../explain_-K.rst_
 
+.. _-N:
+
 **-N**
-    Does **not** skip symbols that fall outside map border [Default
-    plots points inside border only].
+    Does **not** skip symbols that fall outside map border [Default plots points inside border only].
+
+.. _-O:
 
 .. include:: ../../explain_-O.rst_
+
+.. _-P:
+
 .. include:: ../../explain_-P.rst_
+
+.. _-Q:
 
 **-Q**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Qe**\ [pen])
-    Outline symbols in extensive quadrants using *pen* or the default
-    pen (see **-W**).
+    **-Qe**\ [pen]
+        Outline symbols in extensive quadrants using *pen* or the default pen (see |-W|).
 
-**-Qf**\ [pen])
-    Outline the beach ball using *pen* or the default pen (see **-W**).
+    **-Qf**\ [pen]
+        Outline the beach ball using *pen* or the default pen (see |-W|).
 
-**-Qg**\ [pen])
-    Outline symbols in compressional quadrants using *pen* or the
-    default pen (see **-W**).
+    **-Qg**\ [pen]
+        Outline symbols in compressional quadrants using *pen* or the default pen (see |-W|).
 
-**-Qh**
-    Use special format derived from HYPO71 output
+    **-Qh**
+        Use special format derived from HYPO71 output
 
-**-Qs**\ *half-size*/[**V**\ [*v\_width/h\_length/h\_width/shape*\ ]][\ **G**\ *color*][**L**\ ]
-    Plots S polarity azimuth. S polarity is in last column. It may be a
-    vector (**V** option) or a segment. Give
-    half-size,v\_width,h\_length,h\_width in inch (unless **c**, **i**,
-    **m**, or **p** is appended). [**L**\ ] option is for outline.
+    **-Qs**\ *half-size*/[**V**\ [*v_width/h_length/h_width/shape*]][**G**\ *color*][**L**]
+        Plots S polarity azimuth. S polarity is in last column. It may be a vector (**V** flag) or a segment.
+        Give *half-size,v_width,h_length,h_width* in default units (unless **c**, **i**,
+        **m**, or **p** is appended). [**L**] flag is for outline.
+        See `Vector Attributes`_ for specifying additional attributes.
 
-**-Qt**\ *pen*
-    Set pen color to write station code. Default uses the default pen
-    (see **-W**).
+    **-Qt**\ *pen*
+        Set pen color to write station code. Default uses the default pen (see |-W|).
 
+.. _-Y:
 
 **-T**\ *angle/form/justify/fontsize in points*
     To write station code. [Default is 0.0/0/5/12].
 
+.. _-U:
+
 .. include:: ../../explain_-U.rst_
+
+.. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-W**\ *pen*
+.. _-W:
+
+**-W**\ [**-**\ \|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set current pen attributes [Defaults: width = default, color = black, style = solid].
+
+.. _-X:
 
 .. include:: ../../explain_-XY.rst_
 .. include:: ../../explain_-c.rst_
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-di.rst_
+
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
+
+.. include:: ../../explain_vectors.rst_
 
 Examples
 --------
@@ -183,6 +229,9 @@ or
 See Also
 --------
 
+:doc:`psmeca`,
+:doc:`psvelo`,
+:doc:`pscoupe`,
 :doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
 
 References

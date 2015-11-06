@@ -13,22 +13,25 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**pswiggle** [ *table* ] **-J**\ *parameters*
-|SYN_OPT-Rz|
-[ **-Z**\ *scale* [ **-A**\ *azimuth* ]
+**pswiggle** [ *table* ] |-J|\ *parameters* |SYN_OPT-Rz| |-Z|\ *scale*
+[ |-A|\ *azimuth* ]
 [ |SYN_OPT-B| ]
-[ **-C**\ *center* ]
-[ **-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
-[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-I**\ *fix\_az* ] [ **-K** ]
-[ **-O** ] [ **-P** ]
-[ **-S**\ [**x**\ ]\ *lon0*/*lat0*/*length*\ [/*units*] ] [ **-T**\ *pen* ]
+[ |-C|\ *center* ]
+[ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
+[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
+[ |-I|\ *fix_az* ]
+[ |-K| ]
+[ |-O| ] [ **-P** ]
+[ |-S|\ [**x**]\ *lon0*/*lat0*/*length*\ [/*units*] ]
+[ |-T|\ *pen* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ *pen* ] [
+[ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -55,13 +58,20 @@ PostScript code is written to standard output.
 Required Arguments
 ------------------
 
+.. _-J:
+
+.. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
+
+.. _-R:
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
+
+.. _-Z:
 
 **-Z**\ *scale*
     Gives anomaly scale in data-units/distance-unit.
@@ -72,45 +82,74 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
+.. _-A:
+
 **-A**\ *azimuth*
     Sets the preferred positive azimuth. Positive wiggles will
     "gravitate" towards that direction. 
 
+.. _-B:
+
 .. include:: explain_-B.rst_
+
+.. _-C:
 
 **-C**\ *center*
     Subtract *center* from the data set before plotting [0].
+
+.. _-G:
+
 **-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill*
     Set fill shade, color or pattern for positive and/or negative
     wiggles [Default is no fill]. Optionally, prepend **+** to fill
     positive areas (this is the default behavior). Prepend **-** to fill
     negative areas. Prepend **=** to fill both positive and negative
     areas with the same fill.
-**-I**\ *fix\_az*
+
+.. _-I:
+
+**-I**\ *fix_az*
     Set a fixed azimuth projection for wiggles [Default uses track
     azimuth, but see **-A**]. 
 
 .. include:: explain_-Jz.rst_
 
+.. _-K:
+
 .. include:: explain_-K.rst_
+
+.. _-O:
 
 .. include:: explain_-O.rst_
 
+.. _-P:
+
 .. include:: explain_-P.rst_
 
-**-S**\ [**x**\ ]\ *lon0*/*lat0*/*length*\ [/*units*]
+.. _-S:
+
+**-S**\ [**x**]\ *lon0*/*lat0*/*length*\ [/*units*]
     Draws a simple vertical scale centered on *lon0/lat0*. Use **-Sx**
     to specify cartesian coordinates instead. *length* is in z units,
     append unit name for labeling. **FONT\_ANNOT\_PRIMARY** is used as
     font.
+
+.. _-T:
+
 **-T**\ *pen*
     Draw track [Default is no track]. Append pen attributes to use
     [Defaults: width = 0.25p, color = black, style = solid]. 
 
+.. _-U:
+
 .. include:: explain_-U.rst_
+
+.. _-:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+.. _-W:
 
 **-W**\ *pen*
 
@@ -118,6 +157,9 @@ Optional Arguments
 .. include:: explain_-bi.rst_
 
 .. include:: explain_-c.rst_
+
+.. |Add_-di| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-di.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

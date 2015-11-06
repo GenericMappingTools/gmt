@@ -23,6 +23,11 @@
  * Version:	5 API
  */
 
+/*!
+ * \file gmt_time.h
+ * \brief Definitions of structures dealing with time.
+ */
+
 #ifndef _GMT_TIME_H
 #define _GMT_TIME_H
 
@@ -37,12 +42,6 @@ struct GMT_TIME_SYSTEM {
 	int64_t rata_die;		/* Rata die number of epoch */
 	char epoch[GMT_LEN64];	/* User-defined epoch for time */
 	char unit;			/* User-defined time unit */
-};
-
-struct GMT_TIME_LANGUAGE {		/* Language-specific text strings for calendars */
-	char month_name[4][12][GMT_LEN16];	/* Full, short, 1-char, and short (upper case) month names */
-	char day_name[3][7][GMT_LEN16];	/* Full, short, and 1-char weekday names */
-	char week_name[3][GMT_LEN16];	/* Full, short, and 1-char versions of the word Week */
 };
 
 #endif  /* _GMT_TIME_H */

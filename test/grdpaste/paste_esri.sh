@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-# Paste esri ascii grids along Y
+# Paste esri ASCII grids along Y
 
 # The final grid is just f(x,y) = x
 gmt grdmath -R-15/15/-15/0 -I0.5 X = lixo_y1.asc=ef
