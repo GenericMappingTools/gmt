@@ -37,7 +37,7 @@
 
 #define THIS_MODULE_NAME	"sphdistance"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Make Voronoi distance, node, or nearest-neighbor grid on a sphere"
+#define THIS_MODULE_PURPOSE	"Create Voronoi distance, node, or nearest-neighbor grid on a sphere"
 #define THIS_MODULE_KEYS	"<DI,NDi,QDi,GGO,RG-,Q-i"
 
 #include "gmt_dev.h"
