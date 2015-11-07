@@ -153,8 +153,10 @@ Optional Arguments
 .. _-Q:
 
 **-Q**\ *<mode><value>*
-    Can be used to change 4 different settings depending on *mode*:
+    Can be used to change 5 different settings depending on *mode*:
        **-Qb**\ *bias* to bias scaled traces (-Qb-0.1 subtracts 0.1 from values).
+
+       **-Qi**\ *dpi* sets the dots-per-inch resolution of the image [300].
 
        **-Qu**\ *redvel* to apply reduction velocity (negative value removes reduction already present).
 

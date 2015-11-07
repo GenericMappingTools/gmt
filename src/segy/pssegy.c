@@ -41,9 +41,10 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
 
 #define B_ID	0	/* Indices into Q values */
-#define U_ID	1
-#define X_ID	2
-#define Y_ID	3
+#define I_ID	1
+#define U_ID	2
+#define X_ID	3
+#define Y_ID	4
 
 #define PLOT_CDP	1
 #define PLOT_OFFSET	2
@@ -86,9 +87,9 @@ struct PSSEGY_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Qb|u|x|y */
-		bool active[4];
-		double value[4];
+	struct Q {	/* -Qb|i|u|x|y */
+		bool active[5];
+		double value[5];
 	} Q;
 	struct S {	/* -S */
 		bool active;
@@ -116,6 +117,7 @@ void *New_pssegy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.active = !GMT_BIGENDIAN;
 	C->M.value = 10000;
+	C->Q.value[I_ID] = 300.0; /* Effective dots-per-inch of image */
 	C->Q.value[X_ID] = 1.0; /* Ctrl->Q.value[X_ID], Ctrl->Q.value[Y_ID] are trace and sample interval */
 	return (C);
 }
@@ -154,8 +156,9 @@ int GMT_pssegy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -M<ntraces> will attempt to read only <ntraces> traces.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Trace normalize the plot, with order of operations: [normalize][bias][clip](deviation).\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change any of 4 different settings:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change any of 5 different settings:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qb<bias> to bias scaled traces (-B-0.1 subtracts 0.1 from values).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Qi<dpi> to change image dots-per-inch [300].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qu<redvel> to apply reduction velocity (-ve removes reduction already present).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<mult> to multiply trace locations by <mult>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<dy> to override sample interval.\n");
@@ -240,6 +243,10 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 						Ctrl->Q.active[B_ID] = true;
 						Ctrl->Q.value[B_ID] = atof (&opt->arg[1]);
 						break;
+					case 'i':	/* Image dpi */
+						Ctrl->Q.active[I_ID] = true;
+						Ctrl->Q.value[I_ID] = atof (&opt->arg[1]);
+						break;
 					case 'u':	/* reduction velocity application */
 						Ctrl->Q.active[U_ID] = true;
 						Ctrl->Q.value[U_ID] = atof (&opt->arg[1]);
@@ -322,7 +329,7 @@ int segy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny)	/* 
 	return (0);
 }
 
-void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */
+void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */
 {
 	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
@@ -331,10 +338,10 @@ void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, d
 	GMT_geo_to_xy (GMT, x0+ (double)data1, y1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0 = irint (xp0 * PSL_DOTS_PER_INCH);
-	px1 = irint (xp1 * PSL_DOTS_PER_INCH);
-	py0 = irint (yp0 * PSL_DOTS_PER_INCH);
-	py1 = irint (yp1 * PSL_DOTS_PER_INCH);
+	px0 = irint (xp0 * dpi);
+	px1 = irint (xp1 * dpi);
+	py0 = irint (yp0 * dpi);
+	py1 = irint (yp1 * dpi);
 
 	/* now have the pixel locations for the two samples - join with a line..... */
 	if (fabs (slope) <= 1.0) { /* more pixels needed in x direction */
@@ -368,7 +375,7 @@ void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, d
 	}
 }
 
-void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, int negative, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current samples with all options to bitmap */
+void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, int negative, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current samples with all options to bitmap */
 {
 	int px0, px00, py0, py1, ixx, ix, iy;
 	double xp0, xp00, xp1, yp0, yp1, interp, slope;
@@ -394,10 +401,10 @@ void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1,
 
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0  = irint (0.49 + xp0  * PSL_DOTS_PER_INCH);
-	px00 = irint (0.49 + xp00 * PSL_DOTS_PER_INCH);
-	py0  = irint (0.49 + yp0  * PSL_DOTS_PER_INCH);
-	py1  = irint (0.49 + yp1  * PSL_DOTS_PER_INCH);
+	px0  = irint (0.49 + xp0  * dpi);
+	px00 = irint (0.49 + xp00 * dpi);
+	py0  = irint (0.49 + yp0  * dpi);
+	py1  = irint (0.49 + yp1  * dpi);
 
 
 	/*  can rasterize simply by looping over values of y */
@@ -425,7 +432,7 @@ void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1,
 	}
 }
 
-void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, unsigned char *bitmap, int bm_nx, int bm_ny)
+void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny)
 	/* shell function to loop over all samples in the current trace, determine plot options
 	 * and call the appropriate bitmap routine */
 {
@@ -434,10 +441,10 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 
 	for (iy = 1; iy < n_samp; iy++) {	/* loop over samples on trace - refer to pairs iy-1, iy */
 		y1 = dy * (float) iy + toffset;
-		if (plot_wig) segy_wig_bmap (GMT, x0, data[iy-1],data[iy], y0, y1, bitmap, bm_nx, bm_ny); /* plotting wiggle */
+		if (plot_wig) segy_wig_bmap (GMT, x0, data[iy-1],data[iy], y0, y1, dpi, bitmap, bm_nx, bm_ny); /* plotting wiggle */
 		if (do_fill) {	/* plotting VA -- check data points first */
 			paint_wiggle = ((!negative && ((data[iy-1] >= 0.0) || (data[iy] >= 0.0))) || (negative && ((data[iy-1] <= 0.0) || (data[iy] <= 0.0))));
-			if (paint_wiggle) segy_shade_bmap (GMT, x0, data[iy-1], data[iy], y0, y1, negative, bitmap, bm_nx, bm_ny);
+			if (paint_wiggle) segy_shade_bmap (GMT, x0, data[iy-1], data[iy], y0, y1, negative, dpi, bitmap, bm_nx, bm_ny);
 		}
 		y0=y1;
 	}
@@ -533,13 +540,13 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
-	xpix = xlen * PSL_DOTS_PER_INCH;	/* pixels in x direction */
+	xpix = xlen * Ctrl->Q.value[I_ID];	/* pixels in x direction */
 	/* xpix /= 8.0;
 	bm_nx = 1 +(int) xpix;*/
 	bm_nx = irint (ceil (xpix / 8.0)); /* store 8 pixels per byte in x direction but must have
 		whole number of bytes per scan */
 	ylen = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
-	ypix = ylen * PSL_DOTS_PER_INCH;	/* pixels in y direction */
+	ypix = ylen * Ctrl->Q.value[I_ID];	/* pixels in y direction */
 	bm_ny = irint (ypix);
 	nm = bm_nx * bm_ny;
 
@@ -676,7 +683,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 		if ((!Ctrl->Z.active || scale) && (plot_it || !n_tracelist)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "trace %d plotting at %f \n", ix+1, x0);
-			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, bitmap, bm_nx, bm_ny);
+			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
 		}
 		free (data);
 		free (header);

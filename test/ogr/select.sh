@@ -8,7 +8,7 @@
 # 2) We cannot work around that since the output does not retain the
 #    original metadata OGR format.
 # Thus, the original select.ps was doctored by plotting the text strings
-# via awk; there are commented out for reference and so that the script
+# via awk; these are commented out for reference and so that the script
 # will fail until OGR passing is fixed.
 
 ps=select.ps
