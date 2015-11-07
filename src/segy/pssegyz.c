@@ -286,7 +286,7 @@ int GMT_pssegyz_parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct G
 							case '0' : case '1': case '2': case '3': case '4': case '5':
 							case '6': case '7': case '8': case '9': case '-': case '+': case '.':
 								Ctrl->S.fixed[k] = true;
-								Ctrl->S.mode[k] = PLOT_CDP;
+								Ctrl->S.orig[k] = (double) atof(txt[k]);
 								break;
 						}
 					}
@@ -632,7 +632,10 @@ int GMT_pssegyz (void *V_API, int mode, void *args)
 	/* set up map projection and PS plotting */
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	/* In this program we DO NOT want to call GMT_plane_perspective since that is already in the SEGV projection
+	 * Per Tim Henstock, Nov, 2015.
+	 * GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	 */
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	/* define area for plotting and size of array for bitmap */
@@ -813,7 +816,8 @@ use a few of these*/
 
 	if (fpi != stdin) fclose (fpi);
 
-	GMT_plane_perspective (GMT, -1, 0.0);
+	/* Not needed, see above for why.  GMT_plane_perspective (GMT, -1, 0.0); */
+
 	GMT_plotend (GMT);
 
 	GMT_free (GMT, bitmap);
