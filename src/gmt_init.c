@@ -9393,7 +9393,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				else if (n_slashes == 3) {	/* with true scale at specified latitude */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &GMT->current.proj.pars[3]);
 					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
-					if (c <= -90.0 || c >= 90.0) {
+					if (c < -90.0 || c > 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
 					}
@@ -9404,7 +9404,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				else if (n_slashes == 4) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &GMT->current.proj.pars[3]);
 					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
-					if (c <= -90.0 || c >= 90.0) {
+					if (c < -90.0 || c > 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
 					}

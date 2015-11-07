@@ -887,6 +887,10 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 		else {		/* Do forward transformation */
+			if (in[GMT_Y] < -90.0 || in[GMT_Y] > 90.0) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Bad latitude outside valid range at input line %" PRIu64 " - skipped\n", n_read);
+				continue;
+			}
 
 			if (Ctrl->S.active && GMT_map_outside (GMT, in[GMT_X], in[GMT_Y])) continue;
 
