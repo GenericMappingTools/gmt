@@ -598,17 +598,21 @@ void gmt_map_latline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, do
 #endif
 	nn = GMT_latpath (GMT, lat, west, east, &llon, &llat);
 #ifdef DEBUG
-	sprintf (name, "gridline_y_%g_ll.txt", lat);
-	fp = fopen (name, "w");
-	for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
-	fclose (fp);
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_y_%g_ll.txt", lat);
+		fp = fopen (name, "w");
+		for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
+		fclose (fp);
+	}
 #endif
 	GMT->current.plot.n = GMT_geo_to_xy_line (GMT, llon, llat, nn);
 #ifdef DEBUG
-	sprintf (name, "gridline_y_%g_xy.txt", lat);
-	fp = fopen (name, "w");
-	for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
-	fclose (fp);
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_y_%g_xy.txt", lat);
+		fp = fopen (name, "w");
+		for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
+		fclose (fp);
+	}
 #endif
 
 	if (GMT->current.plot.n > 1) {	/* Need at least 2 points for a line */
@@ -637,17 +641,21 @@ void gmt_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, do
 #endif
 	nn = GMT_lonpath (GMT, lon, south, north, &llon, &llat);
 #ifdef DEBUG
-	sprintf (name, "gridline_x_%g_ll.txt", lon);
-	fp = fopen (name, "w");
-	for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
-	fclose (fp);
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_x_%g_ll.txt", lon);
+		fp = fopen (name, "w");
+		for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
+		fclose (fp);
+	}
 #endif
 	GMT->current.plot.n = GMT_geo_to_xy_line (GMT, llon, llat, nn);
 #ifdef DEBUG
-	sprintf (name, "gridline_x_%g_xy.txt", lon);
-	fp = fopen (name, "w");
-	for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
-	fclose (fp);
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_x_%g_xy.txt", lon);
+		fp = fopen (name, "w");
+		for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
+		fclose (fp);
+	}
 #endif
 
 	if (GMT->current.plot.n > 1) {	/* Need at least 2 points for a line */
