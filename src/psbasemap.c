@@ -182,7 +182,13 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 				Ctrl->T.active = true;
 				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
-
+#if DEBUG
+			case '+':	/* Draw a single gridline only [for debugging]  -+x|y<value>*/
+				GMT->hidden.gridline_debug = true;
+				GMT->hidden.gridline_kind = opt->arg[0];	/* Get x or y */
+				GMT->hidden.gridline_val = atof (&opt->arg[1]);	/* Value of grid line */
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;

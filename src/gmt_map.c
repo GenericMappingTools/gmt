@@ -3665,6 +3665,14 @@ bool gmt_map_init_oblique (struct GMT_CTRL *GMT) {
 	GMT->current.map.right_edge = &gmt_right_rect;
 
 	GMT->current.map.is_world = GMT_360_RANGE (w, e);
+#if 0
+	if (GMT->current.map.is_world == false) {	/* Check if one of the poles are inside the area */
+		if (!GMT_map_outside (GMT, 0.0, -90.0))	/* South pole is inside map */
+			GMT->current.map.is_world = true;
+		else if (!GMT_map_outside (GMT, 0.0, +90.0))	/* North pole is inside map */
+			GMT->current.map.is_world = true;
+	}
+#endif
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.frame.check_side = !(GMT->current.setting.map_annot_oblique & 1);
 	return (true);

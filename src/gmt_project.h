@@ -137,7 +137,7 @@ enum GMT_enum_units {GMT_IS_METER = 0,
 	C->current.proj.xyz_projection[GMT_X] == GMT_LOG10 || C->current.proj.xyz_projection[GMT_X] == GMT_POW || \
 	C->current.proj.xyz_projection[GMT_Y] == GMT_LOG10 || C->current.proj.xyz_projection[GMT_Y] == GMT_POW)
 
-#define GMT_POLE_IS_POINT(C) (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN)
+#define GMT_POLE_IS_POINT(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN))
 
 #define GMT_IS_SPHERICAL(C) (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening < 1.0e-10)
 #define GMT_IS_FLATEARTH(C) (!strcmp (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].name, "FlatEarth"))
