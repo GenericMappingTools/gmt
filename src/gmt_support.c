@@ -1903,29 +1903,35 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Given nx implies x_inc = %g\n", h->inc[GMT_X]);
 	}
 	else if (GMT->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {	/* Got funny units */
-		switch (GMT->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {
-			case GMT_INC_IS_FEET:	/* foot */
-				s = METERS_IN_A_FOOT;
-				break;
-			case GMT_INC_IS_KM:	/* km */
-				s = METERS_IN_A_KM;
-				break;
-			case GMT_INC_IS_MILES:	/* Statute mile */
-				s = METERS_IN_A_MILE;
-				break;
-			case GMT_INC_IS_NMILES:	/* Nautical mile */
-				s = METERS_IN_A_NAUTICAL_MILE;
-				break;
-			case GMT_INC_IS_SURVEY_FEET:	/* US survey foot */
-				s = METERS_IN_A_SURVEY_FOOT;
-				break;
-			case GMT_INC_IS_M:	/* Meter */
-			default:
-				s = 1.0;
-				break;
+		if (GMT_is_geographic (GMT, GMT_IN)) {
+			switch (GMT->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {
+				case GMT_INC_IS_FEET:	/* foot */
+					s = METERS_IN_A_FOOT;
+					break;
+				case GMT_INC_IS_KM:	/* km */
+					s = METERS_IN_A_KM;
+					break;
+				case GMT_INC_IS_MILES:	/* Statute mile */
+					s = METERS_IN_A_MILE;
+					break;
+				case GMT_INC_IS_NMILES:	/* Nautical mile */
+					s = METERS_IN_A_NAUTICAL_MILE;
+					break;
+				case GMT_INC_IS_SURVEY_FEET:	/* US survey foot */
+					s = METERS_IN_A_SURVEY_FOOT;
+					break;
+				case GMT_INC_IS_M:	/* Meter */
+				default:
+					s = 1.0;
+					break;
+			}
+			h->inc[GMT_X] *= s / (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (h->wesn[YLO] + h->wesn[YHI])));	/* Latitude scaling of E-W distances */
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Distance to degree conversion implies x_inc = %g\n", h->inc[GMT_X]);
 		}
-		h->inc[GMT_X] *= s / (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (h->wesn[YLO] + h->wesn[YHI])));	/* Latitude scaling of E-W distances */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Distance to degree conversion implies x_inc = %g\n", h->inc[GMT_X]);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cartesian x-increments are unit-less! - unit ignored\n");
+			GMT->current.io.inc_code[GMT_X] -= (GMT->current.io.inc_code[GMT_X] & GMT_INC_UNITS);
+		}
 	}
 	if (!(GMT->current.io.inc_code[GMT_X] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust x_inc to exactly fit west/east */
 		s = h->wesn[XHI] - h->wesn[XLO];
@@ -1959,29 +1965,35 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Given ny implies y_inc = %g\n", h->inc[GMT_Y]);
 	}
 	else if (GMT->current.io.inc_code[GMT_Y] & GMT_INC_UNITS) {	/* Got funny units */
-		switch (GMT->current.io.inc_code[GMT_Y] & GMT_INC_UNITS) {
-			case GMT_INC_IS_FEET:	/* feet */
-				s = METERS_IN_A_FOOT;
-				break;
-			case GMT_INC_IS_KM:	/* km */
-				s = METERS_IN_A_KM;
-				break;
-			case GMT_INC_IS_MILES:	/* miles */
-				s = METERS_IN_A_MILE;
-				break;
-			case GMT_INC_IS_NMILES:	/* nmiles */
-				s = METERS_IN_A_NAUTICAL_MILE;
-				break;
-			case GMT_INC_IS_SURVEY_FEET:	/* US survey feet */
-				s = METERS_IN_A_SURVEY_FOOT;
-				break;
-			case GMT_INC_IS_M:	/* Meter */
-			default:
-				s = 1.0;
-				break;
+		if (GMT_is_geographic (GMT, GMT_IN)) {
+			switch (GMT->current.io.inc_code[GMT_Y] & GMT_INC_UNITS) {
+				case GMT_INC_IS_FEET:	/* feet */
+					s = METERS_IN_A_FOOT;
+					break;
+				case GMT_INC_IS_KM:	/* km */
+					s = METERS_IN_A_KM;
+					break;
+				case GMT_INC_IS_MILES:	/* miles */
+					s = METERS_IN_A_MILE;
+					break;
+				case GMT_INC_IS_NMILES:	/* nmiles */
+					s = METERS_IN_A_NAUTICAL_MILE;
+					break;
+				case GMT_INC_IS_SURVEY_FEET:	/* US survey feet */
+					s = METERS_IN_A_SURVEY_FOOT;
+					break;
+				case GMT_INC_IS_M:	/* Meter */
+				default:
+					s = 1.0;
+					break;
+			}
+			h->inc[GMT_Y] = (h->inc[GMT_Y] == 0.0) ? h->inc[GMT_X] : h->inc[GMT_Y] * s / GMT->current.proj.DIST_M_PR_DEG;
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Distance to degree conversion implies y_inc = %g\n", h->inc[GMT_Y]);
 		}
-		h->inc[GMT_Y] = (h->inc[GMT_Y] == 0.0) ? h->inc[GMT_X] : h->inc[GMT_Y] * s / GMT->current.proj.DIST_M_PR_DEG;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Distance to degree conversion implies y_inc = %g\n", h->inc[GMT_Y]);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cartesian y-increments are unit-less! - unit ignored\n");
+			GMT->current.io.inc_code[GMT_Y] -= (GMT->current.io.inc_code[GMT_Y] & GMT_INC_UNITS);
+		}
 	}
 	if (!(GMT->current.io.inc_code[GMT_Y] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust y_inc to exactly fit south/north */
 		s = h->wesn[YHI] - h->wesn[YLO];
