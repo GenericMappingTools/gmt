@@ -1639,6 +1639,12 @@ int table_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
+int table_DENAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: DENAN 2 1 Replace NaNs in A with values from B.  */
+{	/* Just a more straightforward application of AND */
+	return (table_AND (GMT, info, S, last, col));
+}
+
 int table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DILOG 1 1 dilog (A).  */
 {

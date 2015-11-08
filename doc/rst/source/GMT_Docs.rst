@@ -350,7 +350,7 @@ Several changes have affects across GMT; these are:
 *  Faster netCDF reading for COARDS table data (i.e., not grids).
 
 *  When importing grids via GDAL the projection info is preserved and stored as netCDF metadata.
-   This will allow third party programs like GDAL and QGis to recognize the projection info of
+   This will allow third party programs like GDAL and QGIS to recognize the projection info of
    GMT created grids. Same thing happens when creating grids with :doc:`grdproject`.
 
 *  Tools using GSHHG can now access information for both Antarctica data
@@ -405,7 +405,8 @@ changes to existing syntax will be backwards compatible:
    **LPDF** and **LCDF** for the Laplace distribution (as well as **LCRIT**),
    **RPDF** and **RCDF** for the Rayleigh distribution (as well as **RCRIT**),
    **WPDF** and **WCDF** for the Weibull distribution (as well as **WCRIT**), and
-   **ZPDF** and **ZCDF** for the Normal distribution. We added **ROLL** for cyclic shifts of the stack, as
+   **ZPDF** and **ZCDF** for the Normal distribution. We added **ROLL** for cyclic shifts of the stack,
+   and **DENAN** as a more intuitive operator for removing NaNs, as
    well as new constants **TRANGE**, **TROW**, **F_EPS** and **D_EPS**, and we have renamed the
    normalized coordinates from **Tn** to **TNORM** (but this is backwards compatible).  We added
    operator **POINT** which reads a data table and places the mean x and mean y on the stack.
@@ -447,6 +448,7 @@ changes to existing syntax will be backwards compatible:
    **ZPDF** and **ZCDF** for the Normal distribution.  We added **LDISTG** (for distances
    to GSHHG), **CDIST2** and **SDIST2**
    (to complement **LDIST2** and **PDIST2**), and **ROLL** for cyclic shifts of the stack,
+   and **DENAN** as a more intuitive operator for removing NaNs,
    while **LDIST1** has been renamed
    to **LDISTC**.  We also add new constants **XRANGE**, **YRANGE**, **XCOL**,
    **YROW** and **F_EPS**, and we have renamed the normalized coordinates from **Xn** to **XNORM**
