@@ -1499,7 +1499,7 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 		PSL_plotpolygon (PSL, axe, aye, npoints);
 	}
 	else
-		PSL_plotline (PSL, axe, aye, npoints, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, axe, aye, npoints, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 
 	/* draw uncertainty wedge */
 
@@ -1512,7 +1512,7 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 		PSL_plotpolygon (PSL, axe, aye, npoints - 1);
 	}
 	else
-		PSL_plotline (PSL, axe, aye, npoints - 1, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, axe, aye, npoints - 1, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 }
 
 #ifdef DEBUG
