@@ -1,65 +1,46 @@
 #!/bin/bash
 #	$Id$
-#
 
-ps=meca_4.ps
+ps=meca_2b.ps
 
-gmt gmtset PROJ_LENGTH_UNIT inch MAP_VECTOR_SHAPE 0.4 MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i 
+gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
-#     The example should plot some residual rates of  rotation  in
-#     the  Western Transverse Ranges, California.  The wedges will
-#     be dark gray, with light gray wedges  to  represent  the  2-
-#     sigma uncertainties.
- 
-gmt psvelo << EOF  -X2i -Y5i -Jm1.3i -R238.5/242/32.5/35.5 -B2 -BWeSn+tpsvelo \
-    -Sw0.4/1.e7 -W0.25p -G60 -E210 -D2 -P -K > $ps    
-# lon     lat    spin(rad/yr) spin_sigma (rad/yr)
-241.4806 34.2073  5.65E-08 1.17E-08
-241.6024 34.4468 -4.85E-08 1.85E-08
-241.0952 34.4079  4.46E-09 3.07E-08
+# Plotting 2 mechanisms on map
+gmt psmeca -R128/130/10/11.1 -JX2i -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
+# lon   lat  dep str dip rake str dip rake m ex nx ny 
+129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
+128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
+EOF
+(echo 128 11; echo 130 11) | gmt psxy -R -J -K -O -W0.25p,red >> $ps
+gmt pstext -R -J -N -F+f14p,Helvetica-Bold+j -K -O << EOF >> $ps
+128 11 ML P1
+130 11 MR P2
 EOF
 
-# omit the shading
-gmt psvelo -J -R -Sw0.4/1.e7 -W0.25p -D2 -O -K << EOF >> $ps    
-# lon     lat    spin(rad/yr) spin_sigma (rad/yr)
-241.2542 34.2581  1.28E-07 1.59E-08
-242.0593 34.0773 -6.62E-08 1.74E-08
-241.0553 34.5369 -2.38E-07 4.27E-08
-241.1993 33.1894 -2.99E-10 7.64E-09
-241.1084 34.2565  2.17E-08 3.53E-08
+plots () {
+y_offset=-2.5i
+for a in $1 $2 $3 ; do
+    gmt pscoupe -R0/250/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
+        -Q -L -Sc0.4 -Ab$4/$5/$a/250/90/$6/0/100f -Ggrey -Fa0.1i/cc $7 $8 \
+        -Y$y_offset -X$x_offset -O -K << EOF
+# lon   lat  dep str dip rake str dip rake m ex nx ny 
+129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
+128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
- 
-# hit the beach
-gmt pscoast -O -R -J -W0.25p -Di -K >> $ps    
+    gmt pstext -R -J -F+f18p,Helvetica-Bold+jBR -O -K <<< "240 90 $a"
+    y_offset=0i
+    x_offset=2.5i
+done
+x_offset=-5i
+}
 
+x_offset=0i
 
-#     The  following  should  make  big  green arrows  with blue
-#     ellipses,  outlined  in  red. Note that the 39% confidence
-#     scaling will give an ellipse which fits inside a rectangle
-#     of dimension Esig by Nsig.
- 
-# 
-gmt psvelo -Y-4.5i -R-10/10/-10/10 -Wthin,red \
-	-Se0.2/0.39/12 -B1g1 -BWeSn -Jx0.2i -Ggreen -Eblue -L -N \
-	-A1c+p3p+e -O -K << EOF >> $ps    
-# Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
-# (deg)  (deg)    (mm/yr)        (mm/yr)
-  -10.    0.     5.0    0.0     4.0    6.0  0.500  4x6
-   -5.    0.     0.0    5.0     4.0    6.0  0.500  4x6
-   -5.    5.    -5.0    0.0     4.0    6.0  0.500  4x6
-  -10.    5.     0.0   -5.0     0.0    0.0  0.500  4x6
-  -1.     5.     3.0    3.0     1.0    1.0  0.100  3x3
-EOF
+plots   0  40  80 128 10.0 200    >> $ps
+plots 120 160 200 128 11.0 400 -N >> $ps
+plots 240 280 320 130 10.5 200 -N >> $ps
 
-# simpler colors, labeled with following font
-gmt gmtset FONT_ANNOT_PRIMARY Helvetica
-gmt psvelo -Se0.2/0.39/18 -R -J -A0.25c+p0.25p+e -O -Umeca_4 << EOF >> $ps    
-# Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
-# (deg)  (deg)    (mm/yr)        (mm/yr)
-   0.    -8.     0.0    0.0     4.0    6.0  0.100  4x6
-  -8.     5.     3.0    3.0     0.0    0.0  0.200  3x3
-   0.     0.     4.0    6.0     4.0    6.0  0.300
-  -5.    -5.     6.0    4.0     6.0    4.0  0.400  6x4
-   5.     0.    -6.0    4.0     6.0    4.0 -0.300  -6x4
-   0.    -5.     6.0   -4.0     6.0    4.0 -0.500  6x-4
+gmt pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O << EOF >> $ps
+3 8.5 24 Variation of azimuth
+3 8.0 20 vertical cross-section
 EOF

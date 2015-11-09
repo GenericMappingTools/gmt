@@ -1,102 +1,46 @@
 #!/bin/bash
 #	$Id$
-#
-# Check gmt psmeca for plotting beach balls
-# Verified by K. Feigl on 2015/8/6.  Comments left below.
 
-ps=meca_5.ps
+ps=meca_2c.ps
 
-size=1.0c
+gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
-#THOUGHTS:
-#echo 2.0 1.0 0.0  90 90  90 270  0  90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-#echo 2.0 1.0 0.0  90 90  90  90  0 -90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-# Question: The previous two lines don't give the same result.. Maybe there could be a warning to not use the
-#same strike twice?
-# Answer via K. Feigl 2015/8/6: The -Sc option describes two planes with 6 numbers where 3 are enough.
-# So, no warning if two planes are not compatible, i.e., orthogonal.
+# Plotting 2 mechanisms on map
+gmt psmeca -R128/130/10/11.1 -JX2i -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
+# lon   lat  dep str dip rake str dip rake m ex nx ny 
+129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
+128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
+EOF
+(echo 128 11; echo 130 11) | gmt psxy -R -J -K -O -W0.25p,red >> $ps
+gmt pstext -R -J -N -F+f14p,Helvetica-Bold+j -K -O << EOF >> $ps
+128 11 ML P1
+130 11 MR P2
+EOF
 
-#TESTING AKI OPTION -Sa  - PURE STRIKE SLIP
-# Explosion
-# - not possible
-# Implosion
-# - not possible
-# Right lateral strike slip
-echo 1.0 1.0 0.0  0 90  0 5 0 0 Strike slip | gmt psmeca -Sa${size} -L1 -Gblack -R-1/6/-1/2 -JM14c -P -Y20c -B2 -K > $ps
-# Rotated strike slip
-echo 1.0 0.0 0.0  45 90 180 5 0 0 Strike slip 45 deg | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-# Dip slip
-echo 2.0 1.0 0.0  90  0 -90 5 0 0 Dip slip    | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-# Dip slip
-#echo 2.0 0.0 0.0   0 90  90 5 0 0 Dip slip    | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-echo 2.0 0.0 0.0   0  0 -90 5 0 0 Dip slip    | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-# Thrust
-echo 3.0 1.0 0.0  90 45 90 5 0 0 Thrust      | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-# Thrust
-echo 3.0 0.0 0.0   0 45 90 5 0 0 Thrust      | gmt psmeca -Sa${size} -L1 -Gblack -R -J -K -O >> $ps
-# Horizontal CLVD
-# - not possible
-# Horizontal CLVD
-# - not possible
-# Vertical CLVD
-# - not possible
-# Vertical CLVD
-# - not possible
+plots () {
+y_offset=-2.5i
+for a in $1 $2 $3 ; do
+    gmt pscoupe -R0/250/0/100 -JX1.5i -Bxa100f10 -Bya50f10 -BWesN \
+        -Q -L -Sc0.4 -Ab$4/$5/$a/250/90/$6/0/100f -Ggrey -Fa0.1i/cc $7 $8 \
+        -Y$y_offset -X$x_offset -O -K << EOF
+# lon   lat  dep str dip rake str dip rake m ex nx ny 
+129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
+128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
+EOF
+    gmt pstext -R -J -F+f18p,Courier-Bold+jBR -O -K <<< "240 85 $a"
+    y_offset=0i
+    x_offset=2.5i
+done
+x_offset=-5i
+}
 
-#TESTING HARVARD OPTION -Sc - two fault planes
+x_offset=0i
 
-# Right lateral Strike Slip
+plots   0  40  80 128 10.0 200    >> $ps
+plots 120 160 200 128 11.0 400 -N >> $ps
+plots 240 280 320 130 10.5 200 -N >> $ps
 
-# Rotated strike Slip
-# Explosion
-# - not possible
-# Implosion
-# - not possible
-# Right lateral strike slip
-echo 1.0 1.0 0.0  90 90 180   0 90   0 4 23 0 0 Right Strike Slip | gmt psmeca -Sc${size} -L1 -Gblack -R -JM14c -Y-8c -P -B2 -K -O >> $ps
-# Rotated strike slip
-echo 1.0 0.0 0.0  45 90 180 135 90   0 4 23 0 0 Strike slip 45 deg | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-# Dip slip
-echo 2.0 1.0 0.0  90 90  90 270  0  90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-# Dip slip
-echo 2.0 0.0 0.0   0 90  90 180  0  90 4 23 0 0 Dip slip    | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-# Thrust
-echo 3.0 1.0 0.0  90 45  90 270 45  90 4 23 0 0 Thrust      | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-# Thrust
-echo 3.0 0.0 0.0   0 45  90 180 45  90 4 23 0 0 Thrust      | gmt psmeca -Sc${size} -L1 -Gblack -R -J -K -O >> $ps
-# Horizontal CLVD
-# - not possible
-# Horizontal CLVD
-# - not possible
-# Vertical CLVD
-# - not possible
-# Vertical CLVD
-# - not possible
-
-#TESTING HARVARD OPTION -Sm - moment tensor elements
-#Following Dahlen and Tromp (1998) page 174
-# Explosion
-echo 0.0 1.0 0.0  1.0  1.0  1.0  0.0  0.0  0.0 23 0 0 Explosion   | gmt psmeca -Sm${size} -L1 -Gblack -R -J -Y-8c -P -B2 -K -O >> $ps
-# Implosion
-echo 0.0 0.0 0.0 -1.0 -1.0 -1.0  0.0  0.0  0.0 23 0 0 Implosion   | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Right lateral strike slip
-echo 1.0 1.0 0.0  0.0  0.0  0.0  0.0  0.0 -1.0 23 0 0 Strike slip | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Rotated strike slip
-echo 1.0 0.0 0.0  0.0  1.0 -1.0  0.0  0.0  0.0 23 0 0 Strike slip 45 deg | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Dip slip
-echo 2.0 1.0 0.0  0.0  0.0  0.0  1.0  0.0  0.0 23 0 0 Dip slip    | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Dip slip
-echo 2.0 0.0 0.0  0.0  0.0  0.0  0.0  1.0  0.0 23 0 0 Dip slip    | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Thrust
-echo 3.0 1.0 0.0  1.0 -1.0  0.0  0.0  0.0  0.0 23 0 0 Thrust      | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Thrust
-echo 3.0 0.0 0.0  1.0  0.0 -1.0  0.0  0.0  0.0 23 0 0 Thrust      | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Horizontal CLVD
-echo 4.0 1.0 0.0  1.0  1.0 -2.0  0.0  0.0  0.0 23 0 0 Horiz. CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Horizontal CLVD
-echo 4.0 0.0 0.0  1.0 -2.0  1.0  0.0  0.0  0.0 23 0 0 Horiz. CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-# Vertical CLVD-L1 
-echo 5.0 1.0 0.0 -2.0  1.0  1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -K -J -O >> $ps
-# Vertical CLVD
-echo 5.0 0.0 0.0  2.0 -1.0 -1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -J -K -O >> $ps
-echo "Dahlen and Tromp (1998) page 174" | gmt pstext -R -J -O -F+f12p,+cLB -Dj0.1i  >> $ps
+gmt pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O << EOF >> $ps
+3 8.5 24 Variation of azimuth
+3 8.0 20 vertical cross-section
+EOF
