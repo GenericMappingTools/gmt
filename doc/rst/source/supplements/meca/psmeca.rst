@@ -74,7 +74,7 @@ files without depth in third column using the **-o** option.
 Focal mechanisms in Aki and Richards convention. *scale* adjusts the
 scaling of the radius of the "beach ball", which will be proportional to
 the magnitude. Scale is the size for magnitude = 5 in inch (unless
-**c**, **i**, **m**, or **p** is appended). Use the **-T** option to
+**c**, **i**, or **p** is appended). Use the **-T** option to
 render the beach ball transparent by drawing only the nodal planes and
 the circumference. The color or shade of the compressive quadrants can
 be specified with the **-G** option. The color or shade of the extensive
@@ -104,7 +104,7 @@ expected to be in the following columns:
 Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
 of the radius of the "beach ball", which will be proportional to the
 magnitude. Scale is the size for magnitude = 5 (that is M0 = 4.0E23
-dynes-cm) in inch (unless **c**, **i**, **m**, or **p** is appended).
+dynes-cm) in inch (unless **c**, **i**, or **p** is appended).
 Use the **-T** option to render the beach ball transparent by drawing
 only the nodal planes and the circumference. The color or shade of the
 compressive quadrants can be specified with the **-G** option. The color
@@ -171,7 +171,7 @@ columns:
 Focal mechanisms given with partial data on both planes. *scale* adjusts
 the scaling of the radius of the "beach ball", which will be
 proportional to the magnitude. Scale is the size for magnitude = 5 in
-inch (unless **c**, **i**, **m**, or **p** is appended). The color or
+inch (unless **c**, **i**, or **p** is appended). The color or
 shade of the compressive quadrants can be specified with the **-G**
 option. The color or shade of the extensive quadrants can be specified
 with the **-E** option. Append **u** to have the text appear below the
@@ -204,7 +204,7 @@ following columns:
 Principal axis. *scale* adjusts the scaling of the radius of the "beach
 ball", which will be proportional to the magnitude. Scale is the size
 for magnitude = 5 (that is seismic scalar moment = 4\*10e+23 dynes-cm)
-in inch (unless **c**, **i**, **m**, or **p** is appended). (**-T**\ *0*
+in inch (unless **c**, **i**, or **p** is appended). (**-T**\ *0*
 option overlays best double couple transparently.) Use **-Sx** to plot
 standard Harvard CMT. Use **-Sy** to plot only the double couple part of
 moment tensor. Use **-St** to plot zero trace moment tensor. The color

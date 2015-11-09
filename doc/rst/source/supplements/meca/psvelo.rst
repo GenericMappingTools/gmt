@@ -72,7 +72,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
     **-Se**\ *velscale/confidence/fontsize*.
 
         Velocity ellipses in (N,E) convention. *Vscale* sets the scaling of the
-        velocity arrows. This scaling gives inches (unless **c**, **i**, **m**,
+        velocity arrows. This scaling gives inches (unless **c**, **i**,
         or **p** is appended). *Confidence* sets the 2-dimensional confidence
         limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *Fontsize*
         sets the size of the text in points. The ellipse will be filled with the
@@ -95,7 +95,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
     **-Sn**\ *barscale.*
 
         Anisotropy bars. *Barscale* sets the scaling of the bars This scaling
-        gives inches (unless **c**, **i**, **m**, or **p** is appended).
+        gives inches (unless **c**, **i**, or **p** is appended).
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -107,7 +107,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
 
         Velocity ellipses in rotated convention. *Vscale* sets the scaling of
         the velocity arrows. This scaling gives inches (unless **c**, **i**,
-        **m**, or **p** is appended). *Confidence* sets the 2-dimensional
+        or **p** is appended). *Confidence* sets the 2-dimensional
         confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
         *Fontsize* sets the size of the text in points. The ellipse will be
         filled with the color or shade specified by the |-G| option [default
@@ -129,7 +129,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
     **-Sw**\ *wedge\_scale/wedge\_mag*.
 
         Rotational wedges. *Wedge\_scale* sets the size of the wedges in inches
-        (unless **c**, **i**, **m**, or **p** is appended). Values are
+        (unless **c**, **i**, or **p** is appended). Values are
         multiplied by *Wedge\_mag* before plotting. For example, setting
         *Wedge\_mag* to 1.e7 works well for rotations of the order of 100
         nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
@@ -146,7 +146,7 @@ Selects the meaning of the columns in the data file and the figure to be plotted
     **-Sx**\ *cross_scale*
 
         gives Strain crosses. *Cross\_scale* sets the size of the cross in
-        inches (unless **c**, **i**, **m**, or **p** is appended). Parameters
+        inches (unless **c**, **i**, or **p** is appended). Parameters
         are expected to be in the following columns:
 
             **1**,\ **2**:

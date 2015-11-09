@@ -112,7 +112,7 @@ Required Arguments
      Focal mechanisms in Aki and Richards convention. *scale* adjusts the
      scaling of the radius of the "beach ball", which will be proportional to
      the magnitude. The *scale* is the size for magnitude = 5 in
-     **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is appended
+     **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
      to indicate that the size information is in units of cm, inches, meters,
      or points, respectively). Use the **-T** option to render the beach ball
      transparent by drawing only the nodal planes and the circumference. The
@@ -138,7 +138,7 @@ Required Arguments
      Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
      of the radius of the "beach ball", which will be proportional to the
      magnitude. The *scale* is the size for magnitude = 5 (that is M0 = 4E+23
-     dynes-cm.) in **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or
+     dynes-cm.) in **PROJ_LENGTH_UNIT** (unless **c**, **i**, or
      **p** is appended to indicate that the size information is in units of
      cm, inches, meters, or points, respectively). Use the **-T** option to
      render the beach ball transparent by drawing only the nodal planes and
@@ -167,7 +167,7 @@ Required Arguments
      Focal mechanisms given with partial data on both planes. *scale* adjusts
      the scaling of the radius of the "beach ball", which will be
      proportional to the magnitude. The *scale* is the size for magnitude = 5
-     in **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is
+     in **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is
      appended to indicate that the size information is in units of cm,
      inches, meters, or points, respectively). The color or shade of the
      compressive quadrants can be specified with the **-G** option. The color
@@ -196,7 +196,7 @@ Required Arguments
      the scaling of the radius of the "beach ball", which will be
      proportional to the magnitude. The *scale* is the size for magnitude = 5
      (that is seismic scalar moment = 4E+23 dynes-cm) in
-     **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is appended
+     **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
      to indicate that the size information is in units of cm, inches, meters,
      or points, respectively). (**-T**\ *0* option overlays best double
      couple transparently.)
@@ -226,7 +226,7 @@ Required Arguments
      Principal axis. *scale* adjusts the scaling of the radius of the "beach
      ball", which will be proportional to the magnitude. The *scale* is the
      size for magnitude = 5 (that is seismic scalar moment = 4\*10e+23
-     dynes-cm) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or
+     dynes-cm) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, or
      **p** is appended to indicate that the size information is in units of
      cm, inches, meters, or points, respectively). (**-T0** option overlays
      best double couple transparently.)
@@ -277,7 +277,7 @@ Optional Arguments
    selects a symbol instead of mechanism. Choose from the following:
    (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
    (**t**) triangle, (**x**) cross. *size* is the symbol size in
-   **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is appended
+   **PROJ_LENGTH_UNIT** (unless **c**, **i**, or **p** is appended
    to indicate that the size information is in units of cm, inches, meters,
    or points, respectively). If *size* must be read, it must be in column 4
    and the text string will start in column 5. Parameters are expected to

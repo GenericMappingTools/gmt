@@ -180,7 +180,7 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   h Use special format derived from HYPO71 output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   s Plot S polarity azimuth.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Azimuth of S polarity is in last column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     It may be a vector (V option) or a segment. Give half-size in cm.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     It may be a vector (V option) or a segment. Append half-size.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     L option is for outline\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -s<half-size>/[V[<vecpar>]][G<fill>][L]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default definition of v is 0.075/0.3/0.25/1\n");
