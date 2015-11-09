@@ -9,7 +9,7 @@ ps=meca_11.ps
 #     sigma uncertainties. [K. Feigl, 2015-11-08]
  
 gmt psvelo << EOF -Xc -JM15c -R241/242/34/35 -B0.5 -BWeSn+tpsvelo \
-    -Sw3/1.e7 -W1p -G60 -E210 -D2 -P -K > $ps    
+    -Sw3c/1.e7 -W1p -G60 -E210 -D2 -P -K > $ps    
 # lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 241.2 34.2  5.65E-08 1.17E-08
 241.2 34.5 -4.85E-08 1.85E-08
@@ -17,7 +17,7 @@ gmt psvelo << EOF -Xc -JM15c -R241/242/34/35 -B0.5 -BWeSn+tpsvelo \
 EOF
 
 # omit the shading
-gmt psvelo -J -R -Sw3/1.e7 -W1p -D2 -O -K << EOF >> $ps    
+gmt psvelo -J -R -Sw3c/1.e7 -W1p -D2 -O -K << EOF >> $ps    
 # lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 # lon     lat    spin(rad/yr) spin_sigma (rad/yr)
 241.7 34.2  5.65E-08 1.17E-08

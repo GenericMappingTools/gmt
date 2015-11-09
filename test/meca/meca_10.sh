@@ -26,7 +26,7 @@ gmt psmeca -R -J -P -M -Sa6i -N -W1p -O -K -h4 -C -T << EOF >> $ps
 EOF
  
 # and polarities observed
-gmt pspolar -R -J -D0./0. -M4 -N -Sc0.2i -Qe -O -K -P -h3 << EOF >> $ps
+gmt pspolar -R -J -D0./0. -M4c -N -Sc0.2i -Qe -O -K -P -h3 << EOF >> $ps
 # ID strike plunge Compression/Dilatation
 #  1 90 45 d
 #  1  0  45 d
