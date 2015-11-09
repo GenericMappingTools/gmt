@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-ps=meca_2b.ps
+ps=meca_4.ps
 
 gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
