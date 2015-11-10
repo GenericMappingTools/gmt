@@ -1173,7 +1173,7 @@ void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	GMT_message (GMT, "\t     c: %s continuous line segments for each group [Default].\n", verb[mode]);
 	GMT_message (GMT, "\t     r: %s line segments from a reference point reset for each group.\n", verb[mode]);
 	GMT_message (GMT, "\t     n: %s networks of line segments between all points in each group.\n", verb[mode]);
-	if (mode == 1) GMT_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv+s\n");
+	if (mode == 0) GMT_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv+s\n");
 	GMT_message (GMT, "\t     Optionally, append one of five ways to define a \"group\":\n");
 	GMT_message (GMT, "\t       a: All data is consider a single group; reference point is first point in the group.\n");
 	GMT_message (GMT, "\t       f: Each file is a separate group; reference point is reset to first point in the group.\n");
