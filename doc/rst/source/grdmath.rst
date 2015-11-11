@@ -758,4 +758,3 @@ See Also
         <p>gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc</br></p>
     </div>
    </div>
-   <link type="text/css" rel="stylesheet" href="_static/overlaypopup.css" />
