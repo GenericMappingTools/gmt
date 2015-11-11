@@ -665,7 +665,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			             GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_message (GMT, "\t   Note: For x|y with time data the unit is controlled by TIME_UNIT.\n");
 			GMT_message (GMT, "\t   Repeat option to specify multiple criteria, and prepend +\n");
-			GMT_message (GMT, "\t   to indicate that all the critera must be met [any].\n");
+			GMT_message (GMT, "\t   to indicate that all the criteria must be met [any].\n");
 			break;
 
 		case 'h':	/* Header */
@@ -825,7 +825,7 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	else
 		GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).\n", pad);
 	if (kind < 2)GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
-	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
+	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
 	if (kind == 2) GMT_message (GMT, "%s +s<symbol><size> specifies the decorative symbol and its size.\n", pad);
 	if (kind < 2) {

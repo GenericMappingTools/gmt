@@ -186,7 +186,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tYROW                   = grid with row numbers 0, 1, ..., NY-1.\n"
 		"\n\tUse macros for frequently used long expressions; see the grdmath man page.\n"
 		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
-		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n\n");
+		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n");
 	GMT_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-A is only relevant to the LDISTG operator)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions to use with the LDISTG operator:\n");

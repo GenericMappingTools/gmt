@@ -64,8 +64,8 @@ int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the GMT default settings.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of the defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of the defaults.\n");
 
 	return (EXIT_FAILURE);
 }

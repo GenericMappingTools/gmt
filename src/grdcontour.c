@@ -176,10 +176,10 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the grid file to be contoured.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of three ways:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval, or a single contour if prepended with a + sign.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3. Name of a CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     1. Fixed contour interval, or a single contour if prepended with a + sign.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        [and optionally an individual annotation angle in col 3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     3. Name of a CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT file contours are set to C unless the CPT flags are set;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");

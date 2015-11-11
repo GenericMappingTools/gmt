@@ -164,6 +164,11 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives either names of xyz[m] and vertex files or of a file defining a close surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' immediately after -T and before the file name.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int></m_dec></m_dip> -> body magnetic intensity/declination/inclination.\n");
@@ -175,10 +180,6 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E give layer thickness in m [Default = 0 m].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Gives either names of xyz[m] and vertex files or of a file defining a close surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In the first case append an 'd' immediately after -T and optionally a /m after the vertex file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In the second case append an 'r' or a 's' immediately after -T and before the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Sets z level of reference plane [Default = 0].\n");
 	GMT_Option (API, "bi");

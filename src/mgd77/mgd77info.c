@@ -92,7 +92,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *API, int level)
              
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C List abbreviations of all columns present for each cruise.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m for listing just the MGD77 columns present.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append e for listing just any extra columns present.\n");
