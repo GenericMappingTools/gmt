@@ -35,7 +35,7 @@
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
     **s** (econdary) axes information (mostly used for time axes annotations).
-    The [**x**\|\ **x**\|\ **z**] flags specify which axes you are providing information for.
+    The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
     If none are given then we default to **xy**.  If you wish to give different annotation intervals
     or labels for the various axes then you must repeat the **B** option for
     each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
