@@ -752,9 +752,9 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_POLAR_CAP**
     Controls the appearance of gridlines near the poles for all
     azimuthal projections and a few others in which the geographic poles
-    are plotted as points (Lambert Conic, Hammer, Mollweide, Sinusoidal,
-    and van der Grinten). Specify either none (in which case there is no
-    special handling) or *pc_lat*/*pc_dlon*. In that case, normal
+    are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
+    Sinusoidal and van der Grinten). Specify either none (in which case there
+    is no special handling) or *pc_lat*/*pc_dlon*. In that case, normal
     gridlines are only drawn between the latitudes
     -*pc_lat*/+*pc_lat*, and above those latitudes the gridlines are
     spaced at the (presumably coarser) *pc_dlon* interval; the two

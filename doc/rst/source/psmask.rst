@@ -6,7 +6,7 @@ psmask
 
 .. only:: not man
 
-    psmask - Use data tables to clip or mask map areas with no coverage
+    psmask - Clip or mask map areas with no data table coverage
 
 Synopsis
 --------

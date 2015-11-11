@@ -7,7 +7,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`blockmode`      | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`filter1d`       | Filter 1-D table data sets (time series)                            |
+| :doc:`filter1d`       | Time domain filtering of 1-D data tables                            |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdfilter`      | Filter 2-D gridded data sets in the space domain                    |
 +-----------------------+---------------------------------------------------------------------+
@@ -103,7 +103,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sph2grd`        | Compute grid from spherical harmonic coefficients                   |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`sphdistance`    | Make grid of distances to nearest points on a sphere                |
+| :doc:`sphdistance`    | Create grid of distances to nearest points on a sphere              |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`sphtriangulate` | Delaunay or Voronoi construction of spherical lon,lat data          |
 +-----------------------+---------------------------------------------------------------------+
@@ -117,7 +117,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`gmtspatial`     | Geospatial operations on lines and polygons                         |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`gmtvector`      | Basic operations on vectors in 2-D and 3-D                          |
+| :doc:`gmtvector`      | Operations on Cartesian vectors in 2-D and 3-D                      |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grd2rgb`        | Convert Sun raster or grid file to red, green, blue component grids |
 +-----------------------+---------------------------------------------------------------------+
@@ -139,7 +139,7 @@
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`fitcircle`      | Finds the best-fitting great or small circle for a set of points    |
 +-----------------------+---------------------------------------------------------------------+
-| :doc:`gmtregress`     | Perform linear regression of 1-D data sets                          |
+| :doc:`gmtregress`     | Linear regression of 1-D data sets                                  |
 +-----------------------+---------------------------------------------------------------------+
 | :doc:`grdtrack`       | Sampling of 2-D gridded data set(s) along 1-D track                 |
 +-----------------------+---------------------------------------------------------------------+

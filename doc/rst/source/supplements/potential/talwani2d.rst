@@ -6,7 +6,7 @@ talwani2d
 
 .. only:: not man
 
-    talwani2d - Compute free-air, geoid or vertical gravity gradients anomalies over 2-D bodies
+    talwani2d - Compute geopotential anomalies over 2-D bodies by the method of Talwani
 
 Synopsis
 --------
