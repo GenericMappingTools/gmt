@@ -184,4 +184,7 @@ endif (NOT DEFINED FIND_LIBRARY_USE_LIB64_PATHS)
 # search order for find_*
 set (CMAKE_FIND_FRAMEWORK LAST)
 
+# install GMT developer include files
+set (BUILD_DEVELOPER TRUE)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
