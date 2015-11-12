@@ -41,7 +41,7 @@ Note that the size of the resulting output file is directly dependent on
 the square of the dpi chosen for the scanline conversion and how well
 the resulting image compresses. A higher value for dpi in **-Qc** would
 have resulted in a much larger output file. The CPT files were taken
-from Section [sec:example\ :sub:`0`\ 2].
+from Example :ref:`example_02`.
 
 .. [1]
    These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).

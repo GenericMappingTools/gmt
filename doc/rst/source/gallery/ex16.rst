@@ -6,7 +6,7 @@
 :doc:`pscontour </pscontour>` (for contouring) and
 :doc:`triangulate </triangulate>` (for gridding) use the
 simplest method of interpolating data: a Delaunay triangulation (see
-Section [sec:example\ :sub:`1`\ 2]) which forms *z(x, y)* as a
+Example :ref:`example_12`) which forms *z(x, y)* as a
 union of planar triangular facets. One advantage of this method is that
 it will not extrapolate *z(x, y)* beyond the convex hull of the
 input (*x, y*) data. Another is that it will not estimate a *z* value
@@ -22,7 +22,7 @@ higher-order (smooth and differentiable) interpolation of
 :doc:`surface </surface>` will interpolate to all (*x,
 y*) points in a rectangular region, and thus will extrapolate beyond the
 convex hull of the data. However, this can be masked out in various ways
-(see Section [sec:example\ :sub:`1`\ 5]).
+(see Example :ref:`example_15`).
 
 A more serious objection is that :doc:`surface </surface>` may estimate *z* values
 outside the local range of the data (note area near *x* = 0.8, *y* =
@@ -32,7 +32,7 @@ used to create a "minimum curvature" (most smooth) interpolant.
 tension to partially overcome this problem. The limiting value
 *tension = 1* should approximate the triangulation, while a value
 between 0 and 1 may yield a good compromise between the above two cases.
-A value of 0.5 is shown here (Figure [fig:example:sub:`1`\ 6]). A side
+A value of 0.5 is shown in the Figure :ref:`fig_ex16`. A side
 effect of the tension is that it tends to make the contours turn near
 the edges of the domain so that they approach the edge from a
 perpendicular direction. A solution is to use
@@ -56,8 +56,10 @@ request for interval (700,725).
 .. literalinclude:: /_verbatim/example_16.txt
    :language: bash
 
+.. _fig_ex16:
+
 .. figure:: /_images/example_16.*
    :width: 500 px
    :align: center
 
-   More ways to grid data.
+   More ways to grid data
