@@ -69,7 +69,8 @@ Schmidt, Dirk Stoecker, Eduardo Suárez, Mikhail Tchernychev, Malte
 Thoma, David Townsend, Garry Vaughan, William Weibel, and many others,
 including their advice on how to make GMT portable to a wide range of
 platforms. John Lillibridge and Stephan Eickschen provided the original
-examples 11 and 32, respectively; Hanno von Lom helped resolve early
+Examples :ref:`(11) <example_11>` and :ref:`(32) <example_32>`,
+respectively; Hanno von Lom helped resolve early
 problems with DLL libraries for Win32; Lloyd Parkes enabled indexed
 color images in PostScript; Kurt Schwehr maintains the packages; Wayne
 Wilson implemented the full general perspective projection; and William
@@ -77,8 +78,8 @@ Yip helped translate GMT to POSIX ANSI C and incorporate netCDF 3. The
 SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux and web server support.
 
-Honolulu, HI, College Park, MD, Faro, Portugal, Darmstadt and
-Bremerhaven, Germany, November 2015
+Honolulu, HI; College Park, MD; Faro, Portugal; Darmstadt and
+Bremerhaven, Germany; November 2015
 
 
 A Reminder
@@ -2729,6 +2730,8 @@ labeled 1, 4, 9, ... will appear.
    (bottom) Here, intervals refer to projected values, although the annotation
    uses the corresponding unprojected values, as in -Ba3f2g1p.
 
+.. _cartesian_time_axes:
+
 Cartesian time axes
 ^^^^^^^^^^^^^^^^^^^
 
@@ -4753,7 +4756,8 @@ instead (similar to how the **-R** option works).  Some optional modifiers are a
    right area with **-Dj**\ TR\ **+w**\ 1.5i\ **+o**\ 0.15i\ **+s**\ tmp and then read in the coordinates
    of the lower-right corner of the insert and its dimension with UNIX ("read x0 y0 w h < tmp").
    Knowing the placement (we know the size of the circular global map) we can correctly position it
-   in the insert with **-X$x0** and **-Y$y0**.  See gallery example 44 for more details.
+   in the insert with **-X$x0** and **-Y$y0**.
+   See Example :ref:`example_44` for more details.
 
 .. _grid-file-format:
 
@@ -4978,7 +4982,7 @@ the coordinates of the grid passed to such programs:
 
 For convenience, we also support the inverse translation, i.e.,
 **+U**\ *unit*. This modifier can be used to convert your grid
-coordinates *from* meters *to* the specified unit. Example 28 shows a
+coordinates *from* meters *to* the specified unit. Example :ref:`example_28` shows a
 case where this is being used to change an UTM grid in meters to km.
 These modifiers are only allowed when map projections are not selected
 (or are Cartesian).
@@ -7889,7 +7893,7 @@ GMT graphics in **PowerPoint**
    PowerPoint's Format Picture dialogue to set scale and rotation.
 
 In Figure :ref:`Rendered images <Rendering>` we have attempted to include
-Figure :ref:`Example 20 <Fig_example_20>` into a PowerPoint presentation.
+Example :ref:`example_20` into a PowerPoint presentation.
 First the PostScript file was converted to PDF (using
 :doc:`psconvert`), then loaded into
 PowerPoint and the white background color was made transparent
@@ -8012,6 +8016,8 @@ this table. To change the fonts used in plotting basemap frames, see the
 man page for :doc:`gmt.conf`. For direct
 plotting of text-strings, see the man page for :doc:`pstext`.
 
+.. _non-default-fonts:
+
 Using non-default fonts with GMT
 --------------------------------
 
@@ -8048,7 +8054,7 @@ you can set the GMT font parameters to your non-standard fonts:
 
 After setting the encoding and the degree symbol, the configuration part
 for GMT is finished and you can proceed to create GMT-maps as usual.
-An example script is discussed in Example [sec:non-default-fonts-example].
+An example script is discussed in Example :ref:`example_31`.
 
 Embedding fonts in PostScript and PDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8092,8 +8098,7 @@ outlined fonts in PDF, create the PDF from the converted
 PostScript-file. Also, :doc:`psconvert`
 cannot correctly crop Ghostscript converted PostScript-files
 anymore. Use Heiko Oberdiek's instead or crop with
-:doc:`psconvert` **-A** **-Te** before (See
-Example [sec:non-default-fonts-example]).
+:doc:`psconvert` **-A** **-Te** before (See Example :ref:`example_31`).
 
 Character encoding
 ~~~~~~~~~~~~~~~~~~
@@ -8135,7 +8140,7 @@ imaginable. In GMT each color can be represented by the triplet
 green, and no blue) creates a color called chartreuse. The color sliders
 in the graphics program GIMP are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color
-sliders will change the color. As Figure :ref:`Chartreuse in GIMP <GIMP>`\ *a*
+sliders will change the color. As Figure *(a)* of :ref:`Chartreuse in GIMP <GIMP>`
 shows: increase
 the red and you will get a more yellow color, while lowering the blue
 level will turn it into brown.
@@ -8203,7 +8208,7 @@ The color cube
 
 We are going to try to give you a geometric picture of color mixing in
 RGB and HSV by means of a tour of the RGB cube depicted in
-Figure :ref:`Example 11 <Fig_example_11>`. The geometric picture is most
+Figure :ref:`fig_ex11`. The geometric picture is most
 helpful, we think, since HSV are not orthogonal coordinates and not
 found from RGB by a simple algebraic transformation. So here goes: Look
 at the cube face with black, red, magenta, and blue corners. This is the
@@ -8944,7 +8949,8 @@ bar are built by using :doc:`makecpt`
 Labeled and non-equidistant color legends
 -----------------------------------------
 
-The use of color legends has already been introduced in examples 2, 16, and 17.
+The use of color legends has already been introduced in Examples
+:ref:`2 <example_02>`, :ref:`16 <example_16>`, and :ref:`17 <example_17>`.
 Things become a bit more
 complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
@@ -9564,7 +9570,7 @@ Examples of Contour Label Placement
 
 We will demonstrate the use of these options with a few simple examples.
 First, we will contour a subset of the global geoid data used in
-GMT Example 01; the region selected encompasses the world's strongest
+Example :ref:`example_01`; the region selected encompasses the world's strongest
 "geoid dipole": the Indian Low and the New Guinea High.
 
 Equidistant labels

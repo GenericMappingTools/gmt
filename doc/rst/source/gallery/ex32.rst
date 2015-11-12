@@ -34,7 +34,7 @@ over it and with shading to show the little topography there is.
 borders "at altitude". Something similar is done at the end to plot some
 symbols and names for cities.
 
-The script produces the plot in Figure [fig:example\ :sub:`3`\ 2]. Note
+The script produces the plot in the Figure `fig_ex32`. Note
 that the PNG image of the flag can be downloaded directly in the call
 the :doc:`grdconvert </grdconvert>`, but we have
 commented that out in the example because it requires compilation with
@@ -45,8 +45,10 @@ did not want to store the 58 MB DEM file, whose location is mentioned in the scr
 .. literalinclude:: /_verbatim/example_32.txt
    :language: bash
 
+.. _fig_ex32:
+
 .. figure:: /_images/example_32.*
    :width: 500 px
    :align: center
 
-   Draping an image over topography.
+   Draping an image over topography

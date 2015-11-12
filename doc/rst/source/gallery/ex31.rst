@@ -7,7 +7,7 @@ This example illustrates several possibilities to create GMT plots
 with non-default fonts. As these fonts are not part of the standard
 PostScript font collection they have to be embedded in the PS- or
 PDF-file with Ghostscript. See also
-Appendix [sec:non-default-fonts] for further information. The script
+Cookbook Section :ref:`non-default-fonts` for further information. The script
 includes the following steps:
 
 -  create a ``PSL_custom_fonts.txt`` file;

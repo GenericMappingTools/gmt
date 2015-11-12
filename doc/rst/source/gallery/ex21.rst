@@ -3,7 +3,7 @@
 (21) Time-series of RedHat stock price
 --------------------------------------
 
-As discussed in Section [sec:timeaxis], the annotation of time-series is
+As discussed in the Cookbook Section :ref:`cartesian_time_axes`, the annotation of time-series is
 generally more complicated due to the extra degrees of freedom afforded
 by the dual annotation system. In this example we will display the trend
 of the stock price of RedHat (RHAT) from their initial public offering

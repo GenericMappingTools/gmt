@@ -30,9 +30,10 @@ numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
 .. literalinclude:: /_verbatim/example_11.txt
    :language: bash
 
+.. _fig_ex11:
 
 .. figure:: /_images/example_11.*
    :width: 500 px
    :align: center
 
-   The RGB color cube.
+   The RGB color cube

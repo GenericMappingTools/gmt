@@ -14,7 +14,7 @@ India with :doc:`grdimage </grdimage>`, use
 then overlay topography from the ETOPO5 data set with another call to
 :doc:`grdimage </grdimage>`. We finally undo the
 clippath with a second call to :doc:`pscoast </pscoast>`
-with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
+with the option **-Q** (See the Figure :ref:`fig_ex17`):
 
 We also plot a color legend on top of the land. So here we basically
 have three layers of "paint" stacked on top of each other: the
@@ -32,8 +32,10 @@ CPT files and ways to draw color legends.
 .. literalinclude:: /_verbatim/example_17.txt
    :language: bash
 
+.. _fig_ex17:
+
 .. figure:: /_images/example_17.*
    :width: 500 px
    :align: center
 
-   Clipping of images using coastlines.
+   Clipping of images using coastlines

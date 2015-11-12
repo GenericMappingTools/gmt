@@ -3,7 +3,7 @@
 (25) Global distribution of antipodes
 -------------------------------------
 
-As promised in Section [sec:example\ :sub:`2`\ 3], we will study
+As promised in Example :ref:`example_23`, we will study
 antipodes. The antipode of a point at :math:`(\phi, \lambda)` is the
 point at :math:`(-\phi, \lambda + 180)`. We seek an answer to the
 question that has plagued so many for so long: Given the distribution of

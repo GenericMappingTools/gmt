@@ -5,7 +5,7 @@
 
 This example shows how one goes from randomly spaced data points to an
 evenly sampled surface. First we plot the distribution and values of our
-raw data set (same as in Section [sec:example\ :sub:`1`\ 2]). We choose an equidistant grid and run
+raw data set (same as in Example :ref:`example_12`). We choose an equidistant grid and run
 :doc:`blockmean </blockmean>` which preprocesses the
 data to avoid aliasing. The dashed lines indicate the logical blocks
 used by :doc:`blockmean </blockmean>`; all points inside

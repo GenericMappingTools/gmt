@@ -20,8 +20,8 @@ the shape of the contours.
 The script produces the plot in Figure; note
 how interesting the path to Seattle appears in this particular
 projection (Hammer). We also note that Rome's antipode lies somewhere
-near the Chatham plateau (antipodes will be revisited in
-Section [sec:example\ :sub:`2`\ 5]).
+near the Chatham plateau (antipodes will be revisited in Example
+:ref:`example_25`).
 
 .. literalinclude:: /_verbatim/example_23.txt
    :language: bash
