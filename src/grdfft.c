@@ -29,7 +29,7 @@
 
 #define THIS_MODULE_NAME	"grdfft"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Do mathematical operations on grids in the wavenumber (or frequency) domain"
+#define THIS_MODULE_PURPOSE	"Mathematical operations on grids in the wavenumber (or frequency) domain"
 #define THIS_MODULE_KEYS	"<GI,GGO,RG-,GDE"
 
 #include "gmt_dev.h"
@@ -581,7 +581,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");

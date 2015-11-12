@@ -40,7 +40,7 @@
 
 #define THIS_MODULE_NAME	"filter1d"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Do time domain filtering of 1-D data tables"
+#define THIS_MODULE_PURPOSE	"Time domain filtering of 1-D data tables"
 #define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
@@ -220,7 +220,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Check symmetry of data about window center.  Enter a factor\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output timesteps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
 	GMT_Option (API, "V,bi,bo,d,f,g,h,i,o,:,.");
 	

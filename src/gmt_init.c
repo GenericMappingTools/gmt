@@ -665,7 +665,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options) {
 			             GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_message (GMT, "\t   Note: For x|y with time data the unit is controlled by TIME_UNIT.\n");
 			GMT_message (GMT, "\t   Repeat option to specify multiple criteria, and prepend +\n");
-			GMT_message (GMT, "\t   to indicate that all the critera must be met [any].\n");
+			GMT_message (GMT, "\t   to indicate that all the criteria must be met [any].\n");
 			break;
 
 		case 'h':	/* Header */
@@ -825,7 +825,7 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	else
 		GMT_message (GMT, "%s +n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).\n", pad);
 	if (kind < 2)GMT_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
-	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox  [Default is no outline].\n", pad);
+	GMT_message (GMT, "%s +p[<pen>] draw outline of textbox [Default is no outline].\n", pad);
 	GMT_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
 	if (kind == 2) GMT_message (GMT, "%s +s<symbol><size> specifies the decorative symbol and its size.\n", pad);
 	if (kind < 2) {
@@ -1173,7 +1173,7 @@ void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	GMT_message (GMT, "\t     c: %s continuous line segments for each group [Default].\n", verb[mode]);
 	GMT_message (GMT, "\t     r: %s line segments from a reference point reset for each group.\n", verb[mode]);
 	GMT_message (GMT, "\t     n: %s networks of line segments between all points in each group.\n", verb[mode]);
-	if (mode == 1) GMT_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv+s\n");
+	if (mode == 0) GMT_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv+s\n");
 	GMT_message (GMT, "\t     Optionally, append one of five ways to define a \"group\":\n");
 	GMT_message (GMT, "\t       a: All data is consider a single group; reference point is first point in the group.\n");
 	GMT_message (GMT, "\t       f: Each file is a separate group; reference point is reset to first point in the group.\n");
@@ -9393,7 +9393,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				else if (n_slashes == 3) {	/* with true scale at specified latitude */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &GMT->current.proj.pars[3]);
 					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
-					if (c <= -90.0 || c >= 90.0) {
+					if (c < -90.0 || c > 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
 					}
@@ -9404,7 +9404,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				else if (n_slashes == 4) {
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &GMT->current.proj.pars[3]);
 					if (gmt_get_uservalue (GMT, txt_e, GMT->current.io.col_type[GMT_IN][GMT_Y], &c, "oblique latitude")) return 1;
-					if (c <= -90.0 || c >= 90.0) {
+					if (c < -90.0 || c > 90.0) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Oblique latitude must be in -90 to +90 range\n");
 						error++;
 					}
@@ -9719,7 +9719,7 @@ int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 /*! Parser for -Sv|V, -S=, and -Sm */
 int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_SYMBOL *S) {
 
-	unsigned int pos = 0, k, f, end, error = 0;
+	unsigned int pos = 0, k, f = 0, end, error = 0;
 	size_t len;
 	bool p_opt = false, g_opt = false;
 	int j;

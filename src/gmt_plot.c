@@ -590,9 +590,30 @@ void gmt_map_latline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, do
 {
 	uint64_t nn;
 	double *llon = NULL, *llat = NULL;
-
+#ifdef DEBUG
+	uint64_t k;
+	FILE *fp = NULL;
+	char name[GMT_LEN64] = {""};
+	if (GMT->hidden.gridline_debug && (GMT->hidden.gridline_kind == 'x' || GMT->hidden.gridline_val != lat)) return;
+#endif
 	nn = GMT_latpath (GMT, lat, west, east, &llon, &llat);
+#ifdef DEBUG
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_y_%g_ll.txt", lat);
+		fp = fopen (name, "w");
+		for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
+		fclose (fp);
+	}
+#endif
 	GMT->current.plot.n = GMT_geo_to_xy_line (GMT, llon, llat, nn);
+#ifdef DEBUG
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_y_%g_xy.txt", lat);
+		fp = fopen (name, "w");
+		for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
+		fclose (fp);
+	}
+#endif
 
 	if (GMT->current.plot.n > 1) {	/* Need at least 2 points for a line */
 		PSL_comment (PSL, "Lat = %g\n", lat);
@@ -612,9 +633,30 @@ void gmt_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, do
 {
 	uint64_t nn;
 	double *llon = NULL, *llat = NULL;
-
+#ifdef DEBUG
+	uint64_t k;
+	FILE *fp = NULL;
+	char name[GMT_LEN64] = {""};
+	if (GMT->hidden.gridline_debug && (GMT->hidden.gridline_kind == 'y' || GMT->hidden.gridline_val != lon)) return;
+#endif
 	nn = GMT_lonpath (GMT, lon, south, north, &llon, &llat);
+#ifdef DEBUG
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_x_%g_ll.txt", lon);
+		fp = fopen (name, "w");
+		for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
+		fclose (fp);
+	}
+#endif
 	GMT->current.plot.n = GMT_geo_to_xy_line (GMT, llon, llat, nn);
+#ifdef DEBUG
+	if (GMT->hidden.gridline_debug) {
+		sprintf (name, "gridline_x_%g_xy.txt", lon);
+		fp = fopen (name, "w");
+		for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
+		fclose (fp);
+	}
+#endif
 
 	if (GMT->current.plot.n > 1) {	/* Need at least 2 points for a line */
 		PSL_comment (PSL, "Lon = %g\n", lon);
@@ -2692,7 +2734,7 @@ void gmt_NaN_pen_up (double x[], double y[], unsigned int pen[], uint64_t n)
 
 void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pen, uint64_t n, unsigned int mode)
 {	/* Mode = PSL_LINEAR [0] or PSL_BEZIER [1] */
-	uint64_t i, j, i1;
+	uint64_t i, j, im1, ip1;
 	int way;
 	bool close, stop;
 	double x_cross[2], y_cross[2];
@@ -2728,9 +2770,21 @@ void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 
 	i++;
 	while (i < n) {
-		i1 = i - 1;
-		if (pen[i] == pen[i1] && (way = (*GMT->current.map.jump) (GMT, x[i1], y[i1], x[i], y[i]))) {	/* Jumped across the map */
-			(*GMT->current.map.get_crossings) (GMT, x_cross, y_cross, x[i1], y[i1], x[i], y[i]);
+		im1 = i - 1;
+		ip1 = i + 1;
+		if (pen[im1] == PSL_MOVE && pen[i] == PSL_DRAW && (ip1 == n || pen[ip1] == PSL_MOVE) && GMT->current.proj.projection == GMT_OBLIQUE_MERC && fabs (y[i]-y[im1]) < 0.001) {
+			double mw = 2.0 * GMT_half_map_width (GMT, y[i]);	/* Get map width */
+			/* We have a single 2-point ~horizontal line segment with move, draw, move.  Check if the draw is across the entire oblique Mercator map */
+			if (doubleAlmostEqual (fabs (x[i]-x[im1]), mw)) {	/* Yes, so skip such stray lines across map */
+				/* This fix was implemented in response to the problem first illustrated in test/psbasemap/oblique.sh.
+				 * Ideally, we should fix this upstream but not that easy to follow the logic. */
+				i++;
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Skipping a stray line across map.\n");
+				continue;
+			}
+		}
+		if (pen[i] == pen[im1] && (way = (*GMT->current.map.jump) (GMT, x[im1], y[im1], x[i], y[i]))) {	/* Jumped across the map */
+			(*GMT->current.map.get_crossings) (GMT, x_cross, y_cross, x[im1], y[im1], x[i], y[i]);
 			if (way == -1) {	/* Add left border point */
 				PSL_plotpoint (PSL, x_cross[0], y_cross[0], PSL_DRAW);	/* Draw to left boundary... */
 				PSL_plotpoint (PSL, x_cross[1], y_cross[1], PSL_MOVE);	/* ...then jump to the right boundary */

@@ -83,13 +83,13 @@ Required Arguments
 
 **-M**\ *size*
     Sets the size of the beach ball to plot polarities in. *Size* is in
-    default units (unless **c**, **i**, **m**, or **p** is appended).
+    default units (unless **c**, **i**, or **p** is appended).
 
 .. _-S:
 
 **-S**\ *<symbol_type><size>*
     Selects *symbol_type* and symbol *size*. Size is in default inits (unless
-    **c**, **i**, **m**, or **p** is appended). Choose symbol type from
+    **c**, **i**, or **p** is appended). Choose symbol type from
     st(*a*)r, (*c*)ircle, (*d*)iamond, (*h*)exagon, (*i*)nverted
     triangle, (*p*)oint, (*s*)quare, (*t*)riangle, (*x*)cross.
 
@@ -161,7 +161,7 @@ Optional Arguments
     **-Qs**\ *half-size*/[**V**\ [*v_width/h_length/h_width/shape*]][**G**\ *color*][**L**]
         Plots S polarity azimuth. S polarity is in last column. It may be a vector (**V** flag) or a segment.
         Give *half-size,v_width,h_length,h_width* in default units (unless **c**, **i**,
-        **m**, or **p** is appended). [**L**] flag is for outline.
+        or **p** is appended). [**L**] flag is for outline.
         See `Vector Attributes`_ for specifying additional attributes.
 
     **-Qt**\ *pen*

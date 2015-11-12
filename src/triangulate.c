@@ -34,7 +34,7 @@
  
 #define THIS_MODULE_NAME	"triangulate"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Do optimal (Delaunay) triangulation and gridding of Cartesian table data"
+#define THIS_MODULE_PURPOSE	"Optimal (Delaunay) triangulation and gridding of Cartesian table data"
 #define THIS_MODULE_KEYS	"<DI,>DO,GGo,RG-"
 
 #include "gmt_dev.h"
@@ -117,7 +117,7 @@ int GMT_triangulate_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");   
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");

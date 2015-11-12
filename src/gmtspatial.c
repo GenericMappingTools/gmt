@@ -26,7 +26,7 @@
 
 #define THIS_MODULE_NAME	"gmtspatial"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Do geospatial operations on lines and polygons"
+#define THIS_MODULE_PURPOSE	"Geospatial operations on lines and polygons"
 #define THIS_MODULE_KEYS	"<DI,DDi,NDi,TDi,>DO"
 
 #include "gmt_dev.h"
@@ -626,12 +626,12 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+|-] [-F[l]] [-I[i|e]] [%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[[-|+]<unit>][+h][+l][+p]]\n", GMT_DIST_OPT);
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Si|j|s|u] [-T[<cpol>]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs.\n");

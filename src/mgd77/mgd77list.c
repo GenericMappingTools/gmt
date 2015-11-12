@@ -246,7 +246,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t  + means bit must be 1, - means it must be 0.  All bit tests given must be passed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  By default, MGD77+ files with error bit flags will use the flags to suppress bad data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  Turn this behavior off by append : with no arguments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust some data values before output. Append c|d|f|m|t to select field:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<code>[,<v>] Adjust field carter. <v>, the sound velocity in water, is taken from\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     the MGD77 header (or 1500 if invalid); optionally append your <v> (in m/s)\n");

@@ -1111,7 +1111,7 @@ double GMT_erfinv (struct GMT_CTRL *GMT, double y)
 }
 
 double gmt_beta (struct GMT_CTRL *GMT, double z, double w) {
-	double g1, g2, g3;
+	double g1 = 0.0, g2 = 0.0, g3 = 0.0;
 	gmt_ln_gamma_r (GMT, z,   &g1);
 	gmt_ln_gamma_r (GMT, w,   &g2);
 	gmt_ln_gamma_r (GMT, z+w, &g3);
@@ -1130,7 +1130,7 @@ double GMT_f_pdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
 double GMT_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2)
 {
 	/* Cumulative probability density distribution for F */
-	double y;
+	double y = 0.0;
 	
 	gmt_inc_beta (GMT, 0.5*nu1, 0.5*nu2, F*nu1/(F*nu1+nu2), &y);
 	
@@ -1436,7 +1436,7 @@ double GMT_tcrit (struct GMT_CTRL *GMT, double alpha, double nu)
 double GMT_chi2_pdf (struct GMT_CTRL *GMT, double c, uint64_t nu)
 {
 	/* Probability density distribution for chi-squared */
-	double g, y;
+	double g = 0.0, y;
 	
 	gmt_ln_gamma_r (GMT, 0.5*nu, &g);
 	y = pow (c, 0.5*nu - 1.0) * exp (-0.5 * c - g) / pow (2.0, 0.5 * nu);

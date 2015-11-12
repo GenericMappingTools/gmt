@@ -186,7 +186,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\tYROW                   = grid with row numbers 0, 1, ..., NY-1.\n"
 		"\n\tUse macros for frequently used long expressions; see the grdmath man page.\n"
 		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
-		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n\n");
+		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n");
 	GMT_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-A is only relevant to the LDISTG operator)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions to use with the LDISTG operator:\n");
@@ -424,6 +424,7 @@ void grd_AND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 		stack[prev]->G->data[node] = (float)((GMT_is_dnan (a)) ? b : a);
 	}
 }
+
 void grd_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ARC 2 1 arc(A, B) = pi - |pi - |a-b|| for A, B in radians.  */
 	/*
@@ -1403,6 +1404,12 @@ void grd_DEG2KM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, DEG2KM used with Cartesian data\n");
 	if (stack[last]->constant) a = stack[last]->factor * GMT->current.proj.DIST_KM_PR_DEG;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : stack[last]->G->data[node] * GMT->current.proj.DIST_KM_PR_DEG);
+}
+
+void grd_DENAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: DENAN 2 1 Replace NaNs in A with values from B.  */
+{	/* Just a more straightforward application of AND */
+	grd_AND (GMT, info, stack, last);
 }
 
 void grd_DILOG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)

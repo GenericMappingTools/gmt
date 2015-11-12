@@ -107,7 +107,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -I..<unit> is selected:\n");

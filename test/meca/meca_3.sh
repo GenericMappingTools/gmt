@@ -3,82 +3,54 @@
 
 ps=meca_3.ps
 
-gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i FONT_TITLE 18p
+gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
-# this is Harvard CMT for tibethan earthquake (1997)
-gmt psmeca -Fo -R85/89/25/50 -JX7i -P -M -Sm4i -N  -L -K -G150 -T0 << EOF > $ps
-# lon  lat  mrr   mtt  mff   mrt   mrf  mtf ex nlon nlat
- 87  35 -0.26 -0.71 0.97 -0.20 -0.61 2.60 27  0    0
+# Plotting 2 mechanisms on map
+gmt psmeca -R128/130/10/11.1 -JX2i -Fa0.1i/cc -Sc0.4i -B1 -Y8.5i -P -K << EOF > $ps
+# lon   lat  dep str dip rake str dip rake m ex nx ny 
+129.5  10.5 10  0   90   0  90   90 180  1 24  0  0 10km
+128.5  10.5 40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
- 
-# and polarities observed
-gmt pspolar -R -J -D87/35 -M4i -N -Sc0.3i -Qe -O \
-    -B0 -B+t"Tibet earthquake (1997) - polarities distribution" << EOF >> $ps
-1 147.8 53 c
-2 318.6 53 c
-3 311.9 53 c
-4 122.5 45 c
-5 87.1 44 c
-6 259.9 44 c
-7 358.0 43 d
-8 32.3 40 d
-9 144.5 40 c
-10 206.2 40 d
-11 30.0 36 d
-12 88.3 31 c
-13 326.5 31 c
-14 298.4 29 c
-15 298.3 29 c
-16 316.2 28 c
-17 301.5 27 c
-18 300.7 27 c
-19 303.0 27 d
-20 302.7 26 c
-21 301.7 26 c
-22 302.3 26 c
-23 302.2 26 c
-24 314.1 26 c
-25 296.2 26 c
-26 302.3 26 c
-27 146.8 26 c
-28 145.7 26 d
-29 145.7 26 c
-30 307.0 26 c
-31 311.9 26 c
-32 136.4 25 c
-33 297.6 25 c
-34 306.1 25 c
-35 306.8 25 c
-36 307.6 25 c
-37 346.5 25 c
-39 306.5 24 c
-40 317.3 24 c
-41 305.2 24 c
-42 305.9 24 c
-43 311.9 24 c
-44 307.5 24 c
-45 138.7 24 d
-46 322.4 24 c
-47 305.3 24 c
-48 304.9 24 c
-49 309.3 24 c
-50 307.6 24 c
-51 315.5 24 d
-52 310.3 24 c
-53 308.5 24 c
-54 307.4 24 c
-55 307.5 24 c
-56 307.4 24 c
-57 307.6 24 c
-58 307.1 24 c
-59 311.5 23 d
-61 243.5 23 d
-63 345.2 23 c
-64 117.0 21 d
-65 133.1 20 c
-66 116.0 20 c
-67 231.3 17 d
-68 139.9 16 c
-69 131.7 15 d
-70 114.1 15 c
+(echo 128 11; echo 130 11) | gmt psxy -R -J -K -O -W0.25p,red >> $ps
+gmt pstext -R -J -N -F+f14p,Helvetica-Bold+j -K -O << EOF >> $ps
+128 11 ML P1
+130 11 MR P2
 EOF
+
+# Represent cross-sections between points P1(128E11N) and P2(130E/11N)
+# on a plane the dip of which varies
+# from quasi horizontal to vertical.
+# y dimension is counted along steepest descent on the plane
+# so the values of depth are only in the vertical cross-section.
+
+# Variation of dip for cross-section plane 
+# (WE azimuth, between points (128E,11N) and (130E,11N))) 
+
+plots () {
+y_offset=-2.5i
+for d in $1 $2 $3 ; do
+    gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
+        -Q -L -Sc0.4 -Aa128/11/130/11/$d/60/0/100f -Ggrey -Fa0.1i/cc $4 $5 \
+        -Y$y_offset -X$x_offset -O -K << EOF
+# lon   lat  dep str dip rake str dip rake m ex nx ny 
+129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
+128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
+EOF
+    gmt pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K <<< "10 15 $d"
+    y_offset=0i
+    x_offset=2.5i
+done
+x_offset=-5i
+}
+
+x_offset=0i
+
+plots 10 20 30 >> $ps
+plots 40 50 60 >> $ps
+plots 70 80 90 -N >> $ps
+
+gmt pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O << EOF >> $ps
+3 8.5 24 Variation of dip
+3 8.0 20 W-E cross-section
+EOF
+

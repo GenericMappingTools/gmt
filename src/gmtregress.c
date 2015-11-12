@@ -26,7 +26,7 @@
 
 #define THIS_MODULE_NAME	"gmtregress"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Perform linear regression of 1-D data sets"
+#define THIS_MODULE_PURPOSE	"Linear regression of 1-D data sets"
 #define THIS_MODULE_KEYS	"<DI,>DO"
 
 #include "gmt_dev.h"
@@ -137,7 +137,7 @@ static int GMT_gmtregress_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Examine E as function of line slope; give angle range and increment [-90/+90/1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Option -F is not required as no model will be returned; instead we return\n");
@@ -675,7 +675,7 @@ double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[],
 	(void)gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
 	mx = GMT_mean_and_std (GMT, U, n, &sx);
 	my = GMT_mean_and_std (GMT, V, n, &sy);
-	//fprintf (stderr, "mx and my should be zero: %g %g\n", mx, my);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "mx and my should be zero: %g %g\n", mx, my);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
 	par[GMTREGRESS_ANGLE] = atand (par[GMTREGRESS_SLOPE]);

@@ -92,7 +92,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *API, int level)
              
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C List abbreviations of all columns present for each cruise.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append m for listing just the MGD77 columns present.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append e for listing just any extra columns present.\n");
@@ -125,7 +125,7 @@ int GMT_mgd77info_parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n_opts = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -236,9 +236,14 @@ int GMT_mgd77info_parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, stru
 				break;
 		}
 	}
-
-	n_errors += GMT_check_condition (GMT, !((Ctrl->M.mode == RAW_HEADER) + (Ctrl->M.mode == E77_HEADER) + (Ctrl->M.mode == HIST_HEADER) \
-		+ Ctrl->E.active + Ctrl->C.active + (Ctrl->M.mode == FORMATTED_HEADER) + Ctrl->L.active ) == 1, "Syntax error: Specify one of -C, -E, -L, or -M\n");
+	if (Ctrl->M.mode == RAW_HEADER) n_opts++;
+	if (Ctrl->M.mode == E77_HEADER) n_opts++;
+	if (Ctrl->M.mode == HIST_HEADER) n_opts++;
+	if (Ctrl->M.mode == FORMATTED_HEADER) n_opts++;
+	if (Ctrl->E.active) n_opts++;
+	if (Ctrl->C.active) n_opts++;
+	if (Ctrl->L.active) n_opts++;
+	n_errors += GMT_check_condition (GMT, n_opts != 1, "Syntax error: Specify one of -C, -E, -L, or -M\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -67,7 +67,7 @@ int GMT_mgd77path_usage (struct GMTAPI_CTRL *API, int level)
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-A List full cruise pAths [Default].  Append - to only get cruise names.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D List all directories with MGD77 files instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_Option (API, "V,.");

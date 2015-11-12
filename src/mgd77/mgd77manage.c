@@ -140,7 +140,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Append a new data column to the given files.  The code letters are:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +: Optional.  Will overwrite an existing column with same name with new data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will refuse if an existing column has the same abbreviation as the new data].\n");

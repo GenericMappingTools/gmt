@@ -1,4 +1,3 @@
-#!/bin/csh
 # $Id$
 #
 # Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo,

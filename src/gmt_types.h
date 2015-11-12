@@ -256,6 +256,11 @@ struct GMT_INTERNAL {
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	double **mem_coord;		/* Columns of temp memory */
 	struct MEMORY_TRACKER *mem_keeper;	/* Only filled when #ifdef MEMDEBUG  */
+#ifdef DEBUG
+	bool gridline_debug;
+	char gridline_kind;
+	double gridline_val;
+#endif
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */

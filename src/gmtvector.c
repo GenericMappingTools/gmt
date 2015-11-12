@@ -26,7 +26,7 @@
 
 #define THIS_MODULE_NAME	"gmtvector"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Basic manipulation of Cartesian vectors"
+#define THIS_MODULE_PURPOSE	"Operations on Cartesian vectors in 2-D and 3-D"
 #define THIS_MODULE_KEYS	"<DI,ADi,>DO"
 
 #include "gmt_dev.h"
@@ -113,7 +113,7 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   first 2-3 input columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");

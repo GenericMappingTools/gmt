@@ -95,7 +95,7 @@ int GMT_x2sys_get_usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Report center of each tile with tracks instead [Default is track files].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D only reports the track names and not the report on each field.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column names that must ALL be present [Default is any field].\n");

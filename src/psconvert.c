@@ -388,10 +388,10 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "Works by modifying the page size in order that the resulting\n");
-	GMT_Message (API, GMT_TIME_NONE, "image will have the size specified by the BoundingBox.\n");
-	GMT_Message (API, GMT_TIME_NONE, "As an option, a tight BoundingBox may be computed.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "<psfile(s)> PostScript file(s) to be converted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tWorks by modifying the page size in order that the resulting\n");
+	GMT_Message (API, GMT_TIME_NONE, "\timage will have the size specified by the BoundingBox.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tAs an option, a tight BoundingBox may be computed.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<psfile(s)> PostScript file(s) to be converted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to strip out time-stamps (produced by GMT -U options).\n");

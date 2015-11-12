@@ -63,9 +63,9 @@ int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but weight sum on output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Wo reads unWeighted Input (3 cols: x,y,z) but weight sum on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
 	GMT_Option (API, "a,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set).\n");
 	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");

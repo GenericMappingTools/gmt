@@ -136,7 +136,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");

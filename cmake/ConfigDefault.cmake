@@ -48,7 +48,7 @@ set (GMT_PACKAGE_VERSION_PATCH 0)
 # This is manually set when making GMT *public* releases.
 # However, when making internal releases or just an ordinary developer build, leave it
 # empty; if it is empty, the revision number is automatically populated for you on build.
-#set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "14260")
+#set (GMT_SOURCE_CODE_CONTROL_VERSION_STRING "15220")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MINOR}.${GMT_PACKAGE_VERSION_PATCH}")
@@ -183,5 +183,8 @@ endif (NOT DEFINED FIND_LIBRARY_USE_LIB64_PATHS)
 
 # search order for find_*
 set (CMAKE_FIND_FRAMEWORK LAST)
+
+# install GMT developer include files
+set (BUILD_DEVELOPER TRUE)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

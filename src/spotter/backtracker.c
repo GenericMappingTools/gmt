@@ -162,7 +162,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma).\n");
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify a single finite rotation (in degrees) to be applied to all input points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Output tracks for ages (or stages, see -L) between young and old [Default is entire track].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no limit is given, then each seamount should have their limits in columns 4 and 5 instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable in conjunction with the -L option.\n");

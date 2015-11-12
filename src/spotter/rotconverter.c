@@ -136,7 +136,7 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Or, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotations will be added/subtracted in the order given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Report angles as time [Default uses time].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Reduce opening angles for stage rotations by <factor> [0.5].\n");

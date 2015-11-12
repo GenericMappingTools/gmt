@@ -85,7 +85,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s |\n\t-D%s]\n\t[%s]\n", GMT_INSERT_A, GMT_INSERT_A, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s |\n\t-D%s] [%s]\n", GMT_INSERT_A, GMT_INSERT_A, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Td%s]\n", GMT_TROSE_DIR);
@@ -182,7 +182,13 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 				Ctrl->T.active = true;
 				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
-
+#if DEBUG
+			case '+':	/* Draw a single gridline only [for debugging]  -+x|y<value>*/
+				GMT->hidden.gridline_debug = true;
+				GMT->hidden.gridline_kind = opt->arg[0];	/* Get x or y */
+				GMT->hidden.gridline_val = atof (&opt->arg[1]);	/* Value of grid line */
+				break;
+#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
