@@ -64,7 +64,7 @@ void Free_testapi_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deall
 
 int GMT_testapi_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "testapi - test API i/o methods for any data type\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s] [%s]\n", GMT_V_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|p|v|m -Wf|s|d|c|r[/v|m] [%s] [%s]\n", GMT_V_OPT, GMT_h_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -80,8 +80,9 @@ int GMT_testapi_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   d : Dataset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t : Textset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g : Grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   C : CPT\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c : CPT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i : Image\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   v : Vector\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m : Matrix\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify write destination.  Choose among:\n");
@@ -134,6 +135,7 @@ int GMT_testapi_parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct G
 					case 'g': Ctrl->T.mode = GMT_IS_GRID; break;
 					case 'c': Ctrl->T.mode = GMT_IS_CPT; break;
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE; break;
+					case 'p': Ctrl->T.mode = GMT_IS_PS; break;
 					case 'v': Ctrl->T.mode = GMT_IS_VECTOR; break;
 					case 'm': Ctrl->T.mode = GMT_IS_MATRIX; break;
 				}
@@ -170,17 +172,17 @@ int GMT_testapi_parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct G
 
 int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
-	int geometry[7] = {GMT_IS_POINT, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
+	int geometry[] = {GMT_IS_POINT, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_POINT, GMT_IS_SURFACE, GMT_IS_NONE};
 	uint64_t k;
 	
 	float *fdata = NULL;
 	double *ddata = NULL;
 	
-	char *ikind[7] = {"DATASET", "TEXTSET", "GRID", "CPT", "IMAGE", "VECTOR", "MATRIX"};
-	char *method[6] = {"FILE", "STREAM", "FDESC", "COPY", "REF", "READONLY"};
-	char *append[3] = {"", " via VECTOR", " via MATRIX"};
-	char *ifile[7] = {"dtesti.txt", "ttesti.txt", "gtesti.nc", "ctesti.cpt", "itesti.jpg", "vtesti.bin", "mtesti.bin"};
-	char *ofile[7] = {"dtesto.txt", "ttesto.txt", "gtesto.nc", "ctesto.cpt", "itesto.jpg", "vtesto.bin", "mtesto.bin"};
+	char *ikind[] = {"DATASET", "TEXTSET", "GRID", "CPT", "IMAGE", "PS", "VECTOR", "MATRIX", "COORD"};
+	char *method[] = {"FILE", "STREAM", "FDESC", "COPY", "REF"};
+	char *append[] = {"", " via VECTOR", " via MATRIX"};
+	char *ifile[] = {"dtesti.txt", "ttesti.txt", "gtesti.nc", "ctesti.cpt", "itesti.jpg", "ptesti.ps", "vtesti.bin", "mtesti.bin", "-"};
+	char *ofile[] = {"dtesto.txt", "ttesto.txt", "gtesto.nc", "ctesto.cpt", "itesto.jpg", "ptesto.ps", "vtesto.bin", "mtesto.bin", "-"};
 	char string[GMT_STR16];
 
 	FILE *fp = NULL;
@@ -264,22 +266,22 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMT_IS_STREAM:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
+			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p */
+				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT: case GMT_IS_PS:
 					fp = GMT_fopen (GMT, ifile[Ctrl->T.mode], "r");
 					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, fp)) == GMT_NOTSET) {
 						Return (API->error);
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c, p!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
 			break;
 		case GMT_IS_FDESC:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
+			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p */
+				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT: case GMT_IS_PS:
 					fd = open (ifile[Ctrl->T.mode], O_RDONLY);
 					fdp = &fd;
 					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, fdp)) == GMT_NOTSET) {
@@ -287,7 +289,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c, p!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
@@ -361,27 +363,27 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			}
 			break;
 		case GMT_IS_STREAM:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
+			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p */
+				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT: case GMT_IS_PS:
 					fp = GMT_fopen (GMT, ofile[Ctrl->T.mode], "w");
 					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, NULL, fp)) == GMT_NOTSET) {
 						Return (API->error);
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c, p!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
 			break;
 		case GMT_IS_FDESC:
-			switch (Ctrl->T.mode) {	/* Can only do d, t, c */
-				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT:
+			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p */
+				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT: case GMT_IS_PS:
 #ifdef WIN32
-					/* I think they exist on Win too, but no mutch time to find out how. JL */
+					/* I think they exist on Win too, but no much time to find out how. JL */
 					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT);
 #else
-					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
+					fd = open (ofile[Ctrl->T.mode], O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
 #endif
 					fdp = &fd;
 					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, NULL, fdp)) == GMT_NOTSET) {
@@ -389,7 +391,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 					}
 					break;
 				default:
-					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c, p!\n");
 					Return (GMT_NOT_A_VALID_FAMILY);
 					break;
 			}
@@ -465,7 +467,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 
 int main (int argc, char *argv[]) {
 
-	int status = 0;			/* Status code from GMT API */
+	int status = 0;				/* Status code from GMT API */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 
 	/* 1. Initializing new GMT session */

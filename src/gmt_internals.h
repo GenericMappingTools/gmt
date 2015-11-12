@@ -304,6 +304,7 @@ EXTERN_MSC void gmt_set_char_ptr (char **ptr, char *array);
 EXTERN_MSC void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data);
 EXTERN_MSC void GMT_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data);
 EXTERN_MSC void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
+EXTERN_MSC void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P);
 EXTERN_MSC unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid);
 EXTERN_MSC unsigned int GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix);
 EXTERN_MSC unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector);

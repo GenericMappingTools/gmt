@@ -4509,6 +4509,7 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 			return;
 		}
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
+		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 			return;
@@ -5983,13 +5984,22 @@ struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
+void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P)
+{	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
+	if (P->n_alloc && P->data) {
+		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)
+			GMT_free (GMT, P->data);	/* Was allocated by GMT */
+		else
+			PSL_freeplot (GMT->PSL);	/* Free array allocated in PSL */
+		P->data = NULL;			/* This is just a pointer to what was done inside PSL */
+	}
+	P->n_alloc = P->n = 0;
+}
+
+/*! . */
 void GMT_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P)
 {	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
-	if ((*P)->n_alloc && (*P)->data) {
-		PSL_freeplot (GMT->PSL);	/* Free where things were allocated */
-		(*P)->data = NULL;		/* This is just a pointer to what was done inside PSL */
-	}
-	(*P)->n_alloc = (*P)->n = 0;
+	GMT_free_ps_ptr (GMT, *P);
 	GMT_free (GMT, *P);
 	*P = NULL;
 }
@@ -6078,6 +6088,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	if (P->n > n_alloc)
 		P->data = GMT_memory (GMT, P->data, P->n, char);
 	P->n_alloc = P->n;
+	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 
 	return (P);
 }
@@ -6149,4 +6160,5 @@ void GMT_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_
 	P_copy->data = GMT_memory (GMT, NULL, P_obj->n, char);
 	GMT_memcpy (P_copy->data, P_obj->data, P_obj->n, char);
 	P_copy->n_alloc = P_copy->n = P_obj->n;
+	P_copy->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 }

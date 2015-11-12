@@ -2151,7 +2151,7 @@ struct GMT_PS * GMTAPI_Import_PS (struct GMTAPI_CTRL *API, int object_ID, unsign
 	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Import_PS: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return_null (API, GMT_NO_INPUT);
-	if ((item = GMTAPI_Validate_ID (API, GMT_IS_CPT, object_ID, GMT_IN, GMTAPI_OPTION_INPUT)) == GMT_NOTSET) return_null (API, API->error);
+	if ((item = GMTAPI_Validate_ID (API, GMT_IS_PS, object_ID, GMT_IN, GMTAPI_OPTION_INPUT)) == GMT_NOTSET) return_null (API, API->error);
 
 	S_obj = API->object[item];	/* Use S_obj as shorthand */
 	if (S_obj->status != GMT_IS_UNUSED) { /* Already read this resource before; are we allowed to re-read? */
@@ -2192,6 +2192,7 @@ struct GMT_PS * GMTAPI_Import_PS (struct GMTAPI_CTRL *API, int object_ID, unsign
 			return_null (API, GMT_NOT_A_VALID_METHOD);
 			break;
 	}
+	S_obj->alloc_mode = P_obj->alloc_mode;
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
 	S_obj->data = P_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 
@@ -2211,7 +2212,7 @@ int GMTAPI_Export_PS (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode,
 	GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Export_PS: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	if (object_ID == GMT_NOTSET) return (GMTAPI_report_error (API, GMT_OUTPUT_NOT_SET));
-	if ((item = GMTAPI_Validate_ID (API, GMT_IS_CPT, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (GMTAPI_report_error (API, API->error));
+	if ((item = GMTAPI_Validate_ID (API, GMT_IS_PS, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (GMTAPI_report_error (API, API->error));
 
 	S_obj = API->object[item];	/* This is the API object for the output destination */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) {	/* Only allow writing of a data set once, unless we override by resetting the mode */
@@ -2626,6 +2627,9 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_family famil
 			GMT_free_image_ptr (GMT, ptr, true);
 			break;
 #endif
+		case GMT_IS_PS:
+			GMT_free_ps_ptr (GMT, ptr);
+			break;
 		case GMT_IS_COORD:
 			/* Nothing to do as GMT_free below will do it */
 			break;
