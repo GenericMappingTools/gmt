@@ -4333,7 +4333,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
-	unsigned int this_proj;
+	unsigned int this_proj, write_to_mem = 0;
 	char title[GMT_BUFSIZ];
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -4345,13 +4345,19 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
 	if (GMT_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
+	GMT->current.ps.memory = false;
 
 	if ((Out = GMT_Find_Option(GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (GMT->common.O.active && k == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
-		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
+		if (GMT_File_Is_Memory (&(Out->arg[k]))) {
+			write_to_mem = 2;
+			GMT->current.ps.memory = true;
+			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16);
+		}
+		else if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
 			GMT_exit (GMT, EXIT_FAILURE); return NULL;
 		}
@@ -4396,7 +4402,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
-	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation, GMT->common.O.active, GMT->current.setting.ps_color_mode,
+	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, GMT->common.O.active, GMT->current.setting.ps_color_mode,
 	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
@@ -4495,6 +4501,19 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	}
 	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
+	
+	if (PSL->internal.memory) {
+		struct GMT_PS *P = NULL;
+		if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PS, GMT_IS_NONE, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create empty PS structure!\n");
+			return;
+		}
+		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
+		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
+			return;
+		}
+	}
 }
 
 void GMT_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n)
@@ -5952,12 +5971,10 @@ void GMT_plane_perspective (struct GMT_CTRL *GMT, int plane, double level)
 /* All functions involved in reading, writing, duplicating PS structs and contents */
 
 /*! . */
-struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
-	/* Makes an empty PS struct */
+struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT) {
+	/* Makes an empty PS struct - no buffer is allocated by since done in PSL */
 	struct GMT_PS *P = NULL;
 	P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
-	if (length > 0) P->data = GMT_memory (GMT, NULL, length, char);
-	P->n_alloc = (size_t)length;
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -5967,8 +5984,11 @@ struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
 
 /*! . */
 void GMT_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P)
-{
-	if ((*P)->n_alloc && (*P)->data) GMT_free (GMT, (*P)->data);
+{	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
+	if ((*P)->n_alloc && (*P)->data) {
+		PSL_freeplot (GMT->PSL);	/* Free where things were allocated */
+		(*P)->data = NULL;		/* This is just a pointer to what was done inside PSL */
+	}
 	(*P)->n_alloc = (*P)->n = 0;
 	GMT_free (GMT, *P);
 	*P = NULL;

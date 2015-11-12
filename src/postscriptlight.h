@@ -118,6 +118,8 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_END			= 1,
 	PSL_FINALIZE		= 1,
 	PSL_OVERLAY		= 1,
+	PSL_MEMORY		= 2,
+	PSL_MEM_ALLOC		= 2097152, /* 2 Mb of memory */
 	PSL_INIT		= 0,
 	PSL_LANDSCAPE		= 0,
 	PSL_PORTRAIT		= 1,
@@ -268,6 +270,7 @@ struct PSL_CTRL {
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with postscriptlight subdirectory */
 		char *USERDIR;			/* Pointer to path of directory with user definitions */
+		char *buffer;			/* Pointer to buffer where PS will be "writen" when memory == 1 */
 		char *user_image[PSL_N_PATTERNS];	/* Name of user patterns		*/
 		char origin[2];			/* 'r', 'a', 'f', 'c' depending on reference for new origin x and y coordinate */
 		double offset[2];		/* Origin offset [1/1]				*/
@@ -284,7 +287,8 @@ struct PSL_CTRL {
 		int verbose;			/* Verbosity level (0-4): see PSL_MSG_*	*/
 		int comments;			/* true for writing comments to output, false strips all comments */
 		int overlay;			/* true if overlay (-O)				*/
-		int landscape;			/* true = Landscape, false = Portrait		*/
+		int landscape;			/* 1 = Landscape, 0 = Portrait		*/
+		int memory;			/* 1 = write to memory, 0 = write to output	*/
 		int text_init;			/* true after PSL_text.ps has been loaded	*/
 		int image_format;		/* 0 writes images in ASCII, 2 uses binary	*/
 		int N_FONTS;			/* Total no of fonts;  To add more, modify the file PSL_custom_fonts.txt */
@@ -298,6 +302,8 @@ struct PSL_CTRL {
 		int ix, iy;			/* Absolute coordinates of last point		*/
 		int n_userimages;		/* Number of specified custom patterns		*/
 		int x0, y0;			/* x,y PS offsets				*/
+		size_t n_alloc;			/* Allocation length of buffer			*/
+		size_t n;			/* Length of buffer				*/
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/
 		struct PSL_FONT {
 			double height;		/* Height of A for unit fontsize */
@@ -351,6 +357,8 @@ EXTERN_MSC int PSL_endclipping (struct PSL_CTRL *PSL, int mode);
 EXTERN_MSC int PSL_endlayer (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endplot (struct PSL_CTRL *PSL, int lastpage);
 EXTERN_MSC int PSL_endsession (struct PSL_CTRL *PSL);
+EXTERN_MSC int PSL_freeplot (struct PSL_CTRL *PSL);
+EXTERN_MSC char * PSL_getplot (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, double az1, double az2, int type);
 EXTERN_MSC int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, double annotfontsize, int side);
 EXTERN_MSC int PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, double f_rgb[], double b_rgb[]);
