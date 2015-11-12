@@ -38,11 +38,11 @@ int main () {
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("PSLTEST", GMT_NOTSET, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
-	/* 2. Register the PS container to be the destination allocated and written to by pscoast */
-	if ((ID = GMT_Register_IO (API, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
-
+	/* 2. Create a PS container to be the destination allocated and written to by pscoast */
+	if ((PS = GMT_Create_Data (API, GMT_IS_PS, GMT_IS_NONE, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((ID = GMT_Get_ID (API, GMT_IS_PS, GMT_OUT, PS)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, string, ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	sprintf (cmd, "-R0/20/0/20 -JM6i -P -Gred -K > %s", string);		/* Create command for pscoast */
+	sprintf (cmd, "-R0/20/0/20 -JM6i -P -Gred -K > %s", string);			/* Create command for pscoast */
 
 	/* 3. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, cmd);	/* This allocates memory for the plot and returns it via ID */
@@ -62,10 +62,10 @@ int main () {
 	/* 5. Get the plot object into our hands */
 	if ((PS = GMT_Retrieve_Data (API, ID)) == NULL) exit (EXIT_FAILURE);
 
-	/* 7. Write the plot to file */
+	/* 6. Write the plot to file */
 	if (GMT_Write_Data (API, GMT_IS_PS, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, "newmap.ps", PS) != GMT_NOERROR) exit (EXIT_FAILURE);
 
-	/* 8. Destroy GMT session */
+	/* 7. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
 
 	exit (GMT_NOERROR);	/* Return the status from this program */

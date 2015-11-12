@@ -5359,8 +5359,8 @@ int PSL_command (struct PSL_CTRL *C, const char *format, ...) {
 	va_list args;
 	va_start (args, format);
 	if (C->internal.memory) {	/* Send command to memory buffer */
-		static char tmp_buffer[PSL_BUFSIZ] = {""};
-		size_t len = snprintf (tmp_buffer, PSL_BUFSIZ, format, args);
+		char tmp_buffer[PSL_BUFSIZ] = {""};
+		size_t len = vsnprintf (tmp_buffer, PSL_BUFSIZ, format, args);
 		psl_prepare_buffer (C, len);
 		strncat (&(C->internal.buffer[C->internal.n]), tmp_buffer, len);
 		C->internal.n += len;
@@ -5376,8 +5376,8 @@ int PSL_comment (struct PSL_CTRL *C, const char *format, ...) {
 	if (!C->internal.comments) return (0);
 	va_start (args, format);
 	if (C->internal.memory) {	/* Send comments to memory buffer */
-		static char tmp_buffer[PSL_BUFSIZ] = {""};
-		size_t len = snprintf (tmp_buffer, PSL_BUFSIZ, format, args);
+		char tmp_buffer[PSL_BUFSIZ] = {""};
+		size_t len = vsnprintf (tmp_buffer, PSL_BUFSIZ, format, args);
 		psl_prepare_buffer (C, len + 6); /* The string plus the leading 4 and trailing 2 chars */
 		strncat (&(C->internal.buffer[C->internal.n]), "%\n% ", 4U);
 		C->internal.n += 4;

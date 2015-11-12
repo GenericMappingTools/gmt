@@ -89,7 +89,7 @@
  *
  * For FFT operations there are 8 additional API functions:
  *
- * GMT_FFT			: Call the forward or inverse FFT
+ * GMT_FFT		: Call the forward or inverse FFT
  * GMT_FFT_1D		: Lower-level 1-D FFT call
  * GMT_FFT_2D		: Lower-level 2-D FFT call
  * GMT_FFT_Create	: Initialize the FFT machinery for given dimension
@@ -1802,6 +1802,7 @@ bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry
 		case GMT_IS_GRID:    if (geometry != GMT_IS_SURFACE) problem = true; break;	/* Only surface is valid */
 		case GMT_IS_IMAGE:   if (geometry != GMT_IS_SURFACE) problem = true; break;	/* Only surface is valid */
 		case GMT_IS_CPT:     if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
+		case GMT_IS_PS:      if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
 		case GMT_IS_VECTOR:  if (geometry != GMT_IS_POINT) problem = true;   break;	/* Only point is valid */
 		case GMT_IS_MATRIX:  if (geometry == GMT_IS_NONE) problem = true;    break;	/* Matrix can hold surfaces or TEXTSETs */
 		case GMT_IS_COORD:   if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
@@ -1828,7 +1829,8 @@ int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
 		S_obj = API->object[i];	/* Shorthand only */
 		if (!S_obj) continue;									/* Empty object */
-		if (direction != GMT_NOTSET && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this object */
+		//if (direction != GMT_NOTSET && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this object */
+		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;			/* Already used this input object */
 		if (!(family == GMT_NOTSET || (s_value = S_obj->family) == family)) continue;		/* Not the required data type */
 		if (object_ID == GMT_NOTSET && (s_value = S_obj->direction) == direction) item = i;	/* Pick the first object with the specified direction */
 		if (object_ID == GMT_NOTSET && !(S_obj->family == GMT_IS_DATASET || S_obj->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
@@ -2240,7 +2242,7 @@ int GMTAPI_Export_PS (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode,
 		case GMT_IS_DUPLICATE:		/* Duplicate the input cpt */
 			if (S_obj->resource) return (GMTAPI_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating PS to GMT_PS memory location\n");
-			P_copy = GMT_memory (GMT, NULL, 1, struct GMT_PALETTE);
+			P_copy = GMT_memory (GMT, NULL, 1, struct GMT_PS);
 			GMT_copy_ps (GMT, P_copy, P_obj);
 			S_obj->resource = P_copy;	/* Set resource pointer from object to this PS */
 			break;
@@ -3710,7 +3712,7 @@ void *GMTAPI_Import_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, 
 
 	switch (family) {	/* CPT, Dataset, or Grid */
 		case GMT_IS_CPT:
-			new_obj = GMTAPI_Import_CPT (API, object_ID, mode);			/* Try to import a CPT */
+			new_obj = GMTAPI_Import_CPT (API, object_ID, mode);		/* Try to import a CPT */
 			break;
 		case GMT_IS_DATASET:
 			new_obj = GMTAPI_Import_Dataset (API, object_ID, mode);		/* Try to import data tables */
@@ -3719,15 +3721,15 @@ void *GMTAPI_Import_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, 
 			new_obj = GMTAPI_Import_Textset (API, object_ID, mode);		/* Try to import text tables */
 			break;
 		case GMT_IS_GRID:
-			new_obj = GMTAPI_Import_Grid (API, object_ID, mode, data);		/* Try to import a grid */
+			new_obj = GMTAPI_Import_Grid (API, object_ID, mode, data);	/* Try to import a grid */
 			break;
 #ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
-			new_obj = GMTAPI_Import_Image (API, object_ID, mode, data);		/* Try to import a image */
+			new_obj = GMTAPI_Import_Image (API, object_ID, mode, data);	/* Try to import a image */
 			break;
 #endif
 		case GMT_IS_PS:
-			new_obj = GMTAPI_Import_PS (API, object_ID, mode);			/* Try to import PS */
+			new_obj = GMTAPI_Import_PS (API, object_ID, mode);		/* Try to import PS */
 			break;
 		default:
 			API->error = GMT_NOT_A_VALID_FAMILY;
@@ -4452,12 +4454,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	 *
 	 * if direction == GMT_IN:
 	 * A program uses this routine to pass information about input data to GMT.
-	 * family:	Specifies the data type we are trying to import; select one of 5 families:
+	 * family:	Specifies the data type we are trying to import; select one of 6 families:
 	 *   GMT_IS_CPT:	A GMT_PALETTE structure:
 	 *   GMT_IS_DATASET:	A GMT_DATASET structure:
 	 *   GMT_IS_TEXTSET:	A GMT_TEXTSET structure:
 	 *   GMT_IS_GRID:	A GMT_GRID structure:
 	 *   GMT_IS_IMAGE:	A GMT_IMAGE structure:
+	 *   GMT_IS_PS:		A GMT_PS structure:
 	 * method:	Specifies by what method we will import this data set:
 	 *   GMT_IS_FILE:	A file name is given via input.  The program will read data from this file
 	 *   GMT_IS_STREAM:	A file pointer to an open file is passed via input. --"--
@@ -4490,6 +4493,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	 *   GMT_IS_TEXTSET:	A GMT_TEXTSET structure:
 	 *   GMT_IS_IMAGE:	A GMT_IMAGE structure:
 	 *   GMT_IS_GRID:	A GMT_GRID structure:
+	 *   GMT_IS_PS:		A GMT_PS structure:
 	 * method:	Specifies by what method we will export this data set:
 	 *   GMT_IS_FILE:	A file name is given via output.  The program will write data to this file
 	 *   GMT_IS_STREAM:	A file pointer to an open file is passed via output. --"--
@@ -4691,7 +4695,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	 * direction:	Either GMT_IN or GMT_OUT
 	 * head:	Head of the list of module options
 	 *
-	 * Returns:	The family value (GMT_IS_DATASET|TEXTSET|CPT|GRID) or GMT_NOTSET if not known
+	 * Returns:	The family value (GMT_IS_DATASET|TEXTSET|CPT|GRID|IMAGE|PS) or GMT_NOTSET if not known
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	struct GMT_OPTION *current = NULL;
@@ -4732,7 +4736,7 @@ int GMT_Get_Family_ (unsigned int *direction, struct GMT_OPTION *head)
 int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args) {
 	/* Registers program option file arguments as sources/destinations for the current module.
 	 * All modules planning to use std* and/or command-line file args must call GMT_Init_IO to register these resources.
-	 * family:	The kind of data (GMT_IS_DATASET|TEXTSET|CPT|GRID)
+	 * family:	The kind of data (GMT_IS_DATASET|TEXTSET|CPT|GRID|IMAGE|PS)
 	 * geometry:	Either GMT_IS_NONE|POINT|LINE|POLYGON|SURFACE
 	 * direction:	Either GMT_IN or GMT_OUT
 	 * mode:	Bitflags composed of 1 = add command line (option) files, 2 = add std* if no other input/output,
@@ -5205,7 +5209,7 @@ void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int 
 void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, void *data) {
 	/* Create an duplicate container of the requested kind and optionally allocate space
 	 * or duplicate content.
-	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE}.
+	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE,PS}.
  	 * Pass mode as one of GMT_DUPLICATE_{NONE|ALLOC|DATA} to just duplicate the
 	 * container and header structures, allocate space of same dimensions as original,
 	 * or allocate space and duplicate contents.  For GMT_IS_{DATA|TEXT}SET you may add
@@ -5267,6 +5271,10 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
 			new_obj = GMT_duplicate_palette (GMT, data, 0);
+			geometry = GMT_IS_NONE;
+			break;
+		case GMT_IS_PS:	/* GMT PS, allocate one with space for the original */
+			new_obj = GMT_duplicate_ps (GMT, data, 0);
 			geometry = GMT_IS_NONE;
 			break;
 		default:
@@ -6233,7 +6241,7 @@ int GMT_Destroy_Data_ (void *object)
 /*! . */
 void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data) {
 	/* Create an empty container of the requested kind and allocate space for content.
-	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE}, but we
+	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE,PS}, but we
 	 * also allow for creation of the containers for GMT_IS_{VECTOR,MATRIX}. Note
 	 * that for VECTOR|MATRIX we dont allocate space to hold data as it is the users
 	 * responsibility to hook their data pointers in.  The VECTOR allocates the array
@@ -6512,6 +6520,9 @@ int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *
 			break;
 		case GMT_IS_CPT:	/* GMT CPT */
 			GMTAPI_cpt_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_PS:		/* GMT PS */
+			GMT_Report (API, GMT_MSG_NORMAL, "Not possible to set header coments for %s\n", GMT_family[family]);
 			break;
 		case GMT_IS_VECTOR:	/* GMT Vector [PW: Why do we need these?]*/
 			GMTAPI_vector_comment (API, mode, arg, container);

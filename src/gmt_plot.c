@@ -4502,13 +4502,10 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
 	
-	if (PSL->internal.memory) {
-		struct GMT_PS *P = NULL;
-		if ((P = GMT_Create_Data (GMT->parent, GMT_IS_PS, GMT_IS_NONE, 0, NULL, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create empty PS structure!\n");
-			return;
-		}
+	if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
+		struct GMT_PS *P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
+        P->n = PSL->internal.n;         /* Length of plot buffer */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
@@ -6152,6 +6149,15 @@ int GMT_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 	}
 	if (close_file) fclose (fp);
 	return (EXIT_SUCCESS);
+}
+
+/*! . */
+struct GMT_PS * GMT_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode)
+{	/* Mode not used yet */
+	struct GMT_PS *P = GMT_create_ps (GMT);
+	GMT_UNUSED(mode);
+	GMT_copy_ps (GMT, P, P_from);
+	return (P);
 }
 
 void GMT_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj)

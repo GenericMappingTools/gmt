@@ -204,6 +204,8 @@ EXTERN_MSC int GMT_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR 
 EXTERN_MSC unsigned int GMT_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
 EXTERN_MSC void GMT_plotend (struct GMT_CTRL *GMT);
 EXTERN_MSC struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
+EXTERN_MSC struct GMT_PS * GMT_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode);
+
 #endif /* _POSTSCRIPTLIGHT_H */
 
 /* gmt_io.c: */
