@@ -260,6 +260,11 @@ EXTERN_MSC void GMT_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *
 EXTERN_MSC void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode);
 EXTERN_MSC void GMT_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data);
 EXTERN_MSC void GMT_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P);
+EXTERN_MSC void GMT_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P);
+EXTERN_MSC struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode);
+EXTERN_MSC int GMT_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_PS *P);
+EXTERN_MSC void GMT_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj);
+
 #ifdef HAVE_GDAL
 EXTERN_MSC struct GMT_IMAGE * GMT_create_image (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image);

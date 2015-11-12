@@ -97,15 +97,16 @@ enum GMT_enum_via {
 
 /*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and PS */
 enum GMT_enum_family {
-	GMT_IS_DATASET = 0,	/* Entity is data table */
+	GMT_IS_DATASET = 0,	/* Entity is a data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
 	GMT_IS_GRID,		/* Entity is a GMT grid */
 	GMT_IS_CPT,		/* Entity is a CPT table */
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
+	GMT_IS_PS,		/* Entity is a PostScript content struct */
 	GMT_IS_VECTOR,		/* Entity is set of user vectors */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
 	GMT_IS_COORD,		/* Entity is a double coordinate array */
-	GMT_IS_PS};		/* Entity is a PostScript file [API Developers only] */
+	GMT_N_FAMILIES};	/* Total number of families [API Developers only]  */
 
 /*! These are modes for handling comments */
 enum GMT_enum_comment {
@@ -644,6 +645,23 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	unsigned int alloc_level;   /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	const char *ColorInterp;
+};
+
+/*============================================================ */
+/*================= GMT_PS Public Declaration ================ */
+/*============================================================ */
+
+/* The GMT_PS container is used to pass PostScript components */
+
+struct GMT_PS {	/* Single container for a chunk of PostScript */
+	/* Variables we document for the API: */
+	size_t n_alloc;             /* Length of array allocated so far */
+	size_t n;                   /* Length of data array so far */
+	char *data;		    /* Pointer to actual PS text */
+/* ---- Variables "hidden" from the API ---- */
+	uint64_t id;                /* The internal number of the data set */
+	unsigned int alloc_level;   /* The level it was allocated at */
+	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
 
 /*============================================================ */
