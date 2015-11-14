@@ -6155,6 +6155,7 @@ int GMT_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 	char ps_file[GMT_BUFSIZ] = {""};
 	static char *msg1[2] = {"Writing", "Appending"};
 	FILE *fp = NULL;
+	GMT_UNUSED(mode);
 
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 	
