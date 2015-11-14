@@ -628,6 +628,32 @@ if (BUILD_DEVELOPER)
 		gmt_core_module.h gmt_supplements_module.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
+	# Install gshhg supplement headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES gshhg/gshhg.h gshhg/gmt_gshhg.h
+		DESTINATION ${GMT_INCLUDEDIR}/gshhg
+		COMPONENT Runtime)
+	# Install meca supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES meca/meca.h meca/nrutil.h meca/utilmeca.h
+		DESTINATION ${GMT_INCLUDEDIR}/meca
+		COMPONENT Runtime)
+	# Install mgd77 supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES mgd77/cm4_functions.h mgd77/mgd77_e77.h mgd77/mgd77_rls_coeffs.h mgd77/mgd77snifferdefaults.h
+		mgd77/mgd77.h mgd77/mgd77_functions.h mgd77/mgd77defaults.h mgd77/mgd77_IGF_coeffs.h mgd77/mgd77_init.h
+		mgd77/mgd77magref.h mgd77/mgd77_codes.h mgd77/mgd77_recalc.h mgd77/mgd77sniffer.h
+		DESTINATION ${GMT_INCLUDEDIR}/mgd77
+		COMPONENT Runtime)
+	# Install potential supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES potential/okbfuns.h
+		DESTINATION ${GMT_INCLUDEDIR}/potential
+		COMPONENT Runtime)
+	# Install spotter supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES spotter/spotter.h
+		DESTINATION ${GMT_INCLUDEDIR}/spotter
+		COMPONENT Runtime)
+	# Install x2sys supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
+	install (FILES x2sys/x2sys.h
+		DESTINATION ${GMT_INCLUDEDIR}/x2sys
+		COMPONENT Runtime)
 	# Install Configured Developer headers [These are produced by cmake from *.h.in files]
 	install (FILES ${PROJECT_BINARY_DIR}/src/config.h ${PROJECT_BINARY_DIR}/src/gmt_config.h
 		${PROJECT_BINARY_DIR}/src/gmt_dimensions.h ${PROJECT_BINARY_DIR}/src/gmt_version.h
