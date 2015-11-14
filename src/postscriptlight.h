@@ -20,8 +20,8 @@
  *			   pwessel@hawaii.edu
  *		Remko Scharroo, Altimetrics
  *			   remko@altimetrics.com
- * Version:	5.1 [64-bit enabled API edition]
- * Date:	28-JUL-2015
+ * Version:	5.2 [64-bit enabled API edition]
+ * Date:	13-NOV-2015
  */
 
 /*!
@@ -357,7 +357,6 @@ EXTERN_MSC int PSL_endclipping (struct PSL_CTRL *PSL, int mode);
 EXTERN_MSC int PSL_endlayer (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endplot (struct PSL_CTRL *PSL, int lastpage);
 EXTERN_MSC int PSL_endsession (struct PSL_CTRL *PSL);
-EXTERN_MSC int PSL_freeplot (struct PSL_CTRL *PSL);
 EXTERN_MSC char * PSL_getplot (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, double az1, double az2, int type);
 EXTERN_MSC int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *label, double annotfontsize, int side);

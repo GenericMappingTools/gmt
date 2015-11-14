@@ -403,7 +403,7 @@ int PSL_endsession (struct PSL_CTRL *PSL)
 	int i;
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
-	PSL_freeplot (PSL);
+	psl_freeplot (PSL);
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
@@ -1222,7 +1222,7 @@ char * PSL_getplot (struct PSL_CTRL *PSL)
 	return (PSL->internal.buffer);
 }
 
-int PSL_freeplot (struct PSL_CTRL *PSL)
+int psl_freeplot (struct PSL_CTRL *PSL)
 {	/* Simply eliminate any buffer for memory-writing PS */
 	if (PSL->internal.buffer) PSL_free (PSL->internal.buffer);	/* Remove any previous plot buffer */
 	PSL->internal.n_alloc = PSL->internal.n = 0;
@@ -1304,7 +1304,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		char PSL_encoding[64] = {""};
 		
 		if (PSL->internal.memory) {	/* Will be writing to memory so need to set that up */
-			PSL_freeplot (PSL);	/* Free any previous plot laying around */
+			psl_freeplot (PSL);	/* Free any previous plot laying around */
 			PSL->internal.buffer  = PSL_memory (PSL, NULL, PSL_MEM_ALLOC, char);
 			PSL->internal.n_alloc = PSL_MEM_ALLOC;
 			PSL->internal.n	      = 0;

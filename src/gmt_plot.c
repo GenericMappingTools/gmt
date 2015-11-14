@@ -6038,11 +6038,10 @@ struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT) {
 void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P)
 {	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
 	if (P->n_alloc && P->data) {
-		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)
-			GMT_free (GMT, P->data);	/* Was allocated by GMT */
-		else
-			PSL_freeplot (GMT->PSL);	/* Free array allocated in PSL */
-		P->data = NULL;			/* This is just a pointer to what was done inside PSL */
+		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
+			GMT_free (GMT, P->data);
+		/* We never need to free the array allocated in PSL since PSL always destroys it */
+		P->data = NULL;
 	}
 	P->n_alloc = P->n = 0;
 }

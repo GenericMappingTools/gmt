@@ -100,13 +100,9 @@ apply. Nine different values are possible, as shown schematically in
 this diagram:
 
     9------------10----------- 11
-
-    \| \|
-
-    5 6 7
-
-    \| \|
-
+    \|                         \|
+    5             6             7
+    \|                          \|
     1------------ 2------------ 3
 
 The box represents the text or image. E.g., to plot a text string with
@@ -206,6 +202,9 @@ initialization:
     within the current session. Pass file pointer *fp* where the
     PostScript code will be written; if NULL then the output is
     written to *stdout*. The Fortran interface always sends to *stdout*.
+    If you want to receive the PostScript back in memory then you need
+    to add PSL_MEMORY to *orientation* and call **PSL_getplot** to retrieve
+    the plot after you finish the plot with **PSL_endplot**.
     The *orientation* may be landscape (PSL_LANDSCAPE or 0) or portrait
     (PSL_PORTRAIT or 1). Set *overlay* to PSL_OVERLAY (0) if the
     following PostScript code should be appended to an existing plot;
@@ -245,6 +244,26 @@ initialization:
     (*mode*\ =PSL_FWD or 0) or alternatively the rotation followed by
     translation (*mode*\ =PSL_INV or 1).
 
+Memory Output
+-------------
+
+Normally, PSL will write all PostScript to the designated file stream
+set in **PSL_beginplot**.  Alternatively, PSL can write all the PostScript
+to an internal char * buffer which can be retrieved at the end of the plotting.
+This mode can be enabled on a plot-by-plot basis by adding the flag **PSL_MEMORY**
+to the variable *orientation* passed to **PSL_beginplot**.  Once we reach the
+end of the plot with **PSL_endplot** the buffer will be available (see below).
+One function provide the functionality for memory output.
+
+**char * PSL_getplot** (**struct PSL_CTRL** *\*P*)
+
+    Retrieves the pointer to the PostScript plot that is kept in memory
+    when **PSL_beginplot** was instructed to use memory rather than
+    stream output.  Note: It is the responsibility of the programmer to
+    ensure that the object retrieved is duplicated or written or otherwise
+    processed before the next call to **PSL_beginplot** or **PSL_endsession**
+    either of which will destroy the memory pointed to.
+ 
 `Changing Settings <#toc6>`_
 ----------------------------
 
