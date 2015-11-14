@@ -6067,6 +6067,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	size_t n_alloc = 0;
 	struct GMT_PS *P = NULL;
 	FILE *fp = NULL;
+	GMT_UNUSED(mode);
 	
 	/* Determine input source */
 
@@ -6129,7 +6130,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	if (n_alloc) P->data = GMT_memory (GMT, NULL, n_alloc, char);
 	
 	while ((c = fgetc (fp)) != EOF ) {
-		if (c > n_alloc) {
+		if (P->n >= n_alloc) {
 			n_alloc = (n_alloc == 0) ? GMT_INITIAL_MEM_ROW_ALLOC : n_alloc << 1;	/* Start at 2 Mb, then double */
 			P->data = GMT_memory (GMT, P->data, n_alloc, char);
 		}
