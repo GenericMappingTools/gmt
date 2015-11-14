@@ -307,6 +307,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 int psl_putfont (struct PSL_CTRL *PSL, double fontsize);
 void psl_getorigin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2);
 const char *psl_putusername ();
+int psl_freeplot (struct PSL_CTRL *PSL);
 
 /* These are used when the PDF pdfmark extension for transparency is used. */
 
