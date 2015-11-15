@@ -6141,6 +6141,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	P->n_alloc = P->n;
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 
+	if (close_file) fclose (fp);
 	return (P);
 }
 
