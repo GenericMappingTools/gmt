@@ -20,7 +20,7 @@
 # This will require sudo privileges.
 #
 #-------------------------------------------------------------------------
-printf "gmt_prepmex.sh will convert a GMT 5.2.x bundle so libraries are suitable for building the MATLAB interface\n" >&2
+printf "\ngmt_prepmex.sh will convert a GMT 5.2.x bundle so libraries are suitable for building the MATLAB interface.\n" >&2
 printf "You must have sudo privileges on this computer.\n\nContinue? (y/n) [y]:" >&2
 read answer
 if [ "X$answer" = "Xn" ]; then
@@ -151,5 +151,5 @@ version=`gmt-config --version`
 cat << EOF >&2
 gmt_prepmex.sh: Made updated GMT $version installation in /opt/gmt
 gmt_prepmex.sh: Add /opt/gmt to your .gmtversions and run gmtswitch to select this version
-gmt_prepmex.sh: MATLAB needs a gmt.conf file with GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so
+gmt_prepmex.sh: MATLAB may need a gmt.conf file with GMT_CUSTOM_LIBS=/opt/gmt/lib/gmt/plugins/supplements.so in the startup directory
 EOF
