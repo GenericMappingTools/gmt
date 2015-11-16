@@ -523,6 +523,12 @@
 #	define vsnprintf(s, n, format, arg) vsprintf(s, format, arg)
 #endif
 
+#ifdef HAVE__FSTATI64
+#	define fstat _fstati64
+#elif defined HAVE__FSTAT
+#	define fstat _fstat
+#endif
+
 #ifdef HAVE__STATI64
 #	define stat _stati64
 #elif defined HAVE__STAT
