@@ -31,9 +31,10 @@ Installing
 Windows
 -------
 
-Download the zip file and unzip it to a directory that is in the MATLAB path.
-Also make sure that the GMT5.2 binaries are in the Windows path so they will be found by MATLAB.
-If you want to (re)build the MEX file yourself, see the *compile_mex.bat* that comes along.
+The Windows installers come already with the gmtmex.mexw64|32 and gmt.m files necessary run the MEX.
+Only make sure that the GMT5.2 binary dir is either in the Windows path (the installer does that for you)
+and in the MATLAB path (you have to do it yourself).
+If you want to (re)build the MEX file yourself, see the *compile_mex.bat* in the source SVN repository.
 
 OS X
 ----
