@@ -28,13 +28,27 @@ Installing
 Contrary to the rest of all **GMT** products the Julia wrapper has to live in a Github repository. At the time of
 this writing the wrapper was not yet registered within the Julia package manager, so to install it one has to
 access the Github address directly. After installing Julia and from within its shell (*aka* the REPL) issue this
-command: (but refer to Julia's `package manager <http://docs.julialang.org/en/release-0.4/stdlib/pkg/?highlight=init#package-manager-functions>`_
+command: (but refer to Julia's `package manager <http://docs.julialang.org/en/release-0.4/stdlib/pkg/?highlight=init#package-manager-functions>`_)
+
+  ::
 
     Pkg.clone("git://github.com/joa-quim/GMT.jl.git")
 
 Now you are ready to start using the **GMT** wrapper and the only condition for it to work is that the GMT5.2 shared libs
-are listed in your path. On Windows, the only version tested so far, the **GMT** installer takes care of that but be
-careful that no other previous version is found first.
+are listed in your path. On Windows the **GMT** installer takes care of that but be careful that no other previous version
+is found first.
+
+On UNIX things are more complicated (*surprise*). On OSX, the only other OS tested so far by us, we got a working version
+by running, in the Julia *REPL*
+
+  ::
+
+    push!(Libdl.DL_LOAD_PATH, "/Users/j/programs/gmt5/lib")
+
+this adds, for one particular user case, the *gmt/lib* directory to the list of system locations searched for valid libraries.
+There might be more problems finding other gmt dependencies but with Homebrew builds it works because those dependencies
+are located at /usr/local/lib and the system finds them with no other help. To make that line permanent, add it to your
+~/.juliarc.jl file (if don't have one yet, create it).
 
 Using
 =====
