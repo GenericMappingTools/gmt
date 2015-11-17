@@ -704,6 +704,7 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		yn = n;
 	}
 	nx = GMT_linear_array (GMT, w, e, dval, GMT->current.map.frame.axis[GMT_X].phase, &x);
+	if (idup && !GMT_360_RANGE(x[0],x[nx-1])) idup = 0;	/* Probably due to phase we dont need to remove any duplicate */
 	for (i = 0; i < nx - idup; i++)  {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, x[i], ys, yn);
 		gmt_map_lonline (GMT, PSL, x[i], ys, yn);
@@ -714,19 +715,22 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		nx = 0;
 		if (s < -GMT->current.setting.map_polar_cap[0]) {	/* Must draw some or all of the S polar cap */
 			nx = GMT_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].phase, &x);
-			for (i = 0; i < nx - idup; i++)
+			for (i = 0; i < nx - idup; i++) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw S polar cap %s = %g from %g to %g\n", type, x[i], ys, yn);
 				gmt_map_lonline (GMT, PSL, x[i], cap_start[0], cap_stop[0]);
+			}
 			gmt_map_latline (GMT, PSL, -p_cap, w, e);
 		}
 		if (n > GMT->current.setting.map_polar_cap[0]) {	/* Must draw some or all of the N polar cap */
 			if (nx == 0) nx = GMT_linear_array (GMT, w, e, GMT->current.setting.map_polar_cap[1], GMT->current.map.frame.axis[GMT_X].phase, &x);
-			for (i = 0; i < nx - idup; i++)
+			for (i = 0; i < nx - idup; i++) {
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw N polar cap %s = %g from %g to %g\n", type, x[i], ys, yn);
 				gmt_map_lonline (GMT, PSL, x[i], cap_start[1], cap_stop[1]);
+			}
 			gmt_map_latline (GMT, PSL, p_cap, w, e);
 		}
 		if (nx) GMT_free (GMT, x);
 	}
-
 }
 
 void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval)
