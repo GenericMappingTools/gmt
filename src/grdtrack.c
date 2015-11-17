@@ -169,7 +169,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_img_syntax (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -C is selected:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -C or -E are selected:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
@@ -812,10 +812,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
-			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, xyz);
+			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
 		}
 		else
-			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, GMT_TRACK_FILL, NULL);
+			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
 	}
 
