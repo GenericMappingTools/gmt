@@ -159,7 +159,7 @@ root dir so that the data file used in examples can be found. After that, run
 
     include("C:/j/.julia/v0.4/GMT/test/gallery.jl")
 
-now the examples wrapped in functions named *ex01*, *ex02*, ... *ex45* (not all are yet ported/working) and we
+now the examples are wrapped in functions named *ex01*, *ex02*, ... *ex45* (not all are yet ported/working) and we
 just call them with
 
   ::
