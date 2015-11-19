@@ -1020,6 +1020,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		n_contours = c;
 	}
+	if (n_contours == 0) {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours found\n");
+	}
 	c_alloc = n_contours;
 	cont = GMT_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
@@ -1103,7 +1106,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	z_range = xyz[1][GMT_Z] - xyz[0][GMT_Z];
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 
-	for (ij = i = 0; i < np; i++, ij += 3) {	/* For all triangles */
+	for (ij = i = 0; n_contours && i < np; i++, ij += 3) {	/* For all triangles */
 
 		if (ind[ij] < 0) continue;	/* Skip triangles that are fully outside */
 
