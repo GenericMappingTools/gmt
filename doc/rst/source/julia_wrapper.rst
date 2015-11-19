@@ -64,10 +64,10 @@ Azimuthal projection
     gmt("pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps")
 
 Note the ``using GMT`` command. We need to do that to load the ``GMT.jl`` wrapper and the first time it will
-take a little longer because it need to compile the module's code but following commands will run at same
+take a little longer because it will need to *JIT* compile the module's code. Following commands, however, will run at same
 speed as the command line calls to **GMT**.
 
-But that is not particularly interesting as after all we could do the exact same thing on the a shell
+However, the above example is not particularly interesting as after all we could do the exact same thing on the a shell
 command line. Things start to get interesting when we can send data *in* and *out* from Julia to
 **GMT**. So, consider the following example
 
@@ -151,7 +151,20 @@ Things only complicate a little more for the cases where we can have more than o
 *output* arguments. The file *gallery.jl* in *test* directory, that reproduces the examples in the
 Gallery section of the **GMT** documentation, has many (not so trivial) examples on usage of the Julia GMT5.2 API.
 
+To run the examples in *gallery.jl* we have to load the file first, which is located in your .julia directory.
+For me it lives in *C:/j/.julia/v0.4/GMT/test/gallery.jl* and we have to edit it to set the path to the **GMT**
+root dir so that the data file used in examples can be found. After that, run
 
+  ::
+
+    include("C:/j/.julia/v0.4/GMT/test/gallery.jl")
+
+now the examples wrapped in functions named *ex01*, *ex02*, ... *ex45* (not all are yet ported/working) and we
+just call them with
+
+  ::
+
+    ex01()
 
 .. _grid-type:
 
