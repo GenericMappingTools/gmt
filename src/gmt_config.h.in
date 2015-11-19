@@ -179,7 +179,9 @@
 #	define _GNU_SOURCE
 #endif
 #if defined(__sun) || defined(__sun__)
-#	define __EXTENSIONS__
+#	ifndef __EXTENSIONS__
+#		define __EXTENSIONS__
+#	endif
 #endif
 
 /* Math headers */
