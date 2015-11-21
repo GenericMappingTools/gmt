@@ -4563,7 +4563,8 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
 		struct GMT_PS *P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
-        P->n = PSL->internal.n;         /* Length of plot buffer */
+		P->n = PSL->internal.n;         /* Length of plot buffer */
+		P->mode = PSL->internal.pmode;  /* Mode of plot (1,2,3) */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
@@ -6048,6 +6049,7 @@ void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P)
 		P->data = NULL;
 	}
 	P->n_alloc = P->n = 0;
+	P->mode = 0;
 }
 
 /*! . */
@@ -6226,5 +6228,6 @@ void GMT_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_
 	P_copy->data = GMT_memory (GMT, NULL, P_obj->n, char);
 	GMT_memcpy (P_copy->data, P_obj->data, P_obj->n, char);
 	P_copy->n_alloc = P_copy->n = P_obj->n;
+	P_copy->mode =P_obj->mode;
 	P_copy->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 }

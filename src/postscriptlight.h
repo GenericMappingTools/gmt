@@ -302,6 +302,7 @@ struct PSL_CTRL {
 		int ix, iy;			/* Absolute coordinates of last point		*/
 		int n_userimages;		/* Number of specified custom patterns		*/
 		int x0, y0;			/* x,y PS offsets				*/
+		int pmode;			/* Mode of buffer plot (1 = has header, 2 = has trailer, 3 = both) */
 		size_t n_alloc;			/* Allocation length of buffer			*/
 		size_t n;			/* Length of buffer				*/
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/

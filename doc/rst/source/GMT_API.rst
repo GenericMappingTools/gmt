@@ -575,6 +575,7 @@ plot (or partial plot) containing a long text string.
        /* Variables we document for the API: */
        size_t n_alloc;                  /* Length of array allocated so far */
        size_t n;                        /* Length of data array so far */
+       unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
        char *data;                      /* Pointer to actual PS text */
        /* ---- Variables "hidden" from the API ---- */
        uint64_t id;                     /* The internal number of the data set */

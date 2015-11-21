@@ -1201,6 +1201,7 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage)
 	if (PSL->internal.memory) {	/* Finalize memory buffer allocation */
 		PSL->internal.n_alloc = PSL->internal.n;
 		PSL->internal.buffer  = PSL_memory (PSL, PSL->internal.buffer, PSL->internal.n_alloc, char);
+		if (lastpage) PSL->internal.pmode |= 2;	/* We provided a trailer */
 	}
 	else {	/* Dealing with files or stdout */
 		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
@@ -1227,6 +1228,7 @@ int psl_freeplot (struct PSL_CTRL *PSL)
 {	/* Simply eliminate any buffer for memory-writing PS */
 	if (PSL->internal.buffer) PSL_free (PSL->internal.buffer);	/* Remove any previous plot buffer */
 	PSL->internal.n_alloc = PSL->internal.n = 0;
+	PSL->internal.pmode = 0;
 	return (PSL_NO_ERROR);
 }
 
@@ -1309,6 +1311,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 			PSL->internal.buffer  = PSL_memory (PSL, NULL, PSL_MEM_ALLOC, char);
 			PSL->internal.n_alloc = PSL_MEM_ALLOC;
 			PSL->internal.n	      = 0;
+			PSL->internal.pmode   = 1;	/*	Header of plot will be written below */
 		}
 			
 		PSL_command (PSL, "%%!PS-Adobe-3.0\n");
