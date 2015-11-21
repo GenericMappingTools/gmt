@@ -978,16 +978,14 @@ int GMTAPI_key_to_family (void *API, char *key, int *family, int *geometry)
 	return ((key[K_DIR] == 'o' || key[K_DIR] == 'O') ? GMT_OUT : GMT_IN);	/* Return the direction of the i/o [note ! means in] */
 }
 
-char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items, unsigned int *PS)
+char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT_OPTION *head, unsigned int *n_items)
 {	/* Turn the comma-separated list of 3-char codes into an array of such codes.
  	 * In the process, replace any ?-types with the selected type if type is not 0.
-	 * We return the array of strings and its number (n_items) as well as two vars:
-	 * PS will be 1 if the module produces PostScript, else it is 0. */
+	 * We return the array of strings and its number (n_items). */
 	size_t len, k, kk, n;
 	int o_id = GMT_NOTSET;
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
-	*PS = 0;	/* No PostScript output indicated so far */
 	*n_items = 0;	/* No keys yet */
 
 	if (!string) return NULL;	/* Got NULL, just give up */
@@ -1013,7 +1011,6 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 		}
 		s[k] = strdup (next);
 		if (next[K_DIR] == 'O') {	/* Identified primary output key */
-			if (!strncmp (next, ">XO", 3U)) (*PS)++;	/* Found a key for PostScript output. We add but *PS should be 0 or 1 after loop */
 			if (o_id >= 0)	/* Already had a primary output key */
 				GMT_Report (API, GMT_MSG_NORMAL,
 				            "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one primary output key\n", string);
@@ -1022,9 +1019,6 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 		}
 		k++;
 	}
-	/* Now do basic check on PostScript count */
-	if (*PS > 1) GMT_Report (API, GMT_MSG_NORMAL,
-	                         "GMTAPI_process_keys: INTERNAL ERROR: keys %s contain more than one implicit PS output\n", string);
 	for (k = 0; k < n; k++) {	/* Check for presence of any of the magic X,Y,Z keys */
 		if (s[k][K_OPT] == '-') {	/* Key letter X missing: Means that option -Y, if given, changes the type of input|output */
 			/* Must first determine which data type we are dealing with via -T<type> */
@@ -1063,7 +1057,6 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			if (GMT_Find_Option (API, magic, head)) {	/* Got the magic option that changes output type */
 				if (o_id == GMT_NOTSET)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
-				if (*PS == 1) (*PS)--;			/* No longer PostScript producing module */
 				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Required output now implies this data type */
 				s[o_id][K_OPT]    = s[k][K_OPT];	/* Required output now implies this option */
 			}
@@ -1080,7 +1073,6 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	n = kk;	/* May have lost some NULLs */
 	for (k = 0; k < n; k++) {
 		strcat (revised, ",");
-		if (!strncmp (s[k], ">XO", 3U)) strcpy (s[k], "-Xo");	/* Replace the logical >XO with harmless -Xo since PS is not written by the API i/o functions */
 		strcat (revised, s[k]);
 	}
 	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_process_keys: Revised keys string is %s\n", &revised[1]);
@@ -7211,7 +7203,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	 *
 	 */
 
-	unsigned int n_keys, direction = 0, PS, kind, pos, n_items = 0, ku;
+	unsigned int n_keys, direction = 0, kind, pos, n_items = 0, ku,  n_out = 0;
 	unsigned int n_explicit = 0, n_implicit = 0, output_pos = 0, explicit_pos = 0, implicit_pos = 0;
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
@@ -7269,8 +7261,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 	free (module);
 
-	/* 2a. Get the option key array for this module, and determine if it produces PostScript output (PS == 1) and if PS may be bypassed (magic) */
-	key = GMTAPI_process_keys (API, keys, type, *head, &n_keys, &PS);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
+	/* 2a. Get the option key array for this module */
+	key = GMTAPI_process_keys (API, keys, type, *head, &n_keys);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
 
 	/* 2b. Make some specific modifications to the keys given the options passed */
 	if (deactivate_output && (k = GMTAPI_get_key (API, GMT_OPT_OUTFILE, key, n_keys)) >= 0)
@@ -7279,14 +7271,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 3. Count the module options and any input files referenced via marker, then allocate info struct array */
 	for (opt = *head; opt; opt = opt->next) {
 		if (strchr (opt->arg, marker)) n_explicit++;	/* Found an explicit dollar sign referring to an input matrix */
-		if (PS && opt->option == GMT_OPT_OUTFILE) PS++;	/* Count given output options when PS will be produced. */
+		if (opt->option == GMT_OPT_OUTFILE) n_out++;	/* Count given output options when PS will be produced. */
 	}
-	if (PS == 1) {	/* No redirection of the PS to an actual file means an error */
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: No PostScript output file given\n");
-		return_null (NULL, GMT_NOT_OUTPUT_OBJECT);	/* No PS object (file) */
-	}
-	else if (PS > 2) {
-		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Can only specify one PostScript output file\n");
+	if (n_out > 1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Can only specify one main output object via command line\n");
 		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
 	n_alloc = n_explicit + n_keys;	/* Max number of registrations needed (may be just n_explicit) */
