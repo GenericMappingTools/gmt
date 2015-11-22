@@ -79,6 +79,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.pc)
 # elif defined( __arm__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
+# elif defined( __hppa__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.sc_iaoq[0])
 # elif defined(__s390__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.psw.addr)
 # else
