@@ -615,7 +615,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 
 	/* 0. DETERMINE THE NUMBER OF TIME STEPS */
 	
-	if (Ctrl->T.active) {	/* Have requested a time-series of bathymetry */
+	if (Ctrl->T.active) {	/* Have requested a time series of bathymetry */
 		t0_col = n_expected_fields - 2;
 		t1_col = n_expected_fields - 1;
 	}

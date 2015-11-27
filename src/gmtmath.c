@@ -4592,7 +4592,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	for (seg = n_records = 0; seg < info.T->n_segments; seg++) {	/* Create normalized times and possibly reverse time (-I) */
 		off = 0.5 * (info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1] + info.T->segment[seg]->coord[COL_T][0]);
 		scale = 2.0 / (info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1] - info.T->segment[seg]->coord[COL_T][0]);
-		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->coord[COL_T][row], info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time-series */
+		if (Ctrl->I.active) for (row = 0; row < info.T->segment[seg]->n_rows/2; row++) double_swap (info.T->segment[seg]->coord[COL_T][row], info.T->segment[seg]->coord[COL_T][info.T->segment[seg]->n_rows-1-row]);	/* Reverse time series */
 		for (row = 0; row < info.T->segment[seg]->n_rows; row++) {
 			info.T->segment[seg]->coord[COL_TN][row] = (info.T->segment[seg]->coord[COL_T][row] - off) * scale;
 			info.T->segment[seg]->coord[COL_TJ][row] = (unsigned int)((Ctrl->I.active) ? info.T->segment[seg]->n_rows - row - 1 : row);
