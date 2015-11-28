@@ -5391,8 +5391,8 @@ int PSL_comment (struct PSL_CTRL *C, const char *format, ...) {
 		C->internal.n += 2;
 	}
 	else {	/* Write comments to stream */
-		vfprintf (C->internal.fp, format, args);
 		fprintf (C->internal.fp, "%%\n%% ");
+		vfprintf (C->internal.fp, format, args);
 		fprintf (C->internal.fp, "%%\n");
 	}
 	va_end (args);

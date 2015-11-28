@@ -984,6 +984,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	 * We return the array of strings and its number (n_items). */
 	size_t len, k, kk, n;
 	int o_id = GMT_NOTSET;
+	bool change_type = false;
 	char **s = NULL, *next = NULL, *tmp = NULL, magic = 0, revised[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	*n_items = 0;	/* No keys yet */
@@ -1002,11 +1003,11 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	/* Allocate and populate the character array, then return it and n_items */
 	s = (char **) calloc (n, sizeof (char *));
 	k = 0;
-	/* While processing the array we also check if this is a PostScript-producing module and determine the key # for the primary output */
+	/* While processing the array we also determine the key # for the primary output */
 	while ((next = strsep (&tmp, ",")) != NULL) {
-		if (strlen (next) != 3) {
+		if (strlen (next) < 3) {
 			GMT_Report (API, GMT_MSG_NORMAL,
-			            "GMTAPI_process_keys: INTERNAL ERROR: key %s does not contain exactly 3 characters\n", next);
+			            "GMTAPI_process_keys: INTERNAL ERROR: key %s contains less than 3 characters\n", next);
 			continue;
 		}
 		s[k] = strdup (next);
@@ -1021,14 +1022,15 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	}
 	for (k = 0; k < n; k++) {	/* Check for presence of any of the magic X,Y,Z keys */
 		if (s[k][K_OPT] == '-') {	/* Key letter X missing: Means that option -Y, if given, changes the type of input|output */
-			/* Must first determine which data type we are dealing with via -T<type> */
+			/* Must first determine which data type we are dealing with via -Y<type> */
 			if ((opt = GMT_Find_Option (API, s[k][K_FAMILY], head))) {	/* Found the -Y<type> option */
-				type = (char)toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCIT) in GMTAPI_process_keys below */
-				if (!strchr ("DGCIT", type)) {
+				type = (char)toupper (opt->arg[0]);	/* Find type and replace ? in keys with this type in uppercase (DGCITP) in GMTAPI_process_keys below */
+				if (!strchr ("DGCITP", type)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: INTERNAL ERROR: No or bad data type given to read|write (%c)\n", type);
 					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
 				}
-				for (kk = 0; kk < n; kk++) {	/* DO the substitution for all keys that matches ? */
+				if (type == 'P') type = 'X';	/* We use X for PostScript since P may stand for polygon... */
+				for (kk = 0; kk < n; kk++) {	/* Do the substitution for all keys that matches ? */
 					if (s[kk][K_FAMILY] == '?' && strchr ("-iI", s[kk][K_DIR])) s[kk][K_FAMILY] = type;	/* Want input to handle this type of data */
 					if (s[kk][K_FAMILY] == '?' && strchr ("-oO", s[kk][K_DIR])) s[kk][K_FAMILY] = type;	/* Want input to handle this type of data */
 				}
@@ -1049,16 +1051,40 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
 		else if (!strchr ("IOio-", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|-: Means that option -Z, if given, changes the type of primary output to Y */
-			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used */
-			if (magic == 0)	/* First time we find one, get it */
-				magic = s[k][K_DIR];
-			else
-				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: More than one magic key trying to change output type\n");
-			if (GMT_Find_Option (API, magic, head)) {	/* Got the magic option that changes output type */
+			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used.  Also, modifiers may be involved.
+			   e.g, gmtspatial : New key “”>TN+r” means if -N+r given then set >TO.  Just giving -N will not trigger the change.
+			   e.g., pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R then set to >TO */
+			magic = s[k][K_DIR];
+			if ((opt = GMT_Find_Option (API, magic, head))) {	/* Got the magic option that changes output type */
+				char *modifier = "+?";
 				if (o_id == GMT_NOTSET)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
-				s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Required output now implies this data type */
-				s[o_id][K_OPT]    = s[k][K_OPT];	/* Required output now implies this option */
+				/* Check if modifier(s) were given also and that one of them were selected */
+				if (strlen (s[k]) > 3) {	/* Not enough to just find option, must examine modifiers */
+					/* Full syntax: XYZ+abc...-def...: We do the substitution of output type to Y only if
+					 * 1. -Z is given
+					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
+					 * 3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
+					 */
+					unsigned int kase, count[2] = {0, 0}, given[2] = {0, 0};
+					change_type = false;
+					for (kk = 3; s[k][kk]; kk++) {
+						if (strchr ("-+", s[k][kk])) {
+							kase = (s[k][kk] == '-') ? 0 : 1;
+							continue;
+						}
+						count[kase]++;	/* How many AND and how many OR modifiers */
+						modifier[1] = s[k][kk];
+						if (!strstr (opt->arg, modifier)) given[kase]++;
+					}
+					if ((count[0] == 0 || (count[0] && given[0])) && count[1] == given[1]) change_type = true;
+				}
+				else	/* true since we found the option and no modifier given */
+					change_type = true;
+				if (change_type) {
+					s[o_id][K_FAMILY] = s[k][K_FAMILY];	/* Required output now implies this data type */
+					s[o_id][K_OPT]    = s[k][K_OPT];	/* Required output now implies this option */
+				}
 			}
 			free (s[k]);	s[k] = NULL;		/* Free the inactive key that has served its purpose */
 		}
@@ -7244,11 +7270,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* 1a. Check if this is the write special module, which has flagged its output file as input... */
 	if (!strncmp (module, "gmtwrite", 8U) && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *head))) {
-		/* Found a -<"file" option; this is actually the output file so we simply reset the option */
+		/* Found a -<"file" option; this is actually the output file so we simply change the option to output */
 		opt->option = GMT_OPT_OUTFILE;
 		deactivate_output = true;	/* Remember to turn off implicit output option since we got one */
 	}
-	/* 1b. Check if this is either gmtmath or grdmath which uses the special = outfile syntax and replace by -=<outfile> */
+	/* 1b. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
 	if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
 		for (opt = *head; opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
 			if (!strcmp (opt->arg, "=")) {
@@ -7312,7 +7338,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				skip = number = true;
 			else if (len) {	/* There is a 1-char argument given */
 				if (!GMT_access (API->GMT, opt->arg, F_OK)) {
-					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: 1-char file found to override implicit specitication\n");
+					GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: 1-char file found to override implicit specification\n");
 					skip = true;	/* The file actually exist */
 				}
 				else if (key[k][K_FAMILY] == 'C' && !GMT_not_numeric (API->GMT, opt->arg)) {

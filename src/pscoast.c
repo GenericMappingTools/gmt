@@ -54,7 +54,7 @@
 #define THIS_MODULE_NAME	"pscoast"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot continents, countries, shorelines, rivers, and borders on maps"
-#define THIS_MODULE_KEYS	">XO,>DM,RG-"
+#define THIS_MODULE_KEYS	">XO,>DM,RG-,>TE+w-rR"
 
 #include "gmt_dev.h"
 
@@ -509,7 +509,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 		else {	/* Pick up region from chosen polygons */
 			(void) GMT_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION, options);
 			GMT->common.R.active = true;
-			if (!GMT->common.J.active && !Ctrl->M.active) {	/* No plotting or no dumping means just return the -R string */
+			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
 				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 				size_t i, j;
 				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
