@@ -1056,7 +1056,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			   e.g., pscoast ">TE+w-rR" means if -E given with modifier +w and one of +r or +R then set to >TO */
 			magic = s[k][K_DIR];
 			if ((opt = GMT_Find_Option (API, magic, head))) {	/* Got the magic option that changes output type */
-				char *modifier = "+?";
+				char modifier[3] = {'+', '?', 0};	/* We will replace ? with an actual modifier */
 				if (o_id == GMT_NOTSET)
 					GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_process_keys: INTERNAL ERROR: No primary output identified but magic Z key present\n");
 				/* Check if modifier(s) were given also and that one of them were selected */
@@ -1074,9 +1074,10 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 							continue;
 						}
 						count[kase]++;	/* How many AND and how many OR modifiers */
-						modifier[1] = s[k][kk];
-						if (!strstr (opt->arg, modifier)) given[kase]++;
+						modifier[1] = s[k][kk];	/* Set current modifier */
+						if (strstr (opt->arg, modifier)) given[kase]++;	/* Match! */
 					}
+					/* Only change when we found all the AND modifiers and at least one of the OR modifiers if any was given */
 					if ((count[0] == 0 || (count[0] && given[0])) && count[1] == given[1]) change_type = true;
 				}
 				else	/* true since we found the option and no modifier given */

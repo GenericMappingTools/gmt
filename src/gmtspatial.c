@@ -1612,6 +1612,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (Ctrl->N.mode == 2) GMT_adjust_dataset (GMT, D, D->n_columns + 1);	/* Add one more output column */
 		
 		T = C->table[0];	/* Only one input file so only one table */
+		count = GMT_memory (GMT, NULL, D->n_segments, unsigned int);
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
@@ -1629,7 +1630,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			else	/* Increment running polygon ID */
 				ID++;
 
-			count = GMT_memory (GMT, NULL, D->n_segments, unsigned int);
 			for (tbl = p = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++, p++) {
 					S = D->table[tbl]->segment[seg];
@@ -1685,6 +1685,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &C) != GMT_OK) {
 			Return (API->error);
 		}
+		GMT_free (GMT, count);
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active && Ctrl->S.mode == POL_SPLIT) {	/* Split polygons at dateline */
