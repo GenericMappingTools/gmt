@@ -1109,6 +1109,11 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
+	if (GMT_is_dnan (lon[0]) || GMT_is_dnan (lat[0])) {	/* If user manages to pass NaN NaN records then we check on the first record and bail */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Your data contains NaNs - no resampling taken place!\n");
+		return n;
+	}
+	
 	GMT_geo_to_cart (GMT, lat[0], lon[0], a, true);	/* Start point of current arc */
 	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
 	GMT->hidden.mem_coord[GMT_X][0] = lon[0];
