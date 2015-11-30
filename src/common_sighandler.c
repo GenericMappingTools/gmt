@@ -77,6 +77,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.gregs[REG_RIP])
 # elif defined(__aarch64__) || defined(__mips__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.pc)
+# elif defined( __alpha__)
+#  define UC_IP(uc) ((void *) (uc)->uc_mcontext.sc_pc)
 # elif defined( __arm__)
 #  define UC_IP(uc) ((void *) (uc)->uc_mcontext.arm_pc)
 # elif defined( __hppa__)

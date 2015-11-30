@@ -143,7 +143,7 @@ struct PS2RASTER_CTRL {
 	} S;
 	struct PS2R_T {	/* -T */
 		bool active;
-		int eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
+		int eps;	/* 1 if we want to make EPS, -1 with setpagedevice (possibly in addition to another format) */
 		int device;	/* May be negative */
 	} T;
 	struct PS2R_W {	/* -W -- for world file production */
@@ -444,7 +444,7 @@ int GMT_psconvert_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e means EPS.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   E means EPS with /PageSize command.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   E means EPS with setpagedevice command.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f means PDF.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   F means multi-page PDF (requires -F).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g means PNG.\n");
@@ -599,7 +599,7 @@ int GMT_psconvert_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 						case 'e':	/* EPS */
 							Ctrl->T.eps = 1;
 							break;
-						case 'E':	/* EPS with /PageSize */
+						case 'E':	/* EPS with setpagedevice */
 							Ctrl->T.eps = -1;
 							break;
 						case 'f':	/* PDF */
@@ -1072,11 +1072,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...\n", x0, y0, x1, y1);
 		}
 
-		/* Open temporary file to be processed by ghostscript. When -Te is used, tmp_file is for keeps */
+		/* Open temporary file to be processed by ghostscript. When -Te or -TE is used, tmp_file is for keeps */
 
-		if (Ctrl->T.eps)
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Format EPS file...\n");
 		if (Ctrl->T.eps) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Format EPS file...\n");
 			if (Ctrl->D.active) sprintf (tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (!Ctrl->F.active || return_image)
 				strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
@@ -1177,12 +1176,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
 
 		while (line_reader (GMT, &line, &line_size, fp) != EOF) {
-			if (line[0] != '%') {	/* Copy any non-comment line, except one containing /PageSize in the Setup block */
+			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
 				if (look_for_transparency && strstr (line, " PSL_transp")) {
 					transparency = true;		/* Yes, found transparency */
 					look_for_transparency = false;	/* No need to check anymore */
 				}
-				if (setup && strstr(line,"/PageSize") != NULL)
+				if (setup && strstr(line,"setpagedevice") != NULL)	/* This is a "setpagedevice" command that should be avoided */
 					continue;
 				fprintf (fpo, "%s\n", line);
 				continue;
@@ -1257,7 +1256,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				setup = true;
 			else if (!strncmp (line, "%%EndSetup", 10)) {
 				setup = false;
-				if (Ctrl->T.eps == -1)	/* Write out /PageSize command */
+				if (Ctrl->T.eps == -1)	/* Write out setpagedevice command */
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
 					fprintf (fpo, "%d rotate\n", r);

@@ -178,6 +178,7 @@ Optional Arguments
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
     PDF file from the list of input PS or PDF files. It requires the **-F** option.
+    See also **NOTES** below.
 
 .. _-V:
 
@@ -286,14 +287,19 @@ compression technique when creating PDF and PNG files and LZW compression
 for TIFF images.  For smaller dpi images, such as required for building
 animations, the use of **-Qt**\ 4 and **-Qg**\ 4 may help sharpen text and lines.
 
-EPS is a vector, not a raster format. Therefore, the **-E** option has
+EPS is a vector (not a raster) format. Therefore, the **-E** option has
 no effect on the creation of EPS files. Using the option **-Te** will
-remove PageSize commands from the PostScript file and will adjust the
+remove setpagedevice commands from the PostScript file and will adjust the
 BoundingBox when the **-A** option is used. Note the original and
 required BoundingBox is limited to integer points, hence Adobe added the
 optional HiResBoundingBox to add more precision in sizing. The **-A**
-option calculates both and writes both to the EPS file used in the
-rasterization (and output if **-Te** is set).
+option calculates both and writes both to the EPS file and is subsequently
+used in any rasterization, if requested. When the **-TE* option is used, a
+new setpagedevice command is added that will indicate the actual pagesize for
+the plot, similar to the BoundingBox. Note that when the command setpagedevice
+exists in a PostScript file that is included in another document, this can wreak
+havoc on the printing or viewing of the overall document. Hence, **-TE** should only
+be used for "standalone" PostScript files.
 
 Although PDF and SVG are also vector formats, the **-E** option has an effect on
 the resolution of pattern fills and fonts that are stored as bitmaps in

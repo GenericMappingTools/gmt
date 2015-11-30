@@ -1550,6 +1550,10 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 			*status = -1;
 			return (NULL);
 		}
+		
+		/* First chop off trailing whitespace and commas */
+		GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
+		
 		if (gmt_ogr_parser (GMT, line)) continue;	/* If we parsed a GMT/OGR record we must go up to top of loop and get the next record */
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
@@ -1583,9 +1587,6 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 		n_use = gmt_n_cols_needed_for_gaps (GMT, *n);	/* Gives the actual columns we need (which may > *n if gap checking is active; if gap check we also update prev_rec) */
 		gmt_update_prev_rec (GMT, n_use);
 
-		/* First chop off trailing whitespace and commas */
-
-		GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
 		bad_record = set_nan_flag = false;		/* Initialize flags */
 		strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);	/* Keep copy of current record around */
