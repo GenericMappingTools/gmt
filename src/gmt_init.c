@@ -5253,9 +5253,11 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 					switch (txt[dir][0]) {
 						case 'B':
 							GMT->current.setting.io_blankline[dir] = true;
+							GMT->current.setting.io_seg_marker[dir] = 'B';
 							break;
 						case 'N':
 							GMT->current.setting.io_nanline[dir] = true;
+							GMT->current.setting.io_seg_marker[dir] = 'N';
 							break;
 						default:
 							k = (txt[dir][0] == '\\') ? 1 : 0;
