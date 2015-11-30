@@ -98,7 +98,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *dz*
+**-T**\ [**s**]\ *dz*
     Determine min and max z-value, round off to multiples of *dz*, and
     report as the text string **-T**\ *zmin/zmax/dz* for use by
     **makecpt**. To get a symmetrical range about zero, using the max
