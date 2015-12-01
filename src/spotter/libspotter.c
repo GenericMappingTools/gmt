@@ -353,7 +353,9 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	GMT_UNUSED(GMT);
-	if (!GMT_access (GMT, &arg[k], F_OK) && GMT_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
+	if (k == 0 && spotter_GPlates_pair (arg))	/* A GPlates plate pair to look up in the rotation table */
+		R->file = strdup (arg);
+	else if (!GMT_access (GMT, &arg[k], F_OK) && GMT_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
 		R->file = strdup (&arg[k]);
 		if (k == 1) R->invert = true;
 	}
@@ -378,6 +380,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 
 void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e)
 {	/* Update this rotation's derived settings */
+	GMT_UNUSED(GMT);
 	e->duration = e->t_start - e->t_stop;
 	e->omega /= e->duration;	/* Convert to opening rate */
 	e->omega_r = e->omega * D2R;
