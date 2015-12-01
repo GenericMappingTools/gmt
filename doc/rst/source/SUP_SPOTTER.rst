@@ -6,6 +6,7 @@ SPOTTER
    :maxdepth: 1
 
    supplements/spotter/backtracker
+   supplements/spotter/gmtpmodeler
    supplements/spotter/grdpmodeler
    supplements/spotter/grdrotater
    supplements/spotter/grdspotter
