@@ -348,6 +348,44 @@ bool spotter_GPlates_pair (char *file)
 	return (true);	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 }
 
+unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R)
+{
+	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	GMT_UNUSED(GMT);
+	if (!GMT_access (GMT, &arg[k], F_OK) && GMT_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
+		R->file = strdup (&arg[k]);
+		if (k == 1) R->invert = true;
+	}
+	else {	/* Apply a fixed total reconstruction rotation to all input points  */
+		unsigned int ns = 0;
+		size_t kk;
+		for (kk = 0; kk < strlen (arg); kk++) if (arg[kk] == '/') ns++;
+		if (ns == 2 || ns == 3) {	/* Looks like we got lon/lat/omega[/age] */
+			R->single  = true;
+			sscanf (arg, "%[^/]/%[^/]/%[^/]/%lg", txt_a, txt_b, txt_c, &(R->age));
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &(R->lon)), txt_a);
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &(R->lat)), txt_b);
+			R->w = atof (txt_c);
+			if (ns == 2)	/* No age given */
+				R->age = GMT->session.d_NaN;
+		}
+		else	/* Junk of some sort */
+			n_errors++;
+	}
+	return (n_errors);
+}
+
+void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e)
+{	/* Update this rotation's derived settings */
+	e->duration = e->t_start - e->t_stop;
+	e->omega /= e->duration;	/* Convert to opening rate */
+	e->omega_r = e->omega * D2R;
+	sincosd (e->lat, &e->sin_lat, &e->cos_lat);
+	e->lon_r = e->lon * D2R;
+	e->lat_r = e->lat * D2R;
+}
+
 unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max)
 {
 	/* file;	Name of file with backward stage poles, always GEOCENTRIC */
@@ -480,13 +518,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		e[i].duration = e[i].t_start - e[i].t_stop;
-		e[i].omega /= e[i].duration;	/* Convert to opening rate */
-
-		e[i].omega_r = e[i].omega * D2R;
-		sincosd (e[i].lat, &e[i].sin_lat, &e[i].cos_lat);
-		e[i].lon_r = e[i].lon * D2R;
-		e[i].lat_r = e[i].lat * D2R;
+		spotter_setrot (GMT, &(e[i]));
 		if (GPlates) {
 			e[i].id[0] = A_id;
 			e[i].id[1] = B_id;

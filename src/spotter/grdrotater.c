@@ -44,12 +44,9 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E[+]rotfile or -E<lon/lat/angle> */
+	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
-		bool single;
-		bool mode;
-		char *file;
-		double lon, lat, w;
+		struct SPOTTER_ROT rot;
 	} E;
 	struct F {	/* -Fpolfile */
 		bool active;
@@ -86,7 +83,7 @@ void Free_grdrotater_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/*
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
 	if (C->D.file) free (C->D.file);	
-	if (C->E.file) free (C->E.file);	
+	if (C->E.rot.file) free (C->E.rot.file);	
 	if (C->F.file) free (C->F.file);	
 	if (C->G.file) free (C->G.file);	
 	if (C->T.value) free (C->T.value);	
@@ -97,7 +94,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdrotater <grid> -E[+]<rottable>|<plon>/<plat>/<prot> -G<outgrid> [-F<polygontable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdrotater <grid> %s -G<outgrid> [-F<polygontable>]\n", SPOTTER_E_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time(s)>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] > projpol\n\n", GMT_b_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT);
 
@@ -175,24 +172,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
-				k = (opt->arg[0] == '+') ? 1 : 0;
-				if (!GMT_access (GMT, &opt->arg[k], F_OK) && GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
-					Ctrl->E.file  = strdup (&opt->arg[k]);
-					if (k == 1) Ctrl->E.mode = true;
-				}
-				else {	/* Apply a fixed total reconstruction rotation to all input points  */
-					unsigned int ns = 0;
-					size_t kk;
-					for (kk = 0; kk < strlen (opt->arg); kk++) if (opt->arg[kk] == '/') ns++;
-					if (ns == 2) {	/* Looks like we got lon/lat/omega */
-						Ctrl->E.single  = true;
-						sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->E.w);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.lon), txt_a);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.lat), txt_b);
-					}
-					else	/* Junk of some sort */
-						n_errors++;
-				}
+				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
 				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
@@ -239,11 +219,12 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				if (k == 3) {	/* Gave -Ttstart/tstop/tinc or possibly ancient -Tlon/lat/angle */
 					if (GMT_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
-						Ctrl->E.single = Ctrl->E.active = true;
+						Ctrl->E.rot.single = Ctrl->E.active = true;
 						Ctrl->T.active = false;
-						Ctrl->E.w = atof (txt_c);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.lon), txt_a);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.lat), txt_b);
+						Ctrl->E.rot.w = atof (txt_c);
+						Ctrl->E.rot.age = GMT->session.d_NaN;
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.rot.lon), txt_a);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.rot.lat), txt_b);
 					}
 					else {	/* Must be Ttstart/tstop/tinc */
 						double min, max, inc;
@@ -475,18 +456,23 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		polr = Dr->table[0];	/* Since we know it is also a single file */
 	}
 	
-	if (Ctrl->E.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
+	if (Ctrl->E.rot.single) {	/* Got a single rotation, create a rotation table with one entry */
 		Ctrl->T.n_times = n_stages = 1;
 		p = GMT_memory (GMT, NULL, n_stages, struct EULER);
-		p[0].lon = Ctrl->E.lon; p[0].lat = Ctrl->E.lat; p[0].omega = Ctrl->E.w;
+		p[0].lon = Ctrl->E.rot.lon; p[0].lat = Ctrl->E.rot.lat; p[0].omega = Ctrl->E.rot.w;
+		if (GMT_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
+			Ctrl->T.value = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);
+			Ctrl->T.value[0] = p[0].t_start = 1.0;
+		}
+		spotter_setrot (GMT, &(p[0]));
 	}
 	else {	/* Got a rotation file with multiple rotations in total reconstruction format */
 		double t_max = 0.0;
-		n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, true, Ctrl->E.mode, &t_max);
+		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, false, true, Ctrl->E.rot.invert, &t_max);
 		GMT_set_segmentheader (GMT, GMT_OUT, true);
 	}
 	
-	if (!Ctrl->T.active && !Ctrl->E.single) {	/* Gave no time to go with the rotations, use rotation times */
+	if (!Ctrl->T.active && !Ctrl->E.rot.single) {	/* Gave no time to go with the rotations, use rotation times */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
 		Ctrl->T.n_times = n_stages;
 		Ctrl->T.value = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);
@@ -507,8 +493,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	}
 
 	for (t = 0; t < Ctrl->T.n_times; t++) {	/* For each reconstruction time */
-		if (Ctrl->E.single) {
-			plon = Ctrl->E.lon;	plat = Ctrl->E.lat;	pw = Ctrl->E.w;
+		if (Ctrl->E.rot.single) {
+			plon = Ctrl->E.rot.lon;	plat = Ctrl->E.rot.lat;	pw = Ctrl->E.rot.w;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", plon, plat, pw);
 		}
 		else {	/* Extract rotation for given time */
@@ -521,7 +507,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		GMT_make_rot_matrix (GMT, plon, plat, pw, R);	/* Make rotation matrix from rotation parameters */
 	
-		if (Ctrl->E.single)
+		if (Ctrl->E.rot.single)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline\n");
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline for time %g\n", Ctrl->T.value[t]);
@@ -550,7 +536,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			}
 			else
 				file = Ctrl->D.file;
-			if (!Ctrl->E.single) {	/* Add a segment header with the age via -Z */
+			if (!Ctrl->E.rot.single) {	/* Add a segment header with the age via -Z */
 				char txt[BUFSIZ] = {""};
 				sprintf (txt, "-Z%g", Ctrl->T.value[t]);
 				for (seg = 0; seg < polr->n_segments; seg++) {
@@ -593,7 +579,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
-		if (Ctrl->E.single)
+		if (Ctrl->E.rot.single)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid for time %g\n", Ctrl->T.value[t]);
@@ -654,14 +640,14 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		/* Now write rotated grid */
 	
-		if (Ctrl->E.single)
+		if (Ctrl->E.rot.single)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write reconstructed grid\n");
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write reconstructed grid for time %g\n", Ctrl->T.value[t]);
 
 		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
-		if (Ctrl->E.single)
+		if (Ctrl->E.rot.single)
 			sprintf (G_rot->header->remark, "Grid reconstructed using R[lon lat omega] = %g %g %g", plon, plat, pw);
 		else
 			sprintf (G_rot->header->remark, "Grid reconstructed using R[lon lat omega] = %g %g %g for time %g", plon, plat, pw, Ctrl->T.value[t]);

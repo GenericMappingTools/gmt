@@ -21,7 +21,7 @@
 
 # source files
 set (SUPPL_LIB_SRCS spotter.h libspotter.c)
-set (SUPPL_PROGS_SRCS backtracker.c grdpmodeler.c grdrotater.c
+set (SUPPL_PROGS_SRCS backtracker.c gmtpmodeler.c grdpmodeler.c grdrotater.c
 	grdspotter.c hotspotter.c originator.c rotconverter.c)
 
 # example files

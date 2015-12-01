@@ -52,6 +52,7 @@ EXTERN_MSC int GMT_pssegyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pssegy (void *API, int mode, void *args);
 EXTERN_MSC int GMT_segy2grd (void *API, int mode, void *args);
 EXTERN_MSC int GMT_backtracker (void *API, int mode, void *args);
+EXTERN_MSC int GMT_gmtpmodeler (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdpmodeler (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdrotater (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdspotter (void *API, int mode, void *args);

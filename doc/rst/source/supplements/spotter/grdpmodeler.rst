@@ -187,6 +187,7 @@ See Also
 --------
 
 :doc:`backtracker`,
+:doc:`gmtpmodeler`,
 :doc:`grdrotater`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,
