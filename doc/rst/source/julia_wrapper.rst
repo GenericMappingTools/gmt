@@ -170,24 +170,71 @@ just call them with
 
 .. code-block:: c
 
-  ProjectionRefPROJ4     # Projection string in PROJ4 syntax (Optional)
-  ProjectionRefWKT       # Projection string in WKT syntax (Optional)
-  range                  # 1x6 vector with [x_min x_max y_min y_max z_min z_max]
-  inc                    # 1x2 vector with [x_inc y_inc]
-  n_rows                 # Number of rows in grid
-  n_columns              # Number of columns in grid
-  n_bands                # Not-yet used (always == 1)
-  registration           # Registration type: 0 -> Grid registration; 1 -> Pixel registration
-  NoDataValue            # The value of nodata
-  title                  # Title (Optional)
-  remark                 # Remark (Optional)
-  command                # Command used to create the grid (Optional) 
-  DataType               # 'float' or 'double'
-  x                      # [1 x n_columns] vector with XX coordinates
-  y                      # [1 x n_rows]    vector with YY coordinates
-  z                      # [n_rows x n_columns] grid array
-  x_units                # Units of XX axis (Optional)
-  y_units                # Units of YY axis (Optional)
-  z_units                # Units of ZZ axis (Optional)
+    type GMTJL_GRID   # The type holding a local header and data of a GMT grid
+        ProjectionRefPROJ4::ASCIIString    # Projection string in PROJ4 syntax (Optional)
+        ProjectionRefWKT::ASCIIString      # Projection string in WKT syntax (Optional)
+        range::Array{Float64,1}            # 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+        inc::Array{Float64,1}              # 1x2 vector with [x_inc y_inc]
+        n_rows::Int                        # Number of rows in grid
+        n_columns::Int                     # Number of columns in grid
+        n_bands::Int                       # Not-yet used (always == 1)
+        registration::Int                  # Registration type: 0 -> Grid registration; 1 -> Pixel registration
+        NoDataValue::Float64               # The value of nodata
+        title::ASCIIString                 # Title (Optional)
+        remark::ASCIIString                # Remark (Optional)
+        command::ASCIIString               # Command used to create the grid (Optional)
+        DataType::ASCIIString              # 'float' or 'double'
+        x::Array{Float64,1}                # [1 x n_columns] vector with XX coordinates
+        y::Array{Float64,1}                # [1 x n_rows]    vector with YY coordinates
+        z::Array{Float32,2}                # [n_rows x n_columns] grid array
+        x_units::ASCIIString               # Units of XX axis (Optional)
+        y_units::ASCIIString               # Units of YY axis (Optional)
+        z_units::ASCIIString               # Units of ZZ axis (Optional)
+    end
 
 Definition of the *grid type* that holds a grid and its metadata.
+
+
+.. _img-type:
+
+.. code-block:: c
+
+    type GMTJL_IMAGE     # The type holding a local header and data of a GMT image
+        ProjectionRefPROJ4::ASCIIString    # Projection string in PROJ4 syntax (Optional)
+        ProjectionRefWKT::ASCIIString      # Projection string in WKT syntax (Optional)
+        range::Array{Float64,1}            # 1x6 vector with [x_min x_max y_min y_max z_min z_max]
+        inc::Array{Float64,1}              # 1x2 vector with [x_inc y_inc]
+        n_rows::Int                        # Number of rows in image
+        n_columns::Int                     # Number of columns in image
+        n_bands::Int                       # Number of bands in image
+        registration::Int                  # Registration type: 0 -> Grid registration; 1 -> Pixel registration
+        NoDataValue::Float64               # The value of nodata
+        title::ASCIIString                 # Title (Optional)
+        remark::ASCIIString                # Remark (Optional)
+        command::ASCIIString               # Command used to create the image (Optional)
+        DataType::ASCIIString              # 'uint8' or 'int8' (needs checking)
+        x::Array{Float64,1}                # [1 x n_columns] vector with XX coordinates
+        y::Array{Float64,1}                # [1 x n_rows]    vector with YY coordinates
+        image::Array{UInt8,3}              # [n_rows x n_columns x n_bands] image array
+        x_units::ASCIIString               # Units of XX axis (Optional)
+        y_units::ASCIIString               # Units of YY axis (Optional)
+        z_units::ASCIIString               # Units of ZZ axis (Optional) ==> MAKES NO SENSE
+        colormap::Array{Clong,1}           # 
+        nColors::Int                       # Number of colors in colormap
+        alpha::Array{UInt8,2}              # A [n_rows x n_columns] alpha array
+    end
+
+Definition of the *image type* that holds an image and its metadata.
+
+.. _cpt-type:
+
+.. code-block:: c
+
+    type GMTJL_CPT
+        colormap::Array{Float64,2}
+        alpha::Array{Float64,1}
+        range::Array{Float64,2}
+        rangeMinMax::Array{Float64,1}
+    end
+
+Definition of the *cpt type* that holds a CPT paltette.
