@@ -1470,7 +1470,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 
 	/* Check if we need to append suffix */
 
-	add_suffix = strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix));	/* Need to add suffix? */
+	add_suffix = (strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix)) == 0);	/* Need to add suffix? */
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it, possibly after appending suffix */
 		if (add_suffix)
