@@ -6740,8 +6740,8 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL *API, struct 
 
 	GMT_table_detrend (C, D, F->trend_mode, K->coeff);	/* Detrend data, if requested */
 	gmt_table_taper (C, G, F);				/* Taper data, if requested */
-#endif
 	K->dim = 1;	/* 1-D FFT */
+#endif
 	return (K);
 }
 
