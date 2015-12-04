@@ -6,7 +6,7 @@ grdpmodeler
 
 .. only:: not man
 
-    grdpmodeler - Evaluate a plate model on a geographic grid
+    grdpmodeler - Evaluate a plate motion model on a geographic grid
 
 Synopsis
 --------
@@ -187,6 +187,7 @@ See Also
 --------
 
 :doc:`backtracker`,
+:doc:`gmtpmodeler`,
 :doc:`grdrotater`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,

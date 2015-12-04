@@ -2326,8 +2326,19 @@ void GMT_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols)
 	if (GMT->current.setting.io_blankline[GMT_OUT])	/* Write blank line to indicate segment break */
 		fprintf (fp, "\n");
 	else if (GMT->current.setting.io_nanline[GMT_OUT]) {	/* Write NaN record to indicate segment break */
-		for (col = 1 ; col < MIN (2,n_cols); col++) fprintf (fp, "NaN%s", GMT->current.setting.io_col_separator);
-		fprintf (fp, "NaN\n");
+		if (GMT->common.d.active[GMT_OUT]) {	/* Ah, but NaNs are to be replaced */
+			GMT_ascii_output_col (GMT, fp, GMT->common.d.nan_proxy[GMT_OUT], GMT_Z);
+			for (col = 1 ; col < MAX (2,n_cols); col++) {
+				fprintf (fp, "%s", GMT->current.setting.io_col_separator);
+				GMT_ascii_output_col (GMT, fp, GMT->common.d.nan_proxy[GMT_OUT], GMT_Z);
+			}
+			fprintf (fp, "\n");
+		}
+		else {
+			for (col = 1 ; col < MAX (2,n_cols); col++)
+				fprintf (fp, "NaN%s", GMT->current.setting.io_col_separator);
+			fprintf (fp, "NaN\n");
+		}
 	}
 	else if (!GMT->current.io.segment_header[0])		/* No header; perhaps via binary input with NaN-headers */
 		fprintf (fp, "%c\n", GMT->current.setting.io_seg_marker[GMT_OUT]);

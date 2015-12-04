@@ -216,6 +216,17 @@ an issue in the bug tracker
 (see `<http://gmt.soest.hawaii.edu/projects/gmt/issues/>`_).
 
 
+New Features in GMT 5.3
+=======================
+
+New modules
+-----------
+
+One new module has been added to the *spotter* supplement:
+
+:doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`:
+	Evaluate plate tectonic model predictions at given locations.
+
 New Features in GMT 5.2
 =======================
 
@@ -225,7 +236,7 @@ of new programs, new options, and enhancements) have been implemented.
 Here is a summary of these changes in six key areas:
 
 New modules
-------------
+-----------
 
 There are two new modules in the core system:
 

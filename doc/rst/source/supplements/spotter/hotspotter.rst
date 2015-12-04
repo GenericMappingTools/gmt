@@ -165,6 +165,9 @@ See Also
 :doc:`project </project>`,
 :doc:`mapproject </mapproject>`,
 :doc:`backtracker`,
+:doc:`gmtpmodeler`,
+:doc:`grdpmodeler`,
+:doc:`grdrotater`,
 :doc:`originator`
 
 References

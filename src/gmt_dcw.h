@@ -52,6 +52,7 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	bool region;		/* Determine region from polygons instead of -R */
 	bool adjust;		/* Round/adjust the region from polygons using the incs */
 	bool extend;		/* Extend region rather than quantize it */
+	bool report;		/* Report region as -Rw/e/s/n rather than dumping/plotting data */
 	double inc[4];		/* Increments for rounded region */
 	unsigned int mode;	/* 1 get countries, 2 get countries and states */
 	unsigned int n_items;	/* Number of items (times) -F was given */
@@ -61,7 +62,7 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 EXTERN_MSC unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
 EXTERN_MSC unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
 EXTERN_MSC void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);
-EXTERN_MSC struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode, struct GMT_OPTION *options);
+EXTERN_MSC struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
 EXTERN_MSC void GMT_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
 
 #endif /* _GMT_DCW_H */

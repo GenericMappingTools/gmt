@@ -6,7 +6,7 @@ talwani3d
 
 .. only:: not man
 
-    talwani3d - Compute free-air, geoid or vertical gravity gradients anomalies over 3-D bodies
+    talwani3d - Compute geopotential anomalies over 3-D bodies by the method of Talwani
 
 Synopsis
 --------

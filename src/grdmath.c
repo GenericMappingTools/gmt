@@ -2626,8 +2626,8 @@ void grd_MEAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum_a;
 }
 
-void grd_MED (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: MED 1 1 Median value of A.  */
+void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: MEDIAN 1 1 Median value of A.  */
 {
 	uint64_t node, n;
 	unsigned int pad[4];
@@ -4088,14 +4088,15 @@ void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!GMT_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
-	if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); free (*arg); *arg = t = strdup ("PCDF");   }
-	if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("FCDF");   }
-	if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("TCDF");   }
-	if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("ZCDF");   }
-	if (!strcmp (*arg, "CHIDIST")) {strcpy (old, *arg); free (*arg); *arg = t = strdup ("CHI2CDF"); }
-	if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); free (*arg); *arg = t = strdup ("CHI2CRIT"); }
-	if (!strcmp (*arg, "Xn"))      {strcpy (old, *arg); free (*arg); *arg = t = strdup ("XNORM");  }
-	if (!strcmp (*arg, "Yn"))      {strcpy (old, *arg); free (*arg); *arg = t = strdup ("YNORM");  }
+	if (!strcmp (*arg, "CHIDIST"))      {strcpy (old, *arg); free (*arg); *arg = t = strdup ("CHI2CDF");  }
+	else if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); free (*arg); *arg = t = strdup ("CHI2CRIT"); }
+	else if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); free (*arg); *arg = t = strdup ("PCDF");     }
+	else if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("FCDF");     }
+	else if (!strcmp (*arg, "MED"))     {strcpy (old, *arg); free (*arg); *arg = t = strdup ("MEDIAN");   }
+	else if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("TCDF");     }
+	else if (!strcmp (*arg, "Xn"))      {strcpy (old, *arg); free (*arg); *arg = t = strdup ("XNORM");    }
+	else if (!strcmp (*arg, "Yn"))      {strcpy (old, *arg); free (*arg); *arg = t = strdup ("YNORM");    }
+	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); free (*arg); *arg = t = strdup ("ZCDF");     }
 	
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);

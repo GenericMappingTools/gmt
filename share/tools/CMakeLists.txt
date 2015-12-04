@@ -26,6 +26,7 @@ install (PROGRAMS
 	gmt_aliases.csh
 	gmt_links.sh
 	gmt_prepmex.sh
+	gmt_make_custom_code.sh
 	gmt_uninstall.sh
 	ncdeflate
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax

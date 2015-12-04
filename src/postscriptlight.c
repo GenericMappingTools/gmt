@@ -259,6 +259,7 @@ typedef struct {
 /* Define support functions called inside the public PSL functions */
 
 void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t size);
+void psl_prepare_buffer (struct PSL_CTRL *C, size_t len);
 char *psl_prepare_text (struct PSL_CTRL *PSL, char *text);
 void psl_def_font_encoding (struct PSL_CTRL *PSL);
 void psl_get_uppercase (char *new_c, char *old_c);
@@ -306,6 +307,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 int psl_putfont (struct PSL_CTRL *PSL, double fontsize);
 void psl_getorigin (double xt, double yt, double xr, double yr, double r, double *xo, double *yo, double *b1, double *b2);
 const char *psl_putusername ();
+int psl_freeplot (struct PSL_CTRL *PSL);
 
 /* These are used when the PDF pdfmark extension for transparency is used. */
 
@@ -402,6 +404,7 @@ int PSL_endsession (struct PSL_CTRL *PSL)
 	int i;
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
+	psl_freeplot (PSL);
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
@@ -947,7 +950,13 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	PSL_command (PSL, "%g %g T\n", -h->llx, -h->lly);
 	PSL_command (PSL, "N %g %g M %g %g L %g %g L %g %g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
 	PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
-	fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
+	if (PSL->internal.memory) {
+		psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hlpd the EPS */
+		strncat (&(PSL->internal.buffer[PSL->internal.n]), (char *)buffer, h->length);
+		PSL->internal.n += h->length;
+	}
+	else
+		fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
 	PSL_command (PSL, "%%%%EndDocument\n");
 	PSL_command (PSL, "PSL_eps_end\n");
 	return (PSL_NO_ERROR);
@@ -1188,15 +1197,44 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage)
 	else if (PSL->internal.origin[0] == 'a' || PSL->internal.origin[1] == 'a')	/* Restore the origin of the plotting */
 		PSL_command (PSL, "%d %d TM\n", PSL->internal.origin[0] == 'a' ? -psl_iz(PSL, PSL->internal.offset[0]) : 0,
 			PSL->internal.origin[1] == 'a' ? -psl_iz(PSL, PSL->internal.offset[1]) : 0);
-	if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
+
+	if (PSL->internal.memory) {	/* Finalize memory buffer allocation */
+		PSL->internal.n_alloc = PSL->internal.n;
+		PSL->internal.buffer  = PSL_memory (PSL, PSL->internal.buffer, PSL->internal.n_alloc, char);
+		if (lastpage) PSL->internal.pmode |= 2;	/* We provided a trailer */
+	}
+	else {	/* Dealing with files or stdout */
+		if (PSL->internal.fp != stdout && PSL->internal.call_level == 1) fclose (PSL->internal.fp);	/* Only level 1 can close the file (if not stdout) */
+	}
 	memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	PSL->internal.call_level--;	/* Done with this module call */
 	return (PSL_NO_ERROR);
 }
 
+char * PSL_getplot (struct PSL_CTRL *PSL)
+{	/* Simply pass the plot back to caller  */
+	if (!PSL->internal.memory) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "Cannot get a plot since memory output was not activated!\n");
+		return (NULL);
+	}
+	if (!PSL->internal.buffer) {
+		PSL_message (PSL, PSL_MSG_NORMAL, "No plot in memory available!\n");
+		return (NULL);
+	}
+	return (PSL->internal.buffer);
+}
+
+int psl_freeplot (struct PSL_CTRL *PSL)
+{	/* Simply eliminate any buffer for memory-writing PS */
+	if (PSL->internal.buffer) PSL_free (PSL->internal.buffer);	/* Remove any previous plot buffer */
+	PSL->internal.n_alloc = PSL->internal.n = 0;
+	PSL->internal.pmode = 0;
+	return (PSL_NO_ERROR);
+}
+
 int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[])
 /* fp:		Output stream or NULL for standard output
-   orientation:	0 = landscape, 1 = portrait
+   orientation:	0 = landscape, 1 = portrait.  If orientation &2 then we write to memory array [Default is to fp]
    overlay:	true if this is an overlay plot [false means print headers and macros first]
    color_mode:	0 = RGB color, 1 = CMYK color, 2 = HSV color, 3 = Gray scale
    origin:	Two characters indicating origin of new position for x and y respectively:
@@ -1218,6 +1256,9 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	if (!PSL) return (PSL_NO_SESSION);	/* Never was allocated */
 
+	PSL->internal.memory = (orientation & PSL_MEMORY);	/* true if we wish to write PS to memory instead of to file */
+	if (PSL->internal.memory) orientation -= PSL_MEMORY;
+	
 	/* Save original initialization settings */
 
 	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
@@ -1262,8 +1303,17 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	/* In case this is the last overlay, set the Bounding box coordinates to be used atend */
 
-	if (!overlay) {	/* Must issue PSL header */
+	if (!overlay) {	/* Must issue PSL header - this is the start of a new plot */
 		char PSL_encoding[64] = {""};
+		
+		if (PSL->internal.memory) {	/* Will be writing to memory so need to set that up */
+			psl_freeplot (PSL);	/* Free any previous plot laying around */
+			PSL->internal.buffer  = PSL_memory (PSL, NULL, PSL_MEM_ALLOC, char);
+			PSL->internal.n_alloc = PSL_MEM_ALLOC;
+			PSL->internal.n	      = 0;
+			PSL->internal.pmode   = 1;	/*	Header of plot will be written below */
+		}
+			
 		PSL_command (PSL, "%%!PS-Adobe-3.0\n");
 
 		/* Write definitions of macros to plotfile */
@@ -4226,7 +4276,13 @@ size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf, size_
 		/* Write buffer to file and clean up */
 		const size_t buf_size = dst_ptr - dst_buf;
 		assert (buf_size <= dst_buf_size); /* check length */
-		fwrite (dst_buf, sizeof(char), buf_size, PSL->internal.fp);
+		if (PSL->internal.memory) {
+			psl_prepare_buffer (PSL, buf_size); /* Make sure we have enough memory to hlpd the EPS */
+			strncat (&(PSL->internal.buffer[PSL->internal.n]), (const char *)dst_buf, buf_size);
+			PSL->internal.n += buf_size;
+		}
+		else
+			fwrite (dst_buf, sizeof(char), buf_size, PSL->internal.fp);
 		PSL_free (dst_buf);
 		return buf_size;
 	}
@@ -5289,13 +5345,32 @@ const char *psl_putusername ()
 	return (unknown);
 }
 
+void psl_prepare_buffer (struct PSL_CTRL *C, size_t len)
+{	/* Ensure buffer is large enough to accept additional text of length len */
+	size_t new_len = C->internal.n + len;
+	if (new_len <= C->internal.n_alloc) return;
+	while (new_len > C->internal.n_alloc)	/* Wind past what is needed */
+		C->internal.n_alloc <<= 1;
+	if ((C->internal.buffer = PSL_memory (C, C->internal.buffer, C->internal.n_alloc, char)) == NULL) {
+		PSL_message (C, PSL_MSG_NORMAL, "Could not allocate %d additional buffer space - this will not end well\n", len);
+	}
+}
+
 /* Due to the DLL boundary cross problem on Windows we are forced to have the following, otherwise
    defined as macros, implemented as functions. However, macros proved to be problematic too
    on Unixes, so now we have functions only. */
 int PSL_command (struct PSL_CTRL *C, const char *format, ...) {
 	va_list args;
 	va_start (args, format);
-	vfprintf (C->internal.fp, format, args);
+	if (C->internal.memory) {	/* Send command to memory buffer */
+		char tmp_buffer[PSL_BUFSIZ] = {""};
+		size_t len = vsnprintf (tmp_buffer, PSL_BUFSIZ, format, args);
+		psl_prepare_buffer (C, len);
+		strncat (&(C->internal.buffer[C->internal.n]), tmp_buffer, len);
+		C->internal.n += len;
+	}
+	else	/* Write command to stream */
+		vfprintf (C->internal.fp, format, args);
 	va_end (args);
 	return (0);
 }
@@ -5303,10 +5378,23 @@ int PSL_command (struct PSL_CTRL *C, const char *format, ...) {
 int PSL_comment (struct PSL_CTRL *C, const char *format, ...) {
 	va_list args;
 	if (!C->internal.comments) return (0);
-	fprintf (C->internal.fp, "%%\n%% ");
 	va_start (args, format);
-	vfprintf (C->internal.fp, format, args);
-	fprintf (C->internal.fp, "%%\n");
+	if (C->internal.memory) {	/* Send comments to memory buffer */
+		char tmp_buffer[PSL_BUFSIZ] = {""};
+		size_t len = vsnprintf (tmp_buffer, PSL_BUFSIZ, format, args);
+		psl_prepare_buffer (C, len + 6); /* The string plus the leading 4 and trailing 2 chars */
+		strncat (&(C->internal.buffer[C->internal.n]), "%\n% ", 4U);
+		C->internal.n += 4;
+		strncat (&(C->internal.buffer[C->internal.n]), tmp_buffer, len);
+		C->internal.n += len;
+		strncat (&(C->internal.buffer[C->internal.n]), "%\n", 2U);
+		C->internal.n += 2;
+	}
+	else {	/* Write comments to stream */
+		fprintf (C->internal.fp, "%%\n%% ");
+		vfprintf (C->internal.fp, format, args);
+		fprintf (C->internal.fp, "%%\n");
+	}
 	va_end (args);
 	return (0);
 }

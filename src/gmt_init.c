@@ -915,7 +915,7 @@ void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
 	GMT_message (GMT, "\t   Alternatively, specify number of nodes by appending +. Then, the increments\n");
 	GMT_message (GMT, "\t   are calculated from the given domain and node-registration settings\n");
 	GMT_message (GMT, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then\n");
-	GMT_message (GMT, "\t   both -R and -I have been set; use -I to override those values.\n");
+	GMT_message (GMT, "\t   both -R and -%c have been set; use -%c to override those values.\n", option, option);
 }
 
 /*! .

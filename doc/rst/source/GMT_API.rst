@@ -159,9 +159,9 @@ GMT function they are associated with. However, some programs such as
 Recognized resources
 --------------------
 
-The GMT API knows how to read and write five types of data common to
+The GMT API knows how to read and write six types of data common to
 GMT operations: CPT palette tables, data tables (ASCII or binary),
-text tables, GMT grids and images (reading only). In addition, we
+text tables, GMT grids, PostScript text, and images (reading only). In addition, we
 present two data types to facilitate the passing of simple user arrays
 (one or more equal-length data columns of any data type, e.g., double,
 char) and 2-D or 3-D user matrices (of any data type and column/row
@@ -172,7 +172,7 @@ container. These containers are given or returned by the GMT API
 functions using opaque pointers (``void *``). Below we discuss these
 containers in some detail; we will later present how they are used when
 importing or exporting them to or from files, memory locations, or
-streams. The first five are the standard GMT objects, while the latter
+streams. The first six are the standard GMT objects, while the latter
 two are the special user data containers to facilitate passing user
 data into and out of GMT modules. These resources are defined in the include
 file ``gmt_resources.h``; please consult this file to ensure correctness
@@ -559,6 +559,30 @@ pass as arguments to GMT modules.
        double                z_unit_to_meter[2]; /* Scale, given z_unit, to convert z from <unit> to meters */
    };
 
+PostScript text
+~~~~~~~~~~~~~~~
+
+Normally, GMT modules producing PostScript will write to standard output
+or a designated file.  Alternatively, you can tell PSL to write to a
+memory buffer instead and then receive a structure with the final
+plot (or partial plot) containing a long text string.
+
+.. _struct-postscript:
+
+.. code-block:: c
+
+   struct GMT_PS {	/* Single container for a chunk of PostScript text */
+       /* Variables we document for the API: */
+       size_t n_alloc;                  /* Length of array allocated so far */
+       size_t n;                        /* Length of data array so far */
+       unsigned int mode;               /* Bit-flag for header (1) and trailer (2) */
+       char *data;                      /* Pointer to actual PS text */
+       /* ---- Variables "hidden" from the API ---- */
+       uint64_t id;                     /* The internal number of the data set */
+       unsigned int alloc_level;        /* The level it was allocated at */
+       enum GMT_enum_alloc alloc_mode;  /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+   };
+
 User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -713,7 +737,7 @@ simply command-line files then things simplify considerably.
       functions encounter such filenames they extract the ID and make a
       connection to the corresponding resource. Multiple table data or text
       sources are combined into a single virtual source for GMT modules to
-      operate on. In contrast, CPT, Grid, and Image resources are
+      operate on. In contrast, CPT, Grid, Image, and PostScript resources are
       operated on individually.
 
    c. Enable data import once all registrations are complete
@@ -1008,6 +1032,8 @@ it returns 0.
 +------------------+--------------------------------+
 | GMT_IS_IMAGE     | A GMT image                    |
 +------------------+--------------------------------+
+| GMT_IS_PS        | A GMT PostScript object        |
++------------------+--------------------------------+
 
 
 .. _tbl-methods:
@@ -1233,6 +1259,10 @@ and pass the ``par`` array as indicated below:
     An empty :ref:`GMT_PALETTE <struct-palette>` structure with ``par[0]`` palette entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
+  **GMT_IS_PS**
+    An empty :ref:`GMT_PS <struct-postscript>` structure with ``par[0]`` text buffer length allocated.
+    The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
+
   **GMT_IS_VECTOR**
     An empty :ref:`GMT_VECTOR <struct-vector>` structure with ``par[0]`` column entries is allocated.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
@@ -1318,8 +1348,8 @@ of an error we return ``GMT_NOTSET`` and pass an error code via
 Import Data
 -----------
 
-If your main program needs to read any of the five recognized data types
-(CPT files, data tables, text tables, GMT grids, or images) you will
+If your main program needs to read any of the six recognized data types
+(CPT files, data tables, text tables, GMT grids, images, or PostScript) you will
 use the GMT_Get_Data_ or GMT_Read_Data_ functions, which both
 return entire data sets. In the case of data and text tables you may
 also select record-by-record reading using the GMT_Get_Record_
@@ -1383,12 +1413,12 @@ error; otherwise it returns 0.
 Import a data set
 ~~~~~~~~~~~~~~~~~
 
-If your program needs to import any of the five recognized data types
-(CPT table, data table, text table, GMT grid, or image) you will use
+If your program needs to import any of the six recognized data types
+(CPT table, data table, text table, GMT grid, image, or PostScript) you will use
 either the GMT_Read_Data_ or GMT_Get_Data_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used with a registered
-resource via its unique ID. Because of the similarities of these five
+resource via its unique ID. Because of the similarities of these six
 import functions we use an generic form that covers all of them.
 
 Import from a file, stream, or handle
@@ -1451,7 +1481,7 @@ different data types.
 **Text table**
     ``mode`` is currently not used.
 
-**GMT grid**
+**GMT grid** or **image**
     Here, ``mode`` determines how we read the grid: To read the entire
     grid and its header, pass ``GMT_GRID_ALL``. However, if you need to
     extract a sub-region you must first read the header by passing
@@ -1470,6 +1500,9 @@ different data types.
     using GMT_Get_Row_ By default the rows will be automatically
     processed in order. To completely specify which row to be read, use
     ``GMT_GRID_ROW_BY_ROW_MANUAL`` instead.
+
+**PostScript**
+    ``mode`` is currently not used.
 
 If you need to read the same resource more than once you should add the
 bitflag GMT_IO_RESET to the given ``mode``.

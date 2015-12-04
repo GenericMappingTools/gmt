@@ -41,6 +41,8 @@
 #define GPLATES_PLATES    "Global_EarthByte_Plate_ID_Table_AREPS"	/* .txt */
 #define GPLATES_ROTATIONS "Global_EarthByte_230-0Ma_GK07_AREPS"		/* .rot */
 
+#define SPOTTER_E_OPT "-E[+]<rottable>|[+]<ID1>-<ID2>|<plon>/<plat>/<prot>"
+
 /*! Structure with info on each Euler (stage) pole */
 struct EULER {
 	double lon, lat;		/* Location of Euler pole in degrees */
@@ -80,8 +82,17 @@ struct HOTSPOT {
         double x, y, z;			/* Cartesian Current location of hot spot */
 };
 
+struct SPOTTER_ROT {	/* Holds -E information */
+	bool single;		/* True if given a single finite rotation */
+	bool invert;		/* True if we should invert the rotation(s) */
+	char *file;		/* File with rotations, or <ID1>-<ID2> GPlates specification */
+	double lon, lat, w, age;	/* Single finite rotation, if given */
+};
+
 /* ANSI-C Function prototypes (see libspotter.c for details): */
 
+EXTERN_MSC void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e);
+EXTERN_MSC unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R);
 EXTERN_MSC int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned int ns);
 EXTERN_MSC void spotter_rot_usage (struct GMTAPI_CTRL *API, char option);
 EXTERN_MSC bool spotter_GPlates_pair (char *file);

@@ -4391,7 +4391,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	 * and places a time stamp, if selected */
 
 	int k, id, fno[PSL_MAX_EPS_FONTS], n_fonts, last;
-	unsigned int this_proj;
+	unsigned int this_proj, write_to_mem = 0;
 	char title[GMT_BUFSIZ];
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
@@ -4403,13 +4403,19 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
 	if (GMT_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
+	GMT->current.ps.memory = false;
 
 	if ((Out = GMT_Find_Option(GMT->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (GMT->common.O.active && k == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
-		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
+		if (GMT_File_Is_Memory (&(Out->arg[k]))) {
+			write_to_mem = 2;
+			GMT->current.ps.memory = true;
+			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16);
+		}
+		else if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
 			GMT_exit (GMT, EXIT_FAILURE); return NULL;
 		}
@@ -4454,7 +4460,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 
 	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, GMT->init.module_name);
 
-	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation, GMT->common.O.active, GMT->current.setting.ps_color_mode,
+	PSL_beginplot (PSL, fp, GMT->current.setting.ps_orientation|write_to_mem, GMT->common.O.active, GMT->current.setting.ps_color_mode,
 	               GMT->current.ps.origin, GMT->current.setting.map_origin, GMT->current.setting.ps_page_size, title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
@@ -4553,6 +4559,18 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	}
 	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
+	
+	if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
+		struct GMT_PS *P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
+		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
+		P->n = PSL->internal.n;         /* Length of plot buffer */
+		P->mode = PSL->internal.pmode;  /* Mode of plot (1,2,3) */
+		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
+		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
+			return;
+		}
+	}
 }
 
 void GMT_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n)
@@ -6005,4 +6023,211 @@ void GMT_plane_perspective (struct GMT_CTRL *GMT, int plane, double level)
 
 	/* Store value of plane */
 	GMT->current.proj.z_project.plane = plane;
+}
+
+/* All functions involved in reading, writing, duplicating PS structs and contents */
+
+/*! . */
+struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT) {
+	/* Makes an empty PS struct - no buffer is allocated by since done in PSL */
+	struct GMT_PS *P = NULL;
+	P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
+	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
+	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
+
+	return (P);
+}
+
+/*! . */
+void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P)
+{	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
+	if (P->n_alloc && P->data) {
+		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
+			GMT_free (GMT, P->data);
+		/* We never need to free the array allocated in PSL since PSL always destroys it */
+		P->data = NULL;
+	}
+	P->n_alloc = P->n = 0;
+	P->mode = 0;
+}
+
+/*! . */
+void GMT_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P)
+{	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
+	GMT_free_ps_ptr (GMT, *P);
+	GMT_free (GMT, *P);
+	*P = NULL;
+}
+
+struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode) {
+	/* Opens and reads a PS file.
+	 * Return the result as a GMT_PS struct.
+	 * source_type can be GMT_IS_[FILE|STREAM|FDESC]
+	 * mode is not yet used.
+	 */
+
+	char ps_file[GMT_BUFSIZ] = {""};
+	int c;
+	bool close_file = false;
+	size_t n_alloc = 0;
+	struct GMT_PS *P = NULL;
+	FILE *fp = NULL;
+	GMT_UNUSED(mode);
+	
+	/* Determine input source */
+
+	if (source_type == GMT_IS_FILE) {	/* source is a file name */
+		struct stat buf;
+		char path[GMT_BUFSIZ] = {""};
+		strncpy (ps_file, source, GMT_BUFSIZ);
+		if (!GMT_getdatapath (GMT, ps_file, path, R_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PS file %s\n", ps_file);
+			return (NULL);
+		}
+		if (stat (path, &buf)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PS file %s\n", ps_file);
+			return (NULL);
+		}
+		if ((fp = fopen (ps_file, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open PS file %s\n", ps_file);
+			return (NULL);
+		}
+		n_alloc = buf.st_size;	/* We know what to allocated here */
+		close_file = true;	/* We only close files we have opened here */
+	}
+	else if (source_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
+		fp = (FILE *)source;
+		if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* Default input */
+		if (fp == GMT->session.std[GMT_IN])
+			strcpy (ps_file, "<stdin>");
+		else
+			strcpy (ps_file, "<input stream>");
+	}
+	else if (source_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
+		struct stat buf;
+		int *fd = source;
+		if (fstat (*fd, &buf)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PS file give n file descriptor %d\n", *fd);
+			return (NULL);
+		}
+		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in GMT_read_ps\n", *fd);
+			return (NULL);
+		}
+		if (fd == NULL)
+			fp = GMT->session.std[GMT_IN];	/* Default input */
+		else
+			n_alloc = buf.st_size;		/* We know what to allocated here */
+		if (fp == GMT->session.std[GMT_IN])
+			strcpy (ps_file, "<stdin>");
+		else
+			strcpy (ps_file, "<input file descriptor>");
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in GMT_read_cpt\n", source_type);
+		return (NULL);
+	}
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading PS from %s\n", ps_file);
+
+	P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
+
+	if (n_alloc) P->data = GMT_memory (GMT, NULL, n_alloc, char);
+	
+	while ((c = fgetc (fp)) != EOF ) {
+		if (P->n >= n_alloc) {
+			n_alloc = (n_alloc == 0) ? GMT_INITIAL_MEM_ROW_ALLOC : n_alloc << 1;	/* Start at 2 Mb, then double */
+			P->data = GMT_memory (GMT, P->data, n_alloc, char);
+		}
+		P->data[P->n++] = c;
+	}
+	if (P->n > n_alloc)
+		P->data = GMT_memory (GMT, P->data, P->n, char);
+	P->n_alloc = P->n;
+	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
+
+	if (close_file) fclose (fp);
+	return (P);
+}
+
+int GMT_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_PS *P)
+{
+	/* We write the PS file to fp [or stdout].
+	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
+	 * mode is not used yet.
+	 */
+	
+	bool close_file = false, append = false;
+	char ps_file[GMT_BUFSIZ] = {""};
+	static char *msg1[2] = {"Writing", "Appending"};
+	FILE *fp = NULL;
+	GMT_UNUSED(mode);
+
+	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
+	
+	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
+		static char *msg2[2] = {"create", "append to"};
+		strncpy (ps_file, dest, GMT_BUFSIZ);
+		append = (ps_file[0] == '>');	/* Want to append to existing file */
+		if ((fp = fopen (&ps_file[append], (append) ? "a" : "w")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s file %s\n", msg2[append], &ps_file[append]);
+			return (EXIT_FAILURE);
+		}
+		close_file = true;	/* We only close files we have opened here */
+	}
+	else if (dest_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
+		fp = (FILE *)dest;
+		if (fp == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
+		if (fp == GMT->session.std[GMT_OUT])
+			strcpy (ps_file, "<stdout>");
+		else
+			strcpy (ps_file, "<output stream>");
+	}
+	else if (dest_type == GMT_IS_FDESC) {		/* Open file descriptor given, just convert to file pointer */
+		int *fd = dest;
+		if (fd && (fp = fdopen (*fd, "a")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in GMT_write_ps\n", *fd);
+			return (EXIT_FAILURE);
+		}
+		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
+		if (fp == GMT->session.std[GMT_OUT])
+			strcpy (ps_file, "<stdout>");
+		else
+			strcpy (ps_file, "<output file descriptor>");
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in GMT_write_ps\n", dest_type);
+		return (EXIT_FAILURE);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s PS to %s\n", msg1[append], &ps_file[append]);
+	
+	/* Start writing PS to fp */
+
+	if (fwrite (P->data, 1U, P->n, fp) != P->n) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s PS to %s\n", msg1[append], &ps_file[append]);
+		if (close_file) fclose (fp);
+		return (EXIT_FAILURE);
+	}
+	if (close_file) fclose (fp);
+	return (EXIT_SUCCESS);
+}
+
+/*! . */
+struct GMT_PS * GMT_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode)
+{	/* Mode not used yet */
+	struct GMT_PS *P = GMT_create_ps (GMT);
+	GMT_UNUSED(mode);
+	GMT_copy_ps (GMT, P, P_from);
+	return (P);
+}
+
+void GMT_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj)
+{
+	/* Just duplicate from P_obj into P_copy */
+	P_copy->data = GMT_memory (GMT, NULL, P_obj->n, char);
+	GMT_memcpy (P_copy->data, P_obj->data, P_obj->n, char);
+	P_copy->n_alloc = P_copy->n = P_obj->n;
+	P_copy->mode =P_obj->mode;
+	P_copy->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 }

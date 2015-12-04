@@ -28,8 +28,8 @@
  */
 /*
  * Author: 	Paul Wessel
- * Date:	10-JUN-2013
- * Version:	5.2 API
+ * Date:	11-NOV-2015
+ * Version:	5.3 API
  */
 
 #ifndef _GMT_H

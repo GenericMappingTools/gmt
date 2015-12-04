@@ -207,7 +207,7 @@ bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_co
 	return (false);
 }
 
-struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode, struct GMT_OPTION *options)
+struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode)
 {	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits
 	 * mode = GMT_DCW_PLOT		: Plot the polygons
@@ -312,18 +312,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
 		GMT_set_geographic (GMT, GMT_OUT);
 	}
-	if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
-		if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
-			return NULL;
-		}
-		if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-			return NULL;
-		}
-		if (GMT_set_cols (GMT, GMT_OUT, 2) != GMT_OK) {
-			return NULL;
-		}
-	}
-	
 	pos = 0;
 	while (GMT_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
@@ -469,11 +457,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	GMT_free (GMT, GMT_DCW_country);
 	GMT_free (GMT, GMT_DCW_state);
 
-	if (mode & GMT_DCW_DUMP) {	/* Dumped the coordinates to stdout */
-		if (GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
-			return NULL;
-		}
-	}
 	if (mode & GMT_DCW_REGION) {
 		if (F->adjust) {
 			if (F->extend) {	/* Extend the region by increments */
@@ -541,17 +524,18 @@ unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode)
 
 void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 {	/* Show the usage */
-	char *action[2] = {"extract", "plott"};
+	char *action[2] = {"extract", "plot"};
+	char *action2[2] = {"extracting", "plotting"};
 	if (plot == 1)
 		GMT_Message (API, GMT_TIME_NONE, "\t-%c Apply different fill or outline to specified list of countries.\n", option);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t-%c Extract clipping polygons from specified list of countries.\n", option);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Based on closed polygons from the Digital Chart of the World (DCW).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append comma-separated list of ISO 3166 codes for countries to plot, i.e.,\n", action[plot]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append comma-separated list of ISO 3166 codes for countries to %s, i.e.,\n", action[plot]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <code1>,<code2>,... etc., using the 2-character country codes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %sing takes place].\n", action[plot]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %s takes place].\n", action2[plot]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Australia, Brazil, Canada, and the US.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +r to obtain -Rw/e/s/n from polygon(s). Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     for a region in these multiples [none].  Use +R to extend region by increments instead [0].\n");
@@ -559,7 +543,7 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified to plot; if -M is in effect we just get the data.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -F to give different groups of items separate pen/fill settings.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   If modifier +r or +R is given and no -J or -M is set we just print the -Rstring.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   If modifier +r or +R is given and +w is present then we just print the -Rstring.\n");
 	}
 }
 
@@ -614,6 +598,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					}
 					this_item->mode |= DCW_DO_FILL;
 					break;
+				case 'w':  F->report = true;  break;	/* Report region only */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;

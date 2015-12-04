@@ -6,7 +6,7 @@ gmtspatial
 
 .. only:: not man
 
-    gmtspatial - Do geospatial operations on lines and polygons
+    gmtspatial - Geospatial operations on lines and polygons
 
 Synopsis
 --------

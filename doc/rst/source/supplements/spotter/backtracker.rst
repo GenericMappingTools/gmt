@@ -224,6 +224,8 @@ See Also
 
 :doc:`gmt </gmt>` ,
 :doc:`project </project>` ,
+:doc:`gmtpmodeler`,
+:doc:`grdpmodeler`,
 :doc:`grdrotater`,
 :doc:`grdspotter`,
 :doc:`mapproject </mapproject>`,

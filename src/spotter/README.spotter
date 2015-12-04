@@ -7,14 +7,15 @@ LICENSE.TXT in main GMT directory.
 ------------------------------------------------------
 Author:		Paul Wessel (pwessel@hawaii.edu)
 		SOEST, University of Hawaii
-Date:		October 30, 2015
-Version:	5 (for GMT 5 release).
+Date:		November 30, 2015
+Version:	5.3 (for GMT 5.3 release).
 ------------------------------------------------------
 
 This directory contains:
 
 README.spotter		: This document
 backtracker.c		: backtracker C program code
+gmtpmodeler.c		: gmtpmodeler C program code
 grdpmodeler.c		: grdpmodeler C program code
 grdrotater.c		: grdrotater C program code
 grdspotter.c		: grdspotter C program code

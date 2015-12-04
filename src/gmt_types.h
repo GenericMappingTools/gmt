@@ -239,7 +239,7 @@ struct GMT_CURRENT {
 	struct GMT_PLOT plot;		/* Holds all plotting-related parameters */
 	struct GMT_TIME_CONV time;	/* Holds all time-related parameters */
 	struct GMT_LANGUAGE language;	/* Holds all language-related parameters */
-	struct GMT_PS ps;		/* Hold parameters related to PS setup */
+	struct GMT_PSL ps;		/* Hold parameters related to PSL setup */
 	struct GMT_OPTION *options;	/* Pointer to current program's options */
 	struct GMT_FFT_HIDDEN fft;	/* Structure with info that must survive between FFT calls */
 	struct GMT_GDALREAD_IN_CTRL  gdal_read_in;  /* Hold parameters related to options transmitted to gdalread */ 

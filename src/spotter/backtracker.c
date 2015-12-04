@@ -90,12 +90,9 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 		bool active;
 		unsigned int mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
-	struct E {	/* -E[+]rotfile or -E<lon/lat/angle> */
+	struct E {	/* -E[+]rotfile, -E[+]<ID1>-<ID2>, or -E<lon/lat/angle> */
 		bool active;
-		bool single;
-		bool mode;
-		char *file;
-		double lon, lat, w;
+		struct SPOTTER_ROT rot;
 	} E;
 	struct F {	/* -Fdriftfile */
 		bool active;
@@ -141,7 +138,7 @@ void *New_backtracker_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_backtracker_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free (C->E.file);	
+	if (C->E.rot.file) free (C->E.rot.file);	
 	if (C->F.file) free (C->F.file);	
 	if (C->S.file) free (C->S.file);	
 	GMT_free (GMT, C);	
@@ -151,7 +148,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] -E[+]<rottable>|<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] %s [-A[<young></old>]] [-Df|b]\n", SPOTTER_E_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<driftfile] [-Lf|b<d_km>] [-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -263,24 +260,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 				/* Fall-through on purpose */
 			case 'E':	/* File with stage poles or a single rotation pole */
 				Ctrl->E.active = true;
-				k = (opt->arg[0] == '+') ? 1 : 0;
-				if (!GMT_access (GMT, &opt->arg[k], F_OK) && GMT_check_filearg (GMT, 'E', &opt->arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
-					Ctrl->E.file  = strdup (&opt->arg[k]);
-					if (k == 1) Ctrl->E.mode = true;
-				}
-				else {	/* Apply a fixed total reconstruction rotation to all input points  */
-					unsigned int ns = 0;
-					size_t kk;
-					for (kk = 0; kk < strlen (opt->arg); kk++) if (opt->arg[kk] == '/') ns++;
-					if (ns == 2) {	/* Looks like we got lon/lat/omega */
-						Ctrl->E.single  = true;
-						sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->E.w);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.lon), txt_a);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.lat), txt_b);
-					}
-					else	/* Junk of some sort */
-						n_errors++;
-				}
+				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 
 			case 'F':	/* File with hotspot motion history */
@@ -439,11 +419,11 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the backtracker main code ----------------------------*/
 	
-	if (Ctrl->E.single) {	/* Get rotation matrix R */
-		GMT_make_rot_matrix (GMT, Ctrl->E.lon, Ctrl->E.lat, Ctrl->E.w, R);
+	if (Ctrl->E.rot.single) {	/* Get rotation matrix R */
+		GMT_make_rot_matrix (GMT, Ctrl->E.rot.lon, Ctrl->E.rot.lat, Ctrl->E.rot.w, R);
 	}
 	else {	/* Load in the stage poles */
-		n_stages = spotter_init (GMT, Ctrl->E.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.mode, &Ctrl->N.t_upper);
+		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.rot.invert, &Ctrl->N.t_upper);
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 
 		if (fabs (Ctrl->L.d_km) > GMT_CONV4_LIMIT) {		/* User wants to interpolate tracks rather than project individual points */
@@ -466,7 +446,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 3 + ((Ctrl->A.mode == 2) ? 2 : 0);
 	if (Ctrl->Q.active && !GMT->common.b.ncol[GMT_IN]) n_expected_fields = 2;	/* Lon, lat only; use fixed t */
-	if (Ctrl->E.single && !GMT->common.b.active[GMT_IN]) n_expected_fields = GMT_MAX_COLUMNS;	/* Allow any input for -E single rotation */
+	if (Ctrl->E.rot.single && !GMT->common.b.active[GMT_IN]) n_expected_fields = GMT_MAX_COLUMNS;	/* Allow any input for -E single rotation */
 
 	n_out = (Ctrl->S.active) ? 4 : 3;	/* Append smt id number as 4th column when individual files are requested */
 	if (Ctrl->W.active) n_out = 5 + !(Ctrl->W.mode == 0);
@@ -515,7 +495,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 
 		/* Data record to process */
 	
-		if (Ctrl->E.single) {	/* Simple reconstruction, then exit */
+		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then exit */
 			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
 			GMT_matrix_vect_mult (GMT, 3U, R, x, y);			/* Rotate the x-vector */
@@ -663,7 +643,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 
 	/* Clean up and exit */
 
-	if (!Ctrl->E.single) GMT_free (GMT, p);
+	if (!Ctrl->E.rot.single) GMT_free (GMT, p);
 	
 	Return (GMT_OK);
 }

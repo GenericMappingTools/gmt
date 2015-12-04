@@ -215,6 +215,8 @@ See Also
 --------
 
 :doc:`backtracker`,
+:doc:`gmtpmodeler`,
+:doc:`grdpmodeler`,
 :doc:`grdspotter`,
 :doc:`hotspotter`,
 :doc:`originator`,

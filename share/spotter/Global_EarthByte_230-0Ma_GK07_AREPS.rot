@@ -2775,12 +2775,9 @@
 901 43.8  74.78 -51.61   35.29 804 !PAC-MBL @REF Croon_++_2008 @DOI"10.1029/2008GC002019", @CHRONID"An20o" 
 901 47.9  74.43 -48.54   38.18 804 !PAC-MBL @REF Wright_++_2015, @CHRONID"c21o" 
 901 53.3  73.47 -52.08   40.1  804 !PAC-MBL @REF Wright_++_2015, @CHRONID"c24n3o"
-999 55.9  73.0  -51.4    42.26 804 !PAC-MBL @REF Wright_++_2015 interpolated from @CHRONID"c24n3o" & @CHRONID"c25o"
 901 56.4  72.94 -51.29   42.68 804 !PAC-MBL @REF Wright_++_2015, @CHRONID"c25o" 
-901 57.9  72.32 -54.19   42.53 804 !PAC-MBL @REF Wright_++_2015, @CHRONID"c26o" 
 901 61.3  71.35 -54.16   45.5  804 !PAC-MBL @REF Wright_++_2015, @CHRONID"c27o" 
 901 67.6  68.94 -56.69   49.01 804 !PAC-MBL @REF Wright_++_2015, @CHRONID"c30o" 
-999 67.7  68.9  -56.7    49.07 804 !PAC-MBL @REF Wright_++_in review interpolated from @CHRONID"c30o" & @CHRONID"c33y"
 901 73.6  66.63 -57.36   52.78 804 !PAC-MBL @REF Wright_++_in review, @CHRONID"c33y" 
 901 79.1  64.8  -57.8    56.28 804 !PAC-MBL @REF Wright_++_in review, @CHRONID"c33o" 
 901 83.0  63.6  -58.1    58.8  804 !PAC-MBL @REF Wright_++_in review  interpolated @xo_ys

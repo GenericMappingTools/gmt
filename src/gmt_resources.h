@@ -16,19 +16,19 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_resources.h contains the definitions for the GMT 5 resources
- * GMT_GRID, GMT_DATASET, GMT_TEXTSET, GMT_PALETTE, and GMT_IMAGE,
- * the auxilliary resources GMT_VECTOR and GMT_MATRIX, as well as
- * all named constants.
+ * gmt_resources.h contains the definitions for the GMT resources
+ * GMT_GRID, GMT_DATASET, GMT_TEXTSET, GMT_PALETTE, GMT_IMAGE, and
+ * GMT_PS as well as the auxilliary resources GMT_VECTOR and GMT_MATRIX,
+ * as well as all named constants.
  *
  * Author:	Paul Wessel
- * Date:	20-FEB-2013
+ * Date:	13-NOV-2015
  * Version:	5 API
  */
 
 /*!
  * \file gmt_resources.h
- * \brief Definitions for the GMT 5 resources (GMT_GRID, GMT_DATASET etc...)
+ * \brief Definitions for the GMT resources (GMT_GRID, GMT_DATASET etc...)
  */
 
 #ifndef _GMT_RESOURCES_H
@@ -95,17 +95,18 @@ enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 
-/*! These are the 5 families of data types, + a coordinate array + 3 help containers for vector, matrix, and PS */
+/*! These are the 6 families of data types, + a coordinate array + 3 help containers for vector, matrix, and coordinates */
 enum GMT_enum_family {
-	GMT_IS_DATASET = 0,	/* Entity is data table */
+	GMT_IS_DATASET = 0,	/* Entity is a data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
 	GMT_IS_GRID,		/* Entity is a GMT grid */
-	GMT_IS_CPT,		/* Entity is a CPT table */
+	GMT_IS_CPT,			/* Entity is a CPT table */
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_VECTOR,		/* Entity is set of user vectors */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
 	GMT_IS_COORD,		/* Entity is a double coordinate array */
-	GMT_IS_PS};		/* Entity is a PostScript file [API Developers only] */
+	GMT_IS_PS,			/* Entity is a PostScript content struct */
+	GMT_N_FAMILIES};	/* Total number of families [API Developers only]  */
 
 /*! These are modes for handling comments */
 enum GMT_enum_comment {
@@ -644,6 +645,24 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	unsigned int alloc_level;   /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	const char *ColorInterp;
+};
+
+/*============================================================ */
+/*================= GMT_PS Public Declaration ================ */
+/*============================================================ */
+
+/* The GMT_PS container is used to pass PostScript objects */
+
+struct GMT_PS {	/* Single container for a chunk of PostScript */
+	/* Variables we document for the API: */
+	size_t n_alloc;             /* Length of array allocated so far */
+	size_t n;                   /* Length of data array so far */
+	unsigned int mode;          /* 1 = Has header, 2 = Has trailer, 3 = Has both */
+	char *data;		    /* Pointer to actual PS text */
+/* ---- Variables "hidden" from the API ---- */
+	uint64_t id;                /* The internal number of the data set */
+	unsigned int alloc_level;   /* The level it was allocated at */
+	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
 
 /*============================================================ */
