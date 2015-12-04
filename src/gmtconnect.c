@@ -190,7 +190,10 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
 				Ctrl->Q.active = true;
-				if (Ctrl->Q.file) free (Ctrl->Q.file);
+				if (Ctrl->Q.file) {
+					free (Ctrl->Q.file);
+					Ctrl->Q.file = NULL;
+				}
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
