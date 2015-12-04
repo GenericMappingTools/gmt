@@ -845,7 +845,7 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	 * but skip either string if it is a NULL pointer */
 	 
 	int i_sec, m_sec, ap, ival[3];
-	char text[GMT_LEN16] = {""};
+	char text[GMT_LEN16+1] = {""};
 	double step;
 	struct GMT_GCAL calendar;
 
