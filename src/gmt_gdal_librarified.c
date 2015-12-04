@@ -56,6 +56,7 @@ int GMT_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts)
 }
 
 char **breakMe(struct GMT_CTRL *GMT, char *in) {
+	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc dd" */
 	/* Based on GMT_Create_Options() */
 	unsigned int pos = 0, n_args = 0, k;
 	bool quoted;
@@ -78,7 +79,14 @@ char **breakMe(struct GMT_CTRL *GMT, char *in) {
 		for (i = o = 0; p[i]; i++)
 			if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
 		p[o] = '\0';
-		args[n_args++] = strdup(p);
+		if (p[0] == '-')
+			args[n_args++] = strdup(p);
+		else {		/* If string doesn't start with a '-' it means it's an argument to the option and must be packed together */
+			args[n_args] = (char *)realloc(args[n_args], strlen(args[n_args])+strlen(p)+3);	/* Make room to the to be appended string */
+			strcat(args[n_args], " ");
+			strcat(args[n_args], p);
+		}
+
 		if (n_args == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
 			args = GMT_memory(GMT, args, n_alloc, char *);
