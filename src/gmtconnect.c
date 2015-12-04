@@ -175,17 +175,26 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 
 			case 'C':	/* Separate closed from open segments  */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) free (Ctrl->C.file);
+				if (Ctrl->C.file) {
+					free (Ctrl->C.file);
+					Ctrl->C.file = NULL;
+				}
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				Ctrl->D.active = true;
-				if (Ctrl->D.format) free (Ctrl->D.format);
+				if (Ctrl->D.format) {
+					free (Ctrl->D.format);
+					Ctrl->D.format = NULL;
+				}
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
 				Ctrl->L.active = true;
-				if (Ctrl->L.file) free (Ctrl->L.file);
+				if (Ctrl->L.file) {
+					free (Ctrl->L.file);
+					Ctrl->L.file = NULL;
+				}
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
