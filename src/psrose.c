@@ -210,7 +210,10 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Read mode file and plot mean directions */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) free (Ctrl->C.file);
+				if (Ctrl->C.file) {
+					free (Ctrl->C.file);
+					Ctrl->C.file = NULL;
+				}
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
@@ -316,7 +319,8 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && GMT_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && GMT_access (GMT, Ctrl->C.file, R_OK),
+	                                 "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, GMT_IS_ZERO (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
