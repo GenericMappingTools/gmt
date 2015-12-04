@@ -916,7 +916,7 @@ bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[]) {
 		return (false);
 	}
 
-	strncpy (buffer, line, GMT_LEN64);	/* Make local copy */
+	strncpy (buffer, line, GMT_LEN64-1);	/* Make local copy */
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
 		double transparency = atof (&t[1]);
 		if (transparency < 0.0 || transparency > 100.0)
@@ -1203,7 +1203,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
-	strncpy (line, buffer, GMT_BUFSIZ);	/* Work on a copy of the arguments */
+	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	/* Processes font settings given as [size][,name][,fill][=pen] */
@@ -1305,7 +1305,7 @@ int gmt_name2pen (char *name) {
 	int i, k;
 	char Lname[GMT_LEN64] = {""};
 
-	strncpy (Lname, name, GMT_LEN64);
+	strncpy (Lname, name, GMT_LEN64-1);
 	GMT_str_tolower (Lname);
 	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
 
@@ -1417,7 +1417,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Pen attributes too long!\n");
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		strncpy (P->style, string, GMT_PEN_LEN);
+		strncpy (P->style, string, GMT_PEN_LEN-1);
 		P->offset *= GMT->session.u2u[unit][GMT_PT];
 	}
 	else  {	/* New way of building it up with - and . */
@@ -1478,7 +1478,7 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
-	strncpy (line, buffer, GMT_BUFSIZ);	/* Work on a copy of the arguments */
+	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
@@ -1832,7 +1832,7 @@ int GMT_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_get_distance\n"); return (-1); }
 
-	strncpy (copy, line, GMT_LEN64);
+	strncpy (copy, line, GMT_LEN64-1);
 	*dist = GMT->session.d_NaN;
 
 	switch (copy[0]) {	/* Look for modifiers -/+ to set how spherical distances are computed */
