@@ -759,6 +759,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		GC[g].type = Ctrl->G.type[g];
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grids */
 			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
+				GMT_free (GMT, GC);
 				Return (API->error);
 			}
 			if (GMT->common.R.active) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
@@ -767,10 +768,12 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 			if (!GMT_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
+				GMT_free (GMT, GC);
 				Return (GMT_OK);
 			}
 
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
+				GMT_free (GMT, GC);
 				Return (API->error);
 			}
 

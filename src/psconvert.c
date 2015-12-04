@@ -207,7 +207,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 		}
 	}
 	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
-	strncpy (txt, arg, GMT_LEN128);
+	strncpy (txt, arg, GMT_LEN128-1);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'p':	/* Draw outline */
@@ -277,7 +277,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 	GMT_UNUSED(GMT);
 
 	C->W.active = true;
-	strncpy (txt, arg, GMT_BUFSIZ);
+	strncpy (txt, arg, GMT_BUFSIZ-1);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
@@ -961,7 +961,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = false;
 		*out_file = '\0'; /* truncate string */
-		strncpy (ps_file, ps_names[k], GMT_BUFSIZ);
+		strncpy (ps_file, ps_names[k], GMT_BUFSIZ-1);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
 			continue;
