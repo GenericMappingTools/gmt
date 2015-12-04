@@ -191,7 +191,8 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	/* *raw_nx = j;		*raw_ny = lrint((float)n_pix / raw_nx);*/
 
 	/* So be it */
-	*raw_ny = j;		*raw_nx = urint((float)n_pix / (*raw_ny));
+	*raw_ny = j;
+	if (j > 0) *raw_nx = urint((float)n_pix / (*raw_ny));
 
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
 		/* Let's make another attempt to find the right nx * ny combination. The idea is that we

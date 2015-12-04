@@ -314,7 +314,7 @@ double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILT
 				break;
 		}
 	}
-	if (B->mode_choice == GRDFILTER_MODE_KIND_AVE) value /= n_modes;	/* The average of the multiple modes */
+	if (B->mode_choice == GRDFILTER_MODE_KIND_AVE && n_modes > 0) value /= n_modes;	/* The average of the multiple modes */
 
 	return (value);
 }
