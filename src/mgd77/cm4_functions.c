@@ -122,6 +122,9 @@ void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b);
 double d_mod(double x, double y);
 double pow_di(double ap, int bp);
 int i_dnnt(double x);
+void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
+	            double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
+	            double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg);
 
 int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
@@ -129,31 +132,32 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	int i, j, k, l, n, p, nu, mz, nz, mu, js, jy, nt, mt, iyr = 0, jyr, jf107, cerr = 0;
 	int lum1, lum2, lum3, lum4, lum5, lum6, lum7, nsm1, nsm2, lcmf, idim[12], omdl;
 	int lsmf, lpos, lcmg, lsmg, lcsq, lssq, lcto, lsto, lrto, idoy, n_Dst_rows, i_unused = 0;
-	int *msec, *mjdy, imon = 0, idom = 0, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
+	int *msec = NULL, *mjdy = NULL;
+	int imon = 0, idom = 0, jaft, jmon, jdom, jmjd = 0, jdoy, mjdl = 0, mjdh = 0, iyrl = 0, imol = 0, iyrh = 0, imoh = 0;
 	int nout = 0, nygo = 0, nmax, nmin, nobo, nopo, nomn, nomx, noff, noga, nohq, nimf, nyto, nsto, ntay, mmdl;
 	int us[4355], bord[4355], bkno[4355], pbto, peto, csys, jdst[24];
-	double *mut, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;
+	double *mut = NULL, *dstx = NULL, dstt = 0., x, y, z, h, t, dumb, bmdl[21], jmdl[12], date, dst, mut_now, alt;
 	double re, xd, yd, rm, xg, ro, rp, yg, zg, zd;
 	double bc[29], wb[58], trig[132], ru, rt, rse[9], doy, fyr, cego, epch;
 	double rlgm[15], rrgt[9], tsmg[6], tssq[6], tsto[6], tdmg[12], tdsq[10], tdto[10];
 	double rtay_dw, rtay_or, sinp, fsrf, rtay, frto, frho, thetas, rtay_dk;
 	double cnmp, enmp, omgs, omgd, hion, cpol, epol, ctmp, stmp, cemp, semp, rion, fdoy, clat, elon;
 	double sthe, cthe, psiz, cpsi, spsi, ctgo, stgo, sego, cdip = 0, edip = 0, ctmo, stmo, cemo, semo, taus = 0, taud = 0, cosp;
-	double *hq, *ht, *pleg, *rcur;			/* was hq[53040], ht[17680], pleg[4422], rcur[9104] */
-	double *bkpo, *ws, *gamf, *epmg, *esmg;		/* was bkpo[12415], ws[4355], gamf[8840], epmg[1356], esmg[1356] */
-	double *f107x;		/* was [100][12] */
-	double *hymg;		/* was [1356][6] */
-	double *gcto_or = NULL;	/* was [13680][5][2] */ 
-	double *gcto_mg = NULL;	/* was [2736][3][2][2] */ 
-	double *gpsq;		/* was [13680][5][2] */
-	double *gssq;		/* was [13680][5] */
-	double *gpmg;		/* was [1356][5][2] */ 
-	double *gsmg;		/* was [1356][5][2] */  
-	double *hysq;		/* was [1356][6] */  
-	double *epsq;		/* was [13680] */
-	double *essq;		/* was [13680] */
-	double *ecto;		/* was [16416] */
-	double *hyto;		/* was [49248] */
+	double *hq = NULL, *ht = NULL, *pleg = NULL, *rcur = NULL;		/* was hq[53040], ht[17680], pleg[4422], rcur[9104] */
+	double *bkpo = NULL, *ws = NULL, *gamf = NULL, *epmg = NULL, *esmg = NULL;	/* was bkpo[12415], ws[4355], gamf[8840], epmg[1356], esmg[1356] */
+	double *f107x = NULL;		/* was [100][12] */
+	double *hymg = NULL;		/* was [1356][6] */
+	double *gcto_or = NULL;		/* was [13680][5][2] */ 
+	double *gcto_mg = NULL;		/* was [2736][3][2][2] */ 
+	double *gpsq = NULL;		/* was [13680][5][2] */
+	double *gssq = NULL;		/* was [13680][5] */
+	double *gpmg = NULL;		/* was [1356][5][2] */ 
+	double *gsmg = NULL;		/* was [1356][5][2] */  
+	double *hysq = NULL;		/* was [1356][6] */  
+	double *epsq = NULL;		/* was [13680] */
+	double *essq = NULL;		/* was [13680] */
+	double *ecto = NULL;		/* was [16416] */
+	double *hyto = NULL;		/* was [49248] */
 	char line[GMT_BUFSIZ] = {""}, *c_unused = NULL;
 
 	FILE *fp;
@@ -182,6 +186,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 
 	if ((fp = fopen(Ctrl->CM4_M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_M.path);
+		clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+		           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 		return 1;
 	}
 
@@ -298,6 +304,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			int k;
 			if ((fp = fopen(Ctrl->CM4_D.path, "r")) == NULL) {
 				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_D.path);
+				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 				return 1;
 			}
 			jaft = 0;
@@ -338,6 +346,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		if (cerr > 49) {
 			free( dstx);
 			if (Ctrl->CM4_DATA.n_times > 1) free( Ctrl->CM4_D.dst);
+			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+			           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 			return 1;
 		}
 
@@ -352,6 +362,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		if (Ctrl->CM4_I.load) {
 			if ((fp = fopen(Ctrl->CM4_I.path, "r")) == NULL) {
 				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_I.path);
+				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 				return 1;
 			}
 			jaft = 0;
@@ -430,7 +442,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				epch, re, rp, rm, date, clat, elon, alt, dst, dstt, rse, &nz, 
 				&mz, &ro, &thetas, us, us, &bord[nobo], &bkno[nobo], &bkpo[nopo], us, us, us, us, 
 				ws, us, gamf, bc, gamf, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
-			if (cerr > 49) return 1;
+			if (cerr > 49) {
+				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+				return 1;
+			}
 			nomn = nshx(Ctrl->CM4_S.nlmf[0] - 1, 1, Ctrl->CM4_S.nlmf[0] - 1, 0);
 			nomx = nshx(Ctrl->CM4_S.nhmf[0], 1, Ctrl->CM4_S.nhmf[0], 0);
 			noff = nomn - nobo;
@@ -443,7 +459,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
 				getgmf(4, nsm1, &epch, &date, wb, &gamf[noga], &Ctrl->CM4_DATA.gmdl[nout-1], 
 					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
-				if (cerr > 49) return 1;
+				if (cerr > 49) {
+					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+					           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+					return 1;
+				}
 			}
 			nomn = nshx(Ctrl->CM4_S.nlmf[1] - 1, 1, Ctrl->CM4_S.nlmf[1] - 1, 0);
 			nomx = nshx(Ctrl->CM4_S.nhmf[1], 1, Ctrl->CM4_S.nhmf[1], 0);
@@ -460,7 +480,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				nopo = i8ssum(1, nomn, bkno) + (nomn << 1);
 				getgmf(4, nsm2, &epch, &date, wb, &gamf[noga], &Ctrl->CM4_DATA.gmdl[nout-1], 
 					&bkno[nomn], &bord[nomn], &bkpo[nopo]);
-				if (cerr > 49) return 1;
+				if (cerr > 49) {
+					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+					           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+					return 1;
+				}
 				nout += nygo * MIN(1,nsm2);
 			}
 		}
@@ -506,7 +530,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				date, cdip, edip, alt, dst, dstt, rse, &nu, &mu, 
 				&ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gsmg, bc, gsmg, pleg, rcur, 
 				trig, us, ws, ht, hq, hq, &cerr);
-			if (cerr > 49) return 1;
+			if (cerr > 49) {
+				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+				return 1;
+			}
 			js = nu / 2;
 			jy = 1;
 			trigmp(2, taus, tsmg);
@@ -546,7 +574,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					date, cdip, edip, alt, dst, dstt, rse, &nu,
 					&mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
-				if (cerr > 49) return 1;
+				if (cerr > 49) {
+					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+					           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+					return 1;
+				}
 				js = nu / 2;
 				jy = 1;
 				trigmp(2, taus, tssq);
@@ -588,7 +620,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					date, cdip, edip, alt, dst, dstt, 
 					rse, &nu, &mu, &ru, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gssq, 
 					bc, gssq, pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
-				if (cerr > 49) return 1;
+				if (cerr > 49) {
+					clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+					           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+					return 1;
+				}
 				jy = 1;
 				trigmp(2, taus, tssq);
 				trigmp(4, taud, tdsq);
@@ -657,7 +693,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				date, cdip, edip, 0., dst, dstt, rse, &nt, &mt,
 				&rt, &thetas, us, us, us, us, ws, us, us, us, us, ws, us, gcto_mg, bc, gcto_mg, 
 				pleg, rcur, trig, us, ws, ht, hq, hq, &cerr);
-			if (cerr > 49) return 1;
+			if (cerr > 49) {
+				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+				return 1;
+			}
 			frto = rm / ro;
 			frho = (ro - rtay) / rm;
 			jy = 1;
@@ -746,17 +786,37 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 	}
 
-	free ( mut);
-	free ( gpsq);	free ( gssq);	free ( gpmg);
-	free ( gsmg);	free ( hysq);	free ( epsq);
-	free ( essq);	free ( ecto);	free ( hyto);
-	free ( hq);	free ( ht);	free ( bkpo);
-	free ( ws);	free ( gamf);	free ( epmg);
-	free ( esmg);	free ( hymg);	free ( f107x);
-	free ( pleg);	free ( rcur);
-	if (gcto_or) free( gcto_or);
-	if (gcto_mg) free( gcto_mg);
+	clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+	           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 	return 0;
+}
+
+void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
+	            double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
+	            double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg) {
+	if (mut) free(mut);
+	if (gpsq) free(gpsq);
+	if (gssq) free(gssq);
+	if (gpmg) free(gpmg);
+	if (gsmg) free(gsmg);
+	if (hysq) free(hysq);
+	if (epsq) free(epsq);
+	if (essq) free(essq);
+	if (ecto) free(ecto);
+	if (hyto) free(hyto);
+	if (hq) free(hq);
+	if (ht) free(ht);
+	if (bkpo) free(bkpo);
+	if (ws) free(ws);
+	if (gamf) free(gamf);
+	if (epmg) free(epmg);
+	if (esmg) free(esmg);
+	if (hymg) free(hymg);
+	if (f107x) free(f107x);
+	if (pleg) free(pleg);
+	if (rcur) free(rcur);
+	if (gcto_or) free(gcto_or);
+	if (gcto_mg) free(gcto_mg);
 }
 
 void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear) {
