@@ -2362,7 +2362,7 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, struc
 		return (MGD77_ERROR_NOT_MGD77PLUS);
 	}
 	MGD77_nc_status (GMT, nc_inq_dimname (F->nc_id, F->nc_recid, name));	/* Get dimension name */
-	H->no_time = (strcmp (name, "time"));				/* True if data set has no time column */
+	H->no_time = (strcmp (name, "time") == 0);				/* True if data set has no time column */
 	MGD77_nc_status (GMT, nc_inq_dimlen (F->nc_id, F->nc_recid, count));	/* Get number of records */
 	H->n_records = count[0];
 
