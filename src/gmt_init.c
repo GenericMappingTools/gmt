@@ -4776,6 +4776,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			break;
 		case GMTCASE_MAP_TICK_PEN:
 			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[1]);
+			break;
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
 			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[0]);
 			break;
