@@ -285,6 +285,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 					case 'x':
 						Ctrl->A.scale = atof (&opt->arg[2]);
 						Ctrl->A.get_alt = true;
+						break;
 					case '\0':
 						Ctrl->A.get_alt = true;
 						break;
@@ -490,6 +491,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 						break;
 				}
 			}
+			break;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
