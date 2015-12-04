@@ -43,29 +43,33 @@ enum Opt_I_modes {
 	GRDINFO_GIVE_BOUNDBOX};
 
 struct GRDINFO_CTRL {
-	struct C {	/* -C */
+	struct GRDINFO_C {	/* -C */
 		bool active;
 	} C;
-	struct F {	/* -F */
+	struct GRDINFO_F {	/* -F */
 		bool active;
 	} F;
-	struct I {	/* -Idx[/dy] */
+	struct GRDINFO_I {	/* -Idx[/dy] */
 		bool active;
 		unsigned int status;
 		double inc[2];
 	} I;
-	struct M {	/* -M */
+	struct GRDINFO_M {	/* -M */
 		bool active;
 	} M;
-	struct L {	/* -L[1|2] */
+	struct GRDINFO_L {	/* -L[1|2] */
 		bool active;
 		unsigned int norm;
 	} L;
-	struct T {	/* -T[s]<dz> */
+	struct GRDINFO_T {	/* -T[s]<dz> */
 		bool active;
 		bool mode;
 		double inc;
 	} T;
+	struct GRDINFO_G {	/*  */
+		bool active;
+		char *opts;
+	} G;
 };
 
 void *New_grdinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -146,6 +150,10 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 			case 'F':	/* World mapping format */
 				Ctrl->F.active = true;
 				break;
+			case 'G':	/* List of GDAL options */
+				Ctrl->G.active = true;
+				Ctrl->G.opts = strdup(opt->arg);
+				break;
 			case 'I':	/* Increment rounding */
 				Ctrl->I.active = true;
 				if (!opt->arg[0])	/* No args given, we want to output the -I string */
@@ -202,6 +210,11 @@ int GMT_grdinfo_parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct G
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdinfo_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
+#include "gdal_utils.h"
+#include "gmt_gdal_librarified.c"
+#endif
 
 int GMT_grdinfo (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -269,6 +282,11 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
+
+#if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
+	if (Ctrl->G.active)
+		GMT_gdal_librarified(GMT, opt->arg, Ctrl->G.opts);
+#endif
 
 		GMT_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
 
