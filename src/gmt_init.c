@@ -1336,6 +1336,7 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 					GMT_message (GMT, "\t  <scale> is %s/units, or use <width> in %s\n", u, u);
 					GMT_message (GMT, "\t  Optionally, prepend a for azimuths, append theta as origin [0],\n");
 					GMT_message (GMT, "\t  or append r to reverse radial coordinates.\n");
+					break;
 				case GMT_LINEAR:
 					GMT_message (GMT, "\t-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
 					GMT_message (GMT, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n", u);
