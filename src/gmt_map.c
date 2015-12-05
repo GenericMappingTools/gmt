@@ -7020,7 +7020,7 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	}
 
 	if (O->header->z_min < I->header->z_min || O->header->z_max > I->header->z_max) {	/* Truncate output to input extrama */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g]\n",
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid extrema [%g/%g] exceed extrema of input grid [%g/%g] due to resampling\n",
 			O->header->z_min, O->header->z_max, I->header->z_min, I->header->z_max);
 		if (GMT->common.n.truncate) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: Output grid clipped to input grid extrema\n");
@@ -7030,6 +7030,8 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			}
 			O->header->z_min = I->header->z_min;	O->header->z_max = I->header->z_max;
 		}
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "GMT_grd_project: See option -n+c to clip resampled output range to given input range\n");
 	}
 
 	/* Time to clean up our mess */
