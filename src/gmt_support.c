@@ -6259,7 +6259,7 @@ void gmt_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, struct
 	char record[GMT_BUFSIZ] = {""};
 	if (S->n_rows == S->n_alloc) {	/* Need more memory for the segment */
 		S->n_alloc += GMT_SMALL_CHUNK;
-		S->record = GMT_memory (GMT, S->record, S->n_alloc, char **);
+		S->record = GMT_memory (GMT, S->record, S->n_alloc, char *);
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
