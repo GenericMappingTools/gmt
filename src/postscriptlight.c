@@ -2611,7 +2611,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	int *font_unique = NULL;
 	unsigned int i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
 	size_t n_alloc, n_words = 0;
-	double old_size, last_rgb[4], rgb[4];
+	double old_size, last_rgb[4] = {0.0, 0.0, 0.0, 0.0}, rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, plain_word = false, escape;
 	char *c = NULL, *clean = NULL, test_char, **text = NULL, *lastp = NULL, *copy = NULL;
 	const char *sep = " ";
