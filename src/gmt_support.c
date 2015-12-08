@@ -2233,7 +2233,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (cpt_file, source, GMT_BUFSIZ);
+		strncpy (cpt_file, source, GMT_BUFSIZ-1);
 		Z = gmt_cpt_parse_z_unit (GMT, cpt_file, GMT_IN);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open color palette table %s\n", cpt_file);
@@ -2925,7 +2925,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
-		strncpy (cpt_file, dest, GMT_BUFSIZ);
+		strncpy (cpt_file, dest, GMT_BUFSIZ-1);
 		append = (cpt_file[0] == '>');	/* Want to append to existing file */
 		if ((Z = gmt_cpt_parse_z_unit (GMT, &cpt_file[append], GMT_OUT))) {
 			gmt_cpt_z_scale (GMT, P, Z, GMT_OUT);
