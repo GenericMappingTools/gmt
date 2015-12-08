@@ -1474,7 +1474,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 
 	L_track = strlen(track);	L_suffix = (suffix) ? strlen(suffix) : 0;
 	if (L_track > L_suffix)	/* See if track explicitly ends in ".<suffix>" or not */
-		add_suffix = (strncmp (&track[L_track-L_suffix], suffix, L_suffix) != 0);	/* strncmp returns 0 if a match */
+		add_suffix = (L_suffix == 0 || strncmp (&track[L_track-L_suffix], suffix, L_suffix) != 0);	/* strncmp returns 0 if a match */
 	else	/* Cannot possibly end in ".<suffix>" se we must add suffix */
 		add_suffix = true;
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: add_suffix gives %c\n", (add_suffix) ? 'T' : 'F');

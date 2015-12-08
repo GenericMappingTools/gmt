@@ -6066,7 +6066,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	 * mode is not yet used.
 	 */
 
-	char ps_file[GMT_BUFSIZ] = {""};
+	char ps_file[GMT_BUFSIZ+1] = {""};
 	int c;
 	bool close_file = false;
 	size_t n_alloc = 0;
@@ -6078,7 +6078,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		struct stat buf;
-		char path[GMT_BUFSIZ] = {""};
+		char path[GMT_BUFSIZ+1] = {""};
 		strncpy (ps_file, source, GMT_BUFSIZ);
 		if (!GMT_getdatapath (GMT, ps_file, path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PS file %s\n", ps_file);

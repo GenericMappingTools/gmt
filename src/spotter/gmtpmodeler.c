@@ -217,7 +217,7 @@ int GMT_gmtpmodeler_parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {if (p) GMT_free (GMT, p); Free_gmtpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtpmodeler (void *V_API, int mode, void *args)
 {
@@ -290,7 +290,6 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->T.active && Ctrl->T.value > Ctrl->N.t_upper) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
-		GMT_free (GMT, p);
 		Return (EXIT_FAILURE);
 	}
 	/* Set up input */
@@ -459,7 +458,6 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args)
 	if (n_old) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
 	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 
-	GMT_free (GMT, p);
 	GMT_free (GMT, out);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");

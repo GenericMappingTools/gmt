@@ -742,8 +742,11 @@ int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 		case GMT_IS_VECTOR:
 		case GMT_IS_MATRIX:
 		case GMT_IS_COORD:
-		case GMT_N_FAMILIES:
 			GMT_Report (API, GMT_MSG_VERBOSE, "No external read or write support yet for object %s\n", GMT_family[family]);
+			return_error(API, GMT_NOT_A_VALID_FAMILY);
+			break;
+		default:
+			GMT_Report (API, GMT_MSG_VERBOSE, "Internal error, family = %d\n", family);
 			return_error(API, GMT_NOT_A_VALID_FAMILY);
 			break;
 	}
