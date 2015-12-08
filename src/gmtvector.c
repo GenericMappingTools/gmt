@@ -370,7 +370,8 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 			}
 		}
 	}
-	for (k = 0; k < n_components; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
+	if (n > 0)
+		for (k = 0; k < n_components; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
 	GMT_memcpy (X, M, 3, double);
 	
 	/* Compute covariance matrix */
