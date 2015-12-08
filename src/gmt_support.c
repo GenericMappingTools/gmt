@@ -11599,7 +11599,6 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 						for (seg = 0; seg < Tin->n_segments; seg++)	/* For each segment to resample */
 							dim[GMT_SEG] += Tin->segment[seg]->n_rows - 1;
 					}
-					break;
 					dim[GMT_SEG] = Din->n_records;
 					break;
 			}
