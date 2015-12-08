@@ -1003,7 +1003,7 @@ bool gmt_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[]) {
 		return (false);
 	}
 
-	strncpy (buffer, line, GMT_LEN64);	/* Make local copy */
+	strncpy (buffer, line, GMT_LEN64-1);	/* Make local copy */
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
 		double transparency = atof (&t[1]);
 		if (transparency < 0.0 || transparency > 100.0)
