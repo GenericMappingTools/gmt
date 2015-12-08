@@ -114,11 +114,11 @@ void *New_grdredpol_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdredpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->E.dipfile) free (C->E.dipfile);	
-	if (C->E.decfile) free (C->E.decfile);	
-	if (C->Z.file) free (C->Z.file);	
+	if (C->In.file) gmt_free_null (C->In.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
+	if (C->E.dipfile) gmt_free_null (C->E.dipfile);	
+	if (C->E.decfile) gmt_free_null (C->E.decfile);	
+	if (C->Z.file) gmt_free_null (C->Z.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -1495,24 +1495,24 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
 
-	GMT_free(GMT, cosphi);      GMT_free(GMT, sinphi);
-	GMT_free(GMT, cospsi);      GMT_free(GMT, sinpsi);
-	GMT_free(GMT, gxr);         GMT_free(GMT, gxi);
-	GMT_free(GMT, ftlat);       GMT_free(GMT, ftlon);
-	GMT_free(GMT, fxr);
+	GMT_free (GMT, cosphi);      GMT_free (GMT, sinphi);
+	GMT_free (GMT, cospsi);      GMT_free (GMT, sinpsi);
+	GMT_free (GMT, gxr);         GMT_free (GMT, gxi);
+	GMT_free (GMT, ftlat);       GMT_free (GMT, ftlon);
+	GMT_free (GMT, fxr);
 
-	GMT_free(GMT, fxar);		GMT_free(GMT, fxbr);
-	GMT_free(GMT, fxgr);		GMT_free(GMT, fix);
+	GMT_free (GMT, fxar);		GMT_free (GMT, fxbr);
+	GMT_free (GMT, fxgr);		GMT_free (GMT, fix);
 
-	GMT_free(GMT, gxar);		GMT_free(GMT, gxai);
-	GMT_free(GMT, gxbr);		GMT_free(GMT, gxbi);
-	GMT_free(GMT, gxgr);		GMT_free(GMT, gxgi);
+	GMT_free (GMT, gxar);		GMT_free (GMT, gxai);
+	GMT_free (GMT, gxbr);		GMT_free (GMT, gxbi);
+	GMT_free (GMT, gxgr);		GMT_free (GMT, gxgi);
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
-		GMT_free(GMT, gxtr);	GMT_free(GMT, gxti);
-		GMT_free(GMT, gxmr);	GMT_free(GMT, gxmi);
-		GMT_free(GMT, gxnr);	GMT_free(GMT, gxni);
-		GMT_free(GMT, fxtr);	GMT_free(GMT, fxmr);
-		GMT_free(GMT, fxnr);
+		GMT_free (GMT, gxtr);	GMT_free (GMT, gxti);
+		GMT_free (GMT, gxmr);	GMT_free (GMT, gxmi);
+		GMT_free (GMT, gxnr);	GMT_free (GMT, gxni);
+		GMT_free (GMT, fxtr);	GMT_free (GMT, fxmr);
+		GMT_free (GMT, fxnr);
 	}
 
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");

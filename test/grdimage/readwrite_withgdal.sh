@@ -7,7 +7,7 @@ if [ $GDAL -eq 0 ]; then exit; fi
 	
 ps=readwrite_withgdal.ps
 
-ln -fs "${src:-.}/gdal" .
+ln -fs "${GMT_SRCDIR:-.}/gdal" .
 
 # RGB image
 gmt grdimage -D gdal/needle.jpg -JX7c/0 -P -Y20c -K > $ps

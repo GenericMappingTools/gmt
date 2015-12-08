@@ -423,11 +423,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			size_t len;
 			char *pch;
 			GMT_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
-			if (header->ProjRefWKT) free(header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
+			if (header->ProjRefWKT) gmt_free_null (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
 			pch = GMT_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
 			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
 			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
-			GMT_free(GMT, pch);
+			GMT_free (GMT, pch);
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
@@ -735,7 +735,7 @@ void right_shift_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 			memcpy (grid + (row * n_cols + n_cols - n_shift_abs) * cell_size, tmp, n_shift_abs * cell_size);
 		}
 	}
-	free (tmp);
+	gmt_free_null (tmp);
 }
 
 /* Fill padding by replicating the border cells or wrapping around a
@@ -941,7 +941,7 @@ void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned 
 		memcpy (top, bottom, n_cols * cell_size); /* copy bottom to top */
 		memcpy (bottom, tmp, n_cols * cell_size); /* copy tmp to bottom */
 	}
-	free (tmp);
+	gmt_free_null (tmp);
 }
 
 /* Ensure that repeating columns in geographic gridline registered grids

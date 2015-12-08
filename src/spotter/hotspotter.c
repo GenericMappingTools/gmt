@@ -179,9 +179,9 @@ void *New_hotspotter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_hotspotter_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) free (C->E.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->S.file) free (C->S.file);	
+	if (C->E.file) gmt_free_null (C->E.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
+	if (C->S.file) gmt_free_null (C->S.file);	
 	GMT_free (GMT, C);	
 }
 

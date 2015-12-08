@@ -177,13 +177,13 @@ void *New_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 void Free_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file[0]) free (C->In.file[0]);
-	if (C->In.file[1]) free (C->In.file[1]);
-	if (C->F.file) free (C->F.file);
-	if (C->G.file) free (C->G.file);
-	if (C->H.magfile) free (C->H.magfile);
-	if (C->H.decfile) free (C->H.decfile);
-	if (C->H.incfile) free (C->H.incfile);
+	if (C->In.file[0]) gmt_free_null (C->In.file[0]);
+	if (C->In.file[1]) gmt_free_null (C->In.file[1]);
+	if (C->F.file) gmt_free_null (C->F.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->H.magfile) gmt_free_null (C->H.magfile);
+	if (C->H.decfile) gmt_free_null (C->H.decfile);
+	if (C->H.incfile) gmt_free_null (C->H.incfile);
 	GMT_free (GMT, C);
 }
 
@@ -1001,7 +1001,7 @@ L1:
 	if (mag_param) GMT_free (GMT, mag_param);
 	if (mag_var) GMT_free (GMT, mag_var);
 	if (Ctrl->H.do_igrf) {
-		GMT_free(GMT, x_grd_geo);		GMT_free(GMT, y_grd_geo);
+		GMT_free (GMT, x_grd_geo);		GMT_free (GMT, y_grd_geo);
 	}
 
 	Return (GMT_OK);

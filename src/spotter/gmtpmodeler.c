@@ -85,9 +85,9 @@ void *New_gmtpmodeler_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_gmtpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->E.rot.file) free (C->E.rot.file);	
-	if (C->F.file) free (C->F.file);	
+	if (C->In.file) gmt_free_null (C->In.file);	
+	if (C->E.rot.file) gmt_free_null (C->E.rot.file);	
+	if (C->F.file) gmt_free_null (C->F.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -95,7 +95,7 @@ int GMT_gmtpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtpmodeler <table> %s [-F<polygontable>] [-G<outtable>]\n", SPOTTER_E_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtpmodeler <table> %s [-F<polygontable>]\n", SPOTTER_E_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-SadrswxyXY] [-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_i_OPT);
 

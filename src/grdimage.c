@@ -97,9 +97,9 @@ void *New_grdimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_grdimage_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deallocate control structure */
 	int k;
 	if (!C) return;
-	for (k = 0; k < 3; k++) if (C->In.file[k]) free (C->In.file[k]);	
-	if (C->C.file) free (C->C.file);
-	if (C->I.file) free (C->I.file);
+	for (k = 0; k < 3; k++) if (C->In.file[k]) gmt_free_null (C->In.file[k]);	
+	if (C->C.file) gmt_free_null (C->C.file);
+	if (C->I.file) gmt_free_null (C->I.file);
 	GMT_free (GMT, C);
 }
 
@@ -204,7 +204,7 @@ int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct
 #endif
 			case 'C':	/* CPT file */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) free (Ctrl->C.file);
+				if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 #ifdef HAVE_GDAL
@@ -1027,11 +1027,11 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		}
 	}
 	if (Ctrl->A.active) {
-		if (to_GDALW->P.ProjectionRefPROJ4) free (to_GDALW->P.ProjectionRefPROJ4);
-		free( to_GDALW->type);
+		if (to_GDALW->P.ProjectionRefPROJ4) gmt_free_null (to_GDALW->P.ProjectionRefPROJ4);
+		gmt_free_null ( to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
-		free(Ctrl->A.driver);
-		free(Ctrl->A.file);
+		gmt_free_null (Ctrl->A.driver);
+		gmt_free_null (Ctrl->A.file);
 	}
 #endif
 	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_OK) {

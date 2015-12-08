@@ -411,7 +411,7 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	if (X->in_order) GMT_free (GMT, X->in_order);
 	if (X->out_order) GMT_free (GMT, X->out_order);
 	if (X->use_column) GMT_free (GMT, X->use_column);
-	free (X->TAG);	/* free since allocated by strdup */
+	gmt_free_null (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free (GMT, x2sys_datadir[id]);
 	gmtmggpath_free (GMT);
@@ -1041,7 +1041,7 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n)
 {	/* Properly free memory allocated by x2sys_read_list */
 	uint64_t i;
-	for (i = 0; i < n; i++) free (list[i]);
+	for (i = 0; i < n; i++) gmt_free_null (list[i]);
 	if (list) GMT_free (GMT, list);
 }
 
@@ -1464,19 +1464,27 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S)
 int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix)
 {
 	unsigned int id;
+	size_t L_suffix, L_track;
 	bool add_suffix;
 	char geo_path[GMT_BUFSIZ] = {""};
 	GMT_UNUSED(GMT);
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Given track %s and suffix %s\n", track, suffix);
 	/* Check if we need to append suffix */
 
-	add_suffix = (strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix)) == 0);	/* Need to add suffix? */
+	L_track = strlen(track);	L_suffix = (suffix) ? strlen(suffix) : 0;
+	if (L_track > L_suffix)	/* See if track explicitly ends in ".<suffix>" or not */
+		add_suffix = (strncmp (&track[L_track-L_suffix], suffix, L_suffix) != 0);	/* strncmp returns 0 if a match */
+	else	/* Cannot possibly end in ".<suffix>" se we must add suffix */
+		add_suffix = true;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: add_suffix gives %c\n", (add_suffix) ? 'T' : 'F');
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it, possibly after appending suffix */
 		if (add_suffix)
 			sprintf (track_path, "%s.%s", track, suffix);
 		else
 			strcpy (track_path, track);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Full path for %s will be %s\n", track, track_path);
 		return (0);
 	}
 
@@ -1486,10 +1494,14 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 		sprintf (geo_path, "%s.%s", track, suffix);
 	else
 		strcpy (geo_path, track);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Testing path for %s: %s\n", track, geo_path);
 	if (!access(geo_path, R_OK)) {
 		strcpy(track_path, geo_path);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Successful path for %s: %s\n", track, track_path);
 		return (0);
 	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Failed path for %s: %s\n", track, track_path);
 
 	/* Then look elsewhere */
 
@@ -1498,11 +1510,17 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 			sprintf (geo_path, "%s/%s.%s", x2sys_datadir[id], track, suffix);
 		else
 			sprintf (geo_path, "%s/%s", x2sys_datadir[id], track);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Testing path for %s: %s\n", track, geo_path);
 		if (!access (geo_path, R_OK)) {
 			strcpy (track_path, geo_path);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Successful path for %s: %s\n", track, track_path);
 			return (0);
 		}
+		else
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Failed path for %s: %s\n", track, track_path);
 	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: No successful path for %s found\n", track);
+	
 	return(1);	/* Schwinehund! */
 }
 

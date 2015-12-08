@@ -86,10 +86,10 @@ void *New_grdedit_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_grdedit_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);
-	if (C->D.information) free (C->D.information);
-	if (C->G.file) free (C->G.file);
-	if (C->N.file) free (C->N.file);
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->D.information) gmt_free_null (C->D.information);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->N.file) gmt_free_null (C->N.file);
 	GMT_free (GMT, C);
 }
 

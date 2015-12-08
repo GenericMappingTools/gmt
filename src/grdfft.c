@@ -144,9 +144,9 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	if (!C) return;
 	if (C->operation) GMT_free (GMT, C->operation);
 	if (C->par) GMT_free (GMT, C->par);
-	if (C->In.file[0]) free (C->In.file[0]);
-	if (C->In.file[1]) free (C->In.file[1]);
-	if (C->G.file) free (C->G.file);
+	if (C->In.file[GMT_IN]) gmt_free_null (C->In.file[GMT_IN]);
+	if (C->In.file[GMT_OUT]) gmt_free_null (C->In.file[GMT_OUT]);
+	if (C->G.file) gmt_free_null (C->G.file);
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);
 }

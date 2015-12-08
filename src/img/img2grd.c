@@ -125,8 +125,8 @@ void *New_img2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_img2grd_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);
-	if (C->G.file) free (C->G.file);
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->G.file) gmt_free_null (C->G.file);
 	GMT_free (GMT, C);
 }
 

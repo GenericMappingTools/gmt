@@ -58,7 +58,7 @@ void *New_gmtset_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_gmtset_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free (C->G.file);
+	if (C->G.file) gmt_free_null (C->G.file);
 	GMT_free (GMT, C);	
 }
 

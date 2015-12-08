@@ -158,9 +158,9 @@ void *New_grdflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdflexure_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);
-	if (C->G.file) free (C->G.file);
-	if (C->L.file) free (C->L.file);
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->L.file) gmt_free_null (C->L.file);
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	if (C->T.time) GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);

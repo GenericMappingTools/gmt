@@ -1544,11 +1544,11 @@ static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GMT_GDALREAD_
 	if (from_gdalread->ColorMap)
 		GMT_free (GMT, from_gdalread->ColorMap);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
-		free (from_gdalread->band_field_names[i].DataType); /* Those were allocated with strdup */
+		gmt_free_null (from_gdalread->band_field_names[i].DataType); /* Those were allocated with strdup */
 	if (from_gdalread->ProjectionRefPROJ4 != NULL)
-		free (from_gdalread->ProjectionRefPROJ4);
+		gmt_free_null (from_gdalread->ProjectionRefPROJ4);
 	if (from_gdalread->ProjectionRefWKT != NULL)
-		free (from_gdalread->ProjectionRefWKT);
+		gmt_free_null (from_gdalread->ProjectionRefWKT);
 	GMT_free (GMT, from_gdalread->band_field_names);
 	GMT_free (GMT, from_gdalread);
 }
@@ -1591,14 +1591,10 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		header->z_add_offset   = 0.0;
 	}
 
-	if (header->ProjRefPROJ4) {			/* Make sure we don't leak due to a previous copy */
-		free(header->ProjRefPROJ4);
-		header->ProjRefPROJ4 = NULL;
-	}
-	if (header->ProjRefWKT) {
-		free(header->ProjRefWKT);
-		header->ProjRefWKT = NULL;
-	}
+	if (header->ProjRefPROJ4)			/* Make sure we don't leak due to a previous copy */
+		gmt_free_null (header->ProjRefPROJ4);
+	if (header->ProjRefWKT)
+		gmt_free_null (header->ProjRefWKT);
 	if (from_gdalread->ProjectionRefPROJ4)
 		/* Need to strdup because from_gdalread is freed later */
 		header->ProjRefPROJ4 = strdup(from_gdalread->ProjectionRefPROJ4);
@@ -1705,10 +1701,8 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
-	if (to_gdalread->B.active) {
-		free(header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
-		header->pocket = NULL;
-	}
+	if (to_gdalread->B.active)
+		gmt_free_null (header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
 
 	if (subset) {	/* We had a Sub-region demand */
 		header->nx = from_gdalread->RasterXsize;
@@ -1851,8 +1845,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
 		GMT_gdalwrite(GMT, header->name, to_GDALW);
-		free (to_GDALW->driver);
-		free (to_GDALW->type);
+		gmt_free_null (to_GDALW->driver);
+		gmt_free_null (to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
 		GMT_free (GMT, k);
 		return (GMT_NOERROR);
@@ -1911,8 +1905,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, to_GDALW->data);
-	free (to_GDALW->driver);
-	free (to_GDALW->type);
+	gmt_free_null (to_GDALW->driver);
+	gmt_free_null (to_GDALW->type);
 	GMT_free (GMT, to_GDALW);
 	return (GMT_NOERROR);
 }

@@ -76,8 +76,8 @@ void *New_gshhg_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 
 void Free_gshhg_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->Out.file) free (C->Out.file);	
+	if (C->In.file) gmt_free_null (C->In.file);	
+	if (C->Out.file) gmt_free_null (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 

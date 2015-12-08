@@ -124,8 +124,8 @@ void *New_pssegy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_pssegy_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->In.file) free (C->In.file);
-	if (C && C->T.file) free (C->T.file);
+	if (C && C->In.file) gmt_free_null (C->In.file);
+	if (C && C->T.file) gmt_free_null (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -685,8 +685,8 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "trace %d plotting at %f \n", ix+1, x0);
 			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
 		}
-		free (data);
-		free (header);
+		gmt_free_null (data);
+		gmt_free_null (header);
 		ix++;
 	}
 

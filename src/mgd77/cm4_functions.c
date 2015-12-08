@@ -344,8 +344,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
 		Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);
 		if (cerr > 49) {
-			free( dstx);
-			if (Ctrl->CM4_DATA.n_times > 1) free( Ctrl->CM4_D.dst);
+			gmt_free_null ( dstx);
+			if (Ctrl->CM4_DATA.n_times > 1) gmt_free_null ( Ctrl->CM4_D.dst);
 			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 			           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 			return 1;
@@ -355,7 +355,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		for (n = 1; n < Ctrl->CM4_DATA.n_times; ++n)
 			Ctrl->CM4_D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
-		free( dstx);
+		gmt_free_null ( dstx);
 		if (cerr > 49) return 1;
 	}
 	if (Ctrl->CM4_I.index) {
@@ -386,8 +386,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		Ctrl->CM4_I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) return 1;
 	}
-	free ( msec);
-	free ( mjdy);
+	gmt_free_null (msec);
+	gmt_free_null (mjdy);
 
 	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
 	hysq = calloc(82080U, sizeof(double));
@@ -794,29 +794,29 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
 	            double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
 	            double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg) {
-	if (mut) free(mut);
-	if (gpsq) free(gpsq);
-	if (gssq) free(gssq);
-	if (gpmg) free(gpmg);
-	if (gsmg) free(gsmg);
-	if (hysq) free(hysq);
-	if (epsq) free(epsq);
-	if (essq) free(essq);
-	if (ecto) free(ecto);
-	if (hyto) free(hyto);
-	if (hq) free(hq);
-	if (ht) free(ht);
-	if (bkpo) free(bkpo);
-	if (ws) free(ws);
-	if (gamf) free(gamf);
-	if (epmg) free(epmg);
-	if (esmg) free(esmg);
-	if (hymg) free(hymg);
-	if (f107x) free(f107x);
-	if (pleg) free(pleg);
-	if (rcur) free(rcur);
-	if (gcto_or) free(gcto_or);
-	if (gcto_mg) free(gcto_mg);
+	if (mut) gmt_free_null (mut);
+	if (gpsq) gmt_free_null (gpsq);
+	if (gssq) gmt_free_null (gssq);
+	if (gpmg) gmt_free_null (gpmg);
+	if (gsmg) gmt_free_null (gsmg);
+	if (hysq) gmt_free_null (hysq);
+	if (epsq) gmt_free_null (epsq);
+	if (essq) gmt_free_null (essq);
+	if (ecto) gmt_free_null (ecto);
+	if (hyto) gmt_free_null (hyto);
+	if (hq) gmt_free_null (hq);
+	if (ht) gmt_free_null (ht);
+	if (bkpo) gmt_free_null (bkpo);
+	if (ws) gmt_free_null (ws);
+	if (gamf) gmt_free_null (gamf);
+	if (epmg) gmt_free_null (epmg);
+	if (esmg) gmt_free_null (esmg);
+	if (hymg) gmt_free_null (hymg);
+	if (f107x) gmt_free_null (f107x);
+	if (pleg) gmt_free_null (pleg);
+	if (rcur) gmt_free_null (rcur);
+	if (gcto_or) gmt_free_null (gcto_or);
+	if (gcto_mg) gmt_free_null (gcto_mg);
 }
 
 void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear) {

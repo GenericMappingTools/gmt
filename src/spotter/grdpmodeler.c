@@ -93,10 +93,10 @@ void *New_grdpmodeler_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->E.rot.file) free (C->E.rot.file);	
-	if (C->F.file) free (C->F.file);	
-	if (C->G.file) free (C->G.file);	
+	if (C->In.file) gmt_free_null (C->In.file);	
+	if (C->E.rot.file) gmt_free_null (C->E.rot.file);	
+	if (C->F.file) gmt_free_null (C->F.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

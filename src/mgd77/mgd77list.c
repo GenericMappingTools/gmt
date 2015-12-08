@@ -155,8 +155,8 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.flags) free (C->F.flags);
-	if (C->L.file) free (C->L.file);
+	if (C->F.flags) gmt_free_null (C->F.flags);
+	if (C->L.file) gmt_free_null (C->L.file);
 	GMT_free (GMT, C);	
 }
 
@@ -1427,9 +1427,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 
 						dvalue[m1_col][rec] = mtf_int[rec];
 						/* We can free these right now because they won't be used anymore for this file */
-						GMT_free(GMT, ind);
-						GMT_free(GMT, cumdist_cl);         GMT_free(GMT, cumdist_off_cl);
-						GMT_free(GMT, mtf_cl);             GMT_free(GMT, mtf_int_cl);
+						GMT_free (GMT, ind);
+						GMT_free (GMT, cumdist_cl);         GMT_free (GMT, cumdist_off_cl);
+						GMT_free (GMT, mtf_cl);             GMT_free (GMT, mtf_int_cl);
 						first_time_on_sensor_offset = false;
 					}
 					else                               /* All other times, just pull out current val of interped mtf1 */
@@ -1509,10 +1509,10 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		}
 
 		if (cumdist) {
-			GMT_free(GMT, cumdist_off);	cumdist_off = NULL;	/* Free and reset for eventual reuse */
-			GMT_free(GMT, cumdist);		cumdist = NULL;	/* Free and reset for eventual reuse */
-			GMT_free(GMT, mtf_bak);		mtf_bak = NULL;	/* Free and reset for eventual reuse */
-			GMT_free(GMT, mtf_int);		mtf_int = NULL;	/* Free and reset for eventual reuse */
+			GMT_free (GMT, cumdist_off);	/* Free and reset for eventual reuse */
+			GMT_free (GMT, cumdist);	/* Free and reset for eventual reuse */
+			GMT_free (GMT, mtf_bak);	/* Free and reset for eventual reuse */
+			GMT_free (GMT, mtf_int);	/* Free and reset for eventual reuse */
 		}
 		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;

@@ -68,7 +68,7 @@ void *New_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize
 
 void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->T.TAG) free (C->T.TAG);
+	if (C->T.TAG) gmt_free_null (C->T.TAG);
 	GMT_free (GMT, C);
 }
 

@@ -128,11 +128,11 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) free (C->C.file);
+	if (C->C.file) gmt_free_null (C->C.file);
 	GMT_free_refpoint (GMT, &C->D.refpoint);
-	if (C->D.etext) free (C->D.etext);
+	if (C->D.etext) gmt_free_null (C->D.etext);
 	if (C->F.panel) GMT_free (GMT, C->F.panel);
-	if (C->Z.file) free (C->Z.file);
+	if (C->Z.file) gmt_free_null (C->Z.file);
 	GMT_free (GMT, C);
 }
 
@@ -244,7 +244,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				break;
 			case 'C':
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) free (Ctrl->C.file);
+				if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':

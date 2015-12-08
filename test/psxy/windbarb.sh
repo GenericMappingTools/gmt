@@ -10,7 +10,7 @@ cat << EOF > tmp
 150	-30	50	90.0
 EOF
 
-ln -fs "${src:-.}"/windbarb.def .
+ln -fs "${GMT_SRCDIR:-.}"/windbarb.def .
 
 # Mercator
 gmt pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -Bafg -BWSen -K -P -Xc > $ps

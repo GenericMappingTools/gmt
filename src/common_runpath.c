@@ -61,6 +61,8 @@
 
 /* #define DEBUG_RUNPATH */
 
+#define gmt_free_null(ptr) (free((void *)(ptr)),(ptr)=NULL)
+
 /* Private functions */
 static char *sharedir_from_runtime_libdir (char *sharedir);
 static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_bindir);
@@ -209,11 +211,11 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 #ifdef DEBUG_RUNPATH
 				fprintf (stderr, "executable is in '%s' (from PATH).\n", result);
 #endif
-				free (path);
+				gmt_free_null (path);
 				return result;
 			}
 		}
-		free (path);
+		gmt_free_null (path);
 	}
 	return NULL;
 }

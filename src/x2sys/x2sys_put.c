@@ -70,8 +70,8 @@ void *New_x2sys_put_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_x2sys_put_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);
-	if (C->T.TAG) free (C->T.TAG);
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->T.TAG) gmt_free_null (C->T.TAG);
 	GMT_free (GMT, C);
 }
 

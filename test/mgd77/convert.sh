@@ -7,7 +7,7 @@ log=convert.log
 
 OLD=$MGD77_HOME
 export MGD77_HOME=${GMT_SOURCE_DIR}/share/mgd77
-ln -fs "${src:-.}"/dummy.mgd77 12345678.mgd77
+ln -fs "${GMT_SRCDIR:-.}"/dummy.mgd77 12345678.mgd77
 
 # Make cdf file
 gmt mgd77convert 12345678 -Fa -Tc
@@ -25,8 +25,8 @@ mv 12345678.mgd77 tt.mgd77
 gmt mgd77convert 12345678 -Fc -Ta
 diff 12345678.mgd77 tt.mgd77 --strip-trailing-cr | tee -a fail >> $log
 echo "Test if mgd77 from nc matches original:" >> $log
-diff 12345678.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
+diff 12345678.mgd77 "${GMT_SRCDIR:-.}"/dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 echo "Test if mgd77 from dat matches original:" >> $log
-diff tt.mgd77 dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
+diff tt.mgd77 "${GMT_SRCDIR:-.}"/dummy.mgd77 --strip-trailing-cr | tee -a fail >> $log
 
 export MGD77_HOME=$OLD

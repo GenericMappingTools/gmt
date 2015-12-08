@@ -579,7 +579,7 @@ int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	GMT_free(GMT, rowVec);
-	free(tmp);
+	gmt_free_null (tmp);
 	if (whichBands) GMT_free(GMT, whichBands);
 	if (colVec) GMT_free(GMT, colVec);
 

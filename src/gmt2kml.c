@@ -164,16 +164,16 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->C.file) free (C->C.file);
-	if (C->D.file) free (C->D.file);
-	if (C->I.file) free (C->I.file);
-	if (C->N.fmt) free (C->N.fmt);
-	if (C->T.title) free (C->T.title);
-	if (C->T.folder) free (C->T.folder);
+	if (C->In.file) gmt_free_null (C->In.file);	
+	if (C->C.file) gmt_free_null (C->C.file);
+	if (C->D.file) gmt_free_null (C->D.file);
+	if (C->I.file) gmt_free_null (C->I.file);
+	if (C->N.fmt) gmt_free_null (C->N.fmt);
+	if (C->T.title) gmt_free_null (C->T.title);
+	if (C->T.folder) gmt_free_null (C->T.folder);
 	if (C->L.active) {
 		unsigned int col;
-		for (col = 0; col < C->L.n_cols; col++) free ((void *)C->L.name[col]);
+		for (col = 0; col < C->L.n_cols; col++) gmt_free_null (C->L.name[col]);
 		GMT_free (GMT, C->L.name);
 	}
 	GMT_free (GMT, C);
@@ -311,18 +311,14 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Color table */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) {
-					free (Ctrl->C.file);
-					Ctrl->C.file = NULL;
-				}
+				if (Ctrl->C.file)
+					gmt_free_null (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
 				Ctrl->D.active = true;
-				if (Ctrl->D.file) {
-					free (Ctrl->D.file);
-					Ctrl->D.file = NULL;
-				}
+				if (Ctrl->D.file)
+					gmt_free_null (Ctrl->D.file);
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Extrude feature down to the ground*/
@@ -381,7 +377,8 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = true;
-				free (Ctrl->I.file);
+				if (Ctrl->I.file)
+					gmt_free_null (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])
@@ -457,41 +454,41 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				Ctrl->Z.active = true;
 				pos = 0;
 				while ((GMT_strtok (&opt->arg[1], "+", &pos, p))) {
-				switch (p[0]) {
-					case 'a':	/* Altitude range */
-						if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-							GMT_Message (API, GMT_TIME_NONE, "-Z+a requires 2 arguments\n");
+					switch (p[0]) {
+						case 'a':	/* Altitude range */
+							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
+								GMT_Message (API, GMT_TIME_NONE, "-Z+a requires 2 arguments\n");
+								n_errors++;
+							}
+							Ctrl->Z.min[ALT] = atof (T[0]);	Ctrl->Z.max[ALT] = atof (T[1]);
+							break;
+						case 'l':	/* LOD */
+							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
+								GMT_Message (API, GMT_TIME_NONE, "-Z+l requires 2 arguments\n");
+								n_errors++;
+							}
+							Ctrl->Z.min[LOD] = atof (T[0]);	Ctrl->Z.max[LOD] = atof (T[1]);
+							break;
+						case 'f':	/* Fading */
+							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
+								GMT_Message (API, GMT_TIME_NONE, "-Z+f requires 2 arguments\n");
+								n_errors++;
+							}
+							Ctrl->Z.min[FADE] = atof (T[0]);	Ctrl->Z.max[FADE] = atof (T[1]);
+							break;
+						case 'v':
+							Ctrl->Z.invisible = true;
+							break;
+						case 'o':
+							Ctrl->Z.open = true;
+							break;
+						default:
+							GMT_Message (API, GMT_TIME_NONE, "-Z unrecognized modifier +%c\n", p[0]);
 							n_errors++;
-						}
-						Ctrl->Z.min[ALT] = atof (T[0]);	Ctrl->Z.max[ALT] = atof (T[1]);
-						break;
-					case 'l':	/* LOD */
-						if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-							GMT_Message (API, GMT_TIME_NONE, "-Z+l requires 2 arguments\n");
-							n_errors++;
-						}
-						Ctrl->Z.min[LOD] = atof (T[0]);	Ctrl->Z.max[LOD] = atof (T[1]);
-						break;
-					case 'f':	/* Fading */
-						if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
-							GMT_Message (API, GMT_TIME_NONE, "-Z+f requires 2 arguments\n");
-							n_errors++;
-						}
-						Ctrl->Z.min[FADE] = atof (T[0]);	Ctrl->Z.max[FADE] = atof (T[1]);
-						break;
-					case 'v':
-						Ctrl->Z.invisible = true;
-						break;
-					case 'o':
-						Ctrl->Z.open = true;
-						break;
-					default:
-						GMT_Message (API, GMT_TIME_NONE, "-Z unrecognized modifier +%c\n", p[0]);
-						n_errors++;
-						break;
+							break;
+					}
 				}
 				break;
-			}
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);

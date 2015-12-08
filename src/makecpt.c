@@ -109,9 +109,9 @@ void *New_makecpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_makecpt_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);
-	if (C->C.file) free (C->C.file);
-	if (C->T.file) free (C->T.file);
+	if (C->Out.file) gmt_free_null (C->Out.file);
+	if (C->C.file) gmt_free_null (C->C.file);
+	if (C->T.file) gmt_free_null (C->T.file);
 	GMT_free (GMT, C);
 }
 

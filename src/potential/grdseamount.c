@@ -144,8 +144,8 @@ void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free (C->G.file);	
-	if (C->M.file) free (C->M.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
+	if (C->M.file) gmt_free_null (C->M.file);	
 	if (C->T.time) GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);	
 }

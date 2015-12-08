@@ -12,7 +12,7 @@ OLDX=$X2SYS_HOME
 export X2SYS_HOME=.
 
 rm -rf TEST
-ln -fs "${src:-.}"/bad "${src:-.}"/data .
+ln -fs "${GMT_SRCDIR:-.}"/bad "${GMT_SRCDIR:-.}"/data .
 (cd bad; ls *.xyg) > bad.lis
 (cd data; ls *.xyg) > data.lis
 

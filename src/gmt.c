@@ -231,7 +231,7 @@ no_such:
 	}
 
 exit:
-	if (progname) free (progname);
+	if (progname) gmt_free_null (progname);
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;

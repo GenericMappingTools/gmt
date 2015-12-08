@@ -388,8 +388,8 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	}
 
 	for (n = 0; n < n_files; n++) {
-		free (L[n].file);
-		free (L[n].region);
+		gmt_free_null (L[n].file);
+		gmt_free_null (L[n].region);
 	}
 	GMT_free (GMT, L);
 	*blend = B;
@@ -451,9 +451,9 @@ void *New_grdblend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Deallocate control structure */
 	unsigned int k;
 	if (!C) return;
-	for (k = 0; k < C->In.n; k++) if (C->In.file[k]) free (C->In.file[k]);
+	for (k = 0; k < C->In.n; k++) if (C->In.file[k]) gmt_free_null (C->In.file[k]);
 	if (C->In.file) GMT_free (GMT, C->In.file);
-	if (C->G.file) free (C->G.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

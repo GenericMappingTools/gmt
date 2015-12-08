@@ -735,8 +735,8 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	if (do_extra) GMT_free (GMT, z_tmp);
 
 	if (emode) {
-		free (GMT->current.io.o_format[i_col]);		/* Free the temporary integer format */
-		GMT->current.io.o_format[i_col] = old_format;	/* Restore previous format */
+		gmt_free_null (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
+		GMT->current.io.o_format[i_col] = old_format;		/* Restore previous format */
 	}
 	if (Ctrl->D.active) {	/* Free histogram binning machinery */
 		GMT_free (GMT, B->count);
