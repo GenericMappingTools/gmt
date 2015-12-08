@@ -4501,7 +4501,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_BUFSIZ);
+		strncpy (GMT->current.ps.map_logo_label, GMT->init.module_name, GMT_BUFSIZ-1);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;
@@ -6066,7 +6066,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 	 * mode is not yet used.
 	 */
 
-	char ps_file[GMT_BUFSIZ+1] = {""};
+	char ps_file[GMT_BUFSIZ] = {""};
 	int c;
 	bool close_file = false;
 	size_t n_alloc = 0;
@@ -6078,8 +6078,8 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		struct stat buf;
-		char path[GMT_BUFSIZ+1] = {""};
-		strncpy (ps_file, source, GMT_BUFSIZ);
+		char path[GMT_BUFSIZ] = {""};
+		strncpy (ps_file, source, GMT_BUFSIZ-1);
 		if (!GMT_getdatapath (GMT, ps_file, path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PS file %s\n", ps_file);
 			return (NULL);
@@ -6167,7 +6167,7 @@ int GMT_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 	
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		static char *msg2[2] = {"create", "append to"};
-		strncpy (ps_file, dest, GMT_BUFSIZ);
+		strncpy (ps_file, dest, GMT_BUFSIZ-1);
 		append = (ps_file[0] == '>');	/* Want to append to existing file */
 		if ((fp = fopen (&ps_file[append], (append) ? "a" : "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot %s file %s\n", msg2[append], &ps_file[append]);
