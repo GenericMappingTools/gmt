@@ -1670,7 +1670,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				return (GMT_ERROR_ON_FOPEN);
 			}
 			S_obj->close_file = true;	/* We do want to close files we are opening, but later */
-			strncpy (GMT->current.io.current_filename[direction], S_obj->filename, GMT_BUFSIZ);
+			strncpy (GMT->current.io.current_filename[direction], S_obj->filename, GMT_BUFSIZ-1);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s file %s\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
 			if (GMT_binary_header (GMT, direction)) {
@@ -5169,10 +5169,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 				if (!(strstr (file, "+U") || strstr (file, "+u")))	/* Only append extension and supply path if not containing +u|U */
 					GMT_getsharepath (API->GMT, "cpt", file, ext, CPT_file, R_OK);
 				else	/* Use name as is */
-					strncpy (CPT_file, file, GMT_BUFSIZ);
+					strncpy (CPT_file, file, GMT_BUFSIZ-1);
 			}
 			else	/* Got color list, now a temp CPT file instead */
-				strncpy (CPT_file, file, GMT_BUFSIZ);
+				strncpy (CPT_file, file, GMT_BUFSIZ-1);
 			gmt_free_null (file);	/* Free temp CPT file name */
 			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) return_null (API, API->error);
 		}
@@ -5690,7 +5690,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							n_fields = 0;
 							break;
 						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
-							strncpy (GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ);
+							strncpy (GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
@@ -5712,9 +5712,9 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					switch (status) {
 						case GMT_IO_DATA_RECORD:	/* Got a data record */
 							S_obj->status = GMT_IS_USING;		/* Mark this resource as currently being read */
-							record = strncpy (GMT->current.io.current_record, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->record[p[GMT_ROW]], GMT_BUFSIZ);	/* Copy record */
+							record = strncpy (GMT->current.io.current_record, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->record[p[GMT_ROW]], GMT_BUFSIZ-1);	/* Copy record */
 							if (GMT->current.io.current_record[0] == GMT->current.setting.io_seg_marker[GMT_IN]) {	/* Got a seg header pretending to be data */
-								strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, GMT->current.io.current_record), GMT_BUFSIZ);
+								strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, GMT->current.io.current_record), GMT_BUFSIZ-1);
 								record = NULL;	/* No data record to return */
 								n_fields = 0;
 								status = GMT_IO_SEGMENT_HEADER;	/* Change our mind */
@@ -5726,14 +5726,14 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							break;
 						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
 							if (DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)	/* Copy segment header */
-								strncpy (GMT->current.io.segment_header, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZ);
+								strncpy (GMT->current.io.segment_header, DT_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZ-1);
 							else
 								GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
 						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
-							strncpy (GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ);
+							strncpy (GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
@@ -5809,7 +5809,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 					GMT_write_tableheader (API->GMT, S_obj->fp, s);	error = 1;	/* Write one item */
 					break;
 				case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
-					if (record) strncpy (API->GMT->current.io.segment_header, record, GMT_BUFSIZ);	/* Default to last segment record if NULL */
+					if (record) strncpy (API->GMT->current.io.segment_header, record, GMT_BUFSIZ-1);	/* Default to last segment record if NULL */
 					GMT_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);	error = 1;	/* Write one item */
 					break;
 				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */

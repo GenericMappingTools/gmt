@@ -1136,7 +1136,7 @@ unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record,
 		S->tvalue = GMT_memory (GMT, S->tvalue, S->n_aspatial, char *);
 		S->dvalue = GMT_memory (GMT, S->dvalue, S->n_aspatial, double);
 	}
-	strncpy (buffer, record, GMT_BUFSIZ); /* working copy */
+	strncpy (buffer, record, GMT_BUFSIZ-1); /* working copy */
 	gmt_handle_bars (GMT, buffer, 0);	/* Replace vertical bars inside quotes with ASCII 1 */
 	stringp = buffer;
 	while ( (token = strsep (&stringp, "|")) != NULL ) {
@@ -1570,7 +1570,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 			GMT->current.io.segment_header[0] = '\0';
 			if (kind == 1) {
 				/* Just save the header content, not the marker and leading whitespace */
-				strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, line), GMT_BUFSIZ);
+				strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, line), GMT_BUFSIZ-1);
 			}
 			/* else we got a segment break instead - and header was set to NULL */
 			*status = 0;
@@ -1695,7 +1695,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *st
 		}
 		if (line[0] == '#') {	/* Got a file header, take action and return */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
-			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
+			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
 			*n = 1ULL;
 			*status = 0;
@@ -4785,7 +4785,7 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			/* Watch for shit like 2013-OCT-23 with no trailing T */
 			if (GMT->current.io.date_input.mw_text && GMT->current.io.date_input.delimiter[0] && (p2 = strrchr (s, GMT->current.io.date_input.delimiter[0][0])) > p) {
 				/* Got a delimiter after that T, so assume it is a T in a name instead */
-				strncpy (calstring, s, GMT_LEN64);
+				strncpy (calstring, s, GMT_LEN64-1);
 				clocklen = 0;
 			}
 			else {	/* Regular <date>T<clock> */
@@ -4797,7 +4797,7 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		}
 		else {	/* There is no trailing T.  Put all of s in calstring.  */
 			clocklen = 0;
-			strncpy (calstring, s, GMT_LEN64);
+			strncpy (calstring, s, GMT_LEN64-1);
 		}
 		x = 0.0;	/* Default to 00:00:00 if no clock is given */
 		if (clocklen && gmt_scanf_clock (GMT, clockstring, &x)) return (GMT_IS_NAN);
@@ -4889,7 +4889,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, u
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (file, source, GMT_BUFSIZ);
+		strncpy (file, source, GMT_BUFSIZ-1);
 		if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			return (NULL);
@@ -5755,7 +5755,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strncpy (file, dest, GMT_BUFSIZ);
+			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], open_mode)) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -5866,7 +5866,7 @@ int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strncpy (file, dest, GMT_BUFSIZ);
+			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (D->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], open_mode)) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -5950,7 +5950,7 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strncpy (file, dest, GMT_BUFSIZ);
+			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s in gmt_write_texttable\n", &file[append]);
@@ -6046,7 +6046,7 @@ int GMT_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strncpy (file, dest, GMT_BUFSIZ);
+			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (D->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -6479,7 +6479,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strncpy (file, source, GMT_BUFSIZ);
+		strncpy (file, source, GMT_BUFSIZ-1);
 		if ((fp = GMT_fopen (GMT, file, open_mode)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */

@@ -2483,7 +2483,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if ( strcmp(from_gdalread->band_field_names[0].DataType, "Byte") ) {
+	if (from_gdalread->band_field_names != NULL && strcmp(from_gdalread->band_field_names[0].DataType, "Byte")) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Using data type other than byte (unsigned char) is not implemented\n");
 		return (EXIT_FAILURE);
 	}
