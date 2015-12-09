@@ -15,7 +15,7 @@ gmt pstext -R0/2.25/0/2 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> $p
 2.35   0.5  LM MAP_ANNOT_MIN_SPACING
 1      0.5  RT MAP_LINE_STEP
 2.7    0.32 LM PS_PAGE_COLOR
-2.7    0.18 LM PAGE_MEDIA
+2.7    0.18 LM PS_MEDIA
 1.5     1.8 LB FONT_ANNOT_PRIMARY
 EOF
 echo -0.4 -0.4 | gmt psxy -R -J -O -K -Sc0.04i -Gblue -N >> $ps
