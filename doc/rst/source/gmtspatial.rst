@@ -17,7 +17,8 @@ Synopsis
 [ |-C| ]
 [ |-D|\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
 [ |-E|\ **+**\ \|\ **-** ]
-[ |-F|\ [**l**] ] [ **-I**\ [**e**\ \|\ **i**] ]
+[ |-F|\ [**l**] ]
+[ |-I|\ [**e**\ \|\ **i**] ]
 [ |-N|\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
 [ |-Q|\ [[**-**\ \|\ **+**\ ]*unit*\ ][**+h**\ ][**+l**\ ][**+p**\ ] ]
 [ |SYN_OPT-R| ]
@@ -248,7 +249,7 @@ To determine the intersections between the polygons A.txt and B.txt, run
 
    ::
 
-    gmt spatial A.txt B.txt -Ce > crossovers.txt
+    gmt spatial A.txt B.txt -Ie > crossovers.txt
 
 See Also
 --------
