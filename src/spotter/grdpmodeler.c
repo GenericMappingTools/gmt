@@ -254,7 +254,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {if (p) GMT_free (GMT, p); Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdpmodeler (void *V_API, int mode, void *args)
 {
@@ -338,7 +338,6 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->T.active && Ctrl->T.value > Ctrl->N.t_upper) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
-		GMT_free (GMT, p);
 		Return (EXIT_FAILURE);
 	}
 	
@@ -525,7 +524,6 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	GMT_free (GMT, grd_x);
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
-	GMT_free (GMT, p);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

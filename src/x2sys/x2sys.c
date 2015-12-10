@@ -1464,13 +1464,18 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S)
 int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix)
 {
 	unsigned int id;
+	size_t L_suffix, L_track;
 	bool add_suffix;
 	char geo_path[GMT_BUFSIZ] = {""};
 	GMT_UNUSED(GMT);
 
 	/* Check if we need to append suffix */
 
-	add_suffix = strncmp (&track[strlen(track)-strlen(suffix)], suffix, strlen(suffix));	/* Need to add suffix? */
+	L_track = strlen(track);	L_suffix = (suffix) ? strlen(suffix) : 0;
+	if (L_track > L_suffix)	/* See if track explicitly ends in ".<suffix>" or not */
+		add_suffix = (L_suffix == 0 || strncmp (&track[L_track-L_suffix], suffix, L_suffix) != 0);	/* strncmp returns 0 if a match */
+	else	/* Cannot possibly end in ".<suffix>" se we must add suffix */
+		add_suffix = true;
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it, possibly after appending suffix */
 		if (add_suffix)
