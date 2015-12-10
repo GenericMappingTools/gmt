@@ -144,7 +144,7 @@ void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint
 {
 	uint64_t i;
 	unsigned int j;
-	double out[6];
+	static double out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 	for (i = 0; i < n_data; i++) {
 		for (j = 0; j < n_outputs; j++) {
