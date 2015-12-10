@@ -7280,14 +7280,16 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	}
 	/* 1b. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
 	if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
+		struct GMT_OPTION *delete = NULL;
 		for (opt = *head; opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
 			if (!strcmp (opt->arg, "=")) {
 				if (opt->next) {	/* Combine the previous = and <whatever> options into a single -=<whatever> option, then delete the former */
 					opt->next->option = '=';
-					GMT_Delete_Option (API, opt);
+					delete = opt;
 				}
 			}
 		}
+		if (delete) GMT_Delete_Option (API, delete);
 	}
 	gmt_free_null (module);
 
