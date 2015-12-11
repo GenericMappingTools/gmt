@@ -1897,7 +1897,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
-	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4];
+	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0};
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
