@@ -802,7 +802,7 @@ int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode)
 	for (k = ok = 0; !ok && k < N_PDF_TRANSPARENCY_MODES; k++) if (!strcmp (PDF_transparency_modes[k], mode)) ok = 1;
 	if (!ok) PSL_message (PSL, PSL_MSG_FATAL, "Unknown PDF transparency mode %s - ignored\n", mode);
 
-	strncpy (PSL->current.transparency_mode, mode, 16U);
+	strncpy (PSL->current.transparency_mode, mode, 15U);	/* Keep one character for null terminator */
 	return (PSL_NO_ERROR);
 }
 
@@ -1641,7 +1641,7 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 		PSL_command (PSL, "PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb\n");
 	PSL_command (PSL, "U\n");
 	PSL_comment (PSL, "PSL_plottextbox end:\n");
-	strncpy (PSL->current.string, &text[i], PSL_BUFSIZ);	/* Save the string */
+	strncpy (PSL->current.string, &text[i], PSL_BUFSIZ - 1);	/* Save the string with one left for null terminator */
 	return (PSL_NO_ERROR);
 }
 
