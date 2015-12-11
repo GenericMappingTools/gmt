@@ -194,7 +194,7 @@ int64_t GMT_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 		day_offset = (GMT_is_gleap (gy)) ? -1 : -2;
 
 	yearm1 = gy - 1;
-	rd = day_offset + gd + 365 * yearm1;
+	rd = day_offset + gd + 365 * (int64_t) yearm1;
 	s = floor (yearm1/4.0) - floor (yearm1/100.0) + floor (yearm1/400.0);
 	s += floor ((367 * gm - 362)/12.0);
 	rd += lrint (s);
@@ -499,7 +499,6 @@ void gmt_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL
 			x = step_secs * floor (p->sd[0] / step_secs);
 			if (x != p->sd[0]) {
 				p->dt[0] -= ((p->sd[0] - x) * GMT->current.setting.time_system.i_scale);
-				x = p->sd[0];
 			}
 		}
 		/* Step to next interval time.  If this would put GMT_DAY2SEC_I secs
