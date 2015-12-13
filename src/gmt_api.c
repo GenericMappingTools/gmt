@@ -2303,7 +2303,7 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 						for (col = 0; col < n_columns; col++) {	/* Place the record into the dataset segment structure */
 							//S->coord[col][n_records] = GMT->current.io.curr_rec[col];
 							S->coord[col][n_records] = gmt_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns);
-							
+
 						}
 						got_data = true;	/* No longer before first data record */
 						n_records++;	/* Update count of records in current segment */
@@ -3943,7 +3943,7 @@ int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
 	}
 
 	GMT_strtok (*str, ",", &pos, last);	/* Get first color entry */
-	strncpy (first, last, GMT_LEN64);	/* Make this the first color */
+	strncpy (first, last, GMT_LEN64-1);	/* Make this the first color */
 	if (GMT_getrgb (API->GMT, first, rgb)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
 		return (GMT_NOTSET);
@@ -3954,7 +3954,7 @@ int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
 			return (GMT_NOTSET);
 		}
 		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);
-		strncpy (first, last, GMT_LEN64);	/* Make last the new first color */
+		strncpy (first, last, GMT_LEN64-1);	/* Make last the new first color */
 		z += 1.0;				/* Increment z-slice values */
 	}
 	fclose (fp);
@@ -4506,7 +4506,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 
 	S_obj->alloc_level = GMT->hidden.func_level;	/* Object was allocated at this module nesting level */
 	if (module_input) S_obj->module_input = true;
-	
+
 	/* Here S is not NULL and no errors have occurred (yet) */
 
 	/* Try this for a fix: */
@@ -4544,7 +4544,7 @@ int GMT_Get_Family (void *V_API, unsigned int direction, struct GMT_OPTION *head
 	API = gmt_get_api_ptr (V_API);
 	GMT_memset (counter, GMT_IS_PS, unsigned int);	/* Initialize counter */
 	API->error = GMT_OK;	/* Reset in case it has some previous error */
-	
+
 	for (current = head; current; current = current->next) {		/* Loop over the list and look for input files */
 		if (current->option != desired_option) continue;				/* Not a module resource argument */
 		if ((object_ID = GMTAPI_Decode_ID (current->arg)) == GMT_NOTSET) continue;	/* Not a registered resource */
@@ -5192,7 +5192,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	/* With out_ID in hand we can now put the data where it should go */
 	if (GMT_Put_Data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
 	if (output) free (output);	/* Done with this variable */
-	
+
 #ifdef DEBUG
 	GMT_list_API (API, "GMT_Write_Data");
 #endif
@@ -5351,7 +5351,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 	S_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the current data source we are working on */
 	API->GMT->current.io.read_mixed = (mode == GMT_READ_MIXED);	/* Cannot worry about constant # of columns if text is present */
 	GMT = API->GMT;
-	
+
 	do {	/* We do this until we can secure the next record or we run out of records (and return EOF) */
 		get_next_record = false;	/* We expect to read one data record and return */
 		GMT->current.io.status = 0;	/* Initialize status to OK */
@@ -6053,7 +6053,7 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 #ifdef DEBUG
 		GMT_list_API (API, "GMT_Destroy_Data");
 #endif
-		
+
 	}
 	else {
 		/* Quietly ignore these errors: GMT_PTR_IS_NULL, GMT_FREE_EXTERNAL_NOT_ALLOWED, GMT_FREE_WRONG_LEVEL as they are not considered errors here. */
@@ -6455,7 +6455,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *ar
 				/* i/o modifiers */
 				case 'w':	/* Save FFT input; optionally append file suffix */
 					info->save[GMT_IN] = true;
-					if (p[1]) strncpy (info->suffix, &p[1], GMT_LEN64);
+					if (p[1]) strncpy (info->suffix, &p[1], GMT_LEN64-1);
 					break;
 				case 'z': 	/* Save FFT output in two files; append p for polar form */
 					info->save[GMT_OUT] = true;
@@ -6491,7 +6491,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *ar
 			}
 			if (pos) info->info_mode = GMT_FFT_SET;
 	}
-	if (info->suffix[0] == '\0') strncpy (info->suffix, "tapered", GMT_LEN64);	/* Default suffix */
+	if (info->suffix[0] == '\0') strncpy (info->suffix, "tapered", GMT_LEN64-1);	/* Default suffix */
 	info->set = true;	/* We parsed this option */
 	if (info->info_mode == GMT_FFT_SET) {
 		if (dim == 2U && (info->nx <= 0 || info->ny <= 0)) {
