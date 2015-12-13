@@ -42,7 +42,7 @@ EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_M
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
 EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);
 EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile);
-	
+
 #define GMTMATH_ARG_IS_OPERATOR	 0
 #define GMTMATH_ARG_IS_FILE	-1
 #define GMTMATH_ARG_IS_NUMBER	-2
@@ -182,7 +182,7 @@ bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col)
 	char p[GMT_BUFSIZ];
 
 	/* decode_columns is used to handle the parsing of -C<cols>.  */
-	
+
 	if (!txt[0]) {	/* Reset to default */
 		for (i = 0; i < n_col; i++) skip[i] = false;
 		skip[t_col] = true;
@@ -571,7 +571,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 				break;
 			case '#':	/* Skip numbers */
 				break;
-				
+
 			/* Processes program-specific parameters */
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
@@ -947,7 +947,7 @@ int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
 		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
 		T_prev2->segment[s]->coord[col][row] = GMT_binom_cdf (GMT, x, n, p);
-		
+
 	}
 	return 0;
 }
@@ -1009,7 +1009,7 @@ int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 		n = lrint ((S[prev1]->constant) ? S[prev1]->factor : T_prev1->segment[s]->coord[col][row]);
 		x = lrint ((S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row]);
 		T_prev2->segment[s]->coord[col][row] = GMT_binom_pdf (GMT, x, n, p);
-		
+
 	}
 	return 0;
 }
@@ -1069,7 +1069,7 @@ int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
-			else {		
+			else {
 				b = (uint64_t)b_signed;
 				result = a << b;
 				result_trunc = result & DOUBLE_BIT_MASK;
@@ -1161,7 +1161,7 @@ int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
-			else {		
+			else {
 				b = (uint64_t)b_signed;
 				result = a >> b;
 				result_trunc = result & DOUBLE_BIT_MASK;
@@ -1666,7 +1666,7 @@ int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 
 	/* Central 1st difference in t */
 	for (s = 0; s < info->T->n_segments; s++) {
-		for (row = 0; row < info->T->segment[s]->n_rows - 1; row++) 
+		for (row = 0; row < info->T->segment[s]->n_rows - 1; row++)
 			T->segment[s]->coord[col][row] = T->segment[s]->coord[col][row+1] - T->segment[s]->coord[col][row];
 
 		T->segment[s]->coord[col][info->T->segment[s]->n_rows - 1] = 0;
@@ -3099,7 +3099,7 @@ int table_PLM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	assert (last > 1);
 	prev = last - 1;	first = last - 2;
 	T_first = S[first]->D->table[0];
-	
+
 	/* last holds the order M, prev holds the degree L, first holds the argument x = cos(colat) */
 
 	if (!(S[prev]->constant && S[last]->constant)) {
@@ -3474,7 +3474,7 @@ int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	int shift;
 	double *z = NULL;
 	struct GMT_DATATABLE *T_prev = NULL;
-	
+
 	assert (last > 0);
 	prev = last - 1;
 	T_prev = S[prev]->D->table[0];
@@ -4273,7 +4273,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	if (!txt) return (GMTMATH_ARG_IS_BAD);
 
 	if (GMT_File_Is_Memory (txt)) return GMTMATH_ARG_IS_FILE;	/* Deal with memory references first */
-	
+
 	/* Check if argument is operator */
 
 	if ((key = GMT_hash_lookup (GMT, txt, H, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) >= GMTMATH_ARG_IS_OPERATOR) return (key);
@@ -4353,7 +4353,7 @@ void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 	else if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("TCDF");     }
 	else if (!strcmp (*arg, "Tn"))      {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("TNORM");    }
 	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("ZCDF");     }
-	
+
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }
@@ -4365,7 +4365,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done, no_C = true;
 	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
-	
+
 	uint64_t dim[4] = {1, 1, 0, 0};
 
 	double t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
@@ -4374,7 +4374,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 #include "gmtmath_op.h"
 
 	int (*call_operator[GMTMATH_N_OPERATORS]) (struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int);
-	
+
 	struct GMTMATH_STACK *stack[GMTMATH_STACK_SIZE];
 	struct GMTMATH_STORED *recall[GMTMATH_STORE_SIZE];
 	struct GMT_DATASET *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
@@ -4427,7 +4427,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	GMT->current.io.skip_if_NaN[Ctrl->N.tcol] = t_check_required;	/* Determines if the t-column may have NaNs */
 
 	/* Because of how gmtmath works we do not use GMT_Init_IO to register inputfiles */
-	
+
 	/* Read the first file we encounter so we may allocate space */
 
 	/* Check sanity of all arguments and also look for an input file to get t from */
@@ -4555,7 +4555,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */
 		Template = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, D_in);
-		
+
 	else {		/* Must use -N -T etc to create single segment */
 		dim[GMT_COL] = n_columns;	dim[GMT_ROW] = n_rows;
 		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
@@ -4563,7 +4563,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	stack[0]->alloc_mode = 1;	/* Allocated locally */
 	Ctrl->N.ncol = n_columns;
 	if (!Ctrl->T.notime && n_columns > 1) Ctrl->C.cols[Ctrl->N.tcol] = (Ctrl->Q.active) ? false : true;
-	
+
 	/* Create the Time data structure with 3 cols: 0 is t, 1 is normalized tn, 2 is row numbers */
 	if (D_in) {	/* Either D_in or D_stdin */
 		Time = GMT_alloc_dataset (GMT, D_in, 0, 3, GMT_ALLOC_NORMAL);
@@ -4899,7 +4899,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_DATASEGMENT *S = stack[0]->D->table[0]->segment[0];
 		uint64_t dim[4] = {1, 1, 0, 1};
-		
+
 		dim[GMT_ROW] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
 		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->coord[GMT_X][kk] = S->coord[info.r_col][kk];
@@ -4913,7 +4913,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	}
 	else {	/* Regular table result */
 		bool template_used = false, place_t_col = (Ctrl->T.active && t_check_required && !Ctrl->Q.active && !touched_t_col);
-		
+
 		if (stack[0]->D)	/* There is an output stack, select it */
 			R = stack[0]->D;
 		else {		/* Can happen if only -T [-N] was specified with no operators */
@@ -4965,7 +4965,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		gmt_free_null (recall[kk]->label);
 		GMT_free (GMT, recall[kk]);
 	}
-	
+
 	if (nstack > 1) GMT_Report (API, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack-1);
 
 	Return (EXIT_SUCCESS);

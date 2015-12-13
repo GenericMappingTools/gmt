@@ -4097,7 +4097,7 @@ void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 	else if (!strcmp (*arg, "Xn"))      {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("XNORM");    }
 	else if (!strcmp (*arg, "Yn"))      {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("YNORM");    }
 	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("ZCDF");     }
-	
+
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
 }

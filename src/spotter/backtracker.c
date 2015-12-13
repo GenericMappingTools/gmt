@@ -128,11 +128,11 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 
 void *New_backtracker_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct BACKTRACKER_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct BACKTRACKER_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	return (C);
 }
 
@@ -185,7 +185,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Wa will output lon,lat,angle,az,major,minor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D to specify which direction to rotate [forward in time].\n");
 	GMT_Option (API, "bi3,bo,d,h,i,o,s,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -344,7 +344,7 @@ int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], doub
 {
 	int n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
-	
+
 	switch (way) {
 		case SPOTTER_BACK:
 			n = spotter_backtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, time_flag, wesn, c);
@@ -356,7 +356,7 @@ int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], doub
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad use of spotter_track\n");
 			break;
 	}
-		
+
 	return (n);
 }
 
@@ -379,7 +379,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	int n_fields, error;		/* Misc. signed counters */
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	bool make_path = false;		/* true means create continuous path, false works on discrete points */
-	
+
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
 	double lon, lat;		/* Seamounts location in decimal degrees */
@@ -418,7 +418,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	if ((error = GMT_backtracker_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the backtracker main code ----------------------------*/
-	
+
 	if (Ctrl->E.rot.single) {	/* Get rotation matrix R */
 		GMT_make_rot_matrix (GMT, Ctrl->E.rot.lon, Ctrl->E.rot.lat, Ctrl->E.rot.w, R);
 	}
@@ -494,7 +494,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 		}
 
 		/* Data record to process */
-	
+
 		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then exit */
 			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
@@ -505,7 +505,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			continue;
 		}
-		
+
 		if (Ctrl->Q.active) in[GMT_Z] = Ctrl->Q.t_fix;
 		if (in[GMT_Z] < 0.0) {	/* Negative ages are flags for points to be skipped */
 			n_skipped++;
@@ -550,7 +550,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 			else
 				sprintf (GMT->current.io.segment_header, "%s %s %g %g", type, dir, in[GMT_X], in[GMT_Y]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
-			
+
 			if (Ctrl->F.active) {	/* Must generate intermediate points in time, then rotatate each adjusted location */
 				t = (Ctrl->A.mode) ? t_low : 0.0;
 				t_end = (Ctrl->A.mode) ? t_high : age;
@@ -591,7 +591,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
-				
+
 				n_track = lrint (c[0]);
 				for (j = 0, i = 1; j < n_track; j++, i += 3) {
 					out[GMT_Z] = c[i+2];
@@ -644,6 +644,6 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	/* Clean up and exit */
 
 	if (!Ctrl->E.rot.single) GMT_free (GMT, p);
-	
+
 	Return (GMT_OK);
 }
