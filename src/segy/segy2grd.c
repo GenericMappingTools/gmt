@@ -110,9 +110,9 @@ void *New_segy2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_segy2grd_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->In.file) free (C->In.file);
-	if (C && C->D.text) free (C->D.text);
-	if (C && C->G.file) free (C->G.file);
+	if (C && C->In.file) gmt_free_null (C->In.file);
+	if (C && C->D.text) gmt_free_null (C->D.text);
+	if (C && C->G.file) gmt_free_null (C->G.file);
 	GMT_free (GMT, C);
 }
 
@@ -440,8 +440,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 
-			free (data);
-			free (header);
+			gmt_free_null (data);
+			gmt_free_null (header);
 			ix++;
 		}
 	}
@@ -520,8 +520,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 					}
 				}
 			}
-			free (data);
-			free (header);
+			gmt_free_null (data);
+			gmt_free_null (header);
 			ix++;
 		}
 

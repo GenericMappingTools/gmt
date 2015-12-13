@@ -133,9 +133,9 @@ void *New_talwani3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_talwani3d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->N.file) free (C->N.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->Z.file) free (C->Z.file);	
+	if (C->N.file) gmt_free_null (C->N.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
+	if (C->Z.file) gmt_free_null (C->Z.file);	
 	GMT_free (GMT, C);	
 }
 

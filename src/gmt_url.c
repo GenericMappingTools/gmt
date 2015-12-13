@@ -222,7 +222,7 @@ static int use_buffer(URL_FILE *file,int want)
   if((file->buffer_pos - want) <=0) {
     /* ditch buffer - write will recreate */
     if(file->buffer)
-      free(file->buffer);
+      free (file->buffer);
 
     file->buffer=NULL;
     file->buffer_pos=0;
@@ -282,7 +282,7 @@ URL_FILE *url_fopen(const char *url,const char *operation)
       /* cleanup */
       curl_easy_cleanup(file->handle.curl);
 
-      free(file);
+      free (file);
 
       file = NULL;
     }
@@ -314,9 +314,10 @@ int url_fclose(URL_FILE *file)
   }
 
   if(file->buffer)
-    free(file->buffer);/* free any allocated buffer space */
+    free (file->buffer);/* free any allocated buffer space */
 
-  free(file);
+  free (file);
+  file=NULL;
 
   return ret;
 }

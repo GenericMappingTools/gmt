@@ -136,6 +136,9 @@
 #define PSL_exit(code) exit(code)
 #endif
 
+/*! Convenience macro for free that excplicitly sets freed pointer to NULL */
+#define psl_free_null(ptr) (free((void *)(ptr)),(ptr)=NULL)
+
 /*--------------------------------------------------------------------
  *		     STANDARD CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
@@ -387,8 +390,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 		DOS_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
-			free (PSL->internal.USERDIR);
-			PSL->internal.USERDIR = NULL;
+			psl_free_null (PSL->internal.USERDIR);
 		}
 	}
 
@@ -406,9 +408,9 @@ int PSL_endsession (struct PSL_CTRL *PSL)
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
 	if (PSL->internal.SHAREDIR)
-		free (PSL->internal.SHAREDIR);
+		psl_free_null (PSL->internal.SHAREDIR);
 	if (PSL->internal.USERDIR)
-		free (PSL->internal.USERDIR);
+		psl_free_null (PSL->internal.USERDIR);
 	PSL_free (PSL->init.encoding);
 	PSL_free (PSL->init.session);
 	PSL_free (PSL);
@@ -689,7 +691,7 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 int PSL_free_nonmacro (void *addr)
 {
 	if (addr)
-		free (addr);
+		psl_free_null (addr);
 	return (PSL_NO_ERROR);
 }
 
@@ -2594,7 +2596,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		c = strtok_r (NULL, sep, &lastp);
 	}
 	text = (char **) PSL_memory (PSL, text, n_words, char *);
-	free (copy);
+	psl_free_null (copy);
 
 	/* Now process the words into pieces we can typeset. */
 
@@ -2779,7 +2781,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		}
 
 		PSL_free (clean);	/* Reclaim this memory */
-		free (text[i]);	/* since strdup created it */
+		psl_free_null (text[i]);	/* since strdup created it */
 
 	} /* End of word loop */
 

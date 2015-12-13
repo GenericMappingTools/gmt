@@ -72,7 +72,7 @@ void *New_gmtsimplify_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_gmtsimplify_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);	
+	if (C->Out.file) gmt_free_null (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 

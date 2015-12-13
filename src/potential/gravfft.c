@@ -149,10 +149,10 @@ void *New_gravfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 void Free_gravfft_Ctrl (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->par) GMT_free (GMT, C->par);	
-	if (C->In.file[0]) free (C->In.file[0]);	
-	if (C->In.file[1]) free (C->In.file[1]);	
-	if (C->D.file) free (C->D.file);	
-	if (C->G.file) free (C->G.file);	
+	if (C->In.file[0]) gmt_free_null (C->In.file[0]);	
+	if (C->In.file[1]) gmt_free_null (C->In.file[1]);	
+	if (C->D.file) gmt_free_null (C->D.file);	
+	if (C->G.file) gmt_free_null (C->G.file);	
 	if (C->N.info) GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);	
 }

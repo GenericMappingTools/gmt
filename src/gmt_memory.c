@@ -180,7 +180,7 @@ static inline struct MEMORY_ITEM * gmt_treeinsert (struct MEMORY_ITEM *t, void *
 		return new;
 	} else {
 		/* We get here if addr is already in the tree. Don't add it again. */
-		free (new);
+		gmt_free_null (new);
 		return t;
 	}
 }
@@ -208,8 +208,8 @@ static inline struct MEMORY_ITEM * gmt_treedelete (struct MEMORY_ITEM *t, void *
 			x = gmt_treesplay (t->l, addr);
 			x->r = t->r;
 		}
-		if (t->name != NULL) free (t->name);
-		free (t);
+		if (t->name != NULL) gmt_free_null (t->name);
+		gmt_free_null (t);
 		return x;
 	}
 	return t; /* It wasn't there */
@@ -221,8 +221,8 @@ static inline void gmt_treedestroy (struct MEMORY_ITEM **t) {
 	if (x != NULL) {
 		gmt_treedestroy (&x->l);
 		gmt_treedestroy (&x->r);
-		if (x->name != NULL) free (x->name);
-		free (x);
+		if (x->name != NULL) gmt_free_null (x->name);
+		gmt_free_null (x);
 		*t = NULL;
 	}
 }
@@ -587,11 +587,11 @@ void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 #elif defined(WIN32) && defined(USE_MEM_ALIGNED)
 		_aligned_free (addr);
 #else
-		free (addr);
+		gmt_free_null (addr);
 #endif
 	}
 	else
-		free (addr);
+		gmt_free_null (addr);
 }
 
 void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where)

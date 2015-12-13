@@ -132,7 +132,7 @@ void *New_mapproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->L.file) free (C->L.file);
+	if (C->L.file) gmt_free_null (C->L.file);
 	GMT_free (GMT, C);
 }
 

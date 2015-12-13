@@ -397,9 +397,9 @@ void *New_sphtriangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 
 void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);
-	if (C->G.file) free (C->G.file);
-	if (C->N.file) free (C->N.file);
+	if (C->Out.file) gmt_free_null (C->Out.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->N.file) gmt_free_null (C->N.file);
 	GMT_free (GMT, C);
 }
 

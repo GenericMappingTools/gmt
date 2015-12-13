@@ -411,7 +411,7 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	if (X->in_order) GMT_free (GMT, X->in_order);
 	if (X->out_order) GMT_free (GMT, X->out_order);
 	if (X->use_column) GMT_free (GMT, X->use_column);
-	free (X->TAG);	/* free since allocated by strdup */
+	gmt_free_null (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free (GMT, x2sys_datadir[id]);
 	gmtmggpath_free (GMT);
@@ -1041,7 +1041,7 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n)
 {	/* Properly free memory allocated by x2sys_read_list */
 	uint64_t i;
-	for (i = 0; i < n; i++) free (list[i]);
+	for (i = 0; i < n; i++) gmt_free_null (list[i]);
 	if (list) GMT_free (GMT, list);
 }
 

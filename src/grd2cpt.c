@@ -125,9 +125,9 @@ void *New_grd2cpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_grd2cpt_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);
-	if (C->C.file) free (C->C.file);
-	if (C->S.file) free (C->S.file);
+	if (C->Out.file) gmt_free_null (C->Out.file);
+	if (C->C.file) gmt_free_null (C->C.file);
+	if (C->S.file) gmt_free_null (C->S.file);
 	GMT_free (GMT, C);
 }
 
@@ -602,7 +602,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT_free (GMT, cdf_cpt);
 	GMT_free (GMT, z);
 	for (k = 0; k < ngrd; k++) {
-		free (grdfile[k]);
+		gmt_free_null (grdfile[k]);
 		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK) {
 			Return (API->error);
 		}

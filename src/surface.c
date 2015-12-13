@@ -1490,10 +1490,10 @@ void *New_surface_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) free (C->G.file);	
-	if (C->D.file) free (C->D.file);	
-	if (C->L.low)  free (C->L.low);	
-	if (C->L.high) free (C->L.high);	
+	if (C->G.file) gmt_free_null (C->G.file);	
+	if (C->D.file) gmt_free_null (C->D.file);	
+	if (C->L.low)  gmt_free_null (C->L.low);	
+	if (C->L.high) gmt_free_null (C->L.high);	
 	GMT_free (GMT, C);	
 }
 

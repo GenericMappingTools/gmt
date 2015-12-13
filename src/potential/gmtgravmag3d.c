@@ -135,12 +135,12 @@ void *New_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 void Free_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.file) free (C->F.file);
-	if (C->G.file) free (C->G.file);
-	if (C->T.xyz_file) free (C->T.xyz_file);
-	if (C->T.t_file) free (C->T.t_file);
-	if (C->T.raw_file) free (C->T.raw_file);
-	if (C->T.stl_file) free (C->T.stl_file);
+	if (C->F.file) gmt_free_null (C->F.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->T.xyz_file) gmt_free_null (C->T.xyz_file);
+	if (C->T.t_file) gmt_free_null (C->T.t_file);
+	if (C->T.raw_file) gmt_free_null (C->T.raw_file);
+	if (C->T.stl_file) gmt_free_null (C->T.stl_file);
 	
 	GMT_free (GMT, C);
 }

@@ -90,8 +90,8 @@ void *New_sample1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_sample1d_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) free (C->Out.file);	
-	if (C->N.file) free (C->N.file);	
+	if (C->Out.file) gmt_free_null (C->Out.file);	
+	if (C->N.file) gmt_free_null (C->N.file);	
 	GMT_free (GMT, C);	
 }
 

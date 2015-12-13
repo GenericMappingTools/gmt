@@ -74,23 +74,23 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 
 void *New_grdrotater_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDROTATER_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	return (C);
 }
 
 void Free_grdrotater_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->D.file) free (C->D.file);	
-	if (C->E.file) free (C->E.file);	
-	if (C->F.file) free (C->F.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->T.value) free (C->T.value);	
-	GMT_free (GMT, C);	
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->D.file) gmt_free_null (C->D.file);
+	if (C->E.file) gmt_free_null (C->E.file);
+	if (C->F.file) gmt_free_null (C->F.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->T.value) gmt_free_null (C->T.value);
+	GMT_free (GMT, C);
 }
 
 int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
@@ -125,7 +125,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the name of a file with a list of times (-T<tfile>).  If no -T is set\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then the reconstruction times equal the rotation times given in -E.\n");
 	GMT_Option (API, "V,bi2,bo,d,g,h,i,n,:,.");
-	
+
 	return (EXIT_FAILURE);
 
 }
@@ -159,7 +159,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				break;
 
 			/* Supplemental parameters */
-			
+
 			case 'C':	/* Now done automatically in spotter_init */
 				if (GMT_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
@@ -261,13 +261,13 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 						}
 					}
 				}
-				else {	/* Got a single time */		
+				else {	/* Got a single time */
 					Ctrl->T.n_times = 1;
 					Ctrl->T.value = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);
 					Ctrl->T.value[0] = atof (txt_a);
 				}
 				break;
-				
+
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -298,12 +298,12 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	uint64_t dim[4] = {1, 1, 0, 2};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
-	
+
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL)
 		return (NULL);	/* An empty table with one segment, two cols */
 
 	S = D->table[0]->segment[0];	/* Short hand */
-		
+
 	/* Add south border w->e */
 	if (h->wesn[YLO] == -90.0) {	/* If at the S pole we just add it twice for end longitudes */
 		add = 2;
@@ -366,7 +366,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	S->min[GMT_X] = h->wesn[XLO];	S->max[GMT_X] = h->wesn[XHI];
 	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
 	S->pole = 0;
-	
+
 	return (D);
 }
 
@@ -390,7 +390,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	bool not_global, global = false;
 	unsigned int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	char gfile[GMT_BUFSIZ] = {""};
-	
+
 	uint64_t ij, ij_rot, seg, rec, t;
 
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3], plon, plat, pw;
@@ -423,7 +423,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdrotater_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdrotater_parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the grdrotater main code ----------------------------*/
 
 	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
@@ -448,14 +448,14 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		if (!GMT->common.R.active) global = GMT_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
-	
+
 	if (!Ctrl->S.active) {	/* Read the input grid */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read grid file\n");
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
 	}
-	
+
 	if (Ctrl->F.active) {	/* Read the user's polygon file */
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
@@ -474,7 +474,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		Dr = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, D);	/* Same table length as D */
 		polr = Dr->table[0];	/* Since we know it is also a single file */
 	}
-	
+
 	if (Ctrl->E.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
 		Ctrl->T.n_times = n_stages = 1;
 		p = GMT_memory (GMT, NULL, n_stages, struct EULER);
@@ -485,14 +485,14 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, true, Ctrl->E.mode, &t_max);
 		GMT_set_segmentheader (GMT, GMT_OUT, true);
 	}
-	
+
 	if (!Ctrl->T.active && !Ctrl->E.single) {	/* Gave no time to go with the rotations, use rotation times */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
 		Ctrl->T.n_times = n_stages;
 		Ctrl->T.value = GMT_memory (GMT, NULL, Ctrl->T.n_times, double);
 		for (t = 0; t < Ctrl->T.n_times; t++) Ctrl->T.value[t] = p[t].t_start;
 	}
-	
+
 	if (Ctrl->T.n_times > 1) {	/* Requires that template names be given */
 		if (!Ctrl->N.active) {	/* Did not give -N so require -D template */
 			if (!Ctrl->D.file || !strchr (Ctrl->D.file, '%')) {	/* No file given or filename without C-format specifiers */
@@ -520,14 +520,14 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Time %g Ma: Using rotation (%g, %g, %g)\n", Ctrl->T.value[t], plon, plat, pw);
 		}
 		GMT_make_rot_matrix (GMT, plon, plat, pw, R);	/* Make rotation matrix from rotation parameters */
-	
+
 		if (Ctrl->E.single)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline\n");
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reconstruct polygon outline for time %g\n", Ctrl->T.value[t]);
-	
+
 		/* First reconstruct the polygon outline */
-	
+
 		for (seg = 0; pol && seg < pol->n_segments; seg++) {
 			S = pol->segment[seg];		/* Shorthand for current original segment */
 			Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
@@ -555,7 +555,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 				sprintf (txt, "-Z%g", Ctrl->T.value[t]);
 				for (seg = 0; seg < polr->n_segments; seg++) {
 					Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
-					if (Sr->header) free (Sr->header);
+					if (Sr->header) gmt_free_null (Sr->header);
 					Sr->header = strdup (txt);
 				}
 			}
@@ -565,9 +565,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->S.active) /* No grids will be rotated */
 			continue;
-	
+
 		/* Then, find min/max of reconstructed outline */
-	
+
 		if (global)
 			GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 		else {
@@ -581,7 +581,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 		}
 		GMT->common.R.active = true;
-	
+
 		if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, G->header->inc, \
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
@@ -592,20 +592,20 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
-	
+
 		if (Ctrl->E.single)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
 		else
 			GMT_Report (API, GMT_MSG_VERBOSE, "Interpolate reconstructed grid for time %g\n", Ctrl->T.value[t]);
 
 		GMT_make_rot_matrix (GMT, plon, plat, -pw, R);	/* Make inverse rotation using negative angle */
-	
+
 		GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
 			G_rot->data[ij_rot] = GMT->session.f_NaN;
 			if (not_global && skip_if_outside (GMT, polr, grd_x[col], grd_y[row])) continue;	/* Outside rotated polygon */
-		
+
 			/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
-		
+
 			GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 			GMT_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 			GMT_cart_to_geo (GMT, &yy, &xx, P_original, true);		/* Recover degree lon lat representation */
@@ -613,8 +613,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			xx -= 360.0;
 			while (xx < G->header->wesn[XLO]) xx += 360.0;	/* Make sure we deal with 360 issues */
 			G_rot->data[ij_rot] = (float)GMT_get_bcr_z (GMT, G, xx, yy);
-		}	
-	
+		}
+
 		/* Also loop over original node locations to make sure the nearest nodes are set */
 
 		for (seg = 0; not_global && seg < pol->n_segments; seg++) {
@@ -653,7 +653,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 
 		/* Now write rotated grid */
-	
+
 		if (Ctrl->E.single)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write reconstructed grid\n");
 		else
@@ -675,14 +675,14 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		if (G_rot && GMT_Destroy_Data (API, &G_rot) != GMT_OK)
 			Return (API->error);
-		
+
 		GMT_free (GMT, grd_x);
 		GMT_free (GMT, grd_y);
 		GMT_free (GMT, grd_yc);
 	} /* End of loop over reconstruction times */
-	
+
 	GMT_free (GMT, p);
-	
+
 	if (Ctrl->S.active) {
 		if (Ctrl->F.active && GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);

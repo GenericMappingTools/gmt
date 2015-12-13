@@ -93,9 +93,9 @@ void *New_grdvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdvector_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file[0]) free (C->In.file[0]);	
-	if (C->In.file[1]) free (C->In.file[1]);	
-	if (C->C.file) free (C->C.file);	
+	if (C->In.file[GMT_IN]) gmt_free_null (C->In.file[GMT_IN]);	
+	if (C->In.file[GMT_OUT]) gmt_free_null (C->In.file[GMT_OUT]);	
+	if (C->C.file) gmt_free_null (C->C.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -183,7 +183,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) free (Ctrl->C.file);
+				if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */

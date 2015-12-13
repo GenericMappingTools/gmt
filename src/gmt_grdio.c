@@ -2133,9 +2133,9 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	if (G->extra) GMTAPI_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) GMT_free (GMT, G->header);
 	if (G->header) {	/* Free the header structure and anything allocated by it */
-		if (G->header->ProjRefWKT) free (G->header->ProjRefWKT);
-		if (G->header->ProjRefPROJ4) free (G->header->ProjRefPROJ4);
-		if (G->header->pocket) free (G->header->pocket);
+		if (G->header->ProjRefWKT) gmt_free_null (G->header->ProjRefWKT);
+		if (G->header->ProjRefPROJ4) gmt_free_null (G->header->ProjRefPROJ4);
+		if (G->header->pocket) gmt_free_null (G->header->pocket);
 		GMT_free (GMT, G->header);
 	}
 	return (G->alloc_mode);
@@ -2490,8 +2490,8 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 
 	I->ColorInterp    = from_gdalread->ColorInterp;     /* Must find out how to release this mem */
 	I->nIndexedColors = from_gdalread->nIndexedColors;
-	if (I->header->ProjRefPROJ4) free(I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
-	if (I->header->ProjRefWKT)   free(I->header->ProjRefWKT);
+	if (I->header->ProjRefPROJ4) gmt_free_null (I->header->ProjRefPROJ4);		/* Make sure we don't leak due to a previous copy */
+	if (I->header->ProjRefWKT)   gmt_free_null (I->header->ProjRefWKT);
 	I->header->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
 	I->header->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
@@ -2514,7 +2514,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 
 	GMT_free (GMT, to_gdalread);
 	for ( i = 0; i < from_gdalread->RasterCount; ++i )
-		free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+		gmt_free_null (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	if (from_gdalread->band_field_names) GMT_free (GMT, from_gdalread->band_field_names);
 	if (from_gdalread->ColorMap) GMT_free (GMT, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
 	GMT_free (GMT, from_gdalread);
@@ -2572,10 +2572,8 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	if (to_gdalread->B.active) {
-		free(I->header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
-		I->header->pocket = NULL;
-	}
+	if (to_gdalread->B.active)
+		gmt_free_null (I->header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
 
 	I->ColorMap = from_gdalread->ColorMap;
 	I->nIndexedColors  = from_gdalread->nIndexedColors;
@@ -2591,7 +2589,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 
 	GMT_free (GMT, to_gdalread);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
-		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+		gmt_free_null (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (GMT, from_gdalread->band_field_names);
 	GMT_free (GMT, from_gdalread);
 	GMT_BC_init (GMT, I->header);	/* Initialize image interpolation and boundary condition parameters */

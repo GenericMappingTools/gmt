@@ -530,7 +530,7 @@ void *New_spectrum1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_spectrum1d_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->N.name) free (C->N.name);	
+	if (C->N.name) gmt_free_null (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -636,7 +636,7 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 						}
 					}
 					else {	/* Set name stem */
-						free (Ctrl->N.name);
+						gmt_free_null (Ctrl->N.name);
 						Ctrl->N.name = strdup (opt->arg);
 					}
 				}

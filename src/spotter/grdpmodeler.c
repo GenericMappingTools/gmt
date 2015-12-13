@@ -83,21 +83,21 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 
 void *New_grdpmodeler_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDROTATER_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	
+
 	return (C);
 }
 
 void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->E.file) free (C->E.file);	
-	if (C->F.file) free (C->F.file);	
-	if (C->G.file) free (C->G.file);	
-	GMT_free (GMT, C);	
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->E.file) gmt_free_null (C->E.file);
+	if (C->F.file) gmt_free_null (C->F.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	GMT_free (GMT, C);
 }
 
 int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
@@ -132,7 +132,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Y : Latitude at origin of crust.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override age grid.\n");
 	GMT_Option (API, "V,bi2,d,h,i,r,.");
-	
+
 	return (EXIT_FAILURE);
 
 }
@@ -160,7 +160,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 				break;
 
 			/* Supplemental parameters */
-			
+
 			case 'E':	/* File with stage poles */
 				if ((Ctrl->E.active = GMT_check_filearg (GMT, 'E', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->E.file = strdup (opt->arg);
@@ -226,7 +226,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 				Ctrl->T.active = true;
 				Ctrl->T.value = atof (opt->arg);
 				break;
-				
+
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -260,13 +260,13 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 {
 	unsigned int col, row, inside, stage, n_stages, registration, k;
 	int retval, error = 0;
-	
+
 	bool skip, spotted;
-	
+
 	uint64_t node, seg, n_old = 0, n_outside = 0, n_NaN = 0;
-	
+
 	double lon, lat, d, value = 0.0, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL, *out = NULL;
-	
+
 	char *quantity[N_PM_ITEMS] = { "azimuth", "distance displacement", "stage", "velocity", "rotation rate", "longitude displacement", \
 		"latitude displacement", "reconstructed longitude", "reconstructed latitude"};
 	char *tag[N_PM_ITEMS] = { "az", "dist", "stage", "vel", "omega", "dlon", "dlat", "lon", "lat" };
@@ -296,7 +296,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdpmodeler_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdpmodeler_parse (GMT, Ctrl, options)) != 0) Return (error);
-	
+
 	/*---------------------------- This is the grdpmodeler main code ----------------------------*/
 
 	/* Check limits and get data file */
@@ -340,7 +340,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
 		Return (EXIT_FAILURE);
 	}
-	
+
 	if (Ctrl->G.active) {	/* Need one or more output grids */
 		G_mod = GMT_memory (GMT, NULL, Ctrl->S.n_items, struct GMT_GRID *);
 		for (k = 0; k < Ctrl->S.n_items; k++) {
@@ -384,7 +384,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.file);
 	}
-	
+
 	grd_x  = GMT_memory (GMT, NULL, G->header->nx, double);
 	grd_y  = GMT_memory (GMT, NULL, G->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G->header->ny, double);
@@ -396,7 +396,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	for (col = 0; col < G->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
-	
+
 
 	GMT_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
@@ -493,8 +493,8 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 				out[k+3] = value;
 		}
 		if (!Ctrl->G.active) GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
-	}	
-	
+	}
+
 	if (n_outside) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points fell outside the polygonal boundary\n", n_outside);
 	if (n_old) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
 	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
@@ -524,7 +524,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	GMT_free (GMT, grd_x);
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
-	
+
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);

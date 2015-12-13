@@ -228,10 +228,10 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);
-	if (C->F.file) free (C->F.file);
-	if (C->G.file) free (C->G.file);
-	if (C->A.file) free (C->A.file);
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->F.file) gmt_free_null (C->F.file);
+	if (C->G.file) gmt_free_null (C->G.file);
+	if (C->A.file) gmt_free_null (C->A.file);
 	GMT_free (GMT, C);
 }
 
@@ -1500,6 +1500,6 @@ void threaded_function (struct THREAD_STRUCT *t) {
 #ifdef DEBUG
 	n_conv_tot += n_conv;
 #endif
-	GMT_free(GMT, visit);
-	GMT_free(GMT, weight);
+	GMT_free (GMT, visit);
+	GMT_free (GMT, weight);
 }

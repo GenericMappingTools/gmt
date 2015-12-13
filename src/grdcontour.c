@@ -147,11 +147,11 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);
-	if (C->C.file) free (C->C.file);
-	if (C->D.file) free (C->D.file);
-	if (C->T.txt[0]) free (C->T.txt[0]);
-	if (C->T.txt[1]) free (C->T.txt[1]);
+	if (C->In.file) gmt_free_null (C->In.file);
+	if (C->C.file) gmt_free_null (C->C.file);
+	if (C->D.file) gmt_free_null (C->D.file);
+	if (C->T.txt[0]) gmt_free_null (C->T.txt[0]);
+	if (C->T.txt[1]) gmt_free_null (C->T.txt[1]);
 	GMT_free (GMT, C);
 }
 
@@ -332,13 +332,13 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 				if (GMT_File_Is_Memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
-					if (Ctrl->C.file) free (Ctrl->C.file);
+					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
-					if (Ctrl->C.file) free (Ctrl->C.file);
+					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (opt->arg[0] == '+')
