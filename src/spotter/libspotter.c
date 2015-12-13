@@ -353,11 +353,14 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	GMT_UNUSED(GMT);
-	if (k == 0 && spotter_GPlates_pair (arg))	/* A GPlates plate pair to look up in the rotation table */
+	if (k == 0 && spotter_GPlates_pair (arg)) {	/* A GPlates plate pair to look up in the rotation table */
 		R->file = strdup (arg);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received GPlates pair: %s\n", arg);
+	}
 	else if (!GMT_access (GMT, &arg[k], F_OK) && GMT_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
 		R->file = strdup (&arg[k]);
 		if (k == 1) R->invert = true;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
 	else {	/* Apply a fixed total reconstruction rotation to all input points  */
 		unsigned int ns = 0;
@@ -371,10 +374,15 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 			R->w = atof (txt_c);
 			if (ns == 2)	/* No age given */
 				R->age = GMT->session.d_NaN;
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation parameters: %s\n", arg);
 		}
-		else	/* Junk of some sort */
+		else {	/* Junk of some sort */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation junk: %s\n", arg);
 			n_errors++;
+		}
 	}
+	if (n_errors) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Rotation argument is neither GPlates pair, rotation file, or rotation parameters: %s\n", arg);
+	
 	return (n_errors);
 }
 
