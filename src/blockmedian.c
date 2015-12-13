@@ -69,7 +69,7 @@ int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "a,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set).\n");
 	GMT_Option (API, "bo,d,f,h,i,o,r,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -121,7 +121,7 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 				Ctrl->Q.active = true;		/* Get median z and (x,y) of that point */
 				break;
 			case 'T':	/* Select a particular quantile [0.5 (median)] */
-				Ctrl->T.active = true;		
+				Ctrl->T.active = true;
 				Ctrl->T.quantile = atof (opt->arg);
 				break;
 			case 'W':	/* Use in|out weights */
@@ -143,7 +143,7 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 				break;
 		}
 	}
-	
+
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
@@ -341,7 +341,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	sid_col = (Ctrl->W.weighted[GMT_IN]) ? 4 : 3;	/* Column with integer source id [if -Es is set] */
 	n_read = n_pitched = 0;	/* Initialize counters */
 
-	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
+	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 MB chunk */
 
 	/* Read the input data */
 
@@ -354,7 +354,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 				break;
 		}
-		
+
 		if (GMT_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
 
@@ -391,11 +391,11 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	} while (true);
 
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
-	
+
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
-	
+
 	if (n_read == 0) {	/* Blank/empty input files */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		Return (EXIT_SUCCESS);
@@ -413,6 +413,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	/* Ready to go. */
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		GMT_free (GMT, data);
 		Return (API->error);
 	}
 
@@ -479,15 +480,16 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;
 	}
+
+	GMT_free (GMT, data);
+	if (do_extra) GMT_free (GMT, z_tmp);
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
-
-	GMT_free (GMT, data);
-	if (do_extra) GMT_free (GMT, z_tmp);
 
 	if (emode) {
 		free (GMT->current.io.o_format[i_col]);		/* Free the temporary integer format */
