@@ -288,7 +288,7 @@ char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node);
 void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, double *y, int npath, int *n);
-void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int *m);
+void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int m[]);
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int nbits);
 int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int ncolors);
@@ -4681,19 +4681,18 @@ void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, d
 	psl_set_int_array (PSL, txt, n, npath);
 }
 
-void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int *m)
+void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int m[])
 {	/* This function sets PSL arrays for attributes needed to place contour labels and quoted text labels.
 	 * node:	specifies where along each segments there should be labels [NULL if not curved text]
-	 * angle:	specifies angle of text for each item.
-	 * txt:		is the text labels for each item.
+	 * angle:	specifies angle of text for each item
+	 * txt:		is the text labels for each item
 	 * npath:	the number of segments (curved text) or number of text items (straight text)
-	 * m:		array of length npath with number of labels per curved segment or NULL if straight text.
+	 * m:		array of length npath with number of labels per segment
 	 */
 	int i, nlab = 0;
-	bool curved = (node != NULL && m != NULL);
 
 	for (i = 0; i < npath; i++) nlab += m[i];	/* Determine total number of labels */
-	if (curved) {	/* Curved text has node array and m[] array */
+	if (node != NULL) {	/* Curved text has node array */
 		PSL_comment (PSL, "Set array with nodes of PSL_path_x|y for text placement:\n");
 		psl_set_int_array (PSL, "label_node", node, nlab);
 		PSL_comment (PSL, "Set array with number of labels per line segment:\n");
