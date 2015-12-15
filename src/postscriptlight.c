@@ -1589,7 +1589,9 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 	 *   |----------------|
 	 *   1       2        3
 	 */
-	const char *align[3] = {"0", "-2 div", "neg"};
+
+	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
+	const char *align[4] = {"0", "-2 div", "neg", ""};
 	int i = 0, j, x_just, y_just, new_anchor;
 	double dx, dy;
 
@@ -1892,10 +1894,13 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*   1	    2	     3
 	*/
 
-	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""};
-	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"}, *align[3] = {"0", "-2 div", "neg"};
-	char *plast = NULL;
-	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
+	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""}, *plast = NULL;
+	/* PS strings to be used dependent on "mode" */
+	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"};
+	/* PS strings to be used dependent on "justify". Empty strings added for unused values. */
+	const char *justcmd[12] = {"", "bl", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
+	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
+	const char *align[4] = {"0", "-2 div", "neg", ""};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
