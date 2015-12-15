@@ -961,14 +961,14 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	GMT_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
 	GMT_message (GMT, "\t                 <offset> shifts elements from start of the line [0].\n");
 	GMT_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
-	if (mode) 
+	if (mode)
 		GMT_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
 	if (mode & 2) {
 		GMT_message (GMT, "\t     +o<offset>[unit] Trim the line from the end inward by the specified amount.\n");
 		GMT_message (GMT, "\t        Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian].\n", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 		GMT_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
 	}
-	if (mode & 1) 
+	if (mode & 1)
 		GMT_message (GMT, "\t     +s Draw line using a Bezier spline in the PostScript [Linear spline].\n");
 	if (mode & 4) {
 		GMT_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
@@ -3110,7 +3110,7 @@ unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   by psxy -Sv+s or external applications.  Again, appending a|f|s controls if we should
 	 *   honor the segment headers [Default is -Fvs if -Fv is given]. Only a|f|s is allowed.
 	 */
-	
+
 	unsigned int k, errors = 0;
 	switch (in_arg[0]) {	/* First set method */
 		case 'c': k = 1;	S->method  = SEGM_CONTINUOUS;	break;
@@ -3119,7 +3119,7 @@ unsigned int GMT_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		case 'v': k = 1;	S->method  = SEGM_VECTOR;	break;
 		default:  k = 0;	S->method  = SEGM_CONTINUOUS;	break;
 	}
-		
+
 	switch (in_arg[k]) {	/* Now set level */
 		case 's': case '\0': S->level = SEGM_SEGMENT;	break;
 		case 'a': S->level = SEGM_DATASET;	break;
@@ -4743,7 +4743,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			break;
 		case GMTCASE_TICK_LENGTH:
 			if (GMT_compat_check (GMT, 4)) {	/* GMT4: */
-				GMT_COMPAT_CHANGE ("MAP_TICK_LENGTH_PRIMARY and MAP_TICK_LENGTH_SECONDARY");
+				GMT_COMPAT_CHANGE ("MAP_TICK_LENGTH");
 				GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT_to_inch (GMT, value);
 				GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  = 0.50 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 				GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 3.00 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
@@ -4769,7 +4769,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			break;
 		case GMTCASE_TICK_PEN:
 			if (GMT_compat_check (GMT, 4)) {	/* GMT4: */
-				GMT_COMPAT_CHANGE ("MAP_TICK_PEN_PRIMARY and MAP_TICK_PEN_SECONDARY");
+				GMT_COMPAT_CHANGE ("MAP_TICK_PEN");
 				error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[0]);
 				error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[1]);
 			}
@@ -9809,9 +9809,9 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 'm':	/* Vector head at midpoint of segment */
 				switch (p[1]) {
 					case '\0':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */
-					case 'f':	f = 2;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */	
+					case 'f':	f = 2;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Place forward-pointing arrow head at center of segment */
 					case 'r':	f = 2;	S->v.status |= PSL_VEC_MID_BWD;	break;	/* Place backward-pointing arrow head at center of segment */
-					case 'a': case 'c': case 's': case 't':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Handle these below */	
+					case 'a': case 'c': case 's': case 't':	f = 1;	S->v.status |= PSL_VEC_MID_FWD;	break;	/* Handle these below */
 					default:  /* Bad direction code */
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +m<dir> modifier %c\n", p[1]);
 						error++;
@@ -9872,8 +9872,8 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 't':	/* Get endpoint trim(s) */
 				switch (p[1]) {
-					case 'b':	f = 2;	S->v.status |= PSL_VEC_OFF_BEGIN;	break;	/* Shift begin point by some trim amount */	
-					case 'e':	f = 2;	S->v.status |= PSL_VEC_OFF_END;		break;	/* Shift end point by some trim amount */	
+					case 'b':	f = 2;	S->v.status |= PSL_VEC_OFF_BEGIN;	break;	/* Shift begin point by some trim amount */
+					case 'e':	f = 2;	S->v.status |= PSL_VEC_OFF_END;		break;	/* Shift end point by some trim amount */
 					default:  	f = 1;	S->v.status |= (PSL_VEC_OFF_BEGIN+PSL_VEC_OFF_END);	break;	/* Do both */
 				}
 				if ((j = GMT_get_pair (GMT, &p[f], GMT_PAIR_DIM_DUP, value)) < 1)  {

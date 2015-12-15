@@ -289,7 +289,7 @@ char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 void psl_defunits_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double *y, int npath, int *n, int *m, int *node);
 void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, double *y, int npath, int *n);
-void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int *m);
+void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int m[]);
 void psl_set_real_array (struct PSL_CTRL *PSL, const char *param, double *array, int n);
 psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int nbits);
 int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, int ncolors);
@@ -1500,7 +1500,7 @@ int PSL_setfont (struct PSL_CTRL *PSL, int font_no)
 	}
 	PSL->current.font_no = font_no;
 	PSL->current.fontsize = 0.0;	/* Forces "%d F%d" to be written on next call to psl_putfont */
-	/* Encoding will be done by subsequent calls inside the text-producing routines though calls to psl_encodefont */
+	/* Encoding will be done by subsequent calls inside the text-producing routines through calls to psl_encodefont */
 	return (PSL_NO_ERROR);
 }
 
@@ -1639,7 +1639,9 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 	 *   |----------------|
 	 *   1       2        3
 	 */
-	const char *align[3] = {"0", "-2 div", "neg"};
+
+	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
+	const char *align[4] = {"0", "-2 div", "neg", ""};
 	int i = 0, j, x_just, y_just, new_anchor;
 	double dx, dy;
 
@@ -1925,7 +1927,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*		If NULL is given then we assume PSL_plottextbox has just been called.
 	* angle:	angle between text baseline and the horizontal.
 	* justify:	indicates where on the textstring the x,y point refers to, see fig below.
-	*		If negative then we string leading and trailing blanks from the text.
+	*		If negative then we strip leading and trailing blanks from the text.
 	*		0 means no justification (already done separately).
 	* mode:	0 = normal text filled with solid color; 1 = draw outline of text using
 	*		the current line width and color; the text is filled with the current fill
@@ -1942,14 +1944,17 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*   1	    2	     3
 	*/
 
-	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""};
-	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"}, *align[3] = {"0", "-2 div", "neg"};
-	char *plast = NULL;
-	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
+	char *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, previous[BUFSIZ] = {""}, *plast = NULL;
+	/* PS strings to be used dependent on "mode" */
+	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"};
+	/* PS strings to be used dependent on "justify". Empty strings added for unused values. */
+	const char *justcmd[12] = {"", "bl", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
+	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
+	const char *align[4] = {"0", "-2 div", "neg", ""};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
-	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0};
+	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
@@ -2831,7 +2836,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		}
 
 		PSL_free (clean);	/* Reclaim this memory */
-		psl_free_null (text[i]);	/* since strdup created it */
+		psl_free_null (text[i]);	/* Since strdup created it */
 
 	} /* End of word loop */
 
@@ -3008,6 +3013,10 @@ int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[])
 	return (PSL_NO_ERROR);
 }
 
+/* Helpers to make sure fp is closed and tmp_file is removed on return. */
+#define Return1(x) {code = x; fclose (fp); return (code);}
+#define Return2(x) {code = x; fclose (fp); remove (tmp_file); return (code);}
+
 int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsigned char **picture)
 {
 	/* PSL_loadimage loads an image of any recognized type into memory
@@ -3018,6 +3027,7 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 	 */
 
 	FILE *fp = NULL;
+	int code = PSL_NO_ERROR;
 
 	/* Open PostScript or Sun raster file */
 
@@ -3030,25 +3040,26 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 
 	if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", file);
-		return (PSL_READ_FAILURE);
+		Return1 (PSL_READ_FAILURE);
 	}
 	fseek (fp, (off_t)0, SEEK_SET);
 
 	/* Which file type */
 
 	if (h->magic == RAS_MAGIC) {
-		return (psl_load_raster (PSL, fp, h, picture));
-	} else if (h->magic == EPS_MAGIC) {
-		return (psl_load_eps (PSL, fp, h, picture));
+		Return1 (psl_load_raster (PSL, fp, h, picture));
+	}
+	else if (h->magic == EPS_MAGIC) {
+		Return1 (psl_load_eps (PSL, fp, h, picture));
 	}
 	else if (!strstr (file, ".ras")) {	/* Not a .ras file; convert to ras */
-		int code;
 		char cmd[PSL_BUFSIZ], tmp_file[32];
 #ifdef WIN32
 		char *null_dev = "nul";
 #else
 		char *null_dev = "/dev/null";
 #endif
+		fclose (fp);
 		sprintf (tmp_file, "PSL_TMP_%d.ras", (int)getpid());
 		/* Try GraphicsMagick's "gm convert" */
 		sprintf (cmd, "gm convert %s %s 2> %s", file, tmp_file, null_dev);
@@ -3062,27 +3073,23 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 		}
 		if ((fp = fopen (tmp_file, "rb")) == NULL) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Cannot open image file %s!\n", tmp_file);
+			remove (tmp_file);
 			return (PSL_READ_FAILURE);
 		}
 		if (psl_read_rasheader (PSL, fp, h, 0, 0)) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading magic number of image file %s!\n", tmp_file);
-			return (PSL_READ_FAILURE);
+			Return2 (PSL_READ_FAILURE);
 		}
 		fseek (fp, (off_t)0, SEEK_SET);
 		if (h->magic != RAS_MAGIC) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, tmp_file);
-			return (PSL_READ_FAILURE);
+			Return2 (PSL_READ_FAILURE);
 		}
-		code = psl_load_raster (PSL, fp, h, picture);
-		remove (tmp_file);	/* Remove the temp file */
-		return (code);
-	}
-	else {
-		PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
-		return (PSL_READ_FAILURE);
+		Return2 (psl_load_raster (PSL, fp, h, picture));
 	}
 
-	return (PSL_NO_ERROR);	/* Dummy return to satisfy some compilers */
+	PSL_message (PSL, PSL_MSG_FATAL, "Unrecognised magic number 0x%x in file %s!\n", h->magic, file);
+	Return1 (PSL_READ_FAILURE);
 }
 
 int psl_read_rasheader (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, int i0, int i1)
@@ -3870,6 +3877,11 @@ int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned 
 	return (0);
 }
 
+/* Make sure that all memory is freed upon return.
+   This way is simpler than freeing buffer, red, green, blue, entry individually at every return
+ */
+#define Return(code) {if (buffer) PSL_free (buffer); if (entry) PSL_free (entry); if (red) PSL_free (red); if (green) PSL_free (green); if (blue) PSL_free (blue); return (code);}
+
 int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **picture)
 {
 	/* psl_load_raster reads a Sun standard rasterfile of depth 1, 8, 24, or 32 into memory */
@@ -3891,8 +3903,6 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		return (PSL_READ_FAILURE);
 	}
 
-	buffer = entry = red = green = blue = (unsigned char *)NULL;
-
 	if (header->depth == 1) {	/* 1 bit black and white image */
 		mx_in = (int) (2 * ceil (header->width / 16.0));	/* Because Sun images are written in multiples of 2 bytes */
 		mx = (int) (ceil (header->width / 8.0));		/* However, PS wants only the bytes that matters, so mx may be one less */
@@ -3900,7 +3910,7 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 1-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 
@@ -3913,21 +3923,22 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 	}
 	else if (header->depth == 8 && header->maplength) {	/* 8-bit with color table */
 		get = header->maplength / 3;
-		red   = PSL_memory (PSL, NULL, get, unsigned char);
-		green = PSL_memory (PSL, NULL, get, unsigned char);
-		blue  = PSL_memory (PSL, NULL, get, unsigned char);
+		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
+		red   = PSL_memory (PSL, NULL, 256, unsigned char);
+		green = PSL_memory (PSL, NULL, 256, unsigned char);
+		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
 		n  = (int)fread (red,   1U, (size_t)get, fp);
 		n += (int)fread (green, 1U, (size_t)get, fp);
 		n += (int)fread (blue,  1U, (size_t)get, fp);
 		if (n != header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		odd = (int)header->width%2;
 		entry = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (entry, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 8-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &entry);
 		buffer = PSL_memory (PSL, NULL, 3 * header->width * header->height, unsigned char);
@@ -3946,27 +3957,28 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 8-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 	}
 	else if (header->depth == 24 && header->maplength) {	/* 24-bit raster with colormap */
 		unsigned char r, b;
 		get = header->maplength / 3;
-		red   = PSL_memory (PSL, NULL, get, unsigned char);
-		green = PSL_memory (PSL, NULL, get, unsigned char);
-		blue  = PSL_memory (PSL, NULL, get, unsigned char);
+		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
+		red   = PSL_memory (PSL, NULL, 256, unsigned char);
+		green = PSL_memory (PSL, NULL, 256, unsigned char);
+		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
 		n  = (int)fread (red,   1U, (size_t)get, fp);
 		n += (int)fread (green, 1U, (size_t)get, fp);
 		n += (int)fread (blue,  1U, (size_t)get, fp);
 		if ((size_t)n != (size_t)header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 24-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 		oddlength = 3 * header->width;
@@ -3987,7 +3999,7 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 24-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 		oddlength = 3 * header->width;
@@ -4006,20 +4018,21 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 	else if (header->depth == 32 && header->maplength) {	/* 32-bit raster with colormap */
 		unsigned char b;
 		get = header->maplength / 3;
-		red   = PSL_memory (PSL, NULL, get, unsigned char);
-		green = PSL_memory (PSL, NULL, get, unsigned char);
-		blue  = PSL_memory (PSL, NULL, get, unsigned char);
+		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
+		red   = PSL_memory (PSL, NULL, 256, unsigned char);
+		green = PSL_memory (PSL, NULL, 256, unsigned char);
+		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
 		n  = (int)fread (red,   1U, (size_t)get, fp);
 		n += (int)fread (green, 1U, (size_t)get, fp);
 		n += (int)fread (blue,  1U, (size_t)get, fp);
 		if ((size_t)n != (size_t)header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 32-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
@@ -4040,7 +4053,7 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		buffer = PSL_memory (PSL, NULL, header->length, unsigned char);
 		if (fread (buffer, 1U, (size_t)header->length, fp) != (size_t)header->length) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Trouble reading 32-bit Sun rasterfile!\n");
-			return (PSL_READ_FAILURE);
+			Return (PSL_READ_FAILURE);
 		}
 		if (header->type == RT_BYTE_ENCODED) psl_rle_decode (PSL, header, &buffer);
 		r_off = (header->type == RT_FORMAT_RGB) ? 1 : 3;
@@ -4058,7 +4071,7 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 	}
 	else {	/* Unrecognized format */
 		PSL_message (PSL, PSL_MSG_FATAL, "Unrecognized file format!\n");
-		return (PSL_READ_FAILURE);
+		Return (PSL_READ_FAILURE);
 	}
 
 	fclose (fp);
@@ -4737,19 +4750,18 @@ void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, double *x, d
 	psl_set_int_array (PSL, txt, n, npath);
 }
 
-void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int *m)
+void psl_set_attr_arrays (struct PSL_CTRL *PSL, int *node, double *angle, char **txt, int npath, int m[])
 {	/* This function sets PSL arrays for attributes needed to place contour labels and quoted text labels.
 	 * node:	specifies where along each segments there should be labels [NULL if not curved text]
-	 * angle:	specifies angle of text for each item.
-	 * txt:		is the text labels for each item.
+	 * angle:	specifies angle of text for each item
+	 * txt:		is the text labels for each item
 	 * npath:	the number of segments (curved text) or number of text items (straight text)
-	 * m:		array of length npath with number of labels per curved segment or NULL if straight text.
+	 * m:		array of length npath with number of labels per segment
 	 */
 	int i, nlab = 0;
-	bool curved = (node != NULL && m != NULL);
 
 	for (i = 0; i < npath; i++) nlab += m[i];	/* Determine total number of labels */
-	if (curved) {	/* Curved text has node array and m[] array */
+	if (node != NULL) {	/* Curved text has node array */
 		PSL_comment (PSL, "Set array with nodes of PSL_path_x|y for text placement:\n");
 		psl_set_int_array (PSL, "label_node", node, nlab);
 		PSL_comment (PSL, "Set array with number of labels per line segment:\n");
