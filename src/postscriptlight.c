@@ -1904,7 +1904,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
-	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0};
+	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
@@ -3873,9 +3873,10 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 	}
 	else if (header->depth == 8 && header->maplength) {	/* 8-bit with color table */
 		get = header->maplength / 3;
-		red   = PSL_memory (PSL, NULL, get, unsigned char);
-		green = PSL_memory (PSL, NULL, get, unsigned char);
-		blue  = PSL_memory (PSL, NULL, get, unsigned char);
+		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
+		red   = PSL_memory (PSL, NULL, 256, unsigned char);
+		green = PSL_memory (PSL, NULL, 256, unsigned char);
+		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
 		n  = (int)fread (red,   1U, (size_t)get, fp);
 		n += (int)fread (green, 1U, (size_t)get, fp);
 		n += (int)fread (blue,  1U, (size_t)get, fp);
@@ -3913,9 +3914,10 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 	else if (header->depth == 24 && header->maplength) {	/* 24-bit raster with colormap */
 		unsigned char r, b;
 		get = header->maplength / 3;
-		red   = PSL_memory (PSL, NULL, get, unsigned char);
-		green = PSL_memory (PSL, NULL, get, unsigned char);
-		blue  = PSL_memory (PSL, NULL, get, unsigned char);
+		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
+		red   = PSL_memory (PSL, NULL, 256, unsigned char);
+		green = PSL_memory (PSL, NULL, 256, unsigned char);
+		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
 		n  = (int)fread (red,   1U, (size_t)get, fp);
 		n += (int)fread (green, 1U, (size_t)get, fp);
 		n += (int)fread (blue,  1U, (size_t)get, fp);
@@ -3966,9 +3968,10 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 	else if (header->depth == 32 && header->maplength) {	/* 32-bit raster with colormap */
 		unsigned char b;
 		get = header->maplength / 3;
-		red   = PSL_memory (PSL, NULL, get, unsigned char);
-		green = PSL_memory (PSL, NULL, get, unsigned char);
-		blue  = PSL_memory (PSL, NULL, get, unsigned char);
+		/* Create 256-item array to make sure that red[i], green[i], blue[i] always have a value for 0 <= i <= 255 */
+		red   = PSL_memory (PSL, NULL, 256, unsigned char);
+		green = PSL_memory (PSL, NULL, 256, unsigned char);
+		blue  = PSL_memory (PSL, NULL, 256, unsigned char);
 		n  = (int)fread (red,   1U, (size_t)get, fp);
 		n += (int)fread (green, 1U, (size_t)get, fp);
 		n += (int)fread (blue,  1U, (size_t)get, fp);
