@@ -2996,10 +2996,12 @@ int PSL_loadimage (struct PSL_CTRL *PSL, char *file, struct imageinfo *h, unsign
 
 	/* Which file type */
 
-	if (h->magic == RAS_MAGIC)
+	if (h->magic == RAS_MAGIC) {
 		Return1 (psl_load_raster (PSL, fp, h, picture));
-	else if (h->magic == EPS_MAGIC)
+	}
+	else if (h->magic == EPS_MAGIC) {
 		Return1 (psl_load_eps (PSL, fp, h, picture));
+	}
 	else if (!strstr (file, ".ras")) {	/* Not a .ras file; convert to ras */
 		char cmd[PSL_BUFSIZ], tmp_file[32];
 #ifdef WIN32
