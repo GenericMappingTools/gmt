@@ -1450,7 +1450,7 @@ int PSL_setfont (struct PSL_CTRL *PSL, int font_no)
 	}
 	PSL->current.font_no = font_no;
 	PSL->current.fontsize = 0.0;	/* Forces "%d F%d" to be written on next call to psl_putfont */
-	/* Encoding will be done by subsequent calls inside the text-producing routines though calls to psl_encodefont */
+	/* Encoding will be done by subsequent calls inside the text-producing routines through calls to psl_encodefont */
 	return (PSL_NO_ERROR);
 }
 
@@ -1875,7 +1875,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	*		If NULL is given then we assume PSL_plottextbox has just been called.
 	* angle:	angle between text baseline and the horizontal.
 	* justify:	indicates where on the textstring the x,y point refers to, see fig below.
-	*		If negative then we string leading and trailing blanks from the text.
+	*		If negative then we strip leading and trailing blanks from the text.
 	*		0 means no justification (already done separately).
 	* mode:	0 = normal text filled with solid color; 1 = draw outline of text using
 	*		the current line width and color; the text is filled with the current fill

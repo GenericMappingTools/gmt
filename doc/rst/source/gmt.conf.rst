@@ -111,21 +111,35 @@ fonts can be found in the :doc:`gmt` man page.
 
 .. _DIR Parameters:
 
+.. _DIR_DATA:
+
 **DIR_DATA**
     Session data dir. Overrides the value of the environment variable **$GMT_DATADIR**
     (see :ref:`Directory parameters` in the CookBook).
 
+.. _DIR_DCW:
+
 **DIR_DCW**
     Path to optional Digital Chart of the World polygon files.
+
+.. _DIR_GSHHG:
 
 **DIR_GSHHG**
     Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
 
 .. _FONT Parameters:
 
+.. _FONT:
+
 **FONT**
     Sets the default for all fonts, except FONT_LOGO. This setting is
     not included in the **gmt.conf** file.
+
+.. _FONT_ANNOT:
+
+**FONT_ANNOT**
+    Sets both **FONT_ANNOT_PRIMARY** and **FONT_ANNOT_SECONDARY** to the value specified.
+    This setting is not included in the **gmt.conf** file.
 
 .. _FONT_ANNOT_PRIMARY:
 
@@ -305,6 +319,12 @@ fonts can be found in the :doc:`gmt` man page.
     override the format for all other columns.  Alternatively, you can
     list N space-separated formats and these apply to the first N
     columns.
+
+.. _FORMAT_TIME_MAP:
+
+**FORMAT_TIME_MAP**
+    Sets both **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP** to the value specified.
+    This setting is not included in the **gmt.conf** file.
 
 .. _FORMAT_TIME_PRIMARY_MAP:
 
@@ -619,6 +639,12 @@ fonts can be found in the :doc:`gmt` man page.
     then latitude annotations will be plotted parallel to the border. To
     set a combination of these, add up the values in parentheses. [1].
 
+.. _MAP_ANNOT_OFFSET:
+
+**MAP_ANNOT_OFFSET**
+    Sets both **MAP_ANNOT_OFFSET_PRIMARY** and **MAP_ANNOT_OFFSET_SECONDARY** to the value specified.
+    This setting is not included in the **gmt.conf** file.
+
 .. _MAP_ANNOT_OFFSET_PRIMARY:
 
 **MAP_ANNOT_OFFSET_PRIMARY**
@@ -687,6 +713,12 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_FRAME_WIDTH**
     Width (> 0) of map borders for fancy map frame [5p].
 
+.. _MAP_GRID_CROSS_SIZE:
+
+**MAP_GRID_CROSS_SIZE**
+    Sets both **MAP_GRID_CROSS_SIZE_PRIMARY** and **MAP_GRID_CROSS_SIZE_SECONDARY** to the value specified.
+    This setting is not included in the **gmt.conf** file.
+
 .. _MAP_GRID_CROSS_SIZE_PRIMARY:
 
 **MAP_GRID_CROSS_SIZE_PRIMARY**
@@ -698,6 +730,12 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_GRID_CROSS_SIZE_SECONDARY**
     Size (>= 0) of grid cross at secondary lon-lat intersections. 0
     means draw continuous gridlines instead [0p].
+
+.. _MAP_GRID_CROSS_PEN:
+
+**MAP_GRID_CROSS_PEN**
+    Sets both **MAP_GRID_CROSS_PEN_PRIMARY** and **MAP_GRID_CROSS_PEN_SECONDARY** to the value specified.
+    This setting is not included in the **gmt.conf** file.
 
 .. _MAP_GRID_PEN_PRIMARY:
 
@@ -770,6 +808,12 @@ fonts can be found in the :doc:`gmt` man page.
     Sets the height (> 0) on the map of the map scale bars drawn by
     various programs [5p].
 
+.. _MAP_TICK_LENGTH:
+
+**MAP_TICK_LENGH**
+    Sets both **MAP_TICK_LENGTH_PRIMARY** and **MAP_TICK_LENGH_SECONDARY** to the value specified.
+    This setting is not included in the **gmt.conf** file.
+
 .. _MAP_TICK_LENGTH_PRIMARY:
 
 **MAP_TICK_LENGTH_PRIMARY**
@@ -781,6 +825,12 @@ fonts can be found in the :doc:`gmt` man page.
 **MAP_TICK_LENGTH_SECONDARY**
     The length of a secondary major/minor tick-marks [15p/3.75p]. If
     only the first value is set, the second is assumed to be 25% of the first.
+
+.. _MAP_TICK_PEN:
+
+**MAP_TICK_PEN**
+    Sets both **MAP_TICK_PEN_PRIMARY** and **MAP_TICK_PEN_SECONDARY** to the value specified.
+    This setting is not included in the **gmt.conf** file.
 
 .. _MAP_TICK_PEN_PRIMARY:
 
