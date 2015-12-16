@@ -803,7 +803,7 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	if (kind < 2) GMT_message (GMT, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
 	GMT_message (GMT, "%s +d turns on debug which draws helper points and lines.\n", pad);
 	if (kind < 2) GMT_message (GMT, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
-	if (kind < 2) GMT_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
+	if (kind < 2) GMT_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, GMT_putfont (GMT, GMT->current.setting.font_annot[GMT_PRIMARY]));
 	if (kind < 2)
 		GMT_message (GMT, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
 	else
@@ -1522,7 +1522,7 @@ int GMT_default_error (struct GMT_CTRL *GMT, char option)
 
 		case '-': break;	/* Skip indiscriminently */
 		case '>': break;	/* Skip indiscriminently since dealt with internally */
-		case 'B': error += (GMT->common.B.active[0] == false && GMT->common.B.active[1] == false); break;
+		case 'B': error += (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false); break;
 		case 'J': error += GMT->common.J.active == false; break;
 		case 'K': error += GMT->common.K.active == false; break;
 		case 'O': error += GMT->common.O.active == false; break;
@@ -4040,7 +4040,7 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	bool go = true;
 
 	GMT->current.map.frame.set_frame[part]++;
-	if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
+	if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
 		return (1);
 	}
@@ -4088,8 +4088,8 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
 	bool s_given = false;
 	if (check) {	/* true if coming via -B, false if parsing gmt.conf */
-		GMT->current.map.frame.set_frame[0]++, GMT->current.map.frame.set_frame[1]++;
-		if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
+		GMT->current.map.frame.set_frame[GMT_PRIMARY]++, GMT->current.map.frame.set_frame[GMT_SECONDARY]++;
+		if (GMT->current.map.frame.set_frame[GMT_PRIMARY] > 1 || GMT->current.map.frame.set_frame[GMT_SECONDARY] > 1) {
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
 			return (1);
 		}
@@ -4296,9 +4296,9 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_FORMAT_TIME_MAP:
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			strncpy (GMT->current.setting.format_time[1], value, GMT_LEN64);	/* Sets secondary */
+			strncpy (GMT->current.setting.format_time[GMT_SECONDARY], value, GMT_LEN64);	/* Sets secondary */
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
-			strncpy (GMT->current.setting.format_time[0], value, GMT_LEN64);
+			strncpy (GMT->current.setting.format_time[GMT_PRIMARY], value, GMT_LEN64);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4306,7 +4306,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_FORMAT_TIME_SECONDARY_MAP:
-			strncpy (GMT->current.setting.format_time[1], value, GMT_LEN64);
+			strncpy (GMT->current.setting.format_time[GMT_SECONDARY], value, GMT_LEN64);
 			break;
 		case GMTCASE_D_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4331,8 +4331,8 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 		/* FONT GROUP */
 
 		case GMTCASE_FONT:	/* Special to set all fonts */
-			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[0])) error = true;
-			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[1])) error = true;
+			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
+			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
 			if (GMT_getfont (GMT, value, &GMT->current.setting.font_title)) error = true;
 			if (GMT_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
 			/* if (GMT_getfont (GMT, value, &GMT->current.setting.font_logo)) error = true; */
@@ -4344,29 +4344,29 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_FONT_ANNOT:
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[1])) error = true;
+			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
 				/* When + is prepended, scale fonts, offsets and ticklengths relative to FONT_ANNOT_PRIMARY (except LOGO font) */
 				double scale;
-				scale = GMT->current.setting.font_annot[0].size;
-				if (GMT_getfont (GMT, &value[1], &GMT->current.setting.font_annot[0])) error = true;
-				scale = GMT->current.setting.font_annot[0].size / scale;
-				GMT->current.setting.font_annot[1].size *= scale;
+				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size;
+				if (GMT_getfont (GMT, &value[1], &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
+				scale = GMT->current.setting.font_annot[GMT_PRIMARY].size / scale;
+				GMT->current.setting.font_annot[GMT_SECONDARY].size *= scale;
 				GMT->current.setting.font_label.size *= scale;
 				GMT->current.setting.font_title.size *= scale;
-				GMT->current.setting.map_annot_offset[0] *= scale;
-				GMT->current.setting.map_annot_offset[1] *= scale;
+				GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale;
+				GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale;
 				GMT->current.setting.map_label_offset *= scale;
 				GMT->current.setting.map_title_offset *= scale;
 				GMT->current.setting.map_frame_width *= scale;
-				GMT->current.setting.map_tick_length[0] *= scale;
-				GMT->current.setting.map_tick_length[1] *= scale;
+				GMT->current.setting.map_tick_length[GMT_PRIMARY] *= scale;
+				GMT->current.setting.map_tick_length[GMT_SECONDARY] *= scale;
 				GMT->current.setting.map_tick_length[2] *= scale;
 				GMT->current.setting.map_tick_length[3] *= scale;
 			}
 			else
-				if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[0])) error = true;
+				if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_PRIMARY])) error = true;
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4374,7 +4374,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_FONT_ANNOT_SECONDARY:
-			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[1])) error = true;
+			if (GMT_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
 			break;
 		case GMTCASE_HEADER_FONT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4403,7 +4403,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				GMT_COMPAT_CHANGE ("FONT_ANNOT_PRIMARY");
 				dval = GMT_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
-					GMT->current.setting.font_annot[0].size = dval;
+					GMT->current.setting.font_annot[GMT_PRIMARY].size = dval;
 				else
 					error = true;
 			}
@@ -4415,7 +4415,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				GMT_COMPAT_CHANGE ("FONT_ANNOT_SECONDARY");
 				dval = GMT_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0)
-					GMT->current.setting.font_annot[1].size = dval;
+					GMT->current.setting.font_annot[GMT_SECONDARY].size = dval;
 				else
 					error = true;
 			}
@@ -4456,9 +4456,9 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_MAP_ANNOT_OFFSET:
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			GMT->current.setting.map_annot_offset[1] = GMT_to_inch (GMT, value);
+			GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT_to_inch (GMT, value);
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
-			GMT->current.setting.map_annot_offset[0] = GMT_to_inch (GMT, value);
+			GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT_to_inch (GMT, value);
 			break;
 		case GMTCASE_ANNOT_OFFSET_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4466,7 +4466,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_MAP_ANNOT_OFFSET_SECONDARY:
-			GMT->current.setting.map_annot_offset[1] = GMT_to_inch (GMT, value);
+			GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT_to_inch (GMT, value);
 			break;
 		case GMTCASE_OBLIQUE_ANNOTATION:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4557,11 +4557,11 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			i = (value[0] == '+') ? 1 : 0;	/* If plus is added, copy color to MAP_*_PEN settings */
 			error = GMT_getpen (GMT, &value[i], &GMT->current.setting.map_default_pen);
 			if (i == 1) {
-				GMT_rgb_copy (&GMT->current.setting.map_grid_pen[0].rgb, &GMT->current.setting.map_default_pen.rgb);
-				GMT_rgb_copy (&GMT->current.setting.map_grid_pen[1].rgb, &GMT->current.setting.map_default_pen.rgb);
+				GMT_rgb_copy (&GMT->current.setting.map_grid_pen[GMT_PRIMARY].rgb, &GMT->current.setting.map_default_pen.rgb);
+				GMT_rgb_copy (&GMT->current.setting.map_grid_pen[GMT_SECONDARY].rgb, &GMT->current.setting.map_default_pen.rgb);
 				GMT_rgb_copy (&GMT->current.setting.map_frame_pen.rgb  , &GMT->current.setting.map_default_pen.rgb);
-				GMT_rgb_copy (&GMT->current.setting.map_tick_pen[0].rgb, &GMT->current.setting.map_default_pen.rgb);
-				GMT_rgb_copy (&GMT->current.setting.map_tick_pen[1].rgb, &GMT->current.setting.map_default_pen.rgb);
+				GMT_rgb_copy (&GMT->current.setting.map_tick_pen[GMT_PRIMARY].rgb, &GMT->current.setting.map_default_pen.rgb);
+				GMT_rgb_copy (&GMT->current.setting.map_tick_pen[GMT_SECONDARY].rgb, &GMT->current.setting.map_default_pen.rgb);
 			}
 			break;
 		case GMTCASE_FRAME_PEN:
@@ -4611,14 +4611,14 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 		case GMTCASE_MAP_GRID_CROSS_SIZE:
 			dval = GMT_to_inch (GMT, value);
 			if (dval >= 0.0)
-				GMT->current.setting.map_grid_cross_size[0] = GMT->current.setting.map_grid_cross_size[1] = dval;
+				GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
 			else
 				error = true;
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
 			dval = GMT_to_inch (GMT, value);
 			if (dval >= 0.0)
-				GMT->current.setting.map_grid_cross_size[0] = dval;
+				GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = dval;
 			else
 				error = true;
 			break;
@@ -4630,7 +4630,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
 			dval = GMT_to_inch (GMT, value);
 			if (dval >= 0.0)
-				GMT->current.setting.map_grid_cross_size[1] = dval;
+				GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
 			else
 				error = true;
 			break;
@@ -4641,9 +4641,9 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_MAP_GRID_PEN:
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			error = GMT_getpen (GMT, value, &GMT->current.setting.map_grid_pen[1]);
+			error = GMT_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
-			error = GMT_getpen (GMT, value, &GMT->current.setting.map_grid_pen[0]);
+			error = GMT_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4651,7 +4651,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Under compatibility mode we will fall through (no break) to next (correct) case: */
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
-			error = GMT_getpen (GMT, value, &GMT->current.setting.map_grid_pen[1]);
+			error = GMT_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -4770,20 +4770,20 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 		case GMTCASE_TICK_PEN:
 			if (GMT_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_CHANGE ("MAP_TICK_PEN");
-				error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[0]);
-				error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[1]);
+				error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+				error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 			}
 			else	/* Not recognized so give error message */
 				error = gmt_badvalreport (GMT, keyword);
 			break;
 		case GMTCASE_MAP_TICK_PEN:
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
-			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[1]);
+			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
-			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[0]);
+			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_MAP_TICK_PEN_SECONDARY:
-			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[1]);
+			error = GMT_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 			break;
 		case GMTCASE_HEADER_OFFSET:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -5764,14 +5764,14 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
-			strncpy (value, GMT->current.setting.format_time[0], GMT_LEN256);
+			strncpy (value, GMT->current.setting.format_time[GMT_PRIMARY], GMT_LEN256);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_SECONDARY_MAP:
-			strncpy (value, GMT->current.setting.format_time[1], GMT_LEN256);
+			strncpy (value, GMT->current.setting.format_time[GMT_SECONDARY], GMT_LEN256);
 			break;
 		case GMTCASE_D_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -5798,14 +5798,14 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_ANNOT_PRIMARY:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[0]), GMT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[GMT_PRIMARY]), GMT_LEN256);
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_ANNOT_SECONDARY:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[1]), GMT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[GMT_SECONDARY]), GMT_LEN256);
 			break;
 		case GMTCASE_HEADER_FONT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -5831,7 +5831,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 		case GMTCASE_ANNOT_FONT_SIZE_PRIMARY:
 			if (GMT_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_WARN;
-				sprintf (value, "%g", GMT->current.setting.font_annot[0].size);
+				sprintf (value, "%g", GMT->current.setting.font_annot[GMT_PRIMARY].size);
 			}
 			else
 				error = gmt_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -5839,7 +5839,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 		case GMTCASE_ANNOT_FONT_SIZE_SECONDARY:
 			if (GMT_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_WARN;
-				sprintf (value, "%g", GMT->current.setting.font_annot[1].size);
+				sprintf (value, "%g", GMT->current.setting.font_annot[GMT_SECONDARY].size);
 			}
 			else
 				error = gmt_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -5868,14 +5868,14 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_annot_offset[0] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
+			sprintf (value, "%g%c", GMT->current.setting.map_annot_offset[GMT_PRIMARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
 			break;
 		case GMTCASE_ANNOT_OFFSET_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OFFSET_SECONDARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_annot_offset[1] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
+			sprintf (value, "%g%c", GMT->current.setting.map_annot_offset[GMT_SECONDARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
 			break;
 		case GMTCASE_OBLIQUE_ANNOTATION:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -5969,28 +5969,28 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_grid_cross_size[0] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
+			sprintf (value, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_grid_cross_size[1] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
+			sprintf (value, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
-			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_grid_pen[0]));
+			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_grid_pen[GMT_PRIMARY]));
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
-			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_grid_pen[1]));
+			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_grid_pen[GMT_SECONDARY]));
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -6070,10 +6070,10 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
-			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_tick_pen[0]));
+			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_tick_pen[GMT_PRIMARY]));
 			break;
 		case GMTCASE_MAP_TICK_PEN_SECONDARY:
-			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_tick_pen[1]));
+			sprintf (value, "%s", GMT_putpen (GMT, GMT->current.setting.map_tick_pen[GMT_SECONDARY]));
 			break;
 		case GMTCASE_HEADER_OFFSET:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -7635,7 +7635,7 @@ struct GMT_CTRL *GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 
 	/* Reset all the common.?.active settings to false */
 
-	GMT->common.B.active[0] = GMT->common.B.active[1] = GMT->common.K.active = GMT->common.O.active = false;
+	GMT->common.B.active[GMT_PRIMARY] = GMT->common.B.active[GMT_SECONDARY] = GMT->common.K.active = GMT->common.O.active = false;
 	GMT->common.P.active = GMT->common.U.active = GMT->common.V.active = false;
 	GMT->common.X.active = GMT->common.Y.active = false;
 	GMT->common.R.active = GMT->common.J.active = false;
@@ -8285,7 +8285,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 	I->active = true;
 	if (!custom && in[0] && val == 0.0) I->active = false;
 	I->upper_case = false;
-	format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[0] : GMT->current.setting.format_time[1];
+	format = (GMT->current.map.frame.primary) ? GMT->current.setting.format_time[GMT_PRIMARY] : GMT->current.setting.format_time[GMT_SECONDARY];
 	switch (format[0]) {	/* This parameter controls which version of month/day textstrings we use for plotting */
 		case 'F':	/* Full name, upper case */
 			I->upper_case = true;
@@ -8407,7 +8407,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->current.map.frame.header[0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
-		GMT->current.map.frame.set_frame[0] = GMT->current.map.frame.set_frame[1] = 0;
+		GMT->current.map.frame.set_frame[GMT_PRIMARY] = GMT->current.map.frame.set_frame[GMT_SECONDARY] = 0;
 	}
 
 #ifdef _WIN32
@@ -8722,7 +8722,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
-		GMT->current.map.frame.set_frame[0] = GMT->current.map.frame.set_frame[1] = 0;
+		GMT->current.map.frame.set_frame[GMT_PRIMARY] = GMT->current.map.frame.set_frame[GMT_SECONDARY] = 0;
 	}
 
 	if ((error = gmt5_parse_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
@@ -10049,7 +10049,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	p->n_required = p->convert_angles = p->n_nondim = p->base_set = 0;
 	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->u_set = false;
-	p->font = GMT->current.setting.font_annot[0];
+	p->font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	if (p->read_size)  p->given_size_x = p->given_size_y = p->size_x = p->size_y = 0.0;
 
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
@@ -10966,8 +10966,8 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 
 		case 'B':
 			switch (item[0]) {	/* Check for -B[p] and -Bs */
-				case 's': GMT->common.B.active[1] = true; break;
-				default:  GMT->common.B.active[0] = true; break;
+				case 's': GMT->common.B.active[GMT_SECONDARY] = true; break;
+				default:  GMT->common.B.active[GMT_PRIMARY] = true; break;
 			}
 			if (!error) error = gmt_parse_B_option (GMT, item);
 			break;

@@ -179,6 +179,11 @@ enum GMT_enum_model {
 	GMT_POLYNOMIAL = 0, GMT_CHEBYSHEV, GMT_COSINE, GMT_SINE, GMT_FOURIER
 	};
 
+/*! Various array indeces of fonts and pens */
+enum GMT_enum_index {
+	GMT_PRIMARY = 0, GMT_SECONDARY = 1
+	};
+
 /*! Various options for FFT calculations [Default is 0] */
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
