@@ -697,7 +697,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right)
 {
 	int i, error;
-	double restore_a, restore_b1, restore_b2, diff, dw, w0, w1, wn1, wn, max_dw;
+	double restore_a, restore_b1, restore_b2, diff = 2 * LIMIT, dw, w0, w1, wn1, wn, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
 
 	/* Allocate memory for load and restore force */
@@ -724,7 +724,7 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
 
 	if (error) return (error);
 
-	do {	/* Iterate as long as rms difference is > LIMIT */
+	while (!error && diff > LIMIT) {	/* Iterate as long as rms difference is > LIMIT. diff starts at 2*LIMIT. */
 
 		/* Set variable restoring force */
 
@@ -750,7 +750,6 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
 		/* diff = sqrt (diff / n); RMS */
 		diff = max_dw;
 	}
-	while (!error && diff > LIMIT);
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, load);
