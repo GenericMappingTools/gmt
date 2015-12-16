@@ -1898,7 +1898,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	/* PS strings to be used dependent on "mode" */
 	const char *op[4] = {"Z", "false charpath fs", "false charpath fs", "false charpath V S U fs"};
 	/* PS strings to be used dependent on "justify". Empty strings added for unused values. */
-	const char *justcmd[12] = {"", "bl", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
+	const char *justcmd[12] = {"", "bl ", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
 	const char *align[4] = {"0", "-2 div", "neg", ""};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
