@@ -5380,7 +5380,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	/* With out_ID in hand we can now put the data where it should go */
 	if (GMT_Put_Data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
 	if (output) gmt_free_null (output);	/* Done with this variable */
-	
+
 #ifdef DEBUG
 	GMT_list_API (API, "GMT_Write_Data");
 #endif
@@ -7770,10 +7770,12 @@ int GMT_Report_ (void *V_API, unsigned int *level, const char *format, int len)
 #endif
 
 /*! . */
-int GMT_Get_Value (void *V_API, const char *arg, double par[])
+int GMT_Get_Value (void *V_API, const char *arg, double par[], int maxpar)
 {	/* Parse any number of comma, space, tab, semi-colon or slash-separated values.
-	 * The array par must have enough space to hold all the items.
+	 * The array par must have enough space to hold a maximum of maxpar items.
 	 * Function returns the number of items, or GMT_NOTSET if there was an error.
+	 * When there are more than maxpar items, only the first maxpar are stored, and
+	 * the value of maxpar is returned.
 	 * We can handle dimension units (c|i|p), distance units (d|m|s|e|f|k|M|n|u),
 	 * geographic coordinates, absolute dateTtime strings, and regular floats.
 	 *
@@ -7783,7 +7785,7 @@ int GMT_Get_Value (void *V_API, const char *arg, double par[])
 	 * Geographic dd:mm:ss[W|E|S|N] coordinates are returned in decimal degrees.
 	 * DateTtime moments are returned in time in chosen units [sec] since chosen epoch [1970] */
 
-	unsigned int pos = 0, n_arg = 0, mode, col_type_save[2][2];
+	unsigned int pos = 0, npar = 0, mode, col_type_save[2][2];
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, unit;
 	double value;
@@ -7804,6 +7806,10 @@ int GMT_Get_Value (void *V_API, const char *arg, double par[])
 
 	while (GMT_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
 		if ((len = strlen (p)) == 0) continue;
+		if (npar >= maxpar) {	/* Bail out when already maxpar values are stored */
+			GMTAPI_report_error (API, GMT_DIM_TOO_LARGE);
+			break;
+		}
 		len--;	/* Position of last char, possibly a unit */
 		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit (c|i|p), return distance in GMT default length unit [inch or cm] */
 			value = GMT_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
@@ -7814,19 +7820,19 @@ int GMT_Get_Value (void *V_API, const char *arg, double par[])
 		}
 		else	/* Perhaps coordinates or floats */
 			(void) GMT_scanf_arg (GMT, p, GMT_IS_UNKNOWN, &value);
-		par[n_arg++] = value;
+		par[npar++] = value;
 	}
 	/* Reset col_types to what they were before the parsing */
 	GMT_memcpy (GMT->current.io.col_type[GMT_IN],  col_type_save[GMT_IN],  2, unsigned int);
 	GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type_save[GMT_OUT], 2, unsigned int);
 
-	return (n_arg);
+	return (npar);
 }
 
 #ifdef FORTRAN_API
 int GMT_Get_Value_ (char *arg, double par[], int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Value (GMT_FORTRAN, arg, par));
+	return (GMT_Get_Value (GMT_FORTRAN, arg, par, len));
 }
 #endif
 

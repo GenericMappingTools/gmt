@@ -1487,7 +1487,7 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	 * +o<offset(s) : Start and end line after an initial offset from actual coordinates [planned for 5.3]
 	 * +v[b|e]<size><vecargs>  : Draw vector head at line endings [planned for 5.3].
 	 */
-	
+
 	if ((c = strchr (line, '+')) && strchr ("osv", c[1])) {	/* Found valid modifiers */
 		char mods[GMT_LEN256] = {""}, v_args[2][GMT_LEN256] = {"",""}, p[GMT_LEN64] = {""}, T[2][GMT_LEN64], *t = NULL, *t2 = NULL;
 		unsigned int pos = 0;
@@ -1572,7 +1572,7 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 							case PSL_VEC_TERMINAL:
 								P->end[n].length = 0.0;
 								break;
-							
+
 						}
 						use[n] = false;	/* Done processing this one */
 					}
@@ -4042,7 +4042,7 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 /*! . */
 void GMT_decorate_init (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, unsigned int mode)
 {	/* Assign default values to structure */
-	
+
 	GMT_decorate_free (GMT, G);	/* In case we've been here before we must free stuff first */
 
 	GMT_memset (G, 1, struct GMT_DECORATE);	/* Sets all to 0 */
@@ -4710,7 +4710,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	char buffer[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
 	GMT_contlabel_free (GMT, G);	/* In case we've been here before */
-	
+
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[GMT_X] = 0.01 * G->clearance[GMT_X] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		G->clearance[GMT_Y] = 0.01 * G->clearance[GMT_Y] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -9167,7 +9167,7 @@ int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double 
 	 */
 	int n, k;
 	/* Wrapper around GMT_Get_Value when we know input is either coordinates or plot dimensions */
-	if ((n = GMT_Get_Value (GMT->parent, string, par)) < 0) return n;	/* Parsing error */
+	if ((n = GMT_Get_Value (GMT->parent, string, par, 2)) < 0) return n;	/* Parsing error */
 	if ((mode == GMT_PAIR_COORD || mode == GMT_PAIR_DIM_EXACT) && n != 2) {
 		char *kind[2] = {"coordinates", "dimensions"};
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Parsing error: Expected two %s\n", kind[mode]);
@@ -9219,7 +9219,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	while (GMT_getmodopt (GMT, text, "cidgprs", &pos, p)) {	/* Looking for +c, [+d], +g, +i, +p, +r, +s */
 		switch (p[0]) {
 			case 'c':	/* Clearance will expand the rectangle by specified amounts */
-				n = GMT_Get_Value (GMT->parent, &p[1], P->padding);
+				n = GMT_Get_Value (GMT->parent, &p[1], P->padding, 4);
 				if (n == 1)	/* Same round in all directions */
 					P->padding[XHI] = P->padding[YLO] = P->padding[YHI] = P->padding[XLO];
 				else if (n == 2) {	/* Separate round in x and y */
@@ -11639,15 +11639,15 @@ struct GMT_DATASET * GMT_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 			coord = GMT_memory (GMT, NULL, dim[GMT_COL], double);
 			break;
 	}
-	if (S->method == SEGM_CONTINUOUS) 
+	if (S->method == SEGM_CONTINUOUS)
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " variable-length segment lines\n", dim[GMT_SEG]);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " 2-point segment lines\n", dim[GMT_SEG]);
-		
+
 	/* Allocate the dataset with one large table */
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* Our new dataset */
 	Tout = D->table[0];	/* The only output table */
-	
+
 	if (S->method == SEGM_NETWORK) {	/* Make segments that connect every point with every other point */
 		struct GMT_DATATABLE *Tin2 = NULL;
 		uint64_t tbl2, seg2, row2;
@@ -13038,7 +13038,7 @@ double GMT_pol_area (double x[], double y[], uint64_t n)
 void GMT_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo)
 {	/* Estimate mean position */
 	uint64_t i, k;
-	
+
 	assert (n > 0);
 	if (n == 1) {
 		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
@@ -13095,7 +13095,7 @@ unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	int increment[2] = {1, -1};
 	unsigned int k, proj_type, effect;
 	double *x = NULL, *y = NULL, dist, ds = 0.0, f1, f2, x0, x1, y0, y1, offset;
-	
+
 	if (P == NULL) return 0;	/* No settings given */
 	if (GMT_IS_ZERO (P->end[BEG].offset) && GMT_IS_ZERO (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL) return 0;	/* No trims given */
 
@@ -13150,4 +13150,4 @@ unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	*nn = new_n;
 	return 0;
 }
-	
+

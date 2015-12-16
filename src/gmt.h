@@ -105,7 +105,7 @@ EXTERN_MSC int GMT_Option     (void *API, const char *options);
 EXTERN_MSC int GMT_Get_Common (void *API, unsigned int option, double *par);
 EXTERN_MSC int GMT_Get_Default(void *API, const char *keyword, char *value);
 EXTERN_MSC int GMT_Set_Default(void *API, const char *keyword, const char *value);
-EXTERN_MSC int GMT_Get_Value  (void *API, const char *arg, double *par);
+EXTERN_MSC int GMT_Get_Value  (void *API, const char *arg, double *par, int maxpar);
 EXTERN_MSC int GMT_Report     (void *API, unsigned int level, const char *message, ...);
 EXTERN_MSC int GMT_Message    (void *API, unsigned int mode, const char *format, ...);
 
