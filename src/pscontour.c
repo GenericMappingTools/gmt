@@ -303,7 +303,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		}
 	}
 
-	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = true */
 
@@ -348,7 +348,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		GMT_setpen (GMT, &save[pol].pen);
 		way = GMT_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
-			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
 			if (mode & 2) GMT_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high], mode & 4);
 		}
 		if (mode & 1) {	/* Tick the innermost contour */

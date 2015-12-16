@@ -353,7 +353,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	GMT_memset (col, GMT_LEN64*12, char);
 	GMT_memset (dim, PSL_MAX_DIMS, double);
 	GMT_setpen (GMT, &Ctrl->W.pen);
-	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
+	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 	if (Ctrl->E.active) Ctrl->L.active = true;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);

@@ -131,7 +131,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.dx = C->C.dy = 15.0;	/* 15% of font size is default clearance */
 	C->C.percent = true;
 	C->F.justify = PSL_MC;		/* MC is the default */
-	C->F.font = GMT->current.setting.font_annot[0];		/* Default font */
+	C->F.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
 	C->S.pen = GMT->current.setting.map_default_pen;
 	C->T.mode = 'o';	/* Rectangular box shape */
@@ -315,7 +315,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a[<angle>] specifies the baseline angle for all text [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f[<fontinfo>] sets the size, font, and optionally the text color [%s].\n",
-		GMT_putfont (API->GMT, API->GMT->current.setting.font_annot[0]));
+		GMT_putfont (API->GMT, API->GMT->current.setting.font_annot[GMT_PRIMARY]));
 	GMT_Message (API, GMT_TIME_NONE, "\t   +j[<justify>] sets text justification relative to given (x,y) coordinate.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +h will use as text the most recent segment header.\n");

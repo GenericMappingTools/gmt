@@ -756,7 +756,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	GMT_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
 
 	S.base = GMT->session.d_NaN;
-	S.font = GMT->current.setting.font_annot[0];
+	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	S.u = GMT->current.setting.proj_length_unit;
 	S.justify = PSL_MC;
 	Ctrl = New_psxy_Ctrl (GMT);	/* Allocate and initialize a new control structure */

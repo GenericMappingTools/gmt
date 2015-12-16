@@ -508,7 +508,7 @@ void fix_format (char *unit, char *format)
 	}
 }
 
-#define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
+#define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 
 bool hangs_down (char *text) {
 	/* Returns true if text contains one of the 4 lower-case letters that hangs down below the baseline */
@@ -542,7 +542,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 	max_intens[0] = Ctrl->I.min;
 	max_intens[1] = Ctrl->I.max;
 
-	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
+	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* No 'inside' annotations allowed in colorbar */
 	cap  = PSL->internal.line_cap;
 	join = PSL->internal.line_join;
 
@@ -699,15 +699,15 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 		sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
 		off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
 			((ndec > 0) ? GMT_PER_WIDTH : 0.0))
-			* GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+			* GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 		bar_tick_len = fabs (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Length of tickmarks */
 		if (Ctrl->D.horizontal) {	/* Determine center and dimensions of horizontal background rectangle */
 			/* Determine dimensions */
-			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
+			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between bar and annotations */
 			/* Extend y clearance by tick length */
 			annot_off += bar_tick_len;
 			/* Extend y clearance by annotation height */
-			annot_off += GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+			annot_off += GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 			/* If a label then add space for offset and label height */
 			if (GMT->current.map.frame.axis[GMT_X].label[0]) {
 				label_off = 1.0;	/* 1-letter height */
@@ -719,8 +719,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			/* If a unit then add space on the right to deal with the unit */
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
 				/* u_off is width of the label placed on the right side , while v_off, if > 0, is the extra height of the label beyond the width of the bar */
-				u_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + (0.5+strlen (GMT->current.map.frame.axis[GMT_Y].label)) * GMT_LET_WIDTH * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
-				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - width);
+				u_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + (0.5+strlen (GMT->current.map.frame.axis[GMT_Y].label)) * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - width);
 			}
 			/* Adjust clearances for the panel */
 			if (flip & PSSCALE_FLIP_ANNOT) dim[YHI] += annot_off; else dim[YLO] += annot_off;
@@ -739,9 +739,9 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			panel->width = length + dim[XHI] + dim[XLO];	panel->height = width + dim[YHI] + dim[YLO];
 		}
 		else {	/* Determine center and dimensions of vertical background rectangle */
-			h_off = 0.5 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+			h_off = 0.5 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 			/* Determine dimensions */
-			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]);	/* Allow for space between bar and annotations */
+			annot_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between bar and annotations */
 			/* Extend x clearance by tick length */
 			annot_off += bar_tick_len;
 			/* Extend x clearance by annotation width */
@@ -752,8 +752,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
 				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accomodate the label */
-				u_off = 0.5 * MAX (0.0, 1.3*strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_WIDTH * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH - width);
-				v_off = MAX (0.0, GMT->current.setting.map_annot_offset[0]) + GMT->current.setting.font_annot[0].size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
+				u_off = 0.5 * MAX (0.0, 1.3*strlen (GMT->current.map.frame.axis[GMT_Y].label) * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - width);
+				v_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
 			}
 			/* Adjust clearances for the panel */
 			if (flip & PSSCALE_FLIP_LABEL) dim[XLO] += label_off; else dim[XHI] += label_off;
@@ -857,8 +857,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			}
 		}
 
-		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[0];
-		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
+		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
 		y_annot = y_base + dir * annot_off;
 		if ((flip & PSSCALE_FLIP_ANNOT) == (flip & PSSCALE_FLIP_LABEL) / 2) y_label = y_base + dir * label_off;
 
@@ -894,7 +894,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
-			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
+			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
@@ -931,21 +931,21 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
+				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
 
 			if (!skip_lines) {	/* First draw gridlines, unless skip_lines is true */
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
+				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				for (i = 0; i < n_xpos; i++)
 					PSL_plotsegment (PSL, xpos[i], 0.0, xpos[i], width);
 			}
 
 			/* Then draw annotation and frame tickmarks */
 
-			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
+			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
@@ -959,7 +959,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			}
 
 			/* Now we place annotations */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
 
@@ -983,7 +983,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 					}
 					else
 						GMT_sprintf_float (text, format, P->range[i].z_low);
-					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, 0.0, -this_just, form);
+					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 				x1 += z_width[i];
 			}
@@ -1001,7 +1001,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 					}
 					else
 						GMT_sprintf_float (text, format, P->range[i].z_high);
-					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[0].size, text, 0.0, -this_just, form);
+					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 			}
 		}
@@ -1011,11 +1011,11 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
 		}
 		if (unit[0]) {	/* Add unit label */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left */
-				PSL_plottext (PSL, xleft  - Ctrl->D.elength - GMT->current.setting.map_annot_offset[0], 0.5 * width, GMT->current.setting.font_annot[0].size, unit, 0.0, PSL_MR, form);
+				PSL_plottext (PSL, xleft  - Ctrl->D.elength - GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_MR, form);
 			else
-				PSL_plottext (PSL, xright + Ctrl->D.elength + GMT->current.setting.map_annot_offset[0], 0.5 * width, GMT->current.setting.font_annot[0].size, unit, 0.0, PSL_ML, form);
+				PSL_plottext (PSL, xright + Ctrl->D.elength + GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_ML, form);
 		}
 	}
 	else {	/* Vertical scale */
@@ -1063,17 +1063,17 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			sprintf (test, "%ld - %ld", lrint (floor (P->range[P->n_colors-1].z_low)), lrint (ceil (P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((int)strlen (text), (int)strlen (test)) + 2*ndec) * GMT_DEC_WIDTH - 0.4 +
 				((ndec > 0) ? 2*GMT_PER_WIDTH : 0.0))
-				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 		else {
 			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
 			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
 				((ndec > 0) ? GMT_PER_WIDTH : 0.0))
-				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+				* GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 
-		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[0] + off;
+		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + off;
 		label_off = annot_off + GMT->current.setting.map_label_offset;
 		if (use_labels || (flip & PSSCALE_FLIP_ANNOT) || Ctrl->Q.active) annot_off -= off;
 		y_annot = y_base + dir * annot_off;
@@ -1111,7 +1111,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
-			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[0]), 0.5 * width, GMT->current.setting.font_annot[0].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
+			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
@@ -1149,7 +1149,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
+				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
@@ -1168,7 +1168,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
 			if (!skip_lines) {	/* First draw gridlines */
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
+				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				for (i = 0; i < n_xpos; i++)
 					PSL_plotsegment (PSL, xpos[i], 0.0, xpos[i], width);
 			}
@@ -1176,7 +1176,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			/* Then draw annotation and frame tickmarks */
 
 			if (!center) {
-				GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
+				GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 				for (i = 0; i < P->n_colors; i++) {
 					t_len = (all || (P->range[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
@@ -1189,7 +1189,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 
 			/* Finally plot annotations */
 
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
 
@@ -1215,7 +1215,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 					else
 						sprintf (text, format, P->range[i].z_low);
 					if (!cpt_auto_fmt) this_just = l_justify;
-					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, -90.0, -this_just, form);
+					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}
 				x1 += z_width[i];
 			}
@@ -1235,7 +1235,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 					else
 						GMT_sprintf_float (text, format, P->range[i].z_high);
 					if (!cpt_auto_fmt) this_just = l_justify;
-					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[0].size, text, -90.0, -this_just, form);
+					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}
 			}
 		}
@@ -1259,11 +1259,11 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			}
 		}
 		if (unit[0]) {	/* Add unit label */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the bottom */
-				PSL_plottext (PSL, xleft  - GMT->current.setting.map_annot_offset[0] - Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[0].size, unit, -90.0, PSL_TC, form);
+				PSL_plottext (PSL, xleft  - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_TC, form);
 			else
-				PSL_plottext (PSL, xright + GMT->current.setting.map_annot_offset[0] + Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[0].size, unit, -90.0, PSL_BC, form);
+				PSL_plottext (PSL, xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_BC, form);
 		}
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}

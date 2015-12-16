@@ -544,7 +544,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
+	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 

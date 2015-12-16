@@ -3712,7 +3712,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 	G->clearance[GMT_X] = G->clearance[GMT_Y] = 15.0;	/* 15 % */
 	G->clearance_flag = 1;	/* Means we gave percentages of label font size */
 	G->just = PSL_MC;
-	G->font_label = GMT->current.setting.font_annot[0];	/* FONT_ANNOT_PRIMARY */
+	G->font_label = GMT->current.setting.font_annot[GMT_PRIMARY];	/* FONT_ANNOT_PRIMARY */
 	G->font_label.size = 9.0;
 	G->dist_unit = GMT->current.setting.proj_length_unit;
 	G->pen = GMT->current.setting.map_default_pen;
@@ -11040,7 +11040,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				if ((c = strchr (s->string, '$')) && isdigit (c[1])) {	/* Got a text string containing one or more variables */
 					s->action = GMT_SYMBOL_VARTEXT;
 				}
-				s->font = GMT->current.setting.font_annot[0];	/* Default font for symbols */
+				s->font = GMT->current.setting.font_annot[GMT_PRIMARY];	/* Default font for symbols */
 				s->justify = PSL_MC;				/* Default justification of text */
 				head->text = true;
 				k = 1;
@@ -11067,7 +11067,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%%<font>] is deprecated syntax, use +f<font> instead\n");
 					*c = 0;		/* Replace % with the end of string NUL indicator */
 					c++;		/* Go to next character */
-					if (GMT_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
+					if (GMT_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[GMT_PRIMARY]));
 				}
 
 				break;

@@ -517,7 +517,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	GMT_contlabel_init (GMT, &S.G, 0);
 
 	S.base = GMT->session.d_NaN;
-	S.font = GMT->current.setting.font_annot[0];
+	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	S.u = GMT->current.setting.proj_length_unit;
 
 	Ctrl = New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */

@@ -308,7 +308,7 @@ struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DAT
 }
 
 /* Define the fraction of the height of the font to the font size */
-#define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
+#define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 #define FONT_HEIGHT(font_id) (GMT->session.font[font_id].height)
 #define FONT_HEIGHT_LABEL (GMT->session.font[GMT->current.setting.font_label.id].height)
 
@@ -414,7 +414,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	/* First attempt to compute the legend height */
 
-	one_line_spacing = Ctrl->D.spacing * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+	one_line_spacing = Ctrl->D.spacing * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 	half_line_spacing    = 0.5  * one_line_spacing;
 	quarter_line_spacing = 0.25 * one_line_spacing;
 
@@ -437,7 +437,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						/* B cptname offset height[+modifiers] [ Optional psscale args -B -I -L -M -N -S -Z -p ] */
 						sscanf (&line[2], "%*s %*s %s", bar_height);
 						if ((c = strchr (bar_height, '+')) != NULL) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
-						height += GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+						height += GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 						column_number = 0;
 						break;
 
@@ -514,7 +514,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (GMT_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
 							gave_label = false;	/* Not sure why I do this, will find out */
 						if (gave_label && (just == 't' || just == 'b')) height += d_off;
-						height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
+						height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 						column_number = 0;
 						break;
 
@@ -578,9 +578,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		double average_char_width = 0.44;	/* There is no such thing but this is just a 1st order estimate */
 		double x_lines;
 		/* Guess: Given legend width and approximate char width, do the simple expression */
-		x_lines = n_char * (average_char_width * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH) / ((Ctrl->D.dim[GMT_X] - 2 * Ctrl->C.off[GMT_X]));
+		x_lines = n_char * (average_char_width * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) / ((Ctrl->D.dim[GMT_X] - 2 * Ctrl->C.off[GMT_X]));
 		n_lines = irint (ceil (x_lines));
-		height += n_lines * Ctrl->D.spacing * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+		height += n_lines * Ctrl->D.spacing * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 		GMT_Report (API, GMT_MSG_DEBUG, "Estimating %d lines of typeset paragraph text [%.1f].\n", n_lines, x_lines);
 	}
 
@@ -681,7 +681,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, module_options);
 						strcpy (bar_modifiers, bar_height);	/* Save the entire modifier string */
 						if ((c = strchr (bar_height, '+')) != NULL) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
-						row_height = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
+						row_height = GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, 1, fill);
 						x_off = GMT_to_inch (GMT, bar_gap);
 						sprintf (buffer, "-C%s -O -K -Dx%gi/%gi+w%gi/%s+h+jTC %s", bar_cpt, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, Ctrl->D.dim[GMT_X] - 2 * x_off, bar_modifiers, module_options);
@@ -891,7 +891,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						/* Default assumes label is added on top */
 						just = 't';
 						gave_label = true;
-						row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
+						row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && GMT_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 							just = string[0];
@@ -968,8 +968,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
-							if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
-							if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[0].id);
+							if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[GMT_PRIMARY].size);
+							if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[GMT_PRIMARY].id);
 							sprintf (tmp, "%s,%s,", size, font);
 							did_old = true;
 						}
@@ -991,7 +991,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X], row_base_y);
 						if (n == 0 || xx[0] == '-') sprintf (xx, "%g", col_left_x);
 						if (n == 0 || yy[0] == '-') sprintf (yy, "%g", row_base_y);
-						if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
+						if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor);
 						if (n == 0 || angle[0] == '-') sprintf (angle, "0");
 						if (n == 0 || key[0] == '-') sprintf (key, "TL");
 						if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
@@ -1035,7 +1035,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							x_off = col_left_x + x_off_col[column_number];
 						}
 						off_tt = GMT_to_inch (GMT, txt_b);
-						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;	/* To center the text */
+						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
 						row_base_y += half_line_spacing;	/* Move to center of box */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 							double length, tlen, gap;
@@ -1249,7 +1249,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (n_scan == 7) {	/* Place symbol text */
 							if ((T[TXT] = get_textset_pointer (API, T[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 							Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
-							sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, row_base_y + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
+							sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, row_base_y + d_off, GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, text);
 							Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 							if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = GMT_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
@@ -1264,8 +1264,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						/* If no previous > record, then use defaults */
 						Ts[PAR] = T[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (!flush_paragraph) {
-							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
-							sprintf (buffer, "%c %g %g %g,%d,%s 0 TL %gi %gi j", save_EOF, col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
+							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+							sprintf (buffer, "%c %g %g %g,%d,%s 0 TL %gi %gi j", save_EOF, col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, one_line_spacing, Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
 							Ts[PAR]->record[Ts[PAR]->n_rows++] = strdup (buffer);
 							GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", buffer);
 							if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = GMT_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);

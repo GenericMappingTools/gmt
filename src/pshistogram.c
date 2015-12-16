@@ -128,7 +128,7 @@ void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.offset = 6.0 / 72.0;	/* 6 points */
-	C->D.font = GMT->current.setting.font_annot[0];		/* Default font */
+	C->D.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
 	C->L.pen = GMT->current.setting.map_default_pen;
 	for (k = 0; k < 3; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;

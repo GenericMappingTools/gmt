@@ -660,7 +660,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		GMT_free (GMT, s);	GMT_free (GMT, xp);	GMT_free (GMT, yp);
 	}
 
-	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
+	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 
 	/* Still not finished with labeling polar caps when the pole point plots as a line (e.g., -JN).
 	 * One idea would be to add help points to include the pole and used this polygon to compute where to
@@ -679,7 +679,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			y_lbl = 0.5 * (save[pol].ylabel + save[k].ylabel);
 			if (mode & 1) {
 				GMT_setpen (GMT, &save[pol].pen);
-				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
 			}
 			save[k].do_it = false;
 			if (mode & 2) GMT_write_label_record (GMT, fp, x_lbl, y_lbl, 0.0, lbl[save[pol].high], mode & 4);
@@ -687,7 +687,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		else {
 			if (mode & 1) {
 				GMT_setpen (GMT, &save[pol].pen);
-				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
 			}
 			if (mode & 2) GMT_write_label_record (GMT, fp, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high], mode & 4);
 		}
