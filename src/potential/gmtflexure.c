@@ -37,7 +37,7 @@
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
 #define	POISSONS_RATIO	0.25
 
-/* 
+/*
  * gmtflexure computes the flexure produced by an arbitrary varying load
  * on a variable rigidity plate. One of four possible boundary contditions
  * can be imposed on each end of the profiles. The user may [optionally] provide 2
@@ -119,18 +119,18 @@ enum gmtflexure_load {
 	NO_LOAD = 0,
 	F_LOAD,
 	T_LOAD};
-	
+
 enum gmtflexure_bc {
 	BC_INFINITY=0,
 	BC_PERIODIC,
 	BC_CLAMPED,
 	BC_FREE};
-	
+
 void *New_gmtflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTFLEXURE_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GMTFLEXURE_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.E = YOUNGS_MODULUS;
 	C->C.nu = POISSONS_RATIO;
@@ -141,10 +141,10 @@ void *New_gmtflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 void Free_gmtflexure_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->Out.file) gmt_free_null (C->Out.file);
-	if (C->E.file) gmt_free_null (C->E.file);	
-	if (C->Q.file) gmt_free_null (C->Q.file);	
-	if (C->T.file) gmt_free_null (C->T.file);	
-	GMT_free (GMT, C);	
+	if (C->E.file) gmt_free_null (C->E.file);
+	if (C->Q.file) gmt_free_null (C->Q.file);
+	if (C->T.file) gmt_free_null (C->T.file);
+	GMT_free (GMT, C);
 }
 
 int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -482,22 +482,22 @@ int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b)
  * Revised:	5-AUG-1989	Now k is a function of x
  *
  */
- 
+
 int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right)
 {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2 = 0.0, stress2, restore, *work = NULL;
-	
+
 	/* Must allocate memory */
-	
+
 	work = GMT_memory (GMT, NULL, 5 * n, double);
-	
+
 	dx_4 = pow (dx, 4.0);
 	stress *= (dx * dx);
 	stress2 = 2.0 * stress;
-	
+
 	for (i = 0; i < n; i++) p[i] *= dx_4;
-		
+
 	/* Matrix row 0: */
 
 	work[0] = 0.0;
@@ -526,9 +526,9 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 		c_2 =  - 2.0 * pow (dx, 3.0) * w[1];
 		p[0] -= c_1*(2.0*d[1] - 4.0*d[0]) + c_2;
 	}
-	
+
 	/* Matrix row 1: */
-	
+
 	ind = (k_flag) ? 1 : 0;
 	restore = k[ind] * dx_4;
 	work[5] = 0.0;
@@ -559,9 +559,9 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 		p[1] -= c_1 * (d[1] + 0.5 * d[2] - 0.5 * d[0]);
 		w[0] = w[1] = 0.0;
 	}
-	
+
 	/* Matrix row 2 -> n - 3: */
-	
+
 	for (row = 2; row < (n-2); row++) {
 		ind = (k_flag) ? row : 0;
 		restore = k[ind] * dx_4;
@@ -574,7 +574,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	}
 
 	/* Matrix row n - 2: */
-	
+
 	row = n - 2;
 	off = row * 5;
 	ind = (k_flag) ? row : 0;
@@ -608,7 +608,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	}
 
 	/* Matrix row nx - 1: */
-	
+
 	off += 5;
 	row++;
 	ind = (k_flag) ? row : 0;
@@ -638,10 +638,10 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 		p[row] -= c_1*(2.0*d[row-1] - 4.0*d[row]) + c_2;
 		w[row-1] = w[row] = 0.0;
 	}
-		
+
 
 	/* Solve for w */
-	
+
 	off = 5 * n;
 	error = lu_solver (GMT, work, n, w, p);
 	GMT_free (GMT, work);
@@ -651,7 +651,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	}
 	return (0);
 }
-	
+
 /* flx1dk will compute 1-D plate flexure for a variable rigidity case with
  * a restoring force that depends on the sign of the deflection.  After each
  * iteration, we recompute k(x) so that k(x) = G * (rho_m - rho_infill (or rho_load)) where
@@ -691,7 +691,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
  * Revised:	5-AUG-1989	Now k is a function of x
  *
  */
- 
+
 #define LIMIT	0.01
 
 int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right)
@@ -699,49 +699,49 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
 	int i, error;
 	double restore_a, restore_b1, restore_b2, diff, dw, w0, w1, wn1, wn, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
-	
+
 	/* Allocate memory for load and restore force */
-	
+
 	k = GMT_memory (GMT, NULL, n, double);
 	w_old = GMT_memory (GMT, NULL, n, double);
 	load = GMT_memory (GMT, NULL, n, double);
-	
+
 	/* Initialize restoring force */
-	
+
 	restore_a  = NORMAL_GRAVITY * (rho_m - rho_w);
 	restore_b1 = NORMAL_GRAVITY * (rho_m - rho_i);
 	restore_b2 = NORMAL_GRAVITY * (rho_m - rho_l);
-	
+
 	for (i = 0; i < n; i++)	k[i] = (p[i] > 0.0) ? restore_b2 : restore_b1;
-	
+
 	/* Save possible boundary values */
-	
+
 	w0 = w[0];	w1 = w[1];	wn1 = w[n-2];	wn = w[n-1];
-	
+
 	memcpy ((void *)load, (void *)p, n * sizeof (double));
-	
+
 	error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right);
-	
+
 	if (error) return (error);
-	
+
 	do {	/* Iterate as long as rms difference is > LIMIT */
-	
+
 		/* Set variable restoring force */
-	
+
 		for (i = 0; i < n; i++)	k[i] = (w[i] > 0.0) ? ((p[i] > 0.0) ? restore_b2 : restore_b1) : restore_a;
-		
+
 		/* Save previous solution */
-		
+
 		memcpy ((void *)w_old, (void *)w, n * sizeof (double));
-		
+
 		/* Initialize arrays again */
-		
+
 		memcpy ((void *)load, (void *)p, n * sizeof (double));
 		memset ((void *)w, 0, n * sizeof (double));
 		w[0] = w0;	w[1] = w1;	w[n-2] = wn1;	w[n-1] = wn;	/* Reset BC values */
-		
+
 		error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right);
-		
+
 		for (i = 0, diff = max_dw = 0.0; i < n; i++) {
 			dw = fabs (w[i] - w_old[i]);
 			if (dw > max_dw) max_dw = dw;
@@ -751,13 +751,13 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
 		diff = max_dw;
 	}
 	while (!error && diff > LIMIT);
-	
+
 	GMT_free (GMT, k);
 	GMT_free (GMT, load);
 	GMT_free (GMT, w_old);
-	
+
 	return (error);
-}	
+}
 
 /* flx1dw0 will compute 1-D plate flexure for a variable rigidity case with
  * a pre-existing deformation.  The equation is
@@ -794,29 +794,29 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
  * 		29-OCT-1990	Include pre-existing deformation
  *
  */
- 
+
 int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right)
 {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2, stress2, restore, *work = NULL, *squeeze = NULL;
-	
+
 	/* Must allocate memory */
-	
+
 	work = GMT_memory (GMT, NULL, 5 * n, double);
 	squeeze = GMT_memory (GMT, NULL, n, double);
-	
+
 	dx_4 = pow (dx, 4.0);
 	stress *= (dx * dx);
 	stress2 = 2.0 * stress;
-	
+
 	for (i = 0; i < n; i++) p[i] *= dx_4;	/* Scale load */
-	
+
 	/* Add in buckling force on preexisting topo */
-	
+
 	for (i = 1; i < n-1; i++) squeeze[i] = -stress * (w0[i+1] - 2.0 * w[i] - w[i-1]);
 	squeeze[0] = squeeze[1];	squeeze[n-1] = squeeze[n-2];
 	for (i = 0; i < n; i++) p[i] -= squeeze[i];
-		
+
 	/* Matrix row 0: */
 
 	work[0] = 0.0;
@@ -845,9 +845,9 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
 		c_2 =  - 2.0 * pow (dx, 3.0) * w[1];
 		p[0] -= c_1*(2.0*d[1] - 4.0*d[0]) + c_2;
 	}
-	
+
 	/* Matrix row 1: */
-	
+
 	ind = (k_flag) ? 1 : 0;
 	restore = k[ind] * dx_4;
 	work[5] = 0.0;
@@ -878,9 +878,9 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
 		p[1] -= c_1 * (d[1] + 0.5 * d[2] - 0.5 * d[0]);
 		w[0] = w[1] = 0.0;
 	}
-	
+
 	/* Matrix row 2 -> n - 3: */
-	
+
 	for (row = 2; row < (n-2); row++) {
 		ind = (k_flag) ? row : 0;
 		restore = k[ind] * dx_4;
@@ -893,7 +893,7 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
 	}
 
 	/* Matrix row n - 2: */
-	
+
 	row = n - 2;
 	off = row * 5;
 	ind = (k_flag) ? row : 0;
@@ -927,7 +927,7 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
 	}
 
 	/* Matrix row nx - 1: */
-	
+
 	off += 5;
 	row++;
 	ind = (k_flag) ? row : 0;
@@ -957,10 +957,10 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
 		p[row] -= c_1*(2.0*d[row-1] - 4.0*d[row]) + c_2;
 		w[row-1] = w[row] = 0.0;
 	}
-		
+
 
 	/* Solve for w */
-	
+
 	off = 5 * n;
 	error = lu_solver (GMT, work, n, w, p);
 	GMT_free (GMT, work);
@@ -971,7 +971,7 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
 	}
 	/* for (i = 0; i < n; i++) w[i] += w0[i]; */
 	return (0);
-}	
+}
 
 /* flxr will compute a cross-section of 3-D plate flexure for a variable rigidity
  * plate with an axially symmetric load applied. In this case we have no phi-
@@ -1002,13 +1002,13 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
-	
+
 	work = GMT_memory (GMT, NULL, n * 5, double);
 	dx_4 = pow (dx, 4.0);
 	restore *= dx_4;
-	
+
 	for (i = 0; i < n; i++) p[i] *= dx_4;
-		
+
 	/* Matrix row 0: */
 
 	work[0] = 0.0;
@@ -1016,17 +1016,17 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	work[2] = 16.0 * d[0] + 2.0 * d[1] + restore;
 	work[3] = -8.0 * d[1] - 16.0 * d[0];
 	work[4] = 6.0 * d[1];
-	
+
 	/* Matrix row 1: */
-	
+
 	work[5] = 0.0;
 	work[6] = -2.0 * d[0] - d[1];
 	work[7] = 4.0 * d[1] + 1.125 * d[2] + 2.0 * d[0] + restore;
 	work[8] = -3.0 * (d[2] + d[1]);
 	work[9] = 1.875 * d[2];
-	
+
 	/* Matrix row 2 -> n - 3: */
-	
+
 	for (row = 2; row < (n-2); row++) {
 		r = row;
 		off = row * 5;
@@ -1043,7 +1043,7 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	}
 
 	/* Matrix row n - 2: */
-	
+
 	row = n - 2;
 	off = row * 5;
 	r = row;
@@ -1058,13 +1058,13 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	work[off+2] += (2.0*r + 3.0) * r2p1 * d[row+1] / (r4 * rp1);
 	work[off+3] = -r2p1 * (d[row+1] + d[row]) / r;
 	/* Matrix row nx - 1: */
-	
+
 	off += 5;
 	row++;
 	work[off] = work[off+1] = work[off+3] = work[off+4] = 0.0;
 	work[off+2] = 1.0;
 	p[row] = 0.0;
-		
+
 
 	/* Solve for w */
 	off = 5*n;
@@ -1075,18 +1075,18 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 		return (error);
 	}
 	return (0);
-}	
+}
 
 int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore)
 {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
-	
+
 	work = GMT_memory (GMT, NULL, n * 5, double);
 	dx_4 = pow (dx, 4.0);
-	
+
 	for (i = 0; i < n; i++) p[i] *= dx_4;
-		
+
 	/* Matrix row 0: */
 
 	work[0] = 0.0;
@@ -1094,17 +1094,17 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	work[2] = 16.0 * d[0] + 2.0 * d[1] + restore[0] * dx_4;
 	work[3] = -8.0 * d[1] - 16.0 * d[0];
 	work[4] = 6.0 * d[1];
-	
+
 	/* Matrix row 1: */
-	
+
 	work[5] = 0.0;
 	work[6] = -2.0 * d[0] - d[1];
 	work[7] = 4.0 * d[1] + 1.125 * d[2] + 2.0 * d[0] + restore[1] * dx_4;
 	work[8] = -3.0 * (d[2] + d[1]);
 	work[9] = 1.875 * d[2];
-	
+
 	/* Matrix row 2 -> n - 3: */
-	
+
 	for (row = 2; row < (n-2); row++) {
 		r = row;
 		off = row * 5;
@@ -1121,7 +1121,7 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	}
 
 	/* Matrix row n - 2: */
-	
+
 	row = n - 2;
 	off = row * 5;
 	r = row;
@@ -1136,13 +1136,13 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	work[off+2] += (2.0*r + 3.0) * r2p1 * d[row+1] / (r4 * rp1);
 	work[off+3] = -r2p1 * (d[row+1] + d[row]) / r;
 	/* Matrix row nx - 1: */
-	
+
 	off += 5;
 	row++;
 	work[off] = work[off+1] = work[off+3] = work[off+4] = 0.0;
 	work[off+2] = 1.0;
 	p[row] = 0.0;
-		
+
 
 	/* Solve for w */
 	off = 5*n;
@@ -1153,41 +1153,39 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 		return (error);
 	}
 	return (0);
-}	
+}
 
 int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx)
 {
 	int i, error, i_rx;
-	double restore_a, restore_b1, restore_b2, restore_b3, diff, dw, max_dw;
+	double restore_a, restore_b1, restore_b2, restore_b3, diff = 2 * LIMIT, dw, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
-	
+
 	/* Allocate memory for load and restore force */
-	
+
 	k = GMT_memory (GMT, NULL, n, double);
 	w_old = GMT_memory (GMT, NULL, n, double);
 	load = GMT_memory (GMT, NULL, n, double);
-	
+
 	/* Initialize restoring force */
-	
+
 	restore_a  = NORMAL_GRAVITY * (rho_m - rho_w);
 	restore_b1 = NORMAL_GRAVITY * (rho_m - rho_i);
 	restore_b2 = NORMAL_GRAVITY * (rho_m - rho_l);
 	restore_b3 = NORMAL_GRAVITY * (rho_m - rho_i2);
-	
+
 	i_rx = (int) rint (rx / dx);
-	
+
 	for (i = 0; i < n; i++)	k[i] = (p[i] > 0.0) ? ((i <= i_rx) ? restore_b3 : restore_b2) : restore_b1;
-		
+
 	memcpy ((void *)load, (void *)p, n * sizeof (double));
-	
+
 	error = flxr2 (GMT, w, d, p, n, dx, k);
-	
-	if (error) return (error);
-	
-	do {	/* Iterate as long as rms difference is > LIMIT */
-	
+
+	while (!error && diff > LIMIT) {	/* Iterate as long as rms difference is > LIMIT. diff starts at 2*LIMIT. */
+
 		/* Set variable restoring force */
-	
+
 		for (i = 0; i < n; i++)	{
 			if (w[i] > 0.0) {	/* Positive depression is down */
 				if (i <= i_rx)		/* We are under the heavier core load */
@@ -1200,18 +1198,18 @@ int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, do
 			else				/* At the bulges */
 				k[i] = restore_a;
 		}
-		
+
 		/* Save previous solution */
-		
+
 		memcpy ((void *)w_old, (void *)w, n * sizeof (double));
-		
+
 		/* Initialize arrays again */
-		
+
 		memcpy ((void *)p, (void *)load, n * sizeof (double));
 		memset ((void *)w, 0, n * sizeof (double));
-		
+
 		error = flxr2 (GMT, w, d, p, n, dx, k);
-		
+
 		for (i = 0, diff = max_dw = 0.0; i < n; i++) {
 			dw = fabs (w[i] - w_old[i]);
 			if (dw > max_dw) max_dw = dw;
@@ -1220,14 +1218,13 @@ int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, do
 		/* diff = sqrt (diff / n); RMS */
 		diff = max_dw;
 	}
-	while (!error && diff > LIMIT);
-	
+
 	GMT_free (GMT, k);
 	GMT_free (GMT, load);
 	GMT_free (GMT, w_old);
-	
+
 	return (error);
-}	
+}
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtflexure_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
@@ -1268,7 +1265,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtflexure main code ----------------------------*/
 
-	
+
 	if (Ctrl->Q.mode == NO_LOAD) {	/* No load file given */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No load file given; Flexure only determined by boundary conditions\n");
 	}
@@ -1363,7 +1360,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Number of load and rigidity records are not the same!\n");
 		Return (API->error);
 	}
-	
+
 	if (Ctrl->T.active && Ctrl->T.file)	{	/* Read pre-existing deflections */
 		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			Return (API->error);
@@ -1377,7 +1374,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	restore = (Ctrl->D.rhom - Ctrl->D.rhoi) * NORMAL_GRAVITY;
 	n_columns = (Ctrl->S.active) ? 3 : 2;	/* Duplicate Q but posibly add 1 more column */
 	W = GMT_alloc_dataset (GMT, Q, 0, n_columns, GMT_ALLOC_NORMAL);
-	
+
 	for (tbl = 0; tbl < W->n_tables; tbl++) {
 		for (seg = 0; seg < W->table[tbl]->n_segments; seg++) {
 			S = Q->table[tbl]->segment[seg];
@@ -1415,14 +1412,14 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, msg);
 			for (row = 0, airy = true; airy && row < S->n_rows; row++)
 				if (rigidity[row] > 0.0) airy = false;
-			
+
 			if (airy) {	/* Airy compensation */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure using Airy compensation\n");
 				for (row = 0; row < S->n_rows; row++) deflection[row] = load[row] / restore;
 			}
 			x_inc = S->coord[GMT_X][1] - S->coord[GMT_X][0];
 			if (Ctrl->M.active[0]) x_inc *= 1000.0;	/* Got x in km */
-			
+
 			if (Ctrl->T.active) {	/* Plate has pre-existing deflection */
 				double *w0 = T->table[tbl]->segment[seg]->coord[GMT_Y];
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure of pre-deformed surface\n");
@@ -1436,12 +1433,12 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Calculate flexure for constant restoring force\n");
 				error = flx1d (GMT, deflection, rigidity, load, (int)S->n_rows, x_inc, &restore, 0, Ctrl->F.force, Ctrl->A.bc[LEFT], Ctrl->A.bc[RIGHT]);
 			}
-		
+
 			if (error) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Flexure sub-function returned error = %d!\n", error);
 				Return (API->error);
 			}
-	
+
 			if (Ctrl->S.active) {	/* Compute curvatures */
 				double *curvature = W->table[tbl]->segment[seg]->coord[GMT_Z];
 				get_curvature (deflection, (int)S->n_rows, x_inc, curvature);
@@ -1454,11 +1451,11 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	
+
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, Ctrl->Out.file, W) != GMT_OK) {
 		Return (API->error);
 	}
-	
+
 	GMT_free_dataset (GMT, &W);
 
 	Return (EXIT_SUCCESS);
