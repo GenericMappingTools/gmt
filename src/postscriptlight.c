@@ -4074,8 +4074,6 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		Return (PSL_READ_FAILURE);
 	}
 
-	fclose (fp);
-
 	if (entry) PSL_free (entry);
 	if (red) PSL_free (red);
 	if (green) PSL_free (green);
