@@ -220,7 +220,7 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 				if (!GMT_access (GMT, opt->arg, F_OK))	/* file exists */
 					Ctrl->E.file = strdup (opt->arg);
 				else {	/* Got a value */
-					GMT_Get_Value (API, opt->arg, &Ctrl->E.te, 1);	/* Returns Te in m if k was appended */
+					GMT_Get_Values (API, opt->arg, &Ctrl->E.te, 1);	/* Returns Te in m if k was appended */
 					if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te in meters */
 						Ctrl->E.te = pow ((12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)) * Ctrl->E.te / Ctrl->C.E, 1.0/3.0);
 					}
@@ -274,11 +274,11 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'W':	/* Water depth */
 				Ctrl->W.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth, 1);	/* This yields water depth in meters if k was added */
+				GMT_Get_Values (API, opt->arg, &Ctrl->W.water_depth, 1);	/* This yields water depth in meters if k was added */
 				break;
 			case 'Z':	/* Moho depth */
 				Ctrl->Z.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->Z.zm, 1);	/* This yields Moho depth in meters if k was added */
+				GMT_Get_Values (API, opt->arg, &Ctrl->Z.zm, 1);	/* This yields Moho depth in meters if k was added */
 				break;
 			default:
 				n_errors += GMT_default_error (GMT, opt->option);

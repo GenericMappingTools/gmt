@@ -75,7 +75,7 @@
  *
  * GMT_Get_Common	: Checks for and returns values for GMT common options
  * GMT_Get_Default	: Return the value of a GMT parameter as a string
- * GMT_Get_Value	: Convert string to one or more coordinates or dimensions
+ * GMT_Get_Values	: Convert string to one or more coordinates or dimensions
  * GMT_Option		: Display syntax for one or more GMT common options
  *
  * One function handles the listing of modules and the calling of any GMT module:
@@ -7770,7 +7770,7 @@ int GMT_Report_ (void *V_API, unsigned int *level, const char *format, int len)
 #endif
 
 /*! . */
-int GMT_Get_Value (void *V_API, const char *arg, double par[], int maxpar)
+int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar)
 {	/* Parse any number of comma, space, tab, semi-colon or slash-separated values.
 	 * The array par must have enough space to hold a maximum of maxpar items.
 	 * Function returns the number of items, or GMT_NOTSET if there was an error.
@@ -7829,10 +7829,19 @@ int GMT_Get_Value (void *V_API, const char *arg, double par[], int maxpar)
 	return (npar);
 }
 
+int GMT_Get_Value (void *V_API, const char *arg, double *par)
+{
+	return (GMT_Get_Values (V_API, arg, par, 999));
+}
+
 #ifdef FORTRAN_API
+int GMT_Get_Values_ (char *arg, double par[], int len)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
+}
 int GMT_Get_Value_ (char *arg, double par[], int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Value (GMT_FORTRAN, arg, par, len));
+	return (GMT_Get_Values (GMT_FORTRAN, arg, par, len));
 }
 #endif
 

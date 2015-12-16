@@ -569,7 +569,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->region = true;
 					if (p[1]) {	/* Supplied increments to add or quantize region with */
 						F->adjust = true;
-						n = GMT_Get_Value (GMT->parent, &p[1], F->inc, 4);
+						n = GMT_Get_Values (GMT->parent, &p[1], F->inc, 4);
 						if (n == 1)	/* Same round in all directions */
 							F->inc[XHI] = F->inc[YLO] = F->inc[YHI] = F->inc[XLO];
 						else if (n == 2) {	/* Separate round in x and y */

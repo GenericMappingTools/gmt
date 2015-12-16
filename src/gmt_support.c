@@ -9166,14 +9166,14 @@ int GMT_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mode, double 
 	 *				Any defaults placed in par will survive.
 	 */
 	int n, k;
-	/* Wrapper around GMT_Get_Value when we know input is either coordinates or plot dimensions */
-	if ((n = GMT_Get_Value (GMT->parent, string, par, 2)) < 0) return n;	/* Parsing error */
+	/* Wrapper around GMT_Get_Values when we know input is either coordinates or plot dimensions */
+	if ((n = GMT_Get_Values (GMT->parent, string, par, 2)) < 0) return n;	/* Parsing error */
 	if ((mode == GMT_PAIR_COORD || mode == GMT_PAIR_DIM_EXACT) && n != 2) {
 		char *kind[2] = {"coordinates", "dimensions"};
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Parsing error: Expected two %s\n", kind[mode]);
 		return -1;
 	}
-	if (mode != GMT_PAIR_COORD) {	/* Since GMT_Get_Value returns default project length unit we scale to inches */
+	if (mode != GMT_PAIR_COORD) {	/* Since GMT_Get_Values returns default project length unit we scale to inches */
 		for (k = 0; k < n; k++)
 			par[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 	}
@@ -9219,7 +9219,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	while (GMT_getmodopt (GMT, text, "cidgprs", &pos, p)) {	/* Looking for +c, [+d], +g, +i, +p, +r, +s */
 		switch (p[0]) {
 			case 'c':	/* Clearance will expand the rectangle by specified amounts */
-				n = GMT_Get_Value (GMT->parent, &p[1], P->padding, 4);
+				n = GMT_Get_Values (GMT->parent, &p[1], P->padding, 4);
 				if (n == 1)	/* Same round in all directions */
 					P->padding[XHI] = P->padding[YLO] = P->padding[YHI] = P->padding[XLO];
 				else if (n == 2) {	/* Separate round in x and y */
@@ -9230,7 +9230,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
-				/* Since GMT_Get_Value returns in default project length unit, convert to inch */
+				/* Since GMT_Get_Valuess returns in default project length unit, convert to inch */
 				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				P->clearance = true;
 				break;

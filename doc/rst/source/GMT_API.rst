@@ -378,7 +378,7 @@ only.
        enum GMT_enum_write mode; /* 0 = output segment, 1 = output header only, 2 = skip segment */
        size_t   n_alloc;         /* Number of rows allocated for this segment */
        char    *file[2];         /* Name of file or source [0 = in, 1 = out] */
-       char   **tvalue;          /* The values of the OGR/GMT aspatial fields */ 
+       char   **tvalue;          /* The values of the OGR/GMT aspatial fields */
    };
 
 GMT grids
@@ -602,8 +602,8 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
 .. code-block:: c
 
-  union GMT_UNIVECTOR { 
-      uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
+  union GMT_UNIVECTOR {
+      uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */
       int8_t   *sc1;       /* Pointer for signed 1-byte array */
       uint16_t *ui2;       /* Pointer for unsigned 2-byte array */
       int16_t  *si2;       /* Pointer for signed 2-byte array */
@@ -632,7 +632,7 @@ Table 1.1: Definition of the ``GMT_UNIVECTOR`` union that holds a pointer to any
       double               range[2];      /* The min and max limits on t-range (or 0,0) */
       char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
       char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
-      /* ---- Variables "hidden" from the API ---- */ 
+      /* ---- Variables "hidden" from the API ---- */
       uint64_t             id;            /* An identification number */
       unsigned int         alloc_level;   /* Level of initial allocation */
       enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
@@ -668,7 +668,7 @@ read the matrix properly.
       double               range[6];      /* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
       union GMT_UNIVECTOR  data;          /* Union with pointer to actual matrix of the chosen type */
       char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
-      char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */      
+      char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
       /* ---- Variables "hidden" from the API ---- */
       uint64_t             id;            /* The internal number of the data set */
       unsigned int         alloc_level;   /* The level it was allocated at */
@@ -848,7 +848,7 @@ Next table gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Row_            | Import a single grid row                          |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Value_          | Convert string into coordinates or dimensions     |
+| GMT_Get_Values_         | Convert string into coordinates or dimensions     |
 +-------------------------+---------------------------------------------------+
 | GMT_Init_IO_            | Initialize i/o given registered resources         |
 +-------------------------+---------------------------------------------------+
@@ -976,7 +976,7 @@ Registration involves a direct or indirect call to
   ::
 
     int GMT_Register_IO (void *API, unsigned int family, unsigned int method,
-                         unsigned int geometry, unsigned int direction, 
+                         unsigned int geometry, unsigned int direction,
                          double wesn[], void *ptr);
 
 where :ref:`family <tbl-family>` specifies what kind of resource is to be registered,
@@ -1039,7 +1039,7 @@ it returns 0.
 .. _tbl-methods:
 
 +-------------------------------+-------+--------------------------------------------------------------+
-| method                        | value | how to read/write data                                       | 
+| method                        | value | how to read/write data                                       |
 +===============================+=======+==============================================================+
 | GMT_IS_FILE                   | 0     | Pointer to name of a file                                    |
 +-------------------------------+-------+--------------------------------------------------------------+
@@ -1216,7 +1216,7 @@ etc.), then you can obtain a "blank slate" by calling
   ::
 
     void *GMT_Create_Data (void *API, unsigned int family, unsigned int geometry,
-                           unsigned int mode, uint64_t par[], double *wesn, 
+                           unsigned int mode, uint64_t par[], double *wesn,
                            double *inc, unsigned int registration, int pad, void *data)
 
 which returns a pointer to the allocated resource. Pass :ref:`family <tbl-family>` as
@@ -1970,23 +1970,23 @@ distances, plot dimensions, coordinates, and other data. The conversion
 from such text to actual distances, taking units into account, is
 tedious to program. You can simplify this by using
 
-.. _GMT_Get_Value:
+.. _GMT_Get_Values:
 
   ::
 
-    int GMT_Get_Value (void *API, const char *arg, double par[]);
+    int GMT_Get_Values (void *API, const char *arg, double par[], int maxpar);
 
 where ``arg`` is the text item with one or more values that are
-separated by commas, spaces, tabs, semi-colons, or slashes, and ``par`` is an array long
+separated by commas, spaces, tabs, semi-colons, or slashes, and ``par`` is an array of length ``maxpar`` long
 enough to hold all the items you are parsing. The function returns the
-number of items parsed, or -1 if there is an error. For instance, assume
+number of items parsed with a maximum of ``maxpar``, or -1 if there is an error. For instance, assume
 the character string ``origin`` was given by the user as two geographic
 coordinates separated by a slash (e.g., ``"35:45W/19:30:55.3S"``). We
 obtain the two coordinates as decimal degrees by calling
 
   ::
 
-    n = GMT_Get_Value (API, origin, pair);
+    n = GMT_Get_Values (API, origin, pair, 2);
 
 Your program can now check that ``n`` equals 2 and then use the values
 in ``pairs``. Note: Dimensions given with units of inches, cm, or points
@@ -2015,7 +2015,7 @@ few API parameters API_PAD (the current pad setting), API_IMAGE_LAYOUT (the
 order and structure of image memory storage), and API_GRID_LAYOUT (order of
 grid memory storage).
 Depending on what parameter you selected you could further convert it to
-a numerical value with ``GMT_Get_Value`` or just use it in a text comparison.
+a numerical value with ``GMT_Get_Values`` or just use it in a text comparison.
 
 To change any of the API or
 GMT default settings you would use
@@ -2362,7 +2362,7 @@ The prototype is
 
   ::
 
-    struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, char marker, 
+    struct GMT_RESOURCE *GMT_Encode_Options (void *API, const char *module, char marker,
                     	            int n_in, struct GMT_OPTION **head, int *n_items);
 
 where ``module`` is the name of the module whose linked options are
@@ -2544,7 +2544,7 @@ The prototype for writing to a file (via name, stream, or file handle) is
 * :ref:`geometry <tbl-geometry>`
 * mode -- specific to each data type (\ *see below*)
 * :ref:`wesn <tbl-wesn>`
-* output -- 
+* output --
 * data -- A pointer to any of the four structures :ref:`GMT_VECTOR <struct-vector>`,
   :ref:`GMT_MATRIX <struct-matrix>`, :ref:`GMT_GRID <struct-grid>`, :ref:`GMT_PALETTE <struct-palette>`
 * Return: 0 on success, otherwise return -1 and set API->error to reflect to cause.

@@ -563,7 +563,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'E':	/* Set elastic thickness */
 				Ctrl->E.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->E.te, 1);
+				GMT_Get_Values (API, opt->arg, &Ctrl->E.te, 1);
 				if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te from D */
 					Ctrl->E.te = pow ((12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)) * Ctrl->E.te / Ctrl->C.E, 1.0/3.0);
 				}
@@ -577,7 +577,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				}
 				if (n == 3) {	/* 2-layer model selected */
 					Ctrl->F.mode = FLX_FV2;
-					GMT_Get_Value (API, A, &Ctrl->F.h_a, 1);
+					GMT_Get_Values (API, A, &Ctrl->F.h_a, 1);
 				}
 				else	/* 1-layer viscous model selected */
 					Ctrl->F.mode = FLX_FV1;
@@ -612,7 +612,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'W':	/* Water depth */
 				Ctrl->W.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth, 1);
+				GMT_Get_Values (API, opt->arg, &Ctrl->W.water_depth, 1);
 				break;
 			case 'Z':	/* Moho depth */
 				Ctrl->Z.active = true;
