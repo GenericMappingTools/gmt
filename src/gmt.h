@@ -19,7 +19,7 @@
 
 /**
  * \file gmt.h
- * \brief Include file for users who wish to develop custom applications 
+ * \brief Include file for users who wish to develop custom applications
  *
  * Include file for users who wish to develop custom applications that
  * require building blocks from the GMT Application Program Interface
@@ -105,13 +105,15 @@ EXTERN_MSC int GMT_Option     (void *API, const char *options);
 EXTERN_MSC int GMT_Get_Common (void *API, unsigned int option, double *par);
 EXTERN_MSC int GMT_Get_Default(void *API, const char *keyword, char *value);
 EXTERN_MSC int GMT_Set_Default(void *API, const char *keyword, const char *value);
-EXTERN_MSC int GMT_Get_Value  (void *API, const char *arg, double *par);
+EXTERN_MSC int GMT_Get_Values (void *API, const char *arg, double *par, int maxpar);
 EXTERN_MSC int GMT_Report     (void *API, unsigned int level, const char *message, ...);
 EXTERN_MSC int GMT_Message    (void *API, unsigned int mode, const char *format, ...);
+/* For backward compatibility */
+EXTERN_MSC int GMT_Get_Value  (void *API, const char *arg, double *par);
 
 /* 1 function to list or call the core, optional supplemental, and custom GMT modules */
 
-EXTERN_MSC int GMT_Call_Module		(void *API, const char *module, int mode, void *args);
+EXTERN_MSC int GMT_Call_Module	(void *API, const char *module, int mode, void *args);
 
 /* 13 secondary functions for argument and option parsing */
 
@@ -128,7 +130,7 @@ EXTERN_MSC int    GMT_Update_Option             (void *API, struct GMT_OPTION *c
 EXTERN_MSC int    GMT_Delete_Option             (void *API, struct GMT_OPTION *current);
 EXTERN_MSC int    GMT_Parse_Common              (void *API, const char *given_options, struct GMT_OPTION *options);
 EXTERN_MSC char  *GMT_Duplicate_String          (void *API, const char* string);
- 
+
 
 /* 8 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_Option    (void *API, char option, unsigned int dim, const char *string);

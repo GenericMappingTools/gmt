@@ -208,6 +208,7 @@ export HAVE_OPENMP="@HAVE_OPENMP@"
 export HAVE_GLIB_GTHREAD="@HAVE_GLIB_GTHREAD@"
 # Start with proper GMT defaults
 gmt set -Du
+gmt set GMT_CUSTOM_LIBS @GMT_BINARY_DIR@/src/plugins/supplements.so
 # Now run the original script
 . "${script}"
 EOF

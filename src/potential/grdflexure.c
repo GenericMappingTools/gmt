@@ -563,7 +563,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'E':	/* Set elastic thickness */
 				Ctrl->E.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->E.te);
+				GMT_Get_Values (API, opt->arg, &Ctrl->E.te, 1);
 				if (Ctrl->E.te > 1e10) { /* Given flexural rigidity, compute Te from D */
 					Ctrl->E.te = pow ((12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)) * Ctrl->E.te / Ctrl->C.E, 1.0/3.0);
 				}
@@ -577,7 +577,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				}
 				if (n == 3) {	/* 2-layer model selected */
 					Ctrl->F.mode = FLX_FV2;
-					GMT_Get_Value (API, A, &Ctrl->F.h_a);
+					GMT_Get_Values (API, A, &Ctrl->F.h_a, 1);
 				}
 				else	/* 1-layer viscous model selected */
 					Ctrl->F.mode = FLX_FV1;
@@ -612,7 +612,7 @@ int GMT_grdflexure_parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, st
 				break;
 			case 'W':	/* Water depth */
 				Ctrl->W.active = true;
-				GMT_Get_Value (API, opt->arg, &Ctrl->W.water_depth);
+				GMT_Get_Values (API, opt->arg, &Ctrl->W.water_depth, 1);
 				break;
 			case 'Z':	/* Moho depth */
 				Ctrl->Z.active = true;
@@ -889,7 +889,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		qsort (Load, n_load_times, sizeof (struct FLX_GRID *), compare_loads);
 	}
 	K = Load[0]->K;	/* We only need one pointer to get to wavenumbers as they are all the same for all grids */
-	
+
 	/* 3. DETERMINE AND POSSIBLY CREATE ONE OUTPUT GRID */
 
 	retain_original = (n_load_times > 1 || Ctrl->T.n_eval_times > 1);	/* True when we will have to loop over the loads */

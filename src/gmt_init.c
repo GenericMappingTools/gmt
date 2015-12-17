@@ -2637,7 +2637,7 @@ int gmt_trend_modifiers (struct GMT_CTRL *GMT, char option, char *c, unsigned in
 	while ((GMT_strtok (c, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'o':	/* Origin of axes */
-				if ((k = GMT_Get_Value (GMT->parent, &p[1], M->origin)) < 1) {
+				if ((k = GMT_Get_Values (GMT->parent, &p[1], M->origin, 2)) < 1) {
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +o arguments (%s)\n", option, &p[1]);
 					return -1;
 				}
@@ -2651,7 +2651,7 @@ int gmt_trend_modifiers (struct GMT_CTRL *GMT, char option, char *c, unsigned in
 				M->robust = true;
 				break;
 			case 'l':
-				if ((k = GMT_Get_Value (GMT->parent, &p[1], M->period)) < 1) {
+				if ((k = GMT_Get_Values (GMT->parent, &p[1], M->period, 2)) < 1) {
 					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error -%c: Unable to parse the +l argument (%s)\n", option, &p[1]);
 					return -1;
 				}
@@ -8638,7 +8638,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 						            "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 						error++;
 					}
-					else if (!p[1] || (k = GMT_Get_Value (GMT->parent, &p[1], pole)) != 2) {
+					else if (!p[1] || (k = GMT_Get_Values (GMT->parent, &p[1], pole, 2)) != 2) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] modifier %c\n", &p[1]);
 						error++;
 					}
@@ -9844,7 +9844,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				if (!p[1]) {	/* Gave no pole, use North pole */
 					S->v.pole[GMT_X] = 0.0f;	S->v.pole[GMT_Y] = 90.0f;
 				}
-				else if ((j = GMT_Get_Value (GMT->parent, &p[1], value)) != 2) {
+				else if ((j = GMT_Get_Values (GMT->parent, &p[1], value, 2)) != 2) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] modifier %c\n", &p[1]);
 					error++;
 				}

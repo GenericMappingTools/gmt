@@ -32,7 +32,7 @@
  * Date:	1-MAY-2013
  * Version:	5.x
  *
- * We expect to find the file dcw-gmt.nc, dcw-countries.txt, and dcw-states.txt 
+ * We expect to find the file dcw-gmt.nc, dcw-countries.txt, and dcw-states.txt
  * in one of the dirs accessible to GMT or pointed to by the default DIR_DCW.
  * See separate subversion project DCW for the maintenance of the raw files that
  * are used to build the netCDF file [svn://gmtserver.soest.hawai.edu/DCW].
@@ -69,7 +69,7 @@ static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica",
 bool gmt_get_dcw_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path)
 {
 	bool found = false;
-	
+
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.DCWDIR, if set
 	 * 2. Look via GMT_getsharepath.
@@ -105,9 +105,9 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 	struct GMT_DCW_COUNTRY *Country = NULL;
 	struct GMT_DCW_STATE *State = NULL;
 	struct GMT_DCW_COUNTRY_STATE *Country_State = NULL;
-	
+
 	if (!gmt_get_dcw_path (GMT, "dcw-countries", ".txt", path)) return -1;
-	
+
 	/* Get countries first */
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file %s [permission trouble?]\n", path);
@@ -149,9 +149,9 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 	fclose (fp);
 	dim[1] = k;	/* Number of states */
 	State = GMT_memory (GMT, State, k, struct GMT_DCW_STATE);
-	
+
 	/* Get list of countries with states */
-	
+
 	dim[2] = n;	/* Number of countries with states */
 	if (CS) {	/* Wants list returned */
 		Country_State = GMT_memory (GMT, NULL, n, struct GMT_DCW_COUNTRY_STATE);
@@ -161,10 +161,10 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 		}
 		*CS = Country_State;
 	}
-	
+
 	*C = Country;
 	*S = State;
-	
+
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "DCW: Found %u countries, %u countries with states, and %u states\n", dim[0], dim[2], dim[1]);
 	return 0;
 }
@@ -230,7 +230,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
-	
+
 	for (j = ks = 0; j < F->n_items; j++) {
 		if (!F->item[j]->codes || F->item[j]->codes[0] == '\0') continue;
 		ks++;	/* Gave some codes */
@@ -243,7 +243,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	GMT_DCW_STATES = n_bodies[1];
 
 	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmt_dcw_comp_countries);	/* Sort on country code */
- 
+
 	n_alloc = n_bodies[0] + n_bodies[1];	/* Presumably max items considered */
 	order = GMT_memory (GMT, NULL, n_alloc, unsigned int);
 	for (j = 0; j < F->n_items; j++) {
@@ -268,7 +268,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
-	
+
 	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
 		if (wesn == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must pass wesn array if mode == 0\n");
@@ -411,7 +411,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			if (outline && new_set) GMT_setpen (GMT, &(F->item[order[tbl]]->pen));
 			if (fill && new_set) GMT_setfill (GMT, &(F->item[order[tbl]]->fill), outline);
 		}
-		
+
 	        /* Extract the pieces into separate segments */
 		k = seg = 0;
 		done = false;
@@ -585,7 +585,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->region = true;
 					if (p[1]) {	/* Supplied increments to add or quantize region with */
 						F->adjust = true;
-						n = GMT_Get_Value (GMT->parent, &p[1], F->inc);
+						n = GMT_Get_Values (GMT->parent, &p[1], F->inc, 4);
 						if (n == 1)	/* Same round in all directions */
 							F->inc[XHI] = F->inc[YLO] = F->inc[YHI] = F->inc[XLO];
 						else if (n == 2) {	/* Separate round in x and y */
