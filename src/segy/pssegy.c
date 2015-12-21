@@ -129,8 +129,7 @@ void Free_pssegy_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_pssegy_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pssegy_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssegy [<segyfile>] -D<dev> -F<color> | -W %s\n", GMT_Jx_OPT);
@@ -175,8 +174,7 @@ int GMT_pssegy_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pssegy and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -292,18 +290,18 @@ int GMT_pssegy_parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT
 		}
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error: Option -T requires a file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK), "Syntax error: Cannot file file %s\n", Ctrl->T.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && access (Ctrl->T.file, R_OK),
+	                                 "Syntax error: Cannot file file %s\n", Ctrl->T.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->E.value < 0.0, "Syntax error -E option: Slop cannot be negative\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->F.active, "Syntax error: Must specify -F with -I\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.active && !Ctrl->W.active, "Syntax error: Must specify -F or -W\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error: Must specify a positive deviation\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == PLOT_CDP && Ctrl->S.mode == PLOT_OFFSET, "Syntax error: Cannot specify more than one trace location key\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float segy_rms (float *data, uint32_t n_samp)
-{ /* function to return rms amplitude of n_samp values from the array data */
+/* function to return rms amplitude of n_samp values from the array data */
+float segy_rms (float *data, uint32_t n_samp) {
 	uint32_t ix;
 	double sumsq = 0.0;
 
@@ -314,8 +312,7 @@ float segy_rms (float *data, uint32_t n_samp)
 	return (float) sumsq;
 }
 
-int segy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny)	/* pixel to paint */
-{
+int segy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny) {	/* pixel to paint */
 	int byte, quot, rem;
 	static unsigned char bmask[8]={128, 64, 32, 16, 8, 4, 2, 1};
 
@@ -329,8 +326,8 @@ int segy_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny)	/* 
 	return (0);
 }
 
-void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */
-{
+void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) { /* apply current sample with all options to bitmap */
+
 	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
 
@@ -375,8 +372,8 @@ void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, d
 	}
 }
 
-void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, int negative, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current samples with all options to bitmap */
-{
+void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1, double y0, double y1, int negative, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) { /* apply current samples with all options to bitmap */
+
 	int px0, px00, py0, py1, ixx, ix, iy;
 	double xp0, xp00, xp1, yp0, yp1, interp, slope;
 
@@ -432,10 +429,10 @@ void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, float data1,
 	}
 }
 
-void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny)
+void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
 	/* shell function to loop over all samples in the current trace, determine plot options
 	 * and call the appropriate bitmap routine */
-{
+
 	int iy, paint_wiggle;
 	double y0 = 0.0, y1;
 
@@ -453,8 +450,7 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pssegy_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pssegy (void *V_API, int mode, void *args)
-{
+int GMT_pssegy (void *V_API, int mode, void *args) {
 	bool plot_it = false;
 	unsigned int i, nm, ix, iy;
 	uint32_t n_samp = 0, n_tracelist = 0;
