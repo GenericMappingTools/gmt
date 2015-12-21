@@ -993,6 +993,17 @@ int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, 
 
 		return (1);
 	}
+
+	body_verts[0].z = z_a;		body_verts[1].z = z_b;
+	body_verts[2].z = z_c;		body_verts[3].z = Ctrl->Z.z0;
+	body_verts[4].z = Ctrl->Z.z0;	body_verts[5].z = Ctrl->Z.z0;
+	if (fabs(body_verts[0].z - body_verts[3].z) > Ctrl->E.dz || fabs(body_verts[1].z - body_verts[4].z) >
+	    Ctrl->E.dz || fabs(body_verts[2].z - body_verts[5].z) > Ctrl->E.dz)
+		return 1;
+	else
+		return (0);
+
+#if 0
 	if (bat) { /* Triangle mesh defines a bathymetric surface (TA MIXORDADO (== NOS DOIS CASOS)) */
 		body_verts[0].z = z_a;		body_verts[1].z = z_b;
 		body_verts[2].z = z_c;		body_verts[3].z = Ctrl->Z.z0;
@@ -1013,6 +1024,7 @@ int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, 
 		else
 			return (0);
 	}
+#endif
 }
 
 /* -----------------------------------------------------------------*/
