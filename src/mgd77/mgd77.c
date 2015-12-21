@@ -1597,13 +1597,13 @@ int MGD77_Write_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, 
 
 	switch (F->format) {
 		case MGD77_FORMAT_M77:		/* Will write a single MGD77 record */
-			if ((error = MGD77_Write_Data_Record_m77 (GMT, F, MGD77Record)) != 0) break;	/* EOF probably */
+			error = MGD77_Write_Data_Record_m77 (GMT, F, MGD77Record);		/* EOF probably */
 			break;
 		case MGD77_FORMAT_M7T:		/* Will write a single MGD77T table record */
-			if ((error = MGD77_Write_Data_Record_m77t (GMT, F, MGD77Record)) != 0) break;	/* probably EOF */
+			error = MGD77_Write_Data_Record_m77t (GMT, F, MGD77Record);		/* probably EOF */
 			break;
 		case MGD77_FORMAT_TBL:		/* Will write a single ASCII table record */
-			if ((error = MGD77_Write_Data_Record_txt (GMT, F, MGD77Record)) != 0) break;	/* EOF probably */
+			error = MGD77_Write_Data_Record_txt (GMT, F, MGD77Record);		/* EOF probably */
 			break;
 		default:
 			error = MGD77_UNKNOWN_FORMAT;
