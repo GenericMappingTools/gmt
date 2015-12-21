@@ -270,7 +270,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 				break;
 		}
 	}
-	if (B->mode_choice == BLOCKMODE_AVE) value /= n_modes;	/* The average of the multiple modes */
+	if (B->mode_choice == BLOCKMODE_AVE && n_modes > 0) value /= n_modes;	/* The average of the multiple modes */
 
 	return (value);
 }

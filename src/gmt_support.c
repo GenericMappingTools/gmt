@@ -9230,7 +9230,7 @@ int GMT_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad number of increment to modifier +%c.\n", option, p[0]);
 					n_errors++;
 				}
-				/* Since GMT_Get_Valuess returns in default project length unit, convert to inch */
+				/* Since GMT_Get_Values returns in default project length unit, convert to inch */
 				for (n = 0; n < 4; n++) P->padding[n] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				P->clearance = true;
 				break;

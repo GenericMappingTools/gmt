@@ -531,7 +531,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	for (A = 0; A < n_tracks; A++) {	/* Loop over all files */
 		if (duplicate[A]) continue;
 
-		if (s->x_col < 0 || s->x_col < 0) {
+		if (s->x_col < 0 || s->y_col < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
 			Return (EXIT_FAILURE);
 		}
