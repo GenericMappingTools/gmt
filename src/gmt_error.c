@@ -59,7 +59,7 @@ const char *g_error_string[] = {
 	/* GMT_GRDIO_GRD98_YINC */		"GRD98 format requires n = 1/y_inc to be an integer",
 	/* GMT_GRDIO_GRD98_BADMAGIC */		"GRD98 grid file has wrong magic number",
 	/* GMT_GRDIO_GRD98_BADLENGTH */		"GRD98 grid file has wrong length",
-	/* GMT_GRDIO_ESRI_NONSQUARE */		"Only square pixels are allowed in ESRI grids"
+	/* GMT_GRDIO_ESRI_NONSQUARE */		"Only square pixels are allowed in ESRI grids",
 	/* GMT_GRDIO_RI_OLDBAD */		"Use grdedit -A on your grid file to make region and increments compatible",
 	/* GMT_GRDIO_RI_NEWBAD */		"Please select compatible -R and -I values",
 	/* GMT_GRDIO_RI_NOREPEAT */		"Pixel format grids do not have repeating rows or columns",
