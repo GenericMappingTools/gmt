@@ -322,7 +322,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 						if (strchr (&opt->arg[1], 'L')) Ctrl->S2.outline = true;
 						break;
 					case 't':	/* Set color for station label */
-						GMT_getpen (GMT, &opt->arg[1], &Ctrl->T.pen);
+						if (GMT_getpen (GMT, &opt->arg[1], &Ctrl->T.pen)) n_errors++;
 						break;
 				}
 				break;
