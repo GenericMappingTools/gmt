@@ -271,7 +271,7 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 		struct stat F;
 
 		header->wesn[XLO] = atof (&header->title[len-3]);
-		if ( header->title[len-4] == 'W' || header->title[len-4] == 'W' ) header->wesn[XLO] *= -1; 
+		if ( header->title[len-4] == 'W' || header->title[len-4] == 'w' ) header->wesn[XLO] *= -1; 
 		c = header->title[len-4];
 		header->title[len-4] = '\0';
 		header->wesn[YLO] = atof (&header->title[len-6]);
