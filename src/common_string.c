@@ -595,18 +595,14 @@ stresep(char **stringp, const char *delim, int esc)
 /* Return true if a string is found in file */
 int match_string_in_file (const char *filename, const char *string) {
 	FILE *fp;
-	char line[BUF_SIZE+1];
+	char line[BUF_SIZE] = {""};
 
 	fp = fopen (filename, "r");
-	if ( fp == NULL )
-		return false;
-
-	/* make sure string is always \0-terminated */
-	line[BUF_SIZE] = '\0';
+	if (fp == NULL) return false;
 
 	/* search for string in each line */
-	while ( fgets (line, BUF_SIZE, fp) ) {
-		if ( strstr (line, string) ) {
+	while (fgets (line, BUF_SIZE-1, fp)) {
+		if (strstr (line, string)) {
 			/* line matches */
 			fclose (fp);
 			return true;

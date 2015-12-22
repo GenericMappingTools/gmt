@@ -355,9 +355,9 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 
 char *GMT_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 	/* 1. guess based on runtime_libdir */
-	if ( sharedir_from_runtime_libdir (sharedir) == NULL ) {
+	if (sharedir_from_runtime_libdir (sharedir) == NULL) {
 		/* 2. guess based on runtime_bindir */
-		if ( sharedir_from_runtime_bindir (sharedir, runtime_bindir) == NULL )
+		if (sharedir_from_runtime_bindir (sharedir, runtime_bindir) == NULL)
 			return NULL;
 	}
 
@@ -389,10 +389,10 @@ int GMT_verify_sharedir_version (const char *dir) {
 #endif
 
 	/* If the directory exists */
-	if ( access (dir, R_OK | X_OK) == 0 ) {
+	if (access (dir, R_OK | X_OK) == 0) {
 		snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
 		/* Check correct ver  sion */
-		if ( match_string_in_file (version_file, required_version) ) {
+		if (match_string_in_file (version_file, required_version)) {
 #ifdef DEBUG_RUNPATH
 			fprintf (stderr, "GMT_verify_sharedir_version: found '%s' (%s).\n",
 				version_file, required_version);
@@ -403,15 +403,15 @@ int GMT_verify_sharedir_version (const char *dir) {
 			/* Special case: accept share dir in source tree.
 			 * Needed when running GMT from build dir. */
 			snprintf (version_file, PATH_MAX+1, "%s/VERSION.in", dir);
-			if ( access (version_file, R_OK) == 0 ) {
+			if (access (version_file, R_OK) == 0) {
 #ifdef DEBUG_RUNPATH
 				fprintf (stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
 #endif
 				return true;
 			}
 			else {
-				/* Yet another special case: accept a file called VERSION_all. Needed when run from Mirone */
-				snprintf(version_file, PATH_MAX + 1, "%s/VERSION_all", dir);
+				/* Yet another special case: accept a file called VERSION_all.txt. Needed when run from Mirone */
+				snprintf(version_file, PATH_MAX + 1, "%s/VERSION_all.txt", dir);
 				if (access(version_file, R_OK) == 0) {
 #ifdef DEBUG_RUNPATH
 					fprintf(stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
