@@ -182,11 +182,10 @@ void allocate_the_memory_1d (struct GMT_CTRL *GMT, unsigned int np, double **gtg
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs)
-{
+void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs) {
 	uint64_t i;
 	unsigned int j;
-	double out[5];
+	double out[5] = {0, 0, 0, 0, 0};
 
 	for (i = 0; i < n_data; i++) {
 		for (j = 0; j < n_outputs; j++) {
@@ -212,8 +211,8 @@ void write_output_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint
 	}
 }
 
-void free_the_memory_1d (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND1D_DATA *data, double *work)
-{
+void free_the_memory_1d (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb,
+                         double *workz, double *c_model, double *o_model, double *w_model, struct TREND1D_DATA *data, double *work) {
 	GMT_free (GMT, work);
 	GMT_free (GMT, data);
 	GMT_free (GMT, w_model);
@@ -227,8 +226,7 @@ void free_the_memory_1d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax)
-{
+void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
 	uint64_t i;
 	double offset, scale;
 
@@ -257,8 +255,7 @@ void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MO
 	for (i = 0; i < n_data; i++) data[i].x = (data[i].x * scale) + offset;
 }
 
-double get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int n_model)
-{
+double get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int n_model) {
 	uint64_t i, nu;
 	double chi = 0.0;
 
@@ -273,8 +270,7 @@ double get_chisq_1d (struct TREND1D_DATA *data, uint64_t n_data, unsigned int n_
 	return (chi);
 }
 
-void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, double *work, double *scale)
-{
+void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, double *work, double *scale) {
 	uint64_t i;
 	double k, ksq, rr;
 
