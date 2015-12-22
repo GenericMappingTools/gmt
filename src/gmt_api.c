@@ -5499,7 +5499,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							break;
 						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
 							if (DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)
-								strncpy (GMT->current.io.segment_header, DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZE-1);
+								strncpy (GMT->current.io.segment_header, DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZ-1);
 							else
 								GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
 							record = NULL;	/* No data record to return */
