@@ -34,7 +34,8 @@
 # ============================================================================
 # Basic setup begins here.  All settings are optional.  In most cases, setting
 # CMAKE_INSTALL_PREFIX should be all you need to do in order to build GMT with
-# reasonable defaults enabled.
+# reasonable defaults enabled.  Note: If you need to specify directory names
+# with spaces (e.g., on Windows) then you must put them in quotes.
 # ============================================================================
 
 # Installation path (usually defaults to /usr/local) [auto]:

@@ -6834,6 +6834,9 @@ uint64_t GMT_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 
 /*! . */
 int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset) {
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_project_init: IN: Inc [%.12g/%.12g] nx/ny [%u/%u] dpi = %u offset = %u\n",
+		inc[0], inc[1], nx, ny, dpi, offset);
+	
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
 		if (GMT->current.io.inc_code[GMT_X] || GMT->current.io.inc_code[GMT_Y]) {	/* Must convert from distance units to degrees */
 			GMT_memcpy (header->inc, inc, 2, double);	/* Set these temporarily as the grids incs */
@@ -6841,6 +6844,12 @@ int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 			GMT_memcpy (inc, header->inc, 2, double);	/* Restore the inc array for use below */
 			GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;
 		}
+#if 0
+		if (<to ensure x-ymax is adjusted so the increments are exact>) {
+			header->wesn[XHI] = ceil  (header->wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
+			header->wesn[YHI] = ceil  (header->wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+		}
+#endif
 		header->nx = GMT_get_n (GMT, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
 		header->ny = GMT_get_n (GMT, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
 		header->inc[GMT_X] = GMT_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
@@ -6862,6 +6871,8 @@ int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	header->registration = offset;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_project_init: OUT: Inc [%.12g/%.12g] nx/ny [%u/%u] dpi = %u offset = %u\n",
+		inc[0], inc[1], nx, ny, dpi, offset);
 
 	GMT_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");
@@ -6906,6 +6917,10 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_grd_project: Input grid does not have sufficient (2) padding\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_grd_project: In [%.12g/%.12g/%.12g/%.12g] and out [%.12g/%.12g/%.12g/%.12g]\n",
+		I->header->wesn[XLO], I->header->wesn[XHI], I->header->wesn[YLO], I->header->wesn[YHI], 
+		O->header->wesn[XLO], O->header->wesn[XHI], O->header->wesn[YLO], O->header->wesn[YHI]);
 
 	/* Precalculate grid coordinates */
 
