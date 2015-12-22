@@ -1489,7 +1489,7 @@ void GMTAPI_matrix_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *ar
 }
 
 /*! Also used in gmt_io.c and prototyped in gmt_internals.h: */
-char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg) {
+char *GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg) {
 	size_t lim;
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	static char buffer[GMT_BUFSIZ];
@@ -1497,7 +1497,8 @@ char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	if (mode & GMT_COMMENT_IS_TITLE) strcat (buffer, "  Title :");
 	if (mode & GMT_COMMENT_IS_COMMAND) {
 		strcat (buffer, " Command : ");
-		strcat (buffer, API->GMT->init.module_name);
+		if (strlen(API->GMT->init.module_name) < 500)		/* 500, just to shut up a Coverity issue */
+			strcat (buffer, API->GMT->init.module_name);
 		strcat (buffer, " ");
 	}
 	if (mode & GMT_COMMENT_IS_REMARK) strcat (buffer, " Remark : ");
@@ -5392,7 +5393,8 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 				else
 					S_obj->status = GMT_IS_USING;				/* Mark as being read */
 
-				if (GMT_REC_IS_DATA (GMT) && S_obj->n_expected_fields != GMT_MAX_COLUMNS) GMT->common.b.ncol[GMT_IN] = S_obj->n_expected_fields;	/* Set the actual column count */
+				if (GMT_REC_IS_DATA (GMT) && S_obj->n_expected_fields != GMT_MAX_COLUMNS)
+					GMT->common.b.ncol[GMT_IN] = S_obj->n_expected_fields;	/* Set the actual column count */
 				break;
 
 			case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Here we copy/read from a user memory location */
@@ -5427,7 +5429,8 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					}
 					S_obj->rec++;
 					if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
-						if (status == GMTAPI_GOT_SEGGAP) S_obj->rec--, API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						if (status == GMTAPI_GOT_SEGGAP)	 /* Since we inserted a segment header we must revisit this record as first in next segment */
+							S_obj->rec--, API->current_rec[GMT_IN]--;
 						record = NULL;
 					}
 					else	/* Valid data record */
@@ -5467,7 +5470,8 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					}
 					S_obj->rec++;
 					if ((status = gmt_bin_input_memory (GMT, S_obj->n_columns, n_use)) < 0) {	/* Process the data record */
-						if (status == GMTAPI_GOT_SEGGAP) S_obj->rec--, API->current_rec[GMT_IN]--;	/* Since we inserted a segment header we must revisit this record as first in next segment */
+						if (status == GMTAPI_GOT_SEGGAP)	 /* Since we inserted a segment header we must revisit this record as first in next segment */
+							S_obj->rec--, API->current_rec[GMT_IN]--;
 						record = NULL;
 					}
 					else	/* Valid data record */
@@ -5495,7 +5499,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							break;
 						case GMT_IO_SEGMENT_HEADER:	/* Segment break */
 							if (DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header)
-								strcpy (GMT->current.io.segment_header, DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header);
+								strncpy (GMT->current.io.segment_header, DS_obj->table[p[GMT_TBL]]->segment[p[GMT_SEG]]->header, GMT_BUFSIZE-1);
 							else
 								GMT->current.io.segment_header[0] = '\0';	/* No header for this segment */
 							record = NULL;	/* No data record to return */
@@ -5575,15 +5579,14 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 }
 
 #ifdef FORTRAN_API
-void * GMT_Get_Record_ (unsigned int *mode, int *status)
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+void * GMT_Get_Record_ (unsigned int *mode, int *status) {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Record (GMT_FORTRAN, *mode, status));
 }
 #endif
 
 /*! . */
-int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
-{	/* Writes a single data record to destimation.
+int GMT_Put_Record (void *V_API, unsigned int mode, void *record) {
+	/* Writes a single data record to destimation.
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TABLE_HEADER: Write an ASCII table header
 	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
@@ -5700,14 +5703,20 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 						break;
 					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 						p[GMT_SEG]++, p[GMT_ROW] = 0;	/* Go to next segment */
-						if (p[GMT_SEG] > 0) T_obj->segment[p[GMT_SEG]-1]->record = GMT_memory (API->GMT, T_obj->segment[p[GMT_SEG]-1]->record, T_obj->segment[p[GMT_SEG]-1]->n_rows, char *);
-						if (p[GMT_SEG] == T_obj->n_alloc) T_obj->segment = GMT_malloc (API->GMT, T_obj->segment, p[GMT_SEG], &T_obj->n_alloc, struct GMT_TEXTSEGMENT *);
+						if (p[GMT_SEG] > 0)
+							T_obj->segment[p[GMT_SEG]-1]->record = GMT_memory (API->GMT, T_obj->segment[p[GMT_SEG]-1]->record,
+							                                                   T_obj->segment[p[GMT_SEG]-1]->n_rows, char *);
+						if (p[GMT_SEG] == T_obj->n_alloc)
+							T_obj->segment = GMT_malloc (API->GMT, T_obj->segment, p[GMT_SEG], &T_obj->n_alloc, struct GMT_TEXTSEGMENT *);
 						if (!T_obj->segment[p[GMT_SEG]]) T_obj->segment[p[GMT_SEG]] = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);
 						if (record) T_obj->segment[p[GMT_SEG]]->header = strdup (record);	/* Default to last segment record if NULL */
 						T_obj->n_segments++;
 						break;
 					case GMT_WRITE_TEXT:		/* Export a record */
-						if (p[GMT_SEG] == 0) { GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMTAPI: Internal Warning: GMT_Put_Record (text) called before any segments declared\n"); p[GMT_SEG] = 0; T_obj->n_segments = 1;}
+						if (p[GMT_SEG] == 0) {
+							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GMTAPI: Internal Warning: GMT_Put_Record (text) called before any segments declared\n");
+							p[GMT_SEG] = 0; T_obj->n_segments = 1;
+						}
 						if (!T_obj->segment[p[GMT_SEG]]) T_obj->segment[p[GMT_SEG]] = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXTSEGMENT);	/* Allocate new segment */
 						if (p[GMT_ROW] == T_obj->segment[p[GMT_SEG]]->n_alloc) {	/* Allocate more records */
 							T_obj->segment[p[GMT_SEG]]->n_alloc = (T_obj->segment[p[GMT_SEG]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[p[GMT_SEG]]->n_alloc << 1;
