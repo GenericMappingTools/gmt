@@ -141,7 +141,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.text) gmt_free_null (C->F.text);
+	gmt_free (C->F.text);
 	GMT_free (GMT, C);
 }
 
@@ -1046,8 +1046,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		/* Turn clipping ON after [optionally] displaying the text */
 		PSL_plottextline (PSL, NULL, NULL, NULL, 1, c_x, c_y, c_txt, c_angle, &n_labels, T.font.size, T.block_justify, offset, form);
 		for (kk = 0; kk < m; kk++) {
-			gmt_free_null (c_txt[kk]);
-			gmt_free_null (fonts[kk]);
+			gmt_free (c_txt[kk]);
+			gmt_free (fonts[kk]);
 		}
 		GMT_free (GMT, c_angle);
 		GMT_free (GMT, c_x);

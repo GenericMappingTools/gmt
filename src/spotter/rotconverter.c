@@ -304,12 +304,12 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 			case '0': case '1': case '2': case '3': case '4': case '5': 
 			case '6': case '7': case '8': case '9': case '.':
 				sprintf (record, "-%c%s", opt->option, opt->arg);
-				gmt_free_null (opt->arg);
+				gmt_free (opt->arg);
 				opt->arg = strdup (record);
 				opt->option = GMT_OPT_INFILE;
 				break;
 			case GMT_OPT_SYNOPSIS:
-				gmt_free_null (opt->arg);
+				gmt_free (opt->arg);
 				opt->arg = strdup ("-");
 				opt->option = GMT_OPT_INFILE;
 				confusion = true;	/* Since we don't know if just a single - was given */

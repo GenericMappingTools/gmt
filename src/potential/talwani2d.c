@@ -118,8 +118,8 @@ void *New_talwani2d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_talwani2d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) gmt_free_null (C->Out.file);
-	if (C->N.file) gmt_free_null (C->N.file);	
+	gmt_free (C->Out.file);
+	gmt_free (C->N.file);	
 	GMT_free (GMT, C);	
 }
 

@@ -638,7 +638,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (allocate) GMT_free (GMT, work);
+	GMT_free (GMT, work);
 	GMT_free (GMT, data);
 
 	Return (GMT_OK);

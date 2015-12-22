@@ -138,8 +138,8 @@ void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_pshistogram_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) gmt_free_null (C->Out.file);
-	if (C->C.file) gmt_free_null (C->C.file);
+	gmt_free (C->Out.file);
+	gmt_free (C->C.file);
 	GMT_free (GMT, C);
 }
 
@@ -473,7 +473,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 				Ctrl->A.active = true;
 				break;
 			case 'C':
-				if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+				gmt_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				Ctrl->C.active = true;
 				break;

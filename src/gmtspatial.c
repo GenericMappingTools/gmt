@@ -162,10 +162,10 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) gmt_free_null (C->Out.file);	
-	if (C->D.file) gmt_free_null (C->D.file);	
-	if (C->N.file) gmt_free_null (C->N.file);	
-	if (C->T.file) gmt_free_null (C->T.file);	
+	gmt_free (C->Out.file);	
+	gmt_free (C->D.file);	
+	gmt_free (C->N.file);	
+	gmt_free (C->T.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -1230,7 +1230,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							sprintf (line, "%s -A%.12g -C%.12g/%.12g %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
 							sprintf (line, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
-						gmt_free_null (S->header);
+						gmt_free (S->header);
 					}
 					else {
 						if (poly)
@@ -1659,7 +1659,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_LEN64] = {""};
 							buffer[0] = txt[0] = 0;
-							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ); gmt_free_null (S->header); }
+							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ); gmt_free (S->header); }
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);

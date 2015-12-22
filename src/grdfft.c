@@ -142,12 +142,12 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->operation) GMT_free (GMT, C->operation);
-	if (C->par) GMT_free (GMT, C->par);
-	if (C->In.file[GMT_IN]) gmt_free_null (C->In.file[GMT_IN]);
-	if (C->In.file[GMT_OUT]) gmt_free_null (C->In.file[GMT_OUT]);
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->N.info) GMT_free (GMT, C->N.info);
+	GMT_free (GMT, C->operation);
+	GMT_free (GMT, C->par);
+	gmt_free (C->In.file[GMT_IN]);
+	gmt_free (C->In.file[GMT_OUT]);
+	gmt_free (C->G.file);
+	GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);
 }
 

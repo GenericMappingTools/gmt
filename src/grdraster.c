@@ -631,9 +631,9 @@ void *New_grdraster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdraster_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->T.file) gmt_free_null (C->T.file);
+	gmt_free (C->In.file);
+	gmt_free (C->G.file);
+	gmt_free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -734,7 +734,7 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); if (rasinfo) GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;

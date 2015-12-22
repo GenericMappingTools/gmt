@@ -406,12 +406,12 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	/* Free allcoated memory */
 	unsigned int id;
-	if (X2SYS_HOME) GMT_free (GMT, X2SYS_HOME);
+	GMT_free (GMT, X2SYS_HOME);
 	if (!X) return;
-	if (X->in_order) GMT_free (GMT, X->in_order);
-	if (X->out_order) GMT_free (GMT, X->out_order);
-	if (X->use_column) GMT_free (GMT, X->use_column);
-	gmt_free_null (X->TAG);	/* free since allocated by strdup */
+	GMT_free (GMT, X->in_order);
+	GMT_free (GMT, X->out_order);
+	GMT_free (GMT, X->use_column);
+	gmt_free (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) GMT_free (GMT, x2sys_datadir[id]);
 	gmtmggpath_free (GMT);
@@ -507,10 +507,10 @@ void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struc
 	unsigned int i;
 
 	for (i = 0; i < n; i++) {
-		if (data[i]) GMT_free (GMT, data[i]);
+		GMT_free (GMT, data[i]);
 	}
 	GMT_free (GMT, data);
-	if (p->ms_rec) GMT_free (GMT, p->ms_rec);
+	GMT_free (GMT, p->ms_rec);
 }
 
 double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n) {
@@ -902,7 +902,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	p->ms_rec = NULL;
 	p->n_segments = 0;
 	p->year = S->H.meta.Departure[0];
-	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free (GMT, S->flags[i]);
+	for (i = 0; i < MGD77_N_SETS; i++) GMT_free (GMT, S->flags[i]);
 	MGD77_Free_Header_Record (GMT, &M, &(S->H));	/* Free up header structure */
 	GMT_free (GMT, S);
 	MGD77_end (GMT, &M);
@@ -1041,8 +1041,8 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n)
 {	/* Properly free memory allocated by x2sys_read_list */
 	uint64_t i;
-	for (i = 0; i < n; i++) gmt_free_null (list[i]);
-	if (list) GMT_free (GMT, list);
+	for (i = 0; i < n; i++) gmt_free (list[i]);
+	GMT_free (GMT, list);
 }
 
 int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G)

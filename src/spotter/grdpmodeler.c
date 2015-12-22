@@ -93,10 +93,10 @@ void *New_grdpmodeler_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->E.file) gmt_free_null (C->E.file);
-	if (C->F.file) gmt_free_null (C->F.file);
-	if (C->G.file) gmt_free_null (C->G.file);
+	gmt_free (C->In.file);
+	gmt_free (C->E.file);
+	gmt_free (C->F.file);
+	gmt_free (C->G.file);
 	GMT_free (GMT, C);
 }
 
@@ -254,7 +254,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {if (p) GMT_free (GMT, p); Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_free (GMT, p); Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdpmodeler (void *V_API, int mode, void *args)
 {

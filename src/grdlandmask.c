@@ -91,7 +91,7 @@ void *New_grdlandmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_grdlandmask_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) gmt_free_null (C->G.file);	
+	gmt_free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

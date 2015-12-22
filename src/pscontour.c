@@ -155,11 +155,11 @@ void *New_pscontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) gmt_free_null (C->C.file);	
-	if (C->D.file) gmt_free_null (C->D.file);	
-	if (C->E.file) gmt_free_null (C->E.file);	
-	if (C->T.txt[0]) gmt_free_null (C->T.txt[0]);	
-	if (C->T.txt[1]) gmt_free_null (C->T.txt[1]);	
+	gmt_free (C->C.file);	
+	gmt_free (C->D.file);	
+	gmt_free (C->E.file);	
+	gmt_free (C->T.txt[0]);	
+	gmt_free (C->T.txt[1]);	
 	GMT_free (GMT, C);	
 }
 
@@ -534,13 +534,13 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 				if (GMT_File_Is_Memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
-					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
-					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (opt->arg[0] == '+')

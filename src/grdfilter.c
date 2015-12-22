@@ -228,10 +228,10 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->F.file) gmt_free_null (C->F.file);
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->A.file) gmt_free_null (C->A.file);
+	gmt_free (C->In.file);
+	gmt_free (C->F.file);
+	gmt_free (C->G.file);
+	gmt_free (C->A.file);
 	GMT_free (GMT, C);
 }
 
@@ -1186,11 +1186,11 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
-	if (weight) GMT_free (GMT, weight);
+	GMT_free (GMT, weight);
 	GMT_free (GMT, F.x);
 	GMT_free (GMT, F.y);
 	if (visit_check) GMT_free (GMT, F.visit);
-	if (B) GMT_free (GMT, B);
+	GMT_free (GMT, B);
 
 	GMT_free (GMT, col_origin);
 	if (!fast_way) GMT_free (GMT, x_shift);

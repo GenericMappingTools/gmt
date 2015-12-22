@@ -882,8 +882,8 @@ void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 {
 	if (Z->setup_1d) {	/* Free single-precision FFT data structure and arrays */
 		vDSP_destroy_fftsetup (Z->setup_1d);
-		gmt_free_null (Z->dsp_split_complex_1d.realp);
-		gmt_free_null (Z->dsp_split_complex_1d.imagp);
+		gmt_free (Z->dsp_split_complex_1d.realp);
+		gmt_free (Z->dsp_split_complex_1d.imagp);
 	}
 }
 
@@ -929,8 +929,8 @@ void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 {
 	if (Z->setup_2d) {	/* Free single-precision 2D FFT data structure and arrays */
 		vDSP_destroy_fftsetup (Z->setup_2d);
-		gmt_free_null (Z->dsp_split_complex_2d.realp);
-		gmt_free_null (Z->dsp_split_complex_2d.imagp);
+		gmt_free (Z->dsp_split_complex_2d.realp);
+		gmt_free (Z->dsp_split_complex_2d.imagp);
 	}
 }
 
@@ -995,7 +995,7 @@ int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 	config = kiss_fft_alloc(n, direction == GMT_FFT_INV, NULL, NULL);
 	fin = fout = (kiss_fft_cpx *)data;
 	kiss_fft (config, fin, fout); /* do transform */
-	gmt_free_null (config); /* Free config data structure */
+	gmt_free (config); /* Free config data structure */
 
 	return GMT_NOERROR;
 }
@@ -1013,7 +1013,7 @@ int GMT_fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 
 	fin = fout = (kiss_fft_cpx *)data;
 	kiss_fftnd (config, fin, fout); /* do transform */
-	gmt_free_null (config); /* Free config data structure */
+	gmt_free (config); /* Free config data structure */
 
 	return GMT_NOERROR;
 }
@@ -1942,7 +1942,7 @@ int GMT_fft_1d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n, int d
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = brenner_worksize (GMT, n, 1))) work = GMT_memory (GMT, NULL, work_size, float);
         (void) BRENNER_fourt_ (data, &n_signed, &ndim, &ksign, &kmode, work);
-        if (work_size) GMT_free (GMT, work);	
+        GMT_free (GMT, work);	
         return (GMT_OK);
 }
 	
@@ -1963,7 +1963,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsi
         if ((work_size = brenner_worksize (GMT, nx, ny))) work = GMT_memory (GMT, NULL, work_size, float);
         GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %" PRIuS "\n", work_size);
         (void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
-        if (work_size) GMT_free (GMT, work);
+        GMT_free (GMT, work);
         return (GMT_OK);
 }
 

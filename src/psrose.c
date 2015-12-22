@@ -111,11 +111,11 @@ void *New_psrose_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) gmt_free_null (C->C.file);
-	if (C->L.w) gmt_free_null (C->L.w);
-	if (C->L.e) gmt_free_null (C->L.e);
-	if (C->L.s) gmt_free_null (C->L.s);
-	if (C->L.n) gmt_free_null (C->L.n);
+	gmt_free (C->C.file);
+	gmt_free (C->L.w);
+	gmt_free (C->L.e);
+	gmt_free (C->L.s);
+	gmt_free (C->L.n);
 	GMT_free (GMT, C);
 }
 
@@ -210,8 +210,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Read mode file and plot mean directions */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file)
-					gmt_free_null (Ctrl->C.file);
+				gmt_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
@@ -772,7 +771,9 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		if (half_only) {
 			char text[GMT_LEN64] = {""};
 			if (!Ctrl->L.active) {	/* Use default labels */
-				gmt_free_null (Ctrl->L.w);	gmt_free_null (Ctrl->L.e);	gmt_free_null (Ctrl->L.n);
+				gmt_free (Ctrl->L.w);
+				gmt_free (Ctrl->L.e);
+				gmt_free (Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {
 					if (half_only == 1) {
 						sprintf (Ctrl->L.w, "90%s", GMT->current.language.cardinal_name[2][0]);

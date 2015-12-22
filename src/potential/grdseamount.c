@@ -144,9 +144,9 @@ void *New_grdseamount_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) gmt_free_null (C->G.file);	
-	if (C->M.file) gmt_free_null (C->M.file);	
-	if (C->T.time) GMT_free (GMT, C->T.time);
+	gmt_free (C->G.file);	
+	gmt_free (C->M.file);	
+	GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);	
 }
 
@@ -817,7 +817,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
-					if (d_col) GMT_free (GMT, d_col);
+					GMT_free (GMT, d_col);
 					d_col = GMT_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
 		
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
@@ -938,7 +938,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 
 	//for (ij = 0; ij < n_smts; ij++) fprintf (stderr, "Smt %d: V = %g Stacked V = %g h = %g Stacked h = %g\n", (int)ij, V[ij], V_sum[ij], h[ij], h_sum[ij]);
-	if (d_col) GMT_free (GMT, d_col);
+	GMT_free (GMT, d_col);
 	GMT_free (GMT, V);
 	GMT_free (GMT, h);
 	GMT_free (GMT, V_sum);

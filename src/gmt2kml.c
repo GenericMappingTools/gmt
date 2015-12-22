@@ -164,16 +164,16 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);	
-	if (C->C.file) gmt_free_null (C->C.file);
-	if (C->D.file) gmt_free_null (C->D.file);
-	if (C->I.file) gmt_free_null (C->I.file);
-	if (C->N.fmt) gmt_free_null (C->N.fmt);
-	if (C->T.title) gmt_free_null (C->T.title);
-	if (C->T.folder) gmt_free_null (C->T.folder);
+	gmt_free (C->In.file);	
+	gmt_free (C->C.file);
+	gmt_free (C->D.file);
+	gmt_free (C->I.file);
+	gmt_free (C->N.fmt);
+	gmt_free (C->T.title);
+	gmt_free (C->T.folder);
 	if (C->L.active) {
 		unsigned int col;
-		for (col = 0; col < C->L.n_cols; col++) gmt_free_null (C->L.name[col]);
+		for (col = 0; col < C->L.n_cols; col++) gmt_free (C->L.name[col]);
 		GMT_free (GMT, C->L.name);
 	}
 	GMT_free (GMT, C);
@@ -311,14 +311,12 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Color table */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file)
-					gmt_free_null (Ctrl->C.file);
+				gmt_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
 				Ctrl->D.active = true;
-				if (Ctrl->D.file)
-					gmt_free_null (Ctrl->D.file);
+				gmt_free (Ctrl->D.file);
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Extrude feature down to the ground*/
@@ -377,8 +375,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = true;
-				if (Ctrl->I.file)
-					gmt_free_null (Ctrl->I.file);
+				gmt_free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])

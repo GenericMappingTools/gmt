@@ -57,8 +57,8 @@ void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->A.file) gmt_free_null (C->A.file);
-	if (C->M.file) gmt_free_null (C->M.file);
+	gmt_free (C->A.file);
+	gmt_free (C->M.file);
 	GMT_free (GMT, C);
 }
 

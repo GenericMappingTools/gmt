@@ -168,7 +168,7 @@ void *New_filter1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.file) gmt_free_null (C->F.file);
+	gmt_free (C->F.file);
 	GMT_free (GMT, C);
 }
 
@@ -768,17 +768,17 @@ void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	for (i = 0; i < F->n_cols; ++i)	GMT_free (GMT, F->data[i]);
 	GMT_free (GMT, F->data);
 	GMT_free (GMT, F->n_this_col);
-	if (F->check_asym) GMT_free (GMT, F->n_left);
-	if (F->check_asym) GMT_free (GMT, F->n_right);
-	if (F->min_loc) GMT_free (GMT, F->min_loc);
-	if (F->max_loc) GMT_free (GMT, F->max_loc);
-	if (F->last_loc) GMT_free (GMT, F->last_loc);
-	if (F->this_loc) GMT_free (GMT, F->this_loc);
-	if (F->min_scl) GMT_free (GMT, F->min_scl);
-	if (F->max_scl) GMT_free (GMT, F->max_scl);
-	if (F->last_scl) GMT_free (GMT, F->last_scl);
-	if (F->this_scl) GMT_free (GMT, F->this_scl);
-	if (F->n_f_wts) GMT_free (GMT, F->f_wt);
+	GMT_free (GMT, F->n_left);
+	GMT_free (GMT, F->n_right);
+	GMT_free (GMT, F->min_loc);
+	GMT_free (GMT, F->max_loc);
+	GMT_free (GMT, F->last_loc);
+	GMT_free (GMT, F->this_loc);
+	GMT_free (GMT, F->min_scl);
+	GMT_free (GMT, F->max_scl);
+	GMT_free (GMT, F->last_scl);
+	GMT_free (GMT, F->this_scl);
+	GMT_free (GMT, F->f_wt);
 }
 
 void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, uint64_t n_cols) {

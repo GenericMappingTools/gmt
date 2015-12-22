@@ -551,8 +551,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 		if (nx) GMT_free (GMT, knots);
 		if (label_c) {
-			for (i = 0; i < nx; i++)
-				if (label_c[i]) gmt_free_null (label_c[i]);
+			for (i = 0; i < nx; i++) gmt_free (label_c[i]);
 			GMT_free (GMT, label_c);
 		}
 	}
@@ -2223,7 +2222,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			}
 			if (nx) GMT_free (GMT, val);
 			if (label_c) {
-				for (i = 0; i < nx; i++) if (label_c[i]) gmt_free_null (label_c[i]);
+				for (i = 0; i < nx; i++) gmt_free (label_c[i]);
 				GMT_free (GMT, label_c);
 			}
 		}
@@ -2282,7 +2281,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			}
 			if (ny) GMT_free (GMT, val);
 			if (label_c) {
-				for (i = 0; i < ny; i++) if (label_c[i]) gmt_free_null (label_c[i]);
+				for (i = 0; i < ny; i++) gmt_free (label_c[i]);
 				GMT_free (GMT, label_c);
 			}
 			if (GMT->current.proj.z_down) GMT_free (GMT, tval);
@@ -2884,7 +2883,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 		}
 		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create file %s\n", B->file);
-		gmt_free_null (B->file);
+		gmt_free (B->file);
 	}
 	GMT_draw_map_panel (GMT, 0.5 * (rect[XHI] + rect[XLO]), 0.5 * (rect[YHI] + rect[YLO]), 3U, panel);
 }
@@ -4082,14 +4081,14 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		psl_set_txt_array   (PSL, "label_font", fonts, n_labels);
 		GMT_free (GMT, just);
 		for (k = 0; k < n_labels; k++)
-			gmt_free_null (fonts[k]);
+			gmt_free (fonts[k]);
 		GMT_free (GMT, fonts);
 	}
 	PSL_plottextline (PSL, xpath, ypath, npoints_per_segment, n_segments, A1, A2, txt, angle, nlabels_per_segment, G->font_label.size, justify, G->clearance, form);
 	if (mode & PSL_TXT_INIT) {	/* Free up the things we allocated above */
 		GMT_free (GMT, npoints_per_segment);
 		GMT_free (GMT, nlabels_per_segment);
-		for (k = 0; k < n_segments; k++) gmt_free_null (pen[k]);
+		for (k = 0; k < n_segments; k++) gmt_free (pen[k]);
 		GMT_free (GMT, pen);
 		GMT_free (GMT, angle);
 		GMT_free (GMT, txt);
@@ -4481,7 +4480,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		PSL_command (PSL, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
 			GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI],
 			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], pstr);
-		gmt_free_null (pstr);
+		gmt_free (pstr);
 	}
 
 	if (!GMT->common.O.active) GMT->current.ps.layer = 0;	/* New plot, reset layer counter */
@@ -4550,7 +4549,7 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 		if (GMT->current.ps.clip_level < 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d extra terminations of external clip operations!\n", -GMT->current.ps.clip_level);
 		GMT->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in gmt.history */
 	}
-	for (i = 0; i < 3; i++) if (GMT->current.map.frame.axis[i].file_custom) gmt_free_null (GMT->current.map.frame.axis[i].file_custom);
+	for (i = 0; i < 3; i++) gmt_free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
 }
 

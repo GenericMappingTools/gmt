@@ -161,7 +161,7 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_pscoupe_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Z.file) gmt_free_null (C->Z.file);
+	gmt_free (C->Z.file);
 	GMT_free (GMT, C);
 }
 

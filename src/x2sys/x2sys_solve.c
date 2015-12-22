@@ -172,12 +172,12 @@ void *New_x2sys_solve_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->C.col) gmt_free_null (C->C.col);
+	gmt_free (C->In.file);
+	gmt_free (C->C.col);
 #ifdef SAVEFORLATER
-	if (C->I.file) gmt_free_null (C->I.file);
+	gmt_free (C->I.file);
 #endif
-	if (C->T.TAG) gmt_free_null (C->T.TAG);
+	gmt_free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -919,14 +919,14 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	/* Free up memory */
 
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) GMT_free (GMT, data[i]);
-	if (data[COL_WW]) GMT_free (GMT, data[COL_WW]);
+	GMT_free (GMT, data[COL_WW]);
 	for (i = 0; i < 2; i++) GMT_free (GMT, ID[i]);
 	GMT_free (GMT, b);
 	GMT_free (GMT, R);
 	GMT_free (GMT, col_off);
 	if (!GMT->common.b.active[GMT_IN]) x2sys_free_list (GMT, trk_list, n_tracks);
 #ifdef SAVEFORLATER
-	if (start) GMT_free (GMT, start);
+	GMT_free (GMT, start);
 #endif
 
 	x2sys_end (GMT, S);

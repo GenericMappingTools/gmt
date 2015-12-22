@@ -372,7 +372,7 @@ int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double
 	GMT_free (GMT, P.I.list);
 	GMT_free (GMT, P.I.lptr);
 	GMT_free (GMT, P.I.lend);
-	if (sigma) GMT_free (GMT, sigma);
-	if (grad) GMT_free (GMT, grad);
+	GMT_free (GMT, sigma);
+	GMT_free (GMT, grad);
 	return (GMT_OK);
 }

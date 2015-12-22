@@ -158,11 +158,11 @@ void *New_grdflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdflexure_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->L.file) gmt_free_null (C->L.file);
-	if (C->N.info) GMT_free (GMT, C->N.info);
-	if (C->T.time) GMT_free (GMT, C->T.time);
+	gmt_free (C->In.file);
+	gmt_free (C->G.file);
+	gmt_free (C->L.file);
+	GMT_free (GMT, C->N.info);
+	GMT_free (GMT, C->T.time);
 	GMT_free (GMT, C);
 }
 
@@ -1018,7 +1018,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		if (This_Load == NULL) continue;		/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &This_Load->Grid);	/* Free up grid used */
 		GMT_FFT_Destroy (API, &This_Load->K);		/* Free up wavenumber vectors and info structure created by GMT_FFT_Create */
-		if (This_Load->Time) GMT_free (GMT, This_Load->Time);	/* Free time array, if used */
+		GMT_free (GMT, This_Load->Time);	/* Free time array, if used */
 		GMT_free (GMT, This_Load);			/* Free load structure */
 	}
 	GMT_free (GMT, Load);

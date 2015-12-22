@@ -200,13 +200,13 @@ void *New_grdspotter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdspotter_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);	
-	if (C->A.file) gmt_free_null (C->A.file);	
-	if (C->D.file) gmt_free_null (C->D.file);	
-	if (C->E.file) gmt_free_null (C->E.file);	
-	if (C->G.file) gmt_free_null (C->G.file);	
-	if (C->L.file) gmt_free_null (C->L.file);	
-	if (C->PA.file) gmt_free_null (C->PA.file);	
+	gmt_free (C->In.file);	
+	gmt_free (C->A.file);	
+	gmt_free (C->D.file);	
+	gmt_free (C->E.file);	
+	gmt_free (C->G.file);	
+	gmt_free (C->L.file);	
+	gmt_free (C->PA.file);	
 	GMT_free (GMT, C);	
 }
 

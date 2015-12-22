@@ -155,8 +155,8 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.flags) gmt_free_null (C->F.flags);
-	if (C->L.file) gmt_free_null (C->L.file);
+	gmt_free (C->F.flags);
+	gmt_free (C->L.file);
 	GMT_free (GMT, C);	
 }
 

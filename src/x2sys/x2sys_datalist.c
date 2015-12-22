@@ -80,10 +80,10 @@ void *New_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 
 void Free_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.flags) gmt_free_null (C->F.flags);
-	if (C->I.file) gmt_free_null (C->I.file);
-	if (C->L.file) gmt_free_null (C->L.file);
-	if (C->T.TAG) gmt_free_null (C->T.TAG);
+	gmt_free (C->F.flags);
+	gmt_free (C->I.file);
+	gmt_free (C->L.file);
+	gmt_free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 

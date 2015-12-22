@@ -97,9 +97,9 @@ void *New_grdimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_grdimage_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deallocate control structure */
 	int k;
 	if (!C) return;
-	for (k = 0; k < 3; k++) if (C->In.file[k]) gmt_free_null (C->In.file[k]);	
-	if (C->C.file) gmt_free_null (C->C.file);
-	if (C->I.file) gmt_free_null (C->I.file);
+	for (k = 0; k < 3; k++) gmt_free (C->In.file[k]);	
+	gmt_free (C->C.file);
+	gmt_free (C->I.file);
 	GMT_free (GMT, C);
 }
 
@@ -204,7 +204,7 @@ int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct
 #endif
 			case 'C':	/* CPT file */
 				Ctrl->C.active = true;
-				if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+				gmt_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 #ifdef HAVE_GDAL
@@ -1005,8 +1005,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 
 	/* Free bitimage arrays. GMT_free will not complain if they have not been used (NULL) */
-	if (bitimage_8) GMT_free (GMT, bitimage_8);
-	if (bitimage_24) GMT_free (GMT, bitimage_24);
+	GMT_free (GMT, bitimage_8);
+	GMT_free (GMT, bitimage_24);
 
 	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
@@ -1014,7 +1014,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 #ifdef HAVE_GDAL
 	if (Ctrl->D.active) {
-		if (r_table) GMT_free (GMT, r_table);
+		GMT_free (GMT, r_table);
 		if (g_table) {
 			GMT_free (GMT, g_table);
 			GMT_free (GMT, b_table);
@@ -1027,11 +1027,11 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		}
 	}
 	if (Ctrl->A.active) {
-		if (to_GDALW->P.ProjectionRefPROJ4) gmt_free_null (to_GDALW->P.ProjectionRefPROJ4);
-		gmt_free_null ( to_GDALW->type);
+		gmt_free (to_GDALW->P.ProjectionRefPROJ4);
+		gmt_free (to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
-		gmt_free_null (Ctrl->A.driver);
-		gmt_free_null (Ctrl->A.file);
+		gmt_free (Ctrl->A.driver);
+		gmt_free (Ctrl->A.file);
 	}
 #endif
 	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_OK) {

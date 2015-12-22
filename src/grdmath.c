@@ -4088,14 +4088,14 @@ void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!GMT_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
-	if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("PCDF");   }
-	if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("FCDF");   }
-	if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("TCDF");   }
-	if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("ZCDF");   }
-	if (!strcmp (*arg, "CHIDIST")) {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("CHI2CDF"); }
-	if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("CHI2CRIT"); }
-	if (!strcmp (*arg, "Xn"))      {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("XNORM");  }
-	if (!strcmp (*arg, "Yn"))      {strcpy (old, *arg); gmt_free_null (*arg); *arg = t = strdup ("YNORM");  }
+	if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("PCDF");   }
+	if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("FCDF");   }
+	if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("TCDF");   }
+	if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("ZCDF");   }
+	if (!strcmp (*arg, "CHIDIST")) {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("CHI2CDF"); }
+	if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
+	if (!strcmp (*arg, "Xn"))      {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("XNORM");  }
+	if (!strcmp (*arg, "Yn"))      {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("YNORM");  }
 
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
@@ -4208,16 +4208,16 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
 	}
-	if (info->d_grd_x)  GMT_free (GMT, info->d_grd_x);
-	if (info->d_grd_y)  GMT_free (GMT, info->d_grd_y);
-	if (info->d_grd_xn) GMT_free (GMT, info->d_grd_xn);
-	if (info->d_grd_yn) GMT_free (GMT, info->d_grd_yn);
-	if (info->f_grd_x)  GMT_free (GMT, info->f_grd_x);
-	if (info->f_grd_y)  GMT_free (GMT, info->f_grd_y);
-	if (info->f_grd_xn) GMT_free (GMT, info->f_grd_xn);
-	if (info->f_grd_yn) GMT_free (GMT, info->f_grd_yn);
-	if (info->dx) GMT_free (GMT, info->dx);
-	if (info->ASCII_file) gmt_free_null (info->ASCII_file);
+	GMT_free (GMT, info->d_grd_x);
+	GMT_free (GMT, info->d_grd_y);
+	GMT_free (GMT, info->d_grd_xn);
+	GMT_free (GMT, info->d_grd_yn);
+	GMT_free (GMT, info->f_grd_x);
+	GMT_free (GMT, info->f_grd_y);
+	GMT_free (GMT, info->f_grd_xn);
+	GMT_free (GMT, info->f_grd_yn);
+	GMT_free (GMT, info->dx);
+	gmt_free (info->ASCII_file);
 }
 
 int GMT_grdmath (void *V_API, int mode, void *args)
@@ -4546,7 +4546,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 				}
 
-				gmt_free_null (recall[k]->label);
+				gmt_free (recall[k]->label);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;
@@ -4593,7 +4593,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = (float)(row - stack[nstack]->G->header->pad[YHI]);
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
-				if (info.ASCII_file) gmt_free_null (info.ASCII_file);
+				gmt_free (info.ASCII_file);
 				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				info.ASCII_file = strdup (opt->arg);
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "(%s) ", opt->arg);
@@ -4668,7 +4668,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		if (recall[kk]->stored.G && GMT_Destroy_Data (API, &recall[kk]->stored.G) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", kk);
 		}
-		gmt_free_null (recall[kk]->label);
+		gmt_free (recall[kk]->label);
 		GMT_free (GMT, recall[kk]);
 	}
 

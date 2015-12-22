@@ -56,9 +56,9 @@ void *New_grdpaste_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_grdpaste_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) gmt_free_null (C->G.file);	
-	if (C->In.file[GMT_IN]) gmt_free_null (C->In.file[GMT_IN]);	
-	if (C->In.file[GMT_OUT]) gmt_free_null (C->In.file[GMT_OUT]);	
+	gmt_free (C->G.file);	
+	gmt_free (C->In.file[GMT_IN]);	
+	gmt_free (C->In.file[GMT_OUT]);	
 	GMT_free (GMT, C);	
 }
 

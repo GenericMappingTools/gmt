@@ -195,7 +195,7 @@ void *New_pswiggle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_pswiggle_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->S.label) gmt_free_null (C->S.label);	
+	gmt_free (C->S.label);	
 	GMT_free (GMT, C);	
 }
 

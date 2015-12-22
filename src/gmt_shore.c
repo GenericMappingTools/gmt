@@ -303,7 +303,7 @@ L1:
 					if ( gshhg_require_min_version (path, version) ) {
 						fclose (fp);
 						/* update invalid GMT->session.GSHHGDIR */
-						if (GMT->session.GSHHGDIR) gmt_free_null (GMT->session.GSHHGDIR);
+						gmt_free (GMT->session.GSHHGDIR);
 						GMT->session.GSHHGDIR = strdup (dir);
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: OK, could access %s\n", path);
 						return (path);
@@ -334,7 +334,7 @@ L1:
 			if ( gshhg_require_min_version (path, version) ) {
 				/* update invalid GMT->session.GSHHGDIR */
 				sprintf (dir, "%s/%s", GMT->session.SHAREDIR, "coast");
-				if (GMT->session.GSHHGDIR) gmt_free_null (GMT->session.GSHHGDIR);
+				gmt_free (GMT->session.GSHHGDIR);
 				GMT->session.GSHHGDIR = strdup (dir);
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: OK, could access %s\n", path);
 				return (path);

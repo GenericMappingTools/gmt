@@ -136,9 +136,6 @@
 #define PSL_exit(code) exit(code)
 #endif
 
-/*! Convenience macro for free that excplicitly sets freed pointer to NULL */
-#define psl_free_null(ptr) (free((void *)(ptr)),(ptr)=NULL)
-
 /*--------------------------------------------------------------------
  *		     STANDARD CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
@@ -390,7 +387,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 		DOS_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
-			psl_free_null (PSL->internal.USERDIR);
+			PSL_free (PSL->internal.USERDIR);
 		}
 	}
 
@@ -407,10 +404,8 @@ int PSL_endsession (struct PSL_CTRL *PSL)
 	for (i = 0; i < PSL->internal.N_FONTS; i++) PSL_free (PSL->internal.font[i].name);
 	PSL_free (PSL->internal.font);
 	for (i = 0; i < PSL->internal.n_userimages; i++) PSL_free (PSL->internal.user_image[i]);
-	if (PSL->internal.SHAREDIR)
-		psl_free_null (PSL->internal.SHAREDIR);
-	if (PSL->internal.USERDIR)
-		psl_free_null (PSL->internal.USERDIR);
+	PSL_free (PSL->internal.SHAREDIR);
+	PSL_free (PSL->internal.USERDIR);
 	PSL_free (PSL->init.encoding);
 	PSL_free (PSL->init.session);
 	PSL_free (PSL);
@@ -690,8 +685,7 @@ int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, 
 
 int PSL_free_nonmacro (void *addr)
 {
-	if (addr)
-		psl_free_null (addr);
+	PSL_free (addr);
 	return (PSL_NO_ERROR);
 }
 
@@ -2553,7 +2547,7 @@ void psl_freewords (struct PSL_WORD **word, int n_words)
 	/* Free all the words and their texts */
 	int k;
 	for (k = 0; k < n_words; k++) {
-		if (word[k]->txt) PSL_free (word[k]->txt);
+		PSL_free (word[k]->txt);
 		PSL_free (word[k]);
 	}
 }
@@ -2601,7 +2595,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		c = strtok_r (NULL, sep, &lastp);
 	}
 	text = (char **) PSL_memory (PSL, text, n_words, char *);
-	psl_free_null (copy);
+	PSL_free (copy);
 
 	/* Now process the words into pieces we can typeset. */
 
@@ -2786,7 +2780,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 		}
 
 		PSL_free (clean);	/* Reclaim this memory */
-		psl_free_null (text[i]);	/* Since strdup created it */
+		PSL_free (text[i]);	/* Since strdup created it */
 
 	} /* End of word loop */
 
@@ -3830,7 +3824,7 @@ int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned 
 /* Make sure that all memory is freed upon return.
    This way is simpler than freeing buffer, red, green, blue, entry individually at every return
  */
-#define Return(code) {if (buffer) PSL_free (buffer); if (entry) PSL_free (entry); if (red) PSL_free (red); if (green) PSL_free (green); if (blue) PSL_free (blue); return (code);}
+#define Return(code) {PSL_free (buffer); PSL_free (entry); PSL_free (red); PSL_free (green); PSL_free (blue); return (code);}
 
 int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **picture)
 {
@@ -4024,10 +4018,10 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		Return (PSL_READ_FAILURE);
 	}
 
-	if (entry) PSL_free (entry);
-	if (red) PSL_free (red);
-	if (green) PSL_free (green);
-	if (blue) PSL_free (blue);
+	PSL_free (entry);
+	PSL_free (red);
+	PSL_free (green);
+	PSL_free (blue);
 
 	*picture = buffer;
 	return (PSL_NO_ERROR);
