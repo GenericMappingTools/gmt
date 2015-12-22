@@ -58,8 +58,8 @@ void *New_gmtwrite_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_gmtwrite_Ctrl (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->IO.file[GMT_IN]) gmt_free_null (C->IO.file[GMT_IN]);
-	if (C->IO.file[GMT_OUT]) gmt_free_null (C->IO.file[GMT_OUT]);
+	gmt_free (C->IO.file[GMT_IN]);
+	gmt_free (C->IO.file[GMT_OUT]);
 	GMT_free (GMT, C);
 }
 

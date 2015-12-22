@@ -159,7 +159,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			if (txt_in[k] == ASCII_GS) txt_in[k] = '\t'; else if (txt_in[k] == ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 		args = new_args;
 		n_args = new_n_args;
-		gmt_free_null (txt_in);
+		gmt_free (txt_in);
 	}
 	else {
 		args = (char **)in;	/* Gave an argv[] argument */
@@ -217,14 +217,14 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			strcat(t, "=gd"); 
 			pch[0] = '+';			/* Restore what we have erased 2 lines above */
 			strcat(t, pch);
-			gmt_free_null (new_opt->arg);	/* free it so that we can extend it */
+			gmt_free (new_opt->arg);	/* free it so that we can extend it */
 			new_opt->arg = strdup(t);
 		}
 
 		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
 	if (n_args_in == 0) {	/* Free up temporary arg list */
-		for (arg = 0; arg < n_args; arg++) gmt_free_null (new_args[arg]);
+		for (arg = 0; arg < n_args; arg++) gmt_free (new_args[arg]);
 		GMT_free (G, new_args);
 	}
 
@@ -251,7 +251,7 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 	while (current) {	/* Start at head and loop over the list and delete the options, one by one. */
 		to_delete = current;		/* The one we want to delete */
 		current = current->next;	/* But first grab the pointer to the next item */
-		if (to_delete->arg) gmt_free_null (to_delete->arg);	/* The option had a text argument allocated by strdup, so free it first */
+		gmt_free (to_delete->arg);	/* The option had a text argument allocated by strdup, so free it first */
 		GMT_free (API->GMT, to_delete);		/* Then free the structure which was allocated by GMT_memory */
 	}
 	*head = NULL;		/* Reset head to NULL value since it no longer points to any allocated memory */
@@ -427,7 +427,7 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	/* We passed NULL as the option */
 	if (arg == NULL) return_error (V_API, GMT_ARG_IS_NULL);		/* We passed NULL as the argument */
-	if (opt->arg) gmt_free_null (opt->arg);
+	gmt_free (opt->arg);
 	opt->arg = strdup (arg);
 
 	return (GMT_OK);	/* No error encountered */
@@ -453,7 +453,7 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, const c
 			buffer[out++] = opt->arg[in];
 		in++;
 	}
-	gmt_free_null (opt->arg);
+	gmt_free (opt->arg);
 	opt->arg = strdup (buffer);
 	return (GMT_NOERROR);
 }
@@ -500,7 +500,7 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current)
 	/* Remove the current option and bypass via the enx/prev pointers in the linked list */
 	if (current->previous) current->previous->next = current->next;
 	if (current->next) current->next->previous = current->previous;
-	if (current->arg) gmt_free_null (current->arg);	/* Option arguments were created by strdup, so we must use free */
+	gmt_free (current->arg);	/* Option arguments were created by strdup, so we must use free */
 	GMT_free (API->GMT, current);		/* Option structure was created by GMT_memory, hence GMT_free */
 
 	return (GMT_OK);	/* No error encountered */

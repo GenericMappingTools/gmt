@@ -135,13 +135,12 @@ void *New_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 void Free_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.file) gmt_free_null (C->F.file);
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->T.xyz_file) gmt_free_null (C->T.xyz_file);
-	if (C->T.t_file) gmt_free_null (C->T.t_file);
-	if (C->T.raw_file) gmt_free_null (C->T.raw_file);
-	if (C->T.stl_file) gmt_free_null (C->T.stl_file);
-	
+	gmt_free (C->F.file);
+	gmt_free (C->G.file);
+	gmt_free (C->T.xyz_file);
+	gmt_free (C->T.t_file);
+	gmt_free (C->T.raw_file);
+	gmt_free (C->T.stl_file);
 	GMT_free (GMT, C);
 }
 
@@ -700,27 +699,27 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (x) GMT_free (GMT, x);
-	if (y) GMT_free (GMT, y);
-	if (g) GMT_free (GMT, g);
+	GMT_free (GMT, x);
+	GMT_free (GMT, y);
+	GMT_free (GMT, g);
 	GMT_free (GMT, z_obs);
 	GMT_free (GMT, x_obs);
 	GMT_free (GMT, y_obs);
-	if (triang) GMT_free (GMT, triang);
-	if (raw_mesh) GMT_free (GMT, raw_mesh);
-	if (t_center) GMT_free (GMT, t_center);
-	if (vert) GMT_free (GMT, vert);
-	if (mag_param) GMT_free (GMT, mag_param);
-	if (mag_var) GMT_free (GMT, mag_var);
+	GMT_free (GMT, triang);
+	GMT_free (GMT, raw_mesh);
+	GMT_free (GMT, t_center);
+	GMT_free (GMT, vert);
+	GMT_free (GMT, mag_param);
+	GMT_free (GMT, mag_var);
 	GMT_free (GMT, body_desc.n_v);
 	GMT_free (GMT, body_desc.ind);
 	GMT_free (GMT, loc_or);
 	GMT_free (GMT, body_verts);
-	if (cos_vec) GMT_free (GMT, cos_vec);
+	GMT_free (GMT, cos_vec);
 	if (Ctrl->T.m_var1) GMT_free (GMT, Ctrl->box.mag_int);
 	if (Ctrl->T.m_var2) GMT_free (GMT, mag_var2);
 	if (Ctrl->T.m_var3) GMT_free (GMT, mag_var3);
-	if (mag_var4) GMT_free (GMT, mag_var4);
+	GMT_free (GMT, mag_var4);
 
 	Return (GMT_OK);
 }

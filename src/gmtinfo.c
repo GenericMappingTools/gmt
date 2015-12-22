@@ -281,7 +281,7 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtinfo_Ctrl (GMT, Ctrl); if (xyzmin) GMT_free (GMT, xyzmin); if (xyzmax) GMT_free (GMT, xyzmax); if (Q) GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_gmtinfo_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args)
 {

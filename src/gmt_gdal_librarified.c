@@ -96,6 +96,6 @@ char **breakMe(struct GMT_CTRL *GMT, char *in) {
 		if (txt_in[k] == ASCII_GS) txt_in[k] = '\t';
 		else if (txt_in[k] == ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 	args[n_args] = NULL;	/* Close the list with a NULL */
-	gmt_free_null (txt_in);
+	gmt_free (txt_in);
 	return args;
 }

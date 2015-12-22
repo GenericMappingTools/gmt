@@ -147,11 +147,11 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->C.file) gmt_free_null (C->C.file);
-	if (C->D.file) gmt_free_null (C->D.file);
-	if (C->T.txt[0]) gmt_free_null (C->T.txt[0]);
-	if (C->T.txt[1]) gmt_free_null (C->T.txt[1]);
+	gmt_free (C->In.file);
+	gmt_free (C->C.file);
+	gmt_free (C->D.file);
+	gmt_free (C->T.txt[0]);
+	gmt_free (C->T.txt[1]);
 	GMT_free (GMT, C);
 }
 
@@ -332,13 +332,13 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 				if (GMT_File_Is_Memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
-					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
-					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (opt->arg[0] == '+')
@@ -1066,10 +1066,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			GMT_plane_perspective (GMT, -1, 0.0);
 			GMT_plotend (GMT);
 		}
-		if (contour) GMT_free (GMT, contour);
-		if (cont_type) GMT_free (GMT, cont_type);
-		if (cont_angle) GMT_free (GMT, cont_angle);
-		if (cont_do_tick) GMT_free (GMT, cont_do_tick);
+		GMT_free (GMT, contour);
+		GMT_free (GMT, cont_type);
+		GMT_free (GMT, cont_angle);
+		GMT_free (GMT, cont_do_tick);
 		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}

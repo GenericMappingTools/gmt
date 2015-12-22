@@ -180,7 +180,7 @@ static inline struct MEMORY_ITEM * gmt_treeinsert (struct MEMORY_ITEM *t, void *
 		return new;
 	} else {
 		/* We get here if addr is already in the tree. Don't add it again. */
-		gmt_free_null (new);
+		gmt_free (new);
 		return t;
 	}
 }
@@ -208,8 +208,8 @@ static inline struct MEMORY_ITEM * gmt_treedelete (struct MEMORY_ITEM *t, void *
 			x = gmt_treesplay (t->l, addr);
 			x->r = t->r;
 		}
-		if (t->name != NULL) gmt_free_null (t->name);
-		gmt_free_null (t);
+		gmt_free (t->name);
+		gmt_free (t);
 		return x;
 	}
 	return t; /* It wasn't there */
@@ -221,8 +221,8 @@ static inline void gmt_treedestroy (struct MEMORY_ITEM **t) {
 	if (x != NULL) {
 		gmt_treedestroy (&x->l);
 		gmt_treedestroy (&x->r);
-		if (x->name != NULL) gmt_free_null (x->name);
-		gmt_free_null (x);
+		gmt_free (x->name);
+		gmt_free (x);
 		*t = NULL;
 	}
 }
@@ -432,9 +432,9 @@ void GMT_free_tmp_arrays (struct GMT_CTRL *GMT)
 
 	if (GMT->hidden.mem_cols) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Free %" PRIuS " temporary column arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
 	for (col = 0; col < GMT->hidden.mem_cols; col++) {	/* For each column, free an array */
-		if (GMT->hidden.mem_coord[col]) GMT_free (GMT, GMT->hidden.mem_coord[col]);
+		GMT_free (GMT, GMT->hidden.mem_coord[col]);
 	}
-	if (GMT->hidden.mem_coord) GMT_free (GMT, GMT->hidden.mem_coord);
+	GMT_free (GMT, GMT->hidden.mem_coord);
 	GMT->hidden.mem_rows = GMT->hidden.mem_cols = 0;
 }
 
@@ -560,14 +560,14 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 
 void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where)
 {
-#ifndef DEBUG
 	if (addr == NULL) {
+#ifndef DEBUG
 		/* report freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
 		GMT_report_func (GMT, GMT_MSG_DEBUG, where,
 				"tried to free unallocated memory\n");
+#endif
 		return; /* Do not free a NULL pointer, although allowed */
 	}
-#endif
 
 #ifdef MEMDEBUG
 	if (GMT->hidden.mem_keeper->active) {
@@ -587,11 +587,12 @@ void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 #elif defined(WIN32) && defined(USE_MEM_ALIGNED)
 		_aligned_free (addr);
 #else
-		gmt_free_null (addr);
+		free (addr);
 #endif
 	}
 	else
-		gmt_free_null (addr);
+		free (addr);
+	addr = NULL;
 }
 
 void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where)

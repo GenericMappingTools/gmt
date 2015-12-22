@@ -192,8 +192,8 @@ void *New_originator_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_originator_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.file) gmt_free_null (C->E.file);	
-	if (C->F.file) gmt_free_null (C->F.file);	
+	gmt_free (C->E.file);	
+	gmt_free (C->F.file);	
 	GMT_free (GMT, C);	
 }
 

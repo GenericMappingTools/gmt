@@ -85,9 +85,9 @@ void *New_gmtpmodeler_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_gmtpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);	
-	if (C->E.rot.file) gmt_free_null (C->E.rot.file);	
-	if (C->F.file) gmt_free_null (C->F.file);	
+	gmt_free (C->In.file);	
+	gmt_free (C->E.rot.file);	
+	gmt_free (C->F.file);	
 	GMT_free (GMT, C);	
 }
 

@@ -60,7 +60,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			/* The file extension had less than 3 chars, which means that 1) it's not an esri file.
 			   2) would corrupt the heap with the later strcat (file, ".hdr");
 			      On Win this would later cause a crash upon freeing 'file' */
-			gmt_free_null (file);
+			gmt_free (file);
 			return (-1);
 		}
 		if (isupper ((unsigned char) header->name[name_len - 1]))
@@ -84,11 +84,11 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				header->flags[1] = '2';	/* Flag to let us know the file type */
 			}
 			else {	/* Cannot do anything with this data */
-				gmt_free_null (file);
+				gmt_free (file);
 				return (-1);
 			}
 
-			gmt_free_null (file);
+			gmt_free (file);
 		}
 		else {
 			/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem
@@ -121,7 +121,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			}
 			else {
 				/* Cannot do anything with this data */
-				gmt_free_null (file);
+				gmt_free (file);
 				return (-1);	/* Not this kind of file */
 			}
 		}
@@ -571,7 +571,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	GMT_fclose (GMT, fp);
 	GMT_free (GMT, actual_col);
-	if (tmp) GMT_free (GMT, tmp);
+	GMT_free (GMT, tmp);
 
 	if (n_left) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);

@@ -163,7 +163,7 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_psmeca_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Z.file) gmt_free_null (C->Z.file);
+	gmt_free (C->Z.file);
 	GMT_free (GMT, C);
 }
 

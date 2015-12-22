@@ -126,10 +126,10 @@ void *New_grdtrend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_grdtrend_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);	
-	if (C->D.file) gmt_free_null (C->D.file);	
-	if (C->T.file) gmt_free_null (C->T.file);	
-	if (C->W.file) gmt_free_null (C->W.file);	
+	gmt_free (C->In.file);	
+	gmt_free (C->D.file);	
+	gmt_free (C->T.file);	
+	gmt_free (C->W.file);	
 	GMT_free (GMT, C);	
 }
 

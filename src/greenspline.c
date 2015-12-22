@@ -196,12 +196,12 @@ void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_greenspline_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->A.file) gmt_free_null (C->A.file);
-	if (C->C.file) gmt_free_null (C->C.file);
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->N.file) gmt_free_null (C->N.file);
-	if (C->T.file) gmt_free_null (C->T.file);
-	if (C->S.arg)  gmt_free_null (C->S.arg);
+	gmt_free (C->A.file);
+	gmt_free (C->C.file);
+	gmt_free (C->G.file);
+	gmt_free (C->N.file);
+	gmt_free (C->T.file);
+	gmt_free (C->S.arg);
 	GMT_free (GMT, C);
 }
 
@@ -862,12 +862,12 @@ void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr, unsign
 	 * mode = 0 means Lz and mode = 1 means Lg; the latter has no B & C arrays */
 	struct GREENSPLINE_LOOKUP *L = *Lptr;
 	if (L == NULL) return;	/* Nothing to free */
-	if (L->y) GMT_free (GMT, L->y);
-	if (L->c) GMT_free (GMT, L->c);
-	if (L->A) GMT_free (GMT, L->A);
+	GMT_free (GMT, L->y);
+	GMT_free (GMT, L->c);
+	GMT_free (GMT, L->A);
 	if (mode == 0) {	/* Only Lz has A,B,C while Lg borrows B,C */
-		if (L->B) GMT_free (GMT, L->B);
-		if (L->C) GMT_free (GMT, L->C);
+		GMT_free (GMT, L->B);
+		GMT_free (GMT, L->C);
 	}
 	GMT_free (GMT, L);
 	*Lptr = NULL;

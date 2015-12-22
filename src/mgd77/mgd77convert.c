@@ -369,10 +369,10 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 		M.format = Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
 		M.original = true;					/* Always write to original attributes */
 		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? true : false;	/* Only allow the specified output format */
-		if (D->H.author) GMT_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
+		GMT_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
 		D->H.author = GMT_memory (GMT, NULL, strlen (M.user)+1, char);	/* Allocate space for author */
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */
-		if (D->H.history) GMT_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
+		GMT_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
 		if (MGD77_Write_File (GMT, file, &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing new file for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);

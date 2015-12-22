@@ -128,8 +128,8 @@ void *New_psxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new c
 
 void Free_psxyz_Ctrl (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) gmt_free_null (C->C.file);
-	if (C && C->S.arg) gmt_free_null (C->S.arg);
+	gmt_free (C->C.file);
+	gmt_free (C->S.arg);
 	GMT_free (GMT, C);
 }
 
@@ -283,7 +283,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* Vary symbol color with z */
 				if (opt->arg[0]) {
-					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 					Ctrl->C.active = true;
 				}
@@ -1148,7 +1148,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 						(void) GMT_setfont (GMT, &S.font);
 						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
-						gmt_free_null (data[i].string);
+						gmt_free (data[i].string);
 						break;
 					case GMT_SYMBOL_VECTOR:
 						GMT_plane_perspective (GMT, GMT_Z, data[i].z);

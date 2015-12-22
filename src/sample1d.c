@@ -90,8 +90,8 @@ void *New_sample1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_sample1d_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) gmt_free_null (C->Out.file);	
-	if (C->N.file) gmt_free_null (C->N.file);	
+	gmt_free (C->Out.file);	
+	gmt_free (C->N.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -480,7 +480,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	//GMT_free_dataset (API->GMT, &Dout);	/* Since not registered */
 
 	if (Ctrl->N.active) GMT_free (GMT, t_out);
-	if (nan_flag) GMT_free (GMT, nan_flag);
+	GMT_free (GMT, nan_flag);
 	if (Ctrl->N.active) GMT_free (GMT, t_supplied_out);
 	
 	Return (GMT_OK);

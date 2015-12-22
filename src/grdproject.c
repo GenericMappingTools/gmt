@@ -81,8 +81,8 @@ void *New_grdproject_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_grdproject_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);	
-	if (C->G.file) gmt_free_null (C->G.file);	
+	gmt_free (C->In.file);	
+	gmt_free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -551,7 +551,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Rect) != GMT_OK) {
 			Return (API->error);
 		}
-		gmt_free_null (Rect->header->ProjRefPROJ4);
+		gmt_free (Rect->header->ProjRefPROJ4);
 	}
 
 	Return (GMT_OK);

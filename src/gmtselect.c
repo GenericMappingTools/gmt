@@ -143,9 +143,9 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->C.file) gmt_free_null (C->C.file);	
-	if (C->F.file) gmt_free_null (C->F.file);	
-	if (C->L.file) gmt_free_null (C->L.file);	
+	gmt_free (C->C.file);	
+	gmt_free (C->F.file);	
+	gmt_free (C->L.file);	
 	if (C->Z.n_tests) GMT_free (GMT, C->Z.limit);	
 	GMT_free (GMT, C);	
 }

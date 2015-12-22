@@ -225,7 +225,7 @@ int main (int argc, char *argv[]) {
 		status = EXIT_FAILURE;
 	} /* status == GMT_NOT_A_VALID_OPTION */
 
-	gmt_free_null (progname); /* Was already dereferenced in GMT_chop_ext, so no NULL check needed */
+	gmt_free (progname); /* Was already dereferenced in GMT_chop_ext, so no NULL check needed */
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;

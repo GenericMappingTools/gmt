@@ -123,8 +123,8 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->A.file) gmt_free_null (C->A.file);	
-	if (C->D.file) gmt_free_null (C->D.file);	
+	gmt_free (C->A.file);	
+	gmt_free (C->D.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -809,7 +809,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 				In.n_out_columns--;
 				for (col = k; col < In.n_out_columns; col++) {	/* Move remaining columns over */
 					D->values[col] = D->values[col+1];
-					gmt_free_null (In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
+					gmt_free (In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
 					In.desired_column[col] = strdup(In.desired_column[col+1]);
 					In.order[col].set = In.order[col+1].set;
 					In.order[col].item = In.order[col+1].item;
@@ -1609,7 +1609,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Data column %s added to %s\n", Ctrl->I.c_abbrev, list[argno]);
 	}
 
-	if (colvalue) GMT_free (GMT, colvalue);
+	GMT_free (GMT, colvalue);
 	if (two_cols) GMT_free (GMT, coldnt);
 
 	if (Ctrl->D.active)

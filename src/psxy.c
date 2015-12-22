@@ -135,8 +135,8 @@ void *New_psxy_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new co
 
 void Free_psxy_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C && C->C.file) gmt_free_null (C->C.file);
-	if (C && C->S.arg) gmt_free_null (C->S.arg);
+	gmt_free (C->C.file);
+	gmt_free (C->S.arg);
 	GMT_freepen (GMT, &C->W.pen);
 	GMT_free (GMT, C);
 }
@@ -533,7 +533,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'C':	/* Vary symbol color with z */
 				if (opt->arg[0]) {
-					if (Ctrl->C.file) gmt_free_null (Ctrl->C.file);
+					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 					Ctrl->C.active = true;
 				}

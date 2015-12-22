@@ -81,10 +81,10 @@ void *New_x2sys_get_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->F.flags) gmt_free_null (C->F.flags);
-	if (C->L.file) gmt_free_null (C->L.file);
-	if (C->N.flags) gmt_free_null (C->N.flags);
-	if (C->T.TAG) gmt_free_null (C->T.TAG);
+	gmt_free (C->F.flags);
+	gmt_free (C->L.file);
+	gmt_free (C->N.flags);
+	gmt_free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 

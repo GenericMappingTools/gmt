@@ -649,7 +649,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				}
 				else
 					GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s has no extension! Ignored\n", text);
-				gmt_free_null (libname);
+				gmt_free (libname);
 			}
 		}
 	}
@@ -666,10 +666,10 @@ void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API) {
 	for (k = 0; k < API->n_shared_libs; k++) {
 		if (k > 0 && API->lib[k].handle && dlclose (API->lib[k].handle))
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GMT %s shared library: %s\n", API->lib[k].name, dlerror());
-		if (API->lib[k].name) gmt_free_null (API->lib[k].name);
-		if (API->lib[k].path) gmt_free_null (API->lib[k].path);
+		gmt_free (API->lib[k].name);
+		gmt_free (API->lib[k].path);
 	}
-	if (API->lib) GMT_free (API->GMT, API->lib);
+	GMT_free (API->GMT, API->lib);
 	API->n_shared_libs = 0;
 }
 
@@ -1041,7 +1041,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 			else
 				GMT_Report (API, GMT_MSG_NORMAL,
 				            "GMT_Encode_Options: INTERNAL ERROR: Required runtime type-getting option (-%c) not given\n", s[k][K_FAMILY]);
-			gmt_free_null (s[k]);		/* Free the inactive key that has served its purpose */
+			gmt_free (s[k]);		/* Free the inactive key that has served its purpose */
 		}
 		else if (s[k][K_FAMILY] == '-') {	/* * Key letter Y missing: Means that -X, if given, changes the type of input|output to secondary (i.e., not required) */
 			if (GMT_Find_Option (API, s[k][K_OPT], head)) {	/* Got the option that removes the requirement of an input or output dataset */
@@ -1051,7 +1051,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 					if (s[kk][K_DIR] == 'O' && strchr ("-oO", s[k][K_DIR])) s[kk][K_DIR] = 'o';	/* No longer an implicit output */
 				}
 			}
-			gmt_free_null (s[k]);		/* Free the inactive key that has served its purpose */
+			gmt_free (s[k]);		/* Free the inactive key that has served its purpose */
 		}
 		else if (!strchr ("IOio-", s[k][K_DIR])) {	/* Key letter Z not i|I|o|O|-: Means that option -Z, if given, changes the type of primary output to Y */
 			/* E.g, pscoast has >DM and this turns >XO to >DO only when -M is used.  Also, modifiers may be involved.
@@ -1090,7 +1090,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 					s[o_id][K_OPT]    = s[k][K_OPT];	/* Required output now implies this option */
 				}
 			}
-			gmt_free_null (s[k]);		/* Free the inactive key that has served its purpose */
+			gmt_free (s[k]);		/* Free the inactive key that has served its purpose */
 		}
 	}
 	/* Shuffle away any NULL entries */
@@ -1107,7 +1107,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 	}
 	if (revised[0]) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_process_keys: Revised keys string is %s\n", &revised[1]);
 	*n_items = (unsigned int)n;	/* Total number of keys for this module */
-	gmt_free_null (tmp);
+	gmt_free (tmp);
 	return s;
 }
 
@@ -1458,7 +1458,7 @@ int GMTAPI_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, char 
 /*! . */
 void GMTAPI_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	struct GMT_GRID_ROWBYROW *R = gmt_get_rbr_ptr (G->extra);	/* Shorthand to row-by-row book-keeping structure */
-	if (R->v_row) GMT_free (GMT, R->v_row);
+	GMT_free (GMT, R->v_row);
 	if (GMT->session.grdformat[G->header->type][0] == 'c' || GMT->session.grdformat[G->header->type][0] == 'n')
 		nc_close (R->fid);
 	else
@@ -1545,9 +1545,9 @@ int GMTAPI_add_comment (struct GMTAPI_CTRL *API, unsigned int mode, char *txt) {
 	unsigned int k = 0;
 	struct GMT_COMMON *C = &API->GMT->common;	/* Short-hand to the common arg structs */
 
-	if (mode & GMT_COMMENT_IS_TITLE)  { if (C->h.title) gmt_free_null (C->h.title); C->h.title = strdup (txt); k++; }
-	if (mode & GMT_COMMENT_IS_REMARK) { if (C->h.remark) gmt_free_null (C->h.remark); C->h.remark = strdup (txt); k++; }
-	if (mode & GMT_COMMENT_IS_COLNAMES) { if (C->h.colnames) gmt_free_null (C->h.colnames); C->h.colnames = strdup (txt); k++; }
+	if (mode & GMT_COMMENT_IS_TITLE)  { gmt_free (C->h.title); C->h.title = strdup (txt); k++; }
+	if (mode & GMT_COMMENT_IS_REMARK) { gmt_free (C->h.remark); C->h.remark = strdup (txt); k++; }
+	if (mode & GMT_COMMENT_IS_COLNAMES) { gmt_free (C->h.colnames); C->h.colnames = strdup (txt); k++; }
 	return (k);	/* 1 if we did any of the three above; 0 otherwise */
 }
 
@@ -1563,7 +1563,7 @@ void GMTAPI_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
 		T = D->table[tbl];	/* Short-hand for this table */
 		if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
-			for (k = 0; k < T->n_headers; k++) if (T->header[k]) gmt_free_null (T->header[k]);
+			for (k = 0; k < T->n_headers; k++) gmt_free (T->header[k]);
 			T->n_headers = 0;
 		}
 		T->header = GMT_memory (API->GMT, T->header, T->n_headers + 1, char *);
@@ -1583,7 +1583,7 @@ void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
 		T = D->table[tbl];	/* Short-hand for this table */
 		if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
-			for (k = 0; k < T->n_headers; k++) if (T->header[k]) gmt_free_null (T->header[k]);
+			for (k = 0; k < T->n_headers; k++) gmt_free (T->header[k]);
 			T->n_headers = 0;
 		}
 		T->header = GMT_memory (API->GMT, T->header, T->n_headers + 1, char *);
@@ -1600,7 +1600,7 @@ void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, 
 
 	/* Here we process free-form comments; these go into the CPT's header structures */
 	if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
-		for (k = 0; k < P->n_headers; k++) if (P->header[k]) gmt_free_null (P->header[k]);
+		for (k = 0; k < P->n_headers; k++) gmt_free (P->header[k]);
 		P->n_headers = 0;
 	}
 	P->header = GMT_memory (API->GMT, P->header, P->n_headers + 1, char *);
@@ -1977,7 +1977,7 @@ int GMTAPI_is_registered (struct GMTAPI_CTRL *API, enum GMT_enum_family family, 
 					unsigned int cmplx = mode & GMT_GRID_IS_COMPLEX_MASK;
 					if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK && G->header->complex_mode != cmplx && filename) {
 						/* Apparently so, either had real and now getting imag or vice versa. */
-						gmt_free_null (API->object[i]->filename);	/* Free previous grid name and replace with current name */
+						gmt_free (API->object[i]->filename);	/* Free previous grid name and replace with current name */
 						API->object[i]->filename = strdup (filename);
 						mode |= GMT_IO_RESET;	/* Reset so we may read in the 2nd component grid */
 					}
@@ -2018,7 +2018,7 @@ int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
  	if (API->object[item]->data) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Object no %d has non-NULL data pointer\n", API->object[item]->ID);
  	if (API->object[item]->resource) GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Object no %d has non-NULL resource pointer\n", API->object[item]->ID);
 
-	if (API->object[item]->method == GMT_IS_FILE && API->object[item]->filename) gmt_free_null (API->object[item]->filename);	/* Free any strdup-allocated filenames */
+	if (API->object[item]->method == GMT_IS_FILE) gmt_free (API->object[item]->filename);	/* Free any strdup-allocated filenames */
 	GMT_free (API->GMT, API->object[item]);		/* Free the current data object */
 	API->n_objects--;				/* Tally of how many data sets are left */
 	while (item < API->n_objects) {
@@ -3869,7 +3869,7 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, enum GMT_enum_family family, un
 				}
 				if ((object_ID = GMT_Register_IO (API, family|GMT_VIA_MODULE_INPUT, GMT_IS_FILE, geometry, GMT_IN, wesn, current->arg)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Failure to register */
 				n_reg++;	/* Count of new items registered */
-				if (wesn) GMT_free (API->GMT, wesn);
+				GMT_free (API->GMT, wesn);
 				if (first_ID == GMT_NOTSET) first_ID = object_ID;	/* Found our first ID */
 				if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN, GMTAPI_MODULE_INPUT)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);	/* Some internal error... */
 				API->object[item]->selected = true;
@@ -4144,7 +4144,7 @@ int GMTAPI_Colors2CPT (struct GMTAPI_CTRL *API, char **str) {
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Converted %s to CPT file %s\n", *str, tmp_file);
 
-	gmt_free_null (*str);		/* Because it was allocated with strdup */
+	gmt_free (*str);		/* Because it was allocated with strdup */
 	*str = strdup (tmp_file);	/* Pass out the temp file name */
 
 	return (1);	/* We replaced the name */
@@ -4304,7 +4304,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	if (session) {
 		char *tmptag = strdup (session);
 		API->session_tag = strdup (basename (tmptag));	/* Only used in reporting and error messages */
-		gmt_free_null (tmptag);
+		gmt_free (tmptag);
 	}
 
 #ifdef WIN32
@@ -4316,7 +4316,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
 	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
-		gmt_free_null (API);	/* Free API */
+		gmt_free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
@@ -4368,10 +4368,10 @@ int GMT_Destroy_Session (void *V_API) {
 	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	GMT_free (API->GMT, API->object);
 	GMT_end (API->GMT);	/* Terminate GMT machinery */
-	if (API->session_tag) gmt_free_null (API->session_tag);
-	if (API->tmp_dir) gmt_free_null (API->tmp_dir);
+	gmt_free (API->session_tag);
+	gmt_free (API->tmp_dir);
 	GMT_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
- 	gmt_free_null (API);	/* Not GMT_free since this item was allocated before GMT was initialized */
+ 	gmt_free (API);	/* Not GMT_free since this item was allocated before GMT was initialized */
 
 	return (GMT_OK);
 }
@@ -4597,7 +4597,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					GMT_Report (API, GMT_MSG_NORMAL, "Not permitted to read file %s\n", file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
-				gmt_free_null (file);
+				gmt_free (file);
 			}
 			else if (resource == NULL) {	/* No file given [should this mean stdin/stdout?] */
 				return_value (API, GMT_OUTPUT_NOT_SET, GMT_NOTSET);
@@ -5174,7 +5174,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			}
 			else	/* Got color list, now a temp CPT file instead */
 				strncpy (CPT_file, file, GMT_BUFSIZ-1);
-			gmt_free_null (file);	/* Free temp CPT file name */
+			gmt_free (file);	/* Free temp CPT file name */
 			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) return_null (API, API->error);
 		}
 		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET) return_null (API, API->error);
@@ -5211,7 +5211,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	if ((new_obj = GMT_Get_Data (API, in_ID, mode, data)) == NULL) return_null (API, API->error);
 	if (reset) API->object[item]->status = 0;	/* Reset  to unread */
-	if (input) gmt_free_null (input);	/* Done with this variable) */
+	gmt_free (input);	/* Done with this variable) */
 	API->module_input = false;	/* Reset to normal */
 
 #ifdef DEBUG
@@ -5380,7 +5380,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	}
 	/* With out_ID in hand we can now put the data where it should go */
 	if (GMT_Put_Data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
-	if (output) gmt_free_null (output);	/* Done with this variable */
+	gmt_free (output);	/* Done with this variable */
 
 #ifdef DEBUG
 	GMT_list_API (API, "GMT_Write_Data");
@@ -6995,7 +6995,7 @@ int GMT_FFT_Destroy (void *V_API, void *v_info)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
 	K = gmt_get_fftwave_addr (v_info);
-	if ((*K)->info) GMT_free (API->GMT, (*K)->info);
+	GMT_free (API->GMT, (*K)->info);
 	GMT_free (API->GMT, (*K));
 	return_error (V_API, GMT_NOERROR);
 }
@@ -7272,7 +7272,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 0. Get the keys for the module, possibly prepend "gmt" to module if required, or list modules and return NULL if unknown module */
 	if ((keys = GMTAPI_get_moduleinfo (V_API, module)) == NULL) {	/* Gave an unknown module */
 		GMT_Call_Module (V_API, NULL, GMT_MODULE_PURPOSE, NULL);	/* List the available modules */
-		gmt_free_null (module);
+		gmt_free (module);
 		return_null (NULL, GMT_NOT_A_VALID_MODULE);	/* Unknown module code */
 	}
 
@@ -7300,7 +7300,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		}
 		if (delete) GMT_Delete_Option (API, delete);
 	}
-	gmt_free_null (module);
+	gmt_free (module);
 
 	/* 2a. Get the option key array for this module */
 	key = GMTAPI_process_keys (API, keys, type, *head, &n_keys);	/* This is the array of keys for this module, e.g., "<DI,GGO,..." */
@@ -7381,7 +7381,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
 				/* Excplicitly add the missing marker ($) to the option argument */
 				sprintf (txt, "%s%c", opt->arg, marker);
-				gmt_free_null (opt->arg);
+				gmt_free (opt->arg);
 				opt->arg = strdup (txt);
 				n_implicit++;
 				kind = GMT_FILE_EXPLICIT;
@@ -7429,14 +7429,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				if (direction == GMT_IN) n_in_added++;
 			}
 		}
-		gmt_free_null (key[ku]);	/* Free up this key */
+		gmt_free (key[ku]);	/* Free up this key */
 	}
 	/* Free up the temporary key array */
-	gmt_free_null (key);
+	gmt_free (key);
 
 	/* Reallocate the information structure array or remove entirely if nothing given. */
 	if (n_items && n_items < n_alloc) info = realloc (info, n_items * sizeof (struct GMT_RESOURCE));
-	else if (n_items == 0) gmt_free_null (info);	/* No containers used */
+	else if (n_items == 0) gmt_free (info);	/* No containers used */
 
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", implicit_pos, output_pos);
 	/* Just checking that the options were properly processed */
@@ -7625,7 +7625,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val)
 	}
 	else	/* Must process as a GMT setting */
 		error = GMT_setparameter (API->GMT, keyword, value);
-	gmt_free_null (value);
+	gmt_free (value);
 	return_error (V_API, (error) ? GMT_NOT_A_VALID_PARAMETER : GMT_NOERROR);
 }
 
@@ -7876,10 +7876,10 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 
 	if (GMT_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
-		gmt_free_null (file);
+		gmt_free (file);
 		return EXIT_FAILURE;
 	}
-	gmt_free_null (file);
+	gmt_free (file);
 
 	/* Assign variables from header structure items */
 	dim[GMT_X] = header.nx;	dim[GMT_Y] = header.ny;
@@ -7919,7 +7919,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	GMT_grd_init (API->GMT, &header, NULL, false);
 	if (GMT_read_grd_info (API->GMT, file, &header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
-		gmt_free_null (file);
+		gmt_free (file);
 		return EXIT_FAILURE;
 	}
 
@@ -7927,10 +7927,10 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	if (dim[GMT_Z] == 1) array = GMT_memory (API->GMT, NULL, header.size, float);
 	if (GMT_read_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
-		gmt_free_null (file);
+		gmt_free (file);
 		return EXIT_FAILURE;
 	}
-	gmt_free_null (file);
+	gmt_free (file);
 
 	if (dim[3] == 1) GMT_inplace_transpose (array, header.ny, header.nx);
 
@@ -7970,12 +7970,12 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	GMT_grd_init (API->GMT, &header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid domain not specified for %s\n", file);
-		gmt_free_null (file);
+		gmt_free (file);
 		return EXIT_FAILURE;
 	}
 	if (inc[GMT_X] == 0.0 || inc[GMT_Y] == 0.0) {	/* Here that means grid spacing was not properly given */
 		GMT_Report (API, GMT_MSG_NORMAL, "Grid spacing not specified for %s\n", file);
-		gmt_free_null (file);
+		gmt_free (file);
 		return EXIT_FAILURE;
 	}
 
@@ -7995,10 +7995,10 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 
 	if (GMT_write_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error writing file %s\n", file);
-		gmt_free_null (file);
+		gmt_free (file);
 		return EXIT_FAILURE;
 	}
-	gmt_free_null (file);
+	gmt_free (file);
 
 	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
 	return EXIT_SUCCESS;

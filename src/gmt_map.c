@@ -1236,8 +1236,8 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				if (!ok) {
 					/* Polygon does NOT contain the region and we delete it */
 					n = 0;
-					if (*x) GMT_free (GMT, *x);
-					if (*y) GMT_free (GMT, *y);
+					GMT_free (GMT, *x);
+					GMT_free (GMT, *y);
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
 			}
@@ -1245,8 +1245,8 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
 				   This results in a rectangular closed polygon after the clipping. */
 				n = 0;
-				if (*x) GMT_free (GMT, *x);
-				if (*y) GMT_free (GMT, *y);
+				GMT_free (GMT, *x);
+				GMT_free (GMT, *y);
 			}
 		}
 	}

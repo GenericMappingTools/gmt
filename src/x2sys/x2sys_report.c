@@ -102,12 +102,12 @@ void *New_x2sys_report_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 void Free_x2sys_report_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->C.col) gmt_free_null (C->C.col);
-	if (C->I.file) gmt_free_null (C->I.file);
-	if (C->L.file) gmt_free_null (C->L.file);
-	if (C->S.file) gmt_free_null (C->S.file);
-	if (C->T.TAG) gmt_free_null (C->T.TAG);
+	gmt_free (C->In.file);
+	gmt_free (C->C.col);
+	gmt_free (C->I.file);
+	gmt_free (C->L.file);
+	gmt_free (C->S.file);
+	gmt_free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 

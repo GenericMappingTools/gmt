@@ -621,7 +621,7 @@ void GMT_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F)
 	unsigned int k;
 	if (F->n_items == 0) return;	/* Nothing to free */
 	for (k = 0; k < F->n_items; k++) {
-		gmt_free_null (F->item[k]->codes);
+		gmt_free (F->item[k]->codes);
 		GMT_free (GMT, F->item[k]);
 	}
 	GMT_free (GMT, F->item);

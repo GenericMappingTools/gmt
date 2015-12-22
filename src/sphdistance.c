@@ -130,9 +130,9 @@ void *New_sphdistance_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_sphdistance_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) gmt_free_null (C->G.file);
-	if (C->N.file) gmt_free_null (C->N.file);
-	if (C->Q.file) gmt_free_null (C->Q.file);
+	gmt_free (C->G.file);
+	gmt_free (C->N.file);
+	gmt_free (C->Q.file);
 	GMT_free (GMT, C);
 }
 

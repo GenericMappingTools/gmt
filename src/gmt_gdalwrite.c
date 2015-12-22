@@ -263,7 +263,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	OGRFree(pszSRS_WKT);
 	GDALClose(hDstDS);
 	GDALDestroyDriverManager();
-	if (outByte) GMT_free(GMT, outByte);
+	GMT_free(GMT, outByte);
 	if (papszOptions != NULL) CSLDestroy (papszOptions);
 
 	if (GMT_strlcmp(pszFormat,"netCDF")) {

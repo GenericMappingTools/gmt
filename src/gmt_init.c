@@ -1644,11 +1644,11 @@ int gmt_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 					GMT->common.h.add_colnames = true;
 					break;
 				case 'r':	/* Add specific text remark */
-					if (GMT->common.h.remark) gmt_free_null (GMT->common.h.remark);
+					gmt_free (GMT->common.h.remark);
 					GMT->common.h.remark = strdup (&p[1]);
 					break;
 				case 't':	/* Add specific text title */
-					if (GMT->common.h.title) gmt_free_null (GMT->common.h.title);
+					gmt_free (GMT->common.h.title);
 					GMT->common.h.title = strdup (&p[1]);
 					break;
 				default:	/* Bad modifier */
@@ -2086,7 +2086,7 @@ int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
 		}
 		GMT->common.a.col[GMT->common.a.n_aspatial] = col;
 		if (col < 0 && col != GMT_IS_Z) GMT->common.a.type[GMT->common.a.n_aspatial] = GMT_TEXT;
-		if (GMT->common.a.name[GMT->common.a.n_aspatial]) gmt_free_null (GMT->common.a.name[GMT->common.a.n_aspatial]);	/* Free any previous names */
+		gmt_free (GMT->common.a.name[GMT->common.a.n_aspatial]);	/* Free any previous names */
 		GMT->common.a.name[GMT->common.a.n_aspatial] = strdup (name);
 		GMT->common.a.n_aspatial++;
 		if (GMT->common.a.n_aspatial == MAX_ASPATIAL) return (GMT_PARSE_ERROR);	/* Too many items */
@@ -2697,12 +2697,12 @@ char *gmt_old_trendsyntax (struct GMT_CTRL *GMT, char option, char *in_arg)
 				sprintf (term, "%d", order);
 				strcat (new, term);
 			}
-			gmt_free_null (arg);	/* Wipe old setting */
+			gmt_free (arg);	/* Wipe old setting */
 			arg = strdup (new);	/* Place revised args */
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Old-style arguments given and chosen compatibility mode does not allow it\n", option);
-			gmt_free_null (arg);
+			gmt_free (arg);
 			return NULL;
 		}
 	}
@@ -2819,7 +2819,7 @@ int GMT_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 			}
 		}
 	}
-	gmt_free_null (arg);
+	gmt_free (arg);
 
 	/* Make sure there are no duplicates */
 
@@ -3042,7 +3042,7 @@ int GMT_parse_model2d (struct GMT_CTRL *GMT, char option, char *in_arg, struct G
 			}
 		}
 	}
-	gmt_free_null (arg);
+	gmt_free (arg);
 	/* Make sure there are no duplicates */
 
 	for (k = 0; k < n_model; k++) {
@@ -3934,7 +3934,7 @@ void gmt_free_user_media (struct GMT_CTRL *GMT) {	/* Free any user-specified med
 	if (GMT->session.n_user_media == 0) return;	/* Nothing to free */
 
 	for (i = 0; i < GMT->session.n_user_media; i++)
-		gmt_free_null (GMT->session.user_media_name[i]);
+		gmt_free (GMT->session.user_media_name[i]);
 	GMT_free (GMT, GMT->session.user_media_name);
 	GMT_free (GMT, GMT->session.user_media);
 	GMT->session.n_user_media = 0;
@@ -4144,7 +4144,7 @@ void gmt_reset_colformats (struct GMT_CTRL *GMT)
 {
 	unsigned int i;
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) if (GMT->current.io.o_format[i])
-		gmt_free_null (GMT->current.io.o_format[i]);
+		gmt_free (GMT->current.io.o_format[i]);
 }
 
 /*! . */
@@ -5390,7 +5390,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				if (GMT->session.CUSTOM_LIBS) {
 					if ((strcmp (GMT->session.CUSTOM_LIBS, value) == 0))
 						break; /* stop here if string in place is equal */
-					gmt_free_null (GMT->session.CUSTOM_LIBS);
+					gmt_free (GMT->session.CUSTOM_LIBS);
 				}
 				/* Set Extension shared libraries */
 				GMT->session.CUSTOM_LIBS = strdup (value);
@@ -5545,7 +5545,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				if (GMT->session.DATADIR) {
 					if ((strcmp (GMT->session.DATADIR, value) == 0))
 						break; /* stop here if string in place is equal */
-					gmt_free_null (GMT->session.DATADIR);
+					gmt_free (GMT->session.DATADIR);
 				}
 				/* Set session DATADIR dir */
 				GMT->session.DATADIR = strdup (value);
@@ -5556,7 +5556,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				if (GMT->session.DCWDIR) {
 					if ((strcmp (GMT->session.DCWDIR, value) == 0))
 						break; /* stop here if string in place is equal */
-					gmt_free_null (GMT->session.DCWDIR);
+					gmt_free (GMT->session.DCWDIR);
 				}
 				/* Set session DCW dir */
 				GMT->session.DCWDIR = strdup (value);
@@ -5567,7 +5567,7 @@ unsigned int GMT_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				if (GMT->session.GSHHGDIR) {
 					if ((strcmp (GMT->session.GSHHGDIR, value) == 0))
 						break; /* stop here if string in place is equal */
-					gmt_free_null (GMT->session.GSHHGDIR);
+					gmt_free (GMT->session.GSHHGDIR);
 				}
 				/* Set session GSHHG dir */
 				GMT->session.GSHHGDIR = strdup (value);
@@ -7286,8 +7286,8 @@ void gmt_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used by shorthand 
 		return;
 
 	for (i = 0; i < GMT->session.n_shorthands; ++i) {
-		gmt_free_null (GMT->session.shorthand[i].suffix);
-		gmt_free_null (GMT->session.shorthand[i].format);
+		gmt_free (GMT->session.shorthand[i].suffix);
+		gmt_free (GMT->session.shorthand[i].format);
 	}
 	GMT_free (GMT, GMT->session.shorthand);
 }
@@ -7438,7 +7438,7 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 		}
 		if ((id = GMT_hash_lookup (GMT, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
 		if (GMT->init.history[id])
-			gmt_free_null (GMT->init.history[id]);
+			gmt_free (GMT->init.history[id]);
 		GMT->init.history[id] = strdup (value);
 	}
 
@@ -7508,7 +7508,7 @@ int gmt_put_history (struct GMT_CTRL *GMT)
 /*! . */
 void Free_GMT_Ctrl (struct GMT_CTRL *GMT) {	/* Deallocate control structure */
 	if (!GMT) return;	/* Never was allocated */
-	gmt_free_null (GMT);
+	gmt_free (GMT);
 }
 
 /*! . */
@@ -7522,7 +7522,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 
 	/* Remove font structures */
 	for (i = 0; i < GMT->session.n_fonts; i++)
-		gmt_free_null (GMT->session.font[i].name);
+		gmt_free (GMT->session.font[i].name);
 	GMT_free (GMT, GMT->session.font);
 #ifdef __FreeBSD__
 #ifdef _i386_
@@ -7531,28 +7531,28 @@ void GMT_end (struct GMT_CTRL *GMT)
 #endif
 #endif
 
-	if (GMT->init.runtime_bindir)    gmt_free_null (GMT->init.runtime_bindir);
-	if (GMT->init.runtime_libdir)    gmt_free_null (GMT->init.runtime_libdir);
-	if (GMT->init.runtime_plugindir) gmt_free_null (GMT->init.runtime_plugindir);
-	gmt_free_null (GMT->session.SHAREDIR);
-	gmt_free_null (GMT->session.HOMEDIR);
-	if (GMT->session.DATADIR)     gmt_free_null (GMT->session.DATADIR);
-	if (GMT->session.DCWDIR)      gmt_free_null (GMT->session.DCWDIR);
-	if (GMT->session.GSHHGDIR)    gmt_free_null (GMT->session.GSHHGDIR);
-	if (GMT->session.USERDIR)     gmt_free_null (GMT->session.USERDIR);
-	if (GMT->session.TMPDIR)      gmt_free_null (GMT->session.TMPDIR);
-	if (GMT->session.CUSTOM_LIBS) gmt_free_null (GMT->session.CUSTOM_LIBS);
+	gmt_free (GMT->init.runtime_bindir);
+	gmt_free (GMT->init.runtime_libdir);
+	gmt_free (GMT->init.runtime_plugindir);
+	gmt_free (GMT->session.SHAREDIR);
+	gmt_free (GMT->session.HOMEDIR);
+	gmt_free (GMT->session.DATADIR);
+	gmt_free (GMT->session.DCWDIR);
+	gmt_free (GMT->session.GSHHGDIR);
+	gmt_free (GMT->session.USERDIR);
+	gmt_free (GMT->session.TMPDIR);
+	gmt_free (GMT->session.CUSTOM_LIBS);
 	for (i = 0; i < GMT_N_PROJ4; i++)
-		gmt_free_null (GMT->current.proj.proj4[i].name);
+		gmt_free (GMT->current.proj.proj4[i].name);
 	GMT_free (GMT, GMT->current.proj.proj4);
-	for (i = 0; i < GMT_N_UNIQUE; i++) if (GMT->init.history[i])
-		gmt_free_null (GMT->init.history[i]);
+	for (i = 0; i < GMT_N_UNIQUE; i++)
+		gmt_free (GMT->init.history[i]);
 	gmt_reset_colformats (GMT);	/* Wipe settings */
-	for (i = 0; i < GMT->common.a.n_aspatial; i++) if (GMT->common.a.name[i])
-		gmt_free_null (GMT->common.a.name[i]);
-	if (GMT->common.h.title)    gmt_free_null (GMT->common.h.title);
-	if (GMT->common.h.remark)   gmt_free_null (GMT->common.h.remark);
-	if (GMT->common.h.colnames) gmt_free_null (GMT->common.h.colnames);
+	for (i = 0; i < GMT->common.a.n_aspatial; i++)
+		gmt_free (GMT->common.a.name[i]);
+	gmt_free (GMT->common.h.title);
+	gmt_free (GMT->common.h.remark);
+	gmt_free (GMT->common.h.colnames);
 
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 
@@ -7565,7 +7565,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 	PSL_endsession (GMT->PSL);
 #ifdef MEMDEBUG
 	GMT_memtrack_report (GMT);
-	gmt_free_null (GMT->hidden.mem_keeper);
+	gmt_free (GMT->hidden.mem_keeper);
 #endif
 
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
@@ -7695,13 +7695,12 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/* GMT_COMMON */
 
-	if (Ccopy->common.U.label && Ccopy->common.U.label != GMT->common.U.label) gmt_free_null (Ccopy->common.U.label);
+	if (Ccopy->common.U.label != GMT->common.U.label) gmt_free (Ccopy->common.U.label);
 	Ccopy->common.U.label = GMT->common.U.label;
-	for (i = 0; i < GMT->common.a.n_aspatial; i++) if (GMT->common.a.name[i])
-		gmt_free_null (GMT->common.a.name[i]);
-	if (GMT->common.h.title)    gmt_free_null (GMT->common.h.title);
-	if (GMT->common.h.remark)   gmt_free_null (GMT->common.h.remark);
-	if (GMT->common.h.colnames) gmt_free_null (GMT->common.h.colnames);
+	for (i = 0; i < GMT->common.a.n_aspatial; i++) gmt_free (GMT->common.a.name[i]);
+	gmt_free (GMT->common.h.title);
+	gmt_free (GMT->common.h.remark);
+	gmt_free (GMT->common.h.colnames);
 
 	/* GMT_PLOT */
 
@@ -7740,7 +7739,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		GMT->PSL->current.fontsize = 0;
 	}
 
-	gmt_free_null (Ccopy);	/* Good riddance */
+	gmt_free (Ccopy);	/* Good riddance */
 }
 
 /*! . */
@@ -7821,7 +7820,7 @@ int GMT_set_env (struct GMT_CTRL *GMT) {
 	DOS_path_fix (GMT->session.USERDIR);
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we won't use it */
-		gmt_free_null (GMT->session.USERDIR);
+		gmt_free (GMT->session.USERDIR);
 	}
 
 	if (GMT_compat_check (GMT, 4)) {
@@ -7914,7 +7913,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
 				if (str[1] != 'Z' && str[1] != 'z' && remember) {
-					if (GMT->init.history[id]) gmt_free_null (GMT->init.history[id]);
+					gmt_free (GMT->init.history[id]);
 					GMT->init.history[id] = strdup (&str[1]);
 				}
 				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
@@ -7934,7 +7933,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				if (!GMT->init.history[B_id]) Return;
 				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
 				B_next = opt->next;             /* Pointer to option following the -B option */
-				if (opt2->arg) gmt_free_null (opt2->arg);/* Free previous pointer to arg */
+				gmt_free (opt2->arg);/* Free previous pointer to arg */
 				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
 				opt2->arg = strdup (p);         /* Update arg */
 				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
@@ -7959,20 +7958,20 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */
 			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
 				if (remember) {
-					if (GMT->init.history[id]) gmt_free_null (GMT->init.history[id]);
+					gmt_free (GMT->init.history[id]);
 					GMT->init.history[id] = strdup (opt->arg);
 				}
 			}
 			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
 				if (!GMT->init.history[id]) Return;
-				if (opt->arg) gmt_free_null (opt->arg);   /* Free previous pointer to arg */
+				gmt_free (opt->arg);   /* Free previous pointer to arg */
 				opt->arg = strdup (GMT->init.history[id]);
 			}
 		}
 	}
 
 	if (B_string[0]) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
-		if (GMT->init.history[B_id]) gmt_free_null (GMT->init.history[B_id]);
+		gmt_free (GMT->init.history[B_id]);
 		GMT->init.history[B_id] = strdup (B_string);
 	}
 
@@ -8322,7 +8321,7 @@ int gmt_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, char *in, struc
 		int k, n_int[4];
 		char *list = "aifg";
 		if (!(GMT_access (GMT, &in[1], R_OK))) {
-			if (A->file_custom) gmt_free_null (A->file_custom);
+			gmt_free (A->file_custom);
 			A->file_custom = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
 			if (gmt_init_custom_annot (GMT, A, n_int)) return (-1);	/* See what ticks, anots, gridlines etc are requested */

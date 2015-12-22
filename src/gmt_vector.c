@@ -410,7 +410,7 @@ void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned
 
 	double_swap (b[n1], b[n2]);
 
-	gmt_free_null (oa);
+	gmt_free (oa);
 }
 
 int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b)

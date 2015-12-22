@@ -140,10 +140,10 @@ void *New_gmtflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_gmtflexure_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) gmt_free_null (C->Out.file);
-	if (C->E.file) gmt_free_null (C->E.file);
-	if (C->Q.file) gmt_free_null (C->Q.file);
-	if (C->T.file) gmt_free_null (C->T.file);
+	gmt_free (C->Out.file);
+	gmt_free (C->E.file);
+	gmt_free (C->Q.file);
+	gmt_free (C->T.file);
 	GMT_free (GMT, C);
 }
 

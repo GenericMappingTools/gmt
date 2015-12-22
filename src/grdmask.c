@@ -77,7 +77,7 @@ void *New_grdmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 void Free_grdmask_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->G.file) gmt_free_null (C->G.file);	
+	gmt_free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -385,7 +385,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
 					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
-						if (d_col) GMT_free (GMT, d_col);
+						GMT_free (GMT, d_col);
 						d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
 						last_radius = radius;
 					}

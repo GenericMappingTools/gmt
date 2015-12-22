@@ -93,17 +93,17 @@ void *New_x2sys_init_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.TAG) gmt_free_null (C->In.TAG);
-	if (C->C.string) gmt_free_null (C->C.string);
-	if (C->D.file) gmt_free_null (C->D.file);
-	if (C->E.string) gmt_free_null (C->E.string);
-	if (C->G.string) gmt_free_null (C->G.string);
-	if (C->I.string) gmt_free_null (C->I.string);
-	if (C->m.string) gmt_free_null (C->m.string);
-	if (C->N.string[0]) gmt_free_null (C->N.string[0]);
-	if (C->N.string[1]) gmt_free_null (C->N.string[1]);
-	if (C->W.string[0]) gmt_free_null (C->W.string[0]);
-	if (C->W.string[1]) gmt_free_null (C->W.string[1]);
+	gmt_free (C->In.TAG);
+	gmt_free (C->C.string);
+	gmt_free (C->D.file);
+	gmt_free (C->E.string);
+	gmt_free (C->G.string);
+	gmt_free (C->I.string);
+	gmt_free (C->m.string);
+	gmt_free (C->N.string[0]);
+	gmt_free (C->N.string[1]);
+	gmt_free (C->W.string[0]);
+	gmt_free (C->W.string[1]);
 	GMT_free (GMT, C);
 }
 

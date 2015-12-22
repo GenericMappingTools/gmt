@@ -412,7 +412,7 @@ EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int 
 EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 EXTERN_MSC char *psl_putdash (struct PSL_CTRL *PSL, char *pattern, double offset);
 
-/* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
+/* Used indirectly by FORTRAN wrapper PSL_free_ . */
 EXTERN_MSC int PSL_free_nonmacro (void *addr);
 
 /* Definition for printing a message. When DEBUG is on, also print source file and line number.
@@ -425,7 +425,8 @@ EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 
-#define PSL_free(ptr) (PSL_free_nonmacro(ptr),(ptr)=NULL) /* Cleanly set the freed pointer to NULL */
+/*! Macro for free that excplicitly checks for NULL pointer and sets freed pointer to NULL */
+#define PSL_free(ptr) (free((void *)(ptr)),(ptr)=NULL)
 
 #ifdef __cplusplus
 }

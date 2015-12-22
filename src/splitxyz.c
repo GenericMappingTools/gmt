@@ -140,8 +140,8 @@ void *New_splitxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_splitxyz_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->Out.file) gmt_free_null (C->Out.file);	
-	if (C->N.name) gmt_free_null (C->N.name);	
+	gmt_free (C->Out.file);	
+	gmt_free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -581,7 +581,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;
 		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		/* The io_mode tells the i/o function to split segments into files */
-		if (Ctrl->Out.file) gmt_free_null (Ctrl->Out.file);
+		gmt_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->N.name);
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {

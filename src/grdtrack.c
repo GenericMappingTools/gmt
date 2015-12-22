@@ -139,12 +139,12 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
 	unsigned int g;
 	if (!C) return;
-	if (C->In.file) gmt_free_null (C->In.file);
-	if (C->D.file) gmt_free_null (C->D.file);
-	for (g = 0; g < C->G.n_grids; g++) if (C->G.file[g]) gmt_free_null (C->G.file[g]);
-	if (C->Out.file) gmt_free_null (C->Out.file);
-	if (C->S.file) gmt_free_null (C->S.file);
-	if (C->E.lines) gmt_free_null (C->E.lines);
+	gmt_free (C->In.file);
+	gmt_free (C->D.file);
+	for (g = 0; g < C->G.n_grids; g++) gmt_free (C->G.file[g]);
+	gmt_free (C->Out.file);
+	gmt_free (C->S.file);
+	gmt_free (C->E.lines);
 	if (C->T.S) {
 		GMT_free (GMT, C->T.S->x);
 		GMT_free (GMT, C->T.S->y);
@@ -1178,7 +1178,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (out) GMT_free (GMT, out);
+		GMT_free (GMT, out);
 	}
 	if (some_outside) GMT_Report (API, GMT_MSG_VERBOSE, "Some input points were outside the grid domain(s).\n");
 	/* Clean up */

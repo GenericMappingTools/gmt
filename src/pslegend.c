@@ -68,7 +68,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free_refpoint (GMT, &C->D.refpoint);
-	if (C->F.panel) GMT_free (GMT, C->F.panel);
+	GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);
 }
 
@@ -748,7 +748,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 					case 'F':	/* Cell color: F fill1[,fill2,...,filln]  */
 						/* First free all previous entries in fill array */
-						for (col = 0; col < PSLEGEND_MAX_COLS; col++) if (fill[col]) gmt_free_null (fill[col]);
+						for (col = 0; col < PSLEGEND_MAX_COLS; col++) gmt_free (fill[col]);
 						pos = n_col = 0;
 						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
 							if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */

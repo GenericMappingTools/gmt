@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------
- *	$Id $
+ *	$Id$
  *
  *	Copyright (c) 1991-2015 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -59,7 +59,7 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 #endif
 
 /*! Convenience macro for free that excplicitly sets freed pointer to NULL */
-#define gmt_free_null(ptr) (free((void *)(ptr)),(ptr)=NULL)
+#define gmt_free(ptr) (free((void *)(ptr)),(ptr)=NULL)
 
 #ifdef MEMDEBUG
 

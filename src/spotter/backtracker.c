@@ -138,9 +138,9 @@ void *New_backtracker_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_backtracker_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->E.rot.file) gmt_free_null (C->E.rot.file);	
-	if (C->F.file) gmt_free_null (C->F.file);	
-	if (C->S.file) gmt_free_null (C->S.file);	
+	gmt_free (C->E.rot.file);	
+	gmt_free (C->F.file);	
+	gmt_free (C->S.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -601,7 +601,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
-			if (c) GMT_free (GMT, c);
+			GMT_free (GMT, c);
 		}
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */

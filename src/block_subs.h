@@ -195,7 +195,7 @@ void *NEW_BLK (struct GMT_CTRL *GMT) {
 /*! Deallocate control structure */
 void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	if (!C) return;
-	if (C->G.file) free (C->G.file);	
+	gmt_free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

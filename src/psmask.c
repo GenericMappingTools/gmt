@@ -426,8 +426,8 @@ void *New_psmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->D.file) gmt_free_null (C->D.file);	
-	if (C->L.file) gmt_free_null (C->L.file);	
+	gmt_free (C->D.file);	
+	gmt_free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 

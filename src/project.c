@@ -1039,8 +1039,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
-		if (p_data[rec].t) GMT_free (GMT, p_data[rec].t);
-		if (p_data[rec].z) GMT_free (GMT, p_data[rec].z);
+		GMT_free (GMT, p_data[rec].t);
+		GMT_free (GMT, p_data[rec].z);
 	}
 
 	GMT_free (GMT, p_data);
