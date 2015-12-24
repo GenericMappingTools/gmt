@@ -849,13 +849,20 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active) {	/* Read precalculated triangulation indices */
 		uint64_t seg, row, col;
+		unsigned int save_col_type[3];
 		double d_n = (double)n - 0.5;	/* So we can use > in test near line 806 */
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_DATATABLE *T = NULL;
 
+		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
+		for (k = 0; k < 3; k++) {
+			save_col_type[k] = GMT->current.io.col_type[GMT_IN][k];	/* Remember what we have */
+			GMT->current.io.col_type[GMT_IN][k] = GMT_IS_FLOAT;	/* And temporarily set to FLOAT */
+		}
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		for (k = 0; k < 3; k++) GMT->current.io.col_type[GMT_IN][k] = save_col_type[k];	/* Undo the damage above */
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E: %s does not have at least 3 columns with indices\n", Ctrl->E.file);
@@ -899,7 +906,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		for (k = i = n_skipped = 0; i < np; i++) {	/* For all triangles */
 			k2 = (unsigned int)k;
 			for (k3 = n_out = 0; k3 < 3; k3++, k++) {
-				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) n_out++;	/* Count how many vertices are outside */
+				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) {
+					n_out++;	/* Count how many vertices are outside */
+				}
 			}
 			if (n_out == 3) {
 				ind[k2] = -1;	/* Flag so no longer to be used */
@@ -1084,8 +1093,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		GMT_setpen (GMT, &Ctrl->L.pen);
 
 		for (k = i = 0; i < np; i++) {	/* For all triangles */
-			if (ind[k] < 0) { k += 3; continue;}	/* Skip triangles that are fully outside */
-
+			if (ind[k] < 0) { k += 3; continue; }	/* Skip triangles that are fully outside */
 			xx[0] = x[ind[k]];	yy[0] = y[ind[k++]];
 			xx[1] = x[ind[k]];	yy[1] = y[ind[k++]];
 			xx[2] = x[ind[k]];	yy[2] = y[ind[k++]];
