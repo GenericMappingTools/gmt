@@ -3858,6 +3858,9 @@ bool gmt_true_false_or_error (char *value, bool *answer)
 	return (true);
 }
 
+#ifdef HARDWIRE_GMTCONF 
+#include "def_us_locale.c"
+#endif
 /*! . */
 int gmt_get_language (struct GMT_CTRL *GMT)
 {
@@ -3867,12 +3870,20 @@ int gmt_get_language (struct GMT_CTRL *GMT)
 
 	int i, nm = 0, nw = 0, nu = 0, nc = 0;
 
+#ifdef HARDWIRE_GMTCONF 
+	if (!strcmp(GMT->current.setting.language, "us")) {
+		def_us_local(GMT);
+		return 0;
+	}
+#endif
+
 	GMT_memset (months, 12, char *);
 
 	sprintf (line, "gmt_%s", GMT->current.setting.language);
 	GMT_getsharepath (GMT, "localization", line, ".locale", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load language %s - revert to us (English)!\n", GMT->current.setting.language);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load language %s - revert to us (English)!\n",
+		            GMT->current.setting.language);
 		GMT_getsharepath (GMT, "localization", "gmt_us", ".locale", file, R_OK);
 		if ((fp = fopen (file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
@@ -3912,7 +3923,7 @@ int gmt_get_language (struct GMT_CTRL *GMT)
 		}
 	}
 	fclose (fp);
-	if (! (nm == 78 && nw == 28 && nu == 1 && nc == 10)) {	/* Sums of 1-12, 1-7, 1, and 1-4, respectively */
+	if (!(nm == 78 && nw == 28 && nu == 1 && nc == 10)) {	/* Sums of 1-12, 1-7, 1, and 1-4, respectively */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
@@ -11343,6 +11354,9 @@ void GMT_set_pad (struct GMT_CTRL *GMT, unsigned int pad) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = pad;
 }
 
+#ifdef HARDWIRE_GMTCONF 
+#include "def_std_fonts.c"
+#endif
 /*! . */
 int GMT_init_fonts (struct GMT_CTRL *GMT) {
 	unsigned int i = 0, n_GMT_fonts;
@@ -11354,6 +11368,7 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* First the standard 35 PostScript fonts from Adobe */
 
+#ifndef HARDWIRE_GMTCONF 
 	GMT_getsharepath (GMT, "postscriptlight", "PSL_standard_fonts", ".txt", fullname, R_OK);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
@@ -11372,6 +11387,9 @@ int GMT_init_fonts (struct GMT_CTRL *GMT) {
 	}
 	fclose (in);
 	GMT->session.n_fonts = n_GMT_fonts = i;
+#else
+	n_GMT_fonts = i = def_std_fonts(GMT);
+#endif
 
 	/* Then any custom fonts */
 
@@ -11560,6 +11578,9 @@ void gmt_set_today (struct GMT_CTRL *GMT) {
 	GMT->current.time.today_rata_die = GMT_rd_from_gymd (GMT, 1900 + moment->tm_year, moment->tm_mon + 1, moment->tm_mday);
 }
 
+#ifdef HARDWIRE_GMTCONF		/* Use Hardwired parames. I.e, no reading from share/gmt.conf */
+#include "gmt_initconf.c"
+#endif
 /*! . */
 struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, const char *session, unsigned int pad) {
 	/* GMT_begin is called once by GMT_Create_Session and does basic
@@ -11646,7 +11667,11 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 			return NULL;
 		}
 	}
+#ifdef HARDWIRE_GMTCONF		/* Use Hardwired params. I.e, no reading from share/gmt.conf */
+	GMT_initconf (GMT);
+#else
 	GMT_loaddefaults (GMT, path);	/* Load GMT system default settings [and PSL settings if selected] */
+#endif
 	GMT_getdefaults (GMT, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
 
 	/* There is no longer a -m option in GMT 5 so multi segments are now always true.
