@@ -854,11 +854,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_DATATABLE *T = NULL;
 
-		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
-		for (k = 0; k < 3; k++) {
-			save_col_type[k] = GMT->current.io.col_type[GMT_IN][k];	/* Remember what we have */
-			GMT->current.io.col_type[GMT_IN][k] = GMT_IS_FLOAT;	/* And temporarily set to FLOAT */
-		}
+  		/* Must switch to Cartesian input and save whatever original input type we have since we are reading integer triplets */
+  		for (k = 0; k < 3; k++) {
+  			save_col_type[k] = GMT->current.io.col_type[GMT_IN][k];	/* Remember what we have */
+  			GMT->current.io.col_type[GMT_IN][k] = GMT_IS_FLOAT;	/* And temporarily set to FLOAT */
+  		}
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}

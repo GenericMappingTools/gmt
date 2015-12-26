@@ -2219,6 +2219,7 @@ void GMT_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	double dlon, lon_sum = 0.0, lat_sum = 0.0;
 	static char *pole[3] = {"south", "no", "north"};
 
+	if (S->n_rows == 0) return;
 	if (GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot call GMT_set_seg_polar on an open polygon\n");
 		return;
@@ -5036,7 +5037,7 @@ void GMT_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	/* In case the creation of the segment did not allocate min/max do it now */
 	if (!S->min) S->min = GMT_memory (GMT, NULL, S->n_columns, double);
 	if (!S->max) S->max = GMT_memory (GMT, NULL, S->n_columns, double);
-	
+	if (S->n_rows == 0) return;	/* Nothing more we can do */
 	for (col = 0; col < S->n_columns; col++) {
 		if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
 			GMT_get_lon_minmax (GMT, S->coord[col], S->n_rows, &(S->min[col]), &(S->max[col]));
@@ -5068,6 +5069,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T)
 	for (seg = 0; seg < T->n_segments; seg++) {
 		S = T->segment[seg];
 		GMT_set_seg_minmax (GMT, S);
+		if (S->n_rows == 0) continue;
 		for (col = 0; col < T->n_columns; col++) {
 			if (S->min[col] < T->min[col]) T->min[col] = S->min[col];
 			if (S->max[col] > T->max[col]) T->max[col] = S->max[col];
