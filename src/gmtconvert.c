@@ -111,8 +111,7 @@ void Free_gmtconvert_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-C[+l<min>][+u<max>][+i]] [-D[<template>]] [-E[f|l|m<stride>]] [-F<arg>] [-I[tsr]]\n");
@@ -165,8 +164,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -243,7 +241,8 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 				Ctrl->F.active = true;
 				if (opt->arg[0] == '\0') {	/* No arguments, must be old GMT4 option -F */
 					if (GMT_compat_check (GMT, 4)) {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F for output columns is deprecated; use -o instead\n");
+						GMT_Report (API, GMT_MSG_COMPAT,
+						            "Warning: Option -F for output columns is deprecated; use -o instead\n");
 						gmt_parse_o_option (GMT, opt->arg);
 					}
 					else
@@ -261,7 +260,8 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 						case 's': Ctrl->I.mode |= INV_SEGS; break;	/* Reverse segment order */
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							GMT_Report (API, GMT_MSG_NORMAL,
+							            "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
 							n_errors++;
 							break;
 					}
@@ -322,11 +322,16 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 			Ctrl->D.mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active), "Syntax error: -L or -S requires ASCII input data\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max), "Syntax error: -C minimum records cannot exceed maximum records\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"), "Syntax error: -D Output template must contain %%d\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active, "Syntax error: Only one of -Q and -S can be used simultaneously\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
+	                                 "Syntax error: Must specify number of columns in binary input data (-bi)\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active),
+	                                 "Syntax error: -L or -S requires ASCII input data\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max),
+	                                 "Syntax error: -C minimum records cannot exceed maximum records\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"),
+	                                 "Syntax error: -D Output template must contain %%d\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active,
+	                                 "Syntax error: Only one of -Q and -S can be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -336,8 +341,7 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtconvert_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconvert (void *V_API, int mode, void *args)
-{
+int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	bool match = false;
 	int error = 0;
 	uint64_t out_col, col, n_cols_in, n_cols_out, tbl;
@@ -426,7 +430,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_cols_out == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Selection led to no output columns.\n");
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
