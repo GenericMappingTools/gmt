@@ -319,8 +319,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	n = 0;
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (GMT_REC_IS_ERROR (GMT)) {		/* Bail if there are any read errors */
+				GMT_free (GMT, xx);		GMT_free (GMT, yy);		GMT_free (GMT, zz);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
 				continue;
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
@@ -471,6 +473,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			Return (API->error);
 		}
 		if (Ctrl->M.active || Ctrl->Q.active) {	/* Must find unique edges to output only once */
