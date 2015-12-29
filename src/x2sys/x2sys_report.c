@@ -347,6 +347,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+		GMT_free (GMT, R);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
