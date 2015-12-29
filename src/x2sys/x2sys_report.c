@@ -432,6 +432,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
+				GMT_free (GMT, adj);
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s!\n", file);
 				Return (EXIT_FAILURE);
 			}
