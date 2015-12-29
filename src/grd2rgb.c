@@ -113,6 +113,8 @@ int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byt
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 32-bit rasterfile!\n");
+		GMT_fclose (GMT, fp);
+		GMT_free (GMT, buffer);
 		return (EXIT_FAILURE);
 	}
 
@@ -158,6 +160,10 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 32-bit rasterfile!\n");
+		GMT_free (GMT, buffer);
+		GMT_free (GMT, datac);
+		GMT_free (GMT, work);
+		GMT_free (GMT, img_pow);
 		return (EXIT_FAILURE);
 	}
 	GMT_fclose (GMT, fp);
@@ -496,10 +502,12 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 		}
 		if (header.width != nx) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, nx);
+			PSL_free (picture);
 			Return (EXIT_FAILURE);
 		}
 		if (header.height != ny) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, ny);
+			PSL_free (picture);
 			Return (EXIT_FAILURE);
 		}
 
