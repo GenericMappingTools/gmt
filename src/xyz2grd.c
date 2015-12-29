@@ -573,13 +573,16 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	}
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_req)) != GMT_OK) {
+		GMT_free (GMT, flag);
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+		GMT_free (GMT, flag);
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
+		GMT_free (GMT, flag);
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
 
