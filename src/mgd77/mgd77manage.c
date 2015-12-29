@@ -1623,5 +1623,6 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	MGD77_end (GMT, &In);
 	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
+	GMT_free (GMT, tmp_string);		/* A Coverity issue pointed out that 'tmp_string' could not had been freed yet */
 	Return (GMT_OK);
 }

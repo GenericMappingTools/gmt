@@ -7837,13 +7837,7 @@ Examples
 GMT graphics in LaTeX
 ~~~~~~~~~~~~~~~~~~~~~
 
-Nearly all illustrations in this GMT documentation were GMT-produced
-PostScript files. They were converted to PDF files using
-:doc:`psconvert` and then included into a
-LaTeX document that was processed with **pdflatex** to create the PDF
-document you are reading.
-
-To add the graphics into the LaTeX document we use the
+To add the graphics into a LaTeX document we use the
 ``\includegraphics`` command supplied by the package. In the preamble of
 your LaTeX document you will need to include the line
 

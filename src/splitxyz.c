@@ -73,8 +73,7 @@ struct SPLITXYZ_CTRL {
 	} S;
 };
 
-double *filterxy_setup (struct GMT_CTRL *GMT)
-{
+double *filterxy_setup (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
@@ -88,8 +87,8 @@ double *filterxy_setup (struct GMT_CTRL *GMT)
 	return (fwork);
 }
 
-void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork)
-{
+void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col,
+                  unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
 	uint64_t i, j, k, p, istart, istop, ndata;
 	int64_t kk;
 	bool hilow;
@@ -215,19 +214,23 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 
 			case 'A':
 				Ctrl->A.active = true;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2, "Syntax error -A option: Can't decipher values\n");
+				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2,
+				                                       "Syntax error -A option: Can't decipher values\n");
 				break;
 			case 'C':
 				Ctrl->C.active = true;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1, "Syntax error -C option: Can't decipher value\n");
+				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1,
+				                                       "Syntax error -C option: Can't decipher value\n");
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1, "Syntax error -D option: Can't decipher value\n");
+				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1,
+				                                       "Syntax error -D option: Can't decipher value\n");
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2, "Syntax error -F option: Can't decipher values\n");
+				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2,
+				                                       "Syntax error -F option: Can't decipher values\n");
 				break;
 			case 'G':
 				if (GMT_compat_check (GMT, 4)) {
@@ -289,10 +292,12 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name, "Syntax error: Binary output requires a namestem in -N\n");
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name,
+	                                 "Syntax error: Binary output requires a namestem in -N\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"), "Syntax error -N: Output template must contain %%d\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
+	                                 "Syntax error -N: Output template must contain %%d\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -418,7 +423,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
@@ -562,7 +568,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if (nprofiles > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
 	dim[GMT_SEG] = seg2;	dim[GMT_COL] = n_outputs;
-	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
+	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_free (GMT, rec);
+		Return (API->error);	/* An empty table */
+	}
 	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the coord pointers to point to various points in our single S_out arrays */
 		S = D[GMT_OUT]->table[0]->segment[seg];
 		k = (seg == 0) ? 0 : rec[seg-1];
@@ -589,7 +598,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	}
 
 	/* Must set coord pointers to NULL since they were not allocated */
-	for (seg = 0; seg < seg2; seg++) for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
+	for (seg = 0; seg < seg2; seg++)
+		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
 	GMT_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 	if (Ctrl->F.active) GMT_free (GMT, fwork);
 	GMT_free (GMT, rec);
