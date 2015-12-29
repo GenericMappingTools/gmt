@@ -221,8 +221,7 @@ int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_report_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_report (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, word[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
@@ -272,6 +271,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		x2sys_end (GMT, s);
 		Return (EXIT_FAILURE);
 	}
 	
@@ -371,12 +371,14 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;
-	sprintf (fmt, "TOTAL%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s1", GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
-		GMT->current.setting.format_float_out);
+	sprintf (fmt, "TOTAL%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s1",
+	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
+	         GMT->current.setting.format_float_out);
 	sprintf (record, fmt, c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
 	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s\n", GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
-		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s\n",
+	         GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
+	         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (k = 0; k < n_tracks; k++) {	/* For each track that generated crossovers */
 		if (R[k].nx <= Ctrl->N.min) continue;			/* Not enough COEs */
 		if (!GMT_is_dnan (R[k].W)) R[k].W *= scale;
