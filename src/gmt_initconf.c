@@ -121,7 +121,7 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	// MAP_POLAR_CAP:
 	i = sscanf ("85/90", "%[^/]/%s", txt_a, txt_b);
 	error = GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
-	if (GMT_getinc (GMT, txt_b, inc)) error = true;
+	GMT_getinc (GMT, txt_b, inc);
 	GMT->current.setting.map_polar_cap[1] = inc[GMT_X];
 	// MAP_SCALE_HEIGHT:
 	free(size);		size = strdup("5p");
@@ -143,6 +143,8 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_title_offset = GMT_to_inch(GMT, size);
 	// MAP_VECTOR_SHAPE:
 	GMT->current.setting.map_vector_shape = 0;
+
+	free(size);
 
 		/* COLOR GROUP */
 
@@ -305,7 +307,6 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	GMT->current.time.Y2K_fix.y100 = GMT->current.setting.time_Y2K_offset_year - GMT->current.time.Y2K_fix.y2_cutoff;
 	GMT->current.time.Y2K_fix.y200 = GMT->current.time.Y2K_fix.y100 + 100;
 
-	free(size);
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword somewhere\n");
 	return 0;
