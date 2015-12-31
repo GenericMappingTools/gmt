@@ -573,7 +573,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Syntax error -G option: Must specify output grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode == 1 && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && dimension != 2, "Syntax error -T option: Only applies to 2-D gridding\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
