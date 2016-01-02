@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2012-2015
+ * Copyright (c) 2012-2016
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -57,6 +57,7 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<GI,GGO,RG-,>DQ"},
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "<DI,QDi,>DO"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TDI,FDi,GGo,>DO"},
+	{"gpsgridder", "potential", "Interpolate GPS strain vectors using Green's functions for elastic deformation", "<DI,NDi,TGi,CDo,GGO,RG-"},
 	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<GI,GGO"},
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<GI,GGO"},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<GI,FDi,GGO"},

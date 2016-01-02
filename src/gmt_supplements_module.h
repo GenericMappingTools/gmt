@@ -1,6 +1,6 @@
 /* $Id$
  *
- * Copyright (c) 2012-2015
+ * Copyright (c) 2012-2016
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
  * See LICENSE.TXT file for copying and redistribution conditions.
  */
@@ -41,6 +41,7 @@ EXTERN_MSC int GMT_mgd77track (void *API, int mode, void *args);
 EXTERN_MSC int GMT_dimfilter (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtgravmag3d (void *API, int mode, void *args);
+EXTERN_MSC int GMT_gpsgridder (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gravfft (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdflexure (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grdgravmag3d (void *API, int mode, void *args);
