@@ -7,6 +7,7 @@ POTENTIAL
 
    supplements/potential/gmtgravmag3d
    supplements/potential/gmtflexure
+   supplements/potential/gpsgridder
    supplements/potential/gravfft
    supplements/potential/grdflexure
    supplements/potential/grdgravmag3d
