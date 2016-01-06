@@ -337,7 +337,7 @@ man_pages = [
 ('supplements/misc/dimfilter', 'dimfilter', 'Directional filtering of 2-D gridded files in the space (or time) domain', '', 1),
 ('supplements/potential/gmtflexure', 'gmtflexure', 'Compute flexural deformation of 2-D loads, forces, bending and moments', '', 1),
 ('supplements/potential/gmtgravmag3d', 'gmtgravmag3d', 'Compute the gravity/magnetic effect of a body by the method of Okabe', '', 1),
-('supplements/potential/gpsgridder', 'gpsgridder', 'Interpolate GPS strain vectors using Green's functions for elastic deformation', '', 1),
+('supplements/potential/gpsgridder', 'gpsgridder', 'Interpolate GPS strain vectors using Green\'s functions for elastic deformation', '', 1),
 ('supplements/potential/gravfft', 'gravfft', 'Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain', '', 1),
 ('supplements/potential/grdflexure', 'grdflexure', 'Compute flexural deformation of 3-D surfaces for various rheologies', '', 1),
 ('supplements/potential/grdgravmag3d', 'grdgravmag3d', 'Compute the gravity effect of a grid by the method of Okabe', '', 1),
