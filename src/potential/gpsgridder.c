@@ -399,88 +399,19 @@ void get_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double 
 	}
 }
 
-struct GMT_GRID ** initialize_greensfunctions (struct GMT_CTRL *GMT, struct GMT_GRID *G, double nu)
+void evaluate_greensfunctions (double dx, double dy, double par[0], double G[])
 {
-	/* Given the grid domain (G), create 3 grids to hold the Green's functions for the
-	 * x, y, and xy copoments, using an domain that is 3x the range in each direction */
+	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in G[0], G[1], and G[2].
+	 * Here, par[0] holds -(2*e+1)/2 and par[1] holds delta_r to prevent singularity */
 	
-	uint64_t k;
-	unsigned int comp, gmode = GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_REAL;
-	int nx, ny;
-	char *file[3] = {"Green_Gu.nc", "Green_Gv.nc", "Green_Guv.nc"};
-	struct GMT_GRID **Gr = NULL;
-	struct GMT_FFT_INFO *info = NULL;
-	struct GMT_FFT_WAVENUMBER *FFT_info[3] = {NULL, NULL, NULL};
-	double wesn[4], f, e, A, nu1, kx, ky, kx2, ky2, kr2, mu = 1.0, fudge, off = 0.5 - G->header->xy_off;
+	double dx2 = dx * dx, dy2 = dy * dy;	/* Squared offsets */
+	double dr2 = dx2 + dy2 + par[1];			/* Radius squared */
 	
-	/* Create a grid with same spacing but 3x the range, then extend to power of 2 dimensions.
-	 * Must use offset to handle either pixel or gridline grid registrations */
-	
-	nx = irint (pow (2.0, ceil (log2 (3.0 * G->header->nx))));
-	ny = irint (pow (2.0, ceil (log2 (3.0 * G->header->ny))));
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Create 3 Green matrices of size %d x %d\n", nx, ny);
-	wesn[XLO] = -(nx/2.0 - off) * G->header->inc[GMT_X];
-	wesn[XHI] = +(nx/2.0 - off) * G->header->inc[GMT_X];
-	wesn[YLO] = -(ny/2.0 - off) * G->header->inc[GMT_Y];
-	wesn[YHI] = +(ny/2.0 - off) * G->header->inc[GMT_Y];
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Green matrix corresponds to region %g/%g/%g/%g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-
-	info = GMT_FFT_Parse (GMT->parent, 'N', 2U, "f"); /* Pass any specific settings here */
-	/* Allocate and get the three spatial Green's function grids */
-	Gr = GMT_memory (GMT, NULL, 3, struct GMT_GRID *);
-	for (comp = 0; comp < 3; comp++) {
-		if ((Gr[comp] = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, gmode, NULL, wesn, G->header->inc, \
-			G->header->registration, GMT_NOTSET, NULL)) == NULL) return (NULL);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Green matrix %s dimension before FFT is %d x %d\n", file[comp], Gr[comp]->header->nx, Gr[comp]->header->ny);
-		FFT_info[comp] = GMT_FFT_Create (GMT->parent, Gr[comp], 2U, GMT_GRID_IS_COMPLEX_REAL, info);	/* Prep grid */
-		if (GMT_FFT (GMT->parent, Gr[comp], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[comp]))
-			return (NULL);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Green matrix %s dimension after FFT is %d x %d\n", file[comp], Gr[comp]->header->nx, Gr[comp]->header->ny);
-		GMT_memset (Gr[comp]->data, Gr[comp]->header->size, float);
-	}
-
-	/* Build the three grids in the wavenumber domain */
-	nu1 = 1.0 + nu;
-	e = (1.0 - nu) / nu1;
-	f = nu1 / (8.0 * M_PI * M_PI * mu);	/* Leading constant */
-	fudge = 0.1 / (Gr[0]->header->nx * Gr[0]->header->ny);
-	for (k = 0; k < Gr[0]->header->size; k += 2) {
-		kx = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, FFT_info[0]);
-		ky = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, FFT_info[0]);
-		kx2 = kx * kx;	
-		ky2 = ky * ky;	
-		kr2 = kx2 + ky2;
-		A = f / (kr2 * kr2 + fudge);
-		Gr[0]->data[k] =  A * (e * kr2 + ky2);	/* Ux component */
-		Gr[1]->data[k] =  A * (e * kr2 + kx2);	/* Vy component */
-		Gr[2]->data[k] = -A * kx * ky;		/* W = Uy = Vx components */
-	}
-	/* Take inverse transform to get spatial Greens functions */
-	for (comp = 0; comp < 3; comp++) {
-		if (GMT_FFT (GMT->parent, Gr[comp], GMT_FFT_INV, GMT_FFT_COMPLEX, FFT_info[comp]))
-			return (NULL);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Green matrix %s dimension after IFFT is %d x %d\n", file[comp], Gr[comp]->header->nx, Gr[comp]->header->ny);
-		//if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file[comp], Gr[comp]) != GMT_OK) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not write file %s\n", file[comp]);
-			}
-		//}
-		GMT_FFT_Destroy (GMT->parent, &FFT_info[comp]);
-	}
-	GMT_free (GMT, info);
-	
-	return (Gr);	/* Pass back the three grids with Green functions components */
-}
-
-double evaluate_greensfunction (struct GMT_CTRL *GMT, double dx, double dy, struct GMT_GRID *Green[], unsigned int comp)
-{
-	/* The three Green's function components are stored in the array of 3 grids (Green)
-	 * and we are given the delta dx,dy .  We sample the three grids at those points
-	 * and return the results via the G array.  We do so one at the time via comp and
-	 * rely on GMT's bicubic/bilinear resampling to interpolate for us. */
-	
-	double z = GMT_get_bcr_z_fast (GMT, Green[comp], dx, dy);
-	return (z);
+	G[0] = G[1] = par[0] * log (dr2);
+	dr2 = 1.0 / dr2;	/* Get inverse squared radius */
+	G[0] += dx2 * dr2;
+	G[1] += dy2 * dr2;
+	G[2] = dx * dy * dr2;
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
@@ -499,12 +430,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *alpha_x = NULL, *alpha_y = NULL, *in = NULL;
-	double mem, r, dx, dy, norm[GSP_LENGTH], weight_u, weight_v, weight_ju, weight_jv, r_min, r_max, Gu, Gv, Guv;
+	double mem, r, dx, dy, par[2], norm[GSP_LENGTH], weight_u, weight_v, weight_ju, weight_jv, r_min, r_max, G[3];
 
 #ifdef DUMPING
 	FILE *fp = NULL;
 #endif
-	struct GMT_GRID *Grid = NULL, *Out[2] = {NULL, NULL}, **Green = NULL;
+	struct GMT_GRID *Grid = NULL, *Out[2] = {NULL, NULL};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
 	struct GMT_GRID_INFO info;
@@ -710,12 +641,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 
 	/* Initialize the Greens function machinery */
 	
-	if ((Green = initialize_greensfunctions (GMT, Out[GMT_X], Ctrl->S.nu)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Failed to initialize Greens functions\n");
-		Return (EXIT_FAILURE);
-	}
-
-	exit (0);	/* Stop here for now */
+	par[0] = 0.5 * (2.0 * (1.0 - Ctrl->S.nu)/(1.0 + Ctrl->S.nu) + 1.0);	/* half of 2*epsilon + 1 */
+	par[1] = 1e-2 * r_min;		/* Small fudge factor to avoid singularity for r = 0 */
 	
 	/* Remove mean (or LS plane) from data (we will add it back later) */
 
@@ -749,13 +676,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 			Gvu_ij = (j+n) * n2 + i;	/* Index for Gvu term */
 			Gv_ij  = Gvu_ij + n;		/* Index for Gu term */
 			get_dxdy (GMT, X[i], X[j], &dx, &dy, geo);
-			Gu  = evaluate_greensfunction (GMT, dx, dy, Green, 0);
-			Gv  = evaluate_greensfunction (GMT, dx, dy, Green, 1);
-			Guv = evaluate_greensfunction (GMT, dx, dy, Green, 2);
-			A[Gu_ij]  = weight_u * Gu;
-			A[Gv_ij]  = weight_v * Gv;
-			A[Guv_ij] = weight_u * Guv;
-			A[Gvu_ij] = weight_v * Guv;
+			evaluate_greensfunctions (dx, dy, par, G);
+			A[Gu_ij]  = weight_u * G[0];
+			A[Gv_ij]  = weight_v * G[1];
+			A[Guv_ij] = weight_u * G[2];
+			A[Gvu_ij] = weight_v * G[2];
 		}
 	}
 
@@ -878,11 +803,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 				out[GMT_U] = out[GMT_V] = 0.0;
 				for (p = 0; p < n; p++) {
 					get_dxdy (GMT, out, X[p], &dx, &dy, geo);
-					Gu  = evaluate_greensfunction (GMT, dx, dy, Green, 0);
-					Gv  = evaluate_greensfunction (GMT, dx, dy, Green, 1);
-					Guv = evaluate_greensfunction (GMT, dx, dy, Green, 2);
-					out[GMT_U] += (alpha_x[p] * Gu + alpha_y[p] * Guv);
-					out[GMT_V] += (alpha_y[p] * Gv + alpha_x[p] * Guv);
+					evaluate_greensfunctions (dx, dy, par, G);
+					out[GMT_U] += (alpha_x[p] * G[0] + alpha_y[p] * G[2]);
+					out[GMT_V] += (alpha_y[p] * G[1] + alpha_x[p] * G[2]);
 				}
 				undo_normalization (out, normalize, norm);
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
@@ -918,11 +841,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 				/* Here, V holds the current output coordinates */
 				for (p = 0, V[GMT_U] = V[GMT_V] = 0.0; p < (int64_t)n; p++) {
 					get_dxdy (GMT, V, X[p], &dx, &dy, geo);
-					Gu  = evaluate_greensfunction (GMT, dx, dy, Green, 0);
-					Gv  = evaluate_greensfunction (GMT, dx, dy, Green, 1);
-					Guv = evaluate_greensfunction (GMT, dx, dy, Green, 2);
-					V[GMT_U] += (alpha_x[p] * Gu + alpha_y[p] * Guv);
-					V[GMT_V] += (alpha_y[p] * Gv + alpha_x[p] * Guv);
+					evaluate_greensfunctions (dx, dy, par, G);
+					V[GMT_U] += (alpha_x[p] * G[0] + alpha_y[p] * G[2]);
+					V[GMT_V] += (alpha_y[p] * G[1] + alpha_x[p] * G[2]);
 				}
 				undo_normalization (V, normalize, norm);
 				Out[GMT_X]->data[ij] = (float)V[GMT_U];
@@ -945,8 +866,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 	/* Clean up */
 
 	for (p = 0; p < n; p++) GMT_free (GMT, X[p]);
-	for (k = 0; k < 3; k++)
-		GMT_Destroy_Data (GMT, &(Green[k]));
 	GMT_free (GMT, X);
 	GMT_free (GMT, u);
 	GMT_free (GMT, v);
