@@ -117,7 +117,7 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	free(size);		size = strdup("1i");
 	GMT->current.setting.map_origin[GMT_X] = GMT_to_inch(GMT, size);
 	// MAP_ORIGIN_Y:
-	GMT->current.setting.map_origin[GMT_X] = GMT_to_inch(GMT, size);
+	GMT->current.setting.map_origin[GMT_Y] = GMT_to_inch(GMT, size);
 	// MAP_POLAR_CAP:
 	i = sscanf ("85/90", "%[^/]/%s", txt_a, txt_b);
 	error = GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
