@@ -399,7 +399,7 @@ void get_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double 
 	}
 }
 
-void evaluate_greensfunctions (double dx, double dy, double par[0], double G[])
+void evaluate_greensfunctions (double dx, double dy, double par[], double G[])
 {
 	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in G[0], G[1], and G[2].
 	 * Here, par[0] holds -(2*e+1)/2 and par[1] holds delta_r to prevent singularity */
@@ -830,7 +830,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args)
 		nxy = Out[GMT_X]->header->size;
 		GMT_memset (V, 4, double);
 #ifdef _OPENMP
-#pragma omp parallel for private(V,row,col,ij,p,dx,dy,Gu,Gv,Guv) shared(yp,Out,xp,X,Ctrl,GMT,alpha_x,alpha_y,norm,n,normalize,geo)
+#pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,alpha_x,alpha_y,norm,n,normalize,geo)
 #endif
 		for (row = 0; row < Out[GMT_X]->header->ny; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 			V[GMT_Y] = yp[row];
