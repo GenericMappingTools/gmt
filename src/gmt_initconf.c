@@ -3,8 +3,7 @@
 /*! . */
 int GMT_initconf(struct GMT_CTRL *GMT) {
 	int i, error = 0;
-	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *size;
-	double dval, inc[2];
+	double const pt = 1.0/72.0;	/* points to inch */
 
 		/* FORMAT group */
 
@@ -58,18 +57,14 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 
 		/* MAP group */
 
-	/* MAP_ANNOT_OFFSET_PRIMARY */
-	size = strdup("5p");	/* We need to use a variable otherwise GMT_to_inch crashes on Release version on Windows */
-	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT_to_inch (GMT, size);
-	/* MAP_ANNOT_OFFSET_SECONDARY */
-	GMT->current.setting.map_annot_offset[GMT_SECONDARY] = GMT_to_inch (GMT, size);
+	/* MAP_ANNOT_OFFSET_PRIMARY, MAP_ANNOT_OFFSET_SECONDARY */
+	GMT->current.setting.map_annot_offset[GMT_PRIMARY] = GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 5 * pt; /* 5p */
 	/* MAP_ANNOT_OBLIQUE */
 	GMT->current.setting.map_annot_oblique = 1;
 	/* MAP_ANNOT_MIN_ANGLE */
 	GMT->current.setting.map_annot_min_angle = 20;
 	/* MAP_ANNOT_MIN_SPACING */
-	size[0] = '0';		/* size = "0p" */
-	GMT->current.setting.map_annot_min_spacing = GMT_to_inch (GMT, size);
+	GMT->current.setting.map_annot_min_spacing = 0; /* 0p */
 	/* MAP_ANNOT_ORTHO */
 	strcpy (GMT->current.setting.map_annot_ortho, "we");
 	/* MAP_DEGREE_SYMBOL (ring) */
@@ -86,65 +81,43 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	/* MAP_FRAME_TYPE (fancy) */
 	GMT->current.setting.map_frame_type = GMT_IS_FANCY;
 	/* MAP_FRAME_WIDTH */
-	size[0] = '5';		/* size = "5p" */
-	dval = GMT_to_inch (GMT, size);
-	GMT->current.setting.map_frame_width = dval;
-	/* MAP_GRID_CROSS_SIZE_PRIMARY */
-	size[0] = '0';		/* size = "0p" */
-	dval = GMT_to_inch (GMT, size);
-	GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = dval;
-	/* MAP_GRID_CROSS_SIZE_SECONDARY */
-	dval = GMT_to_inch (GMT, size);
-	GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = dval;
+	GMT->current.setting.map_frame_width = 5 * pt; /* 5p */
+	/* MAP_GRID_CROSS_SIZE_PRIMARY, MAP_GRID_CROSS_SIZE_SECONDARY */
+	GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] = GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] = 0; /* 0p */
 	/* MAP_GRID_PEN_PRIMARY */
 	error += GMT_getpen (GMT, "default,black", &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 	/* MAP_GRID_PEN_SECONDARY */
 	error += GMT_getpen (GMT, "thinner,black", &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 	/* MAP_LABEL_OFFSET */
-	size[0] = '8';		/* size = "8p" */
-	GMT->current.setting.map_label_offset = GMT_to_inch (GMT, size);
+	GMT->current.setting.map_label_offset = 8 * pt;	/* 8p */
 	/* MAP_LINE_STEP */
-	free(size);		size = strdup("0.75p");
-	GMT->current.setting.map_line_step = GMT_to_inch (GMT, size);
+	GMT->current.setting.map_line_step = 0.75 * pt;	/* 0.75p */
 	/* MAP_LOGO */
-	error += gmt_true_false_or_error ("false", &GMT->current.setting.map_logo);
+	GMT->current.setting.map_logo = false;
 	/* MAP_LOGO_POS */
-	sscanf ("BL/-54p/-54p", "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-	GMT->current.setting.map_logo_justify = GMT_just_decode (GMT, txt_a, PSL_NO_DEF);
-	GMT->current.setting.map_logo_pos[GMT_X] = GMT_to_inch (GMT, txt_b);
-	GMT->current.setting.map_logo_pos[GMT_Y] = GMT_to_inch (GMT, txt_c);
-	/* MAP_ORIGIN_X */
-	free(size);		size = strdup("1i");
-	GMT->current.setting.map_origin[GMT_X] = GMT_to_inch (GMT, size);
-	/* MAP_ORIGIN_Y */
-	GMT->current.setting.map_origin[GMT_Y] = GMT_to_inch (GMT, size);
+	GMT->current.setting.map_logo_justify = PSL_BL;	/* BL */
+	GMT->current.setting.map_logo_pos[GMT_X] = GMT->current.setting.map_logo_pos[GMT_Y] = -54 * pt;	/* -54p */
+	/* MAP_ORIGIN_X, MAP_ORIGIN_Y */
+	GMT->current.setting.map_origin[GMT_X] = GMT->current.setting.map_origin[GMT_Y] = 1;	/* 1i */
 	/* MAP_POLAR_CAP */
-	i = sscanf ("85/90", "%[^/]/%s", txt_a, txt_b);
-	error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
-	GMT_getinc (GMT, txt_b, inc);
-	GMT->current.setting.map_polar_cap[1] = inc[GMT_X];
+	GMT->current.setting.map_polar_cap[0] = 85;
+	GMT->current.setting.map_polar_cap[1] = 90;
 	/* MAP_SCALE_HEIGHT */
-	free(size);		size = strdup("5p");
-	GMT->current.setting.map_scale_height = GMT_to_inch (GMT, size);
+	GMT->current.setting.map_scale_height = 5 * pt;	/* 5p */
 	/* MAP_TICK_LENGTH_PRIMARY */
-	sscanf ("5p/2.5p", "%[^/]/%s", txt_a, txt_b);
-	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT_to_inch (GMT, txt_a);
-	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = GMT_to_inch (GMT, txt_b);
+	GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 5 * pt;	/* 5p */
+	GMT->current.setting.map_tick_length[GMT_TICK_UPPER] = 2.5 * pt;	/* 2.5p */
 	/* MAP_TICK_LENGTH_SECONDARY */
-	sscanf ("15p/3.75p", "%[^/]/%s", txt_a, txt_b);
-	GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = GMT_to_inch (GMT, txt_a);
-	GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = GMT_to_inch (GMT, txt_b);
+	GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 15 * pt;	/* 15p */
+	GMT->current.setting.map_tick_length[GMT_TICK_LOWER] = 3.75 * pt;	/* 3.75p */
 	/* MAP_TICK_PEN_PRIMARY */
 	error += GMT_getpen (GMT, "thinner,black", &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 	/* MAP_TICK_PEN_SECONDARY */
 	error += GMT_getpen (GMT, "thinner,black", &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 	/* MAP_TITLE_OFFSET */
-	free(size);		size = strdup("14p");
-	GMT->current.setting.map_title_offset = GMT_to_inch (GMT, size);
+	GMT->current.setting.map_title_offset = 14 * pt;	/* 14p */
 	/* MAP_VECTOR_SHAPE */
 	GMT->current.setting.map_vector_shape = 0;
-
-	free(size);
 
 		/* COLOR group */
 
@@ -217,10 +190,9 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	/* IO_GRIDFILE_FORMAT */
 	strcpy (GMT->current.setting.io_gridfile_format, "nf");
 	/* IO_GRIDFILE_SHORTHAND */
-	error += gmt_true_false_or_error ("false", &GMT->current.setting.io_gridfile_shorthand);
+	GMT->current.setting.io_gridfile_shorthand = false;
 	/* IO_HEADER */
-	error += gmt_true_false_or_error ("false", &GMT->current.setting.io_header[GMT_IN]);
-	GMT->current.setting.io_header[GMT_OUT] = GMT->current.setting.io_header[GMT_IN];
+	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header[GMT_OUT] = false;
 	/* IO_N_HEADER_RECS */
 	GMT->current.setting.io_n_header_items = 0;
 	/* IO_NAN_RECORDS (pass) */
@@ -230,7 +202,7 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	/* IO_NC4_DEFLATION_LEVEL */
 	GMT->current.setting.io_nc4_deflation_level = 3;
 	/* IO_LONLAT_TOGGLE */
-	error += gmt_true_false_or_error ("false", &GMT->current.setting.io_lonlat_toggle[GMT_IN]);
+	GMT->current.setting.io_lonlat_toggle[GMT_IN] = false;
 	/* We got false/f/0 or true/t/1. Set outgoing setting to the same as the ingoing. */
 	GMT->current.setting.io_lonlat_toggle[GMT_OUT] = GMT->current.setting.io_lonlat_toggle[GMT_IN];
 	/* IO_SEGMENT_BINARY */
@@ -308,6 +280,6 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	GMT->current.time.Y2K_fix.y200 = GMT->current.time.Y2K_fix.y100 + 100;
 
 	if (error)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword or value during initialization.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 	return 0;
 }
