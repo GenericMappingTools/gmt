@@ -146,23 +146,21 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	/* PS_COLOR_MODEL */
 	GMT->current.setting.ps_color_mode = PSL_RGB;
 	/* PS_IMAGE_COMPRESS */
-	if (!GMT->PSL) return (0);	/* Not using PSL in this session */
+	if (GMT->PSL) {	/* Only when using PSL in this session */
 #ifdef HAVE_ZLIB
-	GMT->PSL->internal.compress = PSL_DEFLATE;
-	GMT->PSL->internal.deflate_level = 5;
+		GMT->PSL->internal.compress = PSL_DEFLATE;
+		GMT->PSL->internal.deflate_level = 5;
 #else
-	/* Silently fall back to LZW compression when ZLIB not available */
-	GMT->PSL->internal.compress = PSL_LZW;
+		/* Silently fall back to LZW compression when ZLIB not available */
+		GMT->PSL->internal.compress = PSL_LZW;
 #endif
-	/* PS_LINE_CAP */
-	if (!GMT->PSL) return (0);	/* Not using PSL in this session */
-	GMT->PSL->internal.line_cap = PSL_BUTT_CAP;
-	/* PS_LINE_JOIN */
-	if (!GMT->PSL) return (0);	/* Not using PSL in this session */
-	GMT->PSL->internal.line_join = PSL_MITER_JOIN;
-	/* PS_MITER_LIMIT */
-	if (!GMT->PSL) return (0);	/* Not using PSL in this session */
-	GMT->PSL->internal.miter_limit = 35;
+		/* PS_LINE_CAP */
+		GMT->PSL->internal.line_cap = PSL_BUTT_CAP;
+		/* PS_LINE_JOIN */
+		GMT->PSL->internal.line_join = PSL_MITER_JOIN;
+		/* PS_MITER_LIMIT */
+		GMT->PSL->internal.miter_limit = 35;
+	}
 	/* PS_PAGE_COLOR */
 	error += GMT_getrgb (GMT, "white", GMT->current.setting.ps_page_rgb);
 	/* PS_PAGE_ORIENTATION */
@@ -180,8 +178,7 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	/* PS_TRANSPARENCY */
 	strcpy (GMT->current.setting.ps_transpmode, "Normal");
 	/* PS_COMMENTS */
-	if (!GMT->PSL) return (0);	/* Not using PSL in this session */
-	GMT->PSL->internal.comments = 0;
+	if (GMT->PSL) GMT->PSL->internal.comments = 0;	/* Only when using PSL in this session */
 
 		/* IO group */
 
