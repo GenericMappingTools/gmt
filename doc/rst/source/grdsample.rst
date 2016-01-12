@@ -20,7 +20,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
-[ **-r** ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-x| ]
 
 |No-spaces|
