@@ -3421,8 +3421,7 @@ void GMT_draw_map_panel (struct GMT_CTRL *GMT, double x, double y, unsigned int 
 	PSL_setcolor (GMT->PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 }
 
-void GMT_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
-{
+void GMT_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen) {
 	/* GMT_setpen issues PostScript code to set the specified pen. */
 
 	if (!pen) return;
@@ -3431,8 +3430,7 @@ void GMT_setpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
 	PSL_setcolor (GMT->PSL, pen->rgb, PSL_IS_STROKE);
 }
 
-void GMT_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
-{
+void GMT_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen) {
 	/* GMT_getpen retrieves the current pen in PSL. */
 	struct PSL_CTRL *PSL = GMT->PSL;
 	if (!pen) return;
@@ -3445,8 +3443,7 @@ void GMT_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen)
 	GMT_rgb_copy (pen->rgb, PSL->current.rgb[PSL_IS_STROKE]);
 }
 
-bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[])
-{
+bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[]) {
 	bool result;
 	double left, right, right2;
 
@@ -3500,14 +3497,13 @@ bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL
 	return (!result);			/* Return the opposite of the test result */
 }
 
-void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, bool *flush)
-{
+void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, uint64_t *n, struct GMT_PEN *p, struct GMT_FILL *f, unsigned int outline, bool *flush) {
 	bool draw_outline;
 
 	draw_outline = (outline && p->rgb[0] != -1) ? true : false;
 	if (draw_outline) GMT_setpen (GMT, p);
 	if (outline == 2) {	/* Stroke path only */
-		PSL_plotline (PSL, x, y, (int)*n, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (PSL, x, y, (int)*n, PSL_MOVE + PSL_STROKE);
 	}
 	else {	/* Fill polygon and possibly stroke outline */
 		GMT_setfill (GMT, f, draw_outline);
@@ -3880,8 +3876,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 /* Plotting functions related to contours */
 
-void GMT_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y, double angle, char *label, bool save_angle)
-{
+void GMT_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y, double angle, char *label, bool save_angle) {
 	char word[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	double geo[2];
 	record[0] = 0;	/* Start with blank record */
@@ -3902,8 +3897,7 @@ void GMT_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y,
 	return;
 }
 
-int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
-{
+int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	int kind;
 	uint64_t k, seg;
 	bool write_angle = (G->save_labels == 2);
@@ -3937,15 +3931,13 @@ int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 	/* To finish and close the file, call GMT_contlabel_save_end */
 }
 
-int GMT_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
-{
+int GMT_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	GMT_fclose (GMT, G->fp);
 	G->fp = NULL;
 	return (GMT_NOERROR);
 }
 
-void gmt_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G)
-{
+void gmt_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G) {
 	uint64_t row;
 	double size[1] = {0.025};
 
