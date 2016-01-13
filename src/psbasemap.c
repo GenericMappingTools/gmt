@@ -261,7 +261,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 		for (i = nx; i > 0; i--, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], i * GMT->current.setting.map_line_step, GMT->current.map.height);
 		for (i = ny; i > 0; i--, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], 0.0, i * GMT->current.setting.map_line_step);
 		S->coord[GMT_X][k] = S->coord[GMT_X][0];	S->coord[GMT_Y][k++] = S->coord[GMT_Y][0];
-		S->n_rows = k;
+		S->n_rows = dim[GMT_ROW];
 		D->table[0]->n_headers = 1;
 		D->table[0]->header = GMT_memory (GMT, NULL, 1U, char *);
 		sprintf (msg, " Geographical coordinates for a (%s) rectangular plot domain outline polygon", kind[GMT->common.R.oblique]);
