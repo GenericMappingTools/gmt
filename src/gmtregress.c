@@ -989,7 +989,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 		}
 		(void) do_regression (GMT, x_in, y_in, www, n, regression, GMTREGRESS_NORM_L2, par, 1);
 		for (col = first_col; col <= GMT_Y; col++)	/* Free any arrays we allocated */
-			GMT_free (GMT, www[col]);
+			if (made[col]) GMT_free (GMT, www[col]);
 	}
 	return (z);	/* Return those z-scoores, calling unit must free this array when done */
 }

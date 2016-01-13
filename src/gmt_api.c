@@ -1069,7 +1069,7 @@ char **GMTAPI_process_keys (void *API, const char *string, char type, struct GMT
 					 * 2. -Z contains ALL the modifiers +a, +b, +c, ...
 					 * 3. -Z contains AT LEAST ONE of the modifers +d, +e, +f.
 					 */
-					unsigned int kase, count[2] = {0, 0}, given[2] = {0, 0};
+					unsigned int kase = 0, count[2] = {0, 0}, given[2] = {0, 0};
 					change_type = false;
 					for (kk = 3; s[k][kk]; kk++) {
 						if (strchr ("-+", s[k][kk])) {
@@ -7794,7 +7794,8 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar)
 	 * Geographic dd:mm:ss[W|E|S|N] coordinates are returned in decimal degrees.
 	 * DateTtime moments are returned in time in chosen units [sec] since chosen epoch [1970] */
 
-	unsigned int pos = 0, npar = 0, mode, col_type_save[2][2];
+	unsigned int pos = 0, mode, col_type_save[2][2];
+	int npar = 0;
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, unit;
 	double value;
