@@ -99,7 +99,8 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to given file (or stdout).  Requires -R and -J only.  Spacing along border\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT defaults MAP_LINE_STEP.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].\n",
+		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");
 	GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
@@ -256,11 +257,12 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		S = D->table[0]->segment[0];
+		/* March around perimeter in a counter-clockwise sense */
 		for (i = 0; i < nx; i++, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], i * GMT->current.setting.map_line_step, 0.0);
 		for (i = 0; i < ny; i++, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], GMT->current.map.width, i * GMT->current.setting.map_line_step);
 		for (i = nx; i > 0; i--, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], i * GMT->current.setting.map_line_step, GMT->current.map.height);
 		for (i = ny; i > 0; i--, k++) GMT_xy_to_geo (GMT, &S->coord[GMT_X][k], &S->coord[GMT_Y][k], 0.0, i * GMT->current.setting.map_line_step);
-		S->coord[GMT_X][k] = S->coord[GMT_X][0];	S->coord[GMT_Y][k++] = S->coord[GMT_Y][0];
+		S->coord[GMT_X][k] = S->coord[GMT_X][0];	S->coord[GMT_Y][k++] = S->coord[GMT_Y][0];	/* Close polygon */
 		S->n_rows = dim[GMT_ROW];
 		D->table[0]->n_headers = 1;
 		D->table[0]->header = GMT_memory (GMT, NULL, 1U, char *);
