@@ -1589,7 +1589,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 
 
 		bad_record = set_nan_flag = false;		/* Initialize flags */
-		strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);	/* Keep copy of current record around */
+		strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;			/* Initialize counters */
 		in_col = -1;					/* Since we will increment right away inside the loop */
 
