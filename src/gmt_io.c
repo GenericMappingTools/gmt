@@ -5805,6 +5805,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 			else					/* Build name with seg ids */
 				sprintf (tmpfile, file, table->segment[seg]->id);
 			if ((fp = GMT_fopen (GMT, out_file, open_mode)) == NULL) {
+				GMT_free (GMT, out);
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", out_file);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
