@@ -10796,7 +10796,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	unsigned int k, nc = 0, nv, error = 0, var_symbol = 0;
 	int last;
 	size_t length;
-	bool do_fill, do_pen, first = true;
+	bool do_fill, do_pen, first = true, got_EPS = false;
 	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
@@ -10814,13 +10814,19 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	else	/* Use as is */
 		strcpy (name, in_name);
 
-	GMT_getsharepath (GMT, "custom", name, ".def", file, R_OK);
 #ifdef PS_MACRO
-	if (stat (file, &buf)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	/* First check for eps macro */
+	if (GMT_getsharepath (GMT, "custom", name, ".eps", file, R_OK)) {
+		if (stat (file, &buf)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
+		got_EPS = true;
 	}
+	else
 #endif
+	GMT_getsharepath (GMT, "custom", name, ".def", file, R_OK);
+
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -10830,7 +10836,12 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	strncpy (head->name, basename (name), GMT_LEN64);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 #ifdef PS_MACRO
-		if (head->PS) {	/* Working on a PS symbol, just append the text as is */
+		if (got_EPS) {	/* Working on an EPS symbol, just append the text as is */
+			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
+				head->PS_macro = GMT_memory (GMT, NULL, (size_t)buf.st_size, char);
+				head->PS = 1;	/* Flag to indicate we already allocated memory */
+			}
+			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
 			strcat (head->PS_macro, buffer);
 			continue;
 		}
@@ -10864,13 +10875,6 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			}
 			continue;
 		}
-#ifdef PS_MACRO
-		if (buffer[0] == '/') {	/* This is the initial definition of a PSL symbol */
-			head->PS = true;
-			head->PS_macro = GMT_memory (GMT, NULL, (size_t)buf.st_size, char);
-			continue;
-		}
-#endif
 		s = GMT_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
 		if (first) head->first = s;
 		first = false;
@@ -11126,7 +11130,12 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 		previous = s;
 	}
 	fclose (fp);
-
+#ifdef PS_MACRO
+	if (head->PS && strstr (head->PS_macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", head->name);
+		head->PS |= 4;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
+	}
+#endif
 	*S = head;
 	return (GMT_NOERROR);
 }

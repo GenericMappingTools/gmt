@@ -3617,18 +3617,25 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 #ifdef PS_MACRO
 	/* PS_MACRO stuff is on hold, awaiting more testing */
-	if (symbol->PS) {	/* Special PostScript-only symbol */
-		if (symbol->PS == 1) {	/* First time we must dump the PS code definition */
+	if (symbol->PS) {	/* Special Encapsulated PostScript-only symbol */
+		//int c;
+		double off = 0.5*size[0];
+		if (symbol->PS & 1) {	/* First time we must dump the PS code definition */
 			PSL_comment (PSL, "Start of symbol %s\n", symbol->name);
+			PSL_command (PSL, "/Sk_%s {\ngsave\n", symbol->name);
+			if ((symbol->PS & 4) == 0)	/* non-GMT5-produced EPS macro - scale points to GMT's unit */
+				PSL_command (PSL, "1200 72 div dup scale\n");
 			PSL_command (PSL, "%s", symbol->PS_macro);
+			PSL_command (PSL, "grestore } def\n");
 			PSL_comment (PSL, "End of symbol %s\n", symbol->name);
-			symbol->PS = 2;	/* Flag to say we have dumped the PS code */
+			symbol->PS++;	/* Flag now says we have dumped the PS code */
 		}
 		PSL_command (PSL, "V ");
-		PSL_setorigin (PSL, x0, y0, 0.0, PSL_FWD);
-		for (i = symbol->n_required; i >= 0; i--) PSL_command (PSL, "%g ", size[i]);
+		PSL_setorigin (PSL, x0-off, y0-off, 0.0, PSL_FWD);
+		//for (c = (int)symbol->n_required; c >= 0; c--) PSL_command (PSL, "%g ", size[c]);
+		PSL_command (PSL, "%g dup scale ", size[0]);
 		PSL_command (PSL, "Sk_%s U\n", symbol->name);
-		return;
+		return (GMT_OK);
 	}
 #endif
 	/* Regular macro symbol */
