@@ -4303,7 +4303,7 @@ int gmt_scanf_ISO_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd) {
 
 	int k, n, ival[3];
 
-	if ((n = sscanf (s, GMT->current.io.date_input.format, &ival[0], &ival[1], &ival[2])) == 0) return (-1);
+	if ((n = sscanf (s, GMT->current.io.date_input.format, &ival[0], &ival[1], &ival[2])) <= 0) return (-1);
 
 	/* Handle possible missing bits */
 	for (k = n; k < 3; k++) ival[k] = 1;
