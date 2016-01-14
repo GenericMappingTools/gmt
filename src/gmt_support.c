@@ -10814,18 +10814,29 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	else	/* Use as is */
 		strcpy (name, in_name);
 
+	if (!GMT_getsharepath (GMT, "custom", name, ".def", file, R_OK)) {	/* No *.def file found */
 #ifdef PS_MACRO
-	/* First check for eps macro */
-	if (GMT_getsharepath (GMT, "custom", name, ".eps", file, R_OK)) {
-		if (stat (file, &buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		/* See if we got EPS macro */
+		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
+			strncpy (name, in_name, length-4);
+		else	/* Use as is */
+			strcpy (name, in_name);
+		/* First check for eps macro */
+		if (GMT_getsharepath (GMT, "custom", name, ".eps", file, R_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found EPS macro %s\n", file);
+			if (stat (file, &buf)) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine size of EPS macro %s\n", name);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+			got_EPS = true;
 		}
-		got_EPS = true;
+		else 
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find either custom symbol or EPS macro %s\n", name);
 	}
-	else
+	else {
 #endif
-	GMT_getsharepath (GMT, "custom", name, ".def", file, R_OK);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", file);
+}
 
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find custom symbol %s\n", name);
