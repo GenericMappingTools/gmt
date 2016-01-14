@@ -3082,8 +3082,7 @@ static inline void swap_uint64 (char *buffer, const size_t len) {
 /* End private functions used by gmt_byteswap_file() */
 
 /*! . */
-bool gmt_byteswap_file (struct GMT_CTRL *GMT,
-		FILE *outfp, FILE *infp, const SwapWidth swapwidth,
+bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const SwapWidth swapwidth,
 		const uint64_t offset, const uint64_t length) {
 	/* read from *infp and write byteswapped data to *ofp
 	 * swap only 'length' bytes beginning at 'offset' bytes
@@ -3130,8 +3129,10 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 		}
 		bytes_read += nbytes;
 		/* write buffer */
-		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
+			gmt_free (buffer);
 			return false;
+		}
 	}
 #ifdef DEBUG_BYTESWAP
 	if (bytes_read) {
@@ -3163,6 +3164,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while swapping.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			gmt_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
@@ -3201,8 +3203,10 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 		nbytes += extrabytes;
 
 		/* write buffer */
-		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
+			gmt_free (buffer);
 			return false;
+		}
 	}
 #ifdef DEBUG_BYTESWAP
 	sprintf (message, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
@@ -3224,12 +3228,15 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while skipping to EOF.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			gmt_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
 		/* write buffer */
-		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
+			gmt_free (buffer);
 			return false;
+		}
 	}
 
 	GMT->current.io.status = GMT_IO_EOF;
