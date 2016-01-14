@@ -664,7 +664,9 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 	else if (!strcmp (filename, "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
 	{
-		return (fopen (GMT_getdatapath(GMT, filename, path, R_OK), mode));
+		char *c;
+		if ((c = GMT_getdatapath(GMT, filename, path, R_OK)) == NULL) return fd;
+		return (fopen (c, mode));
 	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (GMT, filename, mode);
@@ -1589,7 +1591,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 
 
 		bad_record = set_nan_flag = false;		/* Initialize flags */
-		strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);	/* Keep copy of current record around */
+		strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;			/* Initialize counters */
 		in_col = -1;					/* Since we will increment right away inside the loop */
 
@@ -2440,8 +2442,9 @@ int gmt_c_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 	/* read int8_t aka char */
 	uint64_t i;
 	int8_t s;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&s, sizeof (int8_t), 1U, fp)) {
+		if ((k = GMT_fread (&s, sizeof (int8_t), 1U, fp)) != 1) {
 			/* Read was unsuccessful */
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
@@ -2452,13 +2455,13 @@ int gmt_c_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_u_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_u_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read uint8_t aka unsigned char */
 	uint64_t i;
 	uint8_t u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint8_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint8_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2468,13 +2471,13 @@ int gmt_u_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_h_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_h_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read int16_t */
 	uint64_t i;
 	int16_t s;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&s, sizeof (int16_t), 1U, fp)) {
+		if ((k = GMT_fread (&s, sizeof (int16_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2484,14 +2487,14 @@ int gmt_h_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped int16_t */
 	uint64_t i;
 	uint16_t u;
+	size_t k;
 	int16_t *s = (int16_t *)&u;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint16_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint16_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2502,13 +2505,13 @@ int gmt_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_H_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_H_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read uint16_t */
 	uint64_t i;
 	uint16_t u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint16_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint16_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2518,13 +2521,13 @@ int gmt_H_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_H_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_H_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped uint16_t */
 	uint64_t i;
 	uint16_t u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint16_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint16_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2534,13 +2537,13 @@ int gmt_H_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_i_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_i_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read int32_t */
 	uint64_t i;
 	int32_t s;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&s, sizeof (int32_t), 1U, fp)) {
+		if ((k = GMT_fread (&s, sizeof (int32_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2550,14 +2553,14 @@ int gmt_i_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_i_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_i_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped int32_t */
 	uint64_t i;
 	uint32_t u;
 	int32_t *s = (int32_t *)&u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint32_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint32_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2568,13 +2571,13 @@ int gmt_i_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_I_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_I_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read uint32_t */
 	uint64_t i;
 	uint32_t u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint32_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint32_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2584,13 +2587,13 @@ int gmt_I_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_I_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_I_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped uint32_t */
 	uint64_t i;
 	uint32_t u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint32_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint32_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2600,14 +2603,14 @@ int gmt_I_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_l_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_l_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read int64_t */
 	uint64_t i;
 	int64_t s;
+	size_t k;
 
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&s, sizeof (int64_t), 1U, fp)) {
+		if ((k = GMT_fread (&s, sizeof (int64_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2617,14 +2620,14 @@ int gmt_l_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_l_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_l_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped int64_t */
 	uint64_t i;
 	uint64_t u;
 	int64_t *s = (int64_t *)&u;
+	size_t k;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint64_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint64_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2635,14 +2638,14 @@ int gmt_l_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_L_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_L_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read uint64_t */
 	uint64_t i;
 	uint64_t u;
+	size_t k;
 
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint64_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint64_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2652,14 +2655,14 @@ int gmt_L_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped uint64_t */
 	uint64_t i;
 	uint64_t u;
+	size_t k;
 
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u, sizeof (uint64_t), 1U, fp)) {
+		if ((k = GMT_fread (&u, sizeof (uint64_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2669,13 +2672,13 @@ int gmt_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_f_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_f_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read float */
 	uint64_t i;
+	size_t k;
 	float f;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&f, sizeof (float), 1U, fp)) {
+		if ((k = GMT_fread (&f, sizeof (float), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2685,16 +2688,16 @@ int gmt_f_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_f_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_f_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read byteswapped float */
+	size_t k;
 	uint64_t i;
 	union {
 		float f;
 		uint32_t bits;
 	} u;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u.bits, sizeof (uint32_t), 1U, fp)) {
+		if ((k = GMT_fread (&u.bits, sizeof (uint32_t), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2705,12 +2708,12 @@ int gmt_f_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 }
 
 /*! . */
-int gmt_d_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
-{
+int gmt_d_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d) {
 	/* read double */
+	size_t k;
 	uint64_t i;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&d[i], sizeof (double), 1U, fp)) {
+		if ((k = GMT_fread (&d[i], sizeof (double), 1U, fp)) != 1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -2722,13 +2725,14 @@ int gmt_d_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 int gmt_d_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped double */
+	size_t k;
 	uint64_t i;
 	union {
 		double d;
 		uint64_t bits;
 	} u;
 	for (i = 0; i < n; ++i) {
-		if (!GMT_fread (&u.bits, sizeof (uint64_t), 1U, fp)) {
+		if ((k = GMT_fread (&u.bits, sizeof (uint64_t), 1U, fp)) !=1) {
 			GMT->current.io.status = GMT_IO_EOF;
 			return (GMT_DATA_READ_ERROR);
 		}
@@ -3089,8 +3093,7 @@ static inline void swap_uint64 (char *buffer, const size_t len) {
 /* End private functions used by gmt_byteswap_file() */
 
 /*! . */
-bool gmt_byteswap_file (struct GMT_CTRL *GMT,
-		FILE *outfp, FILE *infp, const SwapWidth swapwidth,
+bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const SwapWidth swapwidth,
 		const uint64_t offset, const uint64_t length) {
 	/* read from *infp and write byteswapped data to *ofp
 	 * swap only 'length' bytes beginning at 'offset' bytes
@@ -3137,8 +3140,10 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 		}
 		bytes_read += nbytes;
 		/* write buffer */
-		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
+			gmt_free (buffer);
 			return false;
+		}
 	}
 #ifdef DEBUG_BYTESWAP
 	if (bytes_read) {
@@ -3170,6 +3175,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while swapping.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			gmt_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
@@ -3208,8 +3214,10 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 		nbytes += extrabytes;
 
 		/* write buffer */
-		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
+			gmt_free (buffer);
 			return false;
+		}
 	}
 #ifdef DEBUG_BYTESWAP
 	sprintf (message, "%s: %" PRIu64 " bytes swapped.\n", __func__, bytes_read - offset);
@@ -3231,12 +3239,15 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 			}
 			sprintf (message, "%s: error reading stream while skipping to EOF.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			gmt_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
 		/* write buffer */
-		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp))
+		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
+			gmt_free (buffer);
 			return false;
+		}
 	}
 
 	GMT->current.io.status = GMT_IO_EOF;
@@ -3280,10 +3291,6 @@ int GMT_parse_z_io (struct GMT_CTRL *GMT, char *txt, struct GMT_PARSE_Z_IO *z) {
 			case 'B':
 			case 'L':
 			case 'R':
-				if (k > 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Z: Choose format from [TBLR][TBLR]!\n");
-					return (EXIT_FAILURE);
-				}
 				z->format[k++] = txt[start];
 				break;
 			default:
@@ -3949,7 +3956,7 @@ void gmt_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *
 	/* Craft the actual C-format to use for input/output clock strings */
 
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
-		char fmt[GMT_LEN256] = {""};
+		char fmt[GMT_LEN64] = {""};
 		if (S->compact)
 			sprintf (S->format, "%%d");
 		else
@@ -3982,15 +3989,14 @@ void gmt_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *
 }
 
 /*! . */
-void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode)
-{
+void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S, unsigned int mode) {
 	/* Determine the order of Y, M, D, J in input and output date strings.
 	 * mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
 
 	int k, ywidth;
 	bool no_delim, watch;
-	char fmt[GMT_LEN256] = {""};
+	char fmt[GMT_LEN64] = {""};
 
 	S->skip = false;
 	if (mode && strlen (form) == 1 && form[0] == '-') {	/* Do not want date output or plotted */
@@ -4086,8 +4092,7 @@ void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S,
 }
 
 /*! . */
-int gmt_geo_C_format (struct GMT_CTRL *GMT)
-{
+int gmt_geo_C_format (struct GMT_CTRL *GMT) {
 	/* Determine the output of geographic location formats. */
 
 	struct GMT_GEO_IO *S = &GMT->current.io.geo;
@@ -4104,7 +4109,7 @@ int gmt_geo_C_format (struct GMT_CTRL *GMT)
 		sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
 	}
 	else {			/* Some form of dd:mm:ss */
-		char fmt[GMT_LEN256] = {""};
+		char fmt[GMT_LEN64] = {""};
 		sprintf (S->x_format, "%%03d");
 		sprintf (S->y_format, "%%02d");
 		if (S->order[1] >= 0) {	/* Need minutes too */
@@ -4135,8 +4140,7 @@ int gmt_geo_C_format (struct GMT_CTRL *GMT)
 }
 
 /*! . */
-void gmt_plot_C_format (struct GMT_CTRL *GMT)
-{
+void gmt_plot_C_format (struct GMT_CTRL *GMT) {
 	unsigned int i, j, length;
 	struct GMT_GEO_IO *S = &GMT->current.plot.calclock.geo;
 
@@ -4317,7 +4321,7 @@ int gmt_scanf_ISO_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd) {
 
 	int k, n, ival[3];
 
-	if ((n = sscanf (s, GMT->current.io.date_input.format, &ival[0], &ival[1], &ival[2])) == 0) return (-1);
+	if ((n = sscanf (s, GMT->current.io.date_input.format, &ival[0], &ival[1], &ival[2])) <= 0) return (-1);
 
 	/* Handle possible missing bits */
 	for (k = n; k < 3; k++) ival[k] = 1;
@@ -5176,7 +5180,8 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 		for (col = 0; col < GMT->current.io.OGR->n_aspatial; col++)
 			fprintf (stderr, "OGR %d: N = %s T = %d\n", col, GMT->current.io.OGR->name[col], GMT->current.io.OGR->type[col]);
 		for (col = 0; col < GMT->common.a.n_aspatial; col++)
-			fprintf (stderr, "a: %d: C = %d O = %d, N = %s\n", col, GMT->common.a.col[col], GMT->common.a.ogr[col], GMT->common.a.name[col]);
+			fprintf (stderr, "a: %d: C = %d O = %d, N = %s\n",
+			         col, GMT->common.a.col[col], GMT->common.a.ogr[col], GMT->common.a.name[col]);
 		for (col = 0; col < G->n_aspatial; col++)
 			fprintf (stderr, "G: %d: V = %s\n", col, G->tvalue[col]);
 #endif			
@@ -5189,15 +5194,17 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 			z = (G) ? G->dvalue[ogr_col] : GMT->current.io.OGR->dvalue[col];
 			switch (GMT->common.a.col[col]) {
 				case GMT_IS_G:
-					GMT_getfill (GMT, txt, fill);
-					*use_fill = true;
-					change = 1;
-					processed++;	/* Processed one option */
+					if (GMT_getfill (GMT, txt, fill)) {
+						*use_fill = true;
+						change = 1;
+						processed++;	/* Processed one option */
+					}
 					break;
 				case GMT_IS_W:
-					GMT_getpen (GMT, txt, pen);
-					*use_pen = true;
-					change |= 4;
+					if (GMT_getpen (GMT, txt, pen)) {
+						*use_pen = true;
+						change |= 4;
+					}
 					break;
 				case GMT_IS_Z:
 					GMT_get_fill_from_z (GMT, P, z, fill);
@@ -5451,7 +5458,7 @@ void gmt_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 				virt_col = abs (GMT->common.a.col[col]) - 1;	/* So -3 becomes 2 etc */
 				if (space) strcat (buffer, " ");
 				strcat (buffer, sflag[virt_col]);
-				strcat (buffer, S->ogr->tvalue[GMT->common.a.ogr[col]]);
+				if (S->ogr) strcat (buffer, S->ogr->tvalue[GMT->common.a.ogr[col]]);
 				space = true;
 				break;
 			default:	/* Regular column cases are skipped */
@@ -5757,6 +5764,10 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
+			if (!dest) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "pointer 'dest' cannot be NULL here\n");
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], open_mode)) == NULL) {
@@ -5812,24 +5823,30 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 			else					/* Build name with seg ids */
 				sprintf (tmpfile, file, table->segment[seg]->id);
 			if ((fp = GMT_fopen (GMT, out_file, open_mode)) == NULL) {
+				GMT_free (GMT, out);
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", out_file);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Writing data segment to file %s\n", out_file);
 			if (ASCII && GMT->current.setting.io_header[GMT_OUT]) {
-				for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (GMT, fp, table->header[k]);	/* Write any existing header comments */
+				for (k = 0; k < table->n_headers; k++)
+					GMT_write_tableheader (GMT, fp, table->header[k]);	/* Write any existing header comments */
 				GMT_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 			}
 		}
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (GMT, table->segment[seg]);	/* We have access to OGR metadata */
-			if (table->segment[seg]->header) strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ); else GMT->current.io.segment_header[0] = '\0';
+			if (table->segment[seg]->header)
+				strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);
+			else
+				GMT->current.io.segment_header[0] = '\0';
 			GMT_write_segmentheader (GMT, fp, table->segment[seg]->n_columns);
 			if (table->segment[seg]->ogr && GMT->common.a.output) gmt_write_ogr_segheader (GMT, fp, table->segment[seg]);
 		}
 		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
 		if (table->segment[seg]->range != GMT->current.io.geo.range) {	/* Segment-specific formatting for longitudes */
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s Segment %d changed io.geo.range from %d to %d\n", out_file, (int)seg, GMT->current.io.geo.range, table->segment[seg]->range);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s Segment %d changed io.geo.range from %d to %d\n",
+			            out_file, (int)seg, GMT->current.io.geo.range, table->segment[seg]->range);
 			save = GMT->current.io.geo.range; GMT->current.io.geo.range = table->segment[seg]->range;
 		}
 		for (row = 0; row < table->segment[seg]->n_rows; row++) {
@@ -5868,6 +5885,10 @@ int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
+			if (!dest) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "'dest' pointer cannot be NULL here\n");
+				return (EXIT_FAILURE);
+			}
 			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (D->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], open_mode)) == NULL) {
@@ -5952,6 +5973,10 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
+			if (!dest) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "'dest' pointer cannot be NULL here (gmt_write_texttable)\n");
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], (append) ? "a" : "w")) == NULL) {
@@ -6048,6 +6073,10 @@ int GMT_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
+			if (!dest) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "'dest' pointer cannot be NULL here (gmt_write_textset)\n");
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			strncpy (file, dest, GMT_BUFSIZ-1);
 			if (D->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = GMT_fopen (GMT, &file[append], (append) ? "a" : "w")) == NULL) {
