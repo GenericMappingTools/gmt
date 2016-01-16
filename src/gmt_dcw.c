@@ -238,6 +238,14 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if (ks == 0) return NULL;	/* No countries requested */
 	if (mode != GMT_DCW_REGION && F->region && (mode & 12) == 0) return NULL;	/* No plotting/dumping requested, just -R */
 
+	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
+		if (wesn == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Implementation error: Must pass wesn array if mode == %d\n", GMT_DCW_REGION);
+			return NULL;
+		}
+		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
+	}
+
 	if (gmt_load_dcw_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) return NULL;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
@@ -268,14 +276,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
-
-	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
-		if (wesn == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must pass wesn array if mode == 0\n");
-			return NULL;
-		}
-		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
-	}
 
 	if (!gmt_get_dcw_path (GMT, "dcw-gmt", ".nc", path)) return NULL;
 

@@ -4204,7 +4204,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 				via = (m / GMT_VIA_VECTOR) - 1;
 				m -= (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
 			}
-			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
+			if (m <= GMT_IS_REFERENCE) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
 			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2],
 				(size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
 		}

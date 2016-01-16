@@ -437,6 +437,14 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_free (GMT, adj);
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s!\n", file);
+				/* Free memory before exiting */
+				for (p = k; p < n_tracks; p++)	/* Free everything then bail */
+					GMT_free (GMT, adj[k].K);
+				x2sys_free_coe_dbase (GMT, P, np);
+				GMT_free (GMT, trk_name);
+				GMT_free (GMT, R);
+				if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
+				x2sys_end (GMT, s);
 				Return (EXIT_FAILURE);
 			}
 			n1 = adj[k].n - 1;

@@ -1102,7 +1102,8 @@ void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int si
 			}
 			if (n_slash != 2) {	/* r/g/b not given, must replace whatever it was with a r/g/b triplet */
 				text[n] = '\0';	/* Temporarily terminate string so getrgb can work */
-				GMT_getrgb (GMT, &text[i], rgb);
+				if (!GMT_getrgb (GMT, &text[i], rgb))
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: failed to convert %s to r/g/b\n", &text[i]);
 				text[n] = ';';	/* Undo damage */
 				if (rgb[3] > 0.0)
 					sprintf (color, "%f/%f/%f=%ld", GMT_t255(rgb), lrint (100.0 * rgb[3]));	/* Format triplet w/ transparency */

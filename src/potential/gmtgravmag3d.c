@@ -950,8 +950,8 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
+	GMT_UNUSED (bat);
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
-
 	x_a = triang[vert[i].a].x;	x_b = triang[vert[i].b].x;	x_c = triang[vert[i].c].x;
 	y_a = triang[vert[i].a].y;	y_b = triang[vert[i].b].y;	y_c = triang[vert[i].c].y;
 	z_a = triang[vert[i].a].z;	z_b = triang[vert[i].b].z;	z_c = triang[vert[i].c].z;
