@@ -253,7 +253,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 		
 		nx = urint (GMT->current.map.width  / GMT->current.setting.map_line_step);
 		ny = urint (GMT->current.map.height / GMT->current.setting.map_line_step);
-		dim[GMT_ROW] = 2 * (nx + ny) - 3;
+		dim[GMT_ROW] = 2 * (nx + ny) + 1;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Constructing coordinates of the plot domain outline polygon using %" PRIu64 " points\n", dim[GMT_ROW]);
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLYGON, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		S = D->table[0]->segment[0];
