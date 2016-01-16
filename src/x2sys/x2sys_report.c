@@ -272,6 +272,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		x2sys_end (GMT, s);
 		Return (EXIT_FAILURE);
 	}
 	
@@ -434,6 +435,14 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s!\n", file);
+				/* Free memory before exiting */
+				for (p = k; p < n_tracks; p++)	/* Free everything then bail */
+					GMT_free (GMT, adj[k].K);
+				x2sys_free_coe_dbase (GMT, P, np);
+				GMT_free (GMT, trk_name);
+				GMT_free (GMT, R);
+				if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
+				x2sys_end (GMT, s);
 				Return (EXIT_FAILURE);
 			}
 			n1 = adj[k].n - 1;

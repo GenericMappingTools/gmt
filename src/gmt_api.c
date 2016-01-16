@@ -4022,7 +4022,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 				via = (m / GMT_VIA_VECTOR) - 1;
 				m -= (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
 			}
-			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
+			if (m <= GMT_IS_REFERENCE) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
 			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2],
 				(size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
 		}
@@ -6555,8 +6555,8 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL *API, struct 
 
 	GMT_table_detrend (C, D, F->trend_mode, K->coeff);	/* Detrend data, if requested */
 	gmt_table_taper (C, G, F);				/* Taper data, if requested */
-#endif
 	K->dim = 1;	/* 1-D FFT */
+#endif
 	return (K);
 }
 
@@ -7601,7 +7601,8 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar)
 	 * Geographic dd:mm:ss[W|E|S|N] coordinates are returned in decimal degrees.
 	 * DateTtime moments are returned in time in chosen units [sec] since chosen epoch [1970] */
 
-	unsigned int pos = 0, npar = 0, mode, col_type_save[2][2];
+	unsigned int pos = 0, mode, col_type_save[2][2];
+	int npar = 0;
 	size_t len;
 	char p[GMT_BUFSIZ] = {""}, unit;
 	double value;
