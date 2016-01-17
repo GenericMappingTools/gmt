@@ -15,12 +15,16 @@ Synopsis
 
 **psconvert** *psfile(s)*
 [ |-A|\ [**u**][*margins*][**-**][**+g**\ *paint*\ ][**+p**\ [\ *pen*\ ]][**+r**][**+s**\ [**m**]\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
-[ |-C|\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [ **-F**\ *<out_name>* ]
+[ |-C|\ *gs_option* ]
+[ |-D|\ *outdir* ]
+[ |-E|\ *resolution* ]
+[ |-F|\ *<out_name>* ]
 [ |-G|\ *ghost_path* ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
 [ |-P| ]
-[ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
+[ |-Q|\ [**g**\ \|\ **t**][1\|2\|4] ]
+[ |-S| ]
 [ |-T|\ **b**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **s** \|\ **t** ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
