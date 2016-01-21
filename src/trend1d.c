@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Brief synopsis: Reads stdin or file of x y pairs, or weighted pairs as x,y w data.  Fit 
+ * Brief synopsis: Reads stdin or file of x y pairs, or weighted pairs as x,y w data.  Fit
  * a regression model y = f(x) + e, where e are error misfits and f(x) has
  * some user-prescribed functional form.  Presently available models are
  * polynomials and Fourier series.  The user may choose the number of terms
@@ -28,7 +28,7 @@
  * Date:	1 JAN 2010
  * Version:	5 API
  *
- * In trend1d I chose to construct the polynomial model using Chebyshev 
+ * In trend1d I chose to construct the polynomial model using Chebyshev
  * Polynomials so that the user may easily compare the sizes of the
  * coefficients (and compare with a Fourier series as well).  Tn(x)
  * is an n-degree polynomial with n zero-crossings in [-1,1] and n+1
@@ -41,30 +41,30 @@
  * is rescaled to match the original input values.
  *
  * An n degree polynomial can be written with terms of the form a0 + a1*x
- * + a2*x*x + ...  But it can also be written using other polynomial 
+ * + a2*x*x + ...  But it can also be written using other polynomial
  * basis functions, such as a0*P0 + a1*P1 + a2*P2..., the Legendre
  * polynomials, and a0*T0 + a1*T1 + a2*T2..., the Chebyshev polynomials.
  * (The domain of the x values has to be in [-1, 1] in order to use P or T.)
- * It is well known that the ordinary polynomial basis 1, x, x*x, ... gives 
+ * It is well known that the ordinary polynomial basis 1, x, x*x, ... gives
  * terribly ill- conditioned matrices.  The Ps and Ts do much better.
  * This is because the ordinary basis is far from orthogonal.  The Ps
  * are orthogonal on [-1,1] and the Ts are orthogonal on [-1,1] under a
  * simple weight function.
  * Because the Ps have ordinary orthogonality on [-1,1], I expected them
- * to be the best basis for a regression model; best meaning that they 
+ * to be the best basis for a regression model; best meaning that they
  * would lead to the most balanced G'G (matrix of normal equations) with
  * the smallest condition number and the most nearly diagonal model
  * parameter covariance matrix ((G'G)inverse).  It turns out, however, that
- * the G'G obtained from the Ts is very similar and usually has a smaller 
+ * the G'G obtained from the Ts is very similar and usually has a smaller
  * condition number than the Ps G'G.  Both of these are vastly superior to
  * the usual polynomials 1, x, x*x.  In a test with 1000 equally spaced
  * data and 8 model parameters, the Chebyshev system had a condition # = 10.6,
  * Legendre = 14.8, and traditional = 54722.7.  For 1000 randomly spaced data
  * and 8 model parameters, the results were C = 13.1, L = 15.6, and P = 54916.6.
- * As the number of model parameters approaches the number of data, the 
- * situation still holds, although all matrices get ill-conditioned; for 8 
+ * As the number of model parameters approaches the number of data, the
+ * situation still holds, although all matrices get ill-conditioned; for 8
  * random data and 8 model parameters, C = 1.8e+05, L = 2.6e+05, P = 1.1e+08.
- * I expected the Legendre polynomials to have a covariance matrix more nearly 
+ * I expected the Legendre polynomials to have a covariance matrix more nearly
  * diagonal than that of the Chebyshev polynomials, but on this criterion also
  * the Chebyshev turned out to do better.  Only as ndata -> n_model_parameters
  * does the Legendre covariance matrix do better than the Chebyshev.   So for
@@ -142,7 +142,7 @@ int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_
 		}
 
 		/* Data record to process */
-	
+
 		(*data)[i].x = (*data)[i].t = in[GMT_X];
 		(*data)[i].y = in[GMT_Y];
 		(*data)[i].w = (weighted_input) ? in[GMT_Z] : 1.0;
@@ -276,7 +276,7 @@ void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint
 
 	/* First find median { fabs(data[].r) },
 		estimate scale from this,
-		and compute chisq based on this.  */ 
+		and compute chisq based on this.  */
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
 	GMT_sort_array (GMT, work, n_data, GMT_DOUBLE);
@@ -439,15 +439,15 @@ void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a
 	/* Convert from Chebyshev coefficients used on a t =  [-1,+1] interval
 	 * to polynomial coefficients on the original x = [a b] interval.
 	 * Modified from Numerical Miracles, ...eh Recipes */
-	 
+
 	 unsigned int j, k;
 	 double sv, cnst, fac, *d, *dd;
-	 
+
 	 d  = GMT_memory (GMT, NULL, n, double);
 	 dd = GMT_memory (GMT, NULL, n, double);
-	 
+
 	 /* First we generate coefficients for a polynomial in t */
-	 
+
 	 d[0] = c[n-1];
 	 for (j = n - 2; j >= 1; j--) {
 	 	for (k = n - j; k >= 1; k--) {
@@ -483,18 +483,18 @@ void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a
 
 void *New_trend1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TREND1D_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct TREND1D_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->C.value = 1.0e06;		/* Condition number for matrix solution  */	
+	C->C.value = 1.0e06;		/* Condition number for matrix solution  */
 	C->I.value = 0.51;		/* Confidence interval for significance test  */
 	return (C);
 }
 
 void Free_trend1d_Ctrl (struct GMT_CTRL *GMT, struct TREND1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);	
+	GMT_free (GMT, C);
 }
 
 int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level) {
@@ -532,7 +532,7 @@ int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 (or 3 if -W is set) input columns.\n");
 	GMT_Option (API, "bo,d,h,i,s,:,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -608,7 +608,7 @@ int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct G
 		Ctrl->n_outputs++;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output columns \n");
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->model_parameters, 
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > 1 && Ctrl->model_parameters,
 					"Syntax error -F option: When selecting model parameters, it must be the only output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -621,7 +621,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 	unsigned int i, n_model, rank, np;
 	int error = 0;
 	bool significant;
-	
+
 	uint64_t n_data;
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
@@ -789,6 +789,11 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		}
 	}
 
+	/* Before output, convert back to polynomial coefficients, if desired */
+
+	if (!Ctrl->N.M.chebyshev)
+		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq);
@@ -796,18 +801,13 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 			if (Ctrl->N.M.chebyshev)
 				sprintf (format, "Model Coefficients  (Chebyshev");
 			else
-				sprintf (format, "Model Coefficients  (polynomial");
+				sprintf (format, "Model Coefficients  (Polynomial");
 		}
 		if (Ctrl->N.M.type & 2)	/* Has Fourier components */
 			strcat (format, " and Fourier");
-		strcat (format, ")\n");
+		strcat (format, "): ");
 		GMT_Report (API, GMT_MSG_VERBOSE, format);
 		sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
-		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
-		GMT_Message (API, GMT_TIME_NONE, "\n");
-		if (!Ctrl->N.M.chebyshev)
-			GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
-		GMT_Report (API, GMT_MSG_VERBOSE, "Model Coefficients (Polynomial): ");
 		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
 		GMT_Message (API, GMT_TIME_NONE, "\n");
 	}
@@ -827,11 +827,8 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->model_parameters)	/* Write any or all of the 'xymrw' */
 		write_output_trend1d (GMT, data, n_data, Ctrl->F.col, Ctrl->n_outputs);
-	else {				/* Write only the model parameters */
-		if (!Ctrl->N.M.chebyshev)
-			GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+	else				/* Write only the model parameters */
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, c_model);
-	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
