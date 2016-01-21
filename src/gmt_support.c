@@ -10804,6 +10804,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 #ifdef PS_MACRO
+	bool got_EPS = false;
 	struct stat buf;
 #endif
 
