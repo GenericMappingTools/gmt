@@ -10797,13 +10797,14 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	unsigned int k, nc = 0, nv, error = 0, var_symbol = 0;
 	int last;
 	size_t length;
-	bool do_fill, do_pen, first = true, got_EPS = false;
+	bool do_fill, do_pen, first = true;
 	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
 #ifdef PS_MACRO
+	bool got_EPS = false;
 	struct stat buf;
 #endif
 
