@@ -1229,22 +1229,32 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
+				double w_t, h_t;
+				w_t = w;	h_t = h;
+				if (Ctrl->A.resize) {		/* Here the BB is the new size itself */
+					w_t = Ctrl->A.new_size[0];		h_t = Ctrl->A.new_size[1];
+				}
 				if (got_BB && !Ctrl->A.round)
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w)), lrint (ceil(h)));
+					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w_t)), lrint (ceil(h_t)));
 				else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (w), lrint (h));
+					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (w_t), lrint (h_t));
 
 				got_BB = false;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
 				if (got_HRBB)
-					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w, h);
+					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w_t, h_t);
 				got_HRBB = false;
 				continue;
 			}
 			else if (!strncmp (line, "%%HiResBoundingBox:", 19)) {
+				double w_t, h_t;
+				w_t = w;	h_t = h;
+				if (Ctrl->A.resize) {		/* Here the BB is the new size itself */
+					w_t = Ctrl->A.new_size[0];		h_t = Ctrl->A.new_size[1];
+				}
 				if (got_HRBB)
-					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w, h);
+					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w_t, h_t);
 				got_HRBB = false;
 				continue;
 			}
