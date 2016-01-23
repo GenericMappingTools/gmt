@@ -3623,6 +3623,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		if (symbol->PS & 1) {	/* First time we must dump the PS code definition */
 			PSL_comment (PSL, "Start of symbol %s\n", symbol->name);
 			PSL_command (PSL, "/Sk_%s {\ngsave\n", symbol->name);
+			PSL_command (PSL, "/showpage {} def\n");	/* Temporarily disable showpage */
 			if ((symbol->PS & 4) == 0)	/* non-GMT5-produced EPS macro - scale points to GMT's unit */
 				PSL_command (PSL, "1200 72 div dup scale\n");
 			PSL_command (PSL, "%s", symbol->PS_macro);

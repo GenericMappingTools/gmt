@@ -1330,7 +1330,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "%% Recalculate translation and scale to obtain a resized image\n");
 					fprintf (fpo, "%g %g translate\n", new_off_x, new_off_y);
 					if (landscape_orig) {
-						fprintf (fpo, "gsave %g %g T 90 R %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
+						fprintf (fpo, "gsave %g %g translate 90 rotate %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
 					}
 					else
 						fprintf (fpo, "gsave %g %g scale\n", new_scale_x, new_scale_y);
