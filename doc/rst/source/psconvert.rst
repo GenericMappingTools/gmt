@@ -83,8 +83,8 @@ Optional Arguments
     This is going against Adobe Law but can be useful when creating very small images
     where the difference of one pixel might matter.
     If **-V** is used we also report the dimensions of the illustration.
-    Use **-A+g**\ *paint*\ to paint the BoundingBox behind the illustration and
-    use **-A+p**\ [\ *pen*\ ] to draw the BoundingBox outline (append a pen or accept
+    Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
+    use **-A+p**\ [\ *pen*] to draw the BoundingBox outline (append a pen or accept
     the default pen of 0.25p,black).
 
 .. _-C:
