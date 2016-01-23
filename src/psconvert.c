@@ -729,12 +729,12 @@ void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *
 	if (A->paint) {	/* Paint the background of the page */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
 		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
-		fprintf (fp, "V clippath %s F N U\n", psl_putcolor (GMT->PSL, A->fill.rgb));
+		fprintf (fp, "gsave clippath %s F N U\n", psl_putcolor (GMT->PSL, A->fill.rgb));
 	}
 	if (A->outline) {	/* Draw the outline of the page */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
 		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
-		fprintf (fp, "V %d W", psl_ip (GMT->PSL, 2.0*A->pen.width));	/* Double pen thickness since half will be clipped by BoundingBox */
+		fprintf (fp, "gsave %d W", psl_ip (GMT->PSL, 2.0*A->pen.width));	/* Double pen thickness since half will be clipped by BoundingBox */
 		if (A->pen.style[0]) fprintf (fp, " %s", psl_putdash (GMT->PSL, A->pen.style, A->pen.offset));
 		if (A->pen.rgb[0] > 0.0 || A->pen.rgb[1] > 0.0 || A->pen.rgb[2] > 0.0) fprintf (fp, "  %s", psl_putcolor (GMT->PSL, A->pen.rgb));
 		fprintf (fp, " clippath S U\n");
@@ -1296,7 +1296,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						n_scan = sscanf (line_, "%s %s %s %*s %*s %*s %s %s", c1, t1, t2, c2, c3);
 					else
 						n_scan = sscanf (line_, "%s %s %s", c1, c2, c3);
-					if (strcmp (c1, "V") || !(n_scan == 3 || n_scan == 5))
+					if ((strcmp (c1, "V") && strcmp (c1, "gsave")) || !(n_scan == 3 || n_scan == 5))
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Parsing of scale after %%%%BeginPageSetup failed\n");
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
 					GMT_free (GMT, line_);
@@ -1330,10 +1330,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "%% Recalculate translation and scale to obtain a resized image\n");
 					fprintf (fpo, "%g %g translate\n", new_off_x, new_off_y);
 					if (landscape_orig) {
-						fprintf (fpo, "V %g %g T 90 R %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
+						fprintf (fpo, "gsave %g %g T 90 R %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
 					}
 					else
-						fprintf (fpo, "V %g %g scale\n", new_scale_x, new_scale_y);
+						fprintf (fpo, "gsave %g %g scale\n", new_scale_x, new_scale_y);
 					set_background = false;
 					possibly_fill_or_outline_BoundingBox (GMT, &(Ctrl->A), fpo);
 				}
