@@ -1283,22 +1283,40 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				*/
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				char t1[8], t2[8];	/* To hold the translate part when landscape */
+				char t3[128];		/* To hold a copy of the last commented (%%) line */
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
 					int n_scan = 0;
 					size_t Lsize = 128U;
 					char *line_ = GMT_memory (GMT, NULL, Lsize, char);
 					BeginPageSetup_here = true;	/* Signal that on next line the job must be done */
 					line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten (unless a comment) */
-					while (line_[0] == '%')	/* Skip all comments until we get the first actionable line */
+					while (line_[0] == '%') {	/* Skip all comments until we get the first actionable line */
+						strncpy(t3, line_, 127);
 						line_reader (GMT, &line_, &Lsize, fp);
+					}
+
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
 					if (landscape_orig)
 						n_scan = sscanf (line_, "%s %s %s %*s %*s %*s %s %s", c1, t1, t2, c2, c3);
 					else
 						n_scan = sscanf (line_, "%s %s %s", c1, c2, c3);
-					if ((strcmp (c1, "V") && strcmp (c1, "gsave")) || !(n_scan == 3 || n_scan == 5))
-						GMT_Report (API, GMT_MSG_NORMAL, "Error: Parsing of scale after %%%%BeginPageSetup failed\n");
-					old_scale_x = atof (c2);		old_scale_y = atof (c3);
+					if ((strcmp (c1, "V") && strcmp (c1, "gsave")) || !(n_scan == 3 || n_scan == 5)) {
+						int c;
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Parsing of scale after %%%%BeginPageSetup failed\n"
+						                                 "\tMaking some assumptions to try to save the situation.\n");
+						old_scale_x = 1;		old_scale_y = 1;	/* Assume this */
+						/* Receed two lines to position us again in a comment line (hopefully %%EndPageSetup) */
+						fseek (fp, -(off_t)(strlen(line_)+strlen(t3)+2U), SEEK_CUR);
+						/* But because the line termination issue we must test if we seeked back long enough */
+						c = fgetc (fp);
+						if (c == '%')
+							fseek (fp, -(off_t)(1U), SEEK_CUR);		/* Just receed the read character (file is unix terminate) */
+						else
+							fseek (fp, -(off_t)(3U), SEEK_CUR);		/* Receed the character and 2 more because file is Win terminated */ 
+					}
+					else {
+						old_scale_x = atof (c2);		old_scale_y = atof (c3);
+					}
 					GMT_free (GMT, line_);
 				}
 				else if (BeginPageSetup_here) {
