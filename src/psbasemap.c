@@ -46,7 +46,7 @@ struct PSBASEMAP_CTRL {
 		bool active;
 		struct GMT_MAP_INSERT insert;
 	} D;
-	struct F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
+	struct F {	/* -F[d|f|l][+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
 		bool active;
 		/* The panels are members of GMT_MAP_SCALE, GMT_MAP_ROSE, and GMT_MAP_INSERT */
 	} F;
@@ -122,7 +122,7 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, k = 1;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *kind[3] = {"Specify a rectanglar panel for the map insert", "Specify a rectanglar panel behind the map scale", "Specify a rectanglar panel behind the map rose"};
@@ -148,17 +148,17 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 					case 'd': get_panel[0] = true; break;
 					case 'l': get_panel[1] = true; break;
 					case 't': get_panel[2] = true; break;
-					default : get_panel[0] = get_panel[1] = get_panel[2] = true; break;
+					default : get_panel[0] = get_panel[1] = get_panel[2] = true; k = 0; break;
 				}
-				if (get_panel[0] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.insert.panel))) {
+				if (get_panel[0] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.insert.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
-				if (get_panel[1] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->L.scale.panel))) {
+				if (get_panel[1] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
-				if (get_panel[2] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->T.rose.panel))) {
+				if (get_panel[2] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}

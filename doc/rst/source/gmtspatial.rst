@@ -251,6 +251,12 @@ To determine the intersections between the polygons A.txt and B.txt, run
 
     gmt spatial A.txt B.txt -Ie > crossovers.txt
 
+To truncate polygons A.txt against polygon B.txt, resulting in an open line segment, run
+
+   ::
+
+    gmt gmtspatial A.txt -TB.txt > line.txt
+
 See Also
 --------
 
