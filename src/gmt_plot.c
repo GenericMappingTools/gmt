@@ -3628,7 +3628,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		PSL_setorigin (PSL, x0, y0, 0.0, PSL_FWD);
 		for (i = symbol->n_required; i >= 0; i--) PSL_command (PSL, "%g ", size[i]);
 		PSL_command (PSL, "Sk_%s U\n", symbol->name);
-		return;
+		return (GMT_OK);
 	}
 #endif
 	/* Regular macro symbol */

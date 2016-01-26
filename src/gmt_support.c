@@ -8537,12 +8537,14 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
 	char string[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""}, oldshit[GMT_LEN128] = {""};
+	struct GMT_MAP_PANEL *save_panel = B->panel;	/* In case it was set and we wipe it below with GMT_memset */
 
 	if (!in_text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	GMT_memset (B, 1, struct GMT_MAP_INSERT);
+	B->panel = save_panel;	/* In case it is not NULL */
 
 	if (gmt_ensure_new_mapinsert_syntax (GMT, option, in_text, text, oldshit)) return (1);	/* This recasts any old syntax using new syntax and gives a warning */
 
@@ -8812,6 +8814,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	int error = 0, n;
 	char string[GMT_BUFSIZ] = {""};
+	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with GMT_memset */
 
 	if (!strstr (text, "+w")) return gmt_getscale_old (GMT, option, text, ms);	/* Old-style args */
 
@@ -8821,6 +8824,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	}
 
 	GMT_memset (ms, 1, struct GMT_MAP_SCALE);
+	ms->panel = save_panel;	/* In case it is not NULL */
 	ms->measure = 'k';	/* Default distance unit is km */
 	ms->alignment = 't';	/* Default label placement is on top */
 
@@ -9042,6 +9046,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	unsigned int error = 0, k, pos, order[4] = {3,1,0,2};
 	int n;
 	char txt_a[GMT_LEN256] = {""}, string[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
+	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with GMT_memset */
 
 	/* SYNTAX is -Td|m[g|j|n|x]<refpoint>+w<width>[+f[<kind>]][+i<pen>][+j<justify>][+l<w,e,s,n>][+m[<dec>[/<dlabel>]]][+o<dx>[/<dy>]][+p<pen>][+t<ints>]
 	 * 1)  +f: fancy direction rose, <kind> = 1,2,3 which is the level of directions [1].
@@ -9053,6 +9058,8 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
+	GMT_memset (ms, 1, struct GMT_MAP_ROSE);
+	ms->panel = save_panel;	/* In case it is not NULL */
 	if (!strstr (text, "+w")) return gmt_getrose_old (GMT, option, text, ms);	/* Old-style args */
 
 	/* Assign default values */
