@@ -6610,12 +6610,12 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_GMT_VERBOSE:
 			switch (GMT->current.setting.verbose) {
-				case GMT_MSG_QUIET:		strcpy (value, "quiet");	break;
-				case GMT_MSG_NORMAL:		strcpy (value, "normal");	break;
-				case GMT_MSG_VERBOSE:	strcpy (value, "verbose");	break;
-				case GMT_MSG_LONG_VERBOSE:	strcpy (value, "long_verbose");	break;
-				case GMT_MSG_DEBUG:		strcpy (value, "debug");	break;
-				default:				strcpy (value, "compat");	break;
+				case GMT_MSG_QUIET:         strcpy (value, "quiet");	break;
+				case GMT_MSG_NORMAL:        strcpy (value, "normal");	break;
+				case GMT_MSG_VERBOSE:       strcpy (value, "verbose");	break;
+				case GMT_MSG_LONG_VERBOSE:  strcpy (value, "long_verbose");	break;
+				case GMT_MSG_DEBUG:         strcpy (value, "debug");	break;
+				default:                    strcpy (value, "compat");	break;
 			}
 			break;
 
@@ -6623,22 +6623,22 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 
 		case GMTCASE_DIR_DATA:
 			/* Force update of session.DATADIR before copying the string */
-			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256);
+			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256-1);
 			break;
 		case GMTCASE_DIR_DCW:
 			/* Force update of session.DCWDIR before copying the string */
-			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256);
+			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256-1);
 			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
 			GMT_shore_adjust_res (GMT, 'c');
-			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256);
+			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256-1);
 			break;
 
 		/* TIME GROUP */
 
 		case GMTCASE_TIME_EPOCH:
-			strncpy (value, GMT->current.setting.time_system.epoch, GMT_LEN64);
+			strncpy (value, GMT->current.setting.time_system.epoch, GMT_LEN64-1);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (GMT->current.setting.time_is_interval)
@@ -11543,7 +11543,7 @@ struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, const char *session, uns
 	/* INIT settings */
 
 	GMT_memcpy (GMT->session.u2u, u2u, 1, u2u);
-	for (i = 0; i < 4; i++) strncpy (GMT->session.unit_name[i], unit_name[i], 8U);
+	for (i = 0; i < 4; i++) strncpy (GMT->session.unit_name[i], unit_name[i], 7U);
 	GMT_make_fnan (GMT->session.f_NaN);
 	GMT_make_dnan (GMT->session.d_NaN);
 	for (i = 0; i < 3; i++) GMT->session.no_rgb[i] = -1.0;
