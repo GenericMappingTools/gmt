@@ -648,7 +648,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from GMT->current.setting.io_gridfile_format */
 		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1)
-			strncpy (header->name, tmp, GMT_LEN256);    /* Strip off variable name */
+			strncpy (header->name, tmp, GMT_LEN256-1);    /* Strip off variable name */
 		/* parse grid format string: */
 		if ((val = parse_grd_format_scale (GMT, header, GMT->current.setting.io_gridfile_format)) != GMT_NOERROR)
 			return val;
@@ -658,8 +658,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	return (GMT_NOERROR);
 }
 
-void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Set unit strings for grid coordinates x, y and z based on
 	   output data types for columns 0, 1, and 2.
 	*/
