@@ -3796,14 +3796,15 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT,
+					            "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
 					if (GMT_getfill (GMT, &p[1], &(G->font_label.fill))) bad++;
 				}
 				else
 					bad++;
 				break;
 			case 'l':	/* Exact Label specification */
-				strncpy (G->label, &p[1], GMT_BUFSIZ);
+				strncpy (G->label, &p[1], GMT_BUFSIZ-1);
 				G->label_type = GMT_LABEL_IS_CONSTANT;
 				break;
 
@@ -3941,14 +3942,13 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 }
 
 /*! . */
-int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_CONTOUR *L)
-{
+int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_CONTOUR *L) {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
 	char txt_a[GMT_LEN256] = {""}, c, arg, *p = NULL;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
-	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
+	strncpy (L->option, &txt[1], GMT_BUFSIZ-1);	 /* May need to process L->option later after -R,-J have been set */
 	if ((p = strstr (txt, "+r"))) {	/* Want to isolate labels by given radius */
 		*p = '\0';	/* Temporarily chop off the +r<radius> part */
 		L->isolate = true;
@@ -4116,7 +4116,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 
 			case 's':	/* Symbol to place */
 				if (p[1]) {
-					strncpy(G->size, &p[2], GMT_LEN64);
+					strncpy(G->size, &p[2], GMT_LEN64-1);
 					G->symbol_code[0] = p[1];
 				}
 				break;
@@ -4154,14 +4154,13 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 }
 
 /*! . */
-int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DECORATE *L)
-{
+int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DECORATE *L) {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
 	char txt_a[GMT_LEN256] = {""}, c, arg;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
-	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
+	strncpy (L->option, &txt[1], GMT_BUFSIZ-1);	 /* May need to process L->option later after -R,-J have been set */
 	L->flag = flag;
 	/* Special check for quoted lines */
 	if (txt[0] == 'S' || txt[0] == 's') {	/* -SqS|n should be treated as -SqN|n once file is segmentized */
