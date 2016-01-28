@@ -4302,7 +4302,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 
 	/* Preliminary test-conversion to a number */
 
-	strncpy (copy, txt, GMT_LEN256);
+	strncpy (copy, txt, GMT_LEN256-1);
 	if (!GMT_not_numeric (GMT, copy)) {	/* Only check if we are not sure this is NOT a number */
 		expect = (strchr (copy, 'T')) ? GMT_IS_ABSTIME : GMT_IS_UNKNOWN;	/* Watch out for dateTclock-strings */
 		check = GMT_scanf (GMT, copy, expect, &tmp);
