@@ -96,7 +96,7 @@ int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	char varname[GMT_GRID_VARNAME_LEN80];
 
 	/* Extract levels name from variable name */
-	strncpy (varname, header->varname, GMT_GRID_VARNAME_LEN80);
+	strncpy (varname, header->varname, GMT_GRID_VARNAME_LEN80-1);
 	if (varname[0]) {
 		j = 0;
 		while (varname[j] && varname[j] != '[' && varname[j] != '(') j++;
@@ -254,8 +254,7 @@ void set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	GMT->current.setting.io_nc4_chunksize[1] = (size_t) ceil (header->nx / floor (header->nx / chunksize[1]));
 }
 
-int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job)
-{
+int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char job) {
 	int j, err;
 	int old_fill_mode;
 	double dummy[2], *xy = NULL;
@@ -620,7 +619,8 @@ L100:
 		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
-		if (header->varname[0] && !strcmp (header->z_units, "z")) strncpy (header->z_units, header->varname, GMT_GRID_UNIT_LEN80);
+		if (header->varname[0] && !strcmp (header->z_units, "z"))
+			strncpy (header->z_units, header->varname, GMT_GRID_UNIT_LEN80-1);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmt_nc_put_units (ncid, z_id, header->z_units);

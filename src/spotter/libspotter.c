@@ -348,6 +348,7 @@ bool spotter_GPlates_pair (char *file)
 	return (true);	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 }
 
+<<<<<<< .working
 unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R)
 {
 	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
@@ -397,8 +398,7 @@ void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e)
 	e->lat_r = e->lat * D2R;
 }
 
-unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max)
-{
+unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, bool flowline, bool total_out, bool invert, double *t_max) {
 	/* file;	Name of file with backward stage poles, always GEOCENTRIC */
 	/* p;		Pointer to stage pole array */
 	/* flowline;	true if flowlines rather than hotspot-tracks are needed */
@@ -452,7 +452,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		}
 		/* OK, here we have the two IDs */
 		if ((this_c = getenv ("GPLATES_ROTATIONS")))
-			strncpy (Rotations, this_c, GMT_BUFSIZ);
+			strncpy (Rotations, this_c, GMT_BUFSIZ-1);
 		else {
 			if (!GMT_getsharepath (GMT, "spotter", GPLATES_ROTATIONS, ".rot", Rotations, R_OK)) {	/* Decode GPlates rotations file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_ROTATIONS file : %s\n", Rotations);

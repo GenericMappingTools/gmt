@@ -6621,12 +6621,12 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_GMT_VERBOSE:
 			switch (GMT->current.setting.verbose) {
-				case GMT_MSG_QUIET:		strcpy (value, "quiet");	break;
-				case GMT_MSG_NORMAL:		strcpy (value, "normal");	break;
-				case GMT_MSG_VERBOSE:	strcpy (value, "verbose");	break;
-				case GMT_MSG_LONG_VERBOSE:	strcpy (value, "long_verbose");	break;
-				case GMT_MSG_DEBUG:		strcpy (value, "debug");	break;
-				default:				strcpy (value, "compat");	break;
+				case GMT_MSG_QUIET:         strcpy (value, "quiet");	break;
+				case GMT_MSG_NORMAL:        strcpy (value, "normal");	break;
+				case GMT_MSG_VERBOSE:       strcpy (value, "verbose");	break;
+				case GMT_MSG_LONG_VERBOSE:  strcpy (value, "long_verbose");	break;
+				case GMT_MSG_DEBUG:         strcpy (value, "debug");	break;
+				default:                    strcpy (value, "compat");	break;
 			}
 			break;
 
@@ -6634,22 +6634,22 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, const char *keyword)
 
 		case GMTCASE_DIR_DATA:
 			/* Force update of session.DATADIR before copying the string */
-			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256);
+			strncpy (value, (GMT->session.DATADIR) ? GMT->session.DATADIR : "", GMT_LEN256-1);
 			break;
 		case GMTCASE_DIR_DCW:
 			/* Force update of session.DCWDIR before copying the string */
-			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256);
+			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256-1);
 			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
 			GMT_shore_adjust_res (GMT, 'c');
-			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256);
+			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256-1);
 			break;
 
 		/* TIME GROUP */
 
 		case GMTCASE_TIME_EPOCH:
-			strncpy (value, GMT->current.setting.time_system.epoch, GMT_LEN64);
+			strncpy (value, GMT->current.setting.time_system.epoch, GMT_LEN64-1);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (GMT->current.setting.time_is_interval)
@@ -10026,7 +10026,7 @@ int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, S->font));
 					break;
 				case 'j':	S->justify = GMT_just_decode (GMT, &p[1], PSL_NO_DEF);	break;	/* text justification */
-				case 't':	strncpy (S->string, &p[1], GMT_LEN256);	break;	/* Get the symbol text */
+				case 't':	strncpy (S->string, &p[1], GMT_LEN256-1);	break;	/* Get the symbol text */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
 					error++;
@@ -10041,8 +10041,7 @@ int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S) {
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 /*! . */
-int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd)
-{
+int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd) {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = true when called to process command line options */
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
 	bool check = true, degenerate = false;
@@ -10156,7 +10155,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
 				p->size_y = p->given_size_y = 0.0;
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT,
+				            "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
 				one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
 				sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				p->v.v_width  = (float)GMT_to_inch (GMT, txt_a);
@@ -10170,7 +10170,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated; see -S%c syntax.\n", text[0]);
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
 				k = 2;
-				strncpy (arg, &text[2], GMT_LEN64);
+				strncpy (arg, &text[2], GMT_LEN64-1);
 			}
 		}
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
@@ -11561,7 +11561,7 @@ struct GMT_CTRL *New_GMT_Ctrl (struct GMTAPI_CTRL *API, const char *session, uns
 	/* INIT settings */
 
 	GMT_memcpy (GMT->session.u2u, u2u, 1, u2u);
-	for (i = 0; i < 4; i++) strncpy (GMT->session.unit_name[i], unit_name[i], 8U);
+	for (i = 0; i < 4; i++) strncpy (GMT->session.unit_name[i], unit_name[i], 7U);
 	GMT_make_fnan (GMT->session.f_NaN);
 	GMT_make_dnan (GMT->session.d_NaN);
 	for (i = 0; i < 3; i++) GMT->session.no_rgb[i] = -1.0;

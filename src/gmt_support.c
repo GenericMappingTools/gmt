@@ -3796,14 +3796,15 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT,
+					            "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
 					if (GMT_getfill (GMT, &p[1], &(G->font_label.fill))) bad++;
 				}
 				else
 					bad++;
 				break;
 			case 'l':	/* Exact Label specification */
-				strncpy (G->label, &p[1], GMT_BUFSIZ);
+				strncpy (G->label, &p[1], GMT_BUFSIZ-1);
 				G->label_type = GMT_LABEL_IS_CONSTANT;
 				break;
 
@@ -3941,14 +3942,13 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 }
 
 /*! . */
-int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_CONTOUR *L)
-{
+int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_CONTOUR *L) {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
 	char txt_a[GMT_LEN256] = {""}, c, arg, *p = NULL;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
-	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
+	strncpy (L->option, &txt[1], GMT_BUFSIZ-1);	 /* May need to process L->option later after -R,-J have been set */
 	if ((p = strstr (txt, "+r"))) {	/* Want to isolate labels by given radius */
 		*p = '\0';	/* Temporarily chop off the +r<radius> part */
 		L->isolate = true;
@@ -4116,7 +4116,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 
 			case 's':	/* Symbol to place */
 				if (p[1]) {
-					strncpy(G->size, &p[2], GMT_LEN64);
+					strncpy(G->size, &p[2], GMT_LEN64-1);
 					G->symbol_code[0] = p[1];
 				}
 				break;
@@ -4154,14 +4154,13 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 }
 
 /*! . */
-int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DECORATE *L)
-{
+int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DECORATE *L) {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
 	char txt_a[GMT_LEN256] = {""}, c, arg;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
-	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
+	strncpy (L->option, &txt[1], GMT_BUFSIZ-1);	 /* May need to process L->option later after -R,-J have been set */
 	L->flag = flag;
 	/* Special check for quoted lines */
 	if (txt[0] == 'S' || txt[0] == 's') {	/* -SqS|n should be treated as -SqN|n once file is segmentized */
@@ -10310,8 +10309,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 }
 
 /*! . */
-unsigned int GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels)
-{
+unsigned int GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels) {
 	unsigned int n = 0;
 
 	if (!T->active) return (0);	/* Nothing to do */
@@ -10388,8 +10386,7 @@ bool GMT_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLO
 }
 
 /*! . */
-int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord)
-{
+int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord) {
 	/* Returns the formatted annotation string for the non-geographic axes */
 
 	switch (GMT->current.map.frame.axis[T->parent].type) {
@@ -10419,8 +10416,7 @@ int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLO
 	return (GMT_OK);
 }
 
-int gmt_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, double y)
-{
+int gmt_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, double y) {
 	int justify, left, right, top, bottom, low;
 	double x0, y0;
 
@@ -10560,8 +10556,7 @@ int gmt_gnomonic_adjust (struct GMT_CTRL *GMT, double angle, double x, double y)
 }
 
 /*! . */
-int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double x, double y, unsigned int type, double *line_angle, double *text_angle, unsigned int *justify)
-{
+int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, double x, double y, unsigned int type, double *line_angle, double *text_angle, unsigned int *justify) {
 	bool set_angle;
 
 	if (!GMT->current.proj.edge[side]) return -1;		/* Side doesn't exist */
@@ -10602,7 +10597,7 @@ int GMT_prepare_label (struct GMT_CTRL *GMT, double angle, unsigned int side, do
 }
 
 /*! . */
-void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, bool do_hemi, unsigned int lonlat, bool worldmap)
+void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, bool do_hemi, unsigned int lonlat, bool worldmap) {
 /* val:		Degree value of annotation */
 /* label:	String to hold the final annotation */
 /* do_minutes:	true if degree and minutes are desired, false for just integer degrees */
@@ -10610,7 +10605,7 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 /* do_hemi:	true if compass headings (W, E, S, N) are desired */
 /* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
 /* worldmap:	T/F, whatever GMT->current.map.is_world is */
-{
+
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
 	bool zero_fix = false;
@@ -10853,7 +10848,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	}
 
 	head = GMT_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
-	strncpy (head->name, basename (name), GMT_LEN64);
+	strncpy (head->name, basename (name), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 #ifdef PS_MACRO
 		if (got_EPS) {	/* Working on an EPS symbol, just append the text as is */
