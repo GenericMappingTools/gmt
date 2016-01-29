@@ -348,7 +348,6 @@ bool spotter_GPlates_pair (char *file)
 	return (true);	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 }
 
-<<<<<<< .working
 unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R)
 {
 	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
