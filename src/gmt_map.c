@@ -3890,7 +3890,7 @@ void gmt_map_set_utmzone (struct GMT_CTRL *GMT) {
 	else if (clon < -180.0) clon += 360.0;
 	kx = irint (floor ((clon + 180.0) / 6.0)) + 1;	/* Best UTM zone */
 	GMT->current.proj.lon0 = -180.0 + kx * 6.0 - 3.0;	/* Best centered longitude */
-	if (GMT->common.R.wesn[YLO] > 0.0)
+	if (GMT->common.R.wesn[YLO] >= 0.0)		/* By doing >= we are implicitly saying that when no info we default to northern hemisphere */
 		GMT->current.proj.utm_hemisphere = +1;
 	else
 		GMT->current.proj.utm_hemisphere = -1;
