@@ -669,19 +669,19 @@ static int MGD77_Decode_Header_m77t (struct GMT_CTRL *GMT, struct MGD77_HEADER_P
 		switch (k) {
 			case  0:	strncpy (P->Survey_Identifier, word, 9U);			break;
 			case  1:	strncpy (P->Format_Acronym, word, 6U);				break;
-			case  2:	strncpy (P->Data_Center_File_Number, word, 9U);			break;
-			case  3:	strncpy (P->Parameters_Surveyed_Code, word, 6U);		break;
+			case  2:	strncpy (P->Data_Center_File_Number, word, 9U);		break;
+			case  3:	strncpy (P->Parameters_Surveyed_Code, word, 6U);	break;
 			case  4:	strncpy (P->File_Creation_Year, word, 4);
-					strncpy (P->File_Creation_Month, &word[4], 2);
-					strncpy (P->File_Creation_Day, &word[6], 2);			break;
+			            strncpy (P->File_Creation_Month, &word[4], 2);
+			            strncpy (P->File_Creation_Day, &word[6], 2);		break;
 			case  5:	strncpy (P->Source_Institution, word, 40U);			break;
-			case  6:	strncpy (P->Country, word, 19U);				break;
+			case  6:	strncpy (P->Country, word, 19U);					break;
 			case  7:	strncpy (P->Platform_Name, word, 22U);				break;
-			case  8:	P->Platform_Type_Code = word[0];				break;
+			case  8:	P->Platform_Type_Code = word[0];					break;
 			case  9:	strncpy (P->Platform_Type, word, 7U);				break;
 			case 10:	strncpy (P->Chief_Scientist, word, 33U);			break;
 			case 11:	strncpy (P->Project_Cruise_Leg, word, 59U);			break;
-			case 12:	strncpy (P->Funding, word, 21U);				break;
+			case 12:	strncpy (P->Funding, word, 21U);					break;
 			case 13:	strncpy (P->Survey_Departure_Year, word, 4);
 					strncpy (P->Survey_Departure_Month, &word[4], 2);
 					strncpy (P->Survey_Departure_Day, &word[6], 2);			break;
@@ -737,8 +737,7 @@ static int MGD77_Decode_Header_m77t (struct GMT_CTRL *GMT, struct MGD77_HEADER_P
 	return (NC_NOERR);
 }
 
-static int MGD77_Decode_Header_m77 (struct GMT_CTRL *GMT, struct MGD77_HEADER_PARAMS *P, char *record[], int dir)
-{
+static int MGD77_Decode_Header_m77 (struct GMT_CTRL *GMT, struct MGD77_HEADER_PARAMS *P, char *record[], int dir) {
 	/* Copies information between the header structure and the header records */
 	int k;
 
@@ -901,8 +900,7 @@ static int MGD77_Decode_Header_m77 (struct GMT_CTRL *GMT, struct MGD77_HEADER_PA
 	return (NC_NOERR);
 }
 
-static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *record, int seq)
-{
+static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *record, int seq) {
 	int got;
 
 	if (seq == 1) {	/* Check for MGD77 file header */
@@ -927,8 +925,7 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *GMT, FILE *fp, char *rec
 	return (MGD77_NO_ERROR);
 }
 
-static void MGD77_Select_All_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
-{
+static void MGD77_Select_All_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H) {
 	/* If MGD77_Select_Column has not been called, we want to return all the columns
 	 * present in the current file.  Here, we implement this default "-Fall" choice
 	 */
@@ -1125,8 +1122,7 @@ static int MGD77_Convert_To_New_Format (struct GMT_CTRL *GMT, char *line) {
 	return true;
 }
 
-static int MGD77_entry_in_MGD77record (struct GMT_CTRL *GMT, char *name, int *entry)
-{
+static int MGD77_entry_in_MGD77record (struct GMT_CTRL *GMT, char *name, int *entry) {
 	int i;
 
 	/* Returns the number in the MGD77 Datarecord number[x] and text[y] arrays */
@@ -2834,7 +2830,7 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 		if (has_suffix == MGD77_NOT_SET)	/* file name given without extension */
 			sprintf (F->path, "%s.%s", leg, MGD77_suffix[F->format]);
 		else
-			strncpy (F->path, leg, GMT_BUFSIZ);
+			strncpy (F->path, leg, GMT_BUFSIZ-1);
 	}
 	else
 		return (MGD77_UNKNOWN_MODE);
