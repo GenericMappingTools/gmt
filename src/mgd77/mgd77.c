@@ -117,8 +117,7 @@ int MGD77_nc_status (struct GMT_CTRL *GMT, int status)
 
 /* PRIVATE FUNCTIONS TO MGD77.C */
 
-static inline void MGD77_Set_Home (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
-{
+static inline void MGD77_Set_Home (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	char *this_c = NULL;
 
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
@@ -136,24 +135,21 @@ static inline void MGD77_Set_Home (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F
 #endif
 }
 
-static inline int MGD77_lt_test (double value, double limit)
-{
+static inline int MGD77_lt_test (double value, double limit) {
 	/* Test that checks for value < limit */
 
 	if (GMT_is_dnan (value)) return (false);	/* Cannot pass a test with a NaN */
 	return (value < limit);
 }
 
-static inline int MGD77_le_test (double value, double limit)
-{
+static inline int MGD77_le_test (double value, double limit) {
 	/* Test that checks for value <= limit */
 
 	if (GMT_is_dnan (value)) return (false);	/* Cannot pass a test with a NaN */
 	return (value <= limit);
 }
 
-static inline int MGD77_eq_test (double value, double limit)
-{
+static inline int MGD77_eq_test (double value, double limit) {
 	/* Test that checks for value == limit */
 
 	if (GMT_is_dnan (value) && GMT_is_dnan (limit)) return (true);	/* Matching two NaNs is OK... */
@@ -161,8 +157,7 @@ static inline int MGD77_eq_test (double value, double limit)
 	return (value == limit);
 }
 
-static inline int MGD77_bit_test (double value, double limit)
-{
+static inline int MGD77_bit_test (double value, double limit) {
 	unsigned int ivalue, ilimit;
 
 	/* Test that checks for (value & limit) > 0 */
@@ -4145,7 +4140,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				NGDC_ID_likely = ((n_dig == length) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
 			}
 			else {	/* Gave a specific file with extension - pass along as is.  MGD77_Get_Path will bitch if extension is inactive */
-				strncpy (this_arg, opt->arg, GMT_BUFSIZ);
+				strncpy (this_arg, opt->arg, GMT_BUFSIZ-1);
 				length = strlen (this_arg);
 				NGDC_ID_likely = false;
 			}
