@@ -891,7 +891,7 @@ int GMT_colorname2index (struct GMT_CTRL *GMT, char *name) {
 	int k;
 	char Lname[GMT_LEN64] = {""};
 
-	strncpy (Lname, name, GMT_LEN64);
+	strncpy (Lname, name, GMT_LEN64-1);
 	GMT_str_tolower (Lname);
 	k = GMT_hash_lookup (GMT, Lname, GMT->session.rgb_hashnode, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
@@ -1663,8 +1663,7 @@ char *GMT_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen) {
 	return (text);
 }
 
-void GMT_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P)
-{
+void GMT_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 	for (int k = 0; k < 2; k++) {
 		GMT_free (GMT, P->end[k].V);
 	}
@@ -1681,8 +1680,8 @@ void GMT_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P)
 #define GMT_INC_UNITS		63
 
 /*! . */
-bool GMT_getinc (struct GMT_CTRL *GMT, char *line, double inc[])
-{	/* Special case of getincn use where n is two. */
+bool GMT_getinc (struct GMT_CTRL *GMT, char *line, double inc[]) {
+	/* Special case of getincn use where n is two. */
 
 	int n;
 
