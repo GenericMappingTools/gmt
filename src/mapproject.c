@@ -136,8 +136,7 @@ void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
@@ -203,8 +202,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mapproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -267,7 +265,8 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 			case 'C':
 				Ctrl->C.active = true;
 				if (opt->arg[0]) {	/* Also gave shifts */
-					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2, "Syntax error: Expected -C[<false_easting>/<false_northing>]\n");
+					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
+					                                 "Syntax error: Expected -C[<false_easting>/<false_northing>]\n");
 					Ctrl->C.shift = true;
 				}
 				break;
@@ -293,7 +292,8 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 					if (n_slash == 2) {
 						Ctrl->G.sph = (c == '-') ? 0 : ((c == '+') ? 2 : 1);
 						Ctrl->G.unit = (c == '-' || c == '+') ? d : c;
-						n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->G.unit), "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
+						n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->G.unit),
+						                                 "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
 					}
 					if (Ctrl->G.unit == 'c') GMT_set_cartesian (GMT, GMT_IN);	/* Cartesian */
 					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error: Expected -G<lon0>/<lat0>[/[-|+]%s|c|C]\n", GMT_LEN_UNITS_DISPLAY);
@@ -337,10 +337,12 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 					Ctrl->L.sph = 1;	/* Great circle distances */
 					if (k > 0 && (Ctrl->L.file[k] == '-' || Ctrl->L.file[k] == '+')) Ctrl->L.sph = (Ctrl->L.file[k] == '-') ? 0 : 2;	/* Gave [-|+]unit */
 					Ctrl->L.file[slash] = '\0';
-					n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit), "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
+					n_errors += GMT_check_condition (GMT, !strchr (GMT_LEN_UNITS "cC", (int)Ctrl->L.unit),
+					                                 "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
 				}
-				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since user wants spherical distances */
-				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';	/* Internally, this is Cartesian data and distances */
+				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !GMT_is_geographic (GMT, GMT_IN))
+					GMT_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
+				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
 				if (!GMT_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case 'N':
@@ -380,7 +382,9 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 					strcpy (to, "-");
 					strncpy (from, &opt->arg[k], GMT_LEN256);
 				}
-				n_errors += GMT_check_condition (GMT, GMT_set_datum (GMT, to, &Ctrl->T.to) == -1 || GMT_set_datum (GMT, from, &Ctrl->T.from) == -1, "Syntax error -T: Usage -T[h]<from>[/<to>]\n");
+				n_errors += GMT_check_condition (GMT, GMT_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
+				                                 GMT_set_datum (GMT, from, &Ctrl->T.from) == -1,
+				                                 "Syntax error -T: Usage -T[h]<from>[/<to>]\n");
 				break;
 			case 'W':
 				Ctrl->W.active = true;
@@ -396,18 +400,23 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0, "Syntax error: -T cannot work with -E, -G or -L\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
+	                                 "Syntax error: -T cannot work with -E, -G or -L\n");
 	/* Can only do one of -A, -G and -L */
 	g_dist = (Ctrl->G.mode > 0);
-	n_errors += GMT_check_condition (GMT, (g_dist + Ctrl->A.active + Ctrl->L.active) > 1, "Syntax error: Can only specify one of -A, -G and -L\n");
+	n_errors += GMT_check_condition (GMT, (g_dist + Ctrl->A.active + Ctrl->L.active) > 1,
+	                                 "Syntax error: Can only specify one of -A, -G and -L\n");
 	n_errors += GMT_check_condition (GMT, geodetic_calc && Ctrl->I.active, "Syntax error: -A, -G, and -L cannot work with -I\n");
 	/* Can only do -p for forward projection */
 	n_errors += GMT_check_condition (GMT, GMT->common.p.active && Ctrl->I.active, "Syntax error: -p cannot work with -I\n");
 	/* Must have -J */
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C', "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && (Ctrl->G.mode || Ctrl->L.active) && Ctrl->G.unit == 'C',
+	                                 "Syntax error: Must specify -J option with selected form of -G or -L when unit is C\n");
 	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
-		n_errors += GMT_check_condition (GMT, !GMT->current.proj.utm_zoney && GMT->current.proj.utm_hemisphere == 0, "Syntax error: -Ju need zone specification with latitude or hemisphere selection\n");
-		if (GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, GMT->common.R.wesn)) {
+		if (GMT->current.proj.utm_hemisphere == 0)		/* Default to N hemisphere if nothing is known */
+			GMT->current.proj.utm_hemisphere = 1;
+		if (GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney,
+		                         GMT->current.proj.utm_hemisphere, GMT->common.R.wesn)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
 			n_errors++;
 		}
@@ -417,11 +426,15 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 
 		GMT->common.R.active = true;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active || Ctrl->N.active || Ctrl->Q.active), "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_access (GMT, Ctrl->L.file, R_OK),
+	                                 "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active ||
+	                                 Ctrl->N.active || Ctrl->Q.active), "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -D and -F\n");
-	n_errors += GMT_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) && GMT->common.b.active[GMT_IN] && GMT_get_cols (GMT, GMT_IN) < 3, "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
+	n_errors += GMT_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) &&
+	                                 GMT->common.b.active[GMT_IN] && GMT_get_cols (GMT, GMT_IN) < 3,
+	                                 "Syntax error: For -E or -T, binary input data (-bi) must have at least 3 columns\n");
 
 	if (!(n_errors || GMT->common.R.active)) {
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
@@ -434,8 +447,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mapproject_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mapproject (void *V_API, int mode, void *args)
-{
+int GMT_mapproject (void *V_API, int mode, void *args) {
 	int x, y, ks, rmode, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	bool line_start = true, do_geo_conv = false;
@@ -482,7 +494,8 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	Ctrl = New_mapproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mapproject_parse (GMT, Ctrl, options)) != 0) Return (error);
 	if (!GMT->common.J.active && !GMT_is_geographic (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */
-		if ((Ctrl->G.active && Ctrl->G.unit != 'X') || (Ctrl->L.active && Ctrl->L.unit != 'X')) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
+		if ((Ctrl->G.active && Ctrl->G.unit != 'X') || (Ctrl->L.active && Ctrl->L.unit != 'X'))
+			GMT_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
 	}
 
 	/*---------------------------- This is the mapproject main code ----------------------------*/
@@ -493,7 +506,9 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 		for (i = 0; i < GMT_N_ELLIPSOIDS; i++) {
 			(i == GMT->current.setting.proj_ellipsoid) ? GMT_Message (API, GMT_TIME_NONE, "->") : GMT_Message (API, GMT_TIME_NONE,  "  ");
-			GMT_Message (API, GMT_TIME_NONE, "%-23s %4ld %13.3f %14.9f\n", GMT->current.setting.ref_ellipsoid[i].name, GMT->current.setting.ref_ellipsoid[i].date, GMT->current.setting.ref_ellipsoid[i].eq_radius, 1.0/GMT->current.setting.ref_ellipsoid[i].flattening);
+			GMT_Message (API, GMT_TIME_NONE, "%-23s %4ld %13.3f %14.9f\n",
+			             GMT->current.setting.ref_ellipsoid[i].name, GMT->current.setting.ref_ellipsoid[i].date,
+			             GMT->current.setting.ref_ellipsoid[i].eq_radius, 1.0/GMT->current.setting.ref_ellipsoid[i].flattening);
 		}
 		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 	}
@@ -503,7 +518,10 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------------------------------------\n");
 		for (i = 0; i < GMT_N_DATUMS; i++) {
 			(!strcmp (GMT->current.setting.proj_datum[i].name, "WGS 1984")) ? GMT_Message (API, GMT_TIME_NONE, "->") : GMT_Message (API, GMT_TIME_NONE,  "  ");
-			GMT_Message (API, GMT_TIME_NONE, "%3ld %-34s %-23s %5.0f %5.0f %5.0f %s\n", i, GMT->current.setting.proj_datum[i].name, GMT->current.setting.proj_datum[i].ellipsoid, GMT->current.setting.proj_datum[i].xyz[0], GMT->current.setting.proj_datum[i].xyz[1], GMT->current.setting.proj_datum[i].xyz[2], GMT->current.setting.proj_datum[i].region);
+			GMT_Message (API, GMT_TIME_NONE, "%3ld %-34s %-23s %5.0f %5.0f %5.0f %s\n",
+			             i, GMT->current.setting.proj_datum[i].name, GMT->current.setting.proj_datum[i].ellipsoid,
+			             GMT->current.setting.proj_datum[i].xyz[0], GMT->current.setting.proj_datum[i].xyz[1],
+			             GMT->current.setting.proj_datum[i].xyz[2], GMT->current.setting.proj_datum[i].region);
 		}
 		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------------------------------------\n");
 	}
@@ -1076,10 +1094,14 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && n_read > 0) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\n", n);
-		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		if (!geodetic_calc) {
-			sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n",
+			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+			         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (API, GMT_MSG_VERBOSE, format, x_out_min, x_out_max, y_out_min, y_out_max);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
