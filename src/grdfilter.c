@@ -663,7 +663,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 				if (strchr (GRDFILTER_FILTERS, opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = true;
 					Ctrl->F.filter = opt->arg[0];
-					strncpy (txt, opt->arg, GMT_LEN256);	/* Work on a copy */
+					strncpy (txt, opt->arg, GMT_LEN256-1);	/* Work on a copy */
 					if (Ctrl->F.filter == 'm') {
 						if ((p = strchr (txt, 'q'))) {	/* Requested another quantile */
 							*(--p) = 0;	/* Chop off the +q modifier */
@@ -674,7 +674,8 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 						if (GMT_check_filearg (GMT, 'F', &opt->arg[1], GMT_IN, GMT_IS_GRID))
 							Ctrl->F.file = strdup (&opt->arg[1]);
 						else {
-								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F%c: Cannot access filter weight grid %s\n", Ctrl->F.filter, &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F%c: Cannot access filter weight grid %s\n",
+								            Ctrl->F.filter, &opt->arg[1]);
 								n_errors++;
 							}
 						Ctrl->F.width = 1.0;	/* To avoid error checking below */
@@ -802,8 +803,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 	unsigned int n_conv_tot = 0;
 #endif
 
-int GMT_grdfilter (void *V_API, int mode, void *args)
-{
+int GMT_grdfilter (void *V_API, int mode, void *args) {
 	bool fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, get_weight_sum = true;
 	unsigned int n_nan = 0, col_out, row_out, effort_level;
