@@ -3437,7 +3437,7 @@ void GMT_savepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen) {
 	pen->width = PSL->current.linewidth;
 	pen->offset = PSL->current.offset;
 	if (PSL->current.style[0])
-		strncpy (pen->style, PSL->current.style, GMT_PEN_LEN);
+		strncpy (pen->style, PSL->current.style, GMT_PEN_LEN-1);
 	else
 		memset (pen->style, 0, GMT_PEN_LEN);
 	GMT_rgb_copy (pen->rgb, PSL->current.rgb[PSL_IS_STROKE]);
@@ -3584,8 +3584,8 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 	}
 }
 
-void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name, unsigned int id)
-{	/* Create the custom symbol macro that selects the correct font and size for the symbol item */
+void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name, unsigned int id) {
+	/* Create the custom symbol macro that selects the correct font and size for the symbol item */
 
 	bool encode = (PSL->init.encoding && !PSL->internal.font[font_no].encoded);
 
@@ -3600,8 +3600,7 @@ void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name,
 
 #define GMT_N_COND_LEVELS	10	/* Number of max nesting level for conditionals */
 
-int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
-{
+int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
 	int action;
 	unsigned int na, i, id = 0, level = 0, start = 0, *type = NULL;
 	bool flush = false, this_outline = false, found_elseif = false, skip[GMT_N_COND_LEVELS+1];
@@ -3778,7 +3777,8 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					action = s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", action, (char)action);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+					            "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", action, (char)action);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 					break;
 				}
@@ -3863,7 +3863,8 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", action, (char)action);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+				            "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", action, (char)action);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				break;
 		}
@@ -3970,8 +3971,7 @@ void gmt_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT
 	}
 }
 
-void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode)
-{
+void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode) {
 	uint64_t seg, k;
 	unsigned int *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
@@ -3987,8 +3987,8 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 }
 
-void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode)
-{	/* mode controls what takes place:
+void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_CONTOUR *G, unsigned int mode) {
+	/* mode controls what takes place:
 	 * mode = 1: We place all the PSL variables required to use the text for clipping of painting.
 	 * mode = 2: We paint the text that is stored in the PSL variables.
 	 * mode = 4: We use the text stored in the PSL variables to set up a clip path.  CLipping is turned ON.
@@ -4104,15 +4104,13 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	}
 }
 
-void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[])
-{
+void GMT_textpath_init (struct GMT_CTRL *GMT, struct GMT_PEN *BP, double Brgb[]) {
 	PSL_comment (GMT->PSL, "Pen and fill for text boxes (if enabled):\n");
 	PSL_defpen (GMT->PSL, "PSL_setboxpen", BP->width, BP->style, BP->offset, BP->rgb);
 	PSL_defcolor (GMT->PSL, "PSL_setboxrgb", Brgb);
 }
 
-void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
-{
+void GMT_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 	unsigned int i, mode;
 	bool no_labels;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -4386,8 +4384,7 @@ void ellipsoid_name_convert (char *inname, char outname[]) {
 		sprintf(outname, "unnamed");
 }
 
-struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
-{
+struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
 
@@ -4523,8 +4520,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	return (PSL);
 }
 
-void GMT_plotcanvas (struct GMT_CTRL *GMT)
-{
+void GMT_plotcanvas (struct GMT_CTRL *GMT) {
 	if (GMT->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
 		double *x = NULL, *y = NULL;
 		uint64_t np;
@@ -4584,8 +4580,7 @@ void GMT_geo_line (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n)
 	GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);	/* Separately plot the outline */
 }
 
-uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, bool init, const char *comment)
-{
+uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n, bool init, const char *comment) {
 	/* When geographic data are plotted, polygons that cross the west map boundary will
 	 * sometimes appear on the area bounded by the east map boundary - they "wrap around".
 	 * This usually means we have a global map with (east-west) = 360.
@@ -4717,8 +4712,7 @@ uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 	return (total);
 }
 
-uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment)
-{
+uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, bool add_pole, bool first, const char *comment) {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
 	 * That detour will not be drawn, only used for fill. */
@@ -4745,8 +4739,8 @@ uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *
 	return (k);	/* Number of points plotted */
 }
 
-void GMT_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
-{	/* Deal with plotting of one or more polygons that may wrap across the map.
+void GMT_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+	/* Deal with plotting of one or more polygons that may wrap across the map.
  	 * Multi-polygons occur if composed of a perimeter and one or more holes.
  	 * This is marked by S->next being set to point to the next hole.
 	 * Also, if the perimeter is a polar cap we must add a helping line that
@@ -4813,8 +4807,7 @@ void GMT_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	}
 }
 
-void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major, double minor, double azimuth)
-{
+void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major, double minor, double azimuth) {
 	/* GMT_geo_ellipse takes the location, axes (in km), and azimuth of an ellipse
 	   and draws an approximate ellipse using GMT_ELLIPSE_APPROX points and the chosen map projection */
 
@@ -4869,8 +4862,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 }
 
-float gmt_inch_to_degree_scale (struct GMT_CTRL *GMT)
-{
+float gmt_inch_to_degree_scale (struct GMT_CTRL *GMT) {
 	/* Determine the map scale at the center of the map and use that to scale items in inches to spherical degrees
 	 * anywhere on the map. We pick the center as the map distortion will be the least here.
 	 * This scaling is approximate only but needed to convert geovector head lengths to degrees. */

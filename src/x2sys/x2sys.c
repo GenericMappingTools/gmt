@@ -474,7 +474,7 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	unsigned int i = 0, j, pos = 0;
 
-	strncpy (s->fflags, string, GMT_BUFSIZ);
+	strncpy (s->fflags, string, GMT_BUFSIZ-1);
 	strncpy (line, string, GMT_BUFSIZ);	/* Make copy for later use */
 	GMT_memset (s->use_column, s->n_fields, bool);
 
@@ -721,12 +721,12 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
   		if (x2sys_get_data_path (GMT, path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 	else {
-		char name[80] = {""};
+		char name[82] = {""};
 		if (!(s->flags & 1)) {	/* Must init gmt file paths */
 			gmtmggpath_init (GMT);
 			s->flags |= 1;
 		}
-		strncpy (name, fname, 80U);
+		strncpy (name, fname, 81U);
 		if (strstr (fname, ".gmt")) name[strlen(fname)-4] = 0;	/* Name includes .gmt suffix, remove it */
 	  	if (gmtmggpath_func (path, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 

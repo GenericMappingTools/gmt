@@ -116,7 +116,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 					header->flags[1] = '1';	/* Flag to let us know the file type */
 					/* Store the file name with all extensions removed.
 					 * We'll use this to create header from file name info */
-					strncpy (header->title, file, GMT_GRID_TITLE_LEN80);
+					strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 				}
 			}
 			else {
