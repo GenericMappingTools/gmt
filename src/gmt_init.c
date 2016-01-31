@@ -7205,7 +7205,7 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 	}
 	else if ((epoch = strstr (name, "since"))) {
 		epoch += 6;
-		strncpy (time_system->epoch, epoch, GMT_LEN64);
+		strncpy (time_system->epoch, epoch, GMT_LEN64-1);
 		time_system->unit = name[0];
 		if (!strncmp (name, "mon", 3U)) time_system->unit = 'o';
 	}
