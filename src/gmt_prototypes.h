@@ -438,6 +438,7 @@ EXTERN_MSC int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM
 EXTERN_MSC void GMT_conv_datum (struct GMT_CTRL *GMT, double in[], double out[]);
 EXTERN_MSC uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n_orig, double **x, double **y, uint64_t *total_nx);
 EXTERN_MSC void GMT_set_spherical (struct GMT_CTRL *GMT, bool notify);
+EXTERN_MSC void GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon, double plat, double colat, uint64_t m, double **lons, double **lats);
 
 /* gmt_shore.c: */
 
