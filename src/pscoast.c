@@ -334,16 +334,17 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 					}
 				}
 				Ctrl->F.active = true;
+				k = 1;
 				switch (opt->arg[0]) {
 					case 'l': get_panel[0] = true; break;
 					case 't': get_panel[1] = true; break;
-					default : get_panel[0] = get_panel[1] = true; break;
+					default : get_panel[0] = get_panel[1] = true; k = 0; break;
 				}
-				if (get_panel[0] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->L.scale.panel))) {
+				if (get_panel[0] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
-				if (get_panel[1] && GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->T.rose.panel))) {
+				if (get_panel[1] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
 					GMT_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}
