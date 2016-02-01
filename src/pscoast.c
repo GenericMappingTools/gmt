@@ -133,7 +133,7 @@ struct PSCOAST_CTRL {
 		bool active;
 	} Q;
 	struct S {	/* -S<fill> */
-		bool active, sun_active, sun_params_only;
+		bool active;
 		bool clip;
 		struct GMT_FILL fill;
 	} S;
@@ -146,6 +146,9 @@ struct PSCOAST_CTRL {
 		bool use[GSHHS_MAX_LEVEL];
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
+	struct Z {	/* -Z... Solar stuff */
+		bool active, sun_params_only;
+	} Z;
 #ifdef DEBUG
 	struct DBG {	/* -+<bin> */
 		bool active;
@@ -461,18 +464,12 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				Ctrl->Q.active = true;
 				break;
 			case 'S':		/* Set ocean color if needed */
-				if (opt->arg[0] == '+' && opt->arg[1] == 'd') {
-					Ctrl->S.sun_active = true;
-					Ctrl->S.sun_params_only = true;
-				}
-				else {
-					Ctrl->S.active = true;
-					if (opt->arg[0] == 'c' && opt->arg[1] == '\0')
-						Ctrl->S.clip = true;
-					else if (GMT_getfill (GMT, opt->arg, &Ctrl->S.fill)) {
-						GMT_fill_syntax (GMT, 'S', " ");
-						n_errors++;
-					}
+				Ctrl->S.active = true;
+				if (opt->arg[0] == 'c' && opt->arg[1] == '\0')
+					Ctrl->S.clip = true;
+				else if (GMT_getfill (GMT, opt->arg, &Ctrl->S.fill)) {
+					GMT_fill_syntax (GMT, 'S', " ");
+					n_errors++;
 				}
 				break;
 			case 'T':
@@ -503,6 +500,10 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 					for (k = 0; k < GSHHS_MAX_LEVEL; k++) Ctrl->W.use[k] = true;
 				}
 				break;
+			case 'Z':
+				Ctrl->Z.active = true;
+				Ctrl->Z.sun_params_only = true;
+				break;
 #ifdef DEBUG
 			case '+':
 				Ctrl->debug.active = true;
@@ -517,7 +518,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	}
 
 	/* When no projection specified, use fake linear projection */ 
-	if (Ctrl->S.sun_active) {
+	if (Ctrl->Z.active) {
 		if (!GMT->common.J.active) {
 			GMT_parse_common_options (GMT, "J", 'J', "X1d");
 			GMT->common.J.active = true; 
@@ -587,7 +588,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "Syntax error: Must choose between dumping and clipping/plotting\n");
 	n_errors += GMT_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0, "-JE not implemented for global clipping - I quit\n");
 	n_errors += GMT_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active), "Cannot do clipping AND draw coastlines, rivers, or borders\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->S.sun_active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->Z.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -E, -I, -N, and -W\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active), "Syntax error: -F is only allowed with -L and -T\n");
 
@@ -772,7 +773,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		Ctrl->I.active = false;
 	}
 
-	if (!(need_coast_base || Ctrl->E.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active || Ctrl->S.sun_active)) {
+	if (!(need_coast_base || Ctrl->E.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active || Ctrl->Z.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "No GSHHG databases available - must abort\n");
 		Return (EXIT_FAILURE);
 	}
@@ -812,7 +813,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);
 		}
 	}
-	else if (Ctrl->S.sun_params_only) {
+	else if (Ctrl->Z.sun_params_only) {
 		Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
 		solar_params (GMT, Ctrl, Sun);
 	}
@@ -1182,7 +1183,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		GMT_br_cleanup (GMT, &b);
 	}
 
-	if (!Ctrl->M.active && !Ctrl->S.sun_params_only) {
+	if (!Ctrl->M.active && !Ctrl->Z.sun_params_only) {
 		if (GMT->current.map.frame.init) {
 			GMT->current.map.is_world = world_map_save;
 			GMT_map_basemap (GMT);
@@ -1210,7 +1211,7 @@ int solar_params (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct SUN_PA
 	int    TZ, year, month;
 	struct tm *UTC; 
 	time_t right_now = time (NULL); 
-	double JC, JD, UT, L, M, C, var_y, t, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
+	double JC, JD, UT, L, M, C, var_y, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
 	double EEO, HA_Sunrise, TrueSolarTime, SolarDec;
 	double lon_pt = 0, lat_pt = 0;
 	double radius = 90.833;		/* Sun radius (16' + 34.5' from the light refraction effect) */
@@ -1225,20 +1226,16 @@ int solar_params (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct SUN_PA
 	/* tm_mon is 0-11, so add 1 for 1-12 range, tm_year is years since 1900, so add 1900, but tm_mday is 1-31 so use as is */
 	year = UTC->tm_year + 1900;
 	month = UTC->tm_mon + 1;
-	JD = 367.0 * year - floor(7.0 * (year + floor((month + 9.0) / 12) ) / 4) - 
+	JD = 367.0 * year - floor(7.0 * (year + floor((month + 9.0) / 12) ) / 4) -		/* Julian day */
 		floor(3.0 * (floor((year + (month - 9.0) / 7) / 100) + 1 ) / 4) +
 		floor((275.0 * month) / 9) + UTC->tm_mday + 1721028.5 + (UT / 24);
 
 	JC = (JD - 2451545) / 36525;		/* number of Julian centuries since Jan 1, 2000, 12 UT */
 	L = 280.46645 + 36000.76983 * JC + 0.0003032 * JC * JC;		/* Sun mean longitude, degree */
-	//L = (L % 360);		
-	t = L / 360;
-	if (fabs(t) > 1) L = (t - floor(t)) * 360;
+	L = fmod(L, 360);		
 	if (L < 0) L = L + 360;
 	M = 357.5291 + 35999.0503 * JC - 0.0001559 * JC * JC - 0.00000048 * JC * JC * JC;		/* mean anomaly, degrees */
-	//M = (M % 360);
-	t = M / 360;
-	if (fabs(t) > 1) M = (t - floor(t)) * 360;
+	M = fmod(M, 360);
 	if (M < 0) M = M + 360;
 
 	M = M * D2R;
@@ -1262,9 +1259,7 @@ int solar_params (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct SUN_PA
 	Sun->Sunrise = Sun->SolarNoon - HA_Sunrise * 4 / 1440;
 	Sun->Sunset  = Sun->SolarNoon + HA_Sunrise * 4 / 1440;
 	Sun->Sunlight_duration = 8 * HA_Sunrise;
-	TrueSolarTime = UT/24 * 1440 + Sun->EQ_time + 4 * lon_pt - 60 * TZ;
-	t = TrueSolarTime / 1440;
-	if (fabs(t) > 1) TrueSolarTime = (t - floor(t)) * 1440;
+	TrueSolarTime = fmod(UT/24 * 1440 + Sun->EQ_time + 4 * lon_pt - 60 * TZ, 1440);
 
 	if (TrueSolarTime < 0)
 		Sun->HourAngle = TrueSolarTime / 4 + 180;
@@ -1292,12 +1287,9 @@ int solar_params (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct SUN_PA
 
 	sz = (90 - Sun->SolarElevation) * D2R;		/* Another auxiliary variable */
 	if (Sun->HourAngle > 0)
-		Sun->SolarAzim = acos(((sin(lat_pt)*cos(sz)) - sin(SolarDec))/(cos(lat_pt)*sin(sz))) / D2R + 180;
+		Sun->SolarAzim = fmod(acos(((sin(lat_pt)*cos(sz)) - sin(SolarDec))/(cos(lat_pt)*sin(sz))) / D2R + 180, 360);
 	else
-		Sun->SolarAzim = 540.0 - acos(((sin(lat_pt)*cos(sz)) - sin(SolarDec))/(cos(lat_pt)*sin(sz))) / D2R;
-
-	t = Sun->SolarAzim / 360;
-	if (fabs(t) > 1) Sun->SolarAzim = (t - floor(t)) * 360;
+		Sun->SolarAzim = fmod(540.0 - acos(((sin(lat_pt)*cos(sz)) - sin(SolarDec))/(cos(lat_pt)*sin(sz))) / D2R, 360);
 
 	fprintf(stderr, "Sun long = %g\tSun lat = %g\n", -Sun->HourAngle, Sun->SolarDec);
 
