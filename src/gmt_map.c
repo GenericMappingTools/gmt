@@ -8729,3 +8729,33 @@ void GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon, double plat, double
 	*lons = x;
 	*lats = y;
 }
+
+/*! . */
+struct GMT_DATASEGMENT * GMT_get_smallcircle2 (struct GMT_CTRL *GMT, double plon, double plat, double colat, uint64_t m)
+{
+	/* Function to generate m equidistant coordinates for an oblique small circle about the given pole */
+	double P[3], X[3], N[3], R[3][3], xlat, dlon, x, y;
+	uint64_t k;
+	struct GMT_DATASEGMENT *S = NULL;
+	if (m < 2) return NULL;
+	
+	S = GMT_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
+	if (GMT_alloc_segment (GMT, S, m, 2, true)) return NULL;
+
+	plat = GMT_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	GMT_geo_to_cart (GMT, plat, plon, P, true);		/* Pole P */
+	xlat = (plat > 0.0) ? plat - colat : plat + colat;	/* Starting point along meridian through P but colat degrees away */
+	xlat = GMT_lat_swap (GMT, xlat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	GMT_geo_to_cart (GMT, xlat, plon, X, true);		/* Origin point */
+	dlon = 360.0 / m;					/* Point spacing along the small circle in oblique longitude degrees */
+	for (k = 0; k < m; k++) {
+		GMT_make_rot_matrix2 (GMT, P, k * dlon, R);	/* Rotation matrix about P for this increment in oblique longitude */
+		GMT_matrix_vect_mult (GMT, 3U, R, X, N);	/* Rotate the N-vector */
+		GMT_cart_to_geo (GMT, &y, &x, N, true);		/* Recover lon,lat of rotated point */
+		y = GMT_lat_swap (GMT, y, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+		S->coord[GMT_X][k] = x;	S->coord[GMT_Y][k] = y;
+	}
+	S->n_rows = m;
+	/* Pass out the results */
+	return (S);
+}
