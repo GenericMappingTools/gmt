@@ -85,18 +85,19 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-T]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[b|f|t]<color>] [%s] [%s] [-K] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-I[lon/lat]]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-O]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
 	GMT_Option (API, "J-Z,K");
-	GMT_Option (API, "O,P,R,U,V,X,c,p");
+	GMT_Option (API, "O,P,R,U,V");
+	GMT_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
+	GMT_Option (API, "X,c,p");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
 
@@ -111,20 +112,13 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
-	int n, j;
+	unsigned int n_errors = 0;
+	int j;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
-
-			case '<':	/* Input files */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_IMAGE))
-					Ctrl->In.file = strdup (opt->arg);
-				else
-					n_errors++;
-				break;
 
 			/* Processes program-specific parameters */
 
@@ -267,15 +261,16 @@ int solar_params (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct SUN_PA
 
 /* --------------------------------------------------------------------------------------------------- */
 int GMT_pssolar (void *V_API, int mode, void *args) {
-	int    hour, min, error = 0;
+	int    j, hour, min, error = 0;
+	int    n_pts = 360;						/* Number of points for the terminators */
 	char   record[GMT_LEN256] = {""};
-	double x, y, wesn[4];
+	double *xx = NULL, *yy = NULL;
 	double *lons = NULL, *lats = NULL;		/* To hold the terminator polygon */
 
 	struct PSSOLAR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct PSL_CTRL *PSL = NULL;			/* General PSL interal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	struct SUN_PARAMS *Sun = NULL;
 
@@ -328,10 +323,23 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-		GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, 360, &lons, &lats);
+		GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts, &lons, &lats);
+		
+		xx = GMT_memory (GMT, NULL, n_pts, double);
+		yy = GMT_memory (GMT, NULL, n_pts, double);
+		for (j = 0; j < n_pts; j++) {		/* Convert to inches/cm */
+			GMT_geo_to_xy (GMT, lons[j], lats[j], &xx[j], &yy[j]);
+		}
 
+		GMT_setpen (GMT, &Ctrl->W.pen);
+		//PSL_plotpolygon (PSL, xx, yy, n_pts);		// Hmm, doesn't work. Why?
+		PSL_plotline (PSL, xx, yy, n_pts, PSL_MOVE + PSL_STROKE);
+
+		GMT_map_basemap (GMT);
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);
+		GMT_free (GMT, xx);
+		GMT_free (GMT, yy);
 	}
 
 	GMT_free (GMT, Sun);
