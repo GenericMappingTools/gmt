@@ -534,6 +534,7 @@ char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
 	strcat (file, "_");
 	strcat (file, suffix);
 	if (j) strcat (file, &name[j]);
+	//strcat (file, "=bf"); /* Make native for debugging */
 	return (file);
 }
 
@@ -583,12 +584,13 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	/* Save the raw spectrum as two files (real,imag) or (mag,phase), depending on mode.
 	 * We must first do an "fftshift" operation as in Matlab, to put the 0 frequency
 	 * value in the center of the grid. */
-	uint64_t row, col, i_ij, o_ij;
-	unsigned int nx_2, ny_2, k, pad[4], mode, wmode[2] = {GMT_GRID_IS_COMPLEX_REAL, GMT_GRID_IS_COMPLEX_IMAG};
+	uint64_t i_ij, o_ij,  offset;
+	int row_in, col_in, row_out, col_out, nx_2, ny_2;
+	unsigned int k, pad[4], mode, wmode[2] = {GMT_GRID_IS_COMPLEX_REAL, GMT_GRID_IS_COMPLEX_IMAG};
 	double wesn[4], inc[2];
-	float re, im;
+	float re, im, i_scale;
 	char *file = NULL, *suffix[2][2] = {{"real", "imag"}, {"mag", "phase"}};
-	struct GMT_GRID *Grid = NULL;
+	struct GMT_GRID *Out = NULL;
 	struct GMT_FFT_WAVENUMBER *K = F->K;
 
 	if (K == NULL) return;
@@ -609,60 +611,50 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	GMT_memcpy (pad, GMT->current.io.pad, 4U, unsigned int);	/* Save current GMT pad */
 	for (k = 0; k < 4; k++) GMT->current.io.pad[k] = 0;		/* No pad is what we need for this application */
 
-	/* Set up and allocate the temporary grid. */
-	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_MASK, NULL, wesn, inc, \
-		G->header->registration, 0, NULL)) == NULL) {	/* Note: 0 for pad since no BC work needed for this temporary grid */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", Grid->header->name);
+	/* Set up and allocate the temporary grid which is always gridline registered. */
+	if ((Out = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_MASK, NULL, wesn, inc, \
+		GMT_GRID_NODE_REG, 0, NULL)) == NULL) {	/* Note: 0 for pad since no BC work needed for this temporary grid */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", G->header->name);
 		return;
 	}
 			
-	strcpy (Grid->header->x_units, "m^(-1)");	strcpy (Grid->header->y_units, "m^(-1)");
-	strcpy (Grid->header->z_units, G->header->z_units);
-	strcpy (Grid->header->remark, "Applied fftshift: kx = 0 at (nx/2 + 1) and ky = 0 at ny/2");
+	strcpy (Out->header->x_units, "xunit^(-1)");	strcpy (Out->header->y_units, "yunit^(-1)");
+	strcpy (Out->header->z_units, G->header->z_units);
+	strcpy (Out->header->remark, "Applied fftshift: kx,ky = (0,0) now at (nx/2 + 1,ny/2");
 
-	for (row = 0; row < ny_2; row++) {	/* Swap values from 1/3 and 2/4 quadrants */
-		for (col = 0; col < nx_2; col++) {
-			i_ij = 2*GMT_IJ0 (Grid->header, row, col);
-			o_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col+nx_2);
-			re = Grid->data[i_ij]; im = Grid->data[i_ij+1];
+	offset = Out->header->size / 2;
+	i_scale = 1.0  / Out->header->nm;
+	for (row_in = 0; row_in < K->ny2; row_in++) {
+		row_out = (row_in + ny_2) % K->ny2;
+		for (col_in = 0; col_in < K->nx2; col_in++) {
+			col_out = (col_in + nx_2) % K->nx2;
+			o_ij = GMT_IJ0 (Out->header, row_out, col_out);
+			i_ij = 2 * GMT_IJ0 (G->header,   row_in,  col_in);
+			re = G->data[i_ij] * i_scale; im = G->data[i_ij+1] * i_scale;
 			if (F->polar) {	/* Want magnitude and phase */
-				Grid->data[i_ij]   = (float)hypot (G->data[o_ij], G->data[o_ij+1]);
-				Grid->data[i_ij+1] = (float)d_atan2 (G->data[o_ij+1], G->data[o_ij]);
-				Grid->data[o_ij]   = (float)hypot (re, im);
-				Grid->data[o_ij+1] = (float)d_atan2 (im, re);
+				Out->data[o_ij]   = (float)hypot (re, im);
+				Out->data[o_ij+offset] = (float)d_atan2 (im, re);
 			}
 			else {		/* Retain real and imag components as is */
-				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
-				Grid->data[o_ij] = re;	Grid->data[o_ij+1] = im;
+				Out->data[o_ij] = re;	Out->data[o_ij+offset] = im;
 			}
-			i_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col);
-			o_ij = 2*GMT_IJ0 (Grid->header, row, col+nx_2);
-			re = Grid->data[i_ij]; im = Grid->data[i_ij+1];
-			if (F->polar) {	/* Want magnitude and phase */
-				Grid->data[i_ij]   = (float)hypot (G->data[o_ij], G->data[o_ij+1]);
-				Grid->data[i_ij+1] = (float)d_atan2 (G->data[o_ij+1], G->data[o_ij]);
-				Grid->data[o_ij]   = (float)hypot (re, im);
-				Grid->data[o_ij+1] = (float)d_atan2 (im, re);
-			}
-			else {		/* Retain real and imag components as is */
-				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
-				Grid->data[o_ij] = re;	Grid->data[o_ij+1] = im;
-			}
+			//fprintf (stderr, "Re/Im = %g/%g  [%d,%d] -> [%d/%d]\n", re, im, row_in, col_in, row_out, col_out);
 		}
 	}
 	for (k = 0; k < 2; k++) {	/* Write the two grids */
 		if ((file = file_name_with_suffix (GMT, G->header->name, suffix[mode][k])) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", G->header->name);
 			return;
 		}
-		sprintf (Grid->header->title, "The %s part of FFT transformed input grid %s", suffix[mode][k], G->header->name);
-		if (k == 1 && mode) strcpy (Grid->header->z_units, "radians");
-		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | wmode[k], NULL, file, Grid) != GMT_OK) {
+		Out->header->complex_mode = wmode[k];
+		sprintf (Out->header->title, "The %s part of FFT transformed input grid %s", suffix[mode][k], G->header->name);
+		if (k == 1 && mode) strcpy (Out->header->z_units, "radians");
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | wmode[k], NULL, file, Out) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s could not be written\n", file);
 			return;
 		}
 	}
-	if (GMT_Destroy_Data (GMT->parent, &Grid) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &Out) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
 	}
 
