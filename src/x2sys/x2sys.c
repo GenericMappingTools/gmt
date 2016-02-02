@@ -897,7 +897,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	z = GMT_memory (GMT, NULL, M.n_out_columns, double *);
 	for (i = 0; i < M.n_out_columns; i++) z[i] = S->values[i];
 
-	strncpy (p->name, fname, 32U);
+	strncpy (p->name, fname, 31U);
 	p->n_rows = S->H.n_records;
 	p->ms_rec = NULL;
 	p->n_segments = 0;
