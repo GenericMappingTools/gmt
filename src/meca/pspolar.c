@@ -279,7 +279,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 							if (GMT_compat_check (GMT, 4) && (strchr (&txt[n+1], '/') && !strchr (&txt[n+1], '+'))) {	/* Old-style args */
 								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape>; use -QsV<vecpar> instead.\n");
 								Ctrl->S2.vector = true;
-								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);	/* Vector bit no sizes. Using defaults */
+								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* Vector bit no sizes. Using defaults */
 								if (strncmp(txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen(txt) == 1) {
 									Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1;
 									Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
@@ -298,7 +298,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 							}
 							else {
 								char symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
-								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64);	/* But if -QsV...G|L things will screw here, no? */ 
+								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* But if -QsV...G|L things will screw here, no? */ 
 								if (txt[0] == '+') {	/* No size (use default), just attributes */
 									n_errors += GMT_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
 								}
