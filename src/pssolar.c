@@ -47,10 +47,10 @@ struct SUN_PARAMS {
 };
 
 struct PSSOLAR_CTRL {
-	struct PSSOL_In {
+	struct PSSOL_G {	/* -G<fill> */
 		bool active;
-		char *file;
-	} In;
+		struct GMT_FILL fill;
+	} G;	
 	struct PSSOL_I {	/* -I info about solar stuff */
 		bool active;
 		bool position;
@@ -122,6 +122,12 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
+			case 'G':		/* Set fill for symbols or polygon */
+				Ctrl->G.active = true;
+				if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+					GMT_fill_syntax (GMT, 'G', " "); n_errors++;
+				}
+				break;
 			case 'I':	/* Infos */
 				Ctrl->I.active = true;
 				if (opt->arg[0]) {	/* Also gave shifts */
@@ -331,9 +337,14 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			GMT_geo_to_xy (GMT, lons[j], lats[j], &xx[j], &yy[j]);
 		}
 
-		GMT_setpen (GMT, &Ctrl->W.pen);
-		//PSL_plotpolygon (PSL, xx, yy, n_pts);		// Hmm, doesn't work. Why?
-		PSL_plotline (PSL, xx, yy, n_pts, PSL_MOVE + PSL_STROKE);
+		if (Ctrl->G.active) {
+			GMT_setfill (GMT, &Ctrl->G.fill, false);
+			PSL_plotpolygon (PSL, xx, yy, n_pts);
+		}
+		if (Ctrl->W.active) {
+			GMT_setpen (GMT, &Ctrl->W.pen);
+			PSL_plotline (PSL, xx, yy, n_pts, PSL_MOVE + PSL_STROKE);
+		}
 
 		GMT_map_basemap (GMT);
 		GMT_plane_perspective (GMT, -1, 0.0);
