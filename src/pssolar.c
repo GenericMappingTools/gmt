@@ -52,12 +52,22 @@ struct PSSOLAR_CTRL {
 		struct GMT_FILL fill;
 	} G;	
 	struct PSSOL_I {	/* -I info about solar stuff */
-		bool active;
-		bool position;
+		bool   active;
+		bool   position;
+		int    TZ;		/* Time Zone */
+		char  *date;	/* To hold eventual date string */
 		double lon, lat;
 	} I;
-	struct PSSOL_T {	/* -T terminator options */
+	struct M {			/* -M dumps the terminators data instead of plotting them*/
 		bool active;
+	} M;
+	struct PSSOL_T {	/* -T terminator options */
+		bool   active;
+		bool   night, civil, nautical, astronomical;
+		int    which;	/* 0 = night, ... 3 = astronomical */
+		int    TZ;		/* Time Zone */
+		char  *date;	/* To hold eventual date string */
+		double radius[4];
 	} T;
 	struct PSSOL_W {	/* -W<pen> */
 		bool active;
@@ -80,45 +90,88 @@ void Free_pssolar_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
+int parse_date_tz(char *date_tz, char **date, int *TZ) {
+	/* Parse the string date_tz in the form +d<date>+z<TZ> for char date and int TZ.
+	   date_tz is a copy so ok to mess with it. On the other hand, the output var 'date'
+	   is strdup'd here so it must be freed later.
+	*/
+	char *pch;
+	if ((pch = strchr(&date_tz[1], '+')) != NULL) {		/* Than we know that botd are present. Just dont know the order */
+		if (pch[1] == 'z') {
+			*TZ = atoi(&pch[2]);
+			pch[0] = '\0';
+			date[0] = strdup(&date_tz[2]);
+		}
+		else if (pch[1] == 'd') {
+			date[0] = strdup(&pch[2]);
+			pch[0] = '\0';
+			*TZ = atoi(&date_tz[2]);
+		}
+		else
+			return 1;
+	}
+	else if (date_tz[1] == 'd')				/* So, either this one */
+		date[0] = strdup(&date_tz[2]);
+	else if (date_tz[1] == 'z')				/* or this */
+		*TZ = atoi(&date_tz[2]);
+	else
+		return 1;
+
+	return 0;
+}
+
 int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
-	/* This displays the psimage synopsis and optionally full usage information */
+	/* This displays the pssolar synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-I[lon/lat]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-O]\n", GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-O]\n", GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<outlinepen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
+	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
-	GMT_Option (API, "J-Z,K");
-	GMT_Option (API, "O,P,R,U,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary append time zone as +z<TZ>.\n");
+	GMT_Option (API, "J,K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");	
+	GMT_Option (API, "O,P,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot or dump (see -M) one or more terminators deffined by these flags:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d means the day-night terminator\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c means the civil twilight\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n means the nautical twilight\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a means the astronomical twilight\n");
+	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
 	GMT_Option (API, "X,c,p");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
 
 	return (EXIT_FAILURE);
 }
 
 int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
-	/* This parses the options provided to psimage and sets parameters in Ctrl.
+	/* This parses the options provided to pssolat and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
-	 * It also replaces any file names specified as input or output with the data ID
-	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
-	int j;
+	int    j, TZ = 0, n_files = 0, n_errors = 0;
+	char  *pch = NULL, *date = NULL, *date_tz_str = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
+
+			case '<':	/* Input files */
+				n_files++;
+				break;
 
 			/* Processes program-specific parameters */
 
@@ -128,17 +181,57 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 					GMT_fill_syntax (GMT, 'G', " "); n_errors++;
 				}
 				break;
-			case 'I':	/* Infos */
+			case 'I':		/* Infos -I[x/y][+d<date>][+z<TZ>] */
 				Ctrl->I.active = true;
-				if (opt->arg[0]) {	/* Also gave shifts */
+				if (opt->arg[0]) {	/* Also gave location */
+					Ctrl->I.position = true;
 					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
 					                                 "Syntax error: Expected -I[<lon>/<lat>]\n");
-					Ctrl->I.position = true;
+					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
+						date_tz_str = strdup(pch);
+						pch[0] = '\0';		/* Truncates the date & time zone chunk */
+						if (parse_date_tz(date_tz_str, &date, &TZ)) {
+							GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Error in -T option. Badly formatted date or time zone.\n");
+							n_errors++;
+						}
+						Ctrl->I.TZ = TZ;
+						if (date) Ctrl->I.date = date;
+						free(date_tz_str);
+					}
 				}
 				break;
-			case 'T':	/*  */
+			case 'M':
+				Ctrl->M.active = true;
 				break;
-			case 'W':	/*  */
+			case 'T':		/* -Tdcna[+d<date>][+z<TZ>] */
+				Ctrl->T.active = true;
+				if (opt->arg[0]) {
+					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
+						date_tz_str = strdup(pch);
+						pch[0] = '\0';		/* Truncates the date & time zone chunk */
+						if (parse_date_tz(date_tz_str, &date, &TZ)) {
+							GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Error in -T option. Badly formatted date or time zone.\n");
+							n_errors++;
+						}
+						Ctrl->T.TZ = TZ;
+						if (date) Ctrl->T.date = date;
+						free(date_tz_str);
+					}
+					for (j = 0; j < strlen(opt->arg); j++) {
+						if (opt->arg[j] == 'd')				/* Day-night terminator */
+							{Ctrl->T.night = true;          Ctrl->T.radius[0] = 90.833;}
+						else if (opt->arg[j] == 'c')        /* Civil terminator */
+							{Ctrl->T.civil = true;          Ctrl->T.radius[1] = 90 + 6;}
+						else if (opt->arg[j] == 'n')        /* Nautical terminator */
+							{Ctrl->T.nautical = true;       Ctrl->T.radius[2] = 90 + 12;}
+						else if (opt->arg[j] == 'a')        /* Astronomical terminator */
+							{Ctrl->T.astronomical = true;   Ctrl->T.radius[3] = 90 + 18;}
+					}
+				}
+				else 		/* Then the default */
+					{Ctrl->T.night = true;		Ctrl->T.radius[0] = 90.833;}
+				break;
+			case 'W':		/* Pen */
 				Ctrl->W.active = true;
 				j = 0;
 				if (opt->arg[j] == '-') {Ctrl->W.mode = 1; j++;}
@@ -151,20 +244,25 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 				}
 				break;
 
-			default:	/* Report bad options */
+			default:		/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
-	if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
-		GMT_parse_common_options (GMT, "J", 'J', "X1d");
-		GMT->common.J.active = true;
+	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
+		if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
+			GMT_parse_common_options (GMT, "J", 'J', "X14cd/0d");
+			GMT->common.J.active = true;
+		}
+		if (!GMT->common.R.active) {	/*  */
+			GMT_parse_common_options (GMT, "R", 'R', "-180/180/-90/90");
+			GMT->common.R.active = true;
+		}
 	}
-	if (!GMT->common.R.active) {	/*  */
-		GMT_parse_common_options (GMT, "R", 'R', "-180/180/-90/90");
-		GMT->common.R.active = true;
-	}
+
+	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
+	n_errors += GMT_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Syntax error: Cannot combine -T and -I\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -172,8 +270,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pssolar_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int solar_params (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
+int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
+	/* ... */
 	int    TZ, year, month;
 	struct tm *UTC; 
 	time_t right_now = time (NULL); 
@@ -181,7 +280,9 @@ int solar_params (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct SUN_PA
 	double EEO, HA_Sunrise, TrueSolarTime, SolarDec;
 	double radius = 90.833;		/* Sun radius (16' + 34.5' from the light refraction effect) */
 
-	TZ = 0;
+	radius = Ctrl->T.radius[Ctrl->T.which];
+	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
+
 	UTC = gmtime (&right_now);
 
 	//UTC->tm_mday = 26;	UTC->tm_hour = 17;	UTC->tm_min = 49;	UTC->tm_sec = 30;
@@ -267,23 +368,23 @@ int solar_params (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct SUN_PA
 
 /* --------------------------------------------------------------------------------------------------- */
 int GMT_pssolar (void *V_API, int mode, void *args) {
-	int    j, hour, min, error = 0;
-	int    n_pts = 360;						/* Number of points for the terminators */
-	char   record[GMT_LEN256] = {""};
+	int     j, n, hour, min, error = 0;
+	int     n_pts = 360;						/* Number of points for the terminators */
+	char    record[GMT_LEN256] = {""};
 	double *xx = NULL, *yy = NULL;
 	double *lons = NULL, *lats = NULL;		/* To hold the terminator polygon */
 
-	struct PSSOLAR_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
-	struct GMT_OPTION *options = NULL;
-	struct PSL_CTRL *PSL = NULL;			/* General PSL interal parameters */
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-	struct SUN_PARAMS *Sun = NULL;
+	struct  PSSOLAR_CTRL *Ctrl = NULL;
+	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct  GMT_OPTION *options = NULL;
+	struct  PSL_CTRL *PSL = NULL;			/* General PSL interal parameters */
+	struct  GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct  SUN_PARAMS *Sun = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_pssolar_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_pssolar_usage (API, GMT_MODULE_PURPOSE));	/* Return program's purpose */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pssolar_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -296,19 +397,18 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	Ctrl = New_pssolar_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pssolar_parse (GMT, Ctrl, options)) != 0) Return (error);
 
-	/*---------------------------- This is the psimage main code ----------------------------*/
+	/*---------------------------- This is the pssolar main code ----------------------------*/
 	
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
-		Return (API->error);
-	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
-		Return (API->error);
-	}
 
 	Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
-	solar_params (GMT, Ctrl, Sun);
 
 	if (Ctrl->I.active) {
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default output destination, unless already set */
+			Return (API->error);
+		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK)	/* Enables data output and sets access mode */
+			Return (API->error);
+
+		solar_params (Ctrl, Sun);
 		sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
@@ -323,36 +423,71 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
 			sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
 	}
+
+	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
+		char  *terms[4] = {"Day-night", "Civil", "Nautical", "Astronomical"};
+		double out[2];
+		GMT_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
+		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
+		GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Establishes data output */
+			Return (API->error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK)	/* Enables data output and sets access mode */
+			Return (API->error);
+
+		for (n = 0; n < 4; n++) {						/* Loop over the number of requested terminators */
+			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
+			Ctrl->T.which = n;
+			solar_params (Ctrl, Sun);
+			GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts, &lons, &lats);
+			sprintf (record, "# %s terminator\n", terms[n]);
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
+			for (j = 0; j < n_pts; j++) {
+				out[GMT_X] = lons[j];			out[GMT_Y] = lats[j];
+				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			}
+		}
+
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
+	}
+
 	else {
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-		GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts, &lons, &lats);
-		
 		xx = GMT_memory (GMT, NULL, n_pts, double);
 		yy = GMT_memory (GMT, NULL, n_pts, double);
-		for (j = 0; j < n_pts; j++) {		/* Convert to inches/cm */
-			GMT_geo_to_xy (GMT, lons[j], lats[j], &xx[j], &yy[j]);
-		}
 
-		if (Ctrl->G.active) {
-			GMT_setfill (GMT, &Ctrl->G.fill, false);
-			PSL_plotpolygon (PSL, xx, yy, n_pts);
-		}
-		if (Ctrl->W.active) {
-			GMT_setpen (GMT, &Ctrl->W.pen);
-			PSL_plotline (PSL, xx, yy, n_pts, PSL_MOVE + PSL_STROKE);
+		for (n = 0; n < 4; n++) {						/* Loop over the number of requested terminators */
+			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
+			Ctrl->T.which = n;
+			solar_params (Ctrl, Sun);
+			GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts, &lons, &lats);
+			
+			for (j = 0; j < n_pts; j++)			/* Convert to inches/cm */
+				GMT_geo_to_xy (GMT, lons[j], lats[j], &xx[j], &yy[j]);
+
+			if (Ctrl->G.active) {
+				GMT_setfill (GMT, &Ctrl->G.fill, false);
+				PSL_plotpolygon (PSL, xx, yy, n_pts);
+			}
+			if (Ctrl->W.active) {
+				GMT_setpen (GMT, &Ctrl->W.pen);
+				PSL_plotline (PSL, xx, yy, n_pts, PSL_MOVE + PSL_STROKE);
+			}
 		}
 
 		GMT_map_basemap (GMT);
 		GMT_plane_perspective (GMT, -1, 0.0);
 		GMT_plotend (GMT);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		GMT_free (GMT, xx);		GMT_free (GMT, yy);
 	}
 
+	GMT_free (GMT, lons);	GMT_free (GMT, lats);
 	GMT_free (GMT, Sun);
 
 	Return (GMT_OK);
