@@ -192,7 +192,7 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 							break;
 						case 't':
 							Ctrl->A.fixed_time = true;
-							strncpy (tfixed, &p[1], GMT_LEN64);
+							strncpy (tfixed, &p[1], GMT_LEN64-1);
 							GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
 							break;
 						case 'y':
