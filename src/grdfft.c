@@ -469,15 +469,13 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int count_slashes (char *txt)
-{
+unsigned int count_slashes (char *txt) {
 	unsigned int i, n;
 	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
 	return (n);
 }
 
-bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
-{
+bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c) {
 	unsigned int i, j, n_tokens, pos;
 	bool descending;
 	double fourvals[4];
@@ -485,7 +483,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 
 	/* Syntax is either -F[r|x|y]lc/hc/lp/hp (Cosine taper), -F[r|x|y]lo/hi (Gaussian), or -F[r|x|y]lo/hi/order (Butterworth) */
 
-	strncpy (line, c,  GMT_LEN256);
+	strncpy (line, c,  GMT_LEN256-1);
 	i =  0;
 	f_info->k_type = GMT_FFT_K_IS_KR;	/* j is Filter type: r=2, x=0, y=1  [r] */
 
@@ -569,8 +567,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	return (false);
 }
 
-int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
@@ -621,8 +618,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par)
-{
+void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par) {
 	Ctrl->n_op_count++;
 	Ctrl->operation = GMT_memory (GMT, Ctrl->operation, Ctrl->n_op_count, int);
 	Ctrl->operation[Ctrl->n_op_count-1] = operation;
@@ -633,8 +629,7 @@ void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operatio
 	}
 }
 
-int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO *f_info, struct GMT_OPTION *options)
-{
+int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO *f_info, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdfft and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -809,8 +804,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdfft_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdfft (void *V_API, int mode, void *args)
-{
+int GMT_grdfft (void *V_API, int mode, void *args) {
 	int error = 0, status;
 	unsigned int op_count = 0, par_count = 0, k;
 	char *spec_msg[2] = {"spectrum", "cross-spectrum"};
