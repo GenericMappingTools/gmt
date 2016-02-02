@@ -519,7 +519,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		sprintf (Merc->header->x_units, "longitude [degrees_east]");
 		sprintf (Merc->header->y_units, "latitude [degrees_north]");
 	}
-	strncpy (Merc->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
+	strncpy (Merc->header->z_units, z_units, GMT_GRID_UNIT_LEN80-1);
 	strcpy (Merc->header->title, "Data from Altimetry");
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
 	/* Now malloc some space for integer pixel index, and int16_t data buffer.  */
