@@ -1320,7 +1320,7 @@ size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	/* Must duplicate header and possibly reset wesn, then set pad and recalculate all dims */
 	h_tmp = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
-	h_tmp->complex_mode |= mode;	/* Set the mode-to-be so that if complex the size is doubled */
+	h_tmp->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);	/* Set the mode-to-be so that if complex the size is doubled */
 
 	if (!full_region (wesn)) {
 		GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
@@ -6662,7 +6662,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 			return (NULL);
 	}
 #ifdef DEBUG
-	grd_dump (G->header, G->data, false, "Read in FFT_Create");
+	grd_dump (G->header, G->data, mode & GMT_GRID_IS_COMPLEX_MASK, "Read in FFT_Create");
 #endif
 	/* Make sure there are no NaNs in the grid - that is a fatal flaw */
 
@@ -6675,11 +6675,11 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	if (F->trend_mode == GMT_FFT_REMOVE_NOT_SET) F->trend_mode = GMT_FFT_REMOVE_NOTHING;	/* Delayed default */
 	GMT_grd_detrend (GMT, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
 #ifdef DEBUG
-	grd_dump (G->header, G->data, false, "After detrend");
+	grd_dump (G->header, G->data, mode & GMT_GRID_IS_COMPLEX_MASK, "After detrend");
 #endif
 	gmt_fft_taper (GMT, G, F);				/* Taper data, if requested */
 #ifdef DEBUG
-	grd_dump (G->header, G->data, false, "After Taper");
+	grd_dump (G->header, G->data, mode & GMT_GRID_IS_COMPLEX_MASK, "After Taper");
 #endif
 	K->dim = 2;	/* 2-D FFT */
 	return (K);
