@@ -468,10 +468,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			
 			if (Ctrl->W.active)
 				GMT_setpen (GMT, &Ctrl->W.pen);
-			if (Ctrl->G.active) {
+			if (Ctrl->G.active)
 				GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
-				GMT_geo_polygons (GMT, S);
-			}
+
+			GMT_geo_polygons (GMT, S);
 			GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
