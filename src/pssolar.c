@@ -139,15 +139,15 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary append time zone via +z<TZ>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "J,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");	
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");	
 	GMT_Option (API, "O,P,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot or dump (see -M) one or more terminators defined via these flags:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d means the day/night terminator.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c means the civil twilight\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n means the nautical twilight\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a means the astronomical twilight\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot (or dump; see -M) one or more terminators defined via these flags:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d means day/night terminator.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c means civil twilight.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n means nautical twilight.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a means astronomical twilight.\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
 	GMT_Option (API, "X,c,p");
@@ -157,7 +157,7 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
-	/* This parses the options provided to pssolat and sets parameters in Ctrl.
+	/* This parses the options provided to pssolar and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
 	 */
@@ -370,7 +370,7 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 /* --------------------------------------------------------------------------------------------------- */
 int GMT_pssolar (void *V_API, int mode, void *args) {
 	int     j, n, hour, min, error = 0;
-	int     n_pts = 360;						/* Number of points for the terminators */
+	int     n_pts = 361;						/* Number of points for the terminators */
 	char    record[GMT_LEN256] = {""};
 
 	struct  PSSOLAR_CTRL *Ctrl = NULL;
@@ -429,7 +429,8 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
-		GMT_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
+		unsigned int n_items;
+		GMT_set_geographic (GMT, GMT_OUT);		/* Output lon/lat */
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
 		GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
@@ -437,16 +438,19 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			Return (API->error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK)	/* Enables data output and sets access mode */
 			Return (API->error);
+		for (n = n_items = 0; n < 4; n++) if (Ctrl->T.radius[n] > 0.0) n_items++;
 
 		for (n = 0; n < 4; n++) {						/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
-			S = GMT_get_smallcircle2 (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
-			sprintf (record, "# %s terminator\n", terms[n]);
-			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
+			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
+			if (n_items > 1) {
+				sprintf (record, "%s terminator\n", terms[n]);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
+			}
 			for (j = 0; j < n_pts; j++) {
-				out[GMT_X] = S->coord[GMT_X][j];			out[GMT_Y] = S->coord[GMT_Y][j];
+				out[GMT_X] = S->coord[GMT_X][j];	out[GMT_Y] = S->coord[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
 			GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
@@ -460,11 +464,11 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-		for (n = 0; n < 4; n++) {						/* Loop over the number of requested terminators */
-			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
+		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */
+			if (Ctrl->T.radius[n] == 0) continue;	/* This terminator was not requested */
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
-			S = GMT_get_smallcircle2 (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
+			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			
 			if (Ctrl->W.active)
 				GMT_setpen (GMT, &Ctrl->W.pen);
