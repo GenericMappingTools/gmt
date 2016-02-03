@@ -47,29 +47,31 @@ struct SUN_PARAMS {
 };
 
 struct PSSOLAR_CTRL {
-	struct PSSOL_G {	/* -G<fill> */
+	struct PSSOL_G {		/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
 	} G;	
-	struct PSSOL_I {	/* -I info about solar stuff */
+	struct PSSOL_I {		/* -I info about solar stuff */
 		bool   active;
 		bool   position;
-		int    TZ;		/* Time Zone */
-		char  *date;	/* To hold eventual date string */
+		int    TZ;			/* Time Zone */
+		int    date_vec[6];	/* To store date as [YYYY MM DD hh mm ss] */
+		char  *date;		/* To hold eventual date string */
 		double lon, lat;
 	} I;
-	struct M {			/* -M dumps the terminators data instead of plotting them*/
+	struct M {				/* -M dumps the terminators data instead of plotting them*/
 		bool active;
 	} M;
-	struct PSSOL_T {	/* -T terminator options */
+	struct PSSOL_T {		/* -T terminator options */
 		bool   active;
 		bool   night, civil, nautical, astronomical;
-		int    which;	/* 0 = night, ... 3 = astronomical */
-		int    TZ;		/* Time Zone */
-		char  *date;	/* To hold eventual date string */
+		int    which;		/* 0 = night, ... 3 = astronomical */
+		int    TZ;			/* Time Zone */
+		int    date_vec[6];	/* To store date as [YYYY MM DD hh mm ss] */
+		char  *date;		/* To hold eventual date string */
 		double radius[4];
 	} T;
-	struct PSSOL_W {	/* -W<pen> */
+	struct PSSOL_W {		/* -W<pen> */
 		bool active;
 		unsigned int mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
@@ -274,7 +276,7 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
 	/* ... */
-	int    TZ, year, month;
+	int    TZ, year, month, day, hour, min, sec;
 	struct tm *UTC; 
 	time_t right_now = time (NULL); 
 	double JC, JD, UT, L, M, C, var_y, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
@@ -284,18 +286,35 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	radius = Ctrl->T.radius[Ctrl->T.which];
 	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
 
-	UTC = gmtime (&right_now);
+	/*  Date info may be in either of I or T options. If not, sue current time. */
+	if (Ctrl->I.date_vec[0] != 0 || Ctrl->I.date_vec[0] != 0) {
+		if (Ctrl->I.date_vec[0] != 0) {
+			year = Ctrl->I.date_vec[0];		month = Ctrl->I.date_vec[1];	day = Ctrl->I.date_vec[2];
+			hour = Ctrl->I.date_vec[3];		min   = Ctrl->I.date_vec[4];	sec = Ctrl->I.date_vec[5];
+		}
+		else {
+			year = Ctrl->T.date_vec[0];		month = Ctrl->T.date_vec[1];	day = Ctrl->T.date_vec[2];
+			hour = Ctrl->T.date_vec[3];		min   = Ctrl->T.date_vec[4];	sec = Ctrl->T.date_vec[5];
+		}
+	}
+	else {
+		UTC   = gmtime (&right_now);
+		//UTC->tm_mday = 26;	UTC->tm_hour = 17;	UTC->tm_min = 49;	UTC->tm_sec = 30;
+		year  = UTC->tm_year + 1900;
+		month = UTC->tm_mon + 1;
+		day   = UTC->tm_mday;
+		hour  = UTC->tm_hour;
+		min   = UTC->tm_min;
+		sec   = UTC->tm_sec;
+	}
 
-	//UTC->tm_mday = 26;	UTC->tm_hour = 17;	UTC->tm_min = 49;	UTC->tm_sec = 30;
-	UT = UTC->tm_hour + (double)UTC->tm_min / 60 + (double)UTC->tm_sec / 3600;
+	UT = hour + (double)min / 60 + (double)sec / 3600;
 
 	/*  From http://scienceworld.wolfram.com/astronomy/JulianDate.html */
 	/* tm_mon is 0-11, so add 1 for 1-12 range, tm_year is years since 1900, so add 1900, but tm_mday is 1-31 so use as is */
-	year = UTC->tm_year + 1900;
-	month = UTC->tm_mon + 1;
 	JD = 367.0 * year - floor(7.0 * (year + floor((month + 9.0) / 12) ) / 4) -		/* Julian day */
 		floor(3.0 * (floor((year + (month - 9.0) / 7) / 100) + 1 ) / 4) +
-		floor((275.0 * month) / 9) + UTC->tm_mday + 1721028.5 + (UT / 24);
+		floor((275.0 * month) / 9) + day + 1721028.5 + (UT / 24);
 
 	JC = (JD - 2451545) / 36525;		/* number of Julian centuries since Jan 1, 2000, 12 UT */
 	L = 280.46645 + 36000.76983 * JC + 0.0003032 * JC * JC;		/* Sun mean longitude, degree */
@@ -427,10 +446,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	}
 
 	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
+		int n_items;
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
-		unsigned int n_items;
-		GMT_set_geographic (GMT, GMT_OUT);		/* Output lon/lat */
+		GMT_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
 		GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
@@ -446,7 +465,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			solar_params (Ctrl, Sun);
 			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (n_items > 1) {
-				sprintf (record, "%s terminator\n", terms[n]);
+				sprintf (record, "%s terminator", terms[n]);
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			}
 			for (j = 0; j < n_pts; j++) {
