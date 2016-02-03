@@ -422,6 +422,8 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
 	if (Ctrl->I.active) {
+		double out[10];
+
 		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default output destination, unless already set */
 			Return (API->error);
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK)	/* Enables data output and sets access mode */
@@ -443,12 +445,25 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
+
+		/* Now move the needle to doubles. Output all members of the Sun struct as a vector */
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)
+			Return (API->error);
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) Return (API->error);
+		out[0] = -Sun->HourAngle;		out[1] = -Sun->SolarDec;		out[2] = Sun->SolarAzim;
+		out[3] = Sun->SolarElevation;	out[4] = Sun->Sunrise;			out[5] = Sun->Sunset;
+		out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
+		out[9] = Sun->EQ_time;
+		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
 	}
 
 	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
 		int n_items;
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
+
 		GMT_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
 		GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
