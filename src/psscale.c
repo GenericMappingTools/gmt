@@ -492,7 +492,7 @@ void fix_format (char *unit, char *format)
 
 	if (unit && unit[0]) {	/* Must append the unit string */
 		if (!strchr (unit, '%'))	/* No percent signs */
-			strncpy (text, unit, GMT_LEN64);
+			strncpy (text, unit, GMT_LEN64-1);
 		else {
 			for (i = j = 0; i < strlen (unit); i++) {
 				text[j++] = unit[i];
@@ -578,14 +578,14 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 			if (P->range[i].annot & 1) {
 				z = P->range[i].z_low;
 				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
-					strncpy (format, text, GMT_LEN256);
+					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
 				}
 			}
 			if (P->range[i].annot & 2) {
 				z = P->range[i].z_high;
 				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
-					strncpy (format, text, GMT_LEN256);
+					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
 				}
 			}
@@ -615,7 +615,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 		if (fabs (z_width[i] - z_width[0]) > GMT_CONV4_LIMIT) const_width = false;
 
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
-		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256);
+		strncpy (format, GMT->current.setting.format_float_map, GMT_LEN256-1);
 		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
 
@@ -640,7 +640,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 		gap *= 0.5;
 		if (Ctrl->L.interval) {
 			sprintf (text, "%s - %s", format, format);
-			strncpy (format, text, GMT_LEN256);
+			strncpy (format, text, GMT_LEN256-1);
 		}
 	}
 	if (gap < 0.0) gap = 0.0;
@@ -779,8 +779,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 	/* Save label and unit, because we are going to switch them off in GMT->current.map.frame and do it ourselves */
-	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256);
-	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256);
+	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
+	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
 	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
 
 	if (flip & PSSCALE_FLIP_ANNOT) {	/* Place annotations on the opposite side */
@@ -969,7 +969,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 					this_just = justify;
 					do_annot = true;
 					if (use_labels && P->range[i].label) {
-						strncpy (text, P->range[i].label, GMT_LEN256);
+						strncpy (text, P->range[i].label, GMT_LEN256-1);
 						this_just = l_justify;
 					}
 					else if (center && Ctrl->L.interval)
@@ -1199,7 +1199,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 					this_just = justify;
 					do_annot = true;
 					if (use_labels && P->range[i].label) {
-						strncpy (text, P->range[i].label, GMT_LEN256);
+						strncpy (text, P->range[i].label, GMT_LEN256-1);
 						this_just = l_justify;
 					}
 					else if (center && Ctrl->L.interval)

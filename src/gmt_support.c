@@ -1225,34 +1225,34 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 		if (line[i-1] == ',') {		/* Must be size,name, so we can continue */
 		}
 		else if (line[0] == ',') {	/* ,name,fill got stored in size,name */
-			strncpy (fill, name, GMT_LEN256);
-			strncpy (name, size, GMT_LEN256);
+			strncpy (fill, name, GMT_LEN256-1);
+			strncpy (name, size, GMT_LEN256-1);
 			size[0] = '\0';
 		}
 		else if (gmt_is_fill (GMT, name)) {	/* fill got stored in name */
-			strncpy (fill, name, GMT_LEN256);
+			strncpy (fill, name, GMT_LEN256-1);
 			name[0] = '\0';
 			if (gmt_is_fontname (GMT, size)) {	/* name got stored in size */
-				strncpy (name, size, GMT_LEN256);
+				strncpy (name, size, GMT_LEN256-1);
 				size[0] = '\0';
 			}
 		}
 	}
 	else if (n == 1) {	/* Could be size or name or fill */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,fill got stored in size */
-			strncpy (fill, size, GMT_LEN256);
+			strncpy (fill, size, GMT_LEN256-1);
 			size[0] = '\0';
 		}
 		else if (line[0] == ',') {		/* ,name got stored in size */
-			strncpy (name, size, GMT_LEN256);
+			strncpy (name, size, GMT_LEN256-1);
 			size[0] = '\0';
 		}
 		else if (gmt_is_fill (GMT, size)) {	/* fill got stored in size */
-			strncpy (fill, size, GMT_LEN256);
+			strncpy (fill, size, GMT_LEN256-1);
 			size[0] = '\0';
 		}
 		else if (gmt_is_fontname (GMT, size)) {	/* name got stored in size */
-			strncpy (name, size, GMT_LEN256);
+			strncpy (name, size, GMT_LEN256-1);
 			size[0] = '\0';
 		}
 		/* Unstated else branch means we got size stored correctly */
@@ -1597,34 +1597,34 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
 	if (n == 2) {	/* Could be width,color or width,style or color,style */
 		if (line[0] == ',') {	/* ,color,style got stored in width,color */
-			strncpy (style, color, GMT_LEN256);
-			strncpy (color, width, GMT_LEN256);
+			strncpy (style, color, GMT_LEN256-1);
+			strncpy (color, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
 		else if (gmt_is_penstyle (color)) {	/* style got stored in color */
-			strncpy (style, color, GMT_LEN256);
+			strncpy (style, color, GMT_LEN256-1);
 			color[0] = '\0';
 			if (gmt_is_color (GMT, width)) {	/* color got stored in width */
-				strncpy (color, width, GMT_LEN256);
+				strncpy (color, width, GMT_LEN256-1);
 				width[0] = '\0';
 			}
 		}
 	}
 	else if (n == 1) {	/* Could be width or color or style */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,style got stored in width */
-			strncpy (style, width, GMT_LEN256);
+			strncpy (style, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
 		else if (line[0] == ',') {		/* ,color got stored in width */
-			strncpy (color, width, GMT_LEN256);
+			strncpy (color, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
 		else if (gmt_is_penstyle (width)) {	/* style got stored in width */
-			strncpy (style, width, GMT_LEN256);
+			strncpy (style, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
 		else if (gmt_is_color (GMT, width)) {	/* color got stored in width */
-			strncpy (color, width, GMT_LEN256);
+			strncpy (color, width, GMT_LEN256-1);
 			width[0] = '\0';
 		}
 		/* Unstated else branch means we got width stored correctly */
@@ -3839,7 +3839,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 						G->label_type = GMT_LABEL_IS_FSEG;
 						break;
 					default:	/* Probably meant lower case l */
-						strncpy (G->label, &p[1], GMT_BUFSIZ);
+						strncpy (G->label, &p[1], GMT_BUFSIZ-1);
 						G->label_type = GMT_LABEL_IS_HEADER;
 						break;
 				}
@@ -3880,11 +3880,11 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				G->save_labels = 1;
 			case 't':	/* Save contour label locations to given file [x y label] */
 				G->save_labels++;
-				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ);
+				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ-1);
 				break;
 
 			case 'u':	/* Label Unit specification */
-				if (p[1]) strncpy (G->unit, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->unit, &p[1], GMT_LEN64-1);
 				break;
 
 			case 'v':	/* Curved text [Default is straight] */
@@ -3912,7 +3912,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 
 			case '=':	/* Label Prefix specification */
-				if (p[1]) strncpy (G->prefix, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->prefix, &p[1], GMT_LEN64-1);
 				break;
 
 			case '.':	/* Assume it can be a decimal part without leading 0 */
@@ -3998,7 +3998,7 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			L->do_interpolate = true;
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
-			strncpy (L->file, &txt[1], GMT_BUFSIZ);
+			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
 			if (GMT_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
 				error++;
@@ -4096,7 +4096,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 				break;
 
 			case 'g':	/* Symbol Fill specification */
-				if (p[1]) strncpy (G->fill, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->fill, &p[1], GMT_LEN64-1);
 				break;
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
@@ -4110,7 +4110,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 				break;
 
 			case 'p':	/* Draw text box outline [with optional textbox pen specification] */
-				if (p[1]) strncpy (G->pen, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->pen, &p[1], GMT_LEN64-1);
 				break;
 
 			case 's':	/* Symbol to place */
@@ -4205,7 +4205,7 @@ int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DE
 			L->do_interpolate = true;
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_DECORATE_XCURVE;
-			strncpy (L->file, &txt[1], GMT_BUFSIZ);
+			strncpy (L->file, &txt[1], GMT_BUFSIZ-1);
 			if (GMT_access (GMT, L->file, R_OK)) {	/* Cannot read/find file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Cannot find/read crossing line file %s\n", L->file);
 				error++;
@@ -8675,7 +8675,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
 	options = (text[i] == '+') ? i : -1;	/* -1, or starting point of first option */
 	if (options > 0) {	/* Have optional args, make a copy and truncate text */
-		strncpy (txt_cpy, &text[options], GMT_BUFSIZ);
+		strncpy (txt_cpy, &text[options], GMT_BUFSIZ-1);
 		text[options] = '\0';
 		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fgjlpu, change other + to ASCII 1 to bypass strtok trouble later [f is now deprecated] */
 			if (txt_cpy[i] == '+' && !strchr ("fgjlpu", (int)txt_cpy[i+1])) txt_cpy[i] = 1;
@@ -8776,7 +8776,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 					break;
 
 				case 'l':	/* Label specification */
-					if (p[1]) strncpy (ms->label, &p[1], GMT_LEN64);
+					if (p[1]) strncpy (ms->label, &p[1], GMT_LEN64-1);
 					ms->do_label = true;
 					for (i = 0; ms->label[i]; i++) if (ms->label[i] == 1) ms->label[i] = '+';	/* Change back ASCII 1 to + */
 					break;
@@ -8894,7 +8894,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = GMT_just_default (GMT, ms->refpoint, PSL_MC);
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
-		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
+		if (string[0]) strncpy (ms->label, string, GMT_LEN64-1);
 		ms->do_label = true;
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
@@ -8975,7 +8975,7 @@ int gmt_getrose_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_M
 		tmpstring[k-colon] = '\0';
 		k = pos = 0;
 		while (k < 4 && (GMT_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
-			if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64);
+			if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
 			k++;
 		}
 		ms->do_label = true;
@@ -9133,7 +9133,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		else {	/* Decode w,e,s,n strings */
 			k = pos = 0;
 			while (k < 4 && (GMT_strtok (string, ",", &pos, p))) {	/* Get the four labels */
-				if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64);
+				if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
 				k++;
 			}
 			if (k != 4) {	/* Ran out of labels */
@@ -11850,7 +11850,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 				Tout->segment[seg]->coord[SEG_AZIM][row] = azimuth;
 			}
 			ID[0] = 0;
-			if (Tout->segment[seg]->label) strncpy (ID, Tout->segment[seg]->label, GMT_BUFSIZ);	/* Look for label in header */
+			if (Tout->segment[seg]->label) strncpy (ID, Tout->segment[seg]->label, GMT_BUFSIZ-1);	/* Look for label in header */
 			else if (Tout->segment[seg]->header) GMT_parse_segment_item (GMT, Tout->segment[seg]->header, "-L", ID);	/* Look for label in header */
 			if (!ID[0]) sprintf (ID, "%*.*" PRIu64, ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
@@ -11906,7 +11906,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 				Tout->segment[seg]->coord[SEG_AZIM][row] = azimuth;
 			}
 			ID[0] = 0;
-			if (Tout->segment[seg]->label) strncpy (ID, Tout->segment[seg]->label, GMT_BUFSIZ);	/* Look for label in header */
+			if (Tout->segment[seg]->label) strncpy (ID, Tout->segment[seg]->label, GMT_BUFSIZ-1);	/* Look for label in header */
 			else if (Tout->segment[seg]->header) GMT_parse_segment_item (GMT, Tout->segment[seg]->header, "-L", ID);	/* Look for label in header */
 			if (!ID[0]) sprintf (ID, "%*.*" PRIu64, ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);

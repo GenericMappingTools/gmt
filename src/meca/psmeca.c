@@ -279,7 +279,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 			case 'C':	/* Change position [set line attributes] */
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;
-				strncpy (txt, opt->arg, GMT_LEN256);
+				strncpy (txt, opt->arg, GMT_LEN256-1);
 				if ((p = strchr (txt, 'P')) != NULL) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
 				if (txt[0] != 'P') {	/* Have a pen up front */
 					if (p) p[0] = '\0';
@@ -305,7 +305,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_LEN256);
+						strncpy (txt, &opt->arg[2], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 						p++;

@@ -837,7 +837,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	MGD77_Free_Header_Record (GMT, &M, &H);	/* Free up header structure */
 	MGD77_end (GMT, &M);
 
-	strncpy (p->name, fname, 32U);
+	strncpy (p->name, fname, 31U);
 	p->n_rows = j;
 	for (i = 0; i < s->n_fields; i++) z[i] = GMT_memory (GMT, z[i], p->n_rows, double);
 

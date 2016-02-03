@@ -645,8 +645,7 @@ bool GMT_input_is_bin (struct GMT_CTRL *GMT, const char *filename)
 }
 
 /*! . */
-FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
-{
+FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
 	char path[GMT_BUFSIZ];
 	FILE *fd = NULL;
 
@@ -782,8 +781,8 @@ uint64_t GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction) {
 }
 
 /*! . */
-int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expected)
-{	/* Initializes the internal GMT->common.b.ncol[] settings.
+int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expected) {
+	/* Initializes the internal GMT->common.b.ncol[] settings.
 	 * direction is either GMT_IN or GMT_OUT.
 	 * expected is the expected or known number of columns.  Use 0 if not known.
 	 * For binary input or output the number of columns must be specified.
@@ -968,7 +967,7 @@ bool gmt_traverse_dir (const char *file, char *path) {
 
  	if ((D = opendir (path)) == NULL) return (false);	/* Unable to open directory listing */
 	len = (int)strlen (file);
-	strncpy (savedpath, path, GMT_BUFSIZ);	/* Make copy of current directory path */
+	strncpy (savedpath, path, GMT_BUFSIZ-1);	/* Make copy of current directory path */
 
 	while (!ok && (F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
 		d_namlen = (int)strlen (F->d_name);
@@ -991,8 +990,7 @@ bool gmt_traverse_dir (const char *file, char *path) {
 #endif /* HAVE_DIRENT_H_ */
 
 /*! . */
-char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path, int mode)
-{
+char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path, int mode) {
 	/* stem is the prefix of the file, e.g., gmt_cpt for gmt_cpt.conf
 	 * subdir is an optional subdirectory name in the $GMT_SHAREDIR directory.
 	 * suffix is an optional suffix to append to name
@@ -1106,8 +1104,8 @@ int GMT_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, st
 }
 
 /*! . */
-void gmt_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way)
-{	/* Way = 0: replace | inside quotes with ASCII 1, Way = 1: Replace ASCII 1 with | */
+void gmt_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) {
+	/* Way = 0: replace | inside quotes with ASCII 1, Way = 1: Replace ASCII 1 with | */
 	GMT_UNUSED(GMT);
 	if (in == NULL || in[0] == '\0') return;	/* No string to check */
 	if (way == 0) {	/* Replace | within quotes with a single ASCII 1 */
@@ -1126,8 +1124,8 @@ void gmt_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way)
 }
 
 /*! . */
-unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record, struct GMT_OGR *S)
-{	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
+unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record, struct GMT_OGR *S) {
+	/* Parse @D<vals> aspatial values; this is done once per feature (segment).  We store
  	 * both the text representation (value) and attempt to convert to double in dvalue.
  	 * We use S->n_aspatial to know how many values there are .*/
 	unsigned int col = 0;
@@ -1275,8 +1273,7 @@ bool gmt_ogr_data_parser (struct GMT_CTRL *GMT, char *record) {
 }
 
 /*! . */
-int gmt_get_ogr_id (struct GMT_OGR *G, char *name)
-{
+int gmt_get_ogr_id (struct GMT_OGR *G, char *name) {
 	unsigned int k;
 	for (k = 0; k < G->n_aspatial; k++) if (!strcmp (name, G->name[k])) return (k);
 	return (GMT_NOTSET);
@@ -1294,8 +1291,8 @@ void gmt_align_ogr_values (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-bool gmt_ogr_header_parser (struct GMT_CTRL *GMT, char *record)
-{	/* Parsing of the GMT/OGR vector specification (v 1.0).
+bool gmt_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
+	/* Parsing of the GMT/OGR vector specification (v 1.0).
  	 * GMT->current.io.ogr can have three states:
 	 *	GMT_OGR_UNKNOWN (-1) if not yet set [this is how it is initialized in GMTAPI_Begin_IO].
 	 *	GMT_OGR_FALSE    (0) if file has been determined NOT to be a GMT/OGR file.
@@ -1445,8 +1442,8 @@ bool gmt_ogr_header_parser (struct GMT_CTRL *GMT, char *record)
 }
 
 /*! . */
-unsigned int gmt_assign_aspatial_cols (struct GMT_CTRL *GMT)
-{	/* This function will load input columns with aspatial data as requested by -a.
+unsigned int gmt_assign_aspatial_cols (struct GMT_CTRL *GMT) {
+	/* This function will load input columns with aspatial data as requested by -a.
  	 * It will then handle any possible -i scalings/offsets as well for those columns.
  	 * This is how the @D values end up in the input data record we read. */
 
@@ -1528,7 +1525,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 		if (GMT->current.setting.io_header[GMT_IN] && GMT->current.io.rec_in_tbl_no <= GMT->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (GMT, line, GMT_BUFSIZ, fp);	/* Get the line */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
-			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
+			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
 			//GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output PW: No! If we get here via -hi then no header output was requested */
 			*status = 0;
@@ -1559,7 +1556,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 		if (gmt_ogr_parser (GMT, line)) continue;	/* If we parsed a GMT/OGR record we must go up to top of loop and get the next record */
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
-			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
+			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
 			*status = 0;
 			return (NULL);
@@ -1663,8 +1660,7 @@ void *gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 }
 
 /*! . */
-void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
-{
+void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 	bool more = true;
 	char line[GMT_BUFSIZ] = {""}, *p = NULL;
 
@@ -1684,7 +1680,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *st
 		/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
 		if (GMT->current.setting.io_header[GMT_IN] && GMT->current.io.rec_in_tbl_no <= GMT->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
-			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
+			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
 			*status = 0;
 			return (NULL);
@@ -1709,7 +1705,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *st
 			GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			GMT->current.io.seg_no++;
 			/* Just save the header content, not the marker and leading whitespace */
-			strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, line), GMT_BUFSIZ);
+			strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, line), GMT_BUFSIZ-1);
 			*n = 1ULL;
 			*status = 0;
 			return (NULL);
@@ -1723,7 +1719,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *st
 
 	GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space */
 
-	strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
+	strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 
 	GMT->current.io.status = GMT_IO_DATA_RECORD;
 	GMT->current.io.pt_no++;	/* Got a valid text record */
@@ -4781,7 +4777,7 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 				strncpy (calstring, s, callen-1);
 		}
 		else if (s[0] == 'T') {	/* Got T<clock> presumably, with no <date> */
-			strncpy (clockstring, &s[1], GMT_LEN64);
+			strncpy (clockstring, &s[1], GMT_LEN64-1);
 			clocklen = callen - 1;
 			callen = 0;
 		}
@@ -5837,7 +5833,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (GMT, table->segment[seg]);	/* We have access to OGR metadata */
 			if (table->segment[seg]->header)
-				strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);
+				strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ-1);
 			else
 				GMT->current.io.segment_header[0] = '\0';
 			GMT_write_segmentheader (GMT, fp, table->segment[seg]->n_columns);
@@ -6040,7 +6036,10 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 			}
 		}
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg]->header) strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ); else GMT->current.io.segment_header[0] = '\0';
+			if (table->segment[seg]->header)
+				strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ-1);
+			else
+				GMT->current.io.segment_header[0] = '\0';
 			GMT_write_segmentheader (GMT, fp, 0);
 		}
 		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
@@ -6268,7 +6267,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET
 		for (hdr = 0; hdr < D->table[0]->n_headers; hdr++) {	/* Concatenate headers */
 			for (len = tbl = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
-			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ);
+			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ-1);
 			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
 				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);

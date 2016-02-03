@@ -169,8 +169,7 @@ void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo)
-{
+unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo) {
 	uint64_t i;
 	double wesn[4], xx, yy, size, ix, iy;
 	double *xp = NULL, *yp = NULL;
@@ -223,8 +222,7 @@ unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
 }
 
-void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out)
-{
+void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out) {
 	uint64_t i;
 	double length = 0.0, mid, f, *s = NULL;
 	
@@ -255,16 +253,14 @@ int comp_pairs (const void *a, const void *b) {
 	return (0);
 }
 
-void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p)
-{
+void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p) {
 	uint64_t c;
 	double out[GMT_MAX_COLUMNS];
 	for (c = 0; c < n; c++) out[c] = R[c][p];
 	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 }
 
-int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L)
-{
+int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
 	/* Given single line segment S and a dataset of many line segments in D, determine the closest neighbor
 	 * to S in D (call it S'), and if "really close" it might be a duplicate or slight revision to S.
 	 * There might be several features S' in D close to S so we return how many near or exact matches we
@@ -427,14 +423,17 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GM
 			separation[0] = (np) ? separation[0] / np : DBL_MAX;		/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np) ? separation[0] / use_length : DBL_MAX;		/* Closeness as viewed from S */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+			            "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n",
+			            length[0], separation[0], close[0], np, S->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
 					med_close[0] = med_separation[0] / use_length;
 				}
 				else med_close[0] = DBL_MAX;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n", med_separation[0], med_close[0]);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n",
+				            med_separation[0], med_close[0]);
 			}
 	
 			/* Must now compare the other way */
@@ -519,8 +518,8 @@ struct NN_INFO {
 	int64_t orig_rec;	/* Rec # of this point */
 };
 
-int compare_nn_points (const void *point_1v, const void *point_2v)
-{	/*  Routine for qsort to sort NN data structure on distance.
+int compare_nn_points (const void *point_1v, const void *point_2v) {
+	/*  Routine for qsort to sort NN data structure on distance.
 		*/
 	const struct NN_DIST *point_1 = point_1v, *point_2 = point_2v;
 	
@@ -531,8 +530,8 @@ int compare_nn_points (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-struct NN_DIST * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points)
-{	/* Return array of NN results sorted on smallest distances */
+struct NN_DIST * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
+	/* Return array of NN results sorted on smallest distances */
 	uint64_t k, k2, np;
 	double distance;
 	
@@ -559,8 +558,8 @@ struct NN_DIST * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint6
 	return (P);
 }
 
-struct NN_DIST * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points)
-{	/* Return array of NN results sorted on smallest distances */
+struct NN_DIST * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
+	/* Return array of NN results sorted on smallest distances */
 	uint64_t np = 0, k, tbl, seg, row, col, n_cols;
 	double distance;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -595,8 +594,8 @@ struct NN_DIST * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uin
 	return (P);
 }
 
-int compare_nn_info (const void *point_1v, const void *point_2v)
-{	/*  Routine for qsort to sort NN rec numbers structure on original record order.
+int compare_nn_info (const void *point_1v, const void *point_2v) {
+	/*  Routine for qsort to sort NN rec numbers structure on original record order.
 		*/
 	const struct NN_INFO *point_1 = point_1v, *point_2 = point_2v;
 	
@@ -605,8 +604,8 @@ int compare_nn_info (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points)
-{	/* Return revised array of NN ID lookups via sorting on neighbor IDs */
+struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points) {
+	/* Return revised array of NN ID lookups via sorting on neighbor IDs */
 	uint64_t k;
 	struct NN_INFO *info = (I) ? I : GMT_memory (GMT, NULL, n_points, struct NN_INFO);
 	for (k = 0; k < n_points; k++) {
@@ -1153,7 +1152,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					}
 					else {
 						if (first && S->header) {
-							strncpy (GMT->current.io.segment_header, S->header, GMT_BUFSIZ);
+							strncpy (GMT->current.io.segment_header, S->header, GMT_BUFSIZ-1);
 							GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 						}
 						write_record (GMT, S->coord, S->n_columns, row-1);
@@ -1349,7 +1348,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 										for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 										if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 											if (S2->header)
-												strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
+												strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ-1);
 											else
 												sprintf (GMT->current.io.segment_header, "New segment");
 											GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1360,7 +1359,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									/* Always output crossover point */
 									if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 										if (S2->header)
-											strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
+											strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ-1);
 										else
 											sprintf (GMT->current.io.segment_header, "New segment");
 										GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1379,7 +1378,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 											for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 											if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 												if (S2->header)
-													strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
+													strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ-1);
 												else
 													sprintf (GMT->current.io.segment_header, "New segment");
 												GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1400,8 +1399,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									sprintf (T2, "%s-%" PRIu64, D->table[tbl2]->file[GMT_IN], seg2);
 								}
 								else {
-									strncpy (T1, C->table[tbl1]->file[GMT_IN], GMT_BUFSIZ);
-									strncpy (T2, D->table[tbl2]->file[GMT_IN], GMT_BUFSIZ);
+									strncpy (T1, C->table[tbl1]->file[GMT_IN], GMT_BUFSIZ-1);
+									strncpy (T2, D->table[tbl2]->file[GMT_IN], GMT_BUFSIZ-1);
 								}
 								for (px = 0; px < nx; px++) printf (fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
 							}
@@ -1412,7 +1411,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								/* Inside, copy out the entire polygon */
 								if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 									if (S2->header)
-										strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
+										strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ-1);
 									else
 										sprintf (GMT->current.io.segment_header, "New segment");
 									GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
@@ -1485,7 +1484,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		GMT_init_distaz (GMT, Ctrl->D.unit, Ctrl->D.mode, GMT_MAP_DIST);
 
-		sprintf (format, "%%c : Input %%s %%s is an %%s duplicate of a %%s %%s in %%s, with d = %s c = %%.6g s = %%.4g", GMT->current.setting.format_float_out);
+		sprintf (format, "%%c : Input %%s %%s is an %%s duplicate of a %%s %%s in %%s, with d = %s c = %%.6g s = %%.4g",
+		         GMT->current.setting.format_float_out);
 		
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
@@ -1521,13 +1521,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						I = &(Info[tbl2][seg2]);
 						if (I->mode == 0) continue;
 						/* Report on all the close/exact matches */
-						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
+						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X],
+						          C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
 						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl2, seg2);
 						if (I->mode == 5)
 							sprintf (record, "| : Input %s %s was separated at the Dateline from %s %s in %s", feature[poly_D], src, feature[poly_S2], dup, from);
 						else
-							sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
+							sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2],
+							         dup, from, I->distance, I->closeness, I->setratio);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 				}
@@ -1659,7 +1661,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_LEN64] = {""};
 							buffer[0] = txt[0] = 0;
-							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ); gmt_free (S->header); }
+							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ-1); gmt_free (S->header); }
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
