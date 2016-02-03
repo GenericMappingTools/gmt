@@ -4692,18 +4692,45 @@ uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *
 	double *plon = S->coord[GMT_X], *plat = S->coord[GMT_Y];
 
 	if (add_pole) {	/* Must detour to the N or S pole, then resample the path */
-		n += 2;	/* Add new first and last point to connect to the pole */
-		plon = GMT_memory (GMT, NULL, n, double);
-		plat = GMT_memory (GMT, NULL, n, double);
-		plat[0] = plat[n-1] = S->pole * 90.0;
-		plon[0] = S->coord[GMT_X][0];
-		plon[n-1] = S->coord[GMT_X][S->n_rows-1];
-		GMT_memcpy (&plon[1], S->coord[GMT_X], S->n_rows, double);
-		GMT_memcpy (&plat[1], S->coord[GMT_Y], S->n_rows, double);
-		if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) n = GMT_fix_up_path (GMT, &plon, &plat, n, 0.0, 0);
+#if 0
+		if (GMT_IS_MISC(GMT)) {	/* GLobal projection need to handle pole path properly */
+			uint64_t total_nx = 0, np, k0 = 0;
+			char *pole = "S N";
+			FILE *fp;
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+			fp = fopen ("shit.txt", "w");
+			for (k = 0; k < n; k++) {
+				if (k0 == 0 && k && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k-1]) <= 0.0) k0 = k;
+				fprintf (fp, "%lg\t%lg\n", S->coord[GMT_X][k], S->coord[GMT_Y][k]);
+			}
+			fclose (fp);
+			if (k0) {
+				double dx = S->coord[GMT_X][k0] - S->coord[GMT_X][k0-1], yc;
+				if (fabs (dx) > 180.0) dx += copysign (360.0, -dx);
+				yc = S->coord[GMT_Y][k0-1] - (S->coord[GMT_Y][k0] - S->coord[GMT_Y][k0-1]) * (S->coord[GMT_X][k0-1] - GMT->common.R.wesn[XLO]) / dx;
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Crossing at %g,%g\n", GMT->common.R.wesn[XLO], yc);
+			}
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "k at first west lon = %d [n = %d]\n", (int)k0, (int)n);
+			/* Then add path from pole to west end, then copy path, then add path from east end to pole */
+		}
+		else {
+#endif
+			n += 2;	/* Add new first and last point to connect to the pole */
+			plon = GMT_memory (GMT, NULL, n, double);
+			plat = GMT_memory (GMT, NULL, n, double);
+			plat[0] = plat[n-1] = S->pole * 90.0;
+			plon[0] = S->coord[GMT_X][0];
+			plon[n-1] = S->coord[GMT_X][S->n_rows-1];
+			GMT_memcpy (&plon[1], S->coord[GMT_X], S->n_rows, double);
+			GMT_memcpy (&plat[1], S->coord[GMT_Y], S->n_rows, double);
+			if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) n = GMT_fix_up_path (GMT, &plon, &plat, n, 0.0, 0);
+		//}
 	}
 	k = gmt_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
-	if (add_pole) {		/* Delete what we made */
+	//if (add_pole && !GMT_IS_MISC(GMT)) {		/* Delete what we made */
+	if (add_pole && !GMT_IS_MISC(GMT)) {		/* Delete what we made */
 		GMT_free (GMT, plon);
 		GMT_free (GMT, plat);
 	}
