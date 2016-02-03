@@ -3880,11 +3880,11 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				G->save_labels = 1;
 			case 't':	/* Save contour label locations to given file [x y label] */
 				G->save_labels++;
-				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ);
+				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ-1);
 				break;
 
 			case 'u':	/* Label Unit specification */
-				if (p[1]) strncpy (G->unit, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->unit, &p[1], GMT_LEN64-1);
 				break;
 
 			case 'v':	/* Curved text [Default is straight] */
@@ -3912,7 +3912,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				break;
 
 			case '=':	/* Label Prefix specification */
-				if (p[1]) strncpy (G->prefix, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->prefix, &p[1], GMT_LEN64-1);
 				break;
 
 			case '.':	/* Assume it can be a decimal part without leading 0 */
@@ -4096,7 +4096,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 				break;
 
 			case 'g':	/* Symbol Fill specification */
-				if (p[1]) strncpy (G->fill, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->fill, &p[1], GMT_LEN64-1);
 				break;
 
 			case 'n':	/* Nudge specification; dx/dy are increments along local line axes */
@@ -4110,7 +4110,7 @@ int GMT_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 				break;
 
 			case 'p':	/* Draw text box outline [with optional textbox pen specification] */
-				if (p[1]) strncpy (G->pen, &p[1], GMT_LEN64);
+				if (p[1]) strncpy (G->pen, &p[1], GMT_LEN64-1);
 				break;
 
 			case 's':	/* Symbol to place */
@@ -8776,7 +8776,7 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 					break;
 
 				case 'l':	/* Label specification */
-					if (p[1]) strncpy (ms->label, &p[1], GMT_LEN64);
+					if (p[1]) strncpy (ms->label, &p[1], GMT_LEN64-1);
 					ms->do_label = true;
 					for (i = 0; ms->label[i]; i++) if (ms->label[i] == 1) ms->label[i] = '+';	/* Change back ASCII 1 to + */
 					break;
@@ -8894,7 +8894,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = GMT_just_default (GMT, ms->refpoint, PSL_MC);
 	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
-		if (string[0]) strncpy (ms->label, string, GMT_LEN64);
+		if (string[0]) strncpy (ms->label, string, GMT_LEN64-1);
 		ms->do_label = true;
 	}
 	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
@@ -8975,7 +8975,7 @@ int gmt_getrose_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_M
 		tmpstring[k-colon] = '\0';
 		k = pos = 0;
 		while (k < 4 && (GMT_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
-			if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64);
+			if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
 			k++;
 		}
 		ms->do_label = true;
@@ -9133,7 +9133,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		else {	/* Decode w,e,s,n strings */
 			k = pos = 0;
 			while (k < 4 && (GMT_strtok (string, ",", &pos, p))) {	/* Get the four labels */
-				if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64);
+				if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
 				k++;
 			}
 			if (k != 4) {	/* Ran out of labels */
