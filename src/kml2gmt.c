@@ -68,8 +68,7 @@ void Free_kml2gmt_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [-Fs|l|p] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] > GMTdata.txt\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_colon_OPT);
@@ -89,8 +88,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to kml2gmt and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -154,8 +152,7 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_kml2gmt_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_kml2gmt (void *V_API, int mode, void *args)
-{
+int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	unsigned int i, start, fmode = POINT, n_features = 0, pos;
 	int error = 0, n_scan;
 	size_t length;
@@ -252,7 +249,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			start = i + 1;
 			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
-			strncpy (name, &line[start], GMT_BUFSIZ);
+			strncpy (name, &line[start], GMT_BUFSIZ-1);
 			GMT_chop (name);
 			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
@@ -265,7 +262,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			start = i + 1;
 			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
-			strncpy (description, &line[start], GMT_BUFSIZ);
+			strncpy (description, &line[start], GMT_BUFSIZ-1);
 			GMT_chop (description);
 			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
