@@ -4731,9 +4731,9 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	double *x_perim = NULL, *y_perim = NULL, *plon = NULL, *plat = NULL;
 	static char *pole = "S N";
 	int type;
-//#if 0
+#if 0
 	FILE *fp;
-//#endif
+#endif
 	if (!GMT_IS_MISC(GMT)) return 0;	/* We are only concerned with the global misc projections here */
 	
 	/* Global projection need to handle pole path properly */
@@ -4793,13 +4793,13 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	plat[m++] = pole_lat;
 	GMT_free (GMT, x_perim);	GMT_free (GMT, y_perim);	/* No longer needed */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "New path has %d points, we allocated %d points\n", m, n_new);
-//#if 0
+#if 0
 	fp = fopen ("shit.txt", "w");
 	for (k = 0; k < m; k++) {
 		fprintf (fp, "%lg\t%lg\n", plon[k], plat[k]);
 	}
 	fclose (fp);
-//#endif
+#endif
 	k = gmt_geo_polygon (GMT, plon, plat, m, first, comment);	/* Plot filled polygon [no outline] */
 	GMT_free (GMT, plon);	GMT_free (GMT, plat);			/* No longer needed */
 	return (k);	/* Number of points plotted */
