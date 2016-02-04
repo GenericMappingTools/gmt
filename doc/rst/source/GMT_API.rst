@@ -1160,12 +1160,10 @@ if ``args`` is the head of a linked list of options (further discussed
 in :ref:`Prepare modules opts <sec-func>`); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
 
-Many programs will register an export location where results of a
-GMT function (say, a filtered grid) should be returned, but may then
-wish to use that variable as an *input* resource in a subsequent module
-call. This is accomplished by re-registering the resource as an *input*
-source, thereby changing the *direction* of the data set. The function
-returns 1 if there is an error; otherwise it returns 0.
+Many programs will register an export location where results of a GMT function (say, a filtered grid)
+should be returned, but may then wish to use that variable as an *input* resource in a subsequent module
+call. This is accomplished by re-registering the resource as an *input* source, thereby changing the
+*direction* of the data set. The function returns 1 if there is an error; otherwise it returns 0. |ex_resource_init|
 
 Dimension parameters for user 1-D column vectors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3044,3 +3042,17 @@ this means array will have been transposed when the function returns.
 
 .. [5]
    However, there is no thread-support yet.
+
+.. ------------------------------------- Examples code -------------------
+
+.. |ex_resource_init| raw:: html
+
+   <a href="#openModal">Example</a>
+   <div id="openModal" class="modalDialog">
+    <div>
+        <a href="#close" title="Close" class="close">X</a>
+        <h2>Resource initialization example</h2>
+        <p>
+        </p>
+    </div>
+   </div>
