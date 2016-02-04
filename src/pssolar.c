@@ -84,6 +84,7 @@ void *New_pssolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->T.radius[0] = 90.833;		/* Needed for example if -I only */
 	return (C);
 }
 
@@ -92,34 +93,42 @@ void Free_pssolar_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int parse_date_tz(char *date_tz, char **date, int *TZ) {
-	/* Parse the string date_tz in the form +d<date>+z<TZ> for char date and int TZ.
-	   date_tz is a copy so ok to mess with it. On the other hand, the output var 'date'
-	   is strdup'd here so it must be freed later.
-	*/
-	char *pch;
-	if ((pch = strchr(&date_tz[1], '+')) != NULL) {		/* Than we know that both are present. Just dont know the order */
-		if (pch[1] == 'z') {
-			*TZ = atoi(&pch[2]);
-			pch[0] = '\0';
-			date[0] = strdup(&date_tz[2]);
-		}
-		else if (pch[1] == 'd') {
-			date[0] = strdup(&pch[2]);
-			pch[0] = '\0';
-			*TZ = atoi(&date_tz[2]);
-		}
-		else
-			return 1;
-	}
-	else if (date_tz[1] == 'd')				/* So, either this one */
-		date[0] = strdup(&date_tz[2]);
-	else if (date_tz[1] == 'z')				/* or this */
-		*TZ = atoi(&date_tz[2]);
-	else
-		return 1;
+void parse_date_tz(char *date_tz, char **date, int *TZ) {
+	unsigned int pos = 0;
+	char *p;
 
-	return 0;
+	p = malloc(strlen(date_tz)+1);
+	while ((GMT_strtok (date_tz, "+", &pos, p))) {
+		switch (p[0]) {
+			case 'd': date[0] = strdup(&p[1]);
+			case 'z': *TZ     = atoi(&p[1]);
+		}
+	}
+	free(p);
+}
+
+void strtok_m(char *in, char **token, char **remain, char *sep) {
+	/* A Matlab style strtok. Note that 'token' and 'remain' must be virgin pointers,
+	   otherwise the memory tey point to will be leaked because they are allocated here
+	   with strdup. For that reason the caller is responsable to free them after being consumed.
+	 */
+	unsigned int pos = 0;
+	char *p, *s;
+
+	if (sep == NULL)
+		s = " \t";
+	else
+		s = sep;
+
+	token[0] = NULL;		remain[0] = NULL;
+
+	p = malloc(strlen(in)+1);
+	if (GMT_strtok (in, s, &pos, p)) {
+		token[0] = strdup(p);
+		if (GMT_strtok (in, sep, &pos, p))
+			remain[0] = strdup(p);
+	}
+	free(p);
 }
 
 int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
@@ -191,15 +200,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
 					                                 "Syntax error: Expected -I[<lon>/<lat>]\n");
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
-						date_tz_str = strdup(pch);
-						pch[0] = '\0';		/* Truncates the date & time zone chunk */
-						if (parse_date_tz(date_tz_str, &date, &TZ)) {
-							GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Error in -T option. Badly formatted date or time zone.\n");
-							n_errors++;
-						}
+						parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) Ctrl->I.date = date;
-						free(date_tz_str);
 					}
 				}
 				break;
@@ -211,11 +214,7 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
 						date_tz_str = strdup(pch);
-						pch[0] = '\0';		/* Truncates the date & time zone chunk */
-						if (parse_date_tz(date_tz_str, &date, &TZ)) {
-							GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Error in -T option. Badly formatted date or time zone.\n");
-							n_errors++;
-						}
+						parse_date_tz(date_tz_str, &date, &TZ);
 						Ctrl->T.TZ = TZ;
 						if (date) Ctrl->T.date = date;
 						free(date_tz_str);
