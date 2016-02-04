@@ -2204,6 +2204,39 @@ void GMT_eliminate_lon_jumps (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows
 	GMT_free (GMT, Q);
 }
 
+int GMT_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n) {
+	/* Determines if a polygon is a polar cap and if so, which one:
+	 *  0 : Not a polar cap.
+	 * -1 : A south polar cap going clockwise
+	 * -2 : A south polar cap going counter-clockwise
+	 * +1 : A north polar cap going clockwise
+	 * +2 : A north polar cap going counter-clockwise.
+	 * -99: Returned if there is an error (open polygon or no points)
+	 */
+	uint64_t row;
+	int type = 0, n_360;
+	double dlon, lon_sum = 0.0, lat_sum = 0.0;
+	static char *pole[5] = {"south (CCW)", "south (CW)", "no", "north (CW)", "north (CCW)"};
+
+	if (n == 0) return -99;	/* Nothing given */
+	if (GMT_polygon_is_open (GMT, lon, lat, n)) {	/* Should not happen */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot call GMT_determine_pole on an open polygon\n");
+		return -99;
+	}
+	for (row = 0; row < n - 1; row++) {	/* Add up angular increments between vertices */
+		GMT_set_delta_lon (lon[row], lon[row+1], dlon);	/* Handles the 360 jump cases */
+		lon_sum += dlon;
+		lat_sum += lat[row];
+	}
+	n_360 = irint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
+	if (n_360) {	/* test is true if contains a pole; adjust rectangular bounds and set pole flag accordingly */
+		dlon = (n_360 > 0) ? 2.0 : 1.0;			/* 2 for CCW, 1 for CW paths */
+		type = irint (copysign (dlon, lat_sum));	/* Here, either -2, -1 or +1, +2 */
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_determine_pole: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", n, n_360, lon_sum - n_360 * 360.0, pole[type+2]);
+	return (type);
+}
+
 /*! . */
 void GMT_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 {	/* Must check if polygon is a polar cap.  We use the idea that the sum of
@@ -2212,31 +2245,17 @@ void GMT_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	 * Which pole (S or N) is determined by computng the average latitude and
 	 * assuming the pole is in the heimsphere most visited.  This may not be
 	 * true of course. */
-	uint64_t row;
-	int n_360;
-	double dlon, lon_sum = 0.0, lat_sum = 0.0;
-	static char *pole[3] = {"south", "no", "north"};
+	int answer;
 
-	if (S->n_rows == 0) return;
-	if (GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot call GMT_set_seg_polar on an open polygon\n");
-		return;
-	}
-	for (row = 0; row < S->n_rows - 1; row++) {
-		GMT_set_delta_lon (S->coord[GMT_X][row], S->coord[GMT_X][row+1], dlon);
-		lon_sum += dlon;
-		lat_sum += S->coord[GMT_Y][row];
-	}
-	n_360 = irint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
-	if (n_360) {	/* true if contains a pole; adjust rectangular bounds and set pole flag */
-		S->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
+	if ((answer = GMT_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) == -99) return;	/* No good */
+	if (answer) {	/* true if contains a pole; adjust rectangular bounds and set pole flag */
+		S->pole = (answer < 0) ? -1 : +1;
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
 		if (S->pole == -1) S->lat_limit = S->min[GMT_Y], S->min[GMT_Y] = -90.0;
 		if (S->pole == +1) S->lat_limit = S->max[GMT_Y], S->max[GMT_Y] = +90.0;
 	}
-	else
+	else	/* So, 0 means not polar */
 		S->pole = 0;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_set_seg_polar: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", S->n_rows, n_360, lon_sum - n_360 * 360.0, pole[S->pole+1]);
 }
 
 /*! . */
