@@ -1155,7 +1155,7 @@ what we do if no resources have been registered. The choices are
 
     **GMT_ADD_EXISTING** (16) means "only use already registered resources".
 
-The standard behavior is ``GMT_REG_DEFAULT`` (5). Next, ``n_args`` is 0
+The standard behavior is ``GMT_ADD_DEFAULT`` (6). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in :ref:`Prepare modules opts <sec-func>`); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
@@ -1387,7 +1387,7 @@ upcoming import. The prototype is
   ::
 
     int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction,
-                      unsigned int mode, unsigned int header);
+                      unsigned int header);
 
 where :ref:`family <tbl-family>` specifies the resource type to be read or written
 (only ``GMT_IS_DATASET`` and ``GMT_IS_TEXTSET`` are
@@ -1401,10 +1401,7 @@ companion GMT_End_IO_ function that completes, then disables
 record-by-record data access. You can use these several times to switch
 modes between registering data resources, doing the importing/exporting,
 and disabling further data access, perhaps to do more registration. We
-will discuss GMT_End_IO_ once we are done with the data import. The
-``mode`` option is used to allow output to write table header
-information (``GMT_HEADER_ON``) or not (``GMT_HEADER_OFF``). This is
-usually on unless you are writing messages and other non-data. The final
+will discuss GMT_End_IO_ once we are done with the data import. The final
 ``header`` argument determines if the common header-block should be
 written during initialization; choose between ``GMT_HEADER_ON`` and
 ``GMT_HEADER_OFF``. The function returns 1 if there is an
