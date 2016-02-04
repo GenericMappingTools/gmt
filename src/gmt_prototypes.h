@@ -279,6 +279,7 @@ EXTERN_MSC int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G
 EXTERN_MSC double GMT_get_aspatial_value (struct GMT_CTRL *GMT, int col, struct GMT_DATASEGMENT *S);
 EXTERN_MSC void GMT_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
 EXTERN_MSC void GMT_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
+EXTERN_MSC int GMT_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
 EXTERN_MSC void GMT_skip_xy_duplicates (struct GMT_CTRL *GMT, bool mode);
 EXTERN_MSC void GMT_duplicate_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S_to, struct GMT_DATASEGMENT *S_from);
 EXTERN_MSC struct GMT_DATASEGMENT * GMT_duplicate_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *Sin);
