@@ -30,7 +30,9 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYcptxy"
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
+
+extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 
 struct SUN_PARAMS {
 	double EQ_time;
@@ -55,9 +57,8 @@ struct PSSOLAR_CTRL {
 		bool   active;
 		bool   position;
 		int    TZ;			/* Time Zone */
-		int    date_vec[6];	/* To store date as [YYYY MM DD hh mm ss] */
-		char  *date;		/* To hold eventual date string */
 		double lon, lat;
+		struct GMT_GCAL calendar;
 	} I;
 	struct M {				/* -M dumps the terminators data instead of plotting them*/
 		bool active;
@@ -67,9 +68,8 @@ struct PSSOLAR_CTRL {
 		bool   night, civil, nautical, astronomical;
 		int    which;		/* 0 = night, ... 3 = astronomical */
 		int    TZ;			/* Time Zone */
-		int    date_vec[6];	/* To store date as [YYYY MM DD hh mm ss] */
-		char  *date;		/* To hold eventual date string */
 		double radius[4];
+		struct GMT_GCAL calendar;
 	} T;
 	struct PSSOL_W {		/* -W<pen> */
 		bool active;
@@ -84,7 +84,7 @@ void *New_pssolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->T.radius[0] = 90.833;		/* Needed for example if -I only */
+	C->T.radius[0] = 90.833;		/* (for example if -I only) Sun radius (16' + 34.5' from the light refraction effect) */
 	return (C);
 }
 
@@ -100,8 +100,8 @@ void parse_date_tz(char *date_tz, char **date, int *TZ) {
 	p = malloc(strlen(date_tz)+1);
 	while ((GMT_strtok (date_tz, "+", &pos, p))) {
 		switch (p[0]) {
-			case 'd': date[0] = strdup(&p[1]);
-			case 'z': *TZ     = atoi(&p[1]);
+			case 'd': date[0] = strdup(&p[1]);	break;
+			case 'z': *TZ     = atoi(&p[1]);	break;
 		}
 	}
 	free(p);
@@ -174,8 +174,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 	 */
 
 	int    j, TZ = 0, n_files = 0, n_errors = 0;
-	char  *pch = NULL, *date = NULL, *date_tz_str = NULL;
+	char  *pch = NULL, *date = NULL;
 	struct GMT_OPTION *opt = NULL;
+	double t;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -202,7 +203,10 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
-						if (date) Ctrl->I.date = date;
+						if (date) {
+							GMT_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							GMT_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
+						}
 					}
 				}
 				break;
@@ -212,12 +216,13 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 			case 'T':		/* -Tdcna[+d<date>][+z<TZ>] */
 				Ctrl->T.active = true;
 				if (opt->arg[0]) {
-					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
-						date_tz_str = strdup(pch);
-						parse_date_tz(date_tz_str, &date, &TZ);
+					if ((pch = strchr(opt->arg, '+')) != NULL) {			/* Have one or two extra options */
+						parse_date_tz(pch, &date, &TZ);
 						Ctrl->T.TZ = TZ;
-						if (date) Ctrl->T.date = date;
-						free(date_tz_str);
+						if (date) {
+							GMT_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							GMT_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
+						}
 					}
 					for (j = 0; j < strlen(opt->arg); j++) {
 						if (opt->arg[j] == 'd')				/* Day-night terminator */
@@ -274,7 +279,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 
 int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
-	/* ... */
+	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
+	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
+	   as well as several other solar parameters such sunrise, senset, Sun position, etc... */
 	int    TZ, year, month, day, hour, min, sec;
 	struct tm *UTC; 
 	time_t right_now = time (NULL); 
@@ -286,15 +293,16 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
 
 	/*  Date info may be in either of I or T options. If not, sue current time. */
-	if (Ctrl->I.date_vec[0] != 0 || Ctrl->I.date_vec[0] != 0) {
-		if (Ctrl->I.date_vec[0] != 0) {
-			year = Ctrl->I.date_vec[0];		month = Ctrl->I.date_vec[1];	day = Ctrl->I.date_vec[2];
-			hour = Ctrl->I.date_vec[3];		min   = Ctrl->I.date_vec[4];	sec = Ctrl->I.date_vec[5];
+	if (Ctrl->I.calendar.year != 0 || Ctrl->T.calendar.year != 0) {
+		if (Ctrl->I.calendar.year != 0) {
+			year = Ctrl->I.calendar.year;		month = Ctrl->I.calendar.month;	day = Ctrl->I.calendar.day_m;
+			hour = Ctrl->I.calendar.hour;		min   = Ctrl->I.calendar.min;	sec = irint(Ctrl->I.calendar.sec);
 		}
 		else {
-			year = Ctrl->T.date_vec[0];		month = Ctrl->T.date_vec[1];	day = Ctrl->T.date_vec[2];
-			hour = Ctrl->T.date_vec[3];		min   = Ctrl->T.date_vec[4];	sec = Ctrl->T.date_vec[5];
+			year = Ctrl->T.calendar.year;		month = Ctrl->T.calendar.month;	day = Ctrl->T.calendar.day_m;
+			hour = Ctrl->T.calendar.hour;		min   = Ctrl->T.calendar.min;	sec = irint(Ctrl->T.calendar.sec);
 		}
+		if (sec = 60) sec = 59;		/* I'm lazzy to propagate the correct thing eventualy to the year. */
 	}
 	else {
 		UTC   = gmtime (&right_now);
