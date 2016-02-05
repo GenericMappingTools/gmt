@@ -52,7 +52,7 @@ struct PSSOLAR_CTRL {
 	struct PSSOL_G {		/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
-	} G;	
+	} G;
 	struct PSSOL_I {		/* -I info about solar stuff */
 		bool   active;
 		bool   position;
@@ -152,7 +152,7 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "J,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");	
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");
 	GMT_Option (API, "O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot (or dump; see -M) one or more terminators defined via these flags:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d means day/night terminator.\n");
@@ -282,10 +282,10 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* http://www.esrl.noaa.gov/gmd/grad/solcalc/calcdetails.html */
 	/* Compute the day-night terminator and the civil, nautical and astronomical twilights
 	   as well as several other solar parameters such sunrise, senset, Sun position, etc... */
-	int    TZ, year, month, day, hour, min, sec;
-	struct tm *UTC; 
-	time_t right_now = time (NULL); 
-	double JC, JD, UT, L, M, C, var_y, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
+	int    TZ, year, month, day, hour, min;
+	struct tm *UTC;
+	time_t right_now = time (NULL);
+	double sec, JC, JD, UT, L, M, C, var_y, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
 	double EEO, HA_Sunrise, TrueSolarTime, SolarDec;
 	double radius = 90.833;		/* Sun radius (16' + 34.5' from the light refraction effect) */
 
@@ -293,20 +293,16 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
 
 	/*  Date info may be in either of I or T options. If not, sue current time. */
-	if (Ctrl->I.calendar.year != 0 || Ctrl->T.calendar.year != 0) {
-		if (Ctrl->I.calendar.year != 0) {
-			year = Ctrl->I.calendar.year;		month = Ctrl->I.calendar.month;	day = Ctrl->I.calendar.day_m;
-			hour = Ctrl->I.calendar.hour;		min   = Ctrl->I.calendar.min;	sec = irint(Ctrl->I.calendar.sec);
-		}
-		else {
-			year = Ctrl->T.calendar.year;		month = Ctrl->T.calendar.month;	day = Ctrl->T.calendar.day_m;
-			hour = Ctrl->T.calendar.hour;		min   = Ctrl->T.calendar.min;	sec = irint(Ctrl->T.calendar.sec);
-		}
-		if (sec = 60) sec = 59;		/* I'm lazzy to propagate the correct thing eventualy to the year. */
+	if (Ctrl->I.calendar.year != 0) {
+		year = Ctrl->I.calendar.year;		month = Ctrl->I.calendar.month;	day = Ctrl->I.calendar.day_m;
+		hour = Ctrl->I.calendar.hour;		min   = Ctrl->I.calendar.min;	sec = Ctrl->I.calendar.sec;
+	}
+	else if (Ctrl->T.calendar.year != 0) {
+		year = Ctrl->T.calendar.year;		month = Ctrl->T.calendar.month;	day = Ctrl->T.calendar.day_m;
+		hour = Ctrl->T.calendar.hour;		min   = Ctrl->T.calendar.min;	sec = Ctrl->T.calendar.sec;
 	}
 	else {
 		UTC   = gmtime (&right_now);
-		//UTC->tm_mday = 26;	UTC->tm_hour = 17;	UTC->tm_min = 49;	UTC->tm_sec = 30;
 		year  = UTC->tm_year + 1900;
 		month = UTC->tm_mon + 1;
 		day   = UTC->tm_mday;
@@ -315,7 +311,7 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 		sec   = UTC->tm_sec;
 	}
 
-	UT = hour + (double)min / 60 + (double)sec / 3600;
+	UT = hour + (double)min / 60 + sec / 3600;
 
 	/*  From http://scienceworld.wolfram.com/astronomy/JulianDate.html */
 	/* tm_mon is 0-11, so add 1 for 1-12 range, tm_year is years since 1900, so add 1900, but tm_mday is 1-31 so use as is */
@@ -325,7 +321,7 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 
 	JC = (JD - 2451545) / 36525;		/* number of Julian centuries since Jan 1, 2000, 12 UT */
 	L = 280.46645 + 36000.76983 * JC + 0.0003032 * JC * JC;		/* Sun mean longitude, degree */
-	L = fmod(L, 360);		
+	L = fmod(L, 360);
 	if (L < 0) L = L + 360;
 	M = 357.5291 + 35999.0503 * JC - 0.0001559 * JC * JC - 0.00000048 * JC * JC * JC;		/* mean anomaly, degrees */
 	M = fmod(M, 360);
@@ -346,7 +342,7 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 
 	var_y = tan(obliqCorr/2 * D2R) * tan(obliqCorr/2 * D2R);
 	EEO   = 0.016708634 - JC * (0.000042037 + 0.0000001267 * JC);		/* Earth Eccentric Orbit */
-	Sun->EQ_time = 4 * (var_y * sin(2*L) - 2 * EEO * sin(M) + 4 * EEO * var_y * sin(M) * cos(2*L) - 
+	Sun->EQ_time = 4 * (var_y * sin(2*L) - 2 * EEO * sin(M) + 4 * EEO * var_y * sin(M) * cos(2*L) -
 		                0.5 * var_y * var_y * sin(4*L) - 1.25*EEO*EEO*sin(2*M)) / D2R;
 	HA_Sunrise  = acos(cos(radius*D2R) / (cos(Ctrl->I.lat*D2R) * cos(SolarDec)) - tan(Ctrl->I.lat*D2R) * tan(SolarDec)) / D2R;
 	Sun->SolarNoon = (720 - 4 * Ctrl->I.lon - Sun->EQ_time + TZ * 60) / 1440;
@@ -382,10 +378,10 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 
 	sz = (90 - Sun->SolarElevation) * D2R;		/* Another auxiliary variable */
 	if (Sun->HourAngle > 0)
-		Sun->SolarAzim = fmod(acos(((sin(Ctrl->I.lat * D2R) * cos(sz)) - sin(SolarDec)) / 
+		Sun->SolarAzim = fmod(acos(((sin(Ctrl->I.lat * D2R) * cos(sz)) - sin(SolarDec)) /
 			                  (cos(Ctrl->I.lat * D2R) * sin(sz))) / D2R + 180, 360);
 	else
-		Sun->SolarAzim = fmod(540.0 - acos(((sin(Ctrl->I.lat * D2R) * cos(sz)) - sin(SolarDec)) / 
+		Sun->SolarAzim = fmod(540.0 - acos(((sin(Ctrl->I.lat * D2R) * cos(sz)) - sin(SolarDec)) /
 			                  (cos(Ctrl->I.lat * D2R) * sin(sz))) / D2R, 360);
 
 	Sun->radius = radius;
@@ -424,7 +420,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	if ((error = GMT_pssolar_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pssolar main code ----------------------------*/
-	
+
 
 	Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
@@ -510,7 +506,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
 			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
-			
+
 			if (Ctrl->W.active)
 				GMT_setpen (GMT, &Ctrl->W.pen);
 			if (Ctrl->G.active)
