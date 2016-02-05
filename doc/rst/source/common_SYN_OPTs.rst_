@@ -8,7 +8,9 @@
 
 .. |SYN_OPT-R| replace:: |-R|\ *region*
 
-.. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
+.. .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
+
+.. |SYN_OPT-Rz| replace:: |-R|\ *region*
 
 .. .. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 
@@ -18,7 +20,9 @@
 
 .. |SYN_OPT-Y| replace:: |-Y|\ *y_offset*
 
-.. |SYN_OPT-U| replace:: |-U|\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*]
+.. .. |SYN_OPT-U| replace:: |-U|\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*]
+
+.. |SYN_OPT-U| replace:: |-U|\ [*stamp*]
 
 .. |SYN_OPT-V| replace:: |-V|\ [*level*]
 
