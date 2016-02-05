@@ -30,7 +30,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcpt"
 
 extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 
@@ -60,7 +60,7 @@ struct PSSOLAR_CTRL {
 		double lon, lat;
 		struct GMT_GCAL calendar;
 	} I;
-	struct M {				/* -M dumps the terminators data instead of plotting them*/
+	struct PSSOL_M {		/* -M dumps the terminators data instead of plotting them */
 		bool active;
 	} M;
 	struct PSSOL_T {		/* -T terminator options */
@@ -76,6 +76,9 @@ struct PSSOLAR_CTRL {
 		unsigned int mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
+	struct PSSOL_Z {		/* TEMP */
+		bool active;
+	} Z;
 };
 
 void *New_pssolar_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -250,6 +253,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				break;
+			case 'Z':
+				Ctrl->Z.active = true;
+				break;
 
 			default:		/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -420,7 +426,9 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	if ((error = GMT_pssolar_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pssolar main code ----------------------------*/
-
+	if (Ctrl->Z.active && GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, "-R -J -Dl -W0.1 -A1000 -K") != GMT_OK) {/* Plot a basemap */
+		Return (API->error);
+	}
 
 	Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
