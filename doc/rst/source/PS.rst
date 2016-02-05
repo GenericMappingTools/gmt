@@ -16,6 +16,7 @@ PS
    psmask
    psrose
    psscale
+   pssolar
    pstext
    pswiggle
    psxy
