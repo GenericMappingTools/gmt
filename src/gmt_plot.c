@@ -4734,7 +4734,8 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 #if 0
 	FILE *fp;
 #endif
-	if (!GMT_IS_MISC(GMT)) return 0;	/* We are only concerned with the global misc projections here */
+	/* We want this code to be used for the misc. global projections but also global cylindrical or linear(if degrees) maps */
+	if (!(GMT_IS_MISC(GMT) || (GMT->current.map.is_world  && (GMT_IS_CYLINDRICAL(GMT) || (GMT_IS_LINEAR(GMT) && GMT_is_geographic(GMT,GMT_IN)))))) return 0;	/* We are only concerned with the global misc projections here */
 	
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
@@ -4761,6 +4762,9 @@ uint64_t gmt_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Crossing at %g,%g\n", GMT->common.R.wesn[XLO], yc);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "k at point closest to lon %g is = %d [n = %d]\n", GMT->common.R.wesn[XLO], (int)k0, (int)n);
 	/* Then, add path from pole to start longitude, then copy perimeter path, then add path from stop longitude back to pole */
+	/* WIth cylindrical projections we may not go all the way to the pole, so we adjust pole_lat based on -R: */
+	if (pole_lat < GMT->common.R.wesn[YLO]) pole_lat = GMT->common.R.wesn[YLO];
+	if (pole_lat >GMT->common.R.wesn[YHI])  pole_lat = GMT->common.R.wesn[YHI];
 	/* 1. Calculate the path from yc to pole: */
 	perim_n = GMT_lonpath (GMT, start_lon, pole_lat, yc, &x_perim, &y_perim);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);

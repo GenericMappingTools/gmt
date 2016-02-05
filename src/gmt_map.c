@@ -8726,5 +8726,6 @@ struct GMT_DATASEGMENT * GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 		y = GMT_lat_swap (GMT, y, GMT_LATSWAP_O2G);	/* Convert back to geodetic coordinates */
 		S->coord[GMT_X][k] = x;	S->coord[GMT_Y][k] = y;	/* Assign the array elements */
 	}
+	GMT_set_seg_polar (GMT, S);				/* Prepare if a polar cap */
 	return (S);	/* Pass out the results */
 }
