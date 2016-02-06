@@ -8704,14 +8704,17 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 
 /*! . */
 struct GMT_DATASEGMENT * GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon, double plat, double colat, uint64_t m) {
-	/* Function to generate m equidistant coordinates for an oblique small circle about a given pole */
-	double P[3], X[3], N[3], R[3][3], xlat, dlon, x, y;
-	uint64_t k;
+	/* Function to generate m equidistant coordinates for an oblique small circle about a given pole.
+	 * To avoid some downstream problems we make sure that if circle crosses Greenwhich or Dateline that
+	 * we insert a point at lon = 0 and/or lon = 180. I imagine that in the worst-case scenario we could
+	 * cross those lines twice each, hence I allocate 4 more spaces than needed. */
+	double P[3], X[3], N[3], R[3][3], xlat, dlon, xx, yy, x, y, last_x, last_y, dx;
+	uint64_t k, n;
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;
 	
 	S = GMT_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
-	if (GMT_alloc_segment (GMT, S, m, 2, true)) return NULL;	/* Allocate array space */
+	if (GMT_alloc_segment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
 
 	plat = GMT_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */
 	GMT_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
@@ -8719,13 +8722,31 @@ struct GMT_DATASEGMENT * GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	xlat = GMT_lat_swap (GMT, xlat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	GMT_geo_to_cart (GMT, xlat, plon, X, true);		/* Generating vector X we will rotate about P */
 	dlon = 360.0 / (m - 1);					/* Point spacing along the small circle in oblique longitude degrees */
-	for (k = 0; k < m; k++) {
+	for (k = n = 0; k < m; k++, n++) {	/* Given how dlon was set we end up closing the polygon exactly */
 		GMT_make_rot_matrix2 (GMT, P, k * dlon, R);	/* Rotation matrix about P for this increment in oblique longitude */
 		GMT_matrix_vect_mult (GMT, 3U, R, X, N);	/* Rotate the X-vector to N */
 		GMT_cart_to_geo (GMT, &y, &x, N, true);		/* Recover lon,lat of rotated point */
 		y = GMT_lat_swap (GMT, y, GMT_LATSWAP_O2G);	/* Convert back to geodetic coordinates */
-		S->coord[GMT_X][k] = x;	S->coord[GMT_Y][k] = y;	/* Assign the array elements */
+		if (k) {
+			dx = x - last_x;
+			if (fabs (dx) > 180.0) {	/* Jump in longitudes */
+				dx = copysign (360.0 - fabs (dx), -dx);
+				xx = (fabs (last_x) > 270 || fabs(last_x) < 90.0) ? 0.0 : copysign (180.0, last_x);
+				yy = last_y + (y - last_y) * (xx - last_x) / dx;
+				S->coord[GMT_X][n] = xx;	S->coord[GMT_Y][n++] = yy;	/* Assign the extra element */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_get_smallcircle: Added extra point at %g/%g\n", xx, yy);
+			}
+			else if ((x > 0.0 && last_x < 0.0) || (x < 0.0 && last_x > 0.0)) {	/* Crossing Greenwhich */
+				xx = 0.0;
+				yy = last_y + (y - last_y) * (xx - last_x) / dx;
+				S->coord[GMT_X][n] = xx;	S->coord[GMT_Y][n++] = yy;	/* Assign the extra element */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT_get_smallcircle: Added extra point at %g/%g\n", xx, yy);
+			}
+		}
+		S->coord[GMT_X][n] = x;	S->coord[GMT_Y][n] = y;	/* Assign the array elements */
+		last_x = x;	last_y = y;
 	}
+	S->n_rows = n;
 	GMT_set_seg_polar (GMT, S);				/* Prepare if a polar cap */
 	return (S);	/* Pass out the results */
 }

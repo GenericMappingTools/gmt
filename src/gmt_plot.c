@@ -4829,7 +4829,6 @@ uint64_t GMT_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	type = GMT_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
@@ -4838,7 +4837,10 @@ uint64_t GMT_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	}
 	start_lon = GMT->common.R.wesn[XHI];
 	stop_lon  = GMT->common.R.wesn[XLO];
-		
+	
+	for (k = 0; k < n; k++) 	/* Make negative longitudes only */
+		if (S->coord[GMT_X][k] >= 180.0) S->coord[GMT_X][k] -= 360.0;
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
 	for (k = 1, k0 = 0; k0 == 0 && k < n; k++) {	/* Determine where the perimeter crossing with the west boundary occurs */
 		if (k && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k]) >= 0.0 && (GMT->common.R.wesn[XLO]-S->coord[GMT_X][k-1]) <= 0.0) k0 = k;
 	}
