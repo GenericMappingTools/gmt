@@ -51,6 +51,7 @@ struct SUN_PARAMS {
 struct PSSOLAR_CTRL {
 	struct PSSOL_G {		/* -G<fill> */
 		bool active;
+		bool clip;
 		struct GMT_FILL fill;
 	} G;
 	struct PSSOL_I {		/* -I info about solar stuff */
@@ -63,9 +64,13 @@ struct PSSOLAR_CTRL {
 	struct PSSOL_M {		/* -M dumps the terminators data instead of plotting them */
 		bool active;
 	} M;
+	struct PSSOL_N {	/* -N */
+		bool active;
+	} N;
 	struct PSSOL_T {		/* -T terminator options */
 		bool   active;
 		bool   night, civil, nautical, astronomical;
+		unsigned int n_terminators;
 		int    which;		/* 0 = night, ... 3 = astronomical */
 		int    TZ;			/* Time Zone */
 		double radius[4];
@@ -140,7 +145,7 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-O]\n", GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-N] [-O]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -150,12 +155,14 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
 	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip path instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "J,K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_Option (API, "O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot (or dump; see -M) one or more terminators defined via these flags:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d means day/night terminator.\n");
@@ -193,7 +200,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
-				if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (opt->arg[0] == 'c' && !opt->arg[1])
+					Ctrl->G.clip = true;
+				else if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					GMT_fill_syntax (GMT, 'G', " "); n_errors++;
 				}
 				break;
@@ -216,6 +225,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 			case 'M':
 				Ctrl->M.active = true;
 				break;
+			case 'N':	/* Use the outside of the polygon as clip area */
+				Ctrl->N.active = true;
+				break;
 			case 'T':		/* -Tdcna[+d<date>][+z<TZ>] */
 				Ctrl->T.active = true;
 				if (opt->arg[0]) {
@@ -227,7 +239,7 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 							GMT_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 						}
 					}
-					for (j = 0; j < strlen(opt->arg); j++) {
+					for (j = 0; j < (int)strlen(opt->arg); j++) {
 						if (opt->arg[j] == 'd')				/* Day-night terminator */
 							{Ctrl->T.night = true;          Ctrl->T.radius[0] = 90.833;}
 						else if (opt->arg[j] == 'c')        /* Civil terminator */
@@ -263,6 +275,13 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 		}
 	}
 
+	for (j = 0; j < 4; j++)	/* Count requested terminators */
+		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;	
+
+	if (Ctrl->N.active && GMT->current.map.frame.init) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT->current.map.frame.draw = false;
+	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
 		if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
 			GMT_parse_common_options (GMT, "J", 'J', "X14cd/0d");
@@ -274,6 +293,8 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 		}
 	}
 
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Syntax error: -N requires -Gc\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Syntax error: Can only select one terminator when using -Gc\n");
 	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Syntax error: Cannot combine -T and -I\n");
 
@@ -504,23 +525,44 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
 	}
 
-	else {
+	else {	/* Plotting the terminator as line, polygon, or cliup path */
+		double *lon = NULL, *lat = NULL, x0, y0;
+		unsigned int first = (Ctrl->N.active) ? 0 : 1;
+		
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;	/* This terminator was not requested */
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
 			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
-
-			if (Ctrl->W.active)
-				GMT_setpen (GMT, &Ctrl->W.pen);
-			if (Ctrl->G.active)
-				GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
-
-			GMT_geo_polygons (GMT, S);
+			if (Ctrl->G.clip) {	/* Set up a clip path */
+				bool must_free = true;
+				if ((n_pts = GMT_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
+					lon = S->coord[GMT_X]; lat = S->coord[GMT_Y];
+					n_pts = S->n_rows;
+					must_free = false;
+				}
+				for (j = 0; j < n_pts; j++) {	/* Apply map projection */
+					GMT_geo_to_xy (GMT, lon[j], lat[j], &x0, &y0);
+					lon[j] = x0; lat[j] = y0;
+				}
+				PSL_beginclipping (PSL, lon, lat, n_pts, GMT->session.no_rgb, 2 + first);
+				if (must_free) {
+					GMT_free (GMT, lon);
+					GMT_free (GMT, lat);
+				}
+			}
+			else {
+				if (Ctrl->W.active)
+					GMT_setpen (GMT, &Ctrl->W.pen);
+				if (Ctrl->G.active)
+					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
+				GMT_geo_polygons (GMT, S);
+			}
 			GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 

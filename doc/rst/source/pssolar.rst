@@ -15,11 +15,12 @@ Synopsis
 
 **pssolar** 
 [ |SYN_OPT-B| ]
-[ |-G|\ *fill* ]
+[ |-G|\ *fill*\ \|\ **c** ]
 [ |-I|\ [*lon/lat*][**+d**\ *<date>*][**+z**\ *<TZ>*] ]
 [ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-M| ]
+[ |-N| ]
 [ |-O| ] [|-P| ] [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *<dcna>*\ [**+d**\ *<date>*][**+z**\ *<TZ>*]]
@@ -56,8 +57,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *fill*
-    Select color or pattern for filling of terminators [Default is no fill].
+**-G**\ *fill*\ \|\ **c**
+    Select color or pattern for filling of terminators; or use **-Gc** for clipping [Default is no fill].
+    Deactivate clipping by appending the output of gmt psclip **-C**.
 
 .. _-I:
 
@@ -80,6 +82,12 @@ Optional Arguments
 
 **-M**
     Write terminator(s) as a multisegment ASCII (or binary, see **-b**\ *o*) file to standard output. No plotting occurs.
+
+.. _-N:
+
+**-N**
+    Invert the sense of what is inside and outside the terminator.  Only
+    used with clipping (**-Gc**) and cannot be used together with **-B**.
 
 .. _-O:
 
@@ -159,6 +167,12 @@ Plot the day-night and civil twilight
     gmt pscoast -Rd -W0.1 -JX14cd/0d -Ba -BWSen -Dl -A1000 -P -K > terminator.ps
 
     gmt pssolar -R -JX -W1 -Tdc -O >> terminator.ps
+
+Set up a clip path overlay based on the day/night terminator: 
+
+   ::
+
+    gmt pssolar -R -J -Gc -Tc -O -K >> someplot.ps
 
 
 See Also

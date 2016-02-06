@@ -248,8 +248,8 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	GMT_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
-		unsigned int tbl;
-		bool first = !Ctrl->N.active, duplicate;
+		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1;
+		bool duplicate;
 		uint64_t row, seg;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;

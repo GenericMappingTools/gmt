@@ -205,6 +205,7 @@ EXTERN_MSC unsigned int GMT_setfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
 EXTERN_MSC void GMT_plotend (struct GMT_CTRL *GMT);
 EXTERN_MSC struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
 EXTERN_MSC struct GMT_PS * GMT_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode);
+EXTERN_MSC uint64_t GMT_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, double **lon, double **lat);
 
 #endif /* _POSTSCRIPTLIGHT_H */
 
