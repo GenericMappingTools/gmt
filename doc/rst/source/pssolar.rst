@@ -15,6 +15,7 @@ Synopsis
 
 **pssolar** 
 [ |SYN_OPT-B| ]
+[ |-C| ]
 [ |-G|\ *fill*\ \|\ **c** ]
 [ |-I|\ [*lon/lat*][**+d**\ *<date>*][**+z**\ *<TZ>*] ]
 [ |-J|\ *parameters* ]
@@ -54,6 +55,15 @@ Optional Arguments
 .. _-B:
 
 .. include:: explain_-B.rst_
+
+.. _-C:
+
+**-C**
+    Formats the report selected by **-I** using tab-separated fields on a single line. The
+    output is Sun *Lon Lat Azimuth Elevation* in degrees, *Sunrise Sunset Noon* in dedimal days,
+    *day length* in minutes, *SolarElevationCorrected* corrected for the effect of refraction index
+    and *Equation of time* in minutes. Note that if no position is provided in **-I**\ *lon/lat* the
+    data after *Elevation* refers to the point (0,0).
 
 .. _-G:
 
