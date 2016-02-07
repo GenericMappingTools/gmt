@@ -79,7 +79,7 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies locations where we wish to compute the predicted value.  When this option
-    is used you cannot use *-T** to set an equidistant lattice. The output data records are written to stdout.
+    is used you cannot use **-T** to set an equidistant lattice. The output data records are written to stdout.
 
 .. _-T:
 
