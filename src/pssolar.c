@@ -26,7 +26,7 @@
 #define THIS_MODULE_NAME	"pssolar"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
-#define THIS_MODULE_KEYS	"<II,>XO,RG-"
+#define THIS_MODULE_KEYS	">XO,>DM,RG-"
 
 #include "gmt_dev.h"
 
@@ -67,7 +67,7 @@ struct PSSOLAR_CTRL {
 	struct PSSOL_M {		/* -M dumps the terminators data instead of plotting them */
 		bool active;
 	} M;
-	struct PSSOL_N {	/* -N */
+	struct PSSOL_N {		/* -N */
 		bool active;
 	} N;
 	struct PSSOL_T {		/* -T terminator options */
