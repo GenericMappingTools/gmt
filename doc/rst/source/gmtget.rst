@@ -27,7 +27,7 @@ Required Arguments
 
 PARAMETER
     Provide one or several parameters of interest. The current value of
-    those parameters will be writen to *stdout*. For a complete listing
+    those parameters will be written to *stdout*. For a complete listing
     of available parameters and their meaning, see the :doc:`gmt.conf` man page.
 
 Optional Arguments

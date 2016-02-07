@@ -18,7 +18,6 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *center* ]
 [ |-G|\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
-[ |-J|\ **z**\ \|\ **Z**\ *parameters* ]
 [ |-I|\ *fix_az* ]
 [ |-K| ]
 [ |-O| ] [ **-P** ]

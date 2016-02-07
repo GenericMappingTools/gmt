@@ -811,7 +811,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
 			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
 			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
-			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c (may be overrided by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
