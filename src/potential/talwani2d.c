@@ -590,9 +590,11 @@ int GMT_talwani2d (void *V_API, int mode, void *args)
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We dont really know */
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	}
 
 	/* Specify input expected columns to be at least 2 */

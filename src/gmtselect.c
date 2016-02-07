@@ -487,7 +487,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	unsigned int base = 3, np[2] = {0, 0}, r_mode;
 	unsigned int side, col, id;
 	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
-	bool inside = false, need_header = false, shuffle[2] = {false, false}, just_copy_record = false, pt_cartesian = false;
+	bool inside = false, need_header = false, shuffle = false, just_copy_record = false, pt_cartesian = false;
 	bool output_header = false, do_project = false, no_resample = false, keep;
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0, n_output = 0;
@@ -529,9 +529,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
 
-	shuffle[GMT_OUT] = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
-	shuffle[GMT_IN] = GMT->common.i.active;	/* Must save this as -i affects main input but not -C, -F, -L files */
-	GMT->common.i.active = false;	/* Temporarily unset this control */
+	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
 	
 	if (!GMT->common.R.active && Ctrl->N.active) {	/* If we use coastline data or used -fg but didnt give -R we implicitly set -Rg */
@@ -591,6 +589,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	else	/* Cartesian data */
 		GMT_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
 	
+	GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -686,7 +686,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	GMT->common.i.active = shuffle[GMT_IN];	/* Recover settings provided by user (if -i was used at all) */
+	GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
@@ -708,7 +708,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	just_copy_record = (GMT_is_ascii_record (GMT, options) && !shuffle[GMT_OUT] && !GMT->common.s.active);
+	just_copy_record = (GMT_is_ascii_record (GMT, options) && !shuffle && !GMT->common.s.active);
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */

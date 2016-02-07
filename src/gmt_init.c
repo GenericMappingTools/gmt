@@ -2434,6 +2434,18 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 	return (GMT_NOERROR);
 }
 
+/*! Routine will temporarily suspend any -i selection */
+void GMT_disable_i_opt (struct GMT_CTRL *GMT)
+{	/* Temporarily turn off any -i selections */
+	GMT->common.i.active = false;
+}
+
+/*! Routine will re-enable any suspended -i selection */
+void GMT_reenable_i_opt (struct GMT_CTRL *GMT)
+{	/* Turn on again any -i selections */
+	GMT->common.i.active = GMT->common.i.orig;
+}
+
 /*! Routine will decode the -i<col>|<colrange>[l][s<scale>][o<offset>],... arguments */
 int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 
@@ -2491,6 +2503,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	qsort (GMT->current.io.col[GMT_IN], k, sizeof (struct GMT_COL_INFO), gmt_compare_cols);
 	GMT->common.i.n_cols = k;
+	GMT->common.i.orig = true;
 	return (GMT_NOERROR);
 }
 

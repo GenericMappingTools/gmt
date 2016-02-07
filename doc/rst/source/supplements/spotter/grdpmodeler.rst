@@ -21,7 +21,6 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
-[ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -122,7 +121,6 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
-.. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_help.rst_
 
 .. include:: explain_geodetic.rst_

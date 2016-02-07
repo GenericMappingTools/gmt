@@ -298,7 +298,7 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-C[p|y]<value] [-F<force>] [-S] [-T<wpre>] [%s] [-W<w0>] [-Z<zm>]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -1299,9 +1299,11 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		double scale = (Ctrl->M.active[1]) ? 1000.0 : 1.0;	/* Either got Te in km or m */
 		double d_min = DBL_MAX, d_max = 0.0;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input Te or Rigidity table data\n");
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((E = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->E.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		for (tbl = 0; tbl < E->n_tables; tbl++) {
 			for (seg = 0; seg < E->table[tbl]->n_segments; seg++) {
 				S = E->table[tbl]->segment[seg];	/* Current segment */
@@ -1361,9 +1363,11 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->T.active && Ctrl->T.file)	{	/* Read pre-existing deflections */
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (T->n_tables != E->n_tables || T->n_segments != E->n_segments || T->n_records != E->n_records) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Number of pre-existing deflection records is not correct!\n");
 			Return (API->error);

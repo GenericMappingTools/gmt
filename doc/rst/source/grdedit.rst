@@ -25,7 +25,6 @@ Synopsis
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -134,8 +133,6 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
-
-.. include:: explain_-icols.rst_
 
 .. include:: explain_help.rst_
 

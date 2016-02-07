@@ -160,7 +160,7 @@ struct GMT_COMMON {
 		char *colnames;	/* Not set by -h but maintained here */
 	} h;
 	struct i {	/* -i<col>|<colrange>,... */
-		bool active;
+		bool active, orig;
 		uint64_t n_cols;
 	} i;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] */

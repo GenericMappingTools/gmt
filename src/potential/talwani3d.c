@@ -870,9 +870,11 @@ int GMT_talwani3d (void *V_API, int mode, void *args)
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	else {	/* Got a dataset with output locations */
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	}
 	
 	flat_earth = GMT_is_geographic (GMT, GMT_IN);

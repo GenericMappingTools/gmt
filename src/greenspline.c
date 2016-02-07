@@ -1518,9 +1518,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_DATATABLE *S = NULL;
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		S = Din->table[0];	/* Can only be one table */
 		m = S->n_records;	/* Total number of gradient constraints */
 		nm += m;		/* New total of linear equations to solve */
@@ -1685,9 +1687,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		Z.nz = 1;
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		T = Nin->table[0];
 	}
 	else {	/* Fill in an equidistant output table or grid */

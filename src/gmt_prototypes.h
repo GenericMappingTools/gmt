@@ -107,6 +107,8 @@ EXTERN_MSC int GMT_message (struct GMT_CTRL *GMT, char *format, ...);
 EXTERN_MSC int GMT_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...);
 EXTERN_MSC int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R);
 EXTERN_MSC int GMT_get_num_processors();
+EXTERN_MSC void GMT_disable_i_opt (struct GMT_CTRL *GMT);
+EXTERN_MSC void GMT_reenable_i_opt (struct GMT_CTRL *GMT);
 #ifdef WIN32
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *GMT, int direction);
 #endif
