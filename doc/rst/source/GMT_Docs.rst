@@ -227,6 +227,9 @@ One new module has been added to the *spotter* supplement:
 :doc:`gmtpmodeler<supplements/spotter/gmtpmodeler>`:
 	Evaluate plate tectonic model predictions at given locations.
 
+:doc:`pssolar`:
+  Plot day-light terminators and other sunlight parameters.
+
 New Features in GMT 5.2
 =======================
 
