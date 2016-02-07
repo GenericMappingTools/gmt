@@ -321,9 +321,11 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -Q files */
 		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
@@ -335,9 +337,11 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
+			GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -N files */
 			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
 			}
+			GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "File %s can only have 1 segment!\n", Ctrl->N.file);

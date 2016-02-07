@@ -39,7 +39,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "-:JRVbdfhi" GMT_OPT("H")
+#define GMT_PROG_OPTIONS "-:JRVbdfh" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
 	struct In {
@@ -123,7 +123,7 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
-	GMT_Option (API, "J,V,bi3,di,f,h,i,:,.");
+	GMT_Option (API, "J,V,bi3,di,f,h,:,.");
 
 	return (EXIT_FAILURE);
 }

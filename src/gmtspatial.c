@@ -1271,9 +1271,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
+				GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
+				GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				uint64_t dim[4] = {1, 1, 5, 2};
@@ -1460,9 +1462,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
 		if (Ctrl->D.file) {	/* Get trial features via a file */
+			GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -D files */
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
+			GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			from = Ctrl->D.file;
 		}
 		else {
@@ -1595,9 +1599,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		
+		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
 			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
