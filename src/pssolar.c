@@ -49,6 +49,9 @@ struct SUN_PARAMS {
 };
 
 struct PSSOLAR_CTRL {
+	struct PSSOL_C {		/* -C */
+		bool active;
+	} C;
 	struct PSSOL_G {		/* -G<fill> */
 		bool active;
 		bool clip;
@@ -144,7 +147,7 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-N] [-O]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
@@ -154,6 +157,7 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report selected via -I in a single line of numbers only.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip path instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
@@ -198,6 +202,9 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 
 			/* Processes program-specific parameters */
 
+			case 'C':		/* Format -I output as a vector. No text. */
+				Ctrl->C.active = true;
+				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
@@ -313,8 +320,7 @@ int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	struct tm *UTC;
 	time_t right_now = time (NULL);
 	double sec, JC, JD, UT, L, M, C, var_y, r, sz, theta, lambda, obliqCorr, meanObliqEclipt;
-	double EEO, HA_Sunrise, TrueSolarTime, SolarDec;
-	double radius = 90.833;		/* Sun radius (16' + 34.5' from the light refraction effect) */
+	double EEO, HA_Sunrise, TrueSolarTime, SolarDec, radius;
 
 	radius = Ctrl->T.radius[Ctrl->T.which];
 	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
@@ -447,48 +453,50 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	if ((error = GMT_pssolar_parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pssolar main code ----------------------------*/
-	if (Ctrl->Z.active && GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, "-R -J -Dl -W0.1 -A1000 -K") != GMT_OK) {/* Plot a basemap */
+	if (Ctrl->Z.active && GMT_Call_Module (API, "pscoast", GMT_MODULE_CMD, "-R -J -Dl -P -W0.1 -A1000 -K") != GMT_OK) {/* Plot a basemap */
 		Return (API->error);
 	}
 
 	Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
 	if (Ctrl->I.active) {
-		double out[10];
-
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default output destination, unless already set */
-			Return (API->error);
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK)	/* Enables data output and sets access mode */
-			Return (API->error);
-
 		solar_params (Ctrl, Sun);
-		sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-		sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-		if (Ctrl->I.position) {
-			hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
-			sprintf (record, "\tSunrise  = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
-			sprintf (record, "\tSunset   = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
-			sprintf (record, "\tNoon     = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
-			sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-		}
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
 
-		/* Now move the needle to doubles. Output all members of the Sun struct as a vector */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)
-			Return (API->error);
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) Return (API->error);
-		out[0] = -Sun->HourAngle;		out[1] = -Sun->SolarDec;		out[2] = Sun->SolarAzim;
-		out[3] = Sun->SolarElevation;	out[4] = Sun->Sunrise;			out[5] = Sun->Sunset;
-		out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
-		out[9] = Sun->EQ_time;
-		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
-		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
+		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
+			double out[10];
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)
+				Return (API->error);
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) Return (API->error);
+			out[0] = -Sun->HourAngle;		out[1] = -Sun->SolarDec;		out[2] = Sun->SolarAzim;
+			out[3] = Sun->SolarElevation;	out[4] = Sun->Sunrise;			out[5] = Sun->Sunset;
+			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
+			out[9] = Sun->EQ_time;
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);		
+		}
+		else {
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default output destination*/
+				Return (API->error);
+			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK)	/* Enables data output and sets access mode */
+				Return (API->error);
+
+			sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			sprintf (record, "\t                      Azimuth = %.4f\tElevation = %.4f", Sun->SolarAzim, Sun->SolarElevation);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			if (Ctrl->I.position) {
+				hour = (int)(Sun->Sunrise * 24);	min = irint((Sun->Sunrise * 24 - hour) * 60);
+				sprintf (record, "\tSunrise  = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				hour = (int)(Sun->Sunset * 24);		min = irint((Sun->Sunset * 24 - hour) * 60);
+				sprintf (record, "\tSunset   = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				hour = (int)(Sun->SolarNoon * 24);	min = irint((Sun->SolarNoon * 24 - hour) * 60);
+				sprintf (record, "\tNoon     = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
+				sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			}
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
+		}
 	}
 
 	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
