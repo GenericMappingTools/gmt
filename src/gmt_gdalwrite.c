@@ -100,7 +100,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		n_byteOffset = 4;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gdalwrite: Unsuported input data class!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gdalwrite: Unsupported input data class!\n");
 		return(-1);
 	}
 

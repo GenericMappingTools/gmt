@@ -871,7 +871,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	    Ctrl->T.device == GS_DEV_JPGG || Ctrl->T.device == GS_DEV_TIF ||
 	    Ctrl->T.device == GS_DEV_TIFG || Ctrl->T.device == GS_DEV_PNG ||
 	    Ctrl->T.device == GS_DEV_TPNG || Ctrl->T.device == GS_DEV_PNGG) ) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: As far as we know selected raster type is unsuported by GE.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: As far as we know selected raster type is unsupported by GE.\n");
 	}
 
 	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */

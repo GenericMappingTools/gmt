@@ -1735,7 +1735,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			for (j = 0; j < header->size; j++)
 				grid[j] = (float)from_gdalread->Int32.data[j+i];
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR data type not suported with gdalread in gmt_customio.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR data type not supported with gdalread in gmt_customio.\n");
 			return (GMT_GRDIO_OPEN_FAILED);
 		}
 	}
