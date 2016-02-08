@@ -379,7 +379,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])
-					strncpy (buffer, opt->arg, GMT_BUFSIZ);
+					strncpy (buffer, opt->arg, GMT_BUFSIZ-1);
 				Ctrl->I.file = strdup (buffer);
 				break;
 			case 'L':	/* Extended data */

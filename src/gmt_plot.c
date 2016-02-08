@@ -518,7 +518,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV8_LIMIT || fabs (knots[i] - val1) < GMT_CONV8_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (string, label_c[i], GMT_LEN256);
+					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
 					GMT_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_deftextdim (PSL, ortho ? "-w" : "-h", font.size, string);
@@ -541,7 +541,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", psl_iz (PSL, x), annot_pos);
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (string, label_c[i], GMT_LEN256);
+					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
 					GMT_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, text_angle, justify, form);
@@ -2213,7 +2213,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 						trim = remove[GMT_X];
 				}
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (label, label_c[i], GMT_LEN256);
+					strncpy (label, label_c[i], GMT_LEN256-1);
 				else
 					GMT_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, !trim, 0, is_world_save);
 				gmt_label_trim (label, trim);
@@ -2272,7 +2272,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 						trim = remove[GMT_Y];
 				}
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (label, label_c[i], GMT_LEN256);
+					strncpy (label, label_c[i], GMT_LEN256-1);
 				else
 					GMT_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, !trim, lonlat, is_world_save);
 				gmt_label_trim (label, trim);

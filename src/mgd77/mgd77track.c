@@ -135,7 +135,8 @@ void *New_mgd77track_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 		C->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size = C->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size = 0.04;
 		C->T.marker[MGD77TRACK_MARK_DIST].marker_size = 0.06;
 	}
-	C->T.marker[MGD77TRACK_MARK_NEWDAY].font = C->T.marker[MGD77TRACK_MARK_SAMEDAY].font = C->T.marker[MGD77TRACK_MARK_DIST].font = GMT->current.setting.font_annot[GMT_PRIMARY];
+	C->T.marker[MGD77TRACK_MARK_NEWDAY].font = C->T.marker[MGD77TRACK_MARK_SAMEDAY].font = C->T.marker[MGD77TRACK_MARK_DIST].font =
+	                                           GMT->current.setting.font_annot[GMT_PRIMARY];
 	GMT_getfont (GMT, "Times-BoldItalic", &C->T.marker[MGD77TRACK_MARK_NEWDAY].font);
 	GMT_getfont (GMT, "Times-Italic", &C->T.marker[MGD77TRACK_MARK_SAMEDAY].font);
 	GMT_getfont (GMT, "Times-Roman", &C->T.marker[MGD77TRACK_MARK_DIST].font);
@@ -148,8 +149,7 @@ void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl)
-{
+int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77track cruise(s) %s %s\n\t[-A[c][<size>]][,<inc><unit>] [%s] ", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
@@ -207,8 +207,7 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_
 	return (EXIT_FAILURE);
 }
 
-int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info)
-{
+int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
 	int i1, i2, flag1, flag2, type;
 	bool error = false;
 	double value;
@@ -279,8 +278,7 @@ int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info)
 	return (error);
 }
 
-int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77track and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -505,8 +503,7 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records)
-{
+double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records) {
 	int i1, i2, j;
 	double angle, x1, x0, y1, y0, sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 	
@@ -536,8 +533,7 @@ double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int
 	return (angle);
 }
 
-void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double lon, double lat, double angle, char *text, double size)
-{
+void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double lon, double lat, double angle, char *text, double size) {
 	int just, form;
 	
 	if (lat < GMT->common.R.wesn[YLO])
@@ -549,7 +545,8 @@ void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double
 	else
 		just = (angle >= 0.0) ? 3 : 11;
 	form = GMT_setfont (GMT, &GMT->current.setting.font_label);
-	GMT_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, &x, &y, 1);
+	GMT_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size,
+	                   GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, &x, &y, 1);
 	PSL_plottext (PSL, x, y, size, text, angle, just, form);
 }
 
@@ -557,13 +554,13 @@ int bad_coordinates (double lon, double lat) {
 	return (GMT_is_dnan (lon) || GMT_is_dnan (lat));
 }
 
-extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
+/* Break internal time into calendar and clock struct info  */
+extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77track (void *V_API, int mode, void *args)
-{
+int GMT_mgd77track (void *V_API, int mode, void *args) {
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_paths, argno, n_cruises = 0;
 	int this_julian = 0, last_julian, error = 0;
 	bool first, form, both = false;
@@ -680,9 +677,11 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		lat = (double*)D->values[2];
 		if ((track_dist = GMT_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
 			GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
-		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] < Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
+		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] <
+		     Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
-		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
+		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) &&
+		     track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
 		last_rec = rec;
 		GMT_Report (API, GMT_MSG_VERBOSE, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
 		PSL_comment (PSL, "Tracking %s", list[argno]);
@@ -756,10 +755,14 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 				}
 				first = false;
 				for (i = 0; i < 2; i++) {
-					if (info[i]->annot_int_dist > 0) annot_dist[i] = (track_dist[rec] / info[i]->annot_int_dist + 1) * info[i]->annot_int_dist;
-					if (info[i]->tick_int_dist > 0) tick_dist[i] = (track_dist[rec] / info[i]->tick_int_dist + 1) * info[i]->tick_int_dist;
-					if (info[i]->annot_int_time > 0) annot_time[i] = ceil (track_time[rec] / info[i]->annot_int_time) * info[i]->annot_int_time;
-					if (info[i]->tick_int_time > 0) tick_time[i] = ceil (track_time[rec] / info[i]->tick_int_time) * info[i]->tick_int_time;
+					if (info[i]->annot_int_dist > 0)
+						annot_dist[i] = (track_dist[rec] / info[i]->annot_int_dist + 1) * info[i]->annot_int_dist;
+					if (info[i]->tick_int_dist > 0)
+						tick_dist[i] = (track_dist[rec] / info[i]->tick_int_dist + 1) * info[i]->tick_int_dist;
+					if (info[i]->annot_int_time > 0)
+						annot_time[i] = ceil (track_time[rec] / info[i]->annot_int_time) * info[i]->annot_int_time;
+					if (info[i]->tick_int_time > 0)
+						tick_time[i] = ceil (track_time[rec] / info[i]->tick_int_time) * info[i]->tick_int_time;
 				}
 			}
 			
@@ -791,7 +794,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 					angle -= 90.0;
 				if (annot_tick[ANNOT] & 1) {	/* Time mark */
 					GMT_gcal_from_dt (GMT, annot_time[ANNOT], &calendar);			/* Convert t to a complete calendar structure */
-					GMT_format_calendar (GMT, the_date, the_clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, false, 1, annot_time[ANNOT]);
+					GMT_format_calendar (GMT, the_date, the_clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock,
+					                     false, 1, annot_time[ANNOT]);
 					this_julian = calendar.day_y;
 					if (this_julian != last_julian) {
 						mrk = MGD77TRACK_MARK_NEWDAY;
@@ -805,8 +809,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_CIRCLE);
 					form = GMT_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
-					GMT_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
-					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label, angle, 5, form);
+					GMT_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size,
+					                   &plot_x, &plot_y, 1);
+					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label,
+					              angle, 5, form);
 					last_julian = calendar.day_y;
 				}
 				if (annot_tick[ANNOT] & 2) {	/* Distance mark */
@@ -816,8 +822,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_SQUARE);
 					form = GMT_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
-					GMT_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
-					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label, angle, 7, form);
+					GMT_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 *
+					                   Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
+					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] *
+					                   Ctrl->T.marker[mrk].font_size, label, angle, 7, form);
 				}
 			}
 			if (both && !(annot_tick[ANNOT] & 1) && (draw_tick[ANNOT] & 1)) {
@@ -860,7 +868,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		double size;
 		size = GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size;
 		for (id = 0; id < n_id; id++)
-			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat, cruise_id[id].angle, cruise_id[id].text, size);
+			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat,
+			               cruise_id[id].angle, cruise_id[id].text, size);
 		GMT_free (GMT, cruise_id);
 	}
 
