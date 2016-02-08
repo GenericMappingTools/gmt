@@ -1604,7 +1604,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 				MGD77_nc_status (GMT, nc_put_vara_double (In.nc_id, cdf_var_id, start, count, colvalue));
 		}
 		if (n_bad) {	/* Report what we found */
-			if (In.verbose_level | 1)
+			if (In.verbose_level & 1)
 				fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 				THIS_MODULE_NAME, In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
 		}
