@@ -10235,6 +10235,7 @@ unsigned int GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struc
 
 	if (!T->active) return (0);
 	val = GMT_memory (GMT, NULL, n_alloc, double);
+	GMT_memset (&I, 1, struct GMT_MOMENT_INTERVAL);
 	I.unit = T->unit;
 	I.step = urint (T->interval);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
