@@ -650,6 +650,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		if (GMT->current.setting.io_header[GMT_IN]) {	/* Skip any header records */
 			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Read error for headers\n");
+				if (fp != GMT->session.std[GMT_IN]) GMT_fclose (GMT, fp);
 				Return (EXIT_FAILURE);
 			}
 		}
@@ -692,6 +693,11 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %d\n",
 				            n_fields, n_expected_fields, n);
+				MGD77_Path_Free (GMT, n_paths, list);
+				MGD77_end (GMT, &In);
+				GMT_free (GMT, colvalue);
+				if (two_cols) GMT_free (GMT, coldnt);
+				if (strings) GMT_free (GMT, tmp_string);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 
@@ -1598,7 +1604,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 				MGD77_nc_status (GMT, nc_put_vara_double (In.nc_id, cdf_var_id, start, count, colvalue));
 		}
 		if (n_bad) {	/* Report what we found */
-			if (In.verbose_level | 1)
+			if (In.verbose_level & 1)
 				fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 				THIS_MODULE_NAME, In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
 		}

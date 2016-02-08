@@ -2694,7 +2694,7 @@ struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	 * We write the new CPT file to stdout. */
 
 	unsigned int i = 0, j, k, upper, lower, nz;
-	uint64_t dim_nz;
+	uint64_t dim_nz[1];
 	bool even = false;	/* even is true when nz is passed as negative */
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
 	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
@@ -2712,8 +2712,8 @@ struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	else
 		nz = nz_in;
 
-	dim_nz = nz - 1;
-	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_CPT, GMT_IS_NONE, 0, &dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
+	dim_nz[0] = nz - 1;
+	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_CPT, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
 
 	//P = GMT_create_palette (GMT, nz - 1);
 	lut = GMT_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
@@ -5203,12 +5203,12 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test,
 {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
 	unsigned int side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
-	int p[5], mx;
+	int p[5] = {0, 0, 0, 0, 0}, mx;
 	bool more;
 	size_t n_alloc;
 	uint64_t n = 1, m, ij0, ij_in, ij;
-	float z[5], dz;
-	double xk[5], dist1, dist2, *xx = NULL, *yy = NULL;
+	float z[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dz;
+	double xk[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
 
 	/* Note: We need GMT_IJP to get us the index into the padded G->data whereas we use GMT_IJ0 to get the corresponding index for non-padded edge array */
@@ -10235,6 +10235,7 @@ unsigned int GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struc
 
 	if (!T->active) return (0);
 	val = GMT_memory (GMT, NULL, n_alloc, double);
+	GMT_memset (&I, 1, struct GMT_MOMENT_INTERVAL);
 	I.unit = T->unit;
 	I.step = urint (T->interval);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */

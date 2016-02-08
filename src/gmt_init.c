@@ -7899,7 +7899,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
 			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
 				if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id < 0) Return;
+			if (id < 0) Return;	/* No -J found */
 			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
@@ -7947,6 +7947,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
 		}
 		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */
+			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
 			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
 				if (remember) {
 					gmt_free (GMT->init.history[id]);
@@ -7961,7 +7962,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 		}
 	}
 
-	if (B_string[0]) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
+	if (B_string[0] && B_id >= 0) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
 		gmt_free (GMT->init.history[B_id]);
 		GMT->init.history[B_id] = strdup (B_string);
 	}
