@@ -168,20 +168,21 @@ void gmt_nc_put_units (int ncid, int varid, char *name_units)
 	 * ncid, varid		: as is nc_put_att_text
 	 * name_units		: string in form "long_name [units]"
 	 */
-	int i = 0;
+	bool copy = false;
+	int i = 0, j = 0;
 	char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
 
-	strncpy (name, name_units,  GMT_GRID_UNIT_LEN80);
+	strncpy (name, name_units, GMT_GRID_UNIT_LEN80);
 	units[0] = '\0';
-	while (name[i] && name[i] != '[') i++;
-	if (name[i]) {
-		strcpy (units, &name[i+1]);
-		name[i] = '\0';
-		if (name[i-1] == ' ') name[i-1] = '\0';
+	for (i = 0; i < GMT_GRID_UNIT_LEN80 && units[i]; i++) {
+		if (name[i] == ']') copy = false, units[j] = '\0';
+		if (copy) units[j++] = name[i];
+		if (name[i] == '[') {
+			name[i] = '\0';
+			if (i > 0 && name[i-1] == ' ') name[i] = '\0';
+			copy = true;
+		}
 	}
-	i = 0;
-	while (units[i] && units[i] != ']') i++;
-	if (units[i]) units[i] = '\0';
 	if (name[0]) nc_put_att_text (ncid, varid, "long_name", strlen(name), name);
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
 }
@@ -564,12 +565,12 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 #ifdef HAVE_GDAL
 		/* If we have projection information create a container variable named "grid_mapping" with an attribute
-		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */ 
+		   "spatial_ref" that will hold the projection info in WKT format. GDAL and Mirone know use this info */
 		if ((header->ProjRefWKT != NULL) || (header->ProjRefPROJ4 != NULL)) {
 			int id[1], dim[1];
 
 			if (header->ProjRefWKT == NULL) {				/* Must convert from proj4 string to WKT */
-				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL); 
+				OGRSpatialReferenceH hSRS = OSRNewSpatialReference(NULL);
 
 				if (!strncmp(header->ProjRefPROJ4, "+unavailable", 4) || strlen(header->ProjRefPROJ4) <= 5) {	/* Silently jump out of here */
 					OSRDestroySpatialReference(hSRS);
@@ -585,7 +586,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 				}
 				else {
 					header->ProjRefWKT = NULL;
-					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_nc_grd_info failed to convert the proj4 string\n%s\n to WKT\n", 
+					GMT_Report(GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_nc_grd_info failed to convert the proj4 string\n%s\n to WKT\n",
 							header->ProjRefPROJ4);
 				}
 				OSRDestroySpatialReference(hSRS);
@@ -593,7 +594,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 			if (header->ProjRefWKT != NULL) {			/* It may be NULL if the above conversion failed */
 				if (nc_inq_varid(ncid, "grid_mapping", &id[0]) != NC_NOERR) {
-					GMT_err_trap(nc_def_dim(ncid, "grid_mapping", 12U, &dim[0])); 
+					GMT_err_trap(nc_def_dim(ncid, "grid_mapping", 12U, &dim[0]));
 					GMT_err_trap(nc_def_var(ncid, "grid_mapping", NC_CHAR,  1, dim, &id[0]));
 				}
 				GMT_err_trap(nc_put_att_text(ncid, id[0], "spatial_ref", strlen(header->ProjRefWKT), header->ProjRefWKT));
@@ -994,8 +995,8 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	if (height * width * z_size > NC_CACHE_SIZE) {
 		/* memory needed for subset exceeds the cache size */
 		unsigned int level;
-		size_t chunks_per_row = (size_t) ceil ((double)(width / chunksize[yx_dim[1]]));
-		*n_contiguous_chunk_rows = (size_t) floor ( (double)(NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]]) );
+		size_t chunks_per_row = (size_t) ceil ((double)width / chunksize[yx_dim[1]]);
+		*n_contiguous_chunk_rows = NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]];
 #ifdef NC4_DEBUG
 		level = GMT_MSG_NORMAL;
 #else
