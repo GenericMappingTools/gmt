@@ -993,7 +993,7 @@ int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned in
 }
 
 int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double **weights, unsigned int *nf) {
-	unsigned int n = 0;
+	unsigned int n = 0, k = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char **p = NULL, line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""};
 	double *W = NULL, this_w;
@@ -1009,8 +1009,11 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_weights : Error parsing file %s near line %d\n", file, n);
+			fclose (fp);
+			for (k = 0; k < n; k++) free (p[k]);
+			GMT_free (GMT, p);
+			GMT_free (GMT, W);
 			return (GMT_GRDIO_FILE_NOT_FOUND);
-
 		}
 		p[n] = strdup (name);
 		W[n] = this_w;
