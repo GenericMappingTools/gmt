@@ -2694,7 +2694,7 @@ struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	 * We write the new CPT file to stdout. */
 
 	unsigned int i = 0, j, k, upper, lower, nz;
-	uint64_t dim_nz;
+	uint64_t dim_nz[1];
 	bool even = false;	/* even is true when nz is passed as negative */
 	double rgb_low[4], rgb_high[4], rgb_fore[4], rgb_back[4];
 	double *x = NULL, *z_out = NULL, a, b, f, x_inc;
@@ -2712,8 +2712,8 @@ struct GMT_PALETTE *GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 	else
 		nz = nz_in;
 
-	dim_nz = nz - 1;
-	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_CPT, GMT_IS_NONE, 0, &dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
+	dim_nz[0] = nz - 1;
+	if ((P = GMT_Create_Data (GMT->parent, GMT_IS_CPT, GMT_IS_NONE, 0, dim_nz, NULL, NULL, 0, 0, NULL)) == NULL) return NULL;
 
 	//P = GMT_create_palette (GMT, nz - 1);
 	lut = GMT_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
