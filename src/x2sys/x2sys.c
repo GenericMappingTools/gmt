@@ -938,6 +938,9 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	for (j = 0; j < GMT->current.io.ndim; j++) {
 		if ((in = GMT->current.io.input (GMT, fp, &n_expect, &n_fields)) == NULL || n_fields != ns) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_ncfile: Error reading file %s at record %d\n", fname, j);
+			for (i = 0; i < s->n_out_columns; i++) GMT_free (GMT, z[i]);
+			GMT_free (GMT, z);
+			GMT_fclose (GMT, fp);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = in[i];
