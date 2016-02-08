@@ -429,6 +429,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 
 		if (!n_pairs) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
+			GMT_free (GMT, duplicate);
 			Return (EXIT_FAILURE);
 		}
 		if (n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
