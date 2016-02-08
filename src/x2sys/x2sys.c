@@ -1106,10 +1106,10 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					c_given = true;
 					break;
 				case 'D':
-					strcpy (sfile, &p[2]);
+					strncpy (sfile, &p[2], GMT_BUFSIZ);
 					break;
 				case 'E':
-					strcpy (suffix, &p[2]);
+					strncpy (suffix, &p[2], 16);
 					break;
 				case 'G':	/* Geographical coordinates, set discontinuity */
 					geographic = true;
@@ -1234,9 +1234,9 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	s->multi_segment = true;
 	s->ms_flag = GMT->current.setting.io_seg_marker[GMT_IN];
 	if (suffix[0])
-		strcpy (s->suffix, suffix);
+		strncpy (s->suffix, suffix, 16);
 	else
-		strcpy (s->suffix, sfile);
+		strncpy (s->suffix, sfile, 16);
 
 	x2sys_path_init (GMT, s);		/* Prepare directory paths to data */
 
@@ -1472,9 +1472,9 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 	if (add_suffix)
 		sprintf (geo_path, "%s.%s", track, suffix);
 	else
-		strcpy (geo_path, track);
+		strncpy (geo_path, track, GMT_BUFSIZ);
 	if (!access(geo_path, R_OK)) {
-		strcpy(track_path, geo_path);
+		strcpy (track_path, geo_path);
 		return (0);
 	}
 
