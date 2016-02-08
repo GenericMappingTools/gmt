@@ -1082,6 +1082,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					}
 					if (GMT_parse_common_options (GMT, "R", 'R', &p[2])) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
+						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
 					GMT_memcpy (B->wesn, GMT->common.R.wesn, 4, double);
@@ -1095,6 +1096,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Segment headers are automatically identified.\n", p[1]);
 					else {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad arg in x2sys_set_system! (%s)\n", p);
+						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (X2SYS_BAD_ARG);
 					}
 					break;
@@ -1107,6 +1109,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					if (p[2] == 'e') dist_flag = 3;
 					if (dist_flag < 0 || dist_flag > 3) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
+						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (X2SYS_BAD_ARG);
 					}
 					c_given = true;
@@ -1125,6 +1128,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 				case 'I':
 					if (GMT_getinc (GMT, &p[2], B->inc)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
+						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
 					break;
@@ -1138,6 +1142,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 							break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
+							x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 							return (X2SYS_BAD_ARG);
 							break;
 					}
@@ -1145,6 +1150,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 						unit[k][0] = p[3];
 						if (!strchr ("cefkMn", (int)unit[k][0])) {
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
+							x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 							return (X2SYS_BAD_ARG);
 						}
 						n_given[k] = true;
@@ -1166,6 +1172,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad arg in x2sys_set_system! (%s)\n", p);
+					x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 					return (X2SYS_BAD_ARG);
 					break;
 			}
