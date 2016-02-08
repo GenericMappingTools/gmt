@@ -5203,12 +5203,12 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test,
 {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
 	unsigned int side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
-	int p[5], mx;
+	int p[5] = {0, 0, 0, 0, 0}, mx;
 	bool more;
 	size_t n_alloc;
 	uint64_t n = 1, m, ij0, ij_in, ij;
-	float z[5], dz;
-	double xk[5], dist1, dist2, *xx = NULL, *yy = NULL;
+	float z[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dz;
+	double xk[5] = {0.0, 0.0, 0.0, 0.0, 0.0}, dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
 
 	/* Note: We need GMT_IJP to get us the index into the padded G->data whereas we use GMT_IJ0 to get the corresponding index for non-padded edge array */
