@@ -650,6 +650,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		if (GMT->current.setting.io_header[GMT_IN]) {	/* Skip any header records */
 			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Read error for headers\n");
+				if (fp != GMT->session.std[GMT_IN]) GMT_fclose (GMT, fp);
 				Return (EXIT_FAILURE);
 			}
 		}
@@ -692,6 +693,11 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %d\n",
 				            n_fields, n_expected_fields, n);
+				MGD77_Path_Free (GMT, n_paths, list);
+				MGD77_end (GMT, &In);
+				GMT_free (GMT, colvalue);
+				if (two_cols) GMT_free (GMT, coldnt);
+				if (strings) GMT_free (GMT, tmp_string);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 
