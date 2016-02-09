@@ -214,8 +214,10 @@ int GMT_pssolar_parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct G
 				Ctrl->I.active = true;
 				if (opt->arg[0]) {	/* Also gave location */
 					Ctrl->I.position = true;
-					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
-					                                 "Syntax error: Expected -I[<lon>/<lat>]\n");
+					if (opt->arg[0] != '+') {		/* Then it must be a location */
+						n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
+					                                     "Syntax error: Expected -I[<lon>/<lat>]\n");
+					}
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
