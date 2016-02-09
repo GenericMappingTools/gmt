@@ -8746,6 +8746,8 @@ struct GMT_DATASEGMENT * GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 		S->coord[GMT_X][n] = x;	S->coord[GMT_Y][n] = y;	/* Assign the array elements */
 		last_x = x;	last_y = y;
 	}
+	S->coord[GMT_X][n - 1] = S->coord[GMT_X][0];		/* Make really sure the polygon is closed */
+	S->coord[GMT_Y][n - 1] = S->coord[GMT_Y][0];
 	S->n_rows = n;
 	GMT_set_seg_polar (GMT, S);				/* Prepare if a polar cap */
 	return (S);	/* Pass out the results */
