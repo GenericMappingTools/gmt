@@ -8,9 +8,7 @@
 
 .. |SYN_OPT-R| replace:: |-R|\ *region*
 
-.. .. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
-
-.. |SYN_OPT-Rz| replace:: |-R|\ *region*
+.. |SYN_OPT-Rz| replace:: |-R|\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
 
 .. .. |SYN_OPT-X| replace:: |-X|\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 
