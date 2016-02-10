@@ -395,6 +395,24 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *heade
 	return GMT_NOERROR;
 }
 
+void GMT_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data)
+{	/* Sub-function since this step is also needed in the specific case when a module
+	 * calls GMT_Read_Data with GMT_GRID_IS_COMPLEX_REAL but input comes via an
+	 * external interface (MATLAB, Python) and thus has not been multiplexed yet.
+	 * We assume the data array is already large enough to hold the double-sized grid.
+	 */
+	uint64_t row, col, col_1, col_2, left_node_1, left_node_2;
+	/* Here we have a grid with RRRRRR..._________ and want R_R_R_R_... */
+	for (row = header->my; row > 0; row--) {	/* Going from last to first row */
+		left_node_1 = GMT_IJ (header, row-1, 0);	/* Start of row in RRRRR layout */
+		left_node_2 = 2 * left_node_1;			/* Start of same row in R_R_R_ layout */
+		for (col = header->mx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--) { /* Go from right to left */
+			data[left_node_2+col_2] = 0.0f;	col_2--;	/* Set the Imag component to zero */
+			data[left_node_2+col_2] = data[left_node_1+col_1];	col_2--;
+		}
+	}
+}
+
 void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data, unsigned int desired_mode)
 {	/* Multiplex and demultiplex complex grids.
  	 * Complex grids are read/written by dealing with just one component: real or imag.
@@ -447,14 +465,7 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 		else if (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have RRRRRR..._________ and want R_R_R_R_... */
-			for (row = header->my; row > 0; row--) {	/* Going from last to first row */
-				left_node_1 = GMT_IJ (header, row-1, 0);	/* Start of row in RRRRR layout */
-				left_node_2 = 2 * left_node_1;			/* Start of same row in R_R_R_ layout */
-				for (col = header->mx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--) { /* Go from right to left */
-					data[left_node_2+col_2] = 0.0f;	col_2--;	/* Set the Imag component to zero */
-					data[left_node_2+col_2] = data[left_node_1+col_1];	col_2--;
-				}
-			}
+			GMT_grd_real_interleave (GMT, header, data);
 		}
 		else {
 			/* Here we have _____...IIIII and want _I_I_I_I */
