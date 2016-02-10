@@ -23,7 +23,7 @@
  *         	13-SEP-2002
  * GMT5ed   17-MAR-2012
  *          14-Feb-2013		Big rework by PW
- *          1-Dec-2013		Added -T with infill density approximation
+ *          01-Dec-2013		Added -T with infill density approximation
  *
  *
  * For details, see Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the Azores Plateau:
@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"gravfft"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)"
-#define THIS_MODULE_KEYS	"<GI,GGO"
+#define THIS_MODULE_KEYS	"<GI,GGO,GDC,GDI,GDA"
 
 #include "gmt_dev.h"
 
@@ -160,15 +160,20 @@ void Free_gravfft_Ctrl (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *C) {	/* Deall
 double	scale_out = 1.0;
 double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
-void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint64_t n, double rho);
+void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
+                float *raised, uint64_t n, double rho);
 void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl);
 void do_isostasy__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
-void do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
 void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_below);
 void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top);
-void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
-void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
-void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top_or_bot, double delta_pt);
+void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl,
+                        struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl,
+                          struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
+                          double *z_top_or_bot, double delta_pt);
+int do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl,
+                  struct GMT_FFT_WAVENUMBER *K);
 
 int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
@@ -225,7 +230,8 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				break;
 			case 'D':
 				if (!opt->arg) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: must give constant density contrast or grid with density constrasts\n");
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "Syntax error -D option: must give constant density contrast or grid with density constrasts\n");
 					n_errors++;
 				}
 				else {
@@ -269,6 +275,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				else
 					n_errors++;
 				break;
+			case 'A':		/* For MEX we currently can't use the I char as an option that implies output */
 			case 'I':
 				Ctrl->I.active = true;
 				for (n = 0; opt->arg[n]; n++) {
@@ -478,7 +485,6 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	unsigned int k, n;
 	int error = 0;
 	uint64_t m;
-	char	format[64] = {""}, buffer[256] = {""};
 	float	slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
 	double	delta_pt, freq;
 
@@ -512,24 +518,37 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	/* -------------------- Compute only a theoretical model and exit -------------------- */
 	if (Ctrl->C.active) {
+		uint64_t dim[4] = {1, 1, 0, 0};	/* One table and one segment */
 		double *z_top_or_bot = NULL;
+		struct GMT_DATASET *D = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
 		struct GMT_FFT_WAVENUMBER *K = GMT_memory (GMT, NULL, 1, struct GMT_FFT_WAVENUMBER);
 
 		z_top_or_bot = GMT_memory (GMT, NULL, (size_t)Ctrl->C.n_pt, double);
 
 		delta_pt = 2 * M_PI / (Ctrl->C.n_pt * Ctrl->C.theor_inc);	/* Times 2PI because frequency will be used later */
 		compute_only_admitts (GMT, Ctrl, K, z_top_or_bot, delta_pt);
-		sprintf (format, "%s%s%s\n", GMT->current.setting.format_float_out,
-                 GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		delta_pt /= (2.0 * M_PI);			/* Write out frequency, not wavenumber  */
 		if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_pt *= 1000.0;	/* Wanted wavelength in km */
+
+		GMT_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
+
+		dim[GMT_COL] = 2;
+		dim[GMT_ROW] = Ctrl->C.n_pt;
+		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
+			Return (API->error);
+		}
+		S = D->table[0]->segment[0];	/* Only one table with one segment here */
 
 		for (k = 0; k < Ctrl->C.n_pt; k++) {
 			freq = (k + 1) * delta_pt;
 			if (Ctrl->misc.give_wavelength) freq = 1. / freq;
-			sprintf (buffer, format, freq, z_top_or_bot[k]);
-			GMT_fputs (buffer, stdout);
+			S->coord[0][k] = freq;
+			S->coord[1][k] = z_top_or_bot[k];
 		}
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
+			Return (API->error);
 
 		GMT_free (GMT, K);
 		GMT_free (GMT, z_top_or_bot);
@@ -642,10 +661,16 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 				Return (EXIT_FAILURE);
 		}
 
-		do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
+		error = do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
 		for (k = 0; k < Ctrl->In.n_grids; k++)
 			GMT_FFT_Destroy (API, &(FFT_info[k]));
-		Return (EXIT_SUCCESS);
+		
+		if (!error) {
+			Return (EXIT_SUCCESS);
+		}
+		else {
+			Return (error);
+		}
 	}
 
 	topo   = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
@@ -897,7 +922,7 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 	}
 }
 
-void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K) {
+int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K) {
 	/*	The following are the comments of the routine do_spectrum
 	 *	of grdfft from which this code was adapted.
 	 *
@@ -915,15 +940,18 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	 *	approximation of the integral."
 	 */
 
-	uint64_t	k, k_0 = 0, nk, ifreq;
+	int      error = 0, n_col_out = 3, col;
+	uint64_t dim[4] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
+	uint64_t k, k_0 = 0, nk, ifreq;
 	unsigned int *nused = NULL;
-	size_t n_alloc;
-	char	format[64] = {""}, buffer[256] = {""};
-	double	delta_k, r_delta_k, freq;
-	double	*out = NULL, *err_bar = NULL, *coh = NULL, *b_pow = NULL, *g_pow = NULL, *co_spec = NULL, *quad = NULL;
-	float	*datac = GridA->data;
-	float	*in_grv = GridB->data;
-	double	*z_from_below = NULL, *z_from_top = NULL;
+	size_t   n_alloc;
+	double   delta_k, r_delta_k, freq;
+	double  *out = NULL, *err_bar = NULL, *coh = NULL, *b_pow = NULL, *g_pow = NULL, *co_spec = NULL, *quad = NULL;
+	float   *datac = GridA->data;
+	float   *in_grv = GridB->data;
+	double  *z_from_below = NULL, *z_from_top = NULL;
+	struct   GMT_DATASET *D = NULL;
+	struct   GMT_DATASEGMENT *S = NULL;
 
 	if (K->delta_kx < K->delta_ky)
 		{delta_k = K->delta_kx;	nk = K->nx2/2;}
@@ -986,33 +1014,39 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	if (Ctrl->misc.from_top) 		/* compute theoretical "load from top" admittance */
 		load_from_top_admitt(GMT, Ctrl, K, z_from_top);
 
-	if (Ctrl->misc.from_below || Ctrl->misc.from_top)
-		sprintf (format, "%s%s%s%s%s%s%s\n", GMT->current.setting.format_float_out,
-			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out,
-			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out,
-			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
-	else
-		sprintf (format, "%s%s%s%s%s\n", GMT->current.setting.format_float_out,
-			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out,
-			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+	GMT_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
+
+	n_col_out = (Ctrl->misc.from_below || Ctrl->misc.from_top) ? 4 : 3;
+	dim[GMT_COL] = n_col_out;
+	dim[GMT_ROW] = nk;
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
+		error = GMT->parent->error;
+		goto Lfree;		/* So that we can free what it need to be */
+	}
+	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
 
 	if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_k *= 1000.0;	/* Wanted wavelength in km */
+
 	for (k = k_0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
 		if (Ctrl->misc.give_wavelength) freq = 1.0/freq;
-		if (Ctrl->misc.from_below) {
-			sprintf (buffer, format, freq, out[k], err_bar[k], z_from_below[k]);
-			GMT_fputs (buffer, stdout);
-		}
-		else if (Ctrl->misc.from_top) {
-			sprintf (buffer, format, freq, out[k], err_bar[k], z_from_top[k]);
-			GMT_fputs (buffer, stdout);
-		}
-		else {
-			sprintf (buffer, format, freq, out[k], err_bar[k]);
-			GMT_fputs (buffer, stdout);
-		}
+
+		col = 0;
+		/* Col 0 is the frequency (or wavelength) */
+		S->coord[col++][k] = freq;
+		/* Cols 1-2 are xpower and std.err estimate */
+		S->coord[col++][k] = out[k];
+		S->coord[col++][k] = err_bar[k];
+		if (Ctrl->misc.from_below) 
+			S->coord[col++][k] = z_from_below[k];
+		else if (Ctrl->misc.from_top) 
+			S->coord[col++][k] = z_from_top[k];
 	}
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
+		error = GMT->parent->error;
+
+Lfree:
 	GMT_free (GMT, out);
 	GMT_free (GMT, b_pow);
 	GMT_free (GMT, g_pow);
@@ -1023,6 +1057,8 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	GMT_free (GMT, nused);
 	if (Ctrl->misc.from_below) GMT_free (GMT, z_from_below);
 	if (Ctrl->misc.from_top) GMT_free (GMT, z_from_top);
+
+	return error;
 }
 
 void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top_or_bot, double delta_pt) {
