@@ -132,7 +132,7 @@ Optional Arguments
 .. include:: ../../explain_-bi.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-h.rst_
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 
