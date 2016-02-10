@@ -13,14 +13,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
+**grdfft** *ingrid* [ *ingrid2* ]
+[ |-G|\ *outfile*\ |\ *table* ]
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\ \|\ **g**] ]
 [ |-E|\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]] ]
 [ |-F|\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\ \|\ **g**] ]
-[ |-N|\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]] ]
+[ |-N|\ *params* ]
 [ |-S|\ *scale* ]
 [ |SYN_OPT-V| ]
 [ **-fg** ]
@@ -128,6 +129,13 @@ Optional Arguments
         wavelength, respectively. E.g., **-F**-/30/2 will lowpass the data
         using a 2nd-order Butterworth filter, with half-weight at 30, while
         **-F**\ 400/-/2 will highpass the data.
+
+.. _-G:
+
+**-G**\ *outfile*\ |\ *table*
+    Filename for output netCDF grid file OR 1-D data table (see **-E**).
+    This is optional for -E (spectrum written to stdout) but mandatory for
+    all other options that require a grid output.
 
 .. _-I:
 
