@@ -47,51 +47,51 @@ struct GRDFFT_CTRL {
 	int *operation;
 	double *par;
 
-	struct In {
+	struct GRDFFT_In {
 		bool active;
 		unsigned int n_grids;	/* 1 or 2 */
 		char *file[2];
 	} In;
-	struct A {	/* -A<azimuth> */
+	struct GRDFFT_A {	/* -A<azimuth> */
 		bool active;
 		double value;
 	} A;
-	struct C {	/* -C<zlevel> */
+	struct GRDFFT_C {	/* -C<zlevel> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D[<scale>|g] */
+	struct GRDFFT_D {	/* -D[<scale>|g] */
 		bool active;
 		double value;
 	} D;
-	struct E {	/* -E[r|x|y][w[k]] */
+	struct GRDFFT_E {	/* -E[r|x|y][w[k]] */
 		bool active;
 		bool give_wavelength;
 		bool km;
 		int mode;	/*-1/0/+1 */
 	} E;
-	struct F {	/* -F[r|x|y]<lc>/<lp>/<hp>/<hc> or -F[r|x|y]<lo>/<hi> */
+	struct GRDFFT_F {	/* -F[r|x|y]<lc>/<lp>/<hp>/<hc> or -F[r|x|y]<lo>/<hi> */
 		bool active;
 		double lc, lp, hp, hc;
 	} F;
-	struct G {	/* -G<outfile> */
+	struct GRDFFT_G {	/* -G<outfile> */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -I[<scale>|g] */
+	struct GRDFFT_I {	/* -I[<scale>|g] */
 		bool active;
 		double value;
 	} I;
-	struct N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
+	struct GRDFFT_N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
 		bool active;
 		struct GMT_FFT_INFO *info;
 	} N;
-	struct S {	/* -S<scale> */
+	struct GRDFFT_S {	/* -S<scale> */
 		bool active;
 		double scale;
 	} S;
 	/* Now in gravfft in potential supplement; left for backwards compatibility */
-	struct T {	/* -T<te/rl/rm/rw/ri> */
+	struct GRDFFT_T {	/* -T<te/rl/rm/rw/ri> */
 		bool active;
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
@@ -151,8 +151,7 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K)
-{
+unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	double scale, fact;
 	float *datac = Grid->data;	/* Shorthand */
@@ -169,8 +168,7 @@ unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FF
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K)
-{
+unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	/* Integrate in frequency domain by dividing by kr [scale optional] */
 	uint64_t k;
 	double fact, scale;
@@ -186,8 +184,7 @@ unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WA
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_FFT_WAVENUMBER *K)
-{
+unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	float tmp, *datac = Grid->data;	/* Shorthand */
 
@@ -201,8 +198,7 @@ unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct GMT_FFT_WAVENUMBER *K)
-{
+unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	float tempr, tempi, fact, *datac = Grid->data;	/* Shorthand */
 	double cos_azim, sin_azim;
@@ -225,8 +221,7 @@ unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struc
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* m/s**2  */
 
-unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct GMT_FFT_WAVENUMBER *K)
-{
+unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	densities in kg/m**3, Te in m, etc.
@@ -290,8 +285,7 @@ double cosine_weight_grdfft (struct F_INFO *f_info, double freq, int j) {
 	return (1.0);	/* Freq is in the fully passed range, so weight is multiplied by 1.0  */
 }
 
-double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K)
-{
+double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
 	double freq, return_value;
 
 	freq = GMT_fft_any_wave (k, f_info->k_type, K);
@@ -300,8 +294,7 @@ double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVE
 	return (return_value);
 }
 
-void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K)
-{
+void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	float weight, *datac = Grid->data;	/* Shorthand */
 
