@@ -7274,7 +7274,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 #endif
 
 	/* Pass back the info array and the number of items */
-	*n = n_items;
+	*n = (n_keys == 0) ? UINT_MAX : n_items;	/* n_keys = 0 for gmtset, gmtdefaults, gmtlogo */
 	return (info);
 }
 
