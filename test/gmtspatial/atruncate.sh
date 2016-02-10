@@ -10,9 +10,8 @@ cat << EOF > tpoly.xy
 500 -3400
 -300 -3500
 EOF
-gmtspatial tpoly.xy -C -R0/100/-3100/-3000 > clipped.txt
+gmt spatial tpoly.xy -C -R0/100/-3100/-3000 > clipped.txt
 
 gmt psbasemap -R-500/600/-3600/-700 -JX6i/9i -P -Baf -D0/100/-3100/-3000 -F+p3p,gray -K -Xc > $ps
 gmt psxy -R -J tpoly.xy -W1p -O -K >> $ps
 gmt psxy -R -J clipped.txt -W0.25p,red -O >> $ps
-gv $ps &
