@@ -4300,7 +4300,7 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* if set, then API_exit & GMT_exit are simply a return; otherwise they call exit */
 	API->mode  = mode & GMT_SESSION_EXTERNAL;		/* if false|0 then we dont list read and write as modules */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
-	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we same some CPU */
+	if (API->internal) API->leave_grid_scaled = 1;	/* Do NOT undo grid scaling after write since modules do not reuse grids we save some CPU */
 	if (session) {
 		char *tmptag = strdup (session);
 		API->session_tag = strdup (basename (tmptag));	/* Only used in reporting and error messages */
@@ -6849,6 +6849,20 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	/* Read in the data or change pad to match the nx2/ny2 determined */
 
 	if (G->data) {	/* User already read the data, check padding and possibly extend it */
+		if (G->header->complex_mode == 0) {	/* Grid was not read in interleaved, must do so now */
+			/* Because of no realloc for aligned memory we must do it the hard way */
+			float *f = NULL;
+			size_t new_size = 2*G->header->size;
+			GMT_Report (API, GMT_MSG_VERBOSE, "Must double memory and multiplex external grid before we can do FFT!\n", G->header->name);
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extend grid via copy onto larger memory-aligned grid\n");
+			f = GMT_memory_aligned (GMT, NULL, new_size, float);	/* New, larger grid size */
+			GMT_memcpy (f, G->data, G->header->size, float);	/* Copy over previous grid values */
+			GMT_free_aligned (GMT, G->data);			/* Free previous aligned grid memory */
+			G->data = f;						/* Attach the new, larger aligned memory */
+			G->header->complex_mode = GMT_GRID_IS_COMPLEX_REAL;	/* Flag as complex grid with real components only */
+			G->header->size = new_size;				/* Update the size of complex grid */
+			GMT_grd_real_interleave (GMT, G->header, G->data);	/* Do the multiplexing RRRR.. to R_R_R_... */
+		}
 		if (!(G->header->mx == F->nx && G->header->my == F->ny)) {	/* Must re-pad, possibly re-allocate the grid */
 			GMT_grd_pad_on (GMT, G, GMT->current.io.pad);
 		}
