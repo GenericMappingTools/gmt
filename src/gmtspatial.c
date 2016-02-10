@@ -1571,7 +1571,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];
-				if ((np = GMT_wesn_clip (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, &cp[GMT_X], &cp[GMT_Y], &nx)) == 0) {
+				if ((np = (*GMT->current.map.clip) (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, &cp[GMT_X], &cp[GMT_Y], &nx)) == 0) {
 					/* Everything is outside, let go */
 					S->mode = GMT_WRITE_SKIP;
 					continue;
