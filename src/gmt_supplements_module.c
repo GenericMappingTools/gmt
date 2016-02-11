@@ -62,7 +62,7 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG}"},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{,FD(,GG}"},
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<G{,EG(,GG}"},
-	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry", "<D{,GG},RG-"},
+	{"grdseamount", "potential", "Compute synthetic seamount (Gaussian, parabolic, cone or disc, circular or elliptical) bathymetry", "<T{,GG},RG-"},
 	{"talwani2d", "potential", "Compute geopotential anomalies over 2-D bodies by the method of Talwani", "<D{,ND(,>D}"},
 	{"talwani3d", "potential", "Compute geopotential anomalies over 3-D bodies by the method of Talwani", "<D{,ND(,ZG(,GG),>D},RG-"},
 	{"pssegyz", "segy", "Plot a SEGY file on a map in 3-D", ">X},RG-"},
