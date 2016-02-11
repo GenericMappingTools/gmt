@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"gravfft"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)"
-#define THIS_MODULE_KEYS	"<G{,GG},GDC,GDI,GDA"
+#define THIS_MODULE_KEYS	"<G{,GG},GDC,GDA"
 
 #include "gmt_dev.h"
 
@@ -275,8 +275,8 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				else
 					n_errors++;
 				break;
-			case 'A':		/* For MEX we currently can't use the I char as an option that implies output */
-			case 'I':
+			case 'A':		/* For MEX we currently can't use the I char in GMT < 5.3 as an option that implies output */
+			case 'I':		/* To be reactivated on GMT5.3 */
 				Ctrl->I.active = true;
 				for (n = 0; opt->arg[n]; n++) {
 					switch (opt->arg[n]) {
@@ -482,11 +482,12 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 
 int GMT_gravfft (void *V_API, int mode, void *args) {
 
+	char    *pch;
 	unsigned int k, n;
-	int error = 0;
+	int      error = 0;
 	uint64_t m;
-	float	slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
-	double	delta_pt, freq;
+	float    slab_gravity = 0.0f, *topo = NULL, *raised = NULL;
+	double   delta_pt, freq;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL}, *Rho = NULL;
 	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL, *Rho_info = NULL;
@@ -499,6 +500,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_gravfft_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if ((pch = strpbrk (args, " -I")) != NULL) pch[2] = 'A';	/* Hack till we have 5.3 out because the KEYS changes won't work in 5.2 */
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 

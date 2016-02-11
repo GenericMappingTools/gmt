@@ -58,7 +58,7 @@ struct Gmt_moduleinfo g_supplements_module[] = {
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "<D{,QD(,>D}"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D}"},
 	{"gpsgridder", "potential", "Interpolate GPS strain vectors using Green's functions for elastic deformation", "<D{,ND(,TG(,CD),GG},RG-"},
-	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<G{,GG},GDC,GDI,GDA"},
+	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<G{,GG},GDC,GDA"},
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG}"},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{,FD(,GG}"},
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", "<G{,EG(,GG}"},
