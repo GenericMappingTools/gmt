@@ -1,6 +1,6 @@
 .. _example_46:
 
-(45) Day-light terminators and other sunlight parameters
+(46) Day-light terminators and other sunlight parameters
 --------------------------------------------------------
 
 In this example show how the module :doc:`pssolar </pssolar>`

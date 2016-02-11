@@ -3,7 +3,7 @@
 The GMT historical collection
 =============================
 
-The 45 Examples
+The 46 Examples
 ----------------
 
 In this section we will be giving numerous examples of typical usage of
