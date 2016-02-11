@@ -236,7 +236,7 @@ int GMT_initconf(struct GMT_CTRL *GMT) {
 	/* GMT_FFT */
 	GMT->current.setting.fft = k_fft_auto;
 	/* GMT_HISTORY */
-	GMT->current.setting.history = k_history_write;
+	GMT->current.setting.history = (k_history_read | k_history_write);
 	/* GMT_INTERPOLANT */
 	GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	/* GMT_TRIANGULATE */
