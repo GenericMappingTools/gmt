@@ -30,7 +30,7 @@
 
 #include "gmt_dev.h"
 
-#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcpt"
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcpto"
 
 extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 
@@ -147,8 +147,8 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-N] [-O]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
+	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -172,7 +172,7 @@ int GMT_pssolar_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   a means astronomical twilight.\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
-	GMT_Option (API, "X,c,p");
+	GMT_Option (API, "X,c,o,p");
 	GMT_Option (API, "t,.");
 
 	return (EXIT_FAILURE);
