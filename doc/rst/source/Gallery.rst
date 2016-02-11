@@ -74,6 +74,10 @@ complex illustration.
 |                  |                    |                     |
 | |ex43|           | |ex44|             | |ex45|              |
 +------------------+--------------------+---------------------+
+|:ref:`example_46` |                    |                     |
+|                  |                    |                     |
+| |ex46|           |                    |                     |
++------------------+--------------------+---------------------+
 
 .. |ex01| image:: /_images/example_01.*
    :width: 150 px
@@ -210,6 +214,9 @@ complex illustration.
 .. |ex45| image:: /_images/example_45.*
    :width: 150 px
 
+.. |ex46| image:: /_images/example_46.*
+   :width: 150 px
+
 .. toctree::
    :hidden:
 
@@ -258,6 +265,7 @@ complex illustration.
    gallery/ex43.rst
    gallery/ex44.rst
    gallery/ex45.rst
+   gallery/ex46.rst
 
 
 Animations
