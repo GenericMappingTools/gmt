@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtflexure"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute flexural deformation of 2-D loads, forces, and bending moments"
-#define THIS_MODULE_KEYS	"<DI,QDi,>DO"
+#define THIS_MODULE_KEYS	"<D{,QD(,>D}"
 
 #include "gmt_dev.h"
 

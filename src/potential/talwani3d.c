@@ -43,7 +43,7 @@
 #define THIS_MODULE_NAME	"talwani3d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 3-D bodies by the method of Talwani"
-#define THIS_MODULE_KEYS	"<DI,NDi,ZGi,GGo,>DO,RG-"
+#define THIS_MODULE_KEYS	"<D{,ND(,ZG(,GG),>D},RG-"
 
 #include "gmt_dev.h"
 

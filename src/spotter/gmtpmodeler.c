@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtpmodeler"
 #define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Evaluate a plate motion model at given locations"
-#define THIS_MODULE_KEYS	"<DI,ETI,FDi,>DO"
+#define THIS_MODULE_KEYS	"<D{,ET{,FD(,>D}"
 
 #include "spotter.h"
 

@@ -41,7 +41,7 @@
 #define THIS_MODULE_NAME	"gmtsimplify"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Line reduction using the Douglas-Peucker algorithm"
-#define THIS_MODULE_KEYS	"<DI,>DO"
+#define THIS_MODULE_KEYS	"<D{,>D}"
 
 #include "gmt_dev.h"
 

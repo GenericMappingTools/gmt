@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"kml2gmt"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract GMT table data from Google Earth KML files"
-#define THIS_MODULE_KEYS	"<TI,>DO"
+#define THIS_MODULE_KEYS	"<T{,>D}"
 
 #include "gmt_dev.h"
 

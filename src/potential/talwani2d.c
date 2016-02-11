@@ -42,7 +42,7 @@
 #define THIS_MODULE_NAME	"talwani2d"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute geopotential anomalies over 2-D bodies by the method of Talwani"
-#define THIS_MODULE_KEYS	"<DI,NDi,>DO"
+#define THIS_MODULE_KEYS	"<D{,ND(,>D}"
 
 #include "gmt_dev.h"
 

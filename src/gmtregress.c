@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtregress"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Linear regression of 1-D data sets"
-#define THIS_MODULE_KEYS	"<DI,>DO"
+#define THIS_MODULE_KEYS	"<D{,>D}"
 
 #include "gmt_dev.h"
 

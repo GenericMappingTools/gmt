@@ -35,7 +35,7 @@
 #define THIS_MODULE_NAME	"x2sys_solve"
 #define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Determine least-squares systematic correction from crossovers"
-#define THIS_MODULE_KEYS	">TO"
+#define THIS_MODULE_KEYS	">T}"
 
 #include "x2sys.h"
 

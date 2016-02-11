@@ -25,7 +25,7 @@
 #define THIS_MODULE_NAME	"sph2grd"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
-#define THIS_MODULE_KEYS	"<DI,GGO,RG-"
+#define THIS_MODULE_KEYS	"<D{,GG},RG-"
 
 #include "gmt_dev.h"
 

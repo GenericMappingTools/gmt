@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gpsgridder"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Interpolate GPS strain vectors using Green's functions for elastic deformation"
-#define THIS_MODULE_KEYS	"<DI,NDi,TGi,CDo,GGO,RG-"
+#define THIS_MODULE_KEYS	"<D{,ND(,TG(,CD),GG},RG-"
 
 #include "gmt_dev.h"
 

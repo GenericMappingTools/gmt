@@ -27,7 +27,7 @@
 #define THIS_MODULE_NAME	"gmtget"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Get individual GMT default parameters"
-#define THIS_MODULE_KEYS	">TO"
+#define THIS_MODULE_KEYS	">T}"
 
 #include "gmt_dev.h"
 

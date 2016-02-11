@@ -34,7 +34,7 @@
 #define THIS_MODULE_NAME	"grdredpol"
 #define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute the Continuous Reduction To the Pole, AKA differential RTP"
-#define THIS_MODULE_KEYS	"<GI,EGi,GGO"
+#define THIS_MODULE_KEYS	"<G{,EG(,GG}"
 
 #include "gmt_dev.h"
 
