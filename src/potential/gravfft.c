@@ -480,8 +480,6 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 #define Return(code) {Free_gravfft_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gravfft (void *V_API, int mode, void *args) {
-
-	char    *pch;
 	unsigned int k, n;
 	int      error = 0;
 	uint64_t m;
