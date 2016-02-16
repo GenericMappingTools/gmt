@@ -470,6 +470,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active) {	/* Requires output to stdout */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */

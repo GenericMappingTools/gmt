@@ -339,11 +339,15 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_cols)) != GMT_OK) Return (error);
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
 	GMT_skip_xy_duplicates (GMT, true);	/* Skip repeating x/y points in polygons */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
-		Return (API->error);
-	}
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
+	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default input sources, unless already set */
+		error = API->error;
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
+		error = API->error;
+	if (Ctrl->S.active && error) {
+		GMT_free (GMT, d_col);
+		GMT_free (GMT, grd_x0);
+		GMT_free (GMT, grd_y0);
+		Return (error);
 	}
 	GMT_skip_xy_duplicates (GMT, false);	/* Reset */
 
