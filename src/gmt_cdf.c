@@ -284,10 +284,10 @@ int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_err_trap (nc_close (ncid));
-
 	GMT_free (GMT, actual_col);
 	GMT_free (GMT, tmp);
+	GMT_err_trap (nc_close (ncid));
+
 	return (GMT_NOERROR);
 }
 
