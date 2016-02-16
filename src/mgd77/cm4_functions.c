@@ -384,10 +384,12 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		}
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
 		Ctrl->CM4_I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
-		if (cerr > 49) return 1;
+		if (cerr > 49) {
+			gmt_free (msec);	gmt_free (mjdy);
+			return 1;
+		}
 	}
-	gmt_free (msec);
-	gmt_free (mjdy);
+	gmt_free (msec);	gmt_free (mjdy);
 
 	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
 	hysq = calloc(82080U, sizeof(double));
