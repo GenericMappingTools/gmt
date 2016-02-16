@@ -386,6 +386,24 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	i_yinc_r = 1.0 / G_rad->header->inc[GMT_Y];
 
+	/* Set flowline sampling interval to 1/2 of the shortest distance between x-nodes */
+
+	sampling_int_in_km = Ctrl->D.value * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
+	GMT_Report (API, GMT_MSG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
+
+	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Seamount ages truncated to %g\n", Ctrl->N.t_upper);
+
+	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+		Return (error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		Return (API->error);
+	}
+
 	/* Precalculate coordinates xpos[], ypos[] and scale factors(lat) on the grid */
 
 	xpos = GMT_grd_coord (GMT, G_rad->header, GMT_X);
@@ -403,28 +421,10 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	processed_node = GMT_memory (GMT, NULL, G->header->size, char);
 
-	/* Set flowline sampling interval to 1/2 of the shortest distance between x-nodes */
-
-	sampling_int_in_km = Ctrl->D.value * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
-	GMT_Report (API, GMT_MSG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
-
-	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Seamount ages truncated to %g\n", Ctrl->N.t_upper);
-
 	/* Start to read input data */
 
 	n_smts = 0;
 	nx = G->header->nx;	ny = G->header->ny;	/* Signed integers */
-
-	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
-		Return (error);
-	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-		Return (API->error);
-	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
-		Return (API->error);
-	}
 
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
