@@ -133,8 +133,7 @@ int GMT_x2sys_binlist_parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int outside (double x, double y, struct X2SYS_BIX *B, int geo)
-{
+int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
 	if (y < B->wesn[YLO] || y > B->wesn[YHI]) return (1);
 	if (geo) {	/* Geographic data with periodic longitudes */
 		while (x < B->wesn[XLO]) x += 360.0;
@@ -147,8 +146,7 @@ int outside (double x, double y, struct X2SYS_BIX *B, int geo)
 	return (0);	/* Inside */
 }
 
-unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s)
-{
+unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
 	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
 		if (GMT_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
@@ -157,8 +155,7 @@ unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s)
 	return (flag);
 }
 
-int comp_bincross (const void *p1, const void *p2)
-{
+int comp_bincross (const void *p1, const void *p2) {
 	const struct BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
@@ -169,8 +166,7 @@ int comp_bincross (const void *p1, const void *p2)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_binlist_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_binlist (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
 
 	uint64_t this_bin_index, index, last_bin_index, row;
@@ -244,6 +240,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 		if (!(doubleAlmostEqual (B.wesn[XHI] - B.wesn[XLO], 360.0)
 					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
+			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (EXIT_FAILURE);
 		}
 		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
@@ -270,9 +267,15 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		GMT_free (GMT, X);
+		if (Ctrl->D.active) GMT_free (GMT, dist_bin);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		GMT_free (GMT, X);
+		if (Ctrl->D.active) GMT_free (GMT, dist_bin);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
