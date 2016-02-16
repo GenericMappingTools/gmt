@@ -346,6 +346,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		GMT_free (GMT, x0);		GMT_free (GMT, y0);		GMT_free (GMT, grid_node);
+		GMT_free (GMT, point);	GMT_free (GMT, d_col);
 		Return (API->error);
 	}
 
