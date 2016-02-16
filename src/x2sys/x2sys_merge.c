@@ -221,9 +221,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	rewind (fp_merge);
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		fclose (fp_merge);
+		fclose (fp_base);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+		fclose (fp_merge);
+		fclose (fp_base);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -250,6 +254,8 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 				for (k = map_merge_start[j]; k <= map_merge_end[j]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_merge)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in merge file line\n");
+						fclose (fp_merge);
+						fclose (fp_base);
 						Return (EXIT_FAILURE);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
@@ -257,6 +263,8 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
+						fclose (fp_merge);
+						fclose (fp_base);
 						Return (EXIT_FAILURE);
 					}
 				}
@@ -268,6 +276,8 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
+						fclose (fp_merge);
+						fclose (fp_base);
 						Return (EXIT_FAILURE);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
