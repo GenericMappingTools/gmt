@@ -53,8 +53,7 @@
 
 bool GMT_is_gleap (int gyear);
 
-double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
-{
+double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double *sorted = NULL, med;
 
 	sorted = GMT_memory (GMT, NULL, n, double);
@@ -65,8 +64,7 @@ double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
 	return med;
 }
 
-double lms (struct GMT_CTRL *GMT, double *x, unsigned int n)
-{
+double lms (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double mode;
 	unsigned int GMT_n_multiples = 0;
 
@@ -74,8 +72,7 @@ double lms (struct GMT_CTRL *GMT, double *x, unsigned int n)
 	return mode;
 }
 
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int col)
-{
+void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int col) {
 	double da, *slp = NULL, *icept = NULL, *z = NULL, *sq_misfit = NULL, *angle = NULL, *e = NULL, emin = DBL_MAX, d;
 	unsigned int i, j = 0;
 
@@ -127,8 +124,7 @@ void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, 
 	GMT_free (GMT, sq_misfit);
 }
 
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
-{
+void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col) {
 
 	double d_angle, limit, a, old_error, d_error, angle_0, angle_1;
 	int n_angle;
@@ -151,8 +147,7 @@ void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalu
 	}
 }
 
-void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col)
-{
+void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col) {
 	unsigned int i;
 	double sum_x, sum_y, sum_x2, sum_y2, sum_xy, d, ss;
 	double mean_x, mean_y, S_xx, S_xy, S_yy, y_discrepancy;
@@ -196,8 +191,7 @@ void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned i
 	stats[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
 }
 
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
-{
+void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col) {
 	unsigned int i, n;
 	double y_hat, threshold, s_0, res, *xx = NULL, *yy = NULL, corr=0.0;
 
@@ -368,8 +362,7 @@ int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int 
 	return npts;
 }
 
-int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
@@ -534,8 +527,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 
-int GMT_mgd77sniffer (void *V_API, int mode, void *args)
-{
+int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
 	bool nautical = false, custom_max_speed = false, simulate = false;
 	bool bad_sections = false, custom_min_speed = false, do_regression = true, dist_to_coast = false;
@@ -1121,6 +1113,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 			sprintf (outfile,"%s.e77",M.NGDC_id);
 			if ((fpout = fopen (outfile, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Could not open E77 output file %s\n", outfile);
+				MGD77_Path_Free (GMT, n_paths, list);
 				bailout (EXIT_FAILURE);
 			}
 	 	}
