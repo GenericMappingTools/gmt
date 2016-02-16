@@ -539,7 +539,7 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 		while (k < C->npoints && C->data[k].index < index_1) k++;
 	 		for (ki = imin; k < C->npoints && ki <= imax && C->data[k].index < index_2; ki++) {
 	 			for (kj = jmin; k < C->npoints && kj <= jmax && C->data[k].index < index_2; kj++) {
-	 				k_index = ki*C->block_ny + kj;
+	 				k_index = (uint64_t)ki*C->block_ny + kj;
 	 				while (k < C->npoints && C->data[k].index < k_index) k++;
 	 				while (k < C->npoints && C->data[k].index == k_index) {
 	 					r = (C->data[k].x-x0)*(C->data[k].x-x0) + (C->data[k].y-y0)*(C->data[k].y-y0);
