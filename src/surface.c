@@ -532,8 +532,8 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 		if (jmin < 0) jmin = 0;
 	 		jmax = j + jrad;
 	 		if (jmax >= C->block_ny) jmax = C->block_ny - 1;
-	 		index_1 = imin*C->block_ny + jmin;
-	 		index_2 = imax*C->block_ny + jmax + 1;
+	 		index_1 = (uint64_t)imin*C->block_ny + jmin;
+	 		index_2 = (uint64_t)imax*C->block_ny + jmax + 1;
 	 		sum_w = sum_zw = 0.0;
 	 		k = 0;
 	 		while (k < C->npoints && C->data[k].index < index_1) k++;
