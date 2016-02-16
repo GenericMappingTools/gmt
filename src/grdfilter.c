@@ -398,7 +398,7 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 		if (F->rect) ry = inv_y_half_width * j;	/* -1 to +1 */
 		for (i = -F->x_half_width; i <= F->x_half_width; i++) {
 			x = (i < 0) ? -F->x[-i] : F->x[i];	/* Input grid x-coordinate relative to center */
-			ij = (j + F->y_half_width) * F->nx + i + F->x_half_width;
+			ij = (j + F->y_half_width) * (uint64_t)F->nx + i + F->x_half_width;
 			assert (ij >= 0);
 			if (F->rect) {	/* 2-D rectangular filtering; radius not used as we use x/x_half_width and ry instead */
 				weight[ij] = F->weight_func (inv_x_half_width * i, par) * F->weight_func (ry, par);
