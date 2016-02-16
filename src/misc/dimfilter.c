@@ -966,17 +966,17 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		FILE *ip = NULL;
 
-		/* Check the crucial condition to run the program*/
-		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
-			Return (EXIT_FAILURE);
-		}
-
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))!= GMT_OK) Return (error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		GMT_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
+
+		/* Check the crucial condition to run the program*/
+		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
+			Return (EXIT_FAILURE);
+		}
 
 		/* read depths from each column until EOF */
 		while (fscanf (ip, "%lf", &err_depth) != EOF) {
@@ -987,6 +987,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			for (i = 1; i < Ctrl->Q.err_cols; i++) {
 				if (fscanf (ip, "%lf", &err_depth) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to read depths for column %d\n", i);
+					fclose (ip);
 					Return (EXIT_FAILURE);
 				}
 				err_workarray[i] = err_depth;
