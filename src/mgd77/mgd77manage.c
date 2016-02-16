@@ -651,6 +651,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Read error for headers\n");
 				if (fp != GMT->session.std[GMT_IN]) GMT_fclose (GMT, fp);
+				MGD77_Path_Free (GMT, n_paths, list);
 				Return (EXIT_FAILURE);
 			}
 		}
