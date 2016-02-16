@@ -919,7 +919,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			double **stack = NULL, *stacked_val = NULL, *stacked_dev = NULL, *stacked_hi = NULL, *stacked_lo = NULL, *dev = NULL;
 			dim[GMT_TBL] = 1;			/* One table */
 			dim[GMT_SEG] = Dout->n_tables;		/* Number of stacks */
-			dim[GMT_COL] = 1 + n_step * Ctrl->G.n_grids;	/* Number of columns needed in stack file */
+			dim[GMT_COL] = 1 + (uint64_t)n_step * Ctrl->G.n_grids;	/* Number of columns needed in stack file */
 			dim[GMT_ROW] = n_rows = Dout->table[0]->segment[0]->n_rows;	/* Number of rows */
 			if ((Stack = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
 

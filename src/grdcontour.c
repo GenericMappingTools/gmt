@@ -918,7 +918,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		Return (GMT_OK);
 	}
 
-	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64);
+	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64-1);
 	if (Ctrl->A.interval == 0.0) Ctrl->A.interval = Ctrl->C.interval;
 
 	if (Ctrl->contour.annot) {	/* Want annotated contours */

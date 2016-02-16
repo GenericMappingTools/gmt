@@ -450,7 +450,7 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
 					n_errors++;
 				}
-				strncpy (comment, &opt->arg[1], GMT_BUFSIZ);
+				strncpy (comment, &opt->arg[1], GMT_BUFSIZ-1);
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
@@ -659,9 +659,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		last_julian = -1;
 		
 		if (abs (Ctrl->A.mode) == 2)	/* Use MGD77 cruise ID */
-			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_LEN64);
+			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_LEN64-1);
 		else {			/* Use file name prefix */
-			strncpy (name, list[argno], GMT_LEN64);
+			strncpy (name, list[argno], GMT_LEN64-1);
 			for (i = 0; i < strlen (name); i++) if (name[i] == '.') name[i] = '\0';
 		}
 	

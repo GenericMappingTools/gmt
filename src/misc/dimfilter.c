@@ -155,8 +155,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to dimfilter and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -301,11 +300,10 @@ int GMT_dimfilter_parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast)
+void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast) {
 /* Last two gives offset between output node and 'origin' input node for this window (0,0 for integral grids) */
 /* true when input/output grids are offset by integer values in dx/dy */
 
-{
 	int i, j, ij, i_half, j_half;
 	double x_scl, y_scl, f_half, r_f_half, sigma, sig_2;
 	double y1, y2, theta, x, y, r, s_y1, c_y1, s_y2, c_y2;
@@ -373,8 +371,7 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_dimfilter (void *V_API, int mode, void *args)
-{
+int GMT_dimfilter (void *V_API, int mode, void *args) {
 	unsigned short int **sector = NULL;
 
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
@@ -638,7 +635,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 						srow = j_origin + jj;
 						if (srow < 0 || (row_in = srow) >= Gin->header->ny) continue;
 
-						ij_wt = (jj + F.y_half_width) * F.nx + ii + F.x_half_width;
+						ij_wt = (jj + F.y_half_width) * (uint64_t)F.nx + ii + F.x_half_width;
 						if (F. weight[ij_wt] < 0.0) continue;
 
 						ij_in = GMT_IJP (Gin->header, row_in, col_in);

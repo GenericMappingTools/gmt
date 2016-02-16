@@ -1099,7 +1099,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		if (Ctrl->Q.monochrome) {
 			char gray;
 
-			nm_i = nx_i * ny_i;
+			nm_i = (uint64_t)nx_i * ny_i;
 			layers = 1;
 			bitimage_8 = GMT_memory (GMT, NULL, nm_i, unsigned char);
 			gray = GMT_u255 (GMT_YIQ (GMT->current.setting.ps_page_rgb));

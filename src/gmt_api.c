@@ -3763,8 +3763,7 @@ void *GMTAPI_Import_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, 
 }
 
 /*! . */
-int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data)
-{
+int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, enum GMT_enum_family family, int object_ID, unsigned int mode, void *data) {
 	/* Function that will export the single data object referred to by the object_ID as registered by GMT_Register_IO.
 	 * Note: While there is no GMTAPI_Export_Image, these are handles as grids via GMTAPI_Export_Grid.
 	 */
@@ -4422,8 +4421,8 @@ int GMT_Encode_ID (void *V_API, char *filename, int object_ID) {
 }
 
 #ifdef FORTRAN_API
-int GMT_Encode_ID_ (char *filename, int *object_ID, int len)
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+int GMT_Encode_ID_ (char *filename, int *object_ID, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
 }
 #endif
@@ -4595,6 +4594,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				}
 				if (GMT_access (GMT, file, R_OK) && not_url) {	/* Found it but we cannot read. */
 					GMT_Report (API, GMT_MSG_NORMAL, "Not permitted to read file %s\n", file);
+					gmt_free (file);
 					return_value (API, GMT_BAD_PERMISSION, GMT_NOTSET);
 				}
 				gmt_free (file);

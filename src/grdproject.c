@@ -362,7 +362,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 	ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 	if (Ctrl->F.active) {	/* Convert to chosen units */
-		strncpy (unit_name, scale_unit_name, GMT_GRID_UNIT_LEN80);
+		strncpy (unit_name, scale_unit_name, GMT_GRID_UNIT_LEN80-1);
 		xmin /= GMT->current.proj.scale[GMT_X];
 		xmax /= GMT->current.proj.scale[GMT_X];
 		ymin /= GMT->current.proj.scale[GMT_Y];
@@ -539,8 +539,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		}
 		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
-		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80);
-		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80);
+		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
+		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 
 		Rect->header->ProjRefPROJ4 = GMT_export2proj4(GMT);	/* Convert the GMT -J<...> into a proj4 string and save it in the header */
 

@@ -803,8 +803,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
  * header.
  */
 
-int GMT_native_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_native_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Write GRD header structure to native binary file.  This is used by
 	 * all the native binary formats in GMT */
 
@@ -1047,8 +1046,8 @@ void GMT_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned
 	}
 }
 
-float GMT_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type)
-{	/* Retrieve the z value from the array location of the (type) pointer */
+float GMT_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type) {
+	/* Retrieve the z value from the array location of the (type) pointer */
 	float fval;
 
 	switch (type) {
@@ -1211,8 +1210,7 @@ int GMT_write_srfheader (FILE *fp, struct srf_header6 *h) {
 	return GMT_NOERROR;
 }
 
-int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	struct srf_header6 h6;
 	struct srf_header7 h7;
@@ -1269,8 +1267,7 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	struct srf_header6 h;
 
@@ -1301,8 +1298,8 @@ int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* header:     	grid structure header */
+int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+	/* header:     	grid structure header */
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
@@ -1415,8 +1412,8 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	return (GMT_NOERROR);
 }
 
-int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* header:	grid structure header */
+int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* wesnn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
@@ -1829,7 +1826,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	/* Lazy implementation of nodata value update as it doesn't check and apply on a eventual sub-region on output only */
 	if (!isnan (header->nan_value)) {
-		for (ij = 0; ij < header->mx * header->my; ij++)
+		for (ij = 0; ij < (uint64_t)header->mx * header->my; ij++)
 			if (isnan (grid[ij]))
 				grid[ij] = header->nan_value;
 	}

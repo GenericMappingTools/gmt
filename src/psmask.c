@@ -800,7 +800,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 		/* Force perimeter nodes to be false; thus all contours will be closed */
 
-		for (col = 0, ij = (Grid->header->ny-1) * Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = 0;
+		for (col = 0, ij = (Grid->header->ny-1) * (uint64_t)Grid->header->nx; col < Grid->header->nx; col++) grd[col] = grd[col+ij] = 0;
 		for (row = 0; row < Grid->header->ny; row++) grd[row*Grid->header->nx] = grd[(row+1)*Grid->header->nx-1] = 0;
 
 		if (Ctrl->L.active) {	/* Save a copy of the grid to file */

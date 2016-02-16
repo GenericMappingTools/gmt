@@ -122,8 +122,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		nc_get_att_float (ncid, z_id, "_FillValue", &header->nan_value);
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
-		strncpy (header->command, text, GMT_GRID_COMMAND_LEN320);
-		strncpy (header->remark, &text[GMT_GRID_COMMAND_LEN320], GMT_GRID_REMARK_LEN160);
+		strncpy (header->command, text, GMT_GRID_COMMAND_LEN320-1);
+		strncpy (header->remark, &text[GMT_GRID_COMMAND_LEN320], GMT_GRID_REMARK_LEN160-1);
 
 		GMT_err_trap (nc_get_var_double (ncid, x_range_id, dummy));
 		header->wesn[XLO] = dummy[0];
@@ -144,8 +144,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 	}
 	else {
 		int reg;
-		strncpy (text, header->command, GMT_GRID_COMMAND_LEN320);
-		strncpy (&text[GMT_GRID_COMMAND_LEN320], header->remark, GMT_GRID_REMARK_LEN160);
+		strncpy (text, header->command, GMT_GRID_COMMAND_LEN320-1);
+		strncpy (&text[GMT_GRID_COMMAND_LEN320], header->remark, GMT_GRID_REMARK_LEN160-1);
 		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GMT_GRID_UNIT_LEN80, header->x_units));
 		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", GMT_GRID_UNIT_LEN80, header->y_units));
 		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GMT_GRID_UNIT_LEN80, header->z_units));
@@ -358,7 +358,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/* Set start position for writing grid */
 
 	edge[0] = width_out;
-	ij = first_col + pad[XLO] + (first_row + pad[YHI]) * width_in;
+	ij = first_col + pad[XLO] + (uint64_t)(first_row + pad[YHI]) * width_in;
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
