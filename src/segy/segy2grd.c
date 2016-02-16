@@ -349,8 +349,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
-	if ((check = get_segy_reelhd (fpi, reelhead)) != true) {GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
-	if ((check = get_segy_binhd (fpi, &binhead)) != true) {GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
+	if ((check = get_segy_reelhd (fpi, reelhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
+	if ((check = get_segy_binhd (fpi, &binhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
 
 	if (swap_bytes) {
 		/* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
@@ -554,14 +554,14 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 			if (n_confused) GMT_Message (API, GMT_TIME_NONE, "Warning - %d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 		}
 	}
+	if (fpi != stdin) fclose (fpi);
+	GMT_free (GMT, flag);
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
-
-	GMT_free (GMT, flag);
 
 	Return (GMT_OK);
 }
