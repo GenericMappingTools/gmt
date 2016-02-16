@@ -1044,7 +1044,7 @@ void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 
 int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G) {
 	char tag_file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, sfile[GMT_BUFSIZ] = {""}, suffix[16] = {""}, unit[2][2];
-	unsigned int n, k, pos = 0, geodetic = 0;
+	unsigned int n, k, pos = 0, geodetic = 0, n_errors = 0;
 	int dist_flag = 0;
 	bool geographic = false, parsed_command_R = false, n_given[2] = {false, false}, c_given = false;
 	double dist, save_R_wesn[4];
@@ -1180,31 +1180,32 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	}
 	x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 
+	if (B->time_gap < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -Wt: maximum gap must be > 0!\n");
+		return (X2SYS_BAD_ARG);
+	}
+	if (B->dist_gap < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -Wd: maximum gap must be > 0!\n");
+		return (X2SYS_BAD_ARG);
+	}
+
 	x2sys_err_pass (GMT, x2sys_initialize (GMT, TAG, sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
 
 	if (!strcmp (s->info[s->x_col].name, "lon") && !geographic) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your data have longitude but geographic (-G) not specified!\n");
-		return (X2SYS_CONFLICTING_ARGS);
+		n_errors++;
 	}
 	if (!strcmp (s->info[s->y_col].name, "lat") && !geographic) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your data have latitude but geographic (-G) not specified!\n");
-		return (X2SYS_CONFLICTING_ARGS);
+		n_errors++;
 	}
 	if (!strcmp (s->info[s->x_col].name, "x") && geographic) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your data have Cartesian x but geographic was specified!\n");
-		return (X2SYS_CONFLICTING_ARGS);
+		n_errors++;
 	}
 	if (!strcmp (s->info[s->y_col].name, "y") && geographic) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your data have Cartesian y but geographic was specified!\n");
-		return (X2SYS_CONFLICTING_ARGS);
-	}
-	if (B->time_gap < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -Wt: maximum gap must be > 0!\n");
-		exit (EXIT_FAILURE);
-	}
-	if (B->dist_gap < 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -Wd: maximum gap must be > 0!\n");
-		exit (EXIT_FAILURE);
+		n_errors++;
 	}
 	if (geographic) {
 		if (! (n_given[X2SYS_DIST_SELECTION] || n_given[X2SYS_SPEED_SELECTION])) {	/* Set defaults for geographic data */
@@ -1218,28 +1219,32 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 		}
 		if (geodetic == 0 && (B->wesn[XLO] < 0 || B->wesn[XHI] < 0)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -R and -G settings are contradicting each other!\n");
-			return (X2SYS_CONFLICTING_ARGS);
+			n_errors++;
 		}
 		else if  (geodetic == 2 && (B->wesn[XLO] > 0 && B->wesn[XHI] > 0)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -R and -G settings are contradicting each other!\n");
-			return (X2SYS_CONFLICTING_ARGS);
+			n_errors++;
 		}
 		if (c_given && dist_flag == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -C and -G settings are contradicting each other!\n");
-			return (X2SYS_CONFLICTING_ARGS);
+			n_errors++;
 		}
 		if (n_given[X2SYS_DIST_SELECTION] && unit[X2SYS_DIST_SELECTION][0] == 'c') {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -Nd and -G settings are contradicting each other!\n");
-			return (X2SYS_CONFLICTING_ARGS);
+			n_errors++;
 		}
 		if (n_given[X2SYS_SPEED_SELECTION] && unit[X2SYS_SPEED_SELECTION][0] == 'c') {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -Ns and -G settings are contradicting each other!\n");
-			return (X2SYS_CONFLICTING_ARGS);
+			n_errors++;
 		}
 		s->geographic = true;
 		s->geodetic = geodetic;	/* Override setting */
 		if (GMT_360_RANGE (B->wesn[XHI], B->wesn[XLO]))
 			B->periodic = true;
+	}
+	if (n_errors) {	/* No good */
+		x2sys_free_info (GMT, s);
+		return (X2SYS_CONFLICTING_ARGS);
 	}
 	if (n_given[X2SYS_DIST_SELECTION]) s->unit[X2SYS_DIST_SELECTION][0] = unit[X2SYS_DIST_SELECTION][0];
 	if (n_given[X2SYS_SPEED_SELECTION]) s->unit[X2SYS_SPEED_SELECTION][0] = unit[X2SYS_SPEED_SELECTION][0];
