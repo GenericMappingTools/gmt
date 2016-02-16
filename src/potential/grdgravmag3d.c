@@ -128,7 +128,6 @@ struct THREAD_STRUCT {
 	struct GMT_CTRL *GMT;
 };
 
-void set_center (unsigned int n_triang);
 int grdgravmag3d_body_set_tri (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
 	double *cos_vec, unsigned int j, unsigned int i, unsigned int inc_j, unsigned int inc_i);
@@ -143,17 +142,17 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
 	struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_grd_geo, double *y_grd_geo,
 	double *x_obs, double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts);
-double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+static double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or);
-double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+static double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or);
 void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t);
-double nucleox(double u, double v, double w, double rl, double rm, double rn);
-double nucleoy(double u, double v, double w, double rl, double rm, double rn);
-double nucleoz(double u, double v, double w, double rl, double rm, double rn);
-void dircos(double incl, double decl, double azim, double *a, double *b, double *c);
+static double nucleox(double u, double v, double w, double rl, double rm, double rn);
+static double nucleoy(double u, double v, double w, double rl, double rm, double rn);
+static double nucleoz(double u, double v, double w, double rl, double rm, double rn);
+static void dircos(double incl, double decl, double azim, double *a, double *b, double *c);
 
-double fast_atan(double x) {
+static double fast_atan(double x) {
 	/* http://nghiaho.com/?p=997 */
 	/* Efficient approximations for the arctangent function, Rajan, S. Sichun Wang Inkol, R. Joyal, A., May 2006 */
 	return M_PI_4*x - x*(fabs(x) - 1)*(0.2447 + 0.0663*fabs(x));
@@ -1373,7 +1372,7 @@ void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, str
    consider different dec/dip for magnetization vector and Earth field, but here we do.
 */
 
-double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+static double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *mag_par) {
 
 	/* The MAG_PAR struct is used here to transmit the Ctrl->H members (components actually) */
@@ -1679,7 +1678,7 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
 
 */
 
-double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
+static double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or) {
 
 	/* x_o, y_o, z_o are the coordinates of the observation point
@@ -1721,7 +1720,7 @@ double bhatta (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double 
 	return (tx);
 }
 
-double nucleox(double u, double v, double w, double rl, double rm, double rn) {
+static double nucleox(double u, double v, double w, double rl, double rm, double rn) {
 	double r, t1, t2, t3, rnum, rden;
 	r = sqrt(u*u + v*v + w*w);
 	t1 = rn / 2.0 * log((r+v)/(r-v));
@@ -1732,7 +1731,7 @@ double nucleox(double u, double v, double w, double rl, double rm, double rn) {
 	return (t1 + t2 + t3);
 }
 
-double nucleoy(double u, double v, double w, double rl, double rm, double rn) {
+static double nucleoy(double u, double v, double w, double rl, double rm, double rn) {
 	/* Multiply output by -1 because ... not sure but related to the fact that y vector is up-side down */
 	double r, t1, t2, t3, rnum, rden;
 	r = sqrt(u*u + v*v + w*w);
@@ -1744,7 +1743,7 @@ double nucleoy(double u, double v, double w, double rl, double rm, double rn) {
 	return (-(t1 + t2 + t3));
 }
 
-double nucleoz(double u, double v, double w, double rl, double rm, double rn) {
+static double nucleoz(double u, double v, double w, double rl, double rm, double rn) {
 	double r, t1, t2, t3, rnum, rden;
 	r = sqrt(u*u + v*v + w*w);
 	t1 = rm / 2.0 * log((r+u)/(r-u));
@@ -1755,7 +1754,7 @@ double nucleoz(double u, double v, double w, double rl, double rm, double rn) {
 	return (t1 + t2 + t3);
 }
 
-void dircos(double incl, double decl, double azim, double *a, double *b, double *c) {
+static void dircos(double incl, double decl, double azim, double *a, double *b, double *c) {
 /*
 c  Subroutine DIRCOS computes direction cosines from inclination
 c  and declination.
