@@ -122,9 +122,9 @@ void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b);
 double d_mod(double x, double y);
 double pow_di(double ap, int bp);
 int i_dnnt(double x);
-void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
-	            double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
-	            double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg);
+static void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
+	double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
+	double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg);
 
 int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date) {
 
@@ -795,7 +795,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	return 0;
 }
 
-void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
+static void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
 	            double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
 	            double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg) {
 	gmt_free (mut);
