@@ -316,18 +316,17 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		}
 	}
 
-	/* All data nodes are thus initialized to 0 */
-	x = GMT_memory (GMT, NULL, Grid->header->nx, double);
-	y = GMT_memory (GMT, NULL, Grid->header->ny, double);
-
-	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
-
 	GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = GMT_grd_is_global (GMT, Grid->header);
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
 	GMT_set_geographic (GMT, GMT_OUT);
+	/* All data nodes are thus initialized to 0 */
+	x = GMT_memory (GMT, NULL, Grid->header->nx, double);
+	y = GMT_memory (GMT, NULL, Grid->header->ny, double);
+
+	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
 
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 
