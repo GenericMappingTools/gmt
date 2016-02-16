@@ -358,7 +358,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/* Set start position for writing grid */
 
 	edge[0] = width_out;
-	ij = first_col + pad[XLO] + (first_row + pad[YHI]) * width_in;
+	ij = first_col + pad[XLO] + (uint64_t)(first_row + pad[YHI]) * width_in;
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
