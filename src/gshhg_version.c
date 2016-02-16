@@ -86,7 +86,7 @@ int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version
 	nc_close(ncid);
 
 	/* null-terminate version string */
-	gshhg_version_string[v_len-1] = '\0';
+	gshhg_version_string[v_len] = '\0';
 
 	/* parse version major, minor, and patch */
 	status = sscanf (gshhg_version_string, "%u.%u.%u",
