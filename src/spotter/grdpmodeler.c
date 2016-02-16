@@ -345,7 +345,13 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		G_mod = GMT_memory (GMT, NULL, Ctrl->S.n_items, struct GMT_GRID *);
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			if ((G_mod[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
-				registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+				registration, GMT_NOTSET, NULL)) == NULL) {	/* Free previous grids and bail */
+					unsigned int kk;
+					for (kk = 0; kk < k; kk++)
+						(void)GMT_Destroy_Data (API, &G_mod[kk]);
+					GMT_free (GMT, G_mod);
+					Return (API->error);
+			}
 
 			switch (Ctrl->S.mode[k]) {
 				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
@@ -372,7 +378,6 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	else {	/* No output grids, must have input age grid to rely on */
 		G = G_age;
-		out = GMT_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
@@ -382,6 +387,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
+		out = GMT_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.file);
 	}
 
