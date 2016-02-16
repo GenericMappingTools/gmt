@@ -974,7 +974,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Strip GMT time-stamp...\n");
 			sprintf (no_U_file, "%s/psconvert_%db.eps", Ctrl->D.dir, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
+				int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
+				fclose (fp);	/* Close original PS file */
+				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_free (ps_names[kk]);
 				Return (EXIT_FAILURE);
 			}
 			while (line_reader (GMT, &line, &line_size, fp) != EOF) {

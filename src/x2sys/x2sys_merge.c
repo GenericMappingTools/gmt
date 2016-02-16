@@ -45,6 +45,9 @@ struct X2SYS_MERGE_CTRL {
 	} M;
 };
 
+static void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
+                uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge);
+
 void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_MERGE_CTRL *C;
 
@@ -125,8 +128,7 @@ int GMT_x2sys_merge_parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_merge_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_merge (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	uint64_t  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
 	uint64_t *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
 	int error;
@@ -163,6 +165,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
+		fclose (fp_base);
 		Return (EXIT_FAILURE);
 	}
 
@@ -223,11 +226,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		fclose (fp_merge);
 		fclose (fp_base);
+		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		fclose (fp_merge);
 		fclose (fp_base);
+		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -256,6 +261,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in merge file line\n");
 						fclose (fp_merge);
 						fclose (fp_base);
+						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (EXIT_FAILURE);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
@@ -265,6 +271,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
 						fclose (fp_merge);
 						fclose (fp_base);
+						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (EXIT_FAILURE);
 					}
 				}
@@ -278,6 +285,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
 						fclose (fp_merge);
 						fclose (fp_base);
+						clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 						Return (EXIT_FAILURE);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, line);
@@ -292,11 +300,22 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		fclose (fp_base);	fclose (fp_merge);
+		clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
 		Return (API->error);
 	}
 
 	fclose (fp_base);
 	fclose (fp_merge);
+
+	clear_mem (GMT, pairs_base, pairs_merge, map_base_start, map_base_end, map_merge_start, map_merge_end, n_base, n_merge);
+
+	Return (GMT_OK);
+}
+
+static void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
+                uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge) {
+	int i;
 
 	for (i = 0; i < n_base; i++)  GMT_free (GMT, pairs_base[i]);
 	for (i = 0; i < n_merge; i++) GMT_free (GMT, pairs_merge[i]);
@@ -304,6 +323,4 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	GMT_free (GMT, map_base_end);
 	GMT_free (GMT, map_merge_start);
 	GMT_free (GMT, map_merge_end);
-
-	Return (GMT_OK);
 }

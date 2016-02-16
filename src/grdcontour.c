@@ -155,8 +155,7 @@ void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_PEN P;
 
 	/* This displays the grdcontour synopsis and optionally full usage information */
@@ -281,8 +280,7 @@ unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GR
 	return (n_errors);
 }
 
-int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcontour and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -694,8 +692,8 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 }
 
-void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid)
-{	/* Modify orientation of contours to have top of annotation facing the local hill top */
+void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid) {
+	/* Modify orientation of contours to have top of annotation facing the local hill top */
 	int col, row;
 	uint64_t k, seg, ij;
 	double nx, ny, x_on, y_on, x_node, y_node, x_node_p, y_node_p, dx, dy, dz, dot, angle;
@@ -776,8 +774,8 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdcontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdcontour (void *V_API, int mode, void *args)
-{	/* High-level function that implements the grdcontour task */
+int GMT_grdcontour (void *V_API, int mode, void *args) {
+	/* High-level function that implements the grdcontour task */
 	int error, c;
 	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false, use_t_offset = false;
 
@@ -1091,7 +1089,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
 
 	GMT_grd_minmax (GMT, G, xyz);
-	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
+	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) {	/* Prep for crossing lines, if any */
+		GMT_free (GMT, contour);		GMT_free (GMT, cont_type);
+		GMT_free (GMT, cont_angle);		GMT_free (GMT, cont_do_tick);
+		Return (EXIT_FAILURE);
+	}
 
 	for (i = 0; i < 3; i++) GMT->current.io.col_type[GMT_OUT][i] = GMT->current.io.col_type[GMT_IN][i];	/* Used if -D is set */
 
