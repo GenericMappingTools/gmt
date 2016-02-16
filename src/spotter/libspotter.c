@@ -1452,6 +1452,9 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 #endif	
 	c2 = GMT_chi2crit (GMT, alpha, nu);
 	c = sqrt (c2);
+	GMT_memset (phi, SPOTTER_N_FINE_STEPS+1, double);
+	GMT_memset (t, SPOTTER_N_FINE_STEPS+1, double);
+	GMT_memset (t_inner, SPOTTER_N_FINE_STEPS+1, double);
 
 	spotter_matrix_2Dto1D (GMT, C, p->C);			/* Reformat p->C to 1-D format C for GMT_jacobi */
 	if (fake) {
