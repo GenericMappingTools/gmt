@@ -170,8 +170,8 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SY
 	return (track_id);	/* Return the track id we passed in */
 }
 
-struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, bool *found_it, struct X2SYS_BIX *B)
-{	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to true.
+struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, bool *found_it, struct X2SYS_BIX *B) {
+	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to true.
 	 * I.e., the track is actually this_info->next_info.  If not found set found_it to false and return pointer where
 	 * this track should be inserted */
 	
@@ -184,8 +184,7 @@ struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, bool *found_it,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_put_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_put (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 
@@ -361,20 +360,25 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 	remove (old_track_path);	/* First delete old files */
 	if (rename (track_path, old_track_path)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s\t%s. Aborting %d!\n", track_path, old_track_path, i);
+		x2sys_end (GMT, s);
 		Return (EXIT_FAILURE);
 	}
 	remove (old_index_path);	/* First delete old files */
 	if (rename (index_path, old_index_path)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Rename failed for %s. Aborts!\n", index_path);
+		x2sys_end (GMT, s);
 		Return (EXIT_FAILURE);
 	}
 
 	if ((ftrack = fopen (track_path, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", track_path);
+		x2sys_end (GMT, s);
 		Return (EXIT_FAILURE);
 	}
 	if ((fbin = fopen (index_path, "wb")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to create %s. Aborts!\n", index_path);
+		fclose (ftrack);
+		x2sys_end (GMT, s);
 		Return (EXIT_FAILURE);
 	}
 	fprintf (ftrack,"# %s\n", Ctrl->T.TAG);
