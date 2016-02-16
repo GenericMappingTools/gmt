@@ -298,9 +298,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
 
-		if (G->header->ProjRefPROJ4 && !Ctrl->C.active)
+		if (G->header->ProjRefPROJ4 && !Ctrl->C.active && !Ctrl->T.active)
 			projStr = strdup(G->header->ProjRefPROJ4);		/* Copy proj string to print at the end */
-		else if (G->header->ProjRefWKT && !Ctrl->C.active) 
+		else if (G->header->ProjRefWKT && !Ctrl->C.active && !Ctrl->T.active) 
 			projStr = strdup(G->header->ProjRefWKT);
 
 		for (n = 0; n < GMT_Z; n++) GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
@@ -720,7 +720,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
 
-	if (!Ctrl->C.active && projStr) {		/* Print the referencing info */
+	if (!Ctrl->C.active && !Ctrl->T.active && projStr) {		/* Print the referencing info */
 		GMT_Put_Record (API, GMT_WRITE_TEXT, projStr);
 		gmt_free (projStr);
 	}
