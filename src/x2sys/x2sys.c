@@ -1405,7 +1405,7 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "col (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
 		return (X2SYS_BIX_BAD_COL);
 	}
-	tmp = (*j) * B->nx_bin + (*i);
+	tmp = (*j) * (uint64_t)B->nx_bin + (*i);
 	if (tmp < 0 || (index = tmp) >= B->nm_bin) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Index (%" PRIu64 ") outside range implied by -R -I! [0-%" PRIu64 ">\n", tmp, B->nm_bin);
 		return (X2SYS_BIX_BAD_INDEX);
