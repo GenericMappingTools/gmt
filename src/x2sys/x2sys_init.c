@@ -436,6 +436,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", def_file);
 	if ((fp = x2sys_fopen (GMT, def_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", def_file);
+		fclose (fp_def);	/* Close local def file */
 		Return (EXIT_FAILURE);
 	}
 	while (fgets (line, GMT_BUFSIZ, fp_def)) fprintf (fp, "%s", line);

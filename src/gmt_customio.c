@@ -507,7 +507,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	double item_size;
 	struct stat buf;
 	struct GMT_GRID_HEADER t_head;
-
+	GMT_memset (&t_head, 1, struct GMT_GRID_HEADER);	/* Wipe it */
 	if (!strcmp (header->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if (stat (header->name, &buf))

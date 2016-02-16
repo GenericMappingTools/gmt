@@ -7315,7 +7315,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				}
 			}
 		}
-		if (delete) GMT_Delete_Option (API, delete);
+		if (delete != *head) GMT_Delete_Option (API, delete);
 	}
 	gmt_free (module);
 

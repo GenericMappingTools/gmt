@@ -1357,7 +1357,7 @@ int gmt_getpenwidth (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	unsigned int i, n, pos, unit = GMT_PT, n_dash = 0;
 	double width;
-	char tmp[GMT_LEN256] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
+	char tmp[GMT_PEN_LEN] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do as no style given.  Note we do not reset any existing style here; use solid to do so */
 	if (!strcmp (line, "solid")) {	/* Used to override any other default style */
@@ -10361,6 +10361,7 @@ bool GMT_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLO
 	else if (T->type == 'i' || T->type == 'I') {
 		if (GMT_uneven_interval (T->unit) || T->interval != 1.0) {	/* Must find next month to get month centered correctly */
 			struct GMT_MOMENT_INTERVAL Inext;
+			GMT_memset (&Inext, 1, struct GMT_MOMENT_INTERVAL);	/* Wipe it */
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
 			Inext.step = 1;
 			GMT_moment_interval (GMT, &Inext, coord[0], true);	/* Get this one interval only */

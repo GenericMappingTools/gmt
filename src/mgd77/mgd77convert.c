@@ -271,10 +271,13 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 			}
 			if ((fph77 = fopen (h77_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read H77 file %s - skipping conversion\n", h77_file);
+				fclose (fpout);
 				continue;
 			}
 			if ((fpa77 = fopen (a77_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read A77 file %s - skipping conversion\n", a77_file);
+				fclose (fpout);
+				fclose (fph77);
 				continue;
 			}
 			GMT_Report (API, GMT_MSG_NORMAL, "Assemble %s + %s --> %s\n", h77_file, a77_file, mgd77_file);

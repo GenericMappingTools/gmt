@@ -765,9 +765,6 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		fmt[0] = GMT_X;
 		fmt[1] = GMT_Y;
 	}
-	out = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
-
-	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	if (Ctrl->N.active) lat_mode = Ctrl->N.mode + Ctrl->I.active;
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -785,6 +782,8 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
 
 	n = n_read_in_seg = 0;
+	out = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
+	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */

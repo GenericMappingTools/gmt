@@ -282,8 +282,6 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
 
-	out = GMT_memory (GMT, NULL, s->n_fields, double);
-
 	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;
 
 	if (GMT->common.R.active) {	/* Restrict output to given domain */
@@ -422,12 +420,18 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 	}
 	o_mode = (gmt_formatting) ? GMT_IS_TEXTSET : GMT_IS_DATASET;
 	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		x2sys_end (GMT, s);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	GMT_set_cols (GMT, GMT_OUT, s->n_out_columns);
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		x2sys_end (GMT, s);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
+	
+	out = GMT_memory (GMT, NULL, s->n_fields, double);
 
 	if (Ctrl->A.active) {	/* Allocate an along-track adjustment table */
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);

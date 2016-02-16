@@ -903,14 +903,19 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	}
 
 	max_alloc = 2 * (MAX (1,Ctrl->S.value) * (((Z->header->nx > Z->header->ny) ? Z->header->nx : Z->header->ny) + 2)) + 1;
+
+	GMT_Report (API, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
+
+	if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+		GMT_free (GMT, xval);
+		GMT_free (GMT, yval);
+		Return (GMT_RUNTIME_ERROR);
+	}
+
 	x = GMT_memory (GMT, NULL, max_alloc, double);
 	y = GMT_memory (GMT, NULL, max_alloc, double);
 	z = GMT_memory (GMT, NULL, max_alloc, double);
 	v = GMT_memory (GMT, NULL, max_alloc, double);
-
-	GMT_Report (API, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
-
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	PSL_setformat (PSL, 3);
 

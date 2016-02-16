@@ -318,6 +318,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
 		}
 	}
+	GMT_free (GMT, lon);
 
 	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",
@@ -330,8 +331,6 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 		Return (API->error);
 	}
-
-	GMT_free (GMT, lon);
 
 	Return (GMT_OK);
 }

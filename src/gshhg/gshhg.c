@@ -260,6 +260,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		dim[GMT_ROW] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
+			GMT_fclose (GMT, fp);
 			return (API->error);
 		}
 	}
@@ -267,6 +268,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		dim[GMT_SEG] = n_alloc = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
+			GMT_fclose (GMT, fp);
 			return (API->error);
 		}
 	}

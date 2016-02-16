@@ -1382,20 +1382,35 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
+			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			Return (GMT_PROJECTION_ERROR);
+		}
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			Return (GMT_RUNTIME_ERROR);
+		}
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) {
+			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			Return (GMT_PROJECTION_ERROR);
+		}
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			Return (GMT_RUNTIME_ERROR);
+		}
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
+			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			Return (GMT_PROJECTION_ERROR);
+		}
 	}
 
 	if (Ctrl->D.horizontal) {
