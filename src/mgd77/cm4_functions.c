@@ -386,6 +386,8 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		Ctrl->CM4_I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) {
 			gmt_free (msec);	gmt_free (mjdy);
+			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+	                   esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 			return 1;
 		}
 	}
