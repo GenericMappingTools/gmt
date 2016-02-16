@@ -332,6 +332,17 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
+	/* Free what we are pointing to */
+	uint64_t k;
+	for (k = 0; k < n; k++) {
+		gmt_free (grdfile[k]);
+		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK)
+			return (API->error);
+	}
+	return (GMT_OK);
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grd2cpt_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -406,12 +417,18 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
 		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, opt->arg, NULL)) == NULL) {
-			Return (API->error);
+			error = free_them_grids (API, G, grdfile, k);
+			GMT_free (GMT, G);
+			GMT_free (GMT, grdfile);
+			Return ((error) ? error : API->error);
 		}
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Grids do not have the same domain!\n");
-			Return (GMT_RUNTIME_ERROR);
+			error = free_them_grids (API, G, grdfile, k);
+			GMT_free (GMT, G);
+			GMT_free (GMT, grdfile);
+			Return ((error) ? error : API->error);
 		}
 
 		k++;
@@ -601,14 +618,9 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 	GMT_free (GMT, cdf_cpt);
 	GMT_free (GMT, z);
-	for (k = 0; k < ngrd; k++) {
-		gmt_free (grdfile[k]);
-		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK) {
-			Return (API->error);
-		}
-	}
+	error = free_them_grids (API, G, grdfile, ngrd);
 	GMT_free (GMT, G);
 	GMT_free (GMT, grdfile);
 
-	Return (EXIT_SUCCESS);
+	Return ((error) ? error : EXIT_SUCCESS);
 }
