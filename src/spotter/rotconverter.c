@@ -432,12 +432,15 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	if (Ctrl->G.active) n_out = 6;
 	
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+		GMT_free (GMT, a);
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		GMT_free (GMT, a);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		GMT_free (GMT, a);
 		Return (API->error);
 	}
 
@@ -494,11 +497,12 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 		}
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}
+	
+	GMT_free (GMT, a);
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {		/* Disables further data output */
 		Return (API->error);
 	}
-
-	GMT_free (GMT, a);
 	
 	Return (GMT_OK);
 }
