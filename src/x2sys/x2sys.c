@@ -470,8 +470,8 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	unsigned int i = 0, j, pos = 0;
 
-	strncpy (s->fflags, string, GMT_BUFSIZ-1);
-	strncpy (line, string, GMT_BUFSIZ);	/* Make copy for later use */
+	strncpy (s->fflags, string, GMT_BUFSIZ);
+	strncpy (line, string, GMT_BUFSIZ-1);	/* Make copy for later use */
 	GMT_memset (s->use_column, s->n_fields, bool);
 
 	while ((GMT_strtok (line, ",", &pos, p))) {
@@ -1115,10 +1115,10 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					c_given = true;
 					break;
 				case 'D':
-					strncpy (sfile, &p[2], GMT_BUFSIZ);
+					strncpy (sfile, &p[2], GMT_BUFSIZ-1);
 					break;
 				case 'E':
-					strncpy (suffix, &p[2], 16);
+					strncpy (suffix, &p[2], 15);
 					break;
 				case 'G':	/* Geographical coordinates, set discontinuity */
 					geographic = true;
@@ -1485,7 +1485,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 	if (add_suffix)
 		sprintf (geo_path, "%s.%s", track, suffix);
 	else
-		strncpy (geo_path, track, GMT_BUFSIZ);
+		strncpy (geo_path, track, GMT_BUFSIZ-1);
 	if (!access(geo_path, R_OK)) {
 		strcpy (track_path, geo_path);
 		return (0);
