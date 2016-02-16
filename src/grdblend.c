@@ -234,7 +234,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	B = GMT_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
-		strncpy (B[n].file, L[n].file, GMT_LEN256);
+		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 			return (-1);
 		}
@@ -333,7 +333,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 			}
-			strncpy (B[n].file, buffer, GMT_LEN256);	/* Use the temporary file instead */
+			strncpy (B[n].file, buffer, GMT_LEN256-1);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
 			if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
