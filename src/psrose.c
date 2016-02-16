@@ -416,12 +416,6 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	}
 	n_bins = (Ctrl->A.inc <= 0.0) ? 1U : urint (total_arc / Ctrl->A.inc);
 
-	sum = GMT_memory (GMT, NULL, n_bins, double);
-	xx = GMT_memory (GMT, NULL, n_bins+2, double);
-	yy = GMT_memory (GMT, NULL, n_bins+2, double);
-	azimuth = GMT_memory (GMT, NULL, n_alloc, double);
-	length = GMT_memory (GMT, NULL, n_alloc, double);
-
 	/* Read data and do some stats */
 
 	n = 0;
@@ -436,6 +430,14 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
+
+	/* Allocate arrays */
+	
+	sum = GMT_memory (GMT, NULL, n_bins, double);
+	xx = GMT_memory (GMT, NULL, n_bins+2, double);
+	yy = GMT_memory (GMT, NULL, n_bins+2, double);
+	azimuth = GMT_memory (GMT, NULL, n_alloc, double);
+	length = GMT_memory (GMT, NULL, n_alloc, double);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
