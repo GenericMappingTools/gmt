@@ -1564,6 +1564,7 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (GMT_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
+		GMT_free (GMT, to_gdalread);	GMT_free (GMT, from_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
@@ -1645,22 +1646,34 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		if (pad[XLO] >= header->nx - 1) {	/* With -1 we account for both grid & pixel registration cases */
 			to_gdalread->mini_hdr.offset = pad[XLO];		to_gdalread->mini_hdr.side[0] = 'r';
 			to_gdalread->mini_hdr.mx = header->mx;
-			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) return (EXIT_FAILURE);
+			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
+				GMT_free (GMT, to_gdalread);
+				return (EXIT_FAILURE);
+			}
 		}
 		else if (pad[XHI] >= header->nx - 1) {
 			to_gdalread->mini_hdr.offset = pad[XHI];		to_gdalread->mini_hdr.side[0] = 'l';
 			to_gdalread->mini_hdr.mx = header->mx;
-			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) return (EXIT_FAILURE);
+			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
+				GMT_free (GMT, to_gdalread);
+				return (EXIT_FAILURE);
+			}
 		}
 		else if (pad[YLO] >= header->ny - 1) {
 			to_gdalread->mini_hdr.offset = pad[YLO];		to_gdalread->mini_hdr.side[0] = 't';
 			to_gdalread->mini_hdr.my = header->my;
-			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) return (EXIT_FAILURE);
+			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
+				GMT_free (GMT, to_gdalread);
+				return (EXIT_FAILURE);
+			}
 		}
 		else if (pad[YHI] >= header->ny - 1) {
 			to_gdalread->mini_hdr.offset = pad[YHI];		to_gdalread->mini_hdr.side[0] = 'b';
 			to_gdalread->mini_hdr.my = header->my;
-			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) return (EXIT_FAILURE);
+			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
+				GMT_free (GMT, to_gdalread);
+				return (EXIT_FAILURE);
+			}
 		}
 		else {
 			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
@@ -1890,6 +1903,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown or unsupported data type code in gmt_customio for writing file with GDAL.\n");
+		GMT_free (GMT, k);			GMT_free (GMT, to_GDALW->data);		gmt_free (to_GDALW->driver);
+		gmt_free (to_GDALW->type);	GMT_free (GMT, to_GDALW);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 

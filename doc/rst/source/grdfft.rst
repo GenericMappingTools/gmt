@@ -14,7 +14,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdfft** *ingrid* [ *ingrid2* ]
-[ |-G|\ *outfile*\ |\ *table* ]
+[ |-G|\ *outfile*\ \|\ *table* ]
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\ \|\ **g**] ]
@@ -132,7 +132,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outfile*\ |\ *table*
+**-G**\ *outfile*\ \|\ *table*
     Filename for output netCDF grid file OR 1-D data table (see **-E**).
     This is optional for -E (spectrum written to stdout) but mandatory for
     all other options that require a grid output.

@@ -236,6 +236,10 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
+		for (n = 0; n < n_files; n++) {
+			gmt_free (L[n].file);	gmt_free (L[n].region);
+		}
+		GMT_free (GMT, L);
 			return (-1);
 		}
 		
@@ -335,7 +339,8 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			}
 			strncpy (B[n].file, buffer, GMT_LEN256-1);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
-			if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
+			if (GMT_Destroy_Data (GMT->parent, &B[n].G))
+				return (-1);
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
@@ -703,6 +708,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		w_mode = GMT_GRID_HEADER_ONLY | GMT_GRID_ROW_BY_ROW;
 		if (Ctrl->Q.active) w_mode |= GMT_GRID_NO_HEADER;
 		if ((error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, w_mode, NULL, Ctrl->G.file, Grid))) {
+			GMT_free (GMT, z);
 			Return (error);
 		}
 	}
