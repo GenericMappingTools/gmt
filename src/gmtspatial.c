@@ -50,7 +50,7 @@
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment legnth, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
-struct DUP {
+GMT_LOCAL struct DUP {
 	uint64_t point;
 	uint64_t segment;
 	unsigned int table;
@@ -65,7 +65,7 @@ struct DUP {
 	double s_threshold;
 };
 
-struct DUP_INFO {
+GMT_LOCAL struct DUP_INFO {
 	uint64_t point;
 	int mode;
 	double distance;
@@ -73,7 +73,7 @@ struct DUP_INFO {
 	double setratio;
 };
 
-struct GMTSPATIAL_CTRL {
+GMT_LOCAL struct GMTSPATIAL_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;
@@ -136,12 +136,12 @@ struct GMTSPATIAL_CTRL {
 	} T;
 };
 
-struct PAIR {
+GMT_LOCAL struct PAIR {
 	double node;
 	uint64_t pos;
 };
 
-void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSPATIAL_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GMTSPATIAL_CTRL);
@@ -160,7 +160,7 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	return (C);
 }
 
-void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Out.file);	
 	gmt_free (C->D.file);	
@@ -169,7 +169,7 @@ void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo) {
+GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo) {
 	uint64_t i;
 	double wesn[4], xx, yy, size, ix, iy;
 	double *xp = NULL, *yp = NULL;
@@ -222,7 +222,7 @@ unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n
 	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
 }
 
-void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out) {
+GMT_LOCAL void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out) {
 	uint64_t i;
 	double length = 0.0, mid, f, *s = NULL;
 	
@@ -245,7 +245,7 @@ void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, doub
 	GMT_free (GMT, s);
 }
 
-int comp_pairs (const void *a, const void *b) {
+GMT_LOCAL int comp_pairs (const void *a, const void *b) {
 	const struct PAIR *xa = a, *xb = b;
 	/* Sort on node value */
 	if (xa->node < xb->node) return (-1);
@@ -253,14 +253,14 @@ int comp_pairs (const void *a, const void *b) {
 	return (0);
 }
 
-void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p) {
+GMT_LOCAL void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p) {
 	uint64_t c;
 	double out[GMT_MAX_COLUMNS];
 	for (c = 0; c < n; c++) out[c] = R[c][p];
 	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 }
 
-int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
+GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L) {
 	/* Given single line segment S and a dataset of many line segments in D, determine the closest neighbor
 	 * to S in D (call it S'), and if "really close" it might be a duplicate or slight revision to S.
 	 * There might be several features S' in D close to S so we return how many near or exact matches we
@@ -506,19 +506,19 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GM
 	return (n_dup);
 }
 
-struct NN_DIST {
+GMT_LOCAL struct NN_DIST {
 	double coord[4];	/* Up to x,y,z,weight */
 	double distance;	/* Distance to nearest neighbor */
 	int64_t ID;		/* Input ID # of this point (original input record number 0,1,...)*/
 	int64_t neighbor;	/* Input ID # of this point's neighbor */
 };
 
-struct NN_INFO {
+GMT_LOCAL struct NN_INFO {
 	int64_t sort_rec;	/* Input ID # of this point's neighbor */
 	int64_t orig_rec;	/* Rec # of this point */
 };
 
-int compare_nn_points (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int compare_nn_points (const void *point_1v, const void *point_2v) {
 	/*  Routine for qsort to sort NN data structure on distance.
 		*/
 	const struct NN_DIST *point_1 = point_1v, *point_2 = point_2v;
@@ -530,7 +530,7 @@ int compare_nn_points (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-struct NN_DIST * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
+GMT_LOCAL struct NN_DIST *NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
 	uint64_t k, k2, np;
 	double distance;
@@ -558,7 +558,7 @@ struct NN_DIST * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint6
 	return (P);
 }
 
-struct NN_DIST * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
+GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points) {
 	/* Return array of NN results sorted on smallest distances */
 	uint64_t np = 0, k, tbl, seg, row, col, n_cols;
 	double distance;
@@ -594,7 +594,7 @@ struct NN_DIST * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uin
 	return (P);
 }
 
-int compare_nn_info (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int compare_nn_info (const void *point_1v, const void *point_2v) {
 	/*  Routine for qsort to sort NN rec numbers structure on original record order.
 		*/
 	const struct NN_INFO *point_1 = point_1v, *point_2 = point_2v;
@@ -604,7 +604,7 @@ int compare_nn_info (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points) {
+GMT_LOCAL struct NN_INFO *NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points) {
 	/* Return revised array of NN ID lookups via sorting on neighbor IDs */
 	uint64_t k;
 	struct NN_INFO *info = (I) ? I : GMT_memory (GMT, NULL, n_points, struct NN_INFO);
@@ -617,7 +617,7 @@ struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, stru
 	return (info);
 }
 
-int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
@@ -687,7 +687,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -912,7 +912,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtspatial_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -933,18 +933,18 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtspatial_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtspatial_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtspatial_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtspatial_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtspatial_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtspatial main code ----------------------------*/
 
@@ -1500,13 +1500,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
 					for (col = 0; col < S1->n_columns; col++) S2->coord[col] = S1->coord[col];
-					S1->n_rows = 0;	/* This means it will be skipped by GMT_is_duplicate */
+					S1->n_rows = 0;	/* This means it will be skipped by is_duplicate */
 				}
 				else
 					S2 = S1;
 				poly_S2 = (GMT_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) ? 1 : 0;
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) GMT_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
-				n_dup = GMT_is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
+				n_dup = is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
 				if (same_feature) {
 					S1->n_rows = S2->n_rows;	/* Reset the count */
 					if (Ctrl->D.I.table < tbl || (Ctrl->D.I.table == tbl && Ctrl->D.I.segment < seg)) n_dup = 0;	/* To avoid reporting the same pair twice */

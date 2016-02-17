@@ -44,7 +44,7 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 #define BEST_FOR_FFT	2
 #define ACTUAL_BOUNDS	3
 
-struct MINMAX_CTRL {	/* All control options for this program (except common args) */
+GMT_LOCAL struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A */
 		bool active;
@@ -82,7 +82,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	} T;
 };
 
-int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
+GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
 	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
 
 	int k;
@@ -92,7 +92,7 @@ int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col
 	return (k);	/* This is the position in text that we should start reporting from */
 }
 
-void *New_gmtinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MINMAX_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct MINMAX_CTRL);
@@ -102,12 +102,12 @@ void *New_gmtinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	return (C);
 }
 
-void Free_gmtinfo_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free (GMT, C);
 }
 
-int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
@@ -146,7 +146,7 @@ int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtinfo and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -272,14 +272,15 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option: Must specify a positive increment\n");
 	for (k = 0; Ctrl->I.active && k < Ctrl->I.ncol; k++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->I.mode != ACTUAL_BOUNDS && Ctrl->I.inc[k] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.mode != ACTUAL_BOUNDS && Ctrl->I.inc[k] <= 0.0,
+		                                 "Syntax error -I option: Must specify positive increment(s)\n");
 	}
 	n_errors += GMT_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtinfo_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
@@ -302,18 +303,18 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtinfo_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options && options->option == GMT_OPT_USAGE) bailout (GMT_gmtinfo_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options && options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtinfo_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (options && options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options && options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtinfo_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtinfo main code ----------------------------*/
 
@@ -329,12 +330,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n",
+			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
-			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n",
+			            GMT->current.setting.format_geo_out);
 		}
 	}
 
@@ -388,7 +391,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->I.active) {	/* Must report multiples of dx/dy etc */
 				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
-					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n",
+					            phase[GMT_X], phase[GMT_Y]);
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
 					buffer[0] = '.';	buffer[1] = 0;
@@ -418,14 +422,14 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
 						if (south < -90.0) {
 							south = -90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90. Reset to -90.\n");
 						}
 						if (north > 90.0) {
 							north = 90.0;
-							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90.  Reset to +90.\n");
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused north to become > +90. Reset to +90.\n");
 						}
 						if (fabs (east - west) > 360.0) {
-							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360.  Reset to a range of 360.\n");
+							GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
 							west = (west < 0.0) ? -180.0 : 0.0;
 							east = (west < 0.0) ? +180.0 : 360.0;
 							full_range = true;

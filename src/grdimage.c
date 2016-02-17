@@ -36,7 +36,7 @@
 
 /* Control structure for grdimage */
 
-GMT_LOCAL struct GRDIMAGE_CTRL {
+struct GRDIMAGE_CTRL {
 	struct GRDIMG_In {
 		bool active;
 		bool do_rgb;

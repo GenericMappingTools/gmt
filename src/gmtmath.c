@@ -82,7 +82,7 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 
 #define DOUBLE_BIT_MASK (~(1023ULL << 54ULL))	/* This will be 00000000 00111111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
 
-struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
+GMT_LOCAL struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct Out {	/* = <filename> */
 		bool active;
@@ -154,7 +154,7 @@ struct GMTMATH_STORED {
 	struct GMTMATH_STACK stored;
 };
 
-void *New_gmtmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTMATH_CTRL *C = GMT_memory (GMT, NULL, 1, struct GMTMATH_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
@@ -166,7 +166,7 @@ void *New_gmtmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	return (C);
 }
 
-void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Out.file);
 	gmt_free (C->A.file);
@@ -175,7 +175,7 @@ void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
+GMT_LOCAL bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
 	uint64_t i, start, stop;
 	unsigned int pos;
 	char p[GMT_BUFSIZ];
@@ -209,14 +209,14 @@ bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
 	return (!skip[t_col]);	/* Returns true if we are changing the time column */
 }
 
-int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_stored, char *label) {
+GMT_LOCAL int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_stored, char *label) {
 	/* Linear search to find the named storage item */
 	int k = 0;
 	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
 	return (k == n_stored ? -1 : k);
 }
 
-void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
+GMT_LOCAL void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
 	/* Copies data from one column to another */
 	uint64_t seg;
 	for (seg = 0; seg < from->n_segments; seg++) {
@@ -226,7 +226,7 @@ void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE 
 
 /* ---------------------- start convenience functions --------------------- */
 
-int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file, bool svd, double eigen_min, struct GMT_OPTION *options, struct GMT_DATASET *A) {
+GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file, bool svd, double eigen_min, struct GMT_OPTION *options, struct GMT_DATASET *A) {
 
 	/* Consider the current table the augmented matrix [A | b], making up the linear system Ax = b.
 	 * We will set up the normal equations, solve for x, and output the solution before quitting.
@@ -432,15 +432,15 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	return (EXIT_SUCCESS);
 }
 
-int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A) {
+GMT_LOCAL int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A) {
 	return (solve_LS_system (GMT, info, S, n_col, skip, file, false, eigen, options, A));
 }
 
-int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A) {
+GMT_LOCAL int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A) {
 	return (solve_LS_system (GMT, info, S, n_col, skip, file, true, eigen, options, A));
 }
 
-void load_const_column (struct GMT_DATASET *to, uint64_t to_col, double factor) {
+GMT_LOCAL void load_const_column (struct GMT_DATASET *to, uint64_t to_col, double factor) {
 	/* Sets all rows in a column to a constant factor */
 	uint64_t row, seg;
 	for (seg = 0; seg < to->n_segments; seg++) {
@@ -448,7 +448,7 @@ void load_const_column (struct GMT_DATASET *to, uint64_t to_col, double factor) 
 	}
 }
 
-bool same_size (struct GMT_DATASET *A, struct GMT_DATASET *B) {
+GMT_LOCAL bool same_size (struct GMT_DATASET *A, struct GMT_DATASET *B) {
 	/* Are the two dataset the same size */
 	uint64_t seg;
 	if (!(A->table[0]->n_segments == B->table[0]->n_segments && A->table[0]->n_columns == B->table[0]->n_columns)) return (false);
@@ -456,7 +456,7 @@ bool same_size (struct GMT_DATASET *A, struct GMT_DATASET *B) {
 	return (true);
 }
 
-bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B) {
+GMT_LOCAL bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B) {
 	/* Are the two dataset the same domain */
 	uint64_t seg;
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) {
@@ -467,7 +467,7 @@ bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B
 	return (true);
 }
 
-int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A[-]<ftable>[+s]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
@@ -529,7 +529,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtmath and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -663,7 +663,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev) {	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
+GMT_LOCAL unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev) {	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
 	unsigned int prev;
 	if (last == 0) {	/* User error in requesting more items that presently on the stack */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Fatal error: Not enough items on the stack\n");
@@ -680,9 +680,8 @@ unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GM
  * -----------------------------------------------------------------*/
 /* Note: The OPERATOR: **** lines are used to extract syntax for documentation */
 
-int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ABS 1 1 abs (A).  */
-{
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -693,9 +692,8 @@ int table_ABS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
 /*OPERATOR: ACOS 1 1 acos (A).  */
-{
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -706,7 +704,7 @@ int table_ACOS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACOSH 1 1 acosh (A).  */
 {
 	uint64_t s, row;
@@ -719,7 +717,7 @@ int table_ACOSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACOT 1 1 acot (A).  */
 {
 	uint64_t s, row;
@@ -732,7 +730,7 @@ int table_ACOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACOTH 1 1 acoth (A).  */
 {
 	uint64_t s, row;
@@ -745,7 +743,7 @@ int table_ACOTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACSC 1 1 acsc (A).  */
 {
 	uint64_t s, row;
@@ -758,7 +756,7 @@ int table_ACSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ACSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ACSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ACSCH 1 1 acsch (A).  */
 {
 	uint64_t s, row;
@@ -771,7 +769,7 @@ int table_ACSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ADD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ADD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ADD 2 1 A + B.  */
 {
 	uint64_t s, row;
@@ -790,7 +788,7 @@ int table_ADD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_AND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_AND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: AND 2 1 B if A == NaN, else A.  */
 {
 	uint64_t s, row;
@@ -809,7 +807,7 @@ int table_AND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ASEC 1 1 asec (A).  */
 {
 	uint64_t s, row;
@@ -822,7 +820,7 @@ int table_ASEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ASECH 1 1 asech (A).  */
 {
 	uint64_t s, row;
@@ -835,7 +833,7 @@ int table_ASECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ASIN 1 1 asin (A).  */
 {
 	uint64_t s, row;
@@ -848,7 +846,7 @@ int table_ASIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ASINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ASINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ASINH 1 1 asinh (A).  */
 {
 	uint64_t s, row;
@@ -861,7 +859,7 @@ int table_ASINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ATAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ATAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ATAN 1 1 atan (A).  */
 {
 	uint64_t s, row;
@@ -874,7 +872,7 @@ int table_ATAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ATAN2 2 1 atan2 (A, B).  */
 {
 	uint64_t s, row;
@@ -894,7 +892,7 @@ int table_ATAN2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ATANH 1 1 atanh (A).  */
 {
 	uint64_t s, row;
@@ -907,7 +905,7 @@ int table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BCDF 3 1 Binomial cumulative distribution function for p = A, n = B and x = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -945,7 +943,7 @@ int table_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BEI 1 1 bei (A).  */
 {
 	uint64_t s, row;
@@ -957,7 +955,7 @@ int table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BER 1 1 ber (A).  */
 {
 	uint64_t s, row;
@@ -969,7 +967,7 @@ int table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BPDF 3 1 Binomial probability density function for p = A, n = B and x = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -1007,7 +1005,7 @@ int table_BPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
 	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
@@ -1036,7 +1034,7 @@ int table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITLEFT 2 1 A << B (bitwise left-shift operator).  */
 {
 	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
@@ -1075,7 +1073,7 @@ int table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	return 0;
 }
 
-int table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITNOT 1 1 ~A (bitwise NOT operator, i.e., return two's complement).  */
 {
 	uint64_t s, row, a = 0, n_warn = 0, result, result_trunc;
@@ -1099,7 +1097,7 @@ int table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITOR 2 1 A | B (bitwise OR operator).  */
 {
 	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
@@ -1128,7 +1126,7 @@ int table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITRIGHT 2 1 A >> B (bitwise right-shift operator).  */
 {
 	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
@@ -1167,7 +1165,7 @@ int table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 	return 0;
 }
 
-int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
 {
 	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
@@ -1207,7 +1205,7 @@ int table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	return 0;
 }
 
-int table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITXOR 2 1 A ^ B (bitwise XOR operator).  */
 {
 	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
@@ -1236,7 +1234,7 @@ int table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CEIL 1 1 ceil (A) (smallest integer >= A).  */
 {
 	uint64_t s, row;
@@ -1249,7 +1247,7 @@ int table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_CHI2CRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CHI2CRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CHI2CRIT 2 1 Chi-squared distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t s, row;
@@ -1269,7 +1267,7 @@ int table_CHI2CRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 	return 0;
 }
 
-int table_CHI2CDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CHI2CDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CHI2CDF 2 1 Chi-squared cumulative distribution function for chi2 = A and nu = B.  */
 {
 	uint64_t s, row;
@@ -1290,7 +1288,7 @@ int table_CHI2CDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	return 0;
 }
 
-int table_CHI2PDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CHI2PDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CHI2PDF 2 1 Chi-squared probability density function for chi = A and nu = B.  */
 {
 	uint64_t s, row, nu;
@@ -1310,7 +1308,7 @@ int table_CHI2PDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	return 0;
 }
 
-int table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COL 1 1 Places column A on the stack.  */
 {
 	uint64_t s, row;
@@ -1330,7 +1328,7 @@ int table_COL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COMB 2 1 Combinations n_C_r, with n = A and r = B.  */
 {
 	uint64_t s, row;
@@ -1361,7 +1359,7 @@ int table_COMB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CORRCOEFF 2 1 Correlation coefficient r(A, B).  */
 {
 	uint64_t s, row, i;
@@ -1410,7 +1408,7 @@ int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 }
 
 
-int table_COS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COS 1 1 cos (A) (A in radians).  */
 {
 	uint64_t s, row;
@@ -1425,7 +1423,7 @@ int table_COS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_COSD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COSD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COSD 1 1 cos (A) (A in degrees).  */
 {
 	uint64_t s, row;
@@ -1438,7 +1436,7 @@ int table_COSD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_COSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COSH 1 1 cosh (A).  */
 {
 	uint64_t s, row;
@@ -1451,7 +1449,7 @@ int table_COSH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_COT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COT 1 1 cot (A) (A in radians).  */
 {
 	uint64_t s, row;
@@ -1467,7 +1465,7 @@ int table_COT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 }
 
 
-int table_COTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COTD 1 1 cot (A) (A in degrees).  */
 {
 	uint64_t s, row;
@@ -1482,7 +1480,7 @@ int table_COTD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_COTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_COTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: COTH 1 1 coth (A).  */
 {
 	uint64_t s, row;
@@ -1495,7 +1493,7 @@ int table_COTH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_CSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CSC 1 1 csc (A) (A in radians).  */
 {
 	uint64_t s, row;
@@ -1510,7 +1508,7 @@ int table_CSC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CSCD 1 1 csc (A) (A in degrees).  */
 {
 	uint64_t s, row;
@@ -1525,7 +1523,7 @@ int table_CSCD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_CSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_CSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: CSCH 1 1 csch (A).  */
 {
 	uint64_t s, row;
@@ -1538,7 +1536,7 @@ int table_CSCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PCDF 2 1 Poisson cumulative distribution function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
@@ -1557,7 +1555,7 @@ int table_PCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DDT 1 1 d(A)/dt Central 1st derivative.  */
 {
 	uint64_t s, row;
@@ -1587,7 +1585,7 @@ int table_DDT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: D2DT2 1 1 d^2(A)/dt^2 2nd derivative.  */
 {
 	uint64_t s, row;
@@ -1619,7 +1617,7 @@ int table_D2DT2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: D2R 1 1 Converts Degrees to Radians.  */
 {
 	uint64_t s, row;
@@ -1632,13 +1630,13 @@ int table_D2R (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_DENAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_DENAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DENAN 2 1 Replace NaNs in A with values from B.  */
 {	/* Just a more straightforward application of AND */
 	return (table_AND (GMT, info, S, last, col));
 }
 
-int table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DILOG 1 1 dilog (A).  */
 {
 	uint64_t s, row;
@@ -1650,7 +1648,7 @@ int table_DILOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DIFF 1 1 Difference between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., 0). */
 {
 	uint64_t s, row;
@@ -1667,13 +1665,13 @@ int table_DIFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DIV 2 1 A / B.  */
 {
 	uint64_t s, row;
 	unsigned int prev;
 	double a, b;
-	int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col);
+	GMT_LOCAL int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col);
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
@@ -1697,7 +1695,7 @@ int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: DUP 1 2 Places duplicate of A on the stack.  */
 {
 	uint64_t s, row;
@@ -1718,7 +1716,7 @@ int table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ECDF 2 1 Exponential cumulative distribution function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
@@ -1736,7 +1734,7 @@ int table_ECDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ECRIT 2 1 Exponential distribution critical value for alpha = A and lambda = B.  */
 {
 	uint64_t s, row;
@@ -1754,7 +1752,7 @@ int table_ECRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_EPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_EPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: EPDF 2 1 Exponential probability density function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
@@ -1772,7 +1770,7 @@ int table_EPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ERF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ERF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ERF 1 1 Error function erf (A).  */
 {
 	uint64_t s, row;
@@ -1785,7 +1783,7 @@ int table_ERF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_ERFC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ERFC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ERFC 1 1 Complementary Error function erfc (A).  */
 {
 	uint64_t s, row;
@@ -1798,7 +1796,7 @@ int table_ERFC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ERFINV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ERFINV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ERFINV 1 1 Inverse error function of A.  */
 {
 	uint64_t s, row;
@@ -1810,7 +1808,7 @@ int table_ERFINV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_EQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_EQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: EQ 2 1 1 if A == B, else 0.  */
 {
 	uint64_t s, row;
@@ -1829,7 +1827,7 @@ int table_EQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_EXCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_EXCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: EXCH 2 2 Exchanges A and B on the stack.  */
 {
 	unsigned int prev;
@@ -1845,7 +1843,7 @@ int table_EXCH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_EXP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_EXP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: EXP 1 1 exp (A).  */
 {
 	uint64_t s, row;
@@ -1858,7 +1856,7 @@ int table_EXP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_FACT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FACT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FACT 1 1 A! (A factorial).  */
 {
 	uint64_t s, row;
@@ -1870,7 +1868,7 @@ int table_FACT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FCRIT 3 1 F distribution critical value for alpha = A, nu1 = B, and nu2 = C.  */
 {
 	uint64_t s, row;
@@ -1891,7 +1889,7 @@ int table_FCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FCDF 3 1 F cumulative distribution function for F = A, nu1 = B, and nu2 = C.  */
 {
 	uint64_t s, row, nu1, nu2;
@@ -1910,7 +1908,7 @@ int table_FCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_FLIPUD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FLIPUD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FLIPUD 1 1 Reverse order of each column.  */
 {
 	uint64_t s, row, k;
@@ -1922,7 +1920,7 @@ int table_FLIPUD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_FLOOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FLOOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FLOOR 1 1 floor (A) (greatest integer <= A).  */
 {
 	uint64_t s, row;
@@ -1935,7 +1933,7 @@ int table_FLOOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FMOD 2 1 A % B (remainder after truncated division).  */
 {
 	uint64_t s, row;
@@ -1954,7 +1952,7 @@ int table_FMOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: FPDF 3 1 F probability density distribution for F = A, nu1 = B and nu2 = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -1991,7 +1989,7 @@ int table_FPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_GE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_GE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: GE 2 1 1 if A >= B, else 0.  */
 {
 	uint64_t s, row;
@@ -2010,7 +2008,7 @@ int table_GE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: GT 2 1 1 if A > B, else 0.  */
 {
 	uint64_t s, row;
@@ -2029,7 +2027,7 @@ int table_GT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_HYPOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_HYPOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: HYPOT 2 1 hypot (A, B) = sqrt (A*A + B*B).  */
 {
 	uint64_t s, row;
@@ -2049,7 +2047,7 @@ int table_HYPOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_I0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_I0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: I0 1 1 Modified Bessel function of A (1st kind, order 0).  */
 {
 	uint64_t s, row;
@@ -2061,7 +2059,7 @@ int table_I0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_I1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_I1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: I1 1 1 Modified Bessel function of A (1st kind, order 1).  */
 {
 	uint64_t s, row;
@@ -2073,7 +2071,7 @@ int table_I1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: IFELSE 3 1 B if A != 0, else C.  */
 {
 	uint64_t s, row;
@@ -2100,7 +2098,7 @@ int table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: IN 2 1 Modified Bessel function of A (1st kind, order B).  */
 {
 	uint64_t s, row;
@@ -2131,7 +2129,7 @@ int table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_INRANGE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_INRANGE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: INRANGE 3 1 1 if B <= A <= C, else 0.  */
 {
 	uint64_t s, row;
@@ -2164,7 +2162,7 @@ int table_INRANGE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	return 0;
 }
 
-int table_INT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_INT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: INT 1 1 Numerically integrate A.  */
 {
 	uint64_t s, row, k;
@@ -2203,7 +2201,7 @@ int table_INT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_INV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_INV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: INV 1 1 1 / A.  */
 {
 	uint64_t s, row;
@@ -2216,7 +2214,7 @@ int table_INV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_ISFINITE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ISFINITE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ISFINITE 1 1 1 if A is finite, else 0.  */
 {
 	uint64_t s, row;
@@ -2229,7 +2227,7 @@ int table_ISFINITE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 	return 0;
 }
 
-int table_ISNAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ISNAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ISNAN 1 1 1 if A == NaN, else 0.  */
 {
 	uint64_t s, row;
@@ -2242,7 +2240,7 @@ int table_ISNAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_J0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_J0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: J0 1 1 Bessel function of A (1st kind, order 0).  */
 {
 	uint64_t s, row;
@@ -2255,7 +2253,7 @@ int table_J0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_J1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_J1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: J1 1 1 Bessel function of A (1st kind, order 1).  */
 {
 	uint64_t s, row;
@@ -2268,7 +2266,7 @@ int table_J1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: JN 2 1 Bessel function of A (1st kind, order B).  */
 {
 	uint64_t s, row;
@@ -2299,7 +2297,7 @@ int table_JN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_K0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_K0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: K0 1 1 Modified Kelvin function of A (2nd kind, order 0).  */
 {
 	uint64_t s, row;
@@ -2311,7 +2309,7 @@ int table_K0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_K1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_K1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: K1 1 1 Modified Bessel function of A (2nd kind, order 1).  */
 {
 	uint64_t s, row;
@@ -2323,7 +2321,7 @@ int table_K1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: KN 2 1 Modified Bessel function of A (2nd kind, order B).  */
 {
 	uint64_t s, row;
@@ -2354,7 +2352,7 @@ int table_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: KEI 1 1 kei (A).  */
 {
 	uint64_t s, row;
@@ -2366,7 +2364,7 @@ int table_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_KER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_KER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: KER 1 1 ker (A).  */
 {
 	uint64_t s, row;
@@ -2378,7 +2376,7 @@ int table_KER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: KURT 1 1 Kurtosis of A.  */
 {
 	uint64_t s, row, n = 0;
@@ -2435,7 +2433,7 @@ int table_KURT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 
 /* Laplace stuff based on https://en.wikipedia.org/wiki/Laplace_distribution */
 
-int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LCDF 1 1 Laplace cumulative distribution function for z = A.  */
 {
 	uint64_t s, row;
@@ -2448,7 +2446,7 @@ int table_LCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LCRIT 1 1 Laplace distribution critical value for alpha = A.  */
 {
 	uint64_t s, row;
@@ -2471,7 +2469,7 @@ int table_LCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_LE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LE 2 1 1 if A <= B, else 0.  */
 {
 	uint64_t s, row;
@@ -2490,7 +2488,7 @@ int table_LE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LMSSCL 1 1 LMS scale estimate (LMS STD) of A.  */
 {
 	uint64_t s, row, k;
@@ -2540,7 +2538,7 @@ int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LOG 1 1 log (A) (natural log).  */
 {
 	uint64_t s, row;
@@ -2554,7 +2552,7 @@ int table_LOG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_LOG10 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LOG10 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LOG10 1 1 log10 (A) (base 10).  */
 {
 	uint64_t s, row;
@@ -2568,7 +2566,7 @@ int table_LOG10 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_LOG1P (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LOG1P (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LOG1P 1 1 log (1+A) (accurate for small A).  */
 {
 	uint64_t s, row;
@@ -2582,7 +2580,7 @@ int table_LOG1P (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_LOG2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LOG2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LOG2 1 1 log2 (A) (base 2).  */
 {
 	uint64_t s, row;
@@ -2596,7 +2594,7 @@ int table_LOG2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LOWER 1 1 The lowest (minimum) value of A.  */
 {
 	uint64_t s, row;
@@ -2622,7 +2620,7 @@ int table_LOWER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LPDF 1 1 Laplace probability density function for z = A.  */
 {
 	uint64_t s, row;
@@ -2635,7 +2633,7 @@ int table_LPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_LRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LRAND 2 1 Laplace random noise with mean A and std. deviation B.  */
 {
 	uint64_t s, row;
@@ -2655,7 +2653,7 @@ int table_LRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LSQFIT 1 0 Current table is [A | b]; return LS solution to A * x = b via Cholesky decomposition.  */
 {
 	GMT_UNUSED(GMT); GMT_UNUSED(info); GMT_UNUSED(S); GMT_UNUSED(last); GMT_UNUSED(col);
@@ -2665,7 +2663,7 @@ int table_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_LT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_LT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: LT 2 1 1 if A < B, else 0.  */
 {
 	uint64_t s, row;
@@ -2684,7 +2682,7 @@ int table_LT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MAD 1 1 Median Absolute Deviation (L1 STD) of A.  */
 {
 	uint64_t s, row, k;
@@ -2729,7 +2727,7 @@ int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_MAX (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MAX (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MAX 2 1 Maximum of A and B.  */
 {
 	uint64_t s, row;
@@ -2747,7 +2745,7 @@ int table_MAX (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_MEAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MEAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MEAN 1 1 Mean value of A.  */
 {
 	uint64_t s, row, n_a = 0;
@@ -2777,7 +2775,7 @@ int table_MEAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MEDIAN 1 1 Median value of A.  */
 {
 	uint64_t s, row, k;
@@ -2820,7 +2818,7 @@ int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_MIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MIN 2 1 Minimum of A and B.  */
 {
 	uint64_t s, row;
@@ -2838,7 +2836,7 @@ int table_MIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_MOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MOD 2 1 A mod B (remainder after floored division).  */
 {
 	uint64_t s, row;
@@ -2857,7 +2855,7 @@ int table_MOD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MODE 1 1 Mode value (Least Median of Squares) of A.  */
 {
 	uint64_t s, row, k;
@@ -2902,7 +2900,7 @@ int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: MUL 2 1 A * B.  */
 {
 	uint64_t s, row;
@@ -2922,7 +2920,7 @@ int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_NAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_NAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: NAN 2 1 NaN if A == B, else A.  */
 {
 	uint64_t s, row;
@@ -2942,7 +2940,7 @@ int table_NAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_NEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_NEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: NEG 1 1 -A.  */
 {
 	uint64_t s, row;
@@ -2955,7 +2953,7 @@ int table_NEG (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: NEQ 2 1 1 if A != B, else 0.  */
 {
 	uint64_t s, row;
@@ -2974,7 +2972,7 @@ int table_NEQ (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: NORM 1 1 Normalize (A) so max(A)-min(A) = 1.  */
 {
 	uint64_t s, row, n;
@@ -2999,7 +2997,7 @@ int table_NORM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: NOT 1 1 NaN if A == NaN, 1 if A == 0, else 0.  */
 {
 	uint64_t s, row;
@@ -3012,7 +3010,7 @@ int table_NOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_NRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_NRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: NRAND 2 1 Normal, random values with mean A and std. deviation B.  */
 {
 	uint64_t s, row;
@@ -3032,7 +3030,7 @@ int table_NRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_OR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_OR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: OR 2 1 NaN if B == NaN, else A.  */
 {
 	uint64_t s, row;
@@ -3050,7 +3048,7 @@ int table_OR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_PERM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PERM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PERM 2 1 Permutations n_P_r, with n = A and r = B.  */
 {
 	uint64_t s, row;
@@ -3082,7 +3080,7 @@ int table_PERM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_PLM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PLM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PLM 3 1 Associated Legendre polynomial P(A) degree B order C.  */
 {
 	uint64_t s, row;
@@ -3107,7 +3105,7 @@ int table_PLM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_PLMg (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PLMg (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PLMg 3 1 Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention).  */
 {
 	uint64_t s, row;
@@ -3131,7 +3129,7 @@ int table_PLMg (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_POP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_POP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: POP 1 0 Delete top element from the stack.  */
 {
 	GMT_UNUSED(GMT); GMT_UNUSED(info); GMT_UNUSED(S); GMT_UNUSED(last); GMT_UNUSED(col);
@@ -3139,7 +3137,7 @@ int table_POP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: POW 2 1 A ^ B.  */
 {
 	uint64_t s, row;
@@ -3159,7 +3157,7 @@ int table_POW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_PPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PPDF 2 1 Poisson probability density function for x = A and lambda = B.  */
 {
 	uint64_t s, row;
@@ -3177,7 +3175,7 @@ int table_PPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PQUANT 2 1 The B'th Quantile (0-100%) of A.  */
 {
 	uint64_t s, row, k;
@@ -3224,7 +3222,7 @@ int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PSI 1 1 Psi (or Digamma) of A.  */
 {
 	uint64_t s, row;
@@ -3246,7 +3244,7 @@ int table_PSI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_PVQV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col, unsigned int kind)
+GMT_LOCAL int table_PVQV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col, unsigned int kind)
 {	/* kind: 0 = Pv, 1 = Qv */
 	uint64_t s, row;
 	unsigned int n, prev, first, calc;
@@ -3286,21 +3284,21 @@ int table_PVQV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_PV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_PV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: PV 3 1 Legendre function Pv(A) of degree v = real(B) + imag(C).  */
 {
 	table_PVQV (GMT, info, S, last, col, 0);
 	return 0;
 }
 
-int table_QV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_QV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: QV 3 1 Legendre function Qv(A) of degree v = real(B) + imag(C).  */
 {
 	table_PVQV (GMT, info, S, last, col, 1);
 	return 0;
 }
 
-int table_R2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_R2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: R2 2 1 R2 = A^2 + B^2.  */
 {
 	uint64_t s, row;
@@ -3322,7 +3320,7 @@ int table_R2 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_R2D (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_R2D (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: R2D 1 1 Convert Radians to Degrees.  */
 {
 	uint64_t s, row;
@@ -3335,7 +3333,7 @@ int table_R2D (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RAND 2 1 Uniform random values between A and B.  */
 {
 	uint64_t s, row;
@@ -3355,7 +3353,7 @@ int table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RCDF 1 1 Rayleigh cumulative distribution function for z = A.  */
 {
 	uint64_t s, row;
@@ -3370,7 +3368,7 @@ int table_RCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RCRIT 1 1 Rayleigh distribution critical value for alpha = A.  */
 {
 	uint64_t s, row;
@@ -3385,7 +3383,7 @@ int table_RCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RPDF 1 1 Rayleigh probability density function for z = A.  */
 {
 	uint64_t s, row;
@@ -3400,7 +3398,7 @@ int table_RPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
 	uint64_t s, row;
@@ -3421,7 +3419,7 @@ void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK *Sfrom)
 	Sto->factor     = Sfrom->factor;
 }
 
-int table_ROLL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ROLL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ROLL 2 0 Cyclicly shifts the top A stack items by an amount B.  */
 {
 	unsigned int prev, top, bottom, k, kk, n_items;
@@ -3459,7 +3457,7 @@ int table_ROLL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ROTT 2 1 Rotate A by the (constant) shift B in the t-direction.  */
 {
 	uint64_t s, row, j, k;
@@ -3503,7 +3501,7 @@ int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SEC 1 1 sec (A) (A in radians).  */
 {
 	uint64_t s, row;
@@ -3516,7 +3514,7 @@ int table_SEC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_SECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SECD 1 1 sec (A) (A in degrees).  */
 {
 	uint64_t s, row;
@@ -3529,7 +3527,7 @@ int table_SECD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SECH 1 1 sech (A).  */
 {
 	uint64_t s, row;
@@ -3542,7 +3540,7 @@ int table_SECH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SIGN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SIGN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SIGN 1 1 sign (+1 or -1) of A.  */
 {
 	uint64_t s, row;
@@ -3555,7 +3553,7 @@ int table_SIGN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SIN 1 1 sin (A) (A in radians).  */
 {
 	uint64_t s, row;
@@ -3568,7 +3566,7 @@ int table_SIN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_SINC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SINC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SINC 1 1 sinc (A) (sin (pi*A)/(pi*A)).  */
 {
 	uint64_t s, row;
@@ -3580,7 +3578,7 @@ int table_SINC (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SIND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SIND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SIND 1 1 sin (A) (A in degrees).  */
 {
 	uint64_t s, row;
@@ -3593,7 +3591,7 @@ int table_SIND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SINH 1 1 sinh (A).  */
 {
 	uint64_t s, row;
@@ -3606,7 +3604,7 @@ int table_SINH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SKEW 1 1 Skewness of A.  */
 {
 	uint64_t s, row, n = 0;
@@ -3659,7 +3657,7 @@ int table_SKEW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_SQR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SQR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SQR 1 1 A^2.  */
 {
 	uint64_t s, row;
@@ -3672,7 +3670,7 @@ int table_SQR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_SQRT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SQRT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SQRT 1 1 sqrt (A).  */
 {
 	uint64_t s, row;
@@ -3685,7 +3683,7 @@ int table_SQRT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: STD 1 1 Standard deviation of A.  */
 {
 	uint64_t s, row, n = 0;
@@ -3718,7 +3716,7 @@ int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_STEP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_STEP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: STEP 1 1 Heaviside step function H(A).  */
 {
 	uint64_t s, row;
@@ -3736,7 +3734,7 @@ int table_STEP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_STEPT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_STEPT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: STEPT 1 1 Heaviside step function H(t-A).  */
 {
 	uint64_t s, row;
@@ -3754,7 +3752,7 @@ int table_STEPT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_SUB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SUB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SUB 2 1 A - B.  */
 {
 	uint64_t s, row;
@@ -3774,7 +3772,7 @@ int table_SUB (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_SUM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SUM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SUM 1 1 Cumulative sum of A.  */
 {
 	uint64_t s, row;
@@ -3794,7 +3792,7 @@ int table_SUM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: SVDFIT 1 0 Current table is [A | b]; return LS solution to A * x = B via SVD decomposition (see -E).  */
 {
 	GMT_UNUSED(GMT); GMT_UNUSED(info); GMT_UNUSED(S); GMT_UNUSED(last); GMT_UNUSED(col);
@@ -3804,7 +3802,7 @@ int table_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return 0;
 }
 
-int table_TAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TAN 1 1 tan (A) (A in radians).  */
 {
 	uint64_t s, row;
@@ -3817,7 +3815,7 @@ int table_TAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_TAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TAND 1 1 tan (A) (A in degrees).  */
 {
 	uint64_t s, row;
@@ -3830,7 +3828,7 @@ int table_TAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_TANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TANH 1 1 tanh (A).  */
 {
 	uint64_t s, row;
@@ -3843,7 +3841,7 @@ int table_TANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TAPER 1 1 Unit weights cosine-tapered to zero within A of end margins.  */
 {
 	/* If no time, then A is interpreted to mean number of nodes instead */
@@ -3881,7 +3879,7 @@ int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_TCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TCDF 2 1 Student's t cumulative distribution function for t = A and nu = B.  */
 {
 	uint64_t s, row, nu;
@@ -3899,7 +3897,7 @@ int table_TCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TN 2 1 Chebyshev polynomial Tn(-1<A<+1) of degree B.  */
 {
 	uint64_t s, row;
@@ -3918,7 +3916,7 @@ int table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TPDF 2 1 Student's t probability density function for t = A and nu = B.  */
 {
 	uint64_t s, row, nu;
@@ -3936,7 +3934,7 @@ int table_TPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TCRIT 2 1 Student's t distribution critical value for alpha = A and nu = B.  */
 {
 	uint64_t s, row;
@@ -3956,7 +3954,7 @@ int table_TCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: UPPER 1 1 The highest (maximum) value of A.  */
 {
 	uint64_t s, row;
@@ -3982,7 +3980,7 @@ int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
 	uint64_t s, row;
@@ -4001,7 +3999,7 @@ int table_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: WCRIT 3 1 Weibull distribution critical value for alpha = A, scale = B, and shape = C.  */
 {
 	uint64_t s, row;
@@ -4020,7 +4018,7 @@ int table_WCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: WPDF 3 1 Weibull probability density function for x = A, scale = B and shape = C.  */
 {
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -4057,7 +4055,7 @@ int table_WPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_XOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_XOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: XOR 2 1 B if A == NaN, else A.  */
 {
 	uint64_t s, row;
@@ -4078,7 +4076,7 @@ int table_XOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	return 0;
 }
 
-int table_Y0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_Y0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: Y0 1 1 Bessel function of A (2nd kind, order 0).  */
 {
 	uint64_t s, row;
@@ -4091,7 +4089,7 @@ int table_Y0 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_Y1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_Y1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: Y1 1 1 Bessel function of A (2nd kind, order 1).  */
 {
 	uint64_t s, row;
@@ -4104,7 +4102,7 @@ int table_Y1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: YN 2 1 Bessel function of A (2nd kind, order B).  */
 {
 	uint64_t s, row;
@@ -4134,7 +4132,7 @@ int table_YN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_ST
 	return 0;
 }
 
-int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ZCRIT 1 1 Normal distribution critical value for alpha = A.  */
 {
 	uint64_t s, row;
@@ -4146,7 +4144,7 @@ int table_ZCRIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	return 0;
 }
 
-int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ZCDF 1 1 Normal cumulative distribution function for z = A.  */
 {
 	uint64_t s, row;
@@ -4158,7 +4156,7 @@ int table_ZCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ZPDF 1 1 Normal probability density function for z = A.  */
 {
 	uint64_t s, row;
@@ -4171,7 +4169,7 @@ int table_ZPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	return 0;
 }
 
-int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ROOTS 2 1 Treats col A as f(t) = 0 and returns its roots.  */
 {
 	uint64_t seg, row;
@@ -4252,8 +4250,8 @@ void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
 
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, &T_in); GMT_Destroy_Data (API, &Template); GMT_Destroy_Data (API, &Time); if (read_stdin) GMT_Destroy_Data (API, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack(API,stack); Free_Store(API,recall); Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); Free_Stack(API,stack); Free_Store(API,recall); Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
 
 int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	unsigned int expect;
@@ -4384,19 +4382,19 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtmath_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtmath_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtmath_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (EXIT_FAILURE);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, list)) Return1 (API->error);
-	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtmath_parse (GMT, Ctrl, list)) != 0) Return1 (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, list)) != 0) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 

@@ -42,7 +42,7 @@ enum Opt_I_modes {
 	GRDINFO_GIVE_REG_ROUNDED,
 	GRDINFO_GIVE_BOUNDBOX};
 
-GMT_LOCAL struct GRDINFO_CTRL {
+struct GRDINFO_CTRL {
 	struct GRDINFO_C {	/* -C */
 		bool active;
 	} C;

@@ -38,7 +38,7 @@
 
 /* Control structure for gmtconnect */
 
-struct GMTCONNECT_CTRL {
+GMT_LOCAL struct GMTCONNECT_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;
@@ -94,7 +94,7 @@ struct LINK {	/* Information on linking segments together */
 	struct BUDDY buddy[2];
 };
 
-void *New_gmtconnect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTCONNECT_CTRL *C = GMT_memory (GMT, NULL, 1, struct GMTCONNECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
@@ -104,7 +104,7 @@ void *New_gmtconnect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	return (C);
 }
 
-void Free_gmtconnect_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Out.file);
 	gmt_free (C->C.file);
@@ -114,7 +114,7 @@ void Free_gmtconnect_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconnect [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>]\n");
@@ -146,7 +146,7 @@ static int GMT_gmtconnect_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtconnect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -224,7 +224,7 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-static int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist) {
+GMT_LOCAL int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist) {
 	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
 	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
@@ -234,7 +234,7 @@ static int found_a_near_segment (struct LINK *S, uint64_t id, int order, double 
 	return (false);							/* Failed all tests */
 }
 
-static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end) {
+GMT_LOCAL uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end) {
 	uint64_t row_in, row_out, col;
 	int64_t inc;
 	bool done = false;
@@ -253,7 +253,7 @@ static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASE
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtconnect_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -286,18 +286,18 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtconnect_usage (API, GMT_MODULE_PURPOSE));		/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));		/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtconnect_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtconnect_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtconnect_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
-	if ((error = GMT_gmtconnect_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtconnect main code ----------------------------*/
 

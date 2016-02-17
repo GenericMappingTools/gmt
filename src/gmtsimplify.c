@@ -49,7 +49,7 @@
 
 /* Control structure for gmtsimplify */
 
-struct GMTSIMPLIFY_CTRL {
+GMT_LOCAL struct GMTSIMPLIFY_CTRL {
 	struct Out {	/* ->[<outfile>] */
 		bool active;
 		char *file;
@@ -62,7 +62,7 @@ struct GMTSIMPLIFY_CTRL {
 	} T;
 };
 
-void *New_gmtsimplify_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSIMPLIFY_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTSIMPLIFY_CTRL);
@@ -70,13 +70,13 @@ void *New_gmtsimplify_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	return (C);
 }
 
-void Free_gmtsimplify_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtsimplify [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
@@ -95,7 +95,7 @@ int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtsimplify_parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtsimplify and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -154,7 +154,7 @@ int GMT_gmtsimplify_parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, 
 	spherical operation.
  */
 
-uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, bool geo, uint64_t index[]) {
+GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, bool geo, uint64_t index[]) {
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
 /* geo:		true if data is lon/lat */
@@ -273,7 +273,7 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtsimplify_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	int error;
@@ -293,18 +293,18 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtsimplify_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtsimplify_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtsimplify_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtsimplify_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtsimplify_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtsimplify main code ----------------------------*/
 

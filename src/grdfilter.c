@@ -56,7 +56,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 
 #define GMT_PROG_OPTIONS "-RVf" GMT_ADD_x_OPT
 
-struct GRDFILTER_CTRL {
+GMT_LOCAL struct GRDFILTER_CTRL {
 	struct GRDFILT_In {
 		bool active;
 		char *file;
@@ -210,9 +210,9 @@ struct THREAD_STRUCT {
 	struct GRDFILTER_BIN_MODE_INFO *B;
 };
 
-void threaded_function (struct THREAD_STRUCT *t);
+GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t);
 
-void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
@@ -226,7 +226,7 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);
 	gmt_free (C->F.file);
@@ -237,13 +237,13 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 
 #ifdef HAVE_GLIB_GTHREAD
 /* -----------------------------------------------------------------------------------*/
-static void *thread_function (void *args) {
+GMT_LOCAL void *thread_function (void *args) {
 	threaded_function ((struct THREAD_STRUCT *)args);
 	return NULL;
 }
 #endif
 
-struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *GMT, double min, double max, double width, bool center, int mode_choice, bool weighted) {
+GMT_LOCAL struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *GMT, double min, double max, double width, bool center, int mode_choice, bool weighted) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the grid data with the specified width.
 	 * This function sets up quantities needed as we loop over the
@@ -267,7 +267,7 @@ struct GRDFILTER_BIN_MODE_INFO *grdfilter_bin_setup (struct GMT_CTRL *GMT, doubl
 	return (B);
 }
 
-double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
+GMT_LOCAL double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning unweighted data with the specified width. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
@@ -317,7 +317,7 @@ double GMT_histmode (struct GMT_CTRL *GMT, double *z, uint64_t n, struct GRDFILT
 	return (value);
 }
 
-double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
+GMT_LOCAL double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data, uint64_t n, struct GRDFILTER_BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning weighted data with the specified width. We check if we find more
 	 * than one mode and return the chosen one as per the settings. */
@@ -367,7 +367,7 @@ double GMT_histmode_weighted (struct GMT_CTRL *GMT, struct GMT_OBSERVATION *data
 	return (value);
 }
 
-void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *weight, double output_lat, double par[], double x_off, double y_off) {
+GMT_LOCAL void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *weight, double output_lat, double par[], double x_off, double y_off) {
 	/* x_off and y_off give offset between output node and 'origin' input node for this window (0,0 for integral grids).
 	 * fast is true when input/output grids are offset by integer values in dx/dy.
 	 * Here, par[0] = filter_width, par[1] = filter_width / 2, par[2] = x_scale, part[3] = y_scale, and
@@ -412,19 +412,19 @@ void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, double *wei
 }
 
 /* Various functions that will be accessed via pointers */
-double CartRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
+GMT_LOCAL double CartRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
 	/* Plain Cartesian distance (par is not used) */
 	GMT_UNUSED(GMT); GMT_UNUSED(par);
 	return (hypot (x0 - x1, y0 - y1));
 }
 
-double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
+GMT_LOCAL double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
 	/* Plain scaled Cartesian distance (xscale = yscale) */
 	GMT_UNUSED(GMT);
 	return (par[GRDFILTER_X_SCALE] * hypot (x0 - x1, y0 - y1));
 }
 
-double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
+GMT_LOCAL double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
 	/* Pass dx,dy via par[GRDFILTER_X|Y_DIST] and return a r that is either in or out */
 	double r;
 	GMT_UNUSED(GMT);
@@ -434,13 +434,13 @@ double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, do
 	return (r);
 }
 
-double FlatEarthRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
+GMT_LOCAL double FlatEarthRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
 	/* Cartesian radius with different scales */
 	GMT_UNUSED(GMT);
 	return (hypot (par[GRDFILTER_X_SCALE] * (x0 - x1), par[GRDFILTER_Y_SCALE] * (y0 - y1)));
 }
 
-double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
+GMT_LOCAL double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[]) {
 	/* Great circle distance in km with polar wrap-around test on 2nd point */
 	GMT_UNUSED(par);
 	if (fabs (y1) > 90.0) {	/* Must find the point across the pole */
@@ -450,13 +450,13 @@ double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, d
 	return (0.001 * GMT_great_circle_dist_meter (GMT, x0, y0, x1, y1));
 }
 
-double UnitWeight (double r, double par[]) {
+GMT_LOCAL double UnitWeight (double r, double par[]) {
 	/* Return unit weight since we know r is inside radius (par is not used) */
 	GMT_UNUSED(r); GMT_UNUSED(par);
 	return (1.0);
 }
 
-double CosBellWeight (double r, double par[]) {
+GMT_LOCAL double CosBellWeight (double r, double par[]) {
 	/* Return the cosine-bell filter weight for given r.
 	 * The parameter r_f_half is the 5th parameter passed via par.
 	 */
@@ -464,7 +464,7 @@ double CosBellWeight (double r, double par[]) {
 	return (1.0 + cos (M_PI * r * par[GRDFILTER_INV_R_SCALE]));
 }
 
-double GaussianWeight (double r, double par[]) {
+GMT_LOCAL double GaussianWeight (double r, double par[]) {
 	/* Return the Gaussian filter weight for given r.
 	 * The parameter sig_2 is the 5th parameter passed via par.
 	 */
@@ -472,7 +472,7 @@ double GaussianWeight (double r, double par[]) {
 	return (exp (r * r * par[GRDFILTER_INV_R_SCALE]));
 }
 
-struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, char *file) {
+GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, char *file) {
 	/* Precalculate the area weight of each node.  There are several considerations:
 	 * 1. Mercator img grids (d_flag == GRDFILTER_GEO_MERCATOR) has irregular latitude spacing so we
 	 *    must compute the north and south latitude bounds for each cell to get area.
@@ -530,7 +530,7 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 	return (A);
 }
 
-int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<modifiers>] -G<outgrid>\n");
@@ -602,7 +602,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdfilter and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -791,7 +791,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #ifdef DEBUG
 	unsigned int n_conv_tot = 0;
 #endif
@@ -829,19 +829,19 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdfilter_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdfilter_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdfilter_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdfilter_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdfilter main code ----------------------------*/
 
@@ -1267,7 +1267,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 }
 
 /* ----------------------------------------------------------------------------------------------------- */
-void threaded_function (struct THREAD_STRUCT *t) {
+GMT_LOCAL void threaded_function (struct THREAD_STRUCT *t) {
 
 	bool visit_check = false, go_on;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, n_span;

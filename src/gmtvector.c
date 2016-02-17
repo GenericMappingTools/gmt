@@ -48,7 +48,7 @@ enum gmtvector_method {	/* The available methods */
 	DO_POLE,
 	DO_BISECTOR};
 
-struct GMTVECTOR_CTRL {
+GMT_LOCAL struct GMTVECTOR_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;
@@ -85,7 +85,7 @@ struct GMTVECTOR_CTRL {
 	} T;
 };
 
-void *New_gmtvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTVECTOR_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GMTVECTOR_CTRL);
@@ -95,7 +95,7 @@ void *New_gmtvector_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.arg);	
 	gmt_free (C->Out.file);	
@@ -104,7 +104,7 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>]\n");
@@ -147,7 +147,7 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtvector_parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -269,7 +269,7 @@ int GMT_gmtvector_parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int cartesian, int geocentric) {
+GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int cartesian, int geocentric) {
 	unsigned int n_out, n_errors = 0, ix, iy;
 	int n;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
@@ -309,7 +309,7 @@ unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int
 	return (n_out);
 }
 
-void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3]) {
+GMT_LOCAL void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3]) {
 	/* Given points in A and B, return the bisector pole via P */
 	 
 	unsigned int i;
@@ -331,7 +331,7 @@ void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3]) 
 	GMT_normalize3v (GMT, P);
 }
 
-void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az) {
+GMT_LOCAL void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az) {
 	/* Given point in A and azimuth az, return the pole P to the oblique equator with given az at A */
 	double R[3][3], tmp[3], B[3] = {0.0, 0.0, 1.0};	/* set B to north pole  */
 	GMT_cross3v (GMT, A, B, tmp);	/* Point C is 90 degrees away from plan through A and B */
@@ -340,7 +340,7 @@ void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az) {
 	GMT_matrix_vect_mult (GMT, 3U, R, tmp, P);
 }
 
-void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E) {
+GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E) {
 	/* Determines the mean vector M and the covariance matrix C */
 	
 	unsigned int i, j, k, n_components, nrots;
@@ -419,7 +419,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
-void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
+GMT_LOCAL void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 	double s, c;
 	GMT_memset (R, 9, double);
 	sincosd (angle, &s, &c);
@@ -428,7 +428,7 @@ void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtvector_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtvector (void *V_API, int mode, void *args) {
 	unsigned int tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
@@ -448,18 +448,18 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtvector_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtvector_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtvector_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtvector_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
 	

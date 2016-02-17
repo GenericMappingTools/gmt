@@ -36,7 +36,7 @@
 
 /* Control structure for grdcontour */
 
-struct GRDCONTOUR_CTRL {
+GMT_LOCAL struct GRDCONTOUR_CTRL {
 	struct GRDCONTOUR_In {
 		bool active;
 		char *file;
@@ -111,7 +111,7 @@ enum grdcontour_contour_type {cont_is_not_closed = 0,	/* Not a closed contour of
 	cont_is_closed_straddles_equator_south = -4,	/* Closed contour crossing equator that encloses the south pole */
 	cont_is_closed_straddles_equator_north = +4};	/* Closed contour crossing equator that encloses the north pole */
 
-struct SAVE {
+GMT_LOCAL struct SAVE {
 	double *x, *y;
 	double *xp, *yp;
 	double cval;
@@ -124,7 +124,7 @@ struct SAVE {
 	char label[GMT_LEN64];
 };
 
-void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCONTOUR_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDCONTOUR_CTRL);
@@ -145,7 +145,7 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	return (C);
 }
 
-void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);
 	gmt_free (C->C.file);
@@ -155,7 +155,7 @@ void Free_grdcontour_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_PEN P;
 
 	/* This displays the grdcontour synopsis and optionally full usage information */
@@ -241,7 +241,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GRDCONTOUR_CTRL *Ctrl) {
+GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GRDCONTOUR_CTRL *Ctrl) {
 	/* The backwards compatible parser for old-style -T option: */
 	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 	int n, j;
@@ -280,7 +280,7 @@ unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct GR
 	return (n_errors);
 }
 
-int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcontour and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -485,7 +485,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 /* Three sub functions used by GMT_grdcontour */
 
-void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, FILE *fp) {
+GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, FILE *fp) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -692,7 +692,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 }
 
-void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid) {
+GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid) {
 	/* Modify orientation of contours to have top of annotation facing the local hill top */
 	int col, row;
 	uint64_t k, seg, ij;
@@ -733,7 +733,7 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 	}
 }
 
-enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, int n) {
+GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, int n) {
 	/* Determine if this is a closed contour; returns a flag in the -4/+4 range */
 	enum grdcontour_contour_type closed = cont_is_not_closed;
 	int k;
@@ -772,7 +772,7 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdcontour_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
@@ -810,18 +810,18 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdcontour_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdcontour_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdcontour_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdcontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdcontour_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 

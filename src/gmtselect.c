@@ -56,18 +56,18 @@
 #define F_ITEM	0
 #define N_ITEM	1
 
-struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coordinate */
+GMT_LOCAL struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coordinate */
 	double x, y, d;
 };
 
-struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
+GMT_LOCAL struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
 	unsigned int col;	/* Column to test */
 	bool equal;	/* Just check if z == min withing 5 ULps */
 	double min;	/* Smallest z-value to pass through, for this column */
 	double max;	/* Largest z-value to pass through, for this column */
 };
 
-struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
+GMT_LOCAL struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
 		bool active;
@@ -122,7 +122,7 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 	} dbg;
 };
 
-void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	int i;
 	struct GMTSELECT_CTRL *C;
 	
@@ -141,7 +141,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->C.file);	
 	gmt_free (C->F.file);	
@@ -150,7 +150,7 @@ void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int compare_x (const void *point_1, const void *point_2) {
+GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
 	const struct GMTSELECT_DATA *p1 = point_1, *p2 = point_2;
 
 	if (p1->x < p2->x) return (-1);
@@ -159,7 +159,7 @@ int compare_x (const void *point_1, const void *point_2) {
 }
 
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
-void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
+GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
 	unsigned int col, k, n_aspatial = 0;
 	size_t len;
 	char text[GMT_LEN64] = {""};
@@ -212,7 +212,7 @@ void gmt_ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
 	}
 }
 
-int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
@@ -276,7 +276,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -480,7 +480,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtselect_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtselect (void *V_API, int mode, void *args) {
 	int err;	/* Required by GMT_err_fail */
@@ -510,18 +510,18 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtselect_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtselect_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtselect_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtselect_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
@@ -875,7 +875,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 		if (just_copy_record) {	/* Want to (or can) do text output */
 			if (GMT->common.a.active) {	/* Add selected aspatial fields to output record */
-				gmt_ogr_to_text (GMT, GMT->current.io.OGR, extra);
+				ogr_to_text (GMT, GMT->current.io.OGR, extra);
 				strcat (API->GMT->current.io.current_record, extra);
 			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, NULL);

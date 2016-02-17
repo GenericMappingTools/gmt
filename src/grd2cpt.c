@@ -44,7 +44,7 @@
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
-struct GRD2CPT_CTRL {
+GMT_LOCAL struct GRD2CPT_CTRL {
 	struct In {
 		bool active;
 	} In;
@@ -113,7 +113,7 @@ struct GRD2CPT_CTRL {
 	} Z;
 };
 
-void *New_grd2cpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2CPT_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GRD2CPT_CTRL);
@@ -123,7 +123,7 @@ void *New_grd2cpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	return (C);
 }
 
-void Free_grd2cpt_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Out.file);
 	gmt_free (C->C.file);
@@ -131,7 +131,7 @@ void Free_grd2cpt_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c]\n");
@@ -177,7 +177,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -330,7 +330,7 @@ int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
+GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfile, uint64_t n) {
 	/* Free what we are pointing to */
 	uint64_t k;
 	for (k = 0; k < n; k++) {
@@ -342,7 +342,7 @@ int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, char **grdfil
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grd2cpt_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
@@ -370,18 +370,18 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grd2cpt_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grd2cpt_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grd2cpt_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2cpt_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 

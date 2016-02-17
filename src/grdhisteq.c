@@ -33,7 +33,7 @@
 
 #define GMT_PROG_OPTIONS "-RVh"
 
-GMT_LOCAL struct GRDHISTEQ_CTRL {
+struct GRDHISTEQ_CTRL {
 	struct In {
 		bool active;
 		char *file;

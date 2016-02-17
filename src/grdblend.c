@@ -52,7 +52,7 @@
 #define BLEND_FIRST	2
 #define BLEND_LAST	3
 
-struct GRDBLEND_CTRL {
+GMT_LOCAL struct GRDBLEND_CTRL {
 	struct In {	/* Input files */
 		bool active;
 		char **file;
@@ -87,7 +87,7 @@ struct GRDBLEND_CTRL {
 	} W;
 };
 
-struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
+GMT_LOCAL struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	struct GMT_GRID *G;				/* I/O structure for grid files, including grd header */
 	struct GMT_GRID_ROWBYROW *RbR;
 	int in_i0, in_i1, out_i0, out_i1;		/* Indices of outer and inner x-coordinates (in output grid coordinates) */
@@ -107,7 +107,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 
 #define N_NOT_SUPPORTED	8
 
-int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file) {
+GMT_LOCAL int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file) {
 	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
 	unsigned int i;
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
@@ -121,7 +121,7 @@ int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, c
 	return (GMT_NOERROR);
 }
 
-void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
+GMT_LOCAL void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	unsigned int i, pos, error = 0;
 	char text[GMT_BUFSIZ];
 
@@ -137,7 +137,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
-bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h) {
+GMT_LOCAL bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h) {
 	/* Look for phase shifts in w/e/s/n between the two grids */
 	unsigned int way, side;
 	double a;
@@ -151,7 +151,7 @@ bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h) {
 	return false;
 }
 
-bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode) {
+GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode) {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
 	w = ((mode) ? B->wesn[XLO] : B->G->header->wesn[XLO]) - shift;	e = ((mode) ? B->wesn[XHI] : B->G->header->wesn[XHI]) - shift;
@@ -173,7 +173,7 @@ bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GR
 	return false;
 }
 
-int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER *h, struct GRDBLEND_INFO **blend) {
+GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER *h, struct GRDBLEND_INFO **blend) {
 	int type, status;
 	bool do_sample, not_supported;
 	unsigned int one_or_zero = !h->registration, n = 0, nr;
@@ -401,7 +401,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	return (n_files);
 }
 
-int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
+GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
 	unsigned int k;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
@@ -439,7 +439,7 @@ int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, uns
 	return GMT_OK;
 }
 
-void *New_grdblend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDBLEND_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDBLEND_CTRL);
@@ -452,7 +452,7 @@ void *New_grdblend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	return (C);
 }
 
-void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Deallocate control structure */
 	unsigned int k;
 	if (!C) return;
 	for (k = 0; k < C->In.n; k++) gmt_free (C->In.file[k]);
@@ -461,7 +461,7 @@ void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");
@@ -503,8 +503,7 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdblend and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -592,18 +591,15 @@ int GMT_grdblend_parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdblend (void *V_API, int mode, void *args)
-{
+int GMT_grdblend (void *V_API, int mode, void *args) {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final, out_case;
 	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false;
 	
 	uint64_t ij, n_fill, n_tot;
-	
 	double wt_x, w, wt;
-	
 	float *z = NULL, no_data_f;
 	
 	char type;
@@ -619,18 +615,18 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdblend_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdblend_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdblend_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdblend_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 

@@ -111,7 +111,7 @@ enum Grdfft_operators {
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 
-struct F_INFO {
+GMT_LOCAL struct F_INFO {
 	double lc[3];		/* Low-cut frequency for r, x, and y	*/
 	double lp[3];		/* Low-pass frequency for r, x, and y	*/
 	double hp[3];		/* High-pass frequency for r, x, and y	*/
@@ -129,7 +129,7 @@ struct F_INFO {
 	unsigned int arg;	/* 0 = Gaussian, 1 = Butterworth, 2 = cosine taper,  */
 };
 
-void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFFT_CTRL *C = NULL;
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDFFT_CTRL);
@@ -140,7 +140,7 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free (GMT, C->operation);
 	GMT_free (GMT, C->par);
@@ -151,7 +151,7 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	double scale, fact;
 	float *datac = Grid->data;	/* Shorthand */
@@ -168,7 +168,7 @@ unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FF
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	/* Integrate in frequency domain by dividing by kr [scale optional] */
 	uint64_t k;
 	double fact, scale;
@@ -184,7 +184,7 @@ unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WA
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	float tmp, *datac = Grid->data;	/* Shorthand */
 
@@ -198,7 +198,7 @@ unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	float tempr, tempi, fact, *datac = Grid->data;	/* Shorthand */
 	double cos_azim, sin_azim;
@@ -221,7 +221,7 @@ unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struc
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* m/s**2  */
 
-unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct GMT_FFT_WAVENUMBER *K) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	densities in kg/m**3, Te in m, etc.
@@ -264,28 +264,28 @@ unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, doubl
 #define M_LN2			0.69314718055994530942  /* log_e 2 */
 #endif
 
-double gauss_weight (struct F_INFO *f_info, double freq, int j) {
+GMT_LOCAL double gauss_weight (struct F_INFO *f_info, double freq, int j) {
 	double hi, lo;
 	lo = (f_info->llambda[j] == -1.0) ? 0.0 : exp (-M_LN2 * pow (freq * f_info->llambda[j], 2.0));	/* Low-pass part */
 	hi = (f_info->hlambda[j] == -1.0) ? 1.0 : exp (-M_LN2 * pow (freq * f_info->hlambda[j], 2.0));	/* Hi-pass given by its complementary low-pass */
 	return (hi - lo);
 }
 
-double bw_weight (struct F_INFO *f_info, double freq, int j) {	/* Butterworth filter */
+GMT_LOCAL double bw_weight (struct F_INFO *f_info, double freq, int j) {	/* Butterworth filter */
 	double hi, lo;
 	lo = (f_info->llambda[j] == -1.0) ? 0.0 : sqrt (1.0 / (1.0 + pow (freq * f_info->llambda[j], f_info->bw_order)));	/* Low-pass part */
 	hi = (f_info->hlambda[j] == -1.0) ? 1.0 : sqrt (1.0 / (1.0 + pow (freq * f_info->hlambda[j], f_info->bw_order)));	/* Hi-pass given by its complementary low-pass */
 	return (hi - lo);
 }
 
-double cosine_weight_grdfft (struct F_INFO *f_info, double freq, int j) {
+GMT_LOCAL double cosine_weight_grdfft (struct F_INFO *f_info, double freq, int j) {
 	if (freq <= f_info->lc[j] || freq >= f_info->hc[j]) return(0.0);	/* In fully cut range.  Weight is zero.  */
 	if (freq > f_info->lc[j] && freq < f_info->lp[j]) return (0.5 * (1.0 + cos (M_PI * (freq - f_info->lp[j]) * f_info->ltaper[j])));
 	if (freq > f_info->hp[j] && freq < f_info->hc[j]) return (0.5 * (1.0 + cos (M_PI * (freq - f_info->hp[j]) * f_info->htaper[j])));
 	return (1.0);	/* Freq is in the fully passed range, so weight is multiplied by 1.0  */
 }
 
-double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
 	double freq, return_value;
 
 	freq = GMT_fft_any_wave (k, f_info->k_type, K);
@@ -294,7 +294,7 @@ double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVE
 	return (return_value);
 }
 
-void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
 	uint64_t k;
 	float weight, *datac = Grid->data;	/* Shorthand */
 
@@ -305,7 +305,7 @@ void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAV
 	}
 }
 
-int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct GMT_FFT_WAVENUMBER *K) {
 	/* Compute [cross-]spectral estimates from the two grids X and Y and return frequency f and 8 quantities:
 	 * Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
 	 * Each quantity comes with its own 1-std dev error estimate, hence output is 17 columns.  If GridY == NULL
@@ -461,13 +461,13 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	return (1);	/* Number of parameters used */
 }
 
-unsigned int count_slashes (char *txt) {
+GMT_LOCAL unsigned int count_slashes (char *txt) {
 	unsigned int i, n;
 	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
 	return (n);
 }
 
-bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c) {
+GMT_LOCAL bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c) {
 	unsigned int i, j, n_tokens, pos;
 	bool descending;
 	double fourvals[4];
@@ -559,7 +559,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c) {
 	return (false);
 }
 
-int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
@@ -610,7 +610,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par) {
+GMT_LOCAL void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par) {
 	Ctrl->n_op_count++;
 	Ctrl->operation = GMT_memory (GMT, Ctrl->operation, Ctrl->n_op_count, int);
 	Ctrl->operation[Ctrl->n_op_count-1] = operation;
@@ -621,7 +621,7 @@ void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operatio
 	}
 }
 
-int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO *f_info, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO *f_info, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdfft and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -794,7 +794,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdfft_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdfft (void *V_API, int mode, void *args) {
 	int error = 0, status;
@@ -811,18 +811,18 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdfft_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdfft_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdfft_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, &f_info, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 

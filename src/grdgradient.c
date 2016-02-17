@@ -39,7 +39,7 @@
 
 #define GMT_PROG_OPTIONS "-RVfn"
 
-GMT_LOCAL struct GRDGRADIENT_CTRL {
+struct GRDGRADIENT_CTRL {
 	struct In {
 		bool active;
 		char *file;
