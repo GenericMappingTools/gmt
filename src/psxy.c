@@ -273,8 +273,8 @@ void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 	}
 }
 
-int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
-{	/* Accept the textset D with records of {lon, lat, size, angle, symbol} and plot rotated symbols at those locations */
+int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
+	/* Accept the textset D with records of {lon, lat, size, angle, symbol} and plot rotated symbols at those locations */
 	int object_ID;
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
@@ -330,8 +330,8 @@ int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D)
 	return GMT_OK;
 }
 
-void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, struct GMT_PEN *P)
-{	/* Maybe add vector heads.  Here, x,y are in inches on the plot */
+void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, struct GMT_PEN *P) {
+	/* Maybe add vector heads.  Here, x,y are in inches on the plot */
 	unsigned int k, current[2] = {0,0}, next[2] = {1,0};
 	double dim[PSL_MAX_DIMS], angle, s, c, L;
 	if (n < 2) return;
@@ -355,8 +355,7 @@ void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, s
 	}
 }
 
-int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psxy synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -495,8 +494,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S)
-{
+int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
 	/* This parses the options provided to psxy and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -703,8 +701,8 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psxy_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psxy (void *V_API, int mode, void *args)
-{	/* High-level function that implements the psxy task */
+int GMT_psxy (void *V_API, int mode, void *args) {
+	/* High-level function that implements the psxy task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb, clip_set = false, fill_active, may_intrude_inside = false;
 	bool error_x = false, error_y = false, def_err_xy = false;

@@ -82,8 +82,8 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	} T;
 };
 
-int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col)
-{	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
+int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col) {
+	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
 
 	int k;
 
@@ -107,8 +107,7 @@ void Free_gmtinfo_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallo
 	GMT_free (GMT, C);
 }
 
-int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
@@ -147,8 +146,7 @@ int GMT_gmtinfo_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtinfo and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -283,8 +281,7 @@ int GMT_gmtinfo_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GM
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtinfo_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtinfo (void *V_API, int mode, void *args)
-{
+int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, done, full_range = false;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];

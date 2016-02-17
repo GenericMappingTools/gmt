@@ -87,8 +87,7 @@ double *filterxy_setup (struct GMT_CTRL *GMT) {
 	return (fwork);
 }
 
-void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col,
-                  unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
+void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork) {
 	uint64_t i, j, k, p, istart, istop, ndata;
 	int64_t kk;
 	bool hilow;

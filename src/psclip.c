@@ -67,8 +67,7 @@ void Free_psclip_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psclip synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -98,8 +97,7 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psclip and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -178,8 +176,7 @@ int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
-{
+void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n) {
 	switch (n) {
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */

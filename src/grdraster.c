@@ -73,8 +73,7 @@ struct GRDRASTER_INFO {
 	char type;
 };
 
-static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
-{
+static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert unsigned char */
 	unsigned int i;
 	unsigned char tempval;
@@ -92,8 +91,7 @@ static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
-{
+static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert char */
 	unsigned int i;
 	char tempval;
@@ -111,8 +109,7 @@ static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
-{
+static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert uint16_t */
 	unsigned int i;
 	uint16_t tempval;
@@ -132,8 +129,7 @@ static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
-{
+static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert int16_t */
 	unsigned int i;
 	int16_t tempval;
@@ -154,8 +150,7 @@ static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer)
-{
+static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert int32_t */
 	unsigned int i;
 	int32_t tempval;
@@ -211,8 +206,7 @@ unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 	return (ksize);
 }
 
-int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian)
-{
+int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian) {
 	/* Read the file grdraster.info
 		Store the i'th row of the file in rasinfo[i].h.command.
 		Store the filename in rasinfo[i].h.remark.

@@ -136,8 +136,7 @@ void Free_psscale_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psscale synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -203,8 +202,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psscale and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -472,8 +470,7 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n)
-{
+double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n) {
 	unsigned int i = 0;
 	double tmp;
 
@@ -483,8 +480,7 @@ double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n)
 	return (P->range[i].z_low + (x - tmp + width[i]) * (P->range[i].z_high - P->range[i].z_low) / width[i]);
 }
 
-void fix_format (char *unit, char *format)
-{
+void fix_format (char *unit, char *format) {
 	unsigned int i, j;
 	char text[GMT_LEN64] = {""}, new_format[GMT_BUFSIZ] = {""};
 
@@ -517,8 +513,7 @@ bool hangs_down (char *text) {
 	return false;
 }
 
-void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width)
-{
+void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify;
 	int this_just, p_val;
@@ -1277,8 +1272,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psscale_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psscale (void *V_API, int mode, void *args)
-{	/* High-level function that implements the psscale task */
+int GMT_psscale (void *V_API, int mode, void *args) {
+	/* High-level function that implements the psscale task */
 	int error = 0;
 	unsigned int i;
 

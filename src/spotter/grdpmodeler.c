@@ -100,8 +100,7 @@ void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdpmodeler <agegrdfile> %s [-F<polygontable>] [-G<outgrid>]\n", SPOTTER_E_OPT);
@@ -138,8 +137,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 
 }
 
-int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdpmodeler and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -257,8 +255,7 @@ int GMT_grdpmodeler_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, s
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_free (GMT, p); Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdpmodeler (void *V_API, int mode, void *args)
-{
+int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	unsigned int col, row, inside, stage, n_stages, registration, k;
 	int retval, error = 0;
 

@@ -148,8 +148,7 @@ void GMT_strrepc (char *string, int c, int r) {
 	} while (*(++string)); /* repeat until \0 reached */
 }
 
-size_t GMT_strlcmp (char *str1, char *str2)
-{
+size_t GMT_strlcmp (char *str1, char *str2) {
 	/* Compares str1 with str2 but only until str1 reaches the
 	 * null-terminator character while case is ignored.
 	 * When the strings match until that point, the routine returns the
@@ -161,8 +160,7 @@ size_t GMT_strlcmp (char *str1, char *str2)
 	return i;
 }
 
-unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos, char *token)
-{
+unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos, char *token) {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator
 	 * characters (in sep).  Set *pos to 0 before first call.  Unlike
@@ -196,8 +194,7 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 	return 1;
 }
 
-unsigned int GMT_get_modifier (const char *string, char modifier, char *token)
-{
+unsigned int GMT_get_modifier (const char *string, char modifier, char *token) {
 	/* Looks for modifier string in the form +<modifier>[arg] and if found
 	   returns 1 and places arg in token, else return 0.  Must ignore any
 	   +<modifier> found inside quotes as part of text. If token is NULL
@@ -424,9 +421,7 @@ int strncasecmp (const char *s1, const char *s2, size_t n) {
         x = strtok_r(NULL, "=", &sp);   // x = NULL
                                         // s = "abc\0-def\0"
 */
-char *
-strtok_r (char *s, const char *delim, char **save_ptr)
-{
+char *strtok_r (char *s, const char *delim, char **save_ptr) {
   char *token;
 
   if (s == NULL)
@@ -474,9 +469,7 @@ strtok_r (char *s, const char *delim, char **save_ptr)
    You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-char *
-strsep (char **stringp, const char *delim)
-{
+char * strsep (char **stringp, const char *delim) {
   char *start = *stringp;
   char *ptr;
 
@@ -560,9 +553,7 @@ char *strsepz (char **stringp, const char *delim) {
  * If *stringp is NULL, stresep returns NULL.
  */
 
-char *
-stresep(char **stringp, const char *delim, int esc)
-{
+char *stresep(char **stringp, const char *delim, int esc) {
 	char *s;
 	const char *spanp;
 	int c, sc;

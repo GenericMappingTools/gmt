@@ -187,8 +187,7 @@ int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n) {
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_get_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_get (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;

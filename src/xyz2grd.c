@@ -89,8 +89,7 @@ void Free_xyz2grd_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: xyz2grd [<table>] -G<outgrid> %s\n", GMT_I_OPT);
@@ -152,8 +151,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options)
-{
+int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 	/* This parses the options provided to xyz2grd and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -314,8 +312,7 @@ void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
 	}
 }
 
-int GMT_xyz2grd (void *V_API, int mode, void *args)
-{
+int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	bool previous_bin_i = false, previous_bin_o = false;
 	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL;

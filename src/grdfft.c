@@ -305,8 +305,7 @@ void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAV
 	}
 }
 
-int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct GMT_FFT_WAVENUMBER *K)
-{
+int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct GMT_FFT_WAVENUMBER *K) {
 	/* Compute [cross-]spectral estimates from the two grids X and Y and return frequency f and 8 quantities:
 	 * Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
 	 * Each quantity comes with its own 1-std dev error estimate, hence output is 17 columns.  If GridY == NULL

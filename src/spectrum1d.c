@@ -96,8 +96,7 @@ struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
 	} *spec;
 };
 
-void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C)
-{
+void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	C->n_spec = C->window/2;	/* This means we skip zero frequency; data are detrended  */
 	C->window_2 = 2 * C->window;		/* This is for complex array stuff  */
 
@@ -105,8 +104,7 @@ void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C)
 	C->datac = GMT_memory (GMT, NULL, C->window_2, float);
 }
 
-void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode)
-{
+void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
 	/* If leave_trend is true we do not remove best-fitting LS trend.  Otherwise
 	 * we do, modulated by mode: 0: remove trend, 1: remove mean, 2: remove mid-value.
 	 * In all cases we apply the Hanning windowing */
@@ -179,8 +177,7 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned 
 	}
 }
 
-int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode)
-{
+int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode) {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
@@ -289,8 +286,8 @@ int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x,
 	return 0;
 }
 
-int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem)
-{	/* Writes separate hardwired files for each output type.  Does NOT use GMT_Put_* functions */
+int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem) {
+	/* Writes separate hardwired files for each output type.  Does NOT use GMT_Put_* functions */
 	int i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
 	char fname[GMT_LEN256] = {""};
@@ -441,8 +438,8 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 	return (0);
 }
 
-void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[])
-{	/* Fills out the 2-D table array given */
+void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[]) {
+	/* Fills out the 2-D table array given */
 	int i, j, k;
 	double delta_f, eps_pow, tmp, *f_or_w;
 
@@ -504,8 +501,7 @@ void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 	GMT_free (GMT, f_or_w);
 }
 
-void free_space_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C)
-{
+void free_space_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	GMT_free (GMT, C->spec);
 	GMT_free (GMT, C->datac);
 }
@@ -535,8 +531,7 @@ void Free_spectrum1d_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[<name_stem>]] [-T]\n");
@@ -567,8 +562,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to spectrum1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -678,8 +672,7 @@ int GMT_spectrum1d_parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_spectrum1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_spectrum1d (void *V_API, int mode, void *args)
-{
+int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int k, n_outputs;
 	

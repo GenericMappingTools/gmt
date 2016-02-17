@@ -247,8 +247,7 @@ int GMT_x2sys_cross_parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs)
-{
+int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs) {
 	uint64_t i;
 
 	/* Return true if this particular combination is found in the list of pairs */
@@ -263,8 +262,7 @@ int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_cross_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_cross (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	char **trk_name = NULL;			/* Name of tracks */
 	char line[GMT_BUFSIZ] = {""};		/* buffer */
 	char item[GMT_BUFSIZ] = {""};		/* buffer */

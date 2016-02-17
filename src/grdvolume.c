@@ -67,8 +67,7 @@ struct GRDVOLUME_CTRL {
  * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
  */
 
-double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d)
-{
+double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d) {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
 
 	dzdx  = (G->data[ij+1] - G->data[ij]);
@@ -95,8 +94,7 @@ double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, 
  * lines y0 and y1 and two vertical lines x0 = ay +b and x1 = cy + d
  */
 
-double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d)
-{
+double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d) {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
 
 	dzdx = (G->data[ij+1] - G->data[ij]);
@@ -119,8 +117,8 @@ double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, 
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
-{	/* Calculates area of a SW-corner triangle */
+void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+	/* Calculates area of a SW-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, frac;
 
@@ -137,8 +135,8 @@ void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
-{	/* Calculates area of a NE-corner triangle */
+void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+	/* Calculates area of a NE-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
 
@@ -160,8 +158,8 @@ void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
-{	/* Calculates area of a SE-corner triangle */
+void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+	/* Calculates area of a SE-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
 
@@ -182,8 +180,8 @@ void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
-{	/* Calculates area of a NW-corner triangle */
+void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+	/* Calculates area of a NW-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, y0_1, frac;
 
@@ -201,8 +199,8 @@ void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da)
-{	/* Calculates area of a NS trapezoid */
+void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da) {
+	/* Calculates area of a NS trapezoid */
 	/* right = true gets the right trapezoid, false gets the left */
 	double x0, x1;
 
@@ -218,8 +216,8 @@ void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, doub
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da)
-{	/* Calculates area of a EW trapezoid */
+void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da) {
+	/* Calculates area of a EW trapezoid */
 	/* top = true gets the top trapezoid, false gets the bottom */
 	double y0, y1;
 
@@ -235,8 +233,8 @@ void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double
 	}
 }
 
-double median3 (double x[])
-{	/* Returns the median of the three points in x */
+double median3 (double x[]) {
+	/* Returns the median of the three points in x */
 	if (x[0] < x[1]) {
 		if (x[2] > x[1]) return (x[1]);
 		if (x[2] > x[0]) return (x[2]);
@@ -249,8 +247,8 @@ double median3 (double x[])
 	}
 }
 
-int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode)
-{	/* mode: 0 = find value maximum, 1 = find curvature maximum */
+int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode) {
+	/* mode: 0 = find value maximum, 1 = find curvature maximum */
 	unsigned int i, im;
 	double *c = NULL, *f = NULL;
 

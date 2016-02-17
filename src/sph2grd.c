@@ -92,8 +92,7 @@ void Free_sph2grd_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s\n", GMT_I_OPT);
@@ -128,8 +127,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sph2grd and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -223,8 +221,7 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sph2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sph2grd (void *V_API, int mode, void *args)
-{
+int GMT_sph2grd (void *V_API, int mode, void *args) {
 	bool ortho = false, duplicate_col;
 	int row, col, nx, error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0, kk = 0;
 	unsigned int n_PLM, n_CS, n_CS_nx, next_10_percent = 10;

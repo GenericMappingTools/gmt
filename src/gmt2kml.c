@@ -507,8 +507,8 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int kml_print (struct GMTAPI_CTRL *API, int ntabs, char *format, ...)
-{	/* Message whose output depends on verbosity setting */
+int kml_print (struct GMTAPI_CTRL *API, int ntabs, char *format, ...) {
+	/* Message whose output depends on verbosity setting */
 	int tab;
 	char record[GMT_BUFSIZ] = {""};
 	va_list args;
@@ -578,8 +578,8 @@ void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], dou
 	kml_print (API, --N, "</Region>\n");
 }
 
-void set_iconstyle (struct GMTAPI_CTRL *API, double *rgb, double scale, char *iconfile, int N)
-{	/* No icon = no symbol */
+void set_iconstyle (struct GMTAPI_CTRL *API, double *rgb, double scale, char *iconfile, int N) {
+	/* No icon = no symbol */
 	kml_print (API, N++, "<IconStyle>\n");
 	kml_print (API, N++, "<Icon>\n");
 	if (iconfile[0] != '-') kml_print (API, N, "<href>%s</href>\n", iconfile);
@@ -606,8 +606,8 @@ void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int activ
 	kml_print (API, --N, "</PolyStyle>\n");
 }
 
-void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb)
-{	/* Special version of GMT_get_rgb_lookup since no interpolation can take place */
+void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb) {
+	/* Special version of GMT_get_rgb_lookup since no interpolation can take place */
 
 	if (index < 0) {	/* NaN, Foreground, Background */
 		GMT_rgb_copy (rgb, P->patch[index+3].rgb);
@@ -623,8 +623,7 @@ void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, dou
 	}
 }
 
-int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, double wesn[])
-{
+int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, double wesn[]) {
 	/* Because we read as textset we must determine the data extent the hard way */
 	unsigned int tbl, ix, iy, way;
 	uint64_t row, seg;
@@ -660,8 +659,7 @@ int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, double wesn[])
 	return (GMT_NOERROR);
 }
 
-bool crossed_dateline (double this_x, double last_x)
-{
+bool crossed_dateline (double this_x, double last_x) {
 	if (this_x > 90.0 && this_x <= 180.0 && last_x > +180.0 && last_x < 270.0) return (true);	/* Positive lons 0-360 */
 	if (last_x > 90.0 && last_x <= 180.0 && this_x > +180.0 && this_x < 270.0) return (true);	/* Positive lons 0-360 */
 	if (this_x > 90.0 && this_x <= 180.0 && last_x > -180.0 && last_x < -90.0) return (true);	/* Lons in -180/+180 range */
@@ -673,8 +671,7 @@ bool crossed_dateline (double this_x, double last_x)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmt2kml_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmt2kml (void *V_API, int mode, void *args)
-{
+int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act, no_text;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 

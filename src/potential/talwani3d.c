@@ -139,8 +139,7 @@ void Free_talwani3d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	unsigned int k, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
@@ -267,8 +266,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 
 #define INV_3 (1.0/3.0)
 
-double parint (double x[], double y[], int n)
-{
+double parint (double x[], double y[], int n) {
 	/* parint is a piecewise parabolic integrator
 	 *
 	 * Arguments:
@@ -331,8 +329,8 @@ double parint (double x[], double y[], int n)
 	return (area);
 }
 
-double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
-{	/* Talwani et al., 1959 */
+double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+	/* Talwani et al., 1959 */
 	int k;
 	double gsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
 	double xr2 = 0.0, yr2 = 0.0, dx, dy, p, em, sign2, wsign, value, part1 = 0.0, part2 = 0.0, part3 = 0.0, q, f, psi;
@@ -423,8 +421,8 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 	return (GAMMA * rho * gsum);	/* Return contribution in mGal */
 }
 
-double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
-{	/* Kim & Wessel, 2015 */
+double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+	/* Kim & Wessel, 2016 */
 	int k;
 	double vsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
 	double xr2 = 0.0, yr2 = 0.0, dx, dy, p, em, sign2, part2 = 0.0, part3 = 0.0, q, f, z2, p2;
@@ -512,8 +510,8 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	return (10 * GAMMA * rho * vsum);	/* To get Eotvos = 0.1 mGal/km */
 }
 
-double definite_integral (double a, double s, double c)
-{	/* Return out definite integral n_ij (except the factor z_j) */
+double definite_integral (double a, double s, double c) {
+	/* Return out definite integral n_ij (except the factor z_j) */
 	/* Here, 0 <= a <= TWO_I and c >= 0 */
 	double s2, c2, u2, k, k2, q, q2, f, v, n_ij, arg1, arg2, y;
 	/* Deal with special cases */
@@ -544,13 +542,13 @@ double definite_integral (double a, double s, double c)
 	return (n_ij);
 }
 
-double integral (double a, double sa, double b, double sb, double c)
-{	/* Return integral of geoid function from a to b */
+double integral (double a, double sa, double b, double sb, double c) {
+	/* Return integral of geoid function from a to b */
 	return (definite_integral (b, sb, c) - definite_integral (a, sa, c));
 }
 
-double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat)
-{	/* Kim & Wessel, 2015 */
+double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+	/* Kim & Wessel, 2016 */
 	int k;
 	double nsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside, c, z_j = z_obs;
 	double xr2 = 0.0, yr2 = 0.0, dx, dy, p_i, theta_i, sign2, part1 = 0.0, part2 = 0.0, fi_i, em, del_alpha, s_fi, s_th;
@@ -637,8 +635,8 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 	return (1.0e-2 * GAMMA * rho * nsum / G0);	/* To get geoid in meter */
 }
 
-double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth)
-{	/* Evaluate output at a single observation point (x,y,z) */
+double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth) {
+	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
 	double z;
@@ -679,8 +677,8 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	return (parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
 }
 
-int comp_cakes (const void *cake_a, const void *cake_b)
-{	/* Used in the sorting of layers on depths */
+int comp_cakes (const void *cake_a, const void *cake_b) {
+	/* Used in the sorting of layers on depths */
 	const struct CAKE *a = cake_a, *b = cake_b;
 	if (a->depth < b->depth) return (-1);
 	if (a->depth > b->depth) return (+1);
@@ -690,8 +688,7 @@ int comp_cakes (const void *cake_a, const void *cake_b)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_talwani3d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_talwani3d (void *V_API, int mode, void *args)
-{
+int GMT_talwani3d (void *V_API, int mode, void *args) {
 	int error = 0, ns;
 	unsigned int k, tbl, seg, ndepths = 0, n = 0, dup_node, n_duplicate = 0;
 	uint64_t node;

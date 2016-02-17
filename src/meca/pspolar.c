@@ -128,8 +128,7 @@ void Free_pspolar_Ctrl (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pspolar synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -195,8 +194,7 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pspolar and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -400,8 +398,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pspolar_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pspolar (void *V_API, int mode, void *args)
-{
+int GMT_pspolar (void *V_API, int mode, void *args) {
 	int k, n = 0, error = 0;
 	bool old_is_world;
 

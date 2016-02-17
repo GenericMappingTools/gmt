@@ -73,8 +73,7 @@ union Double_t {
 	double f;
 };
 
-bool floatAlmostEqualUlpsAndAbs(float A, float B,
-																float maxDiff, int maxUlpsDiff) {
+bool floatAlmostEqualUlpsAndAbs(float A, float B, float maxDiff, int maxUlpsDiff) {
 	/* Adapted from AlmostEqualUlpsAndAbs,
 	 * http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 	 *
@@ -114,8 +113,7 @@ bool floatAlmostEqualUlpsAndAbs(float A, float B,
 	return false;
 }
 
-bool doubleAlmostEqualUlpsAndAbs(double A, double B,
-																 double maxDiff, int maxUlpsDiff) {
+bool doubleAlmostEqualUlpsAndAbs(double A, double B, double maxDiff, int maxUlpsDiff) {
 	/* Adapted from AlmostEqualUlpsAndAbs,
 	 * http://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
 	 *

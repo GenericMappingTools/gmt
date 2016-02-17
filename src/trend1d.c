@@ -122,8 +122,7 @@ struct	TREND1D_DATA {
 	double	w;
 };
 
-int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, int weighted_input, double **work)
-{
+int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, int weighted_input, double **work) {
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
@@ -169,8 +168,7 @@ int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_
 	return (0);
 }
 
-void allocate_the_memory_1d (struct GMT_CTRL *GMT, unsigned int np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
-{
+void allocate_the_memory_1d (struct GMT_CTRL *GMT, unsigned int np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model) {
 	*gtg = GMT_memory (GMT, NULL, np*np, double);
 	*v = GMT_memory (GMT, NULL, np*np, double);
 	*gtd = GMT_memory (GMT, NULL, np, double);
@@ -243,8 +241,8 @@ void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODE
 	}
 }
 
-void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax)
-{	/* Undo transformation of x, if used */
+void untransform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
+	/* Undo transformation of x, if used */
 	uint64_t i;
 	double offset, scale;
 
@@ -295,8 +293,8 @@ void recompute_weights_1d (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint
 	}
 }
 
-double chebyshev (double x, unsigned int n)
-{	/* Return T_n(x) */
+double chebyshev (double x, unsigned int n) {
+	/* Return T_n(x) */
 	double cj, cj1, cj2;
 	unsigned int j;
 	if (n == 0) return 1.0;
@@ -310,15 +308,14 @@ double chebyshev (double x, unsigned int n)
 	return (cj);
 }
 
-double polynomial (double x, unsigned int n)
-{	/* Return x^n */
+double polynomial (double x, unsigned int n) {
+	/* Return x^n */
 	if (n == 0) return 1.0;
 	if (n == 1) return x;
 	return (pow (x, (double)n));
 }
 
-void load_g_row_1d (double x, double t, int n, double *gr, struct GMT_MODEL *M)
-{
+void load_g_row_1d (double x, double t, int n, double *gr, struct GMT_MODEL *M) {
 	/* x: Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
 	/* Elements of row of G matrix.  */
@@ -349,8 +346,7 @@ void load_g_row_1d (double x, double t, int n, double *gr, struct GMT_MODEL *M)
 	}
 }
 
-void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, struct GMT_MODEL *M, double *grow)
-{
+void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, struct GMT_MODEL *M, double *grow) {
 	/* model[n_model] holds solved coefficients of m_type model.
 	  grow[n_model] is a vector for a row of G matrix.  */
 
@@ -364,15 +360,14 @@ void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, double *model,
 	}
 }
 
-void move_model_a_to_b_1d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b)
-{
+void move_model_a_to_b_1d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b) {
 	unsigned int i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp, struct GMT_MODEL *M)
-{
+void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp, struct GMT_MODEL *M) {
+ 
    	/* mp is row dimension of gtg  */
 
 	uint64_t i;
@@ -405,8 +400,7 @@ void load_gtg_and_gtd_1d (struct TREND1D_DATA *data, uint64_t n_data, double *gt
 	}
 }
 
-void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir)
-{
+void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir) {
 	unsigned int i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
@@ -434,8 +428,7 @@ void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 	}
 }
 
-void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b)
-{
+void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b) {
 	/* Convert from Chebyshev coefficients used on a t =  [-1,+1] interval
 	 * to polynomial coefficients on the original x = [a b] interval.
 	 * Modified from Numerical Miracles, ...eh Recipes */

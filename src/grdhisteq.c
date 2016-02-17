@@ -87,8 +87,7 @@ void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
@@ -109,8 +108,7 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdhisteq and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -175,8 +173,7 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell)
-{
+float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
 	unsigned int low, high, i;
 
 	low = 0;
@@ -206,8 +203,8 @@ float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned in
 	return (0.0f);	/* Cannot get here - just used to quiet compiler */
 }
 
-int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals)
-{	/* Do basic histogram equalization */
+int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
+	/* Do basic histogram equalization */
 	uint64_t i, j, nxy;
 	unsigned int last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
@@ -286,8 +283,8 @@ int compare_indices (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
-{	/* Make an output grid file with standard normal scores */
+int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm) {
+	/* Make an output grid file with standard normal scores */
 	unsigned int row, col;
 	uint64_t i = 0, j = 0, ij, nxy;
 	double dnxy;

@@ -39,8 +39,7 @@
 
 #define GMT_PROG_OPTIONS "-:>RVabdfghior" GMT_OPT("FH")
 
-int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
@@ -75,8 +74,7 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to blockmean and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -166,8 +164,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); GMT_free (GMT, zw); GMT_free (GMT, xy); GMT_free (GMT, np); GMT_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
-int GMT_blockmean (void *V_API, int mode, void *args)
-{
+int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
 	unsigned int row, col, n_input;
 	int error;

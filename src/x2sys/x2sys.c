@@ -124,8 +124,7 @@ unsigned int n_x2sys_paths = 0;	/* Number of these directories */
 char *gmtmgg_path[10];  /* Max 10 directories for now */
 int n_gmtmgg_paths = 0; /* Number of these directories */
 
-int gmtmggpath_func (char *leg_path, char *leg)
-{
+int gmtmggpath_func (char *leg_path, char *leg) {
 	int id;
 	char geo_path[GMT_BUFSIZ] = {""};
 
@@ -529,8 +528,7 @@ double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n) {
  * array called data[] with each data value in it.
  */
 
-int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
-{
+int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G) {
 	bool error = false;
 	unsigned int j, k, i, pos;
 	int is;
@@ -632,8 +630,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 	return ((error || n_read != s->n_fields) ? -1 : 0);
 }
 
-int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
-{
+int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec) {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
 	 * pointer data.
@@ -696,8 +693,7 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	return (X2SYS_NOERROR);
 }
 
-int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s,
-                        struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec) {
+int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec) {
 	/* Reads the entire contents of the file given and returns the
 	 * number of data records.  The data matrix is return in the
 	 * pointer data.  The input file format is the venerable GMT
@@ -1552,8 +1548,7 @@ const char *x2sys_strerror (struct GMT_CTRL *GMT, int err) {
 	}
 }
 
-int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file)
-{
+int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
 	if (file && file[0])
@@ -1927,8 +1922,8 @@ unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, 
 	return (n_aux);
 }
 
-void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
-{	/* Load an ephemeral correction table */
+void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
+	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
 	unsigned int i, n_items, n_aux = 0, n_cols, missing;
 	int ks;

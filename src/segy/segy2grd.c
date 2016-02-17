@@ -116,8 +116,7 @@ void Free_segy2grd_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: segy2grd <segyfile> -G<grdfile> %s\n", GMT_Id_OPT);
@@ -150,8 +149,7 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to segy2grd and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -274,8 +272,7 @@ int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_segy2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_segy2grd (void *V_API, int mode, void *args)
-{
+int GMT_segy2grd (void *V_API, int mode, void *args) {
 	bool  read_cont = false, swap_bytes = !GMT_BIGENDIAN;
 	int error = 0;
 	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;

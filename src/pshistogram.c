@@ -233,8 +233,7 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	return (0);
 }
 
-double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D)
-{
+double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, bool stairs, bool flip_to_y, bool draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, bool cpt, struct D *D) {
 	int i, index, fmode = 0, label_justify = (flip_to_y) ? PSL_ML : PSL_BC;
 	uint64_t ibox;
 	char label[GMT_LEN64] = {""};
@@ -341,8 +340,7 @@ double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETT
 	return (area * F->box_width);
 }
 
-int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
-{
+int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats) {
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
 	uint64_t i, j;
@@ -384,8 +382,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 	return (0);
 }
 
-int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -W<width>[+l|h|b] [-A] [%s] [-C<cpt>] [-D[+b][+f<font>][+o<off>][+r]]\n", GMT_Jx_OPT, GMT_B_OPT);
@@ -438,8 +435,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pshistogram and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -600,8 +596,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pshistogram_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pshistogram (void *V_API, int mode, void *args)
-{
+int GMT_pshistogram (void *V_API, int mode, void *args) {
 	bool automatic = false;
 	int error = 0;
 

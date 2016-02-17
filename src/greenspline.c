@@ -205,8 +205,7 @@ void Free_greenspline_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
@@ -281,8 +280,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to greenspline and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -585,8 +583,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (struct GMT_CTRL *GMT, double (*G) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *), double (*D) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *), double par[], double x0, double x1, int N, struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg)
-{
+void dump_green (struct GMT_CTRL *GMT, double (*G) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *), double (*D) (struct GMT_CTRL *, double, double *, struct GREENSPLINE_LOOKUP *), double par[], double x0, double x1, int N, struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {
 	int i;
 	double x, dx, dy, y, t, ry, rdy;
 	double min_y, max_y, min_dy, max_dy;
@@ -624,14 +621,14 @@ void dump_green (struct GMT_CTRL *GMT, double (*G) (struct GMT_CTRL *, double, d
 /*----------------------  ONE DIMENSION ---------------------- */
 /* Basic linear spline (bilinear in 2-D) */
 
-double spline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{	/* Dumb linear spline */
+double spline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
+	/* Dumb linear spline */
 	GMT_UNUSED(GMT); GMT_UNUSED(par); GMT_UNUSED(unused);
 	return (r);	/* Just regular spline; par not used */
 }
 
-double gradspline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{	/* d/dr of r is 1 */
+double gradspline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
+	/* d/dr of r is 1 */
 	GMT_UNUSED(GMT); GMT_UNUSED(r); GMT_UNUSED(par); GMT_UNUSED(unused);
 	return (1.0);
 }
@@ -640,27 +637,24 @@ double gradspline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct
  * as per Sandwell [1987], G(r) = r^3.  All r must be >= 0.
  */
 
-double spline1d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double spline1d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	GMT_UNUSED(GMT); GMT_UNUSED(par); GMT_UNUSED(unused);
 	if (r == 0.0) return (0.0);
 
 	return (pow (r, 3.0));	/* Just regular spline; par not used */
 }
 
-double gradspline1d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double gradspline1d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	GMT_UNUSED(GMT); GMT_UNUSED(par); GMT_UNUSED(unused);
 	return (r);	/* Just regular spline; par not used */
 }
 
-double spline1d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-/* spline1d_Wessel_Bercovici computes the Green function for a 1-d spline
- * in tension as per Wessel and Bercovici [1988], G(u) = exp(-u) + u - 1,
- * where u = par[0] * r and par[0] = sqrt (t/(1-t)).
- * All r must be >= 0. par[0] = c
- */
-{
+double spline1d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
+	/* spline1d_Wessel_Bercovici computes the Green function for a 1-d spline
+	 * in tension as per Wessel and Bercovici [1988], G(u) = exp(-u) + u - 1,
+	 * where u = par[0] * r and par[0] = sqrt (t/(1-t)).
+	 * All r must be >= 0. par[0] = c
+	 */
 	double cx;
 	GMT_UNUSED(GMT); GMT_UNUSED(unused);
 
@@ -757,8 +751,7 @@ double gradspline2d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par
  * par[1] = phi^2/4
  */
 
-double spline2d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double spline2d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	double x, z, g, En, Ed;
 	GMT_UNUSED(GMT); GMT_UNUSED(unused);
 
@@ -814,23 +807,23 @@ double gradspline2d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
  * par[0] = 6/M_PI^2 (to normalize results)
  */
 
-double spline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *unused)
-{	/* Normalized to 0-1 */
+double spline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *unused) {
+	/* Normalized to 0-1 */
 	GMT_UNUSED(unused);
 	if (x == +1.0) return (1.0);
 	if (x == -1.0) return (0.0);
 	return (GMT_dilog (GMT, 0.5 - 0.5 * x) * par[0]);
 }
 
-double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *unused)
-{	/* Normalized to 0-1 */
+double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *unused) {
+	/* Normalized to 0-1 */
 	GMT_UNUSED(GMT); GMT_UNUSED(par); GMT_UNUSED(unused);
 	if (x == +1.0 || x == -1.0) return (0.0);
 	return (log (0.5 - 0.5 * x) * sqrt ((1.0 - x) / (1.0 + x)));
 }
 
-void series_prepare (struct GMT_CTRL *GMT, double p, unsigned int L, struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg)
-{	/* Precalculate Legendre series terms involving various powers/ratios of l and p */
+void series_prepare (struct GMT_CTRL *GMT, double p, unsigned int L, struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {
+	/* Precalculate Legendre series terms involving various powers/ratios of l and p */
 	unsigned int l;
 	double pp, t1, t2;
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Precalculate max %u terms for Legendre summation\n", L+1);
@@ -851,14 +844,14 @@ void series_prepare (struct GMT_CTRL *GMT, double p, unsigned int L, struct GREE
 	if (Lg) Lg->C = Lz->C;
 }
 
-unsigned int get_max_L (struct GMT_CTRL *GMT, double p, double err)
-{	/* Return max L needed given p and truncation err for Parker's simplified loop expression */
+unsigned int get_max_L (struct GMT_CTRL *GMT, double p, double err) {
+	/* Return max L needed given p and truncation err for Parker's simplified loop expression */
 	GMT_UNUSED(GMT);
 	return ((unsigned int)lrint (p / sqrt (err)  + 10.0));
 }
 
-void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr, unsigned int mode)
-{	/* Free all items allocated under the lookup structures.
+void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr, unsigned int mode) {
+	/* Free all items allocated under the lookup structures.
 	 * mode = 0 means Lz and mode = 1 means Lg; the latter has no B & C arrays */
 	struct GREENSPLINE_LOOKUP *L = *Lptr;
 	if (L == NULL) return;	/* Nothing to free */
@@ -873,8 +866,8 @@ void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr, unsign
 	*Lptr = NULL;
 }
 
-unsigned int get_L (double x, double p, double err)
-{	/* Determines the truncation order L_max given x, p, and err.
+unsigned int get_L (double x, double p, double err) {
+	/* Determines the truncation order L_max given x, p, and err.
 	 * See ParkerNotesJan2013.pdf in gurudocs for explanations and derivation */
 	unsigned int L_max;
 	double s, c, pp, Lf, gam, lam;
@@ -902,8 +895,8 @@ unsigned int get_L (double x, double p, double err)
 	return (L_max);
 }
 
-double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lz)
-{	/* Evaluate g = M_PI * Pv(-x)/sin (v*x) - log (1-x) via series approximation */
+double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lz) {
+	/* Evaluate g = M_PI * Pv(-x)/sin (v*x) - log (1-x) via series approximation */
 	unsigned int L_max, l;
 	double P0, P1, P2, S;
 	GMT_UNUSED(GMT);
@@ -929,8 +922,8 @@ double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double pa
 	return (S);
 }
 
-double gradspline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lg)
-{	/* Evaluate g = -M_PI * (v+1)*[x*Pv(-x)+Pv+1(-x)]/(sin (v*x)*sin(theta)) - 1/(1-x) via series approximation */
+double gradspline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lg) {
+	/* Evaluate g = -M_PI * (v+1)*[x*Pv(-x)+Pv+1(-x)]/(sin (v*x)*sin(theta)) - 1/(1-x) via series approximation */
 	unsigned int L_max, l;
 	double sin_theta, P0, P1, P2, S;
 	GMT_UNUSED(GMT);
@@ -964,8 +957,8 @@ double gradspline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, doubl
  *	 par[10] is min x
  */
 
-double csplint (double *y, double *c, double b, double h2, uint64_t klo)
-{	/* Special version of GMT_csplint where x is equidistant with spacing squared h2
+double csplint (double *y, double *c, double b, double h2, uint64_t klo) {
+	/* Special version of GMT_csplint where x is equidistant with spacing squared h2
  	 * and b is the fractional distance relative to x[klo], so x itself is not needed here. */
 	uint64_t khi;
 	double a, yp;
@@ -977,8 +970,8 @@ double csplint (double *y, double *c, double b, double h2, uint64_t klo)
 	return (yp);
 }
 
-double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L)
-{	/* Given x, look up nearest node xx[k] <= x and do cubic spline interpolation */
+double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L) {
+	/* Given x, look up nearest node xx[k] <= x and do cubic spline interpolation */
 	uint64_t k;
 	double f, f0, df, y;
 	GMT_UNUSED(GMT);
@@ -992,26 +985,23 @@ double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GRE
 	return (y);
 }
 
-double spline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L)
-{
+double spline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L) {
 	return (spline2d_lookup (GMT, x, par, L));
 }
 
-double gradspline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L)
-{
+double gradspline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L) {
 	return (spline2d_lookup (GMT, x, par, L));
 }
 
-void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double par[], double *x, struct GREENSPLINE_LOOKUP *L)
-{	/* Set up cubic spline interpolation given the precomputed x,y values of the function */
+void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double par[], double *x, struct GREENSPLINE_LOOKUP *L) {
+	/* Set up cubic spline interpolation given the precomputed x,y values of the function */
 	GMT_UNUSED(GMT);
 	GMT_UNUSED(par);
 	L->c = GMT_memory (GMT, NULL, 3*L->n, double);
 	GMT_cspline (GMT, x, L->y, L->n, L->c);
 }
 
-void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg)
-{
+void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {
 	uint64_t i, nx;
 	double *x = NULL;
 #ifdef DUMP
@@ -1055,27 +1045,24 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GRE
  * as per Sandwell [1987], G(r) = r.  All r must be >= 0.
  */
 
-double spline3d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double spline3d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	GMT_UNUSED(GMT); GMT_UNUSED(par); GMT_UNUSED(unused);
 	if (r == 0.0) return (0.0);
 
 	return (r);	/* Just regular spline; par not used */
 }
 
-double gradspline3d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double gradspline3d_sandwell (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	GMT_UNUSED(GMT); GMT_UNUSED(r); GMT_UNUSED(par); GMT_UNUSED(unused);
 	return (1.0);	/* Just regular spline; par not used */
 }
 
-double spline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-/* spline1d_Wessel_Bercovici computes the Green function for a 3-d spline
- * in tension as per Wessel and Bercovici [1988], G(u) = [exp(-u) -1]/u,
- * where u = par[0] * r and par[0] = sqrt (t/(1-t)).
- * All r must be >= 0. par[0] = c
- */
-{
+double spline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
+	/* spline1d_Wessel_Bercovici computes the Green function for a 3-d spline
+	 * in tension as per Wessel and Bercovici [1988], G(u) = [exp(-u) -1]/u,
+	 * where u = par[0] * r and par[0] = sqrt (t/(1-t)).
+	 * All r must be >= 0. par[0] = c
+	 */
 	double cx;
 	GMT_UNUSED(GMT); GMT_UNUSED(unused);
 
@@ -1085,8 +1072,7 @@ double spline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], 
 	return (((exp (-cx) - 1.0) / cx) + 1.0);
 }
 
-double gradspline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double gradspline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	double cx;
 	GMT_UNUSED(GMT); GMT_UNUSED(unused);
 
@@ -1101,8 +1087,7 @@ double gradspline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par
  * where u = par[0] * r. All r must be >= 0. par[0] = phi
  */
 
-double spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	double x;
 	GMT_UNUSED(GMT); GMT_UNUSED(unused);
 
@@ -1112,8 +1097,7 @@ double spline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], st
 	return ((erf (0.5 * x) / x) - M_INV_SQRT_PI);
 }
 
-double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused) {
 	double u, dgdr;
 	GMT_UNUSED(GMT); GMT_UNUSED(unused);
 
@@ -1135,8 +1119,7 @@ double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
  * coeff[GSP_RANGE]:	The largest |range| of the detrended data
  */
 
-double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim)
-{
+double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff, unsigned int dim) {
 	if (mode & GREENSPLINE_NORM) w_norm *= coeff[GSP_RANGE];	/* Scale back up by residual data range (ir we normalized) */
 	w_norm += coeff[GSP_MEAN_Z];					/* Add in mean data value plus minimum residual value (ir we normalized by range) */
 	if (mode & GREENSPLINE_TREND) {					/* Restore residual trend */
@@ -1146,8 +1129,8 @@ double undo_normalization (double *X, double w_norm, unsigned int mode, double *
 	return (w_norm);
 }
 
-void do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff)
-{	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
+void do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, double *coeff) {
+	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
 	 */
@@ -1194,8 +1177,8 @@ void do_normalization_1d (struct GMTAPI_CTRL *API, double **X, double *obs, uint
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "1-D Normalization coefficients: zoff = %g slope = %g xmean = %g range = %g\n", coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_RANGE]);
 }
 
-void do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, unsigned int dim, double *coeff)
-{	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
+void do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_t n, unsigned int mode, unsigned int dim, double *coeff) {
+	/* We always remove/restore the mean observation value.  mode is a combination of bitflags that affects what we do:
 	 * Bit GREENSPLINE_TREND will also remove linear trend
 	 * Bit GREENSPLINE_NORM will normalize residuals by range
 	 */
@@ -1261,8 +1244,7 @@ void do_normalization (struct GMTAPI_CTRL *API, double **X, double *obs, uint64_
 		coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_SLP_Y], coeff[GSP_MEAN_Y], coeff[GSP_RANGE]);
 }
 
-double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, unsigned int dim)
-{
+double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, unsigned int dim) {
 	double r = 0.0;
 	/* Get distance between the two points */
 	switch (dim) {
@@ -1280,8 +1262,7 @@ double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, unsigned int di
 	return (r);
 }
 
-double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, unsigned int dim, bool baz)
-{
+double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, unsigned int dim, bool baz) {
 	/* D, the directional cosines of the observed gradient:
 	 * X0: Observation point.
 	 * X1: Prediction point.
@@ -1312,8 +1293,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, u
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_greenspline_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_greenspline (void *V_API, int mode, void *args)
-{
+int GMT_greenspline (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii, n_duplicates = 0, n_skip = 0;
 	unsigned int dimension = 0, normalize, unit = 0, n_cols, L_Max = 0;
 	size_t old_n_alloc, n_alloc;

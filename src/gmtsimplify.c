@@ -76,8 +76,7 @@ void Free_gmtsimplify_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtsimplify [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
@@ -96,8 +95,7 @@ int GMT_gmtsimplify_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtsimplify_parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmtsimplify_parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtsimplify and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -277,8 +275,7 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtsimplify_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtsimplify (void *V_API, int mode, void *args)
-{
+int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	int error;
 	bool geo, poly, skip;
 	uint64_t tbl, col, row, seg_in, seg_out, np_out, ns_in = 0, ns_out = 0, n_in_tbl, *index = NULL;

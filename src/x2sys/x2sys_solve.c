@@ -292,8 +292,7 @@ int GMT_x2sys_solve_parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, 
 }
 
 #ifdef SAVEFORLATER
-int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, double **start, int *nf)
-{
+int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, double **start, int *nf) {
 	/* Reads a list with track names and their origin times (needed for -Et) */
 	size_t n_alloc = GMT_CHUNK;
 	int n = 0;
@@ -339,8 +338,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_solve_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-uint64_t next_unused_track (uint64_t *cluster, uint64_t n)
-{
+uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
 	uint64_t k;
 	for (k = 0; k < n; k++) if (cluster[k] == 0) return (k);
 	return (n);

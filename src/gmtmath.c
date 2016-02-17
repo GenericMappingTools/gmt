@@ -175,8 +175,7 @@ void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col)
-{
+bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
 	uint64_t i, start, stop;
 	unsigned int pos;
 	char p[GMT_BUFSIZ];
@@ -210,15 +209,15 @@ bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col)
 	return (!skip[t_col]);	/* Returns true if we are changing the time column */
 }
 
-int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_stored, char *label)
-{	/* Linear search to find the named storage item */
+int gmtmath_find_stored_item (struct GMTMATH_STORED *recall[], int n_stored, char *label) {
+	/* Linear search to find the named storage item */
 	int k = 0;
 	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
 	return (k == n_stored ? -1 : k);
 }
 
-void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col)
-{	/* Copies data from one column to another */
+void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col) {
+	/* Copies data from one column to another */
 	uint64_t seg;
 	for (seg = 0; seg < from->n_segments; seg++) {
 		GMT_memcpy (to->table[0]->segment[seg]->coord[to_col], from->segment[seg]->coord[from_col], from->segment[seg]->n_rows, double);
@@ -227,9 +226,8 @@ void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE 
 
 /* ---------------------- start convenience functions --------------------- */
 
-int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], \
-	char *file, bool svd, double eigen_min, struct GMT_OPTION *options, struct GMT_DATASET *A)
-{
+int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file, bool svd, double eigen_min, struct GMT_OPTION *options, struct GMT_DATASET *A) {
+
 	/* Consider the current table the augmented matrix [A | b], making up the linear system Ax = b.
 	 * We will set up the normal equations, solve for x, and output the solution before quitting.
 	 * This function is special since it operates across columns and returns n_col scalars.
@@ -434,34 +432,32 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	return (EXIT_SUCCESS);
 }
 
-int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A)
-{
+int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A) {
 	return (solve_LS_system (GMT, info, S, n_col, skip, file, false, eigen, options, A));
 }
 
-int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A)
-{
+int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A) {
 	return (solve_LS_system (GMT, info, S, n_col, skip, file, true, eigen, options, A));
 }
 
-void load_const_column (struct GMT_DATASET *to, uint64_t to_col, double factor)
-{	/* Sets all rows in a column to a constant factor */
+void load_const_column (struct GMT_DATASET *to, uint64_t to_col, double factor) {
+	/* Sets all rows in a column to a constant factor */
 	uint64_t row, seg;
 	for (seg = 0; seg < to->n_segments; seg++) {
 		for (row = 0; row < to->table[0]->segment[seg]->n_rows; row++) to->table[0]->segment[seg]->coord[to_col][row] = factor;
 	}
 }
 
-bool same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
-{	/* Are the two dataset the same size */
+bool same_size (struct GMT_DATASET *A, struct GMT_DATASET *B) {
+	/* Are the two dataset the same size */
 	uint64_t seg;
 	if (!(A->table[0]->n_segments == B->table[0]->n_segments && A->table[0]->n_columns == B->table[0]->n_columns)) return (false);
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) if (A->table[0]->segment[seg]->n_rows != B->table[0]->segment[seg]->n_rows) return (false);
 	return (true);
 }
 
-bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B)
-{	/* Are the two dataset the same domain */
+bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B) {
+	/* Are the two dataset the same domain */
 	uint64_t seg;
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) {
 		if (!(doubleAlmostEqualZero (A->table[0]->min[t_col], B->min[COL_T])
@@ -471,8 +467,7 @@ bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B
 	return (true);
 }
 
-int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A[-]<ftable>[+s]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
@@ -534,8 +529,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gmtmath and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -669,8 +663,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev)
-{	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
+unsigned int gmt_assign_ptrs (struct GMT_CTRL *GMT, unsigned int last, struct GMTMATH_STACK *S[], struct GMT_DATATABLE **T, struct GMT_DATATABLE **T_prev) {	/* Centralize the assignment of previous stack ID and the current and previous stack tables */
 	unsigned int prev;
 	if (last == 0) {	/* User error in requesting more items that presently on the stack */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Fatal error: Not enough items on the stack\n");

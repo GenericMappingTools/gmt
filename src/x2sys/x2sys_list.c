@@ -272,8 +272,8 @@ int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first, char *record)
-{	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
+void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first, char *record) {
+	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
 	 * col is used to set the format, and first is true for first item per record.
 	 */
 	int i;
@@ -290,8 +290,7 @@ void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool fi
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_list_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_list (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **weight_name = NULL, *tofrom[2] = {"stdin", "stdout"}, *from = NULL;
 	char record[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;

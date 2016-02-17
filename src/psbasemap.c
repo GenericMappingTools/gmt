@@ -210,8 +210,8 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psbasemap_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
-int GMT_psbasemap (void *V_API, int mode, void *args)
-{	/* High-level function that implements the psbasemap task */
+int GMT_psbasemap (void *V_API, int mode, void *args) {
+	/* High-level function that implements the psbasemap task */
 	int error;
 	
 	struct PSBASEMAP_CTRL *Ctrl = NULL;	/* Control structure specific to program */

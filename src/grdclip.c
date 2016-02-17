@@ -113,8 +113,7 @@ int GMT_grdclip_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int compare_classes (const void *point_1v, const void *point_2v)
-{
+int compare_classes (const void *point_1v, const void *point_2v) {
 	/*  Needed to sort classes on low value. */
 	const struct GRDCLIP_RECLASSIFY *point_1 = point_1v, *point_2 = point_2v;
 	
@@ -123,8 +122,7 @@ int compare_classes (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID

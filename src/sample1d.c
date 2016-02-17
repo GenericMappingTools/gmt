@@ -95,8 +95,7 @@ void Free_sample1d_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level) {
 	char type[3] = {'l', 'a', 'c'};
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -140,8 +139,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to sample1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -254,8 +252,7 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sample1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sample1d (void *V_API, int mode, void *args)
-{
+int GMT_sample1d (void *V_API, int mode, void *args) {
 	unsigned int geometry, int_mode;
 	bool resample_path = false;
 	int error = 0, result;

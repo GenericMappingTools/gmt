@@ -90,8 +90,7 @@ void Free_grdrotater_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdrotater <grid> %s -G<outgrid> [-F<polygontable>]\n", SPOTTER_E_OPT);
@@ -127,8 +126,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
 
 }
 
-int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdrotater and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -351,8 +349,8 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	return (D);
 }
 
-bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat)
-{	/* Returns true if the selected point is outside the polygon */
+bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat) {
+	/* Returns true if the selected point is outside the polygon */
 	uint64_t seg;
 	unsigned int inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */

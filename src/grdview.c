@@ -146,8 +146,7 @@ struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct
 	return (new_cont);
 }
 
-struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y)
-{
+struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y) {
 	struct GRDVIEW_POINT *point = GMT_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
 	point->x = x;
 	point->y = y;
@@ -157,8 +156,7 @@ struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y)
 #if 0
 /* RS: Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
 
-void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_plane, double plane_level)
-{
+void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_plane, double plane_level) {
 	int row, col, ij;
 	double xtmp, ytmp, tmp;
 
@@ -344,7 +342,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. Optionally, instead give name of a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign 16 continuous colors over the data range [rainbow].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Yet another option is to specify -Ccolor1,color2[,color3,...] to build a\n");
-    GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Use <drapegrid> rather than <topogrid> for color-coding.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use <topogrid> as the relief and drape the image on top.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
@@ -386,8 +384,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdview and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -639,8 +636,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdview_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdview (void *V_API, int mode, void *args)
-{
+int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
 	bool nothing_inside = false, use_intensity_grid;
 	unsigned int c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;

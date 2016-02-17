@@ -188,8 +188,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	}
 }
 
-void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
-{
+void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
 	GMT_memset (T, 1, struct PSTEXT_INFO);
 	if (C->T.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cannot have non-rectangular text box if clearance (-C) is zero.\n");
@@ -219,8 +218,7 @@ void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct
 	T->block_justify = C->F.justify;
 }
 
-int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
-{
+int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode) {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode.
 	 * Return 4 if GMT 4, 5 if GMT 5, -1 if nothing can be done */
@@ -259,8 +257,7 @@ int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 	return (4);
 }
 
-int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
-{
+int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	/* This displays the pstext synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -355,8 +352,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 #define GET_CMD_TEXT	3
 #define GET_CMD_FORMAT	4
 
-int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pstext and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -566,8 +562,8 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[])
-{	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
+int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[]) {
+	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
 	int ix, iy, nscan = 0;
 	unsigned int pos = 0;
 	char txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""}, txt_z[GMT_LEN256] = {""};
@@ -615,8 +611,8 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pstext (void *V_API, int mode, void *args)
-{	/* High-level function that implements the pstext task */
+int GMT_pstext (void *V_API, int mode, void *args) {
+	/* High-level function that implements the pstext task */
 
 	int  error = 0, k, fmode, nscan, *c_just = NULL;
 	bool master_record = false, skip_text_records = false, old_is_world, clip_set = false;

@@ -163,8 +163,7 @@ void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned int n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, unsigned int **v, unsigned int **cindex)
-{
+int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned int n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, unsigned int **v, unsigned int **cindex) {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
@@ -278,8 +277,8 @@ void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, FILE *fp)
-{	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
+void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, unsigned int nn, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *in_lbl[], unsigned int mode, FILE *fp) {
+	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones.
 	
 	   Note: mode = 1 (plot only), 2 (save labels only), 3 (both).
@@ -450,8 +449,8 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct PSCONTOUR_CTRL *Ctrl)
-{	/* The backwards compatible parser for old-style -T option: */
+unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, struct PSCONTOUR_CTRL *Ctrl) {
+	/* The backwards compatible parser for old-style -T option: */
 	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 	int n, j;
 	unsigned int n_errors = 0;

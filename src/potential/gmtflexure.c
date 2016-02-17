@@ -336,13 +336,13 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-double te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te)
-{	/* Convert elastic thickness to flexural rigidity */
+double te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te) {
+	/* Convert elastic thickness to flexural rigidity */
 	return (Ctrl->C.E * pow (te, 3.0) / (12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)));
 }
 
-int get_curvature (double flexure[], int n, double dist_increment, double curvature[])
-{	/* Calculate central second differences of flexure = curvature */
+int get_curvature (double flexure[], int n, double dist_increment, double curvature[]) {
+	/* Calculate central second differences of flexure = curvature */
 	int i;
 
 	dist_increment = -1.0/(dist_increment*dist_increment);	/* - since z points down */
@@ -354,8 +354,8 @@ int get_curvature (double flexure[], int n, double dist_increment, double curvat
 	return (1);
 }
 
-int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b)
-{ /* A 5-diagonal matrix problem A*w = p solved using a LU-transformation */
+int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b) {
+	/* A 5-diagonal matrix problem A*w = p solved using a LU-transformation */
 
 	int i, off3, off5;
 	double new_max, old_max, *l = NULL, *u = NULL, *z = NULL;
@@ -483,8 +483,7 @@ int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b)
  *
  */
 
-int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right)
-{
+int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2 = 0.0, stress2, restore, *work = NULL;
 
@@ -694,8 +693,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 
 #define LIMIT	0.01
 
-int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right)
-{
+int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right) {
 	int i, error;
 	double restore_a, restore_b1, restore_b2, diff = 2 * LIMIT, dw, w0, w1, wn1, wn, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
@@ -794,8 +792,7 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
  *
  */
 
-int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right)
-{
+int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2, stress2, restore, *work = NULL, *squeeze = NULL;
 
@@ -997,8 +994,7 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
  * ONLY APPLIES IF RHO_L == RHO_I
  */
 
-int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore)
-{
+int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore) {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
@@ -1076,8 +1072,7 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	return (0);
 }
 
-int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore)
-{
+int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore) {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
@@ -1154,8 +1149,7 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	return (0);
 }
 
-int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx)
-{
+int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx) {
 	int i, error, i_rx;
 	double restore_a, restore_b1, restore_b2, restore_b3, diff = 2 * LIMIT, dw, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;

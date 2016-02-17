@@ -107,8 +107,8 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 
 #define N_NOT_SUPPORTED	8
 
-int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file)
-{	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
+int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file) {
+	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
 	unsigned int i;
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
 	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
@@ -137,8 +137,8 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
-bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h)
-{	/* Look for phase shifts in w/e/s/n between the two grids */
+bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h) {
+	/* Look for phase shifts in w/e/s/n between the two grids */
 	unsigned int way, side;
 	double a;
 	for (side = 0; side < 4; side++) {
@@ -151,8 +151,7 @@ bool out_of_phase (struct GMT_GRID_HEADER *g, struct GMT_GRID_HEADER *h)
 	return false;
 }
 
-bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode)
-{
+bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GMT_GRID_HEADER *h, unsigned int mode) {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
 	w = ((mode) ? B->wesn[XLO] : B->G->header->wesn[XLO]) - shift;	e = ((mode) ? B->wesn[XHI] : B->G->header->wesn[XHI]) - shift;
@@ -462,8 +461,7 @@ void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");

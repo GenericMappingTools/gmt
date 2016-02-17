@@ -223,8 +223,8 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int gmt_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng)
-{	/* Handle processing of a single file argument.  Return 1 if successful, 0 if error */
+int gmt_process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_CTRL *Ctrl, unsigned int ng) {
+	/* Handle processing of a single file argument.  Return 1 if successful, 0 if error */
 	int j;
 	unsigned int n_errors = 0;
 	char line[GMT_BUFSIZ] = {""};
@@ -463,8 +463,8 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode)
-{	/* Examine the -E<args> option and determine the distance unit and mode. */
+unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsigned int *mode) {
+	/* Examine the -E<args> option and determine the distance unit and mode. */
 	unsigned int id, pos = 0, pos2 = 0, error = 0, l_mode[3], this_mode = 0;
 	size_t len, k, kk, s;
 	char *c = NULL, p[GMT_BUFSIZ] = {""}, modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""}, this_unit = 0, l_unit[3];
@@ -539,8 +539,8 @@ unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *unit, unsig
 	return (error);
 }
 
-int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[])
-{	/* Mode = 0: Cartesian, 1 = geographic, 2 = img mercmator */
+int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, unsigned int mode, double x_in, double y_in, double value[]) {
+	/* Mode = 0: Cartesian, 1 = geographic, 2 = img mercmator */
 	unsigned int g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
 
@@ -586,8 +586,7 @@ int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned i
 
 /* The following two scanners are used below in the gmt_grdspiral_search */
 
-unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int64_t r_col, struct GMT_ZSEARCH *S)
-{
+unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int64_t r_col, struct GMT_ZSEARCH *S) {
 	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is returned, 0 if all NaN */
 	unsigned int ret_code = 0;
 	int64_t col, node;
@@ -611,9 +610,8 @@ unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t l_col, int
 	return (ret_code);
 }
 
-unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int64_t b_row, struct GMT_ZSEARCH *S)
-{
-/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN or beyond max radius*/
+unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int64_t b_row, struct GMT_ZSEARCH *S) {
+	/* Look along this row, return 2 if ran out of row/col, 1 if nearest non-NaN is return, 0 if all NaN or beyond max radius*/
 	unsigned int ret_code = 0;
 	int64_t row, node;
 	double r;
@@ -653,8 +651,7 @@ unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t t_row, int
  * The -T is experimental: Contact P. Wessel for issues.
  */
 
-unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZSEARCH *S, double x, double y)
-{
+unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZSEARCH *S, double x, double y) {
 	unsigned int T, B, L, R;
 	int64_t t_row, b_row, l_col, r_col, step = 0, col0, row0;
 	bool done = false, found = false;

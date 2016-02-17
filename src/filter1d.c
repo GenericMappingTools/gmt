@@ -172,8 +172,7 @@ void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deal
 	GMT_free (GMT, C);
 }
 
-int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
@@ -227,8 +226,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to filter1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -357,37 +355,31 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 
 /* Various functions which will be accessed via pointers depending on chosen filter */
 
-double boxcar_weight (double radius, double half_width)
-{
+double boxcar_weight (double radius, double half_width) {
 	return ((radius > half_width) ? 0.0 : 1.0);
 }
 
-double cosine_weight_filter1d (double radius, double half_width)
-{
+double cosine_weight_filter1d (double radius, double half_width) {
 	return ((radius > half_width) ? 0.0 : 1.0 + cos (radius * M_PI / half_width));
 }
 
-double gaussian_weight (double radius, double half_width)
-{
+double gaussian_weight (double radius, double half_width) {
 	return ((radius > half_width) ? 0.0 : exp (-4.5 * radius * radius / (half_width * half_width)));
 }
 
-void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
-{
+void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i;
 
 	for (i = 0; i < F->n_cols; ++i) F->data[i] = GMT_memory (GMT, F->data[i], F->n_row_alloc, double);
 }
 
-void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
-{
+void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i;
 
 	for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, F->work[i], F->n_work_alloc, double);
 }
 
-int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
-{
+int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i, i1, i2;
 	bool normalize = false;
 	double t_0, t_1, time, w_sum;
@@ -480,8 +472,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	return (0);
 }
 
-int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t right)
-{
+int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t right) {
 	uint64_t last_row, this_row;
 	bool lacking = false;
 	double last_t;
@@ -505,8 +496,7 @@ int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t
 	return (lacking);
 }
 
-void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64_t j, uint64_t n, int both)
-{
+void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64_t j, uint64_t n, int both) {
 	uint64_t i, n_smooth;
 	bool sort_me = true;
 	double low, high, last, temp;

@@ -214,8 +214,7 @@ int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sphinterpolate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_sphinterpolate (void *V_API, int mode, void *args)
-{
+int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	unsigned int row, col;
 	int error = 0;
 

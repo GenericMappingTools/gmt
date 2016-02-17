@@ -81,8 +81,7 @@ void Free_gshhg_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocat
 	GMT_free (GMT, C);	
 }
 
-int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_o_OPT);
@@ -105,8 +104,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 	
-int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gshhg and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -185,8 +183,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gshhg (void *V_API, int mode, void *args)
-{
+int GMT_gshhg (void *V_API, int mode, void *args) {
 	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;

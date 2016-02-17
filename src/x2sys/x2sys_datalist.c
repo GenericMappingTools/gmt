@@ -177,8 +177,7 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
-{
+bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A) {
 	unsigned int k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
 	int n_fields;
 	uint64_t n = 0, n_expected_fields = 2;
@@ -217,8 +216,7 @@ bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *t
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_datalist_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_datalist (void *V_API, int mode, void *args)
-{
+int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 
 	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;

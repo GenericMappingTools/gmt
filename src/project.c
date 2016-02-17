@@ -115,8 +115,7 @@ int compare_distances (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, bool c_given, bool generate)
-{
+double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, bool c_given, bool generate) {
 	/* routine sets up a unit 3-vector p, the pole of an
 	   oblique projection, given plat, plon, the position
 	   of this pole in the usual coordinate frame.
@@ -278,8 +277,7 @@ void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, doubl
 	GMT_normalize3v (GMT, c);
 }
 
-void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set)
-{
+void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
 	/* Sets up stuff for rotation of cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
 	   Output is the negative cartesian azimuth in degrees.
@@ -296,8 +294,8 @@ void flat_project_setup (double alat, double alon, double blat, double blon, dou
 	e[2] = -e[1];
 }
 
-void copy_text_from_col3 (char *line, char *z_cols)
-{	/* returns the input line starting at the 3rd column */
+void copy_text_from_col3 (char *line, char *z_cols) {
+	/* returns the input line starting at the 3rd column */
 
 	unsigned int i;
 

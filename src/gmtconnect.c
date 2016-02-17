@@ -224,8 +224,8 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-static int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist)
-{	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
+static int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist) {
+	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
 	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
 	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */

@@ -39,8 +39,7 @@
 
 #define GMT_PROG_OPTIONS "-:>RVabdfghior" GMT_OPT("FH")
 
-int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s\n", GMT_I_OPT);
@@ -73,8 +72,7 @@ int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to blockmedian and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -156,9 +154,7 @@ int GMT_blockmedian_parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
-	unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data)
-{
+void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra, unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data) {
 	double weight_half, weight_count;
 	uint64_t node, n_in_cell, node1;
 	unsigned int k, k_for_xy;
@@ -237,8 +233,7 @@ void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t fi
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); Free_blockmedian_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmedian (void *V_API, int mode, void *args)
-{
+int GMT_blockmedian (void *V_API, int mode, void *args) {
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
 	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
 

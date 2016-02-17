@@ -77,8 +77,7 @@ struct TREND2D_DATA {
 	double	w;
 };
 
-int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, int weighted_input, double **work)
-{
+int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, int weighted_input, double **work) {
 	uint64_t i;
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
@@ -127,8 +126,7 @@ int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_
 	return (0);
 }
 
-void allocate_the_memory_2d (struct GMT_CTRL *GMT, uint64_t np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
-{
+void allocate_the_memory_2d (struct GMT_CTRL *GMT, uint64_t np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model) {
 	*gtg = GMT_memory (GMT, NULL, np*np, double);
 	*v = GMT_memory (GMT, NULL, np*np, double);
 	*gtd = GMT_memory (GMT, NULL, np, double);
@@ -140,8 +138,7 @@ void allocate_the_memory_2d (struct GMT_CTRL *GMT, uint64_t np, double **gtg, do
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs)
-{
+void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs) {
 	uint64_t i;
 	unsigned int j;
 	static double out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -173,8 +170,7 @@ void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint
 	}
 }
 
-void free_the_memory_2d (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND2D_DATA *data, double *work)
-{
+void free_the_memory_2d (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb, double *workz, double *c_model, double *o_model, double *w_model, struct TREND2D_DATA *data, double *work) {
 	GMT_free (GMT, work);
 	GMT_free (GMT, data);
 	GMT_free (GMT, w_model);
@@ -188,8 +184,7 @@ void free_the_memory_2d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax)
-{
+void transform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax) {
 	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
@@ -329,8 +324,8 @@ void move_model_a_to_b_2d (double *model_a, double *model_b, unsigned int n_mode
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp)
-{	/* mp is row dimension of gtg  */
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp) {
+	/* mp is row dimension of gtg  */
 
 	uint64_t i;
 	unsigned int j, k;
@@ -363,8 +358,7 @@ void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint6
 	}
 }
 
-void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir)
-{
+void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir) {
 
 	unsigned int i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;

@@ -59,8 +59,7 @@ void Free_grdconvert_Ctrl (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdconvert_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdconvert_usage (struct GMTAPI_CTRL *API, int level) {
 	int i;
 	char **grdformats = GMT_grdformats_sorted (API->GMT);
 

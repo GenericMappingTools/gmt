@@ -160,8 +160,7 @@ void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e]\n");
@@ -326,8 +325,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77list and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -668,8 +666,7 @@ int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
-{
+int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
 	unsigned int i, j, k, n_aux;
 	int this_aux;
 
@@ -694,8 +691,7 @@ int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD7
 	return (n_aux);
 }
 
-int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux)
-{
+int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, int n_aux) {
 	/* This adds additional aux colums that are required by the correction table and not already requested by other means (e.g. -F) */
 	int i, j, k, this_aux, n;
 	
@@ -716,8 +712,7 @@ int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *a
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77list_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77list (void *V_API, int mode, void *args)
-{
+int GMT_mgd77list (void *V_API, int mode, void *args) {
 	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;

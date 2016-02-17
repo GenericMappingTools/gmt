@@ -96,8 +96,8 @@ void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) 
 	GMT_free (GMT, C);
 }
 
-struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n)
-{	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
+struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
+	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new_node = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new_node->distance = GMT_memory (GMT, NULL, n, float);
 	new_node->datum = GMT_memory (GMT, NULL, n, int64_t);
@@ -106,8 +106,8 @@ struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n)
 	return (new_node);
 }
 
-void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id)
-{	/* Allocates node space if not already used and updates the value if closer to node than the current value */
+void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id) {
+	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
 	if (!(*node)) *node = add_new_node (GMT, n_sector);
 	if ((*node)->datum[sector] == -1 || (*node)->distance[sector] > distance) {
@@ -116,8 +116,8 @@ void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigne
 	}
 }
 
-void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node)
-{	/* Frees allocated node space */
+void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
+	/* Frees allocated node space */
 
 	if (!node) return;	/* Nothing to do */
 	GMT_free (GMT, node->distance);
@@ -125,8 +125,7 @@ void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node)
 	GMT_free (GMT, node);
 }
 
-int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
@@ -161,8 +160,7 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to nearneighbor and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -259,8 +257,7 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_nearneighbor_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_nearneighbor (void *V_API, int mode, void *args)
-{
+int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj, error = 0;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
 	bool wrap_180, replicate_x, replicate_y;

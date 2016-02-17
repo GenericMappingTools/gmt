@@ -172,8 +172,7 @@ void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pscoast synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -267,8 +266,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pscoast and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.

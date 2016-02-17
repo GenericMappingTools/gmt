@@ -309,8 +309,8 @@ unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int
 	return (n_out);
 }
 
-void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3])
-{	/* Given points in A and B, return the bisector pole via P */
+void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3]) {
+	/* Given points in A and B, return the bisector pole via P */
 	 
 	unsigned int i;
 	double Pa[3], M[3];
@@ -331,8 +331,8 @@ void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3])
 	GMT_normalize3v (GMT, P);
 }
 
-void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az)
-{	/* Given point in A and azimuth az, return the pole P to the oblique equator with given az at A */
+void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az) {
+	/* Given point in A and azimuth az, return the pole P to the oblique equator with given az at A */
 	double R[3][3], tmp[3], B[3] = {0.0, 0.0, 1.0};	/* set B to north pole  */
 	GMT_cross3v (GMT, A, B, tmp);	/* Point C is 90 degrees away from plan through A and B */
 	GMT_normalize3v (GMT, tmp);	/* Get unit vector */
@@ -340,8 +340,7 @@ void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az)
 	GMT_matrix_vect_mult (GMT, 3U, R, tmp, P);
 }
 
-void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E)
-{
+void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E) {
 	/* Determines the mean vector M and the covariance matrix C */
 	
 	unsigned int i, j, k, n_components, nrots;
@@ -420,8 +419,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
-void gmt_make_rot2d_matrix (double angle, double R[3][3])
-{
+void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 	double s, c;
 	GMT_memset (R, 9, double);
 	sincosd (angle, &s, &c);
@@ -432,8 +430,7 @@ void gmt_make_rot2d_matrix (double angle, double R[3][3])
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtvector_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtvector (void *V_API, int mode, void *args)
-{
+int GMT_gmtvector (void *V_API, int mode, void *args) {
 	unsigned int tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
 	bool single = false, convert;
 	

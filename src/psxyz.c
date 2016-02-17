@@ -133,8 +133,7 @@ void Free_psxyz_Ctrl (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *C) {	/* Deallocat
 	GMT_free (GMT, C);
 }
 
-int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psxyz synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -256,8 +255,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S)
-{
+int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S) {
 	/* This parses the options provided to psxyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -398,8 +396,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double z, double *dim, double rgb[3][4], int outline)
-{
+void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double z, double *dim, double rgb[3][4], int outline) {
 	int i, k;
 	double x_size, y_size, z_size, sign;
 
@@ -434,8 +431,7 @@ void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, d
 	}
 }
 
-int dist_compare (const void *a, const void *b)
-{
+int dist_compare (const void *a, const void *b) {
 	if (((struct PSXYZ_DATA *)a)->dist[0] < ((struct PSXYZ_DATA *)b)->dist[0]) return (-1);
 	if (((struct PSXYZ_DATA *)a)->dist[0] > ((struct PSXYZ_DATA *)b)->dist[0]) return (1);
 	if (((struct PSXYZ_DATA *)a)->dist[1] < ((struct PSXYZ_DATA *)b)->dist[1]) return (-1);
@@ -465,8 +461,8 @@ int dist_compare (const void *a, const void *b)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psxyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psxyz (void *V_API, int mode, void *args)
-{	/* High-level function that implements the psxyz task */
+int GMT_psxyz (void *V_API, int mode, void *args) {
+	/* High-level function that implements the psxyz task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool default_outline, outline_active, save_u = false, geovector = false;

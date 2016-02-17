@@ -134,8 +134,7 @@ void Free_pssegyz_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_pssegyz_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pssegyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssegyz [<segyfile>] -D<dev> -F<color> | -W %s\n", GMT_Jx_OPT);
@@ -178,8 +177,7 @@ int GMT_pssegyz_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pssegyz_parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pssegyz_parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pssegyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -329,8 +327,8 @@ int GMT_pssegyz_parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double segyz_rms (float *data, int n_samp)
-{	/* function to return rms amplitude of n_samp values from the array data */
+double segyz_rms (float *data, int n_samp) {
+	/* function to return rms amplitude of n_samp values from the array data */
 	int ix;
 	double sumsq = 0.0;
 
@@ -340,8 +338,8 @@ double segyz_rms (float *data, int n_samp)
 	return (sumsq);
 }
 
-int segyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny)
-{	/* ix iy is pixel to paint */
+int segyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny) {
+	/* ix iy is pixel to paint */
 	static unsigned char bmask[8]={128, 64, 32, 16, 8, 4, 2, 1};
 	int byte, quot, rem;
 
@@ -355,8 +353,7 @@ int segyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny)
 	return (0);
 }
 
-void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */
-{
+void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */ {
 	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
 
@@ -401,10 +398,10 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	}
 }
 
-void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y_edge, double slope1, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny)
-/* shade a quadrilateral with two sides parallel to x axis, one side at y=y0 with ends at x0 and x1,
-with lines with gradients slope0 and slope1 respectively */
-{
+void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y_edge, double slope1, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+	/* shade a quadrilateral with two sides parallel to x axis, one side at y=y0 with ends at x0 and x1,
+	   with lines with gradients slope0 and slope1 respectively */
+
 	int pedge_y, py0, iy, ix1, ix2, ix;
 
 	if (y0 == y_edge) return;
@@ -434,10 +431,10 @@ with lines with gradients slope0 and slope1 respectively */
 	}
 }
 
-void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, double edge_y, double slope, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny)
-/* shade a triangle specified by apex coordinates, y coordinate of an edge (parallel to x-axis)
-and slopes of the two other sides */
-{
+void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, double edge_y, double slope, double slope0, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+	/* shade a triangle specified by apex coordinates, y coordinate of an edge (parallel to x-axis)
+	   and slopes of the two other sides */
+
 	int papex_y, pedge_y, iy, ix, x1, x2;
 
 #ifdef DEBUG
@@ -480,8 +477,8 @@ and slopes of the two other sides */
 }
 
 #define NPTS 4 /* 4 points for the general case here */
-void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, int negative, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current samples with all options to bitmap */
-{
+void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, int negative, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int bm_nx, int bm_ny) {
+	/* apply current samples with all options to bitmap */
 	int ix, iy;
 	double xp[NPTS], yp[NPTS], interp, slope01, slope02, slope12, slope13, slope23, slope03;
 	double slope0, slope1, slope2, slope3;
@@ -556,10 +553,10 @@ void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, 
 	}
 }
 
-void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, double y0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int  bm_nx, int bm_ny)
+void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, double y0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dev_x, double dev_y, double dpi, unsigned char *bitmap, int  bm_nx, int bm_ny) {
 	/* shell function to loop over all samples in the current trace, determine plot options
 	 * and call the appropriate bitmap routine */
-{
+
 	int iz, paint_wiggle;
 	float z0 = (float)GMT->common.R.wesn[ZLO], z1;
 
@@ -582,8 +579,7 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pssegyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pssegyz (void *V_API, int mode, void *args)
-{
+int GMT_pssegyz (void *V_API, int mode, void *args) {
 	int nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny, error;
 
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};

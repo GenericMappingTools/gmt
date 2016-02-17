@@ -123,8 +123,7 @@ void Free_talwani2d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_talwani2d_parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	unsigned int k, n_errors = 0, n_files = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
@@ -250,8 +249,7 @@ int GMT_talwani2d_usage (struct GMTAPI_CTRL *API, int level) {
  * modelling, Geophys. Prosp.
  */
  
-double integralI1 (double xa, double xb, double za, double zb, double y)
-{
+double integralI1 (double xa, double xb, double za, double zb, double y) {
 	/* This function performs the integral I1 (i,Y) from
 	 * Rasmussen & Pedersen's paper
 	 */
@@ -281,8 +279,7 @@ double integralI1 (double xa, double xb, double za, double zb, double y)
 	return (part1 + part2 + part3);
 }
 
-double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0,
-                  double rho, double ymin, double ymax) {
+double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho, double ymin, double ymax) {
 /*  x0;		X-coordinate of observation point */
 /*  z0;		Z-coordinate of observation point */
 /*  x[];	Array of xpositions */
@@ -323,8 +320,7 @@ double grav_2_5D (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, 
 	return (sum);
 }
 
-double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho)
-{
+double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n, double x0, double z0, double rho) {
 	/*  x0;		X-coordinate of observation point */
 	/*  z0;		Z-coordinate of observation point */
 	/*  x[];	Array of xpositions */
@@ -364,8 +360,8 @@ double get_grav2d (struct GMT_CTRL *GMT, double x[], double z[], unsigned int n,
 	return (sum);
 }
 
-double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, double x0, double z0, double rho)
-{	/* From Kim & Wessel, 2015 */
+double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, double x0, double z0, double rho) {
+	/* From Kim & Wessel, 2016 */
 	int i1, i2;
 	double sum = 0.0, x1, z1, x2, z2, r1sq, r2sq;
 	double dx, dz, drsq, two_theta2, two_theta1, sin_2th2, sin_2th1;
@@ -405,8 +401,8 @@ double get_vgg2d (struct GMT_CTRL *GMT, double *x, double *z, unsigned int n, do
 	return (sum);
 }
 
-double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho)
-{	/* Based on Chaptman, 1979, Techniques for interpretation of geoid anomalies, JGR, 84 (B8), 3793-3801.
+double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n, double y0, double z0, double rho) {
+	/* Based on Chaptman, 1979, Techniques for interpretation of geoid anomalies, JGR, 84 (B8), 3793-3801.
 	 *  y0;		Y-coordinate of observation point, in m
 	 *  z0;		Z-coordinate of observation point, in m
 	 *  y[];	Y-coordinates of vertices, in m
@@ -492,8 +488,8 @@ double get_geoid2d (struct GMT_CTRL *GMT, double y[], double z[], unsigned int n
 	return (N);
 }
 
-double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax)
-{	/* Evaluate output at a single observation point (x,z) */
+double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struct BODY2D *body, unsigned int n_bodies, unsigned int mode, double ymin, double ymax) {
+	/* Evaluate output at a single observation point (x,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
 	double area, v_sum = 0.0, v;
@@ -518,8 +514,7 @@ double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_obs, struc
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_talwani2d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_talwani2d (void *V_API, int mode, void *args)
-{
+int GMT_talwani2d (void *V_API, int mode, void *args) {
 	int srow, error = 0, ns;
 	unsigned int k, tbl, seg, n = 0, geometry, n_bodies, dup_node, n_duplicate = 0;
 	size_t n_alloc = 0, n_alloc1 = 0;

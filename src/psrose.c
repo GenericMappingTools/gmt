@@ -119,8 +119,7 @@ void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level) {
 	double r;
 	char *choice[2] = {"OFF", "ON"};
 
@@ -176,8 +175,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psrose and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -336,8 +334,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psrose_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psrose (void *V_API, int mode, void *args)
-{
+int GMT_psrose (void *V_API, int mode, void *args) {
 	bool find_mean = false, do_fill = false;
 	bool automatic = false, sector_plot = false, windrose = true;
 	unsigned int n_bins, n_modes, form, n_in, half_only = 0, bin;

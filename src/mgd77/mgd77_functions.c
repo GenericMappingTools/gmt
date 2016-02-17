@@ -8,8 +8,7 @@
 
 #include "mgd77_functions.h"
 
-void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P)
-{
+void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P) {
 	/* Read the netCDF-encoded MGD77 header parameters as attributes of the data set.
 	 * If orig is true we will recover the original MGD77 parameters; otherwise we first
 	 * look for revised parameters and fall back on the original if no revision is found. */
@@ -95,8 +94,7 @@ void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, stru
 	for (i = 0, F->revised = false; !F->revised && i < MGD77_N_HEADER_PARAMS; i++) if (L[i].revised) F->revised = true;
 }
 
-void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P)
-{
+void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P) {
 	/* Write the MGD77 header parameters as attributes of the netCDF-encoded data set */
 
 	struct MGD77_HEADER_LOOKUP *L;
@@ -342,8 +340,8 @@ void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F) {
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "E77");
 }
 
-unsigned int MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
-{	/* Get a single parameter: original if requested, otherwise check for revised value first */
+unsigned int MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev) {
+	/* Get a single parameter: original if requested, otherwise check for revised value first */
 	unsigned int got_rev = 0;
 
 	if (!F->original) { /* Must look for revised attribute unless explicitly turned off [ e.g, mgd77convert -FC] */
@@ -358,8 +356,8 @@ unsigned int MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	return (got_rev);
 }
 
-void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, unsigned int revised)
-{	/* Function assumes we are in define mode.
+void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, unsigned int revised) {
+	/* Function assumes we are in define mode.
 	 * Place a single parameter in one of several ways:
 	 * revised == 2: Only write the revised attribute [This only happens in mgd77manage where we update a value via -Ae]
 	 * revised == 1: Write both revised and original attribute; [e.g., mgd77manage -D needs this]
@@ -450,8 +448,8 @@ struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[MGD77_N_HEADER_PARAMS] = {
 	{ "Additional_Documentation_7"                  ,  79U, 24,  1, false, 0, { NULL, NULL } },
 };
 
-void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P)
-{	/* Assigns array of pointers to each idividual parameter */
+void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P) {
+	/* Assigns array of pointers to each idividual parameter */
 	int i;
 
 	GMT_UNUSED(C);

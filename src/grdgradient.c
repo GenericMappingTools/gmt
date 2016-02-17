@@ -114,8 +114,7 @@ double specular (double nx, double ny, double nz, double *s) {
 	return (MAX(0, 2 * (s[0]*nx + s[1]*ny + s[2]*nz) * nz - s[2]));
 }
 
-int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n");
@@ -160,8 +159,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdgradient and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -330,8 +328,7 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdgradient_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgradient (void *V_API, int mode, void *args)
-{
+int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool sigma_set = false, offset_set = false, bad, new_grid = false;
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;

@@ -723,8 +723,8 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	return alpha;
 }
 
-void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *A, FILE *fp)
-{	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
+void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *A, FILE *fp) {
+	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
 	if (A->paint) {	/* Paint the background of the page */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));

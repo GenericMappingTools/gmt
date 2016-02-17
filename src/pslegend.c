@@ -72,8 +72,7 @@ void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pslegend synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -105,8 +104,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pslegend and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -257,8 +255,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 #define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* Used to draw the current y-line for debug purposes only. */
-void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0)
-{
+void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0) {
 	struct GMT_PEN faint_pen;
 	GMT_init_pen (GMT, &faint_pen, 0.0);
 	GMT_setpen (GMT, &faint_pen);
@@ -266,8 +263,7 @@ void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1,
 }
 
 /* Used to fill the cells in the the current y-line. */
-void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xoff[], double *d_gap, unsigned int n_cols, char *fill[])
-{
+void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xoff[], double *d_gap, unsigned int n_cols, char *fill[]) {
 	unsigned int col;
 	double dim[2];
 	struct GMT_FILL F;
@@ -286,8 +282,7 @@ void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xof
 	*d_gap = 0.0;	/* Reset any "gap after D operator" once we use it */
 }
 
-struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry)
-{
+struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry) {
 	uint64_t dim[3] = {1, 1, GMT_SMALL_CHUNK};
 	struct GMT_TEXTSET *D = NULL;
 	if (Din) return Din;	/* Already done this */
@@ -298,8 +293,7 @@ struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEX
 	return (D);
 }
 
-struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry)
-{
+struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry) {
 	uint64_t dim[4] = {1, GMT_SMALL_CHUNK, 2, 2};	/* We will a 2-row data set for up to 64 lines; allocate just once */
 	struct GMT_DATASET *D = NULL;
 	if (Din) return Din;	/* Already done this */
@@ -325,8 +319,8 @@ struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DAT
 
 #define PSLEGEND_MAX_COLS	100
 
-int GMT_pslegend (void *V_API, int mode, void *args)
-{	/* High-level function that implements the pslegend task */
+int GMT_pslegend (void *V_API, int mode, void *args) {
+	/* High-level function that implements the pslegend task */
 	unsigned int tbl, pos;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan;
 	int status = 0, object_ID;

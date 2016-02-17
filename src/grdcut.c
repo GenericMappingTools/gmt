@@ -88,8 +88,7 @@ void Free_grdcut_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n|r][<min>/<max>]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
@@ -118,8 +117,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -197,8 +195,8 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side)
-{	/* Looo around current perimeter and count # of nans, return sum and pass back which side had most nans */
+unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int row0, unsigned int row1, unsigned int col0, unsigned int col1, unsigned int count[], unsigned int *side) {
+	/* Looo around current perimeter and count # of nans, return sum and pass back which side had most nans */
 	unsigned int col, row, sum = 0, k;
 	uint64_t node;
 	
@@ -223,8 +221,7 @@ unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdcut_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdcut (void *V_API, int mode, void *args)
-{
+int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;

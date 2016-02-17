@@ -210,8 +210,7 @@ void Free_grdspotter_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
@@ -249,8 +248,7 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdspotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -402,8 +400,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow)
-{
+int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow) {
 	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;
 
@@ -477,8 +474,8 @@ bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t 
 	return (true);	/* We are returning a useful age */
 }
 
-void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
-{	/* Determines the grid's min/max z-values and normalizes the grid
+void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data) {
+	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
 	unsigned int row, col;
 	uint64_t node;

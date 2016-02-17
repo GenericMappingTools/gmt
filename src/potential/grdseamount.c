@@ -150,8 +150,7 @@ void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-Cc|d|g|p] [-D%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
@@ -204,8 +203,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdseamount and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -338,8 +336,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
-{
+void disc_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical disc "seamounts" (more like plateaus).
 	 * Here, f is not used; ignore compiler warning. */
 
@@ -352,8 +349,7 @@ void disc_area_volume_height (double a, double b, double h, double hc, double f,
 	*V = *A * (*z);
 }
 
-void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
-{
+void para_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical parabolic seamounts. */
 	double e, r2, rc2;
 
@@ -365,8 +361,7 @@ void para_area_volume_height (double a, double b, double h, double hc, double f,
 	*z = (*V) / (*A);
 }
 
-void cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
-{
+void cone_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical conical seamounts */
 
 	double e, r2;
@@ -378,8 +373,7 @@ void cone_area_volume_height (double a, double b, double h, double hc, double f,
 	*z = (*V) / (*A);
 }
 
-void gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z)
-{
+void gaussian_area_volume_height (double a, double b, double h, double hc, double f, double *A, double *V, double *z) {
 	/* Compute area and volume of circular or elliptical Gaussian seamounts */
 
 	bool circular = doubleAlmostEqual (a, b);
@@ -401,8 +395,8 @@ void gaussian_area_volume_height (double a, double b, double h, double hc, doubl
 	*z = (*V) / (*A);
 }
 
-double cone_solver (double in[], double f, double v, bool elliptical)
-{	/* Return effective phi given volume fraction */
+double cone_solver (double in[], double f, double v, bool elliptical) {
+	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
 	h0 = (elliptical) ? in[5] : in[3];
@@ -412,8 +406,8 @@ double cone_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
-double para_solver (double in[], double f, double v, bool elliptical)
-{	/* Return effective phi given volume fraction */
+double para_solver (double in[], double f, double v, bool elliptical) {
+	/* Return effective phi given volume fraction */
 	double A, V0, phi, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
 	h0 = (elliptical) ? in[5] : in[3];
@@ -423,8 +417,8 @@ double para_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
-double gauss_solver (double in[], double f, double v, bool elliptical)
-{	/* Return effective phi given volume fraction */
+double gauss_solver (double in[], double f, double v, bool elliptical) {
+	/* Return effective phi given volume fraction */
 	int n = 0;
 	double A, B, V0, phi, phi0, r02, h0;
 	r02 = (elliptical) ? in[3] * in[4] : in[2] * in[2];
@@ -442,8 +436,7 @@ double gauss_solver (double in[], double f, double v, bool elliptical)
 	return (phi);
 }
 
-int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, char *record, int n_expected, int rec, bool map, double inv_scale, double *in)
-{
+int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, char *record, int n_expected, int rec, bool map, double inv_scale, double *in) {
 	int ix, iy, n_conv, t_col;
 	double s_scale;
 	char txt_x[GMT_LEN64], txt_y[GMT_LEN64], T[5][GMT_LEN64], s_unit;
@@ -500,8 +493,7 @@ int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, char 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdseamount_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdseamount (void *V_API, int mode, void *args)
-{
+int GMT_grdseamount (void *V_API, int mode, void *args) {
 	int error, scol, srow, scol_0, srow_0;
 	
 	unsigned int n_expected_fields, n_out, nx1, d_mode, row, col, row_0, col_0;

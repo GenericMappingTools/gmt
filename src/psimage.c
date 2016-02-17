@@ -86,8 +86,7 @@ void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the psimage synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -124,8 +123,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psimage and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -294,8 +292,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int file_is_known (struct GMT_CTRL *GMT, char *file)
-{	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
+int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
        Returns -1 on read error */
 	FILE *fp = NULL;
 	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
@@ -325,8 +322,7 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 
 #define Return(code) {GMT_free (GMT, table); return (code);}
 
-int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b)
-{
+int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
 	int idx;
 	bool trans = false;

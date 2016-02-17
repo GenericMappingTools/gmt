@@ -50,8 +50,7 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 	int mode_choice;	/* For multiple modes: BLOCKMODE_LOW picks lowest, BLOCKMODE_AVE picks average, BLOCKMODE_HIGH picks highest */
 };
 
-int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
-{
+int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmode [<table>] %s\n", GMT_I_OPT);
@@ -87,8 +86,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options)
-{
+int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to blockmode and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -181,8 +179,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, double width, bool center, int mode_choice, bool is_integer, uint64_t n, uint64_t k)
-{
+struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, double width, bool center, int mode_choice, bool is_integer, uint64_t n, uint64_t k) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -223,8 +220,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	return (B);
 }
 
-double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)
-{
+double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B) {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
 	 * data array is already sorted on a[k]. We check if we find more
@@ -276,8 +272,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 }
 
 #if 0
-double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index)
-{
+double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
 	/* Estimate mode by finding a maximum in the estimated
 	   pdf of weighted data.  Estimate the pdf as the finite
 	   difference of the cumulative frequency distribution
@@ -342,8 +337,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 }
 #endif
 
-double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index)
-{
+double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, unsigned int k, uint64_t *index) {
 	/* Looks for the "shortest 50%". This means that when the cumulative weight
 	   (y) is plotted against the value (x) then the line between (xi,yi) and
 	   (xj,yj) should be the steepest for any combination where (yj-yi) is 50%
@@ -398,8 +392,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmode (void *V_API, int mode, void *args)
-{
+int GMT_blockmode (void *V_API, int mode, void *args) {
 	bool mode_xy, do_extra = false, is_integer, duplicate_col;
 
 	int way, error = 0;

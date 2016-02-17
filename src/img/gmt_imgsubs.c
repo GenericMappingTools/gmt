@@ -19,8 +19,7 @@
 
 #include "gmt_imgsubs.h"
 
-double  GMT_img_gud_fwd (double y)
-{
+double  GMT_img_gud_fwd (double y) {
 	/* The Forward Gudermannian function.  Given y, the distance
 	 * from the Equator to a latitude on a spherical Mercator map
 	 * developed from a sphere of unit radius, returns the latitude
@@ -30,8 +29,7 @@ double  GMT_img_gud_fwd (double y)
 	return(2.0 * atan(exp(y)) - M_PI_2);
 }
 
-double  GMT_img_gud_inv (double phi)
-{
+double  GMT_img_gud_inv (double phi) {
 	/* The Inverse Gudermannian function.  Given phi, a latitude
 	 * in radians, returns the distance from the Equator to this
 	 * latitude on a Mercator map tangent to a sphere of unit
@@ -41,8 +39,7 @@ double  GMT_img_gud_inv (double phi)
 	return(log(tan(M_PI_4 + 0.5 * phi)));
 }
 
-double  GMT_img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord)
-{
+double  GMT_img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord) {
 	/* Given Latitude in degrees and pointer to coordinate struct,
 	 * return (double) coordinate from top edge of input img file
 	 * measured downward in coordinate pixels.  */
@@ -50,8 +47,7 @@ double  GMT_img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord)
 	 return(coord->nytop - coord->radius * GMT_img_gud_inv(lat*D2R));
 }
 
-double  GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord)
-{
+double  GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord) {
 	/* Given Y coordinate, measured downward from top edge of 
 	 * input img file in pixels, and pointer to coordinate struct,
 	 * return Latitude in degrees.  */
@@ -59,8 +55,7 @@ double  GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord)
 	return( R2D * GMT_img_gud_fwd( (coord->nytop - ypix) / coord->radius) );
 }
 
-int GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c)
-{
+int GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c) {
 	/* Given the RANGE info, set up the COORD values.  Return (-1) on failure;
 	 * 0 on success.  */
 
