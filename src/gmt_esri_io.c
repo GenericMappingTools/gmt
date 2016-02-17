@@ -214,8 +214,7 @@ int read_esri_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return (GMT_NOERROR);
 }
 
-int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header)
-{
+int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
 	int c;
 	char record[GMT_BUFSIZ];
 	FILE *fp2 = NULL, *fpBAK = NULL;
@@ -366,8 +365,7 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	int error;
 	FILE *fp = NULL;
 
@@ -383,8 +381,7 @@ int GMT_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int write_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header)
-{
+int write_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
 	char record[GMT_BUFSIZ] = {""}, item[GMT_LEN64] = {""};
 
 	sprintf (record, "ncols %d\nnrows %d\n", header->nx, header->ny);
@@ -423,8 +420,7 @@ int write_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *hea
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	FILE *fp = NULL;
 	
 	if (!strcmp (header->name, "="))	/* Write to stdout */
@@ -439,8 +435,7 @@ int GMT_esri_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{
+int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	int error;
 	bool check, is_binary = false, swap = false;
 	unsigned int col, height_in, ii, in_nx;
@@ -585,8 +580,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating)
-{
+int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating) {
 	unsigned int i2, j, j2, width_out, height_out, last;
 	int first_col, last_col, first_row, last_row;
 	unsigned int i, *actual_col = NULL;
@@ -640,12 +634,12 @@ int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	return (GMT_NOERROR);
 }
 
-int GMT_esri_writei_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* Standard integer values on output only */
+int GMT_esri_writei_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+	/* Standard integer values on output only */
 	return (GMT_esri_write_grd (GMT, header, grid, wesn, pad, complex_mode, false));
 }
 
-int GMT_esri_writef_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* Write floating point on output */
+int GMT_esri_writef_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+	/* Write floating point on output */
 	return (GMT_esri_write_grd (GMT, header, grid, wesn, pad, complex_mode, true));
 }

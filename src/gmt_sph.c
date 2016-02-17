@@ -55,8 +55,7 @@ typedef uint32_t logical;
 #include "stripack.c"
 #include "ssrfpack.c"
 
-int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T)
-{
+int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T) {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
 	 *
@@ -175,13 +174,13 @@ int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, d
 	return (GMT_OK);
 }
 
-double stripack_areas (double *V1, double *V2, double *V3)
-{	/* Wrapper for STRIPACK areas_ */
+double stripack_areas (double *V1, double *V2, double *V3) {
+	/* Wrapper for STRIPACK areas_ */
 	return (areas_ (V1, V2, V3));
 }
 
-void cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat)
-{	/* Convert Cartesian vectors back to lon, lat vectors */
+void cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat) {
+	/* Convert Cartesian vectors back to lon, lat vectors */
 	uint64_t k;
 	double V[3];
 	for (k = 0; k < n; k++) {
@@ -191,8 +190,7 @@ void cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double
 }
 
 /* Must be int due to qsort requirement */
-int compare_arc (const void *p1, const void *p2)
-{
+int compare_arc (const void *p1, const void *p2) {
 	const struct STRPACK_ARC *a = p1, *b = p2;
 	if (a->begin < b->begin) return (-1);
 	if (a->begin > b->begin) return (1);
@@ -203,8 +201,7 @@ int compare_arc (const void *p1, const void *p2)
 
 /* Functions for spherical surface interpolation */
 
-int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f)
-{
+int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f) {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
 	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
 	unsigned int row, col;

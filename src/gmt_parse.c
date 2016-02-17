@@ -68,8 +68,8 @@ static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {re
 
 #ifdef DEBUG
 /*! . */
-int GMT_List_Args (void *V_API, struct GMT_OPTION *head)
-{	/* This function dumps the options to stderr for debug purposes.
+int GMT_List_Args (void *V_API, struct GMT_OPTION *head) {
+	/* This function dumps the options to stderr for debug purposes.
 	 * It is not meant to be part of the API but to assist developers
 	 * during the debug phase of development.
 	 */
@@ -259,8 +259,8 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 }
 
 /*! . */
-char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
-{	/* This function creates a character array with the command line options that
+char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head) {
+	/* This function creates a character array with the command line options that
 	 * correspond to the linked options provided.  It is the inverse of GMT_Create_Options.
 	 * The number of array strings is returned via *argc.
 	 */
@@ -306,8 +306,8 @@ char **GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
 }
 
 /*! . */
-int GMT_Destroy_Args (void *V_API, int argc, char **args[])
-{	/* Delete all text arguments, perhaps those created by GMT_Create_Args
+int GMT_Destroy_Args (void *V_API, int argc, char **args[]) {
+	/* Delete all text arguments, perhaps those created by GMT_Create_Args
 	 * Note that a pointer to the args[] array is expected so that we can
 	 * set it to NULL afterwards. */
 
@@ -323,8 +323,8 @@ int GMT_Destroy_Args (void *V_API, int argc, char **args[])
 }
 
 /*! . */
-char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
-{	/* This function creates a single character string with the command line options that
+char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head) {
+	/* This function creates a single character string with the command line options that
 	 * correspond to the linked options provided.
 	 */
 
@@ -487,8 +487,7 @@ struct GMT_OPTION *GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, s
 }
 
 /*! . */
-int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current)
-{
+int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current) {
 	/* Remove the specified entry from the linked list.  It is assumed that current
 	 * points to the correct option in the linked list. */
 	struct GMTAPI_CTRL *API = NULL;
@@ -626,8 +625,8 @@ int gmt_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 }
 
 /*! . */
-unsigned int gmt_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
-{	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<nx>/<ny> we need access
+unsigned int gmt_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<nx>/<ny> we need access
 	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
 	 * make sure that if such a -R option is given we first process -I */
 	

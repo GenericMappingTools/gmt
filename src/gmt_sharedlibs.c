@@ -14,8 +14,7 @@
 #include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 
 #if defined(_WIN32)
-void *dlopen (const char *module_name, int mode)
-{	/* Opens a dll file*/
+void *dlopen (const char *module_name, int mode) {	/* Opens a dll file*/
 	UINT err_code;
 	HINSTANCE dll_handle;
   
@@ -33,19 +32,19 @@ void *dlopen (const char *module_name, int mode)
 	return (void *)dll_handle;
 }
 
-int dlclose (void *handle)
-{	/* Closes handle */
+int dlclose (void *handle) {
+	/* Closes handle */
 	/* POSIX call returns zero for success, non-zero for failure */
 	return (!FreeLibrary (handle)); 
 }
 
-void *dlsym (void *handle, const char *name)
-{	/* Get a symbol from dll */
+void *dlsym (void *handle, const char *name) {
+	/* Get a symbol from dll */
 	return GetProcAddress (handle, name);
 }
 
-char *dlerror (void)
-{	/* Reports last error occured */
+char *dlerror (void) {
+	/* Reports last error occured */
 	int len, error_code;
 	static char errstr[128];
         
@@ -84,8 +83,8 @@ HINSTANCE GetMyModuleHandle() {
 	VirtualQuery(GetMyModuleHandle, &mbi, sizeof(mbi));
 	return (HINSTANCE) (mbi.AllocationBase);
 }
-void *dlopen_special(const char *name)
-{	/* Opens the dll file of the current process.  This is how it is done
+void *dlopen_special(const char *name) {
+	/* Opens the dll file of the current process.  This is how it is done
 	 * under Windows, per http://en.wikipedia.org/wiki/Dynamic_loading */
 	/*HMODULE this_process, this_process_again;
 	GetModuleHandleEx (0, 0, &this_process);
@@ -97,8 +96,8 @@ void *dlopen_special(const char *name)
 }
 #elif defined(__CYGWIN__)
 	/* Cygwin behaves differently than most Unix and we must use regular dlopen with library name */
-void *dlopen_special(const char *name)
-{	/* Opens the shared library file of the current process under *nix.
+void *dlopen_special(const char *name) {
+	/* Opens the shared library file of the current process under *nix.
 	 * Just call dlopen with NULL and RTLD_LAZY */
 	return (dlopen (name, RTLD_LAZY));
 }
@@ -106,8 +105,8 @@ void *dlopen_special(const char *name)
 
 /* Extra convenience function for opening shared library of current process */
 
-void *dlopen_special(const char *name)
-{	/* Opens the shared library file of the current process under *nix.
+void *dlopen_special(const char *name) {
+	/* Opens the shared library file of the current process under *nix.
 	 * Just call dlopen with NULL and RTLD_LAZY */
 	GMT_UNUSED(name);
 	return (dlopen (NULL, RTLD_LAZY));

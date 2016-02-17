@@ -147,8 +147,8 @@ int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return GMT_NOERROR;
 }
 
-void gmt_nc_get_units (struct GMT_CTRL *GMT, int ncid, int varid, char *name_units)
-{	/* Get attributes long_name and units for given variable ID
+void gmt_nc_get_units (struct GMT_CTRL *GMT, int ncid, int varid, char *name_units) {
+	/* Get attributes long_name and units for given variable ID
 	 * and assign variable name if attributes are not available.
 	 * ncid, varid		: as in nc_get_att_text
 	 * nameunit		: long_name and units in form "long_name [units]"
@@ -162,8 +162,8 @@ void gmt_nc_get_units (struct GMT_CTRL *GMT, int ncid, int varid, char *name_uni
 		strcpy (name_units, name);
 }
 
-void gmt_nc_put_units (int ncid, int varid, char *name_units)
-{	/* Put attributes long_name and units for given variable ID based on
+void gmt_nc_put_units (int ncid, int varid, char *name_units) {
+	/* Put attributes long_name and units for given variable ID based on
 	 * string name_unit in the form "long_name [units]".
 	 * ncid, varid		: as is nc_put_att_text
 	 * name_units		: string in form "long_name [units]"
@@ -187,8 +187,8 @@ void gmt_nc_put_units (int ncid, int varid, char *name_units)
 	if (units[0]) nc_put_att_text (ncid, varid, "units", strlen(units), units);
 }
 
-void gmt_nc_check_step (struct GMT_CTRL *GMT, int n, double *x, char *varname, char *file)
-{	/* Check if all steps in range are the same (within 0.1%) */
+void gmt_nc_check_step (struct GMT_CTRL *GMT, int n, double *x, char *varname, char *file) {
+	/* Check if all steps in range are the same (within 0.1%) */
 	double step, step_min, step_max;
 	int i;
 	if (n < 2) return;
@@ -688,23 +688,20 @@ L100:
 	return (GMT_NOERROR);
 }
 
-int GMT_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return (gmt_nc_grd_info (GMT, header, 'r'));
 }
 
-int GMT_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return (gmt_nc_grd_info (GMT, header, 'u'));
 }
 
-int GMT_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-{
+int GMT_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return (gmt_nc_grd_info (GMT, header, 'w'));
 }
 
 /* Shift columns in a grid to the right (n_shift < 0) or to the left (n_shift < 0) */
-void right_shift_grid(void *gridp, const unsigned n_cols, const unsigned n_rows, int n_shift, size_t cell_size) {
+void right_shift_grid (void *gridp, const unsigned n_cols, const unsigned n_rows, int n_shift, size_t cell_size) {
 	char *tmp, *grid = (char*)gridp;
 	unsigned row, n_shift_abs = abs(n_shift);
 
@@ -741,8 +738,7 @@ void right_shift_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 
 /* Fill padding by replicating the border cells or wrapping around a
  * row if columns are periodic */
-void padding_copy(void *gridp, const unsigned n_cols, const unsigned n_rows,
-		const unsigned *n_pad, size_t cell_size, bool periodic_cols) {
+void padding_copy (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size, bool periodic_cols) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
 	unsigned row, cell;
@@ -805,8 +801,7 @@ void padding_copy(void *gridp, const unsigned n_cols, const unsigned n_rows,
 }
 
 /* Fill padding with zeros */
-void padding_zero(void *gridp, const unsigned n_cols, const unsigned n_rows,
-		const unsigned *n_pad, size_t cell_size) {
+void padding_zero (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
 	unsigned row;
@@ -836,8 +831,7 @@ enum Grid_padding_mode {
 };
 
 /* Add padding to a matrix/grid and reshape data */
-void pad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
-		const unsigned *n_pad, size_t cell_size, unsigned filltype) {
+void pad_grid (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size, unsigned filltype) {
 	/* n_cols and n_rows are dimensions of the grid without padding
 	 * cell_size is the size in bytes of each element in grid
 	 * n_pad[4] contains the number of cols/rows to pad on each side {W,E,S,N}
@@ -887,8 +881,7 @@ void pad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 }
 
 /* Remove padding from a matrix/grid and reshape data */
-void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
-		const unsigned *n_pad, size_t cell_size) {
+void unpad_grid (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned *n_pad, size_t cell_size) {
 	/* n_cols and n_rows are dimensions of the grid without padding
 	 * cell_size is the size in bytes of each element in grid
 	 * n_pad[4] contains the number of cols/rows to pad on each side {W,E,S,N}

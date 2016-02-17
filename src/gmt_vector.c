@@ -276,8 +276,7 @@ int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
 	return(0);
 }
 
-int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag)
-{
+int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag) {
 
 /* subroutine gauss, by william menke */
 /* july 1978 (modified feb 1983, nov 85) */
@@ -400,8 +399,7 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 	return (iet + ieb);   /* Return final error flag*/
 }
 
-void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n)
-{
+void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n) {
 	double *oa = (double *)malloc (sizeof(double)*n);
 
 	memcpy(oa, a+n*n1, sizeof(double)*n);
@@ -413,8 +411,7 @@ void switchRows(double *a, double *b, unsigned int n1, unsigned int n2, unsigned
 	gmt_free (oa);
 }
 
-int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b)
-{
+int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b) {
     int i, j, k, bad = 0, n = (int)nu;	/* Doing signed ints due to restriction from OpenMP on unsigned loop variables */
     double c, d;
 
@@ -462,8 +459,7 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b
 #define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 
 /* Use version provided by DJ 2015-07-06 [SDSC] */
-int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
-{
+int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v) {
 	/* void svdcmp(double *a,int m,int n,double *w,double *v) */
 
 	int flag,i,its,j,jj,k,l=0,nm = 0, n = n_in, m = m_in;
@@ -683,8 +679,7 @@ int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned 
 	return (GMT_NOERROR);
 }
 
-int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v)
-{
+int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v) {
 	/* Front for SVD calculations */
 #ifdef HAVE_LAPACK
 	/* Here we use Lapack */
@@ -727,8 +722,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 */
 
-int compare_singular_values (const void *point_1v, const void *point_2v)
-{
+int compare_singular_values (const void *point_1v, const void *point_2v) {
 	/*  Routine for qsort to sort struct GMT_SINGULAR_VALUE on decreasing eigenvalues
 	 * keeping track of the original order before sorting.
 	 */
@@ -739,8 +733,7 @@ int compare_singular_values (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
-{
+int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode) {
 	double w_abs, sing_max, total_variance, variance = 0.0, limit;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = GMT_memory (GMT, NULL, n, double);
@@ -870,15 +863,15 @@ double GMT_mag3v (struct GMT_CTRL *GMT, double *a) {
 	return (d_sqrt(a[GMT_X]*a[GMT_X] + a[GMT_Y]*a[GMT_Y] + a[GMT_Z]*a[GMT_Z]));
 }
 
-void GMT_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
-{	/* C = A + B */
+void GMT_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
+	/* C = A + B */
 	int k;
 	GMT_UNUSED(GMT);
 	for (k = 0; k < 3; k++) c[k] = a[k] + b[k];
 }
 
-void GMT_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
-{	/* C = A - B */
+void GMT_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
+	/* C = A - B */
 	int k;
 	GMT_UNUSED(GMT);
 	for (k = 0; k < 3; k++) c[k] = a[k] - b[k];
@@ -906,24 +899,23 @@ void GMT_normalize2v (struct GMT_CTRL *GMT, double *a) {
 	}
 }
 
-void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
-{
+void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
 	GMT_UNUSED(GMT);
 	c[GMT_X] = a[GMT_Y] * b[GMT_Z] - a[GMT_Z] * b[GMT_Y];
 	c[GMT_Y] = a[GMT_Z] * b[GMT_X] - a[GMT_X] * b[GMT_Z];
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
-void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3])
-{	/* c = A * b for 2 or 3 D */
+void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3]) {
+	/* c = A * b for 2 or 3 D */
 	unsigned int i, j;
 	GMT_UNUSED(GMT);
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
 
-void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3])
-{	/* Based on Cox and Hart, 1986 */
+void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]) {
+	/* Based on Cox and Hart, 1986 */
 /*	E	Euler pole in in cartesian coordinates
  *	w	angular rotation in degrees
  *
@@ -956,8 +948,7 @@ void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R
 	R[2][2] = E[2] * E[2] * c + cos_w;
 }
 
-void GMT_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double w, double R[3][3])
-{
+void GMT_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double w, double R[3][3]) {
 /*	lonp, latp	Euler pole in degrees
  *	w		angular rotation in degrees
  *
@@ -971,8 +962,7 @@ void GMT_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double
 }
 
 
-void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, bool degrees)
-{
+void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, bool degrees) {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = true,
 	   input coordinates are in degrees, otherwise in radian */
@@ -990,8 +980,7 @@ void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, b
 	a[GMT_Y] = clat * slon;
 }
 
-void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees)
-{
+void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees) {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = true, the output coordinates
 	   are in degrees, otherwise in radian. */
@@ -1007,8 +996,7 @@ void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a,
 	}
 }
 
-void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a, bool degrees)
-{
+void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a, bool degrees) {
 	/* Convert polar (cylindrical) coordinates r, theta
 	   to a 2-vector of unit length (a). If degrees = true,
 	   input theta is in degrees, otherwise in radian */
@@ -1020,8 +1008,7 @@ void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a,
 	a[GMT_Y] *= r;
 }
 
-void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *a, bool degrees)
-{
+void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *a, bool degrees) {
 	/* Convert a 2-vector (a) of unit length into polar (cylindrical)
 	   coordinates (r, theta). If degrees = true, the output coordinates
 	   are in degrees, otherwise in radian. */
@@ -1032,8 +1019,7 @@ void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *
 	if (degrees) *theta *= R2D;
 }
 
-void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mode)
-{
+void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mode) {
 	/* Sets the GMT->current.map.path_mode setting given -A and data type.
 	 * By default, path_mode = GMT_RESAMPLE_PATH = 0. */
 
@@ -1045,8 +1031,7 @@ void GMT_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mo
 	}
 }
 
-uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, unsigned int mode)
-{
+uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, unsigned int mode) {
 	/* Takes pointers to a list of <n> Cartesian x/y pairs and adds
 	 * auxiliary points to build a staircase curve.
 	 * If mode=1: staircase; first follows y, then x
@@ -1087,8 +1072,7 @@ uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **
 	return (n_new);
 }
 
-uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode)
-{
+uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode) {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
 	 * <step> spherical degree.  If step <= 0 we use the default path_step.
@@ -1222,8 +1206,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	return (n_new);
 }
 
-uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode)
-{
+uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
 	 * <step> units.
@@ -1304,8 +1287,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	return (n_new);
 }
 
-uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode)
-{
+uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
 	/* See GMT_resample_path below for details. */
 
 	bool meridian, new_pair;
@@ -1413,8 +1395,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 	return (n_out);
 }
 
-uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode)
-{
+uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
 	/* See GMT_resample_path below for details. */
 
 	uint64_t last_row_in = 0, row_in, row_out, n_out;
@@ -1478,8 +1459,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 	return (n_out);
 }
 
-uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode)
-{
+uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
 	/* Takes pointers to a list of <n_in> x/y pairs (in degrees or Cartesian units) and computes
 	 * the distance along that path.  We then determine new coordinates at new distances that are
 	 * multiples of the desired step <step_out> which are in the unit set via GMT_init_distaz (geo)

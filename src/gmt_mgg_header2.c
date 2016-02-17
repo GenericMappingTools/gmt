@@ -16,16 +16,14 @@
 
 #define MGG_BYTE_SIZE
 
-static void gmt_swap_word (void* ptr)
-{
+static void gmt_swap_word (void* ptr) {
 	unsigned char *tmp = ptr;
 	unsigned char a = tmp[0];
 	tmp[0] = tmp[1];
 	tmp[1] = a;
 }
 
-static void gmt_swap_long (void *ptr)
-{
+static void gmt_swap_long (void *ptr) {
 	unsigned char *tmp = ptr;
 	unsigned char a = tmp[0];
 	tmp[0] = tmp[3];
@@ -35,8 +33,7 @@ static void gmt_swap_long (void *ptr)
 	tmp[2] = a;
 }
 
-int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header)
-{
+int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header) {
 	int i, version;
 	/* Determine if swapping is needed */
 	if (header->version == (GRD98_MAGIC_NUM + GRD98_VERSION)) return (0);	/* Version matches, No need to swap */
@@ -70,8 +67,7 @@ int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header)
 	return (1);	/* Signal we need to swap the data also */
 }
 
-static double gmt_dms2degrees (int deg, int min, int sec)
-{
+static double gmt_dms2degrees (int deg, int min, int sec) {
 	double decDeg = (double)deg;
 
 	decDeg += (double)min * GMT_MIN2DEG;
@@ -80,8 +76,7 @@ static double gmt_dms2degrees (int deg, int min, int sec)
     return decDeg;
 }
 
-static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
-{
+static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec) {
 	/* Round off to the nearest half second */
 	if (degrees < 0) degrees -= (0.5 * GMT_SEC2DEG);
 
@@ -95,8 +90,7 @@ static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
 	*sec = (int)(degrees * GMT_MIN2SEC_F);
 }
 
-int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
-{
+int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg) {
 	double f;
 	GMT_memset (mgg, 1, MGG_GRID_HEADER_2);
 
@@ -143,8 +137,7 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	return (GMT_NOERROR);
 }
 
-static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt)
-{
+static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt) {
 	int one_or_zero;
 
 	/* Do not memset the gmt header since it has the file name set */

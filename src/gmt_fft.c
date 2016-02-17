@@ -91,8 +91,7 @@ void gmt_fft_Singleton_list (struct GMTAPI_CTRL *API) {
 	}
 }
 
-uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
-{
+uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n) {
 	/* Return the product of the non-symmetric factors in f[]  */
 	unsigned int i = 0, j = 1, retval = 1;
 
@@ -112,8 +111,7 @@ uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
 #define FSIGNIF			24
 #endif
 
-void gmt_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t)
-{
+void gmt_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t) {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
 	 * of the workspace that will be needed by the transform.
@@ -187,8 +185,7 @@ void gmt_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, un
 	return;
 }
 
-void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print)
-{
+void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print) {
 	unsigned int f[32], xstop, ystop;
 	unsigned int nx_best_t, ny_best_t;
 	unsigned int nx_best_e, ny_best_e;
@@ -292,8 +289,7 @@ void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	return;
 }
 
-double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
-{
+double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K) {
 	/* Return the value of kx given k,
 	 * where kx = 2 pi / lambda x,
 	 * and k refers to the position
@@ -304,8 +300,7 @@ double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
 	return (ii * K->delta_kx);
 }
 
-double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
-{
+double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K) {
 	/* Return the value of ky given k,
 	 * where ky = 2 pi / lambda y,
 	 * and k refers to the position
@@ -316,8 +311,7 @@ double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
 	return (jj * K->delta_ky);
 }
 
-double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
-{
+double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K) {
 	/* Return the value of sqrt(kx*kx + ky*ky),
 	 * where k refers to the position
 	 * in the complex data array Grid->data[k].  */
@@ -325,8 +319,7 @@ double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
 	return (hypot (GMT_fft_kx (k, K), GMT_fft_ky (k, K)));
 }
 
-double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
-{
+double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K) {
 	/* Return the value of kx, ky. or kr,
 	 * where k refers to the position
 	 * in the complex data array Grid->data[k].
@@ -335,8 +328,8 @@ double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
 	return (K->k_ptr (k, K));
 }
 
-double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
-{	/* Lets you specify which wavenumber you want */
+double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K) {
+	/* Lets you specify which wavenumber you want */
 	double wave = 0.0;
 
 	switch (mode) {	/* Select which wavenumber we need */
@@ -347,8 +340,7 @@ double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBE
 	return (wave);
 }
 
-int GMT_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
-{
+int GMT_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K) {
 	/* Change wavenumber selection */
 	switch (mode) {	/* Select which wavenumber we need */
 		case GMT_FFT_K_IS_KX: K->k_ptr = GMT_fft_kx; break;
@@ -362,8 +354,7 @@ int GMT_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WA
 	return GMT_OK;
 }
 
-void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F)
-{
+void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F) {
 	/* mode sets if and how tapering will be performed [see GMT_FFT_EXTEND_* constants].
 	 * width is relative width in percent of the margin that will be tapered [100]. */
 	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_i, end_j, min_i, min_j, one;
@@ -513,8 +504,7 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	}
 }
 
-char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
-{
+char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix) {
 	static char file[GMT_BUFSIZ];
 	uint64_t i, j;
 	size_t len;
@@ -538,8 +528,7 @@ char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
 	return (file);
 }
 
-void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suffix)
-{
+void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suffix) {
 	/* Write the intermediate grid that will be passed to the FFT to file.
 	 * This grid may have been a mean, mid-value, or plane removed, may
 	 * have data filled into an extended margin, and may have been taperer.
@@ -579,8 +568,7 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	GMT_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT default pad */
 }
 
-void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F)
-{
+void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F) {
 	/* Save the raw spectrum as two files (real,imag) or (mag,phase), depending on mode.
 	 * We must first do an "fftshift" operation as in Matlab, to put the 0 frequency
 	 * value in the center of the grid. */
@@ -661,8 +649,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	GMT_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT pad */
 }
 
-void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K)
-{
+void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K) {
 	/* Handle the writing of the grid going into the FFT and comping out of the FFT, per F settings */
 
 	if (G == NULL || (K == NULL ||  K->info == NULL)) return;
@@ -870,8 +857,7 @@ int GMT_fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsign
 
 #ifdef __APPLE__ /* Accelerate framework */
 
-void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
-{
+void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z) {
 	if (Z->setup_1d) {	/* Free single-precision FFT data structure and arrays */
 		vDSP_destroy_fftsetup (Z->setup_1d);
 		gmt_free (Z->dsp_split_complex_1d.realp);
@@ -879,8 +865,7 @@ void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 	}
 }
 
-int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
-{
+int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -917,8 +902,7 @@ int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 	return GMT_NOERROR;
 }
 
-void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
-{
+void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z) {
 	if (Z->setup_2d) {	/* Free single-precision 2D FFT data structure and arrays */
 		vDSP_destroy_fftsetup (Z->setup_2d);
 		gmt_free (Z->dsp_split_complex_2d.realp);
@@ -926,8 +910,7 @@ void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
 	}
 }
 
-int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
-{
+int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
@@ -977,8 +960,7 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 
 #include "kiss_fft/kiss_fftnd.h"
 
-int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
-{
+int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
 	kiss_fft_cpx *fin, *fout;
 	kiss_fft_cfg config;
 	GMT_UNUSED(GMT); GMT_UNUSED(mode);
@@ -992,8 +974,7 @@ int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 	return GMT_NOERROR;
 }
 
-int GMT_fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
-{
+int GMT_fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
 	const int dim[2] = {ny, nx}; /* dimensions of fft */
 	const int dimcount = 2;      /* number of dimensions */
 	kiss_fft_cpx *fin, *fout;
@@ -1011,8 +992,7 @@ int GMT_fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 }
 
 
-int BRENNER_fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work)
-{
+int BRENNER_fourt_ (float *data, int *nn, int *ndim, int *ksign, int *iform, float *work) {
 
     /* System generated locals */
     int i__1, i__2, i__3, i__4, i__5, i__6, i__7, i__8, i__9, i__10, i__11, i__12;
@@ -1862,8 +1842,7 @@ L920:
     return 0;
 } /* fourt_ */
 
-int gmt_get_non_symmetric_f (unsigned int *f, unsigned int n_in)
-{
+int gmt_get_non_symmetric_f (unsigned int *f, unsigned int n_in) {
         /* Return the product of the non-symmetric factors in f[]  */
 	
         int i = 0, j = 1, retval = 1, n = n_in;
@@ -1879,8 +1858,7 @@ int gmt_get_non_symmetric_f (unsigned int *f, unsigned int n_in)
         return (retval);
 }
 
-size_t brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny)
-{
+size_t brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny) {
         /* Find the size of the workspace that will be needed by the transform.
          * To use this routine for a 1-D transform, set ny = 1.
          * 
@@ -1917,8 +1895,7 @@ size_t brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny)
 }
 
 /* C-callable wrapper for BRENNER_fourt_ */
-int GMT_fft_1d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
-{
+int GMT_fft_1d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
         /* void GMT_fourt (struct GMT_CTRL *GMT, float *data, int *nn, int ndim, int ksign, int iform, float *work) */
         /* Data array */
         /* Dimension array */
@@ -1938,8 +1915,7 @@ int GMT_fft_1d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int n, int d
         return (GMT_OK);
 }
 	
-int GMT_fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
-{
+int GMT_fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
         /* Data array */
         /* Dimension array */
         /* Number of dimensions */

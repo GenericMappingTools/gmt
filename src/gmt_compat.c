@@ -33,8 +33,8 @@ EXTERN_MSC int GMT_gmtstitch (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_gmt2rgb (void *V_API, int mode, void *args);
 EXTERN_MSC int GMT_ps2raster (void *V_API, int mode, void *args);
 
-int GMT_gmtdp (void *V_API, int mode, void *args)
-{	/* This was the GMT4 name */
+int GMT_gmtdp (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (GMT_compat_check (API->GMT, 4)) {
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module gmtdp is deprecated; use gmtsimplify.\n");
@@ -44,8 +44,8 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-int GMT_grdreformat (void *V_API, int mode, void *args)
-{	/* This was the GMT5.1 name */
+int GMT_grdreformat (void *V_API, int mode, void *args) {
+	/* This was the GMT5.1 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (GMT_compat_check (API->GMT, 5)) {
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module grdreformat is deprecated; use grdconvert.\n");
@@ -55,8 +55,8 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-int GMT_minmax (void *V_API, int mode, void *args)
-{	/* This was the GMT4 name */
+int GMT_minmax (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (GMT_compat_check (API->GMT, 4)) {
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module minmax is deprecated; use gmtinfo.\n");
@@ -66,8 +66,8 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-int GMT_gmtstitch (void *V_API, int mode, void *args)
-{	/* This was the GMT4 name */
+int GMT_gmtstitch (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (GMT_compat_check (API->GMT, 4)) {
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module gmtstitch is deprecated; use gmtconnect.\n");
@@ -77,8 +77,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-int GMT_gmt2rgb (void *V_API, int mode, void *args)
-{	/* This was the GMT4 name */
+int GMT_gmt2rgb (void *V_API, int mode, void *args) {
+	/* This was the GMT4 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (GMT_compat_check (API->GMT, 4)) {
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module gmt2rgb is deprecated; use grd2rgb.\n");
@@ -88,8 +88,8 @@ int GMT_gmt2rgb (void *V_API, int mode, void *args)
 	return (GMT_NOT_A_VALID_MODULE);
 }
 
-int GMT_ps2raster (void *V_API, int mode, void *args)
-{	/* This was the GMT5.1 name */
+int GMT_ps2raster (void *V_API, int mode, void *args) {
+	/* This was the GMT5.1 name */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	if (GMT_compat_check (API->GMT, 5)) {
 		GMT_Report (API, GMT_MSG_COMPAT, "Warning: module ps2raster is deprecated; use psconvert.\n");

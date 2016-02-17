@@ -58,13 +58,13 @@
  * Splay tree manipulation functions are modified after Sleator and Tarjan, 1985:
  * Self-adjusting binary search trees. JACM, 32(3), doi:10.1145/3828.3835 */
 
-void GMT_memtrack_on (struct GMT_CTRL *GMT)
-{	/* Turns memory tracking ON */
+void GMT_memtrack_on (struct GMT_CTRL *GMT) {
+	/* Turns memory tracking ON */
 	GMT->hidden.mem_keeper->active = true;
 }
 
-void GMT_memtrack_off (struct GMT_CTRL *GMT)
-{	/* Turns memory tracking OFF */
+void GMT_memtrack_off (struct GMT_CTRL *GMT) {
+	/* Turns memory tracking OFF */
 	GMT->hidden.mem_keeper->active = false;
 }
 
@@ -410,8 +410,7 @@ void GMT_memtrack_report (struct GMT_CTRL *GMT) {
  *	     simpler and the number of columns is typically very small (2-3).
  */
 
-void gmt_init_tmp_arrays (struct GMT_CTRL *GMT, size_t n_cols)
-{
+void gmt_init_tmp_arrays (struct GMT_CTRL *GMT, size_t n_cols) {
 	/* Initialization of GMT coordinate temp arrays - this is called at most once per GMT session  */
 
 	size_t col;
@@ -425,8 +424,7 @@ void gmt_init_tmp_arrays (struct GMT_CTRL *GMT, size_t n_cols)
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "GMT memory: Initialize %" PRIuS " temporary column arrays, each of length : %" PRIuS "\n", GMT->hidden.mem_cols, GMT->hidden.mem_rows);
 }
 
-void GMT_free_tmp_arrays (struct GMT_CTRL *GMT)
-{
+void GMT_free_tmp_arrays (struct GMT_CTRL *GMT) {
 	/* Free temporary coordinate memory used by this session */
 	size_t col;
 
@@ -438,8 +436,7 @@ void GMT_free_tmp_arrays (struct GMT_CTRL *GMT)
 	GMT->hidden.mem_rows = GMT->hidden.mem_cols = 0;
 }
 
-void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols)
-{
+void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols) {
 	size_t col;
 
 	/* Check if this is the very first time, if so we initialize the arrays */
@@ -468,8 +465,8 @@ void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols)
 	/* Note: Any additions to these arrays are not guaranteed to be set to zero */
 }
 
-int die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where)
-{	/* Handle reporting and aborting if memory allocation fails */
+int die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where) {
+	/* Handle reporting and aborting if memory allocation fails */
 	double mem = ((double)nelem) * ((double)size);
 	unsigned int k = 0;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
@@ -481,8 +478,7 @@ int die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char 
 	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
 
-void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where)
-{
+void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where) {
 	/* Multi-functional memory allocation subroutine.
 	   If prev_addr is NULL, allocate new memory of nelem elements of size bytes.
 		Ignore when nelem == 0.
@@ -558,8 +554,7 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 	return (tmp);
 }
 
-void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where)
-{
+void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where) {
 	if (addr == NULL) {
 #ifndef DEBUG
 		/* report freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
@@ -595,8 +590,7 @@ void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	addr = NULL;
 }
 
-void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where)
-{
+void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where) {
 	/* GMT_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
 	 * A) Initial allocation of memory:
@@ -645,19 +639,18 @@ void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_all
 
 #ifdef FISH_STRDUP_LEAKS
 char *GMT_strdup(struct GMT_CTRL *GMT, const char *s) {
-
 	char *p = GMT_memory(GMT, NULL, strlen(s) + 1, unsigned char);
 	if (p) { strcpy(p, s); }
 	return p;
 }
 #endif
 
-void GMT_set_meminc (struct GMT_CTRL *GMT, size_t increment)
-{	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
+void GMT_set_meminc (struct GMT_CTRL *GMT, size_t increment) {
+	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
 	GMT->session.min_meminc = increment;
 }
 
-void GMT_reset_meminc (struct GMT_CTRL *GMT)
-{	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
+void GMT_reset_meminc (struct GMT_CTRL *GMT) {
+	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
 	GMT->session.min_meminc = GMT_MIN_MEMINC;
 }

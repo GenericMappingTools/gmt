@@ -124,8 +124,8 @@ enum history_mode {
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-int gmt_get_uservalue (struct GMT_CTRL *GMT, char *txt, int type, double *value, char *err_msg)
-{	/* Use to get a single data value of given type and exit if error, and return EXIT_FAILURE */
+int gmt_get_uservalue (struct GMT_CTRL *GMT, char *txt, int type, double *value, char *err_msg) {
+	/* Use to get a single data value of given type and exit if error, and return EXIT_FAILURE */
 	int kind;
 	if ((kind = GMT_scanf (GMT, txt, type, value)) == GMT_IS_NAN) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %s: %s\n", err_msg, txt);
@@ -904,8 +904,7 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	\param option ...
 	\param error ...
 */
-void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
-{
+void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
 	GMT_message (GMT, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
@@ -923,8 +922,7 @@ void GMT_inc_syntax (struct GMT_CTRL *GMT, char option, bool error)
 	\param option ...
 	\param string ...
 */
-void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{
+void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
 	GMT_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
@@ -942,8 +940,8 @@ void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	\param option ...
 	\param string ...
 */
-void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode)
-{	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all */
+void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int mode) {
+	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c ", option);
 	GMT_message (GMT, string, GMT_putpen (GMT, GMT->current.setting.map_default_pen));
@@ -982,8 +980,7 @@ void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned i
 	\param option ...
 	\param string ...
 */
-void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{
+void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c<color> %s Specify <color> as one of:\n", option, string);
 	GMT_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
@@ -994,8 +991,8 @@ void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 }
 
 
-void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part)
-{	/* For -Dg|j|J|n|x */
+void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind, unsigned int part) {
+	/* For -Dg|j|J|n|x */
 	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "insert", "map scale", "map rose"}, *tab[2] = {"", "     "};
 	unsigned int shift = (kind == GMT_ANCHOR_INSERT) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
@@ -1022,8 +1019,8 @@ void GMT_refpoint_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	\param option ...
 	\param string ...
 */
-void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{	/* Only called in psbasemap.c for now */
+void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	/* Only called in psbasemap.c for now */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t     Specify the map insert region using one of three specifications:\n");
@@ -1043,8 +1040,8 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	\param option ...
 	\param string ...
 */
-void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{	/* Used in psbasemap and pscoast */
+void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	/* Used in psbasemap and pscoast */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_refpoint_syntax (GMT, 'L', NULL, GMT_ANCHOR_MAPSCALE, 3);
@@ -1062,8 +1059,8 @@ void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	\param option ...
 	\param string ...
 */
-void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{	/* Used in psbasemap and pscoast */
+void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	/* Used in psbasemap and pscoast */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Choose between a directional (-Td) or magnetic (-Tm) rose.\n");
@@ -1091,8 +1088,8 @@ void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	\param option ...
 	\param string ...
 */
-void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind)
-{	/* Called by gmtlogo, psimage, pslegend, psscale */
+void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind) {
+	/* Called by gmtlogo, psimage, pslegend, psscale */
 	char *type[4] = {"logo", "image", "legend", "scale"};
 	assert (kind < 4);
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
@@ -1116,8 +1113,8 @@ void GMT_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	\param option ...
 	\param string ...
 */
-void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string)
-{	/* Used by many modules */
+void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	/* Used by many modules */
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
 	GMT_message (GMT, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot)\n");
@@ -1127,8 +1124,7 @@ void GMT_dist_syntax (struct GMT_CTRL *GMT, char option, char *string)
 }
 
 /*! Use mode to control which options are displayed */
-void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
-{
+void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
 	/* Mode is composed of bit-flags to control which lines are printed.
 	 * Items without if-test are common to all vectors.
 	 * 1	= Accepts +j (not mathangle)
@@ -1165,8 +1161,8 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 }
 
 /*! Use mode to control which options are displayed */
-void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode)
-{	/* mode == 0 for formatting and 1 for plotting */
+void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode) {
+	/* mode == 0 for formatting and 1 for plotting */
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
 	GMT_message (GMT, "\t-%c Alter the way points are connected and the data are segmented.\n", option);
 	GMT_message (GMT, "\t    Append one of %s line connection schemes:\n", count[mode]);
@@ -1184,8 +1180,7 @@ void GMT_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 }
 
 /*! For programs that can read *.img grids */
-void GMT_img_syntax (struct GMT_CTRL *GMT)
-{
+void GMT_img_syntax (struct GMT_CTRL *GMT) {
 	GMT_message (GMT, "\t      Give filename and append comma-separated scale, mode, and optionally max latitude.\n");
 	GMT_message (GMT, "\t      The scale (typically 0.1 or 1) is used to multiply after read; give mode as follows:\n");
 	GMT_message (GMT, "\t        0 = img file with no constraint code, interpolate to get data at track.\n");
@@ -1196,8 +1191,7 @@ void GMT_img_syntax (struct GMT_CTRL *GMT)
 }
 
 /*! . */
-void GMT_syntax (struct GMT_CTRL *GMT, char option)
-{
+void GMT_syntax (struct GMT_CTRL *GMT, char option) {
 	/* The function print to stderr the syntax for the option indicated by
 	 * the variable <option>.  Only the common parameter options are covered
 	 */
@@ -1510,8 +1504,7 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 	}
 }
 
-int GMT_default_error (struct GMT_CTRL *GMT, char option)
-{
+int GMT_default_error (struct GMT_CTRL *GMT, char option) {
 	/* GMT_default_error ignores all the common options that have already been processed and returns
 	 * true if the option is not an already processed common option.
 	 */
@@ -1670,8 +1663,7 @@ bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[]) {
 }
 
 /*! . */
-int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R)
-{
+int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R) {
 	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
 	 * call GMT_mapproject to convert this to geographic degrees.
 	 * get_R is true when this is done to obtain the -R setting.  */
@@ -2030,8 +2022,8 @@ int gmt_parse_XY_option (struct GMT_CTRL *GMT, int axis, char *text) {
 }
 
 /*! . */
-int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg)
-{	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
+int gmt_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
+	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
 	unsigned int pos = 0;
 	int col, a_col = GMT_Z;
 	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[64] = {""}, *s = NULL, *c = NULL;
@@ -2435,14 +2427,14 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 }
 
 /*! Routine will temporarily suspend any -i selection */
-void GMT_disable_i_opt (struct GMT_CTRL *GMT)
-{	/* Temporarily turn off any -i selections */
+void GMT_disable_i_opt (struct GMT_CTRL *GMT) {
+	/* Temporarily turn off any -i selections */
 	GMT->common.i.active = false;
 }
 
 /*! Routine will re-enable any suspended -i selection */
-void GMT_reenable_i_opt (struct GMT_CTRL *GMT)
-{	/* Turn on again any -i selections */
+void GMT_reenable_i_opt (struct GMT_CTRL *GMT) {
+	/* Turn on again any -i selections */
 	GMT->common.i.active = GMT->common.i.orig;
 }
 
@@ -11682,8 +11674,8 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 }
 
 /*! . */
-bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family)
-{	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
+bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned int direction, unsigned int family) {
+	/* Return true if a file arg was given and, if direction is GMT_IN, check that the file
 	 * exists and is readable. Otherwise we return false. */
 	unsigned int k = 0;
 	bool not_url = true;

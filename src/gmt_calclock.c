@@ -838,8 +838,8 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 	}
 }
 
-void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, bool upper, unsigned int kind, double dt)
-{	/* Given the internal time representation dt and the formatting information
+void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, bool upper, unsigned int kind, double dt) {
+	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */
 
@@ -920,8 +920,8 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 		sprintf (clock, W->format, calendar.hour, calendar.min, i_sec, m_sec);
 }
 
-void GMT_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t)
-{	/* Assemble the annotation label given the formatting options presented */
+void GMT_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t) {
+	/* Assemble the annotation label given the formatting options presented */
 	struct GMT_GCAL calendar;
 
 	GMT_gcal_from_dt (GMT, t, &calendar);			/* Convert t to a complete calendar structure */

@@ -192,8 +192,7 @@ static double q2[5] = {1.872952849923460, 5.279051029514284e-01,
 #endif /* !defined(HAVE_ERF) || !defined(HAVE_ERFC) */
 
 #ifndef HAVE_ERF
-double erf (double y)
-{
+double erf (double y) {
 	int i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
 
@@ -245,8 +244,7 @@ double erf (double y)
 #endif /* HAVE_ERF */
 
 #ifndef HAVE_ERFC
-double erfc (double y)
-{
+double erfc (double y) {
 	int i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
 
@@ -362,8 +360,7 @@ double hypot (double x, double y) {
 #ifndef HAVE_J0
 /* Alternative j0 coded from Numerical Recipes by Press et al */
 
-double j0 (double x)
-{
+double j0 (double x) {
 	double ax, z, xx, y, ans, ans1, ans2, s, c;
 
 	if ((ax = fabs (x)) < 8.0) {
@@ -389,8 +386,7 @@ double j0 (double x)
 #ifndef HAVE_J1
 /* Alternative j1 coded from Numerical Recipes by Press et al */
 
-double j1 (double x)
-{
+double j1 (double x) {
 	double ax, z, xx, y, ans, ans1, ans2, s, c;
 
 	if ((ax = fabs (x)) < 8.0) {
@@ -422,8 +418,7 @@ double j1 (double x)
 
 /* Alternative jn coded from Numerical Recipes by Press et al */
 
-double jn (int n, double x)
-{
+double jn (int n, double x) {
 	int j, jsum, m;
 	double ax, bj, bjm, bjp, sum, tox, ans;
 
@@ -503,8 +498,7 @@ double log1p (double x) {
 
 #if !defined(HAVE_SINCOS)
 /* Platform does not have sincos - make a dummy one with sin and cos */
-void sincos (double a, double *s, double *c)
-{
+void sincos (double a, double *s, double *c) {
 	*s = sin (a);
 	*c = cos (a);
 }
@@ -520,8 +514,7 @@ void sincos (double a, double *s, double *c)
 
 /* Alternative y0, y1, yn coded from Numerical Recipes by Press et al */
 
-double y0 (double x)
-{
+double y0 (double x) {
 	double z, ax, xx, y, ans, ans1, ans2, s, c;
 
 	if (x < 8.0) {
@@ -548,8 +541,7 @@ double y0 (double x)
 #ifndef HAVE_Y1
 /* Alternative y1 coded from Numerical Recipes by Press et al */
 
-double y1 (double x)
-{
+double y1 (double x) {
 	double z, ax, xx, y, ans, ans1, ans2, s, c;
 
 	if (x < 8.0) {
@@ -576,8 +568,7 @@ double y1 (double x)
 #ifndef HAVE_YN
 /* Alternative yn coded from Numerical Recipes by Press et al */
 
-double yn (int n, double x)
-{
+double yn (int n, double x) {
 	int j;
 	double by, bym, byp, tox;
 
