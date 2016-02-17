@@ -78,6 +78,9 @@ extern "C" {
 #endif
 #endif
 
+/* Used to restrict the scope of a function to the file it was declared in */
+#define GMT_LOCAL static
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
