@@ -1,3 +1,4 @@
+#!/bin/bash
 #	$Id$
 # Test various repeating/clip mode for periodic and straight boundary
 function map { #  $1 = -N option, $2 is text, $3 is any -Y option
