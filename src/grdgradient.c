@@ -39,7 +39,7 @@
 
 #define GMT_PROG_OPTIONS "-RVfn"
 
-struct GRDGRADIENT_CTRL {
+GMT_LOCAL struct GRDGRADIENT_CTRL {
 	struct In {
 		bool active;
 		char *file;
@@ -74,7 +74,7 @@ struct GRDGRADIENT_CTRL {
 	} S;
 };
 
-void *New_grdgradient_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDGRADIENT_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDGRADIENT_CTRL);
@@ -88,7 +88,7 @@ void *New_grdgradient_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	return (C);
 }
 
-void Free_grdgradient_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);	
 	gmt_free (C->G.file);	
@@ -96,7 +96,7 @@ void Free_grdgradient_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-double specular (double nx, double ny, double nz, double *s) {
+GMT_LOCAL double specular (double nx, double ny, double nz, double *s) {
 	/* SPECULAR Specular reflectance.
 	   R = SPECULAR(Nx,Ny,Nz,S,V) returns the reflectance of a surface with
 	   normal vector components [Nx,Ny,Nz].  S and V specify the direction
@@ -114,7 +114,7 @@ double specular (double nx, double ny, double nz, double *s) {
 	return (MAX(0, 2 * (s[0]*nx + s[1]*ny + s[2]*nz) * nz - s[2]));
 }
 
-int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n");
@@ -159,7 +159,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdgradient and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -326,7 +326,7 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdgradient_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdgradient (void *V_API, int mode, void *args) {
 	bool sigma_set = false, offset_set = false, bad, new_grid = false;
@@ -351,18 +351,18 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdgradient_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdgradient_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdgradient_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdgradient_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 

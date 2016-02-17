@@ -33,7 +33,7 @@
 
 #define GMT_PROG_OPTIONS "-RVh"
 
-struct GRDHISTEQ_CTRL {
+GMT_LOCAL struct GRDHISTEQ_CTRL {
 	struct In {
 		bool active;
 		char *file;
@@ -69,7 +69,7 @@ struct	CELL {
 	float high;
 };
 
-void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDHISTEQ_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
@@ -79,7 +79,7 @@ void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);	
 	gmt_free (C->D.file);	
@@ -87,7 +87,7 @@ void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
@@ -108,7 +108,7 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdhisteq and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -173,7 +173,7 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
+GMT_LOCAL float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell) {
 	unsigned int low, high, i;
 
 	low = 0;
@@ -203,7 +203,7 @@ float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned in
 	return (0.0f);	/* Cannot get here - just used to quiet compiler */
 }
 
-int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
+GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals) {
 	/* Do basic histogram equalization */
 	uint64_t i, j, nxy;
 	unsigned int last_cell, n_cells_m1 = 0, current_cell, pad[4];
@@ -271,19 +271,19 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	return (0);
 }
 
-int compare_indexed_floats (const void *point_1, const void *point_2) {
+GMT_LOCAL int compare_indexed_floats (const void *point_1, const void *point_2) {
 	if (((struct INDEXED_DATA *)point_1)->x < ((struct INDEXED_DATA *)point_2)->x) return (-1);
 	if (((struct INDEXED_DATA *)point_1)->x > ((struct INDEXED_DATA *)point_2)->x) return (+1);
 	return (0);
 }
 
-int compare_indices (const void *point_1, const void *point_2) {
+GMT_LOCAL int compare_indices (const void *point_1, const void *point_2) {
 	if (((struct INDEXED_DATA *)point_1)->i < ((struct INDEXED_DATA *)point_2)->i) return (-1);
 	if (((struct INDEXED_DATA *)point_1)->i > ((struct INDEXED_DATA *)point_2)->i) return (1);
 	return (0);
 }
 
-int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm) {
+GMT_LOCAL int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm) {
 	/* Make an output grid file with standard normal scores */
 	unsigned int row, col;
 	uint64_t i = 0, j = 0, ij, nxy;
@@ -331,7 +331,7 @@ int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdhisteq_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -347,18 +347,18 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdhisteq_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdhisteq_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdhisteq_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdhisteq_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
