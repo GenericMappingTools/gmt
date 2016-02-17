@@ -16,16 +16,14 @@
 
 #define MGG_BYTE_SIZE
 
-static void gmt_swap_word (void* ptr)
-{
+static void gmt_swap_word (void* ptr) {
 	unsigned char *tmp = ptr;
 	unsigned char a = tmp[0];
 	tmp[0] = tmp[1];
 	tmp[1] = a;
 }
 
-static void gmt_swap_long (void *ptr)
-{
+static void gmt_swap_long (void *ptr) {
 	unsigned char *tmp = ptr;
 	unsigned char a = tmp[0];
 	tmp[0] = tmp[3];
@@ -35,8 +33,7 @@ static void gmt_swap_long (void *ptr)
 	tmp[2] = a;
 }
 
-int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header)
-{
+int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header) {
 	int i, version;
 	/* Determine if swapping is needed */
 	if (header->version == (GRD98_MAGIC_NUM + GRD98_VERSION)) return (0);	/* Version matches, No need to swap */
@@ -70,8 +67,7 @@ int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header)
 	return (1);	/* Signal we need to swap the data also */
 }
 
-static double gmt_dms2degrees (int deg, int min, int sec)
-{
+static double gmt_dms2degrees (int deg, int min, int sec) {
 	double decDeg = (double)deg;
 
 	decDeg += (double)min * GMT_MIN2DEG;
@@ -80,8 +76,7 @@ static double gmt_dms2degrees (int deg, int min, int sec)
     return decDeg;
 }
 
-static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
-{
+static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec) {
 	/* Round off to the nearest half second */
 	if (degrees < 0) degrees -= (0.5 * GMT_SEC2DEG);
 
@@ -95,8 +90,7 @@ static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
 	*sec = (int)(degrees * GMT_MIN2SEC_F);
 }
 
-int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
-{
+int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg) {
 	double f;
 	GMT_memset (mgg, 1, MGG_GRID_HEADER_2);
 
@@ -143,8 +137,7 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	return (GMT_NOERROR);
 }
 
-static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt)
-{
+static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt) {
 	int one_or_zero;
 
 	/* Do not memset the gmt header since it has the file name set */
@@ -211,12 +204,15 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	/* Check the magic number and size of header */
 	if (ok == -1) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized header, expected 0x%04X saw 0x%04X\n",
+		            GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
 
 	if (mggHeader.length != sizeof (MGG_GRID_HEADER_2)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Invalid grid header size, expected %d, found %d\n", (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Invalid grid header size, expected %d, found %d\n",
+		            (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
+		GMT_fclose (GMT, fp);
 		return (GMT_GRDIO_GRD98_BADLENGTH);
 	}
 
@@ -237,9 +233,15 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	if ((err = gmt_GMTtoMGG2 (header, &mggHeader)) != 0) return (err);
+	if ((err = gmt_GMTtoMGG2 (header, &mggHeader)) != 0) {
+		GMT_fclose (GMT, fp);
+		return (err);
+	}
 
-	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
+		GMT_fclose (GMT, fp);
+		return (GMT_GRDIO_WRITE_FAILED);
+	}
 
 	GMT_fclose (GMT, fp);
 
@@ -268,7 +270,10 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		piping = true;
 	}
 	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.r_mode)) != NULL) {
-		if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+		if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
+			GMT_fclose (GMT, fp);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 		swap_all = gmt_swap_mgg_header (&mggHeader);
 		if (swap_all == -1) return (GMT_GRDIO_GRD98_BADMAGIC);
 		if (mggHeader.numType == 0) mggHeader.numType = sizeof (int);
@@ -292,15 +297,19 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (piping)	{ /* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
-	} else if (first_row) { /* Simply seek by it */
+	}
+	else if (first_row) { /* Simply seek by it */
 		long_offset = (off_t)first_row * (off_t)n_expected * size;
-		if (fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, long_offset, 1)) {
+			GMT_free (GMT, tLong);
+			return (GMT_GRDIO_SEEK_FAILED);
+		}
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
+		if (GMT_fread (tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
@@ -339,7 +348,13 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	}
 	if (piping)	{ /* Skip data by reading it */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) {
+			if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) {
+				GMT_free (GMT, tLong);		GMT_free (GMT, actual_col);
+				GMT_fclose (GMT, fp);
+				return (GMT_GRDIO_READ_FAILED);
+			}
+		}
 	}
 
 	GMT_free (GMT, tLong);
@@ -404,7 +419,11 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	/* store header information and array */
 	if ((err = gmt_GMTtoMGG2(header, &mggHeader)) != 0) return (err);;
-	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
+		GMT_free (GMT, actual_col);
+		GMT_fclose (GMT, fp);
+		return (GMT_GRDIO_WRITE_FAILED);
+	}
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 
 	tLong = GMT_memory (GMT, NULL, width_in, int);
