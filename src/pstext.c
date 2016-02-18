@@ -1015,9 +1015,6 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		int n_labels = m, form = (T.boxflag & 4) ? PSL_TXT_ROUND : 0;	/* PSL_TXT_ROUND = Rounded rectangle */
 		unsigned int kk;
 		char *font = NULL, **fonts = NULL;
-		EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
-		EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
-		EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 
 		form |= PSL_TXT_INIT;	/* To lay down all PSL attributes */
 		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) form |= PSL_TXT_SHOW;	/* To place text */
