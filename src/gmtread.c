@@ -35,7 +35,7 @@
 
 /* Control structure for read */
 
-GMT_LOCAL struct GMTREAD_CTRL {
+struct GMTREAD_CTRL {
 	struct IO {	/* Need two args with filenames */
 		bool active[2];
 		char *file[2];

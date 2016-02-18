@@ -82,7 +82,7 @@ EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, stru
 
 #define DOUBLE_BIT_MASK (~(1023ULL << 54ULL))	/* This will be 00000000 00111111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
 
-GMT_LOCAL struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
+struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct Out {	/* = <filename> */
 		bool active;

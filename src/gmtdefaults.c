@@ -36,7 +36,7 @@
 
 /* Control structure for gmtdefaults */
 
-GMT_LOCAL struct GMTDEFAULTS_CTRL {
+struct GMTDEFAULTS_CTRL {
 	struct D {	/* -D[s|u] */
 		bool active;
 		char mode;

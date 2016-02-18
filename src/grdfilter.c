@@ -56,7 +56,7 @@ Use option -x to set the number of threads. e.g. -x2, -x4, ... or -xa to use all
 
 #define GMT_PROG_OPTIONS "-RVf" GMT_ADD_x_OPT
 
-GMT_LOCAL struct GRDFILTER_CTRL {
+struct GRDFILTER_CTRL {
 	struct GRDFILT_In {
 		bool active;
 		char *file;

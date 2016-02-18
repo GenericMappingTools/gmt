@@ -32,7 +32,7 @@
 
 #define GMT_PROG_OPTIONS "-RVf"
 
-GMT_LOCAL struct GRDCONVERT_CTRL {
+struct GRDCONVERT_CTRL {
 	struct IO {
 		bool active;
 		char *file[2];

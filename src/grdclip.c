@@ -45,13 +45,13 @@ enum Grdclip_cases {
 
 /* Control structure for grdclip */
 
-GMT_LOCAL struct GRDCLIP_RECLASSIFY {
+struct GRDCLIP_RECLASSIFY {
 	float low, high, between;
 	uint64_t n_between;
 	bool replace;	/* true if low == high */
 };
 
-GMT_LOCAL struct GRDCLIP_CTRL {
+struct GRDCLIP_CTRL {
 	struct In {
 		bool active;
 		char *file;

@@ -52,7 +52,7 @@
 #define BLEND_FIRST	2
 #define BLEND_LAST	3
 
-GMT_LOCAL struct GRDBLEND_CTRL {
+struct GRDBLEND_CTRL {
 	struct In {	/* Input files */
 		bool active;
 		char **file;
@@ -87,7 +87,7 @@ GMT_LOCAL struct GRDBLEND_CTRL {
 	} W;
 };
 
-GMT_LOCAL struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
+struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	struct GMT_GRID *G;				/* I/O structure for grid files, including grd header */
 	struct GMT_GRID_ROWBYROW *RbR;
 	int in_i0, in_i1, out_i0, out_i1;		/* Indices of outer and inner x-coordinates (in output grid coordinates) */

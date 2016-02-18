@@ -35,7 +35,7 @@
 
 /* Control structure for gmtget */
 
-GMT_LOCAL struct GMTGET_CTRL {
+struct GMTGET_CTRL {
 	struct L {	/* -L */
 		bool active;
 	} L;

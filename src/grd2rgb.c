@@ -35,7 +35,7 @@
 
 #define GMT_PROG_OPTIONS "->RVh"
 
-GMT_LOCAL struct GRD2RGB_CTRL {
+struct GRD2RGB_CTRL {
 	struct In {
 		bool active;
 		char *file;

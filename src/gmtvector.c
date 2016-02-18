@@ -48,7 +48,7 @@ enum gmtvector_method {	/* The available methods */
 	DO_POLE,
 	DO_BISECTOR};
 
-GMT_LOCAL struct GMTVECTOR_CTRL {
+struct GMTVECTOR_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;

@@ -101,7 +101,7 @@ int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version
 
 /* Check if GSHHG file meets the min version requirement */
 int gshhg_require_min_version (const char* filename, const struct GSHHG_VERSION min_version) {
-  struct GSHHG_VERSION version;
+	struct GSHHG_VERSION version;
 	/* get version of file */
 	if ( ! gshhg_get_version (filename, &version) )
 		return 0;

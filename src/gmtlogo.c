@@ -44,7 +44,7 @@
 
 /* Control structure for gmtlogo */
 
-GMT_LOCAL struct GMTLOGO_CTRL {
+struct GMTLOGO_CTRL {
 	struct D {	/* -D[g|j|n|x]<refpoint>+w<width>[+j<justify>][+o<off[GMT_X]>[/<dy>]] */
 		bool active;
 		struct GMT_REFPOINT *refpoint;

@@ -38,7 +38,7 @@
 
 /* Control structure for gmtconnect */
 
-GMT_LOCAL struct GMTCONNECT_CTRL {
+struct GMTCONNECT_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;

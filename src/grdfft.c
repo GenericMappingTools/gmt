@@ -111,7 +111,7 @@ enum Grdfft_operators {
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 
-GMT_LOCAL struct F_INFO {
+struct F_INFO {
 	double lc[3];		/* Low-cut frequency for r, x, and y	*/
 	double lp[3];		/* Low-pass frequency for r, x, and y	*/
 	double hp[3];		/* High-pass frequency for r, x, and y	*/

@@ -35,7 +35,7 @@
 
 /* Control structure for gmtwrite */
 
-GMT_LOCAL struct GMTWRITE_CTRL {
+struct GMTWRITE_CTRL {
 	struct IO {	/* Need two args with filenames */
 		bool active[2];
 		char *file[2];

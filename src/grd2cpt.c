@@ -44,7 +44,7 @@
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 
-GMT_LOCAL struct GRD2CPT_CTRL {
+struct GRD2CPT_CTRL {
 	struct In {
 		bool active;
 	} In;

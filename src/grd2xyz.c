@@ -33,7 +33,7 @@
 
 #define GMT_PROG_OPTIONS "-:>RVbdfhos" GMT_OPT("H")
 
-GMT_LOCAL struct GRD2XYZ_CTRL {
+struct GRD2XYZ_CTRL {
 	struct GRD2XYZ_C {	/* -C[f|i] */
 		bool active;
 		unsigned int mode;

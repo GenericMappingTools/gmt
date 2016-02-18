@@ -41,7 +41,7 @@
 
 #define GMT_PROG_OPTIONS "-:JRVbdfh" GMT_OPT("H")
 
-GMT_LOCAL struct GRDEDIT_CTRL {
+struct GRDEDIT_CTRL {
 	struct In {
 		bool active;
 		char *file;

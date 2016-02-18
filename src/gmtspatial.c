@@ -50,7 +50,7 @@
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment legnth, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
-GMT_LOCAL struct DUP {
+struct DUP {
 	uint64_t point;
 	uint64_t segment;
 	unsigned int table;
@@ -65,7 +65,7 @@ GMT_LOCAL struct DUP {
 	double s_threshold;
 };
 
-GMT_LOCAL struct DUP_INFO {
+struct DUP_INFO {
 	uint64_t point;
 	int mode;
 	double distance;
@@ -73,7 +73,7 @@ GMT_LOCAL struct DUP_INFO {
 	double setratio;
 };
 
-GMT_LOCAL struct GMTSPATIAL_CTRL {
+struct GMTSPATIAL_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;
@@ -136,7 +136,7 @@ GMT_LOCAL struct GMTSPATIAL_CTRL {
 	} T;
 };
 
-GMT_LOCAL struct PAIR {
+struct PAIR {
 	double node;
 	uint64_t pos;
 };
@@ -506,14 +506,14 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	return (n_dup);
 }
 
-GMT_LOCAL struct NN_DIST {
+struct NN_DIST {
 	double coord[4];	/* Up to x,y,z,weight */
 	double distance;	/* Distance to nearest neighbor */
 	int64_t ID;		/* Input ID # of this point (original input record number 0,1,...)*/
 	int64_t neighbor;	/* Input ID # of this point's neighbor */
 };
 
-GMT_LOCAL struct NN_INFO {
+struct NN_INFO {
 	int64_t sort_rec;	/* Input ID # of this point's neighbor */
 	int64_t orig_rec;	/* Rec # of this point */
 };

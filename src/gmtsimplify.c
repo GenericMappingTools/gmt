@@ -49,7 +49,7 @@
 
 /* Control structure for gmtsimplify */
 
-GMT_LOCAL struct GMTSIMPLIFY_CTRL {
+struct GMTSIMPLIFY_CTRL {
 	struct Out {	/* ->[<outfile>] */
 		bool active;
 		char *file;

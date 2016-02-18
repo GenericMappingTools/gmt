@@ -33,7 +33,7 @@
 
 #define GMT_PROG_OPTIONS "-V"
 
-GMT_LOCAL struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
+struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A */
 		bool active;

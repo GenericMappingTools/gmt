@@ -63,7 +63,7 @@ enum GMT_enum_regress {
 
 /* Control structure for gmtregress */
 
-GMT_LOCAL struct GMTREGRESS_CTRL {
+struct GMTREGRESS_CTRL {
 	struct Out {	/* ->[<outfile>] */
 		bool active;
 		char *file;

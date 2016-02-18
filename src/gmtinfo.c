@@ -44,7 +44,7 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 #define BEST_FOR_FFT	2
 #define ACTUAL_BOUNDS	3
 
-GMT_LOCAL struct MINMAX_CTRL {	/* All control options for this program (except common args) */
+struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A */
 		bool active;

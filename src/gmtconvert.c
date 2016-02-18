@@ -46,7 +46,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 
 /* Control structure for gmtconvert */
 
-GMT_LOCAL struct GMTCONVERT_CTRL {
+struct GMTCONVERT_CTRL {
 	struct Out {	/* -> */
 		bool active;
 		char *file;

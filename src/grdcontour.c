@@ -36,7 +36,7 @@
 
 /* Control structure for grdcontour */
 
-GMT_LOCAL struct GRDCONTOUR_CTRL {
+struct GRDCONTOUR_CTRL {
 	struct GRDCONTOUR_In {
 		bool active;
 		char *file;
@@ -111,7 +111,7 @@ enum grdcontour_contour_type {cont_is_not_closed = 0,	/* Not a closed contour of
 	cont_is_closed_straddles_equator_south = -4,	/* Closed contour crossing equator that encloses the south pole */
 	cont_is_closed_straddles_equator_north = +4};	/* Closed contour crossing equator that encloses the north pole */
 
-GMT_LOCAL struct SAVE {
+struct SAVE {
 	double *x, *y;
 	double *xp, *yp;
 	double cval;

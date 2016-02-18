@@ -35,7 +35,7 @@
 
 /* Control structure for gmtset */
 
-GMT_LOCAL struct GMTSET_CTRL {
+struct GMTSET_CTRL {
 	struct C {	/* -C */
 		bool active;
 	} C;

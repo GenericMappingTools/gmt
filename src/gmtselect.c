@@ -56,18 +56,18 @@
 #define F_ITEM	0
 #define N_ITEM	1
 
-GMT_LOCAL struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coordinate */
+struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coordinate */
 	double x, y, d;
 };
 
-GMT_LOCAL struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
+struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
 	unsigned int col;	/* Column to test */
 	bool equal;	/* Just check if z == min withing 5 ULps */
 	double min;	/* Smallest z-value to pass through, for this column */
 	double max;	/* Largest z-value to pass through, for this column */
 };
 
-GMT_LOCAL struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
+struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
 		bool active;

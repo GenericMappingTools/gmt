@@ -104,7 +104,7 @@ struct PROJECT_INFO {
 	double plon, plat;	/* Pole location */
 };
 
-int compare_distances (const void *point_1, const void *point_2) {
+GMT_LOCAL int compare_distances (const void *point_1, const void *point_2) {
 	double d_1, d_2;
 
 	d_1 = ((struct PROJECT_DATA *)point_1)->a[2];
@@ -115,7 +115,7 @@ int compare_distances (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, bool c_given, bool generate) {
+GMT_LOCAL double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, bool c_given, bool generate) {
 	/* routine sets up a unit 3-vector p, the pole of an
 	   oblique projection, given plat, plon, the position
 	   of this pole in the usual coordinate frame.
@@ -149,7 +149,7 @@ double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p,
 	return (sin_lat_to_pole);
 }
 
-void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *x_t_lat, double *x_t_lon, double *p, double *c) {
+GMT_LOCAL void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *x_t_lat, double *x_t_lon, double *p, double *c) {
 	/* routine takes the point x at conventional (xlat, xlon) and
 	   computes the transformed coordinates (x_t_lat, x_t_lon) in
 	   an oblique reference frame specified by the unit 3-vectors
@@ -173,7 +173,7 @@ void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon, double *
 	*x_t_lon = copysign(d_acosd(temp1), temp2);
 }
 
-void make_euler_matrix (double *p, double *e, double theta) {
+GMT_LOCAL void make_euler_matrix (double *p, double *e, double theta) {
 	/* Routine to fill an euler matrix e with the elements
 	   needed to rotate a 3-vector about the pole p through
 	   an angle theta (in degrees).  p is a unit 3-vector.
@@ -205,7 +205,7 @@ void make_euler_matrix (double *p, double *e, double theta) {
 	e[8] = temp * p[2] + cos_theta;
 }
 
-void matrix_3v (double *a, double *x, double *b) {
+GMT_LOCAL void matrix_3v (double *a, double *x, double *b) {
 	/* routine to find b, where Ax = b, A is a 3 by 3 square matrix,
 	   and x and b are 3-vectors.  A is stored row wise, that is:
 
@@ -216,7 +216,7 @@ void matrix_3v (double *a, double *x, double *b) {
 	b[2] = x[0]*a[6] + x[1]*a[7] + x[2]*a[8];
 }
 
-void matrix_2v (double *a, double *x, double *b) {
+GMT_LOCAL void matrix_2v (double *a, double *x, double *b) {
 	/* routine to find b, where Ax = b, A is a 2 by 2 square matrix,
 	   and x and b are 2-vectors.  A is stored row wise, that is:
 
@@ -226,7 +226,7 @@ void matrix_2v (double *a, double *x, double *b) {
 	b[1] = x[0]*a[2] + x[1]*a[3];
 }
 
-void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, bool two_pts) {
+GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, bool two_pts) {
 	/* routine to initialize a pole vector, p, and a central meridian
 	   normal vector, c, for use in projecting points onto a great circle.
 
@@ -277,7 +277,7 @@ void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, doubl
 	GMT_normalize3v (GMT, c);
 }
 
-void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
+GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
 	/* Sets up stuff for rotation of cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
 	   Output is the negative cartesian azimuth in degrees.
@@ -294,7 +294,7 @@ void flat_project_setup (double alat, double alon, double blat, double blon, dou
 	e[2] = -e[1];
 }
 
-void copy_text_from_col3 (char *line, char *z_cols) {
+GMT_LOCAL void copy_text_from_col3 (char *line, char *z_cols) {
 	/* returns the input line starting at the 3rd column */
 
 	unsigned int i;
@@ -306,7 +306,7 @@ void copy_text_from_col3 (char *line, char *z_cols) {
 	sscanf (line, "%*s %*s %[^\n]", z_cols);
 }
 
-void *New_project_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PROJECT_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1U, struct PROJECT_CTRL);
@@ -317,12 +317,12 @@ void *New_project_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	return (C);
 }
 
-void Free_project_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free (GMT, C);
 }
 
-int GMT_project_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+]]\n");
@@ -382,7 +382,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to project and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -541,7 +541,7 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P) {
+GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, bool pure_ascii, struct PROJECT_INFO *P) {
 	int error;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
@@ -621,7 +621,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_project_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_project (void *V_API, int mode, void *args) {
 	uint64_t rec, n_total_read, col, n_total_used = 0;
@@ -645,18 +645,18 @@ int GMT_project (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_project_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_project_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_project_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_project_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_project_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the project main code ----------------------------*/
 

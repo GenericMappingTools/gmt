@@ -37,7 +37,7 @@
 
 /* Control structure for grdcontour */
 
-GMT_LOCAL struct GRDCUT_CTRL {
+struct GRDCUT_CTRL {
 	struct GRDCUT_In {
 		bool active;
 		char *file;
