@@ -94,7 +94,7 @@ struct PSMASK_INFO {
 	unsigned int bit[32], offset;
 };
 
-void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], unsigned int id, unsigned int flag) {
+GMT_LOCAL void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], unsigned int id, unsigned int flag) {
 	uint64_t i;
 	double x, y;
 
@@ -111,7 +111,7 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
-uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max) {
+GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max) {
 	/* Loosely based on gmt_trace_contour in gmt_support.c.
 	 * Differs in that grd[] is known to only have values 0 (no data) or 1 (data point).
 	 */
@@ -236,7 +236,7 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);	/* Return length of polygon */
 }
 
-uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max) {
+GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max) {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points.
@@ -323,7 +323,7 @@ uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	return (n);
 }
 
-void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *grd, double *x, double *y, uint64_t n, int orient) {
+GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *grd, double *x, double *y, uint64_t n, int orient) {
 	/* Determine handedness of the contour and if opposite of orient reverse the contour */
 	int side[2], z_dir, k, k2;
 	bool reverse;
@@ -392,7 +392,7 @@ void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *grd
 	}
 }
 
-void shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e, double s, double n) {
+GMT_LOCAL void shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e, double s, double n) {
 	/* Moves outside points to boundary.  Array length is not changed. */
 	uint64_t i;
 
@@ -408,7 +408,7 @@ void shrink_clip_contours (double *x, double *y, uint64_t np, double w, double e
 	}
 }
 
-void *New_psmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSMASK_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSMASK_CTRL);
@@ -419,14 +419,14 @@ void *New_psmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->D.file);	
 	gmt_free (C->L.file);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psmask <table> %s %s\n", GMT_I_OPT, GMT_J_OPT);
@@ -467,7 +467,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to psmask and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -595,7 +595,7 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_psmask_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psmask (void *V_API, int mode, void *args) {
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
@@ -626,18 +626,18 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_psmask_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_psmask_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_psmask_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psmask_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psmask main code ----------------------------*/
 

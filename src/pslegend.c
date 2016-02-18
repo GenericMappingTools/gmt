@@ -53,7 +53,7 @@ struct PSLEGEND_CTRL {
 	} F;
 };
 
-void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSLEGEND_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct PSLEGEND_CTRL);
@@ -65,14 +65,14 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	return (C);
 }
 
-void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free_refpoint (GMT, &C->D.refpoint);
 	GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);
 }
 
-int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pslegend synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -104,7 +104,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pslegend and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -252,10 +252,10 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_pslegend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* Used to draw the current y-line for debug purposes only. */
-void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0) {
+GMT_LOCAL void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0) {
 	struct GMT_PEN faint_pen;
 	GMT_init_pen (GMT, &faint_pen, 0.0);
 	GMT_setpen (GMT, &faint_pen);
@@ -263,7 +263,7 @@ void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1,
 }
 
 /* Used to fill the cells in the the current y-line. */
-void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xoff[], double *d_gap, unsigned int n_cols, char *fill[]) {
+GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xoff[], double *d_gap, unsigned int n_cols, char *fill[]) {
 	unsigned int col;
 	double dim[2];
 	struct GMT_FILL F;
@@ -282,7 +282,7 @@ void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, double xof
 	*d_gap = 0.0;	/* Reset any "gap after D operator" once we use it */
 }
 
-struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry) {
+GMT_LOCAL struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry) {
 	uint64_t dim[3] = {1, 1, GMT_SMALL_CHUNK};
 	struct GMT_TEXTSET *D = NULL;
 	if (Din) return Din;	/* Already done this */
@@ -293,7 +293,7 @@ struct GMT_TEXTSET *get_textset_pointer (struct GMTAPI_CTRL *API, struct GMT_TEX
 	return (D);
 }
 
-struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry) {
+GMT_LOCAL struct GMT_DATASET *get_dataset_pointer (struct GMTAPI_CTRL *API, struct GMT_DATASET *Din, unsigned int geometry) {
 	uint64_t dim[4] = {1, GMT_SMALL_CHUNK, 2, 2};	/* We will a 2-row data set for up to 64 lines; allocate just once */
 	struct GMT_DATASET *D = NULL;
 	if (Din) return Din;	/* Already done this */
@@ -374,18 +374,18 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_pslegend_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_pslegend_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pslegend_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pslegend main code ----------------------------*/
 

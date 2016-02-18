@@ -80,7 +80,7 @@ struct PSWIGGLE_CTRL {
 	} Z;
 };
 
-void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, uint64_t n_in, double zscale, double start_az, double stop_az, int fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, int paint_wiggle, int negative, int outline, int track) {
+GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, uint64_t n_in, double zscale, double start_az, double stop_az, int fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, int paint_wiggle, int negative, int outline, int track) {
 	uint64_t n = 0;
 	int64_t i, np = n_in;
 	double dx, dy, len, az = 0.0, s = 0.0, c = 0.0, x_inc, y_inc;
@@ -150,7 +150,7 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 	}
 }
 
-void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double length, double zscale, int gave_xy, char *units) {
+GMT_LOCAL void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double length, double zscale, int gave_xy, char *units) {
 	/* Draws a basic vertical scale bar at (x0,y0) and labels it as specified */
 	int form;
 	double dy, off, xx[4], yy[4];
@@ -179,7 +179,7 @@ void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	PSL_plottext (PSL, x0 + off, y0, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, 5, form);
 }
 
-void *New_pswiggle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSWIGGLE_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
@@ -192,13 +192,13 @@ void *New_pswiggle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	return (C);
 }
 
-void Free_pswiggle_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->S.label);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_pswiggle_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	/* This displays the pswiggle synopsis and optionally full usage information */
 
@@ -240,7 +240,7 @@ int GMT_pswiggle_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pswiggle and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -371,9 +371,9 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_pswiggle_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **yy, double **zz) {
+GMT_LOCAL void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **yy, double **zz) {
 	(*n_alloc) <<= 1;
 	*xx = GMT_memory (GMT, *xx, *n_alloc, double);
 	*yy = GMT_memory (GMT, *yy, *n_alloc, double);
@@ -403,18 +403,18 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_pswiggle_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pswiggle_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_pswiggle_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_pswiggle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pswiggle_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
