@@ -73,7 +73,7 @@ struct GRDRASTER_INFO {
 	char type;
 };
 
-static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert unsigned char */
 	unsigned int i;
 	unsigned char tempval;
@@ -91,7 +91,7 @@ static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert char */
 	unsigned int i;
 	char tempval;
@@ -109,7 +109,7 @@ static inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert uint16_t */
 	unsigned int i;
 	uint16_t tempval;
@@ -129,7 +129,7 @@ static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert int16_t */
 	unsigned int i;
 	int16_t tempval;
@@ -150,7 +150,7 @@ static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
 	/* convert int32_t */
 	unsigned int i;
 	int32_t tempval;
@@ -171,7 +171,7 @@ static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-void reset_coltype (struct GMT_CTRL *GMT, char *Rarg) {
+GMT_LOCAL void reset_coltype (struct GMT_CTRL *GMT, char *Rarg) {
 	/* Because grdraster can deal with either geographic or Cartesian data
 	 * we need to be able to recognized geo arguments and set col_type correctly. */
 		size_t last;
@@ -183,7 +183,7 @@ void reset_coltype (struct GMT_CTRL *GMT, char *Rarg) {
 		GMT_set_cartesian (GMT, GMT_IN);
 }
 
-unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
+GMT_LOCAL unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 	/* Return byte size of each item, or 0 if bits */
 	int ksize;
 	switch (type) {
@@ -206,7 +206,7 @@ unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 	return (ksize);
 }
 
-int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian) {
+GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian) {
 	/* Read the file grdraster.info
 		Store the i'th row of the file in rasinfo[i].h.command.
 		Store the filename in rasinfo[i].h.remark.
@@ -615,7 +615,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 	return (nfound);
 }
 
-void *New_grdraster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDRASTER_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDRASTER_CTRL);
@@ -623,7 +623,7 @@ void *New_grdraster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdraster_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);
 	gmt_free (C->G.file);
@@ -631,7 +631,7 @@ void Free_grdraster_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	int i, nrasters;
 
@@ -671,7 +671,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdraster and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -728,7 +728,7 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
@@ -764,11 +764,11 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdraster_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdraster_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdraster_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -777,8 +777,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	GMT_set_geographic (GMT, GMT_IN);
 	GMT_set_geographic (GMT, GMT_OUT);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdraster_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 

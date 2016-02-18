@@ -67,8 +67,8 @@ struct GRDVOLUME_CTRL {
  * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
  */
 
-double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d) {
-	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
+GMT_LOCAL double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d) {
+                                   double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
 
 	dzdx  = (G->data[ij+1] - G->data[ij]);
 	dzdy  = (G->data[ij-G->header->mx] - G->data[ij]);
@@ -94,8 +94,8 @@ double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, 
  * lines y0 and y1 and two vertical lines x0 = ay +b and x1 = cy + d
  */
 
-double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d) {
-	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
+GMT_LOCAL double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d) {
+                                   double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
 
 	dzdx = (G->data[ij+1] - G->data[ij]);
 	dzdy = (G->data[ij-G->header->mx] - G->data[ij]);
@@ -117,7 +117,7 @@ double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, 
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a SW-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, frac;
@@ -135,7 +135,7 @@ void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a NE-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
@@ -158,7 +158,7 @@ void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a SE-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
@@ -180,7 +180,7 @@ void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
+GMT_LOCAL void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da) {
 	/* Calculates area of a NW-corner triangle */
 	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, y0_1, frac;
@@ -199,7 +199,7 @@ void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, do
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da) {
+GMT_LOCAL void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da) {
 	/* Calculates area of a NS trapezoid */
 	/* right = true gets the right trapezoid, false gets the left */
 	double x0, x1;
@@ -216,7 +216,7 @@ void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, doub
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da) {
+GMT_LOCAL void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da) {
 	/* Calculates area of a EW trapezoid */
 	/* top = true gets the top trapezoid, false gets the bottom */
 	double y0, y1;
@@ -233,7 +233,7 @@ void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double
 	}
 }
 
-double median3 (double x[]) {
+GMT_LOCAL double median3 (double x[]) {
 	/* Returns the median of the three points in x */
 	if (x[0] < x[1]) {
 		if (x[2] > x[1]) return (x[1]);
@@ -247,7 +247,7 @@ double median3 (double x[]) {
 	}
 }
 
-int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode) {
+GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode) {
 	/* mode: 0 = find value maximum, 1 = find curvature maximum */
 	unsigned int i, im;
 	double *c = NULL, *f = NULL;
@@ -280,7 +280,7 @@ int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned in
 	return (im);
 }
 
-void *New_grdvolume_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVOLUME_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
@@ -291,13 +291,13 @@ void *New_grdvolume_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high>] [-L<base>] [-S<unit>]\n");
@@ -323,7 +323,7 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdvolume and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -426,7 +426,7 @@ int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdvolume_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdvolume (void *V_API, int mode, void *args) {
 	bool bad, cut[4];
@@ -447,18 +447,18 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdvolume_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdvolume_usage (API, GMT_USAGE));/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdvolume_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdvolume_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdvolume_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
