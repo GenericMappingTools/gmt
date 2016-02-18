@@ -87,8 +87,12 @@
 
 EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char item, double **xx, char ***labels);
 EXTERN_MSC bool GMT_genper_reset (struct GMT_CTRL *GMT, bool reset);
+EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
+EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 
 #define GMT_ELLIPSE_APPROX 72
+
+#define PSL_IZ(PSL,z) ((int)lrint ((z) * PSL->internal.dpu))
 
 /* Local variables to this file */
 
@@ -305,9 +309,9 @@ void gmt_linear_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	if (!GMT->current.map.frame.draw || GMT->current.map.frame.side[N_SIDE] == 0)
 		PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
 	else
-		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", psl_iz (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
+		PSL_command (PSL, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", PSL_IZ (PSL, GMT->current.setting.map_title_offset));	/* For title adjustment */
 
-	PSL_command (PSL, "%d %d PSL_H_y add M\n", psl_iz (PSL, 0.5 * x_length), psl_iz (PSL, y_length));
+	PSL_command (PSL, "%d %d PSL_H_y add M\n", PSL_IZ (PSL, 0.5 * x_length), PSL_IZ (PSL, y_length));
 	form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 	PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
 	GMT->current.map.frame.plotted_header = true;
@@ -467,7 +471,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	/* Axis items are in order: GMT_ANNOT_UPPER, GMT_ANNOT_LOWER, GMT_TICK_UPPER, GMT_TICK_LOWER, GMT_GRID_UPPER, GMT_GRID_LOWER */
 
 	for (k = 0; k < 2; k++)
-		PSL_command (PSL, "/PSL_A%d_y %d def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (PSL, GMT->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
+		PSL_command (PSL, "/PSL_A%d_y %d def\n", k, A->item[k].active || A->item[k+2].active ? PSL_IZ (PSL, GMT->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
 
 	for (k = 0; k < GMT_GRID_UPPER; k++) {	/* For each one of the 6 axis items (gridlines are done separately) */
 
@@ -523,9 +527,9 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			}
 			PSL_command (PSL, "def\n");
 			if (annot_pos == 0)
-				PSL_command (PSL, "/PSL_A0_y PSL_A0_y %d add ", psl_iz (PSL, GMT->current.setting.map_annot_offset[annot_pos]));
+				PSL_command (PSL, "/PSL_A0_y PSL_A0_y %d add ", PSL_IZ (PSL, GMT->current.setting.map_annot_offset[annot_pos]));
 			else
-				PSL_command (PSL, "/PSL_A1_y PSL_A0_y PSL_A1_y mx %d add ", psl_iz (PSL, GMT->current.setting.map_annot_offset[annot_pos]));
+				PSL_command (PSL, "/PSL_A1_y PSL_A0_y PSL_A1_y mx %d add ", PSL_IZ (PSL, GMT->current.setting.map_annot_offset[annot_pos]));
 			if (faro) PSL_command (PSL, "PSL_AH%d add ", annot_pos);
 			PSL_command (PSL, "def\n");
 
@@ -536,7 +540,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
-				PSL_command (PSL, "%d PSL_A%d_y MM\n", psl_iz (PSL, x), annot_pos);
+				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
@@ -561,9 +565,9 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		PSL_command (PSL, "/PSL_LH ");
 		PSL_deftextdim (PSL, "-h", GMT->current.setting.font_label.size, "M");
 		PSL_command (PSL, "def\n");
-		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", psl_iz (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
+		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
 		/* Move to new anchor point */
-		PSL_command (PSL, "%d PSL_L_y MM\n", psl_iz (PSL, 0.5 * length));
+		PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
 		if (axis == GMT_Y && A->label_mode) {
 			i = (below) ? PSL_MR : PSL_ML;
 			PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_label.size, A->label, 0.0, i, form);
@@ -2081,14 +2085,14 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	if (GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* Make plot header for geographic maps*/
 		if (GMT_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] == 2) {
 			PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
-			PSL_command (PSL, "/PSL_H_y %d ", psl_iz (PSL, GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->current.setting.map_title_offset));
+			PSL_command (PSL, "/PSL_H_y %d ", PSL_IZ (PSL, GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + GMT->current.setting.map_title_offset));
 			PSL_deftextdim (PSL, "-h", GMT->current.setting.font_annot[GMT_PRIMARY].size, "100\\312");
 			PSL_command (PSL, "add def\n");
 		}
 		else
 			PSL_defunits (PSL, "PSL_H_y", GMT->current.setting.map_title_offset + GMT->current.setting.map_tick_length[GMT_PRIMARY]);
 
-		PSL_command (PSL, "%d %d PSL_H_y add M\n", psl_iz (PSL, GMT->current.proj.rect[XHI] * 0.5), psl_iz (PSL, GMT->current.proj.rect[YHI]));
+		PSL_command (PSL, "%d %d PSL_H_y add M\n", PSL_IZ (PSL, GMT->current.proj.rect[XHI] * 0.5), PSL_IZ (PSL, GMT->current.proj.rect[YHI]));
 		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_plottext (PSL, 0.0, 0.0, -GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, PSL_BC, form);
 		GMT->current.map.frame.plotted_header = true;
@@ -3534,6 +3538,7 @@ void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name,
 	/* Create the custom symbol macro that selects the correct font and size for the symbol item */
 
 	bool encode = (PSL->init.encoding && !PSL->internal.font[font_no].encoded);
+	int is = (int)lrint (size * PSL->internal.dpp);	/* Basically psl_ip */
 
 	if (PSL->internal.comments) PSL_command (PSL, "%% Set font encoding and size for this custom symbol %s item %d\n", name, id);
 	PSL_command (PSL, "/PSL_symbol_%s_setfont_%d {", name, id);
@@ -3541,7 +3546,7 @@ void gmt_encodefont (struct PSL_CTRL *PSL, int font_no, double size, char *name,
 		PSL_command (PSL, " PSL_font_encode %d get 0 eq {%s_Encoding /%s /%s PSL_reencode PSL_font_encode %d 1 put} if", font_no, PSL->init.encoding, PSL->internal.font[font_no].name, PSL->internal.font[font_no].name, font_no);
 		PSL->internal.font[font_no].encoded = true;
 	}
-	PSL_command (PSL, " %d F%d } def\n", psl_ip (PSL, size), font_no);
+	PSL_command (PSL, " %d F%d } def\n", is, font_no);
 }
 
 #define GMT_N_COND_LEVELS	10	/* Number of max nesting level for conditionals */
@@ -3957,7 +3962,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 	if (G->fillbox) form |= PSL_TXT_FILLBOX;	/* Want the box filled */
 	if (G->box & 1) form |= PSL_TXT_DRAWBOX;	/* Want box outline */
 	if (mode & PSL_TXT_INIT) {	/* Determine and places all PSL attributes */
-		char font[PSL_BUFSIZ] = {""};
+		char *font = NULL;
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 			justify = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
 		else
@@ -3989,7 +3994,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		pen   = GMT_memory (GMT, NULL, n_segments, char *);
 		fonts = GMT_memory (GMT, NULL, n_labels, char *);
 		PSL_setfont (PSL, G->font_label.id);
-		psl_encodefont (PSL, PSL->current.font_no);
+		//psl_encodefont (PSL, PSL->current.font_no);
 		for (seg = m = this_seg = 0; seg < G->n_segments; seg++) {	/* Process all segments, skip those without labels */
 			L = G->segment[seg];	/* Pointer to current segment */
 			//if (!L->annot || L->n_labels == 0) continue;
@@ -4008,7 +4013,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 					xtxt[m]    = L->L[k].x;
 					ytxt[m]    = L->L[k].y;
 				}
-				sprintf (font, "%s %d F%d", psl_putcolor (PSL, L->L[k].rgb), psl_ip (PSL, G->font_label.size), PSL->current.font_no);
+				font = PSL_makefont (PSL, G->font_label.size, L->L[k].rgb);
 				fonts[m] = strdup (font);
 			}
 			this_seg++;

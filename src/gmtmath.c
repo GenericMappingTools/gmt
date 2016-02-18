@@ -1671,7 +1671,6 @@ GMT_LOCAL int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	uint64_t s, row;
 	unsigned int prev;
 	double a, b;
-	GMT_LOCAL int table_MUL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col);
 	struct GMT_DATATABLE *T = NULL, *T_prev = NULL;
 
 	if ((prev = gmt_assign_ptrs (GMT, last, S, &T, &T_prev)) == UINT_MAX) return -1;	/* Set up pointers and prev; exit if running out of stack */
@@ -1679,14 +1678,6 @@ GMT_LOCAL int table_DIV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	if (S[last]->constant && S[last]->factor == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Divide by zero gives NaNs\n");
 	}
-	if (S[last]->constant) {	/* Turn divide into multiply */
-		a = S[last]->factor;	/* Save old factor */
-		S[last]->factor = 1.0 / S[last]->factor;
-		table_MUL (GMT, info, S, last, col);
-		S[last]->factor = a;	/* Restore factor to original value */
-		return 0;
-	}
-
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 		a = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		b = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];

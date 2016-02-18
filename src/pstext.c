@@ -35,8 +35,10 @@
 
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYacfhptxy" GMT_OPT("E")
 
-void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
-bool GMT_is_a_blank_line (char *line);
+EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
+EXTERN_MSC bool GMT_is_a_blank_line (char *line);
+EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
+EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 
 #define PSTEXT_CLIPPLOT		1
 #define PSTEXT_CLIPONLY		2
@@ -1012,11 +1014,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	if (Ctrl->G.mode && m) {
 		int n_labels = m, form = (T.boxflag & 4) ? PSL_TXT_ROUND : 0;	/* PSL_TXT_ROUND = Rounded rectangle */
 		unsigned int kk;
-		char font[GMT_BUFSIZ] = {""}, **fonts = NULL;
+		char *font = NULL, **fonts = NULL;
 		EXTERN_MSC int psl_encodefont (struct PSL_CTRL *PSL, int font_no);
 		EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
 		EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
-		EXTERN_MSC char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]);
 
 		form |= PSL_TXT_INIT;	/* To lay down all PSL attributes */
 		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) form |= PSL_TXT_SHOW;	/* To place text */
@@ -1033,8 +1034,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		fonts = GMT_memory (GMT, NULL, m, char *);
 		for (kk = 0; kk < m; kk++) {
 			PSL_setfont (PSL, c_font[kk].id);
-			psl_encodefont (PSL, PSL->current.font_no);
-			sprintf (font, "%s %d F%d", psl_putcolor (PSL, c_font[kk].fill.rgb), psl_ip (PSL, c_font[kk].size), PSL->current.font_no);
+			//psl_encodefont (PSL, PSL->current.font_no);
+			font = PSL_makefont (PSL, c_font[kk].size, c_font[kk].fill.rgb);
 			fonts[kk] = strdup (font);
 		}
 		psl_set_int_array (PSL, "label_justify", c_just, m);

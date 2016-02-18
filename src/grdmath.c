@@ -1425,17 +1425,11 @@ GMT_LOCAL void grd_DIV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	uint64_t node;
 	unsigned int prev = last - 1;
 	double a, b;
-	GMT_LOCAL void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last);
 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Divide by zero gives NaNs\n");
-	if (stack[last]->constant) {	/* Turn divide into multiply */
-		a = stack[last]->factor;	/* Save original factor */
-		stack[last]->factor = 1.0 / stack[last]->factor;
-		grd_MUL (GMT, info, stack, last);
-		stack[last]->factor = a;	/* Restore factor */
-		return;
-	}
-
+	prev = last - 1;
+	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand one == 0!\n");
+	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0!\n");
 	for (node = 0; node < info->size; node++) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];

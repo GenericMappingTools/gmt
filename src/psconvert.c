@@ -725,19 +725,20 @@ static inline char * alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 
 void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struct PS2R_A *A, FILE *fp) {
 	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
+	char *ptr = NULL;
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
 	if (A->paint) {	/* Paint the background of the page */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
 		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
-		fprintf (fp, "gsave clippath %s F N U\n", psl_putcolor (GMT->PSL, A->fill.rgb));
+		ptr = PSL_makecolor (GMT->PSL, A->fill.rgb);
+		fprintf (fp, "gsave clippath %s F N U\n", ptr);
 	}
 	if (A->outline) {	/* Draw the outline of the page */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
 		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
-		fprintf (fp, "gsave %d W", psl_ip (GMT->PSL, 2.0*A->pen.width));	/* Double pen thickness since half will be clipped by BoundingBox */
-		if (A->pen.style[0]) fprintf (fp, " %s", psl_putdash (GMT->PSL, A->pen.style, A->pen.offset));
-		if (A->pen.rgb[0] > 0.0 || A->pen.rgb[1] > 0.0 || A->pen.rgb[2] > 0.0) fprintf (fp, "  %s", psl_putcolor (GMT->PSL, A->pen.rgb));
-		fprintf (fp, " clippath S U\n");
+		/* Double pen thickness since half will be clipped by BoundingBox */
+		ptr = PSL_makepen (GMT->PSL, 2.0*A->pen.width, A->pen.rgb, A->pen.style, A->pen.offset);
+		fprintf (fp, "gsave %s clippath S U\n", ptr);
 	}
 }
 
