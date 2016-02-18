@@ -116,7 +116,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 	} W;
 };
 
-void *New_mgd77track_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77TRACK_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct MGD77TRACK_CTRL);
@@ -144,12 +144,12 @@ void *New_mgd77track_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	return (C);
 }
 
-void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77track cruise(s) %s %s\n\t[-A[c][<size>]][,<inc><unit>] [%s] ", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
@@ -207,7 +207,7 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_
 	return (EXIT_FAILURE);
 }
 
-int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
+GMT_LOCAL int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
 	int i1, i2, flag1, flag2, type;
 	bool error = false;
 	double value;
@@ -278,7 +278,7 @@ int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info) {
 	return (error);
 }
 
-int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77track and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -503,7 +503,7 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records) {
+GMT_LOCAL double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int n_records) {
 	int i1, i2, j;
 	double angle, x1, x0, y1, y0, sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 	
@@ -533,7 +533,7 @@ double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double *lat, int
 	return (angle);
 }
 
-void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double lon, double lat, double angle, char *text, double size) {
+GMT_LOCAL void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double lon, double lat, double angle, char *text, double size) {
 	int just, form;
 	
 	if (lat < GMT->common.R.wesn[YLO])
@@ -550,7 +550,7 @@ void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double
 	PSL_plottext (PSL, x, y, size, text, angle, just, form);
 }
 
-int bad_coordinates (double lon, double lat) {
+GMT_LOCAL int bad_coordinates (double lon, double lat) {
 	return (GMT_is_dnan (lon) || GMT_is_dnan (lat));
 }
 
@@ -558,7 +558,7 @@ int bad_coordinates (double lon, double lat) {
 extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_mgd77track_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77track (void *V_API, int mode, void *args) {
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_paths, argno, n_cruises = 0;
@@ -589,18 +589,18 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_mgd77track_usage (API, GMT_MODULE_PURPOSE, NULL));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, NULL));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
-	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (!options || options->option == GMT_OPT_USAGE) Return (GMT_mgd77track_usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) Return (GMT_mgd77track_usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (!options || options->option == GMT_OPT_USAGE) Return (usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) Return (usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if ((error = GMT_mgd77track_parse (GMT, Ctrl, options)) != 0) Return (error);
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/
 	

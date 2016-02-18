@@ -138,7 +138,7 @@ struct PSCOUPE_CTRL {
 	} T2;
 };
 
-void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCOUPE_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct PSCOUPE_CTRL);
@@ -159,13 +159,13 @@ void *New_pscoupe_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	return (C);
 }
 
-void Free_pscoupe_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Z.file);
 	GMT_free (GMT, C);
 }
 
-void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {
+GMT_LOCAL void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {
 	/*
 	 * Change coordinates of axis from
 	 * north,east,down
@@ -198,7 +198,7 @@ void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {
 	}
 }
 
-void rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *mtr) {
+GMT_LOCAL void rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *mtr) {
 	/*
 	 *
 	 * Change coordinates from
@@ -234,7 +234,7 @@ void rot_tensor (struct M_TENSOR mt, struct nodal_plane PREF, struct M_TENSOR *m
 		sa*sd*mt.f[4] - c2a*cd*mt.f[5];
 }
 
-void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct nodal_plane *PLANR) {
+GMT_LOCAL void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct nodal_plane *PLANR) {
 /*
    Calcule l'azimut, le pendage, le glissement relatifs d'un
    mecanisme par rapport a un plan de reference PREF
@@ -271,7 +271,7 @@ void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF, struct n
 	}
 }
 
-void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
+GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 /*
    Projection d'un mecanisme sur un plan donne PREF.
    C'est la demi-sphere derriere le plan qui est representee.
@@ -308,7 +308,7 @@ void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 	mecar->moment.exponent = meca.moment.exponent;
 }
 
-int gutm (double lon, double lat, double *xutm, double *yutm, int fuseau) {
+GMT_LOCAL int gutm (double lon, double lat, double *xutm, double *yutm, int fuseau) {
 	double ccc = 6400057.7, eprim = 0.08276528;
 	double alfe = 0.00507613, bete = 0.429451e-4;
 	double game = 0.1696e-6;
@@ -341,7 +341,7 @@ int gutm (double lon, double lat, double *xutm, double *yutm, int fuseau) {
 	return (fuseau);
 }
 
-int dans_coupe (double lon, double lat, double depth, double xlonref, double ylatref, int fuseau, double str, double dip, double p_length, double p_width, double *distance, double *n_dep) {
+GMT_LOCAL int dans_coupe (double lon, double lat, double depth, double xlonref, double ylatref, int fuseau, double str, double dip, double p_length, double p_width, double *distance, double *n_dep) {
 /* if fuseau < 0, cartesian coordinates */
 
 	double xlon, ylat, largeur, sd, cd, ss, cs;
@@ -367,7 +367,7 @@ int dans_coupe (double lon, double lat, double depth, double xlonref, double yla
 #define COORD_RAD 1
 #define COORD_KM 2
 
-void distaz (double lat1, double lon1, double lat2, double lon2, double *distkm, double *azdeg, int syscoord) {
+GMT_LOCAL void distaz (double lat1, double lon1, double lat2, double lon2, double *distkm, double *azdeg, int syscoord) {
  /*
   Coordinates in degrees  : syscoord = 0
   Coordinates in radians : syscoord = 1
@@ -422,7 +422,7 @@ void distaz (double lat1, double lon1, double lat2, double lon2, double *distkm,
 	return;
 }
 
-int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -510,7 +510,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pscoupe and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -770,7 +770,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_pscoupe_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error, k, n_k;
@@ -797,18 +797,18 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_pscoupe_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pscoupe_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_pscoupe_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_pscoupe_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pscoupe_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the pscoupe main code ----------------------------*/
 
@@ -1151,11 +1151,8 @@ Definition of scalar moment.
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
-
 	PSL_setdash (PSL, NULL, 0);
-
 	GMT_map_basemap (GMT);
-
 	GMT_plotend (GMT);
 
 	Return (GMT_OK);

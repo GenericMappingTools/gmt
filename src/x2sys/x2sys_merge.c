@@ -45,10 +45,10 @@ struct X2SYS_MERGE_CTRL {
 	} M;
 };
 
-static void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
-                uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge);
+GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
+                          uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge);
 
-void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_MERGE_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_MERGE_CTRL);
@@ -58,14 +58,14 @@ void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	return (C);
 }
 
-void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->A.file);
 	gmt_free (C->M.file);
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_merge -A<main_COEdbase> -M<new_COEdbase> [%s]\n", GMT_V_OPT);
@@ -82,7 +82,7 @@ int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_x2sys_merge_parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -126,7 +126,7 @@ int GMT_x2sys_merge_parse (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *Ctrl, 
 }
 			
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_x2sys_merge_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	uint64_t  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
@@ -143,18 +143,18 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_x2sys_merge_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_x2sys_merge_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_x2sys_merge_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_x2sys_merge_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_merge_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
@@ -313,8 +313,8 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	Return (GMT_OK);
 }
 
-static void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
-                uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge) {
+GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
+                          uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge) {
 	int i;
 
 	for (i = 0; i < n_base; i++)  GMT_free (GMT, pairs_base[i]);

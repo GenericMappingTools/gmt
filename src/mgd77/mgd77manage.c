@@ -105,7 +105,7 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 	} N;
 };
 
-void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77MANAGE_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct MGD77MANAGE_CTRL);
@@ -121,14 +121,14 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
  	return (C);
 }
 
-void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->A.file);	
 	gmt_free (C->D.file);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n");
@@ -208,7 +208,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level) {
 
 /* Help functions to decode the -A and -I options */
 
-int decode_A_options (int mode, char *line, char *file, double parameters[]) {
+GMT_LOCAL int decode_A_options (int mode, char *line, char *file, double parameters[]) {
 	int error = 0, n;
 	
 	if (mode == 1) {	/* For *.img files since we need to know data scale and grid mode */
@@ -224,7 +224,7 @@ int decode_A_options (int mode, char *line, char *file, double parameters[]) {
 	return (error);
 }
 
-int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[]) {
+GMT_LOCAL int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[]) {
 	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
 	unsigned int i = 0, k, error, pos = 0;
 	char p[GMT_BUFSIZ] = {""};
@@ -296,7 +296,7 @@ int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name
 	return ((lrint (parameters[COL_TYPE]) == MGD77_NOT_SET) || (i != 7));
 }
 
-int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D) {
+GMT_LOCAL int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D) {
 	/* Used when a needed column is not present and we must free memory and goto next file */
 	int id;
 
@@ -307,7 +307,7 @@ int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_
 	return (id);
 }
 
-int got_default_answer (char *line, char *answer) {
+GMT_LOCAL int got_default_answer (char *line, char *answer) {
 	int i, k, len;
 	
 	len = (int)strlen (line) - 1;
@@ -319,7 +319,7 @@ int got_default_answer (char *line, char *answer) {
 	return (answer[0] != '\0');
 }
 
-int GMT_mgd77manage_parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to mgd77manage and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -495,7 +495,7 @@ int GMT_mgd77manage_parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_mgd77manage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
@@ -535,18 +535,18 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_mgd77manage_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77manage_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_mgd77manage_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77manage_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 

@@ -56,7 +56,7 @@ struct BINCROSS {
 	double x, y, d;
 };
 
-void *New_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_BINLIST_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_BINLIST_CTRL);
@@ -66,13 +66,13 @@ void *New_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize
 	return (C);
 }
 
-void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_binlist <files> -T<TAG> [-D] [-E] [%s]\n\n", GMT_V_OPT);
@@ -89,7 +89,7 @@ int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_x2sys_binlist_parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -133,7 +133,7 @@ int GMT_x2sys_binlist_parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
+GMT_LOCAL int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
 	if (y < B->wesn[YLO] || y > B->wesn[YHI]) return (1);
 	if (geo) {	/* Geographic data with periodic longitudes */
 		while (x < B->wesn[XLO]) x += 360.0;
@@ -146,7 +146,7 @@ int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
 	return (0);	/* Inside */
 }
 
-unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
+GMT_LOCAL unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
 	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
 		if (GMT_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
@@ -155,7 +155,7 @@ unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
 	return (flag);
 }
 
-int comp_bincross (const void *p1, const void *p2) {
+GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 	const struct BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
@@ -164,7 +164,7 @@ int comp_bincross (const void *p1, const void *p2) {
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_x2sys_binlist_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
@@ -196,18 +196,18 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_x2sys_binlist_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_x2sys_binlist_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_x2sys_binlist_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_x2sys_binlist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_binlist_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
 

@@ -121,46 +121,46 @@ struct X2SYS_SOLVE_CTRL {
  * col:	  The crossover number we are working on.
  */
 
-double basis_constant (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a constant c*f = c*1 : == 1 */
+GMT_LOCAL double basis_constant (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a constant c*f = c*1 : == 1 */
 	GMT_UNUSED(P); GMT_UNUSED(which); GMT_UNUSED(row);
 	return (1.0);	/* which, row are not used here */
 }
 
-double basis_tdrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in time c*f = c*t : t */
+GMT_LOCAL double basis_tdrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in time c*f = c*t : t */
 	return (P[COL_T1+which][row]);	/* When this is called the time columns have been corrected for t0 (start of track) */
 }
 
-double basis_ddrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in dist c*f = c*d : d */
+GMT_LOCAL double basis_ddrift (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a linear drift rate in dist c*f = c*d : d */
 	return (P[COL_D1+which][row]);
 }
 
-double basis_cosh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(h)  c*f = c*cos(h) : cos(h) */
+GMT_LOCAL double basis_cosh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(h)  c*f = c*cos(h) : cos(h) */
 	return (cosd(P[COL_H1+which][row]));
 }
 
-double basis_cos2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(2*h)  c*f = c*cos(2*h) : cos(2*h) */
+GMT_LOCAL double basis_cos2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on cos(2*h)  c*f = c*cos(2*h) : cos(2*h) */
 	return (cosd(2.0*P[COL_H1+which][row]));
 }
 
-double basis_sinh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(h)  c*f = c*sin(h) : sin(h) */
+GMT_LOCAL double basis_sinh (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(h)  c*f = c*sin(h) : sin(h) */
 	return (sind(P[COL_H1+which][row]));
 }
 
-double basis_sin2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(2*h)  c*f = c*sin(2*h) : sin(2*h) */
+GMT_LOCAL double basis_sin2h (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin(2*h)  c*f = c*sin(2*h) : sin(2*h) */
 	return (sind(2.0*P[COL_H1+which][row]));
 }
 
-double basis_siny2 (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
+GMT_LOCAL double basis_siny2 (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
 	GMT_UNUSED(which);
 	return (pow (sind(P[COL_YY][row]), 2.0));	/* which not used since y is common to both tracks */
 }
 
-double basis_z (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on value c*f = c*z : z */
+GMT_LOCAL double basis_z (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on value c*f = c*z : z */
 	return (P[COL_Z1+which][row]);
 }
 
 
-void *New_x2sys_solve_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_SOLVE_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_SOLVE_CTRL);
@@ -170,7 +170,7 @@ void *New_x2sys_solve_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	return (C);
 }
 
-void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);
 	gmt_free (C->C.col);
@@ -181,7 +181,7 @@ void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef SAVEFORLATER
@@ -209,7 +209,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_x2sys_solve_parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -292,7 +292,7 @@ int GMT_x2sys_solve_parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, 
 }
 
 #ifdef SAVEFORLATER
-int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, double **start, int *nf) {
+GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, double **start, int *nf) {
 	/* Reads a list with track names and their origin times (needed for -Et) */
 	size_t n_alloc = GMT_CHUNK;
 	int n = 0;
@@ -336,9 +336,9 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 #endif
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_x2sys_solve_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
+GMT_LOCAL uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
 	uint64_t k;
 	for (k = 0; k < n; k++) if (cluster[k] == 0) return (k);
 	return (n);
@@ -370,18 +370,18 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_x2sys_solve_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_x2sys_solve_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_x2sys_solve_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_solve_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the x2sys_solve main code ----------------------------*/
 
