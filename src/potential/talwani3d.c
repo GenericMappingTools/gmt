@@ -121,7 +121,7 @@ enum Talwani3d_fields {
 	TALWANI3D_VER=1
 };
 
-void *New_talwani3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TALWANI3D_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct TALWANI3D_CTRL);
@@ -131,7 +131,7 @@ void *New_talwani3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_talwani3d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->N.file);	
 	gmt_free (C->G.file);	
@@ -139,7 +139,7 @@ void Free_talwani3d_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	unsigned int k, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 
@@ -230,7 +230,7 @@ int GMT_talwani3d_parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: talwani3d <modelfile> [-A] [-D<rho>] [-Ff|n|v] [-G<outfile>] [%s]\n", GMT_I_OPT);
@@ -266,7 +266,7 @@ int GMT_talwani3d_usage (struct GMTAPI_CTRL *API, int level) {
 
 #define INV_3 (1.0/3.0)
 
-double parint (double x[], double y[], int n) {
+GMT_LOCAL double parint (double x[], double y[], int n) {
 	/* parint is a piecewise parabolic integrator
 	 *
 	 * Arguments:
@@ -329,7 +329,7 @@ double parint (double x[], double y[], int n) {
 	return (area);
 }
 
-double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+GMT_LOCAL double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
 	/* Talwani et al., 1959 */
 	int k;
 	double gsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
@@ -421,7 +421,7 @@ double get_grav3d (double x[], double y[], int n, double x_obs, double y_obs, do
 	return (GAMMA * rho * gsum);	/* Return contribution in mGal */
 }
 
-double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+GMT_LOCAL double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
 	/* Kim & Wessel, 2016 */
 	int k;
 	double vsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside;
@@ -510,7 +510,7 @@ double get_vgg3d (double x[], double y[], int n, double x_obs, double y_obs, dou
 	return (10 * GAMMA * rho * vsum);	/* To get Eotvos = 0.1 mGal/km */
 }
 
-double definite_integral (double a, double s, double c) {
+GMT_LOCAL double definite_integral (double a, double s, double c) {
 	/* Return out definite integral n_ij (except the factor z_j) */
 	/* Here, 0 <= a <= TWO_I and c >= 0 */
 	double s2, c2, u2, k, k2, q, q2, f, v, n_ij, arg1, arg2, y;
@@ -542,12 +542,12 @@ double definite_integral (double a, double s, double c) {
 	return (n_ij);
 }
 
-double integral (double a, double sa, double b, double sb, double c) {
+GMT_LOCAL double integral (double a, double sa, double b, double sb, double c) {
 	/* Return integral of geoid function from a to b */
 	return (definite_integral (b, sb, c) - definite_integral (a, sa, c));
 }
 
-double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
+GMT_LOCAL double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, double z_obs, double rho, bool flat) {
 	/* Kim & Wessel, 2016 */
 	int k;
 	double nsum = 0.0, x1, x2, y1, y2, r1, r2, ir1, ir2, xr1 = 0.0, yr1 = 0.0, side, iside, c, z_j = z_obs;
@@ -635,7 +635,7 @@ double get_geoid3d (double x[], double y[], int n, double x_obs, double y_obs, d
 	return (1.0e-2 * GAMMA * rho * nsum / G0);	/* To get geoid in meter */
 }
 
-double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth) {
+GMT_LOCAL double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *cake, double depths[], unsigned int ndepths, unsigned int mode, bool flat_earth) {
 	/* Evaluate output at a single observation point (x,y,z) */
 	/* Work array vtry must have at least of length ndepths */
 	unsigned int k;
@@ -677,7 +677,7 @@ double get_one_output3D (double x_obs, double y_obs, double z_obs, struct CAKE *
 	return (parint (depths, vtry, ndepths));	/* Use parabolic integrator and return value */
 }
 
-int comp_cakes (const void *cake_a, const void *cake_b) {
+GMT_LOCAL int comp_cakes (const void *cake_a, const void *cake_b) {
 	/* Used in the sorting of layers on depths */
 	const struct CAKE *a = cake_a, *b = cake_b;
 	if (a->depth < b->depth) return (-1);
@@ -686,7 +686,7 @@ int comp_cakes (const void *cake_a, const void *cake_b) {
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_talwani3d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_talwani3d (void *V_API, int mode, void *args) {
 	int error = 0, ns;
@@ -713,21 +713,21 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_talwani3d_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE)
-		bailout (GMT_talwani3d_usage (API, GMT_USAGE));	/* Return the usage message */
+		bailout (usage (API, GMT_USAGE));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS)
-		bailout (GMT_talwani3d_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+		bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_talwani3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_talwani3d_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the talwani3d main code ----------------------------*/
 	

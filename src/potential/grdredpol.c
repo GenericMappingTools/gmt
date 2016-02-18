@@ -96,7 +96,7 @@ struct REDPOL_CTRL {
 #define ij0_data(Ctrl,i,j) ((Ctrl->S.nx+Ctrl->F.ncoef_col-1)*(i)+(j))
 #define ij_mn(Ctrl,i,j) (Ctrl->F.ncoef_row*(j)+(i))
 
-void *New_grdredpol_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct REDPOL_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct REDPOL_CTRL);
@@ -112,7 +112,7 @@ void *New_grdredpol_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	return (C);
 }
 
-void Free_grdredpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->In.file);	
 	gmt_free (C->G.file);	
@@ -122,7 +122,7 @@ void Free_grdredpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deal
 	GMT_free (GMT, C);	
 }
 
-void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar, 
+GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u, 
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
@@ -157,7 +157,7 @@ void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *
 }
 
 
-void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar, 
+GMT_LOCAL void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr, 
 		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa, 
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
@@ -211,7 +211,7 @@ void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, doub
 	}
 }
 
-void mirror_edges (float *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
+GMT_LOCAL void mirror_edges (float *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
 	/* This routine mirrors or replicates the West and East borders j_data_start times
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
@@ -258,7 +258,7 @@ void mirror_edges (float *grid, int nc, int i_data_start, int j_data_start, stru
 	}
 }
 
-void tfpoeq(double *w, int m, int n, double *greel, double *gim, 
+GMT_LOCAL void tfpoeq(double *w, int m, int n, double *greel, double *gim, 
 	    double *cosphi, double *sinphi, double *cospsi, double *sinpsi) {
     /* Initialized data */
 
@@ -368,7 +368,7 @@ L4:
 }
 
 
-int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, double elong, double lat, double *out) {
+GMT_LOCAL int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, double elong, double lat, double *out) {
  /*     This is a synthesis routine for the 10th generation IGRF as agreed
   *     in December 2004 by IAGA Working Group V-MOD. It is valid 1900.0 to
   *     2010.0 inclusive. Values for dates from 1945.0 to 2000.0 inclusive are
@@ -1023,7 +1023,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	return (GMT_OK);
 }
 
-int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-E<dip_grd>/<dec_grd>] [-F<m>/<n>]\n");
@@ -1049,7 +1049,7 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to grdredpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -1165,7 +1165,7 @@ int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_grdredpol_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdredpol (void *V_API, int mode, void *args) {
 
@@ -1195,20 +1195,20 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdredpol_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) 
-		bailout (GMT_grdredpol_usage (API, GMT_USAGE));		/* Return the usage message */
+		bailout (usage (API, GMT_USAGE));		/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) 
-		bailout (GMT_grdredpol_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+		bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_grdredpol_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdredpol_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*--------------------------- This is the grdredpol main code --------------------------*/
 

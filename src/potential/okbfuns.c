@@ -18,12 +18,12 @@
 
 #include "okbfuns.h"
 
-static double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi);
-static double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
+GMT_LOCAL double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi);
+GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
 	double c_tet, double s_tet, double c_phi, double s_phi); 
-static double eq_30 (double c, double s, double x, double y, double z);
-static double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
-static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double *c_tet, double *s_tet,
+GMT_LOCAL double eq_30 (double c, double s, double x, double y, double z);
+GMT_LOCAL double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z);
+GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or, double *c_tet, double *s_tet,
 	double *c_phi, double *s_phi);
 
 /*--------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 }
 
 /* ---------------------------------------------------------------------- */
-static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
+GMT_LOCAL void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
@@ -151,7 +151,7 @@ static void rot_17 (unsigned int n_vert, bool top, struct LOC_OR *loc_or,
 }
 
 /* ---------------------------------------------------------------------- */
-static double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi) {
+GMT_LOCAL double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi) {
 /*  Computes the gravity anomaly due to a facet. */
 
 	unsigned int l;
@@ -175,7 +175,7 @@ static double okb_grv (unsigned int n_vert, struct LOC_OR *loc_or, double c_phi)
 }
 
 /* ---------------------------------------------------------------------- */
-static double eq_30 (double c, double s, double x, double y, double z) {
+GMT_LOCAL double eq_30 (double c, double s, double x, double y, double z) {
 	double r, Ji = 0, log_arg;
 
 	r = sqrt(x * x + y * y + z * z);
@@ -190,7 +190,7 @@ static double eq_30 (double c, double s, double x, double y, double z) {
 }
 
 /* ---------------------------------------------------------------------- */
-static double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
+GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or,
 			double c_tet, double s_tet, double c_phi, double s_phi) {
 /*  Computes the total magnetic anomaly due to a facet. */
 
@@ -232,7 +232,7 @@ static double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm, st
 }
 
 /* ---------------------------------------------------------------------- */
-static double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z) {
+GMT_LOCAL double eq_43 (double mz, double c, double tg, double auxil, double x, double y, double z) {
 	double r, ez, Li = 0, tmp;
 
 	ez = y * y + z * z;

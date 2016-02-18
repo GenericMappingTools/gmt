@@ -11,8 +11,7 @@ extern integer trfind_(integer *, doublereal *, integer *,
 	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
 	    integer *, integer *);
 
-double d_sign (doublereal *a, doublereal *b)
-{
+double d_sign (doublereal *a, doublereal *b) {
 	double x;
 	x = (*a >= 0 ? *a : - *a);
 	return (*b >= 0 ? x : -x);
@@ -22,10 +21,9 @@ double d_sign (doublereal *a, doublereal *b)
 
 static doublereal c_b23 = 1.0;
 
-/* Subroutine */ integer aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
+integer aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
 	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, 
-	doublereal *xp, doublereal *yp, doublereal *zp)
-{
+	doublereal *xp, doublereal *yp, doublereal *zp) {
     /* Builtin functions */
     double sqrt(doublereal);
 
@@ -83,9 +81,8 @@ static doublereal c_b23 = 1.0;
     *yp = *cx * *y - *sx * *z__;
     *zp = *sy * *x + *cy * t;
     *xp = *cy * *x - *sy * t;
-    if (*zp >= 0.) {
-	return 0;
-    }
+    if (*zp >= 0.) return 0;
+
 
 /* Move (XP,YP,ZP) to the equator. */
 
@@ -162,8 +159,7 @@ L1:
     return 0;
 } /* aplyrt_ */
 
-doublereal arclen_(doublereal *p, doublereal *q)
-{
+doublereal arclen_(doublereal *p, doublereal *q) {
     /* System generated locals */
     doublereal ret_val, d__1;
 
@@ -562,9 +558,8 @@ L2:
     return 0;
 } /* arcint_ */
 
-/* Subroutine */ integer constr_(doublereal *xk, doublereal *yk, doublereal *zk, 
-	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy)
-{
+integer constr_(doublereal *xk, doublereal *yk, doublereal *zk, 
+	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy) {
     /* Builtin functions */
     double sqrt(doublereal);
 
@@ -969,12 +964,10 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     return ret_val;
 } /* fval_ */
 
-/* Subroutine */ integer getsig_(integer *n, doublereal *x, doublereal *y, 
+integer getsig_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *h__, integer *list, integer *lptr, 
 	integer *lend, doublereal *grad, doublereal *tol, doublereal *sigma, 
-	doublereal *dsmax, integer *ier)
-{
-    /* Initialized data */
+	doublereal *dsmax, integer *ier) {
 
     static doublereal sbig = 85.;
 
@@ -1155,9 +1148,9 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
 
     /* Function Body */
     nm1 = *n - 1;
-    if (nm1 < 2) {
-	goto L11;
-    }
+    if (nm1 < 2)
+    	goto L11;
+
 
 /* Compute an absolute tolerance FTOL = abs(TOL) and a */
 /*   relative tolerance RTOL = 100*Macheps. */
@@ -2351,9 +2344,7 @@ L6:
     return 0;
 } /* setup_ */
 
-/* Subroutine */ integer rotate_(integer *n, doublereal *c__, doublereal *s, 
-	doublereal *x, doublereal *y)
-{
+integer rotate_(integer *n, doublereal *c__, doublereal *s, doublereal *x, doublereal *y) {
     /* System generated locals */
     integer i__1;
 
@@ -2419,10 +2410,9 @@ L6:
     return 0;
 } /* rotate_ */
 
-/* Subroutine */ integer gradl_(integer *n, integer *k, doublereal *x, doublereal 
+integer gradl_(integer *n, integer *k, doublereal *x, doublereal 
 	*y, doublereal *z__, doublereal *w, integer *list, integer *lptr, 
-	integer *lend, doublereal *g, integer *ier)
-{
+	integer *lend, doublereal *g, integer *ier) {
     /* Initialized data */
 
     static doublereal rtol = 1e-6;
@@ -4930,12 +4920,10 @@ L11:
     return ret_val;
 } /* sig2_ */
 
-/* Subroutine */ integer smsgs_(integer *n, doublereal *x, doublereal *y, 
+integer smsgs_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *
-	p, integer *nit, doublereal *dfmax, doublereal *f, doublereal *grad, 
-	integer *ier)
-{
+	p, integer *nit, doublereal *dfmax, doublereal *f, doublereal *grad, integer *ier) {
     /* System generated locals */
     integer i__1, i__2;
     doublereal d__1, d__2;

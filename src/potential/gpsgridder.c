@@ -91,7 +91,7 @@ enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
 	GPS_NORM	= 2	/* Normalize residual data to 0-1 range */
 };
 
-void *New_gpsgridder_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GPSGRIDDER_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct GPSGRIDDER_CTRL);
@@ -101,7 +101,7 @@ void *New_gpsgridder_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	return (C);
 }
 
-void Free_gpsgridder_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->C.file);
 	gmt_free (C->G.file);
@@ -110,7 +110,7 @@ void Free_gpsgridder_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_gpsgridder_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile>[%s]\n", GMT_Rgeo_OPT);
@@ -162,7 +162,7 @@ int GMT_gpsgridder_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gpsgridder_parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to gpsgridder and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -273,7 +273,7 @@ int GMT_gpsgridder_parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, st
  * coeff[GSP_RANGE_V]:	The largest |range| of the detrended v data
  */
 
-void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double *u, double *v, uint64_t n, unsigned int mode, double *coeff) {
+GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double *u, double *v, uint64_t n, unsigned int mode, double *coeff) {
 	/* We always remove/restore the mean observation values.  mode is a combination of bitflags that affects what we do:
 	 * Bit GPS_TREND will also remove linear trend
 	 * Bit GPS_NORM will normalize residuals by full range
@@ -358,7 +358,7 @@ void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double *u, doubl
 		coeff[GSP_MEAN_V], coeff[GSP_SLP_VX], coeff[GSP_MEAN_X], coeff[GSP_SLP_VY], coeff[GSP_MEAN_Y], coeff[GSP_RANGE_V]);
 }
 
-void undo_gps_normalization (double *X, unsigned int mode, double *coeff) {
+GMT_LOCAL void undo_gps_normalization (double *X, unsigned int mode, double *coeff) {
  	/* Here, X holds x,y,u,v */
 	if (mode & GPS_NORM) {	/* Scale back up by residual data range (if we normalized) */
 		X[GMT_U] *= coeff[GSP_RANGE_U];
@@ -373,7 +373,7 @@ void undo_gps_normalization (double *X, unsigned int mode, double *coeff) {
 	}
 }
 
-double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
+GMT_LOCAL double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
 	double r = 0.0;
 	/* Get distance between the two points */
 	/* 2-D Cartesian or spherical surface in meters */
@@ -381,7 +381,7 @@ double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
 	return (r);
 }
 
-void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double *dy, bool geo) {
+GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double *dy, bool geo) {
 	/* Get increments dx,dy between point 1 and 0, as measured from point 1 */
 	if (geo) {	/* Do flat Earth approximation in meters */
 		double dlon;
@@ -395,7 +395,7 @@ void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, dou
 	}
 }
 
-void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
+GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
 	/* Evaluate the Green's functions q(x), p(x), and w(x), here placed in G[0], G[1], and G[2].
 	 * Here, par[0] holds -(2*e+1)/2 and par[1] holds delta_r to prevent singularity */
 	
@@ -410,7 +410,7 @@ void evaluate_greensfunctions (double dx, double dy, double par[], double G[]) {
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gpsgridder_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	uint64_t col, row, n_read, p, k, i, j, seg, n, n2, n_ok = 0, ij;
@@ -441,18 +441,18 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gpsgridder_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gpsgridder_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gpsgridder_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gpsgridder_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gpsgridder_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gpsgridder main code ----------------------------*/
 

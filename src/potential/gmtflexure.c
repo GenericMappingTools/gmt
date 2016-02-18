@@ -126,7 +126,7 @@ enum gmtflexure_bc {
 	BC_CLAMPED,
 	BC_FREE};
 
-void *New_gmtflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTFLEXURE_CTRL *C = NULL;
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTFLEXURE_CTRL);
@@ -138,7 +138,7 @@ void *New_gmtflexure_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	return (C);
 }
 
-void Free_gmtflexure_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->Out.file);
 	gmt_free (C->E.file);
@@ -147,7 +147,7 @@ void Free_gmtflexure_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	unsigned int side, k, n_errors = 0, n_files = 0;
 	int n;
@@ -294,7 +294,7 @@ int GMT_gmtflexure_parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtflexure -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<te> -Q<loadinfo> [-A[l|r]<bc>[/<args>]]\n");
@@ -336,12 +336,12 @@ int GMT_gmtflexure_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-double te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te) {
+GMT_LOCAL double te_2_d (struct GMTFLEXURE_CTRL *Ctrl, double te) {
 	/* Convert elastic thickness to flexural rigidity */
 	return (Ctrl->C.E * pow (te, 3.0) / (12.0 * (1.0 - Ctrl->C.nu * Ctrl->C.nu)));
 }
 
-int get_curvature (double flexure[], int n, double dist_increment, double curvature[]) {
+GMT_LOCAL int get_curvature (double flexure[], int n, double dist_increment, double curvature[]) {
 	/* Calculate central second differences of flexure = curvature */
 	int i;
 
@@ -354,7 +354,7 @@ int get_curvature (double flexure[], int n, double dist_increment, double curvat
 	return (1);
 }
 
-int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b) {
+GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b) {
 	/* A 5-diagonal matrix problem A*w = p solved using a LU-transformation */
 
 	int i, off3, off5;
@@ -483,7 +483,7 @@ int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, double *b) {
  *
  */
 
-int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
+GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2 = 0.0, stress2, restore, *work = NULL;
 
@@ -693,7 +693,7 @@ int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 
 #define LIMIT	0.01
 
-int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right) {
+GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double stress, int bc_left, int bc_right) {
 	int i, error;
 	double restore_a, restore_b1, restore_b2, diff = 2 * LIMIT, dw, w0, w1, wn1, wn, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
@@ -792,7 +792,7 @@ int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], int n, dou
  *
  */
 
-int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
+GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, int n, double dx, double *k, int k_flag, double stress, int bc_left, int bc_right) {
 	int i, row, off, ind, error;
 	double dx_4, c_1 = 0.0, c_2, stress2, restore, *work = NULL, *squeeze = NULL;
 
@@ -994,7 +994,7 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
  * ONLY APPLIES IF RHO_L == RHO_I
  */
 
-int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore) {
+GMT_LOCAL int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore) {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
@@ -1072,7 +1072,7 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	return (0);
 }
 
-int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore) {
+GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore) {
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
@@ -1149,7 +1149,7 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	return (0);
 }
 
-int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx) {
+GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx) {
 	int i, error, i_rx;
 	double restore_a, restore_b1, restore_b2, restore_b3, diff = 2 * LIMIT, dw, max_dw;
 	double *w_old = NULL, *k = NULL, *load = NULL;
@@ -1220,7 +1220,7 @@ int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, do
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtflexure_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	uint64_t tbl, seg, row, n_columns;
@@ -1240,21 +1240,21 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtflexure_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE)
-		bailout (GMT_gmtflexure_usage (API, GMT_USAGE));	/* Return the usage message */
+		bailout (usage (API, GMT_USAGE));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS)
-		bailout (GMT_gmtflexure_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+		bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtflexure_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtflexure_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the gmtflexure main code ----------------------------*/
 

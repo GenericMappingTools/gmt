@@ -191,7 +191,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct GMT_GRID *Low, *High;		/* arrays for minmax values, if set */
 };
 
-void set_coefficients (struct SURFACE_INFO *C) {
+GMT_LOCAL void set_coefficients (struct SURFACE_INFO *C) {
 	/* These are the coefficients in the finite-difference expressionss */
 	double e_4, loose, a0;
 
@@ -233,7 +233,7 @@ void set_coefficients (struct SURFACE_INFO *C) {
 	C->ij_ne_corner = C->ij_se_corner + C->ny - 1;
 }
 
-void set_offset (struct SURFACE_INFO *C) {
+GMT_LOCAL void set_offset (struct SURFACE_INFO *C) {
 	/* Because of the multigrid approach the distance from the central node to
 	 * its neighbors needed in the finite difference expressions varies.  E.g.,
 	 * when C->grid is 8 then the next neighbor to the right is 8 columns over.
@@ -275,7 +275,7 @@ void set_offset (struct SURFACE_INFO *C) {
 	}
 }
 
-void fill_in_forecast (struct SURFACE_INFO *C) {
+GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
 
 	/* Fills in bilinear estimates into new node locations
 	   after grid is divided.   These new nodes are marked as
@@ -356,7 +356,7 @@ void fill_in_forecast (struct SURFACE_INFO *C) {
 	iu[C->ij_ne_corner] = SURFACE_IS_CONSTRAINED;
 }
 
-int compare_points (const void *point_1v, const void *point_2v) {
+GMT_LOCAL int compare_points (const void *point_1v, const void *point_2v) {
 		/*  Routine for qsort to sort data structure for fast access to data by node location.
 		    Sorts on index first, then on radius to node corresponding to index, so that index
 		    goes from low to high, and so does radius.
@@ -382,13 +382,13 @@ int compare_points (const void *point_1v, const void *point_2v) {
 	return (0);
 }
 
-void smart_divide (struct SURFACE_INFO *C) {
+GMT_LOCAL void smart_divide (struct SURFACE_INFO *C) {
 	/* Divide grid by its largest prime factor */
 	C->grid /= C->factors[C->n_fact - 1];
 	C->n_fact--;
 }
 
-void set_index (struct SURFACE_INFO *C) {
+GMT_LOCAL void set_index (struct SURFACE_INFO *C) {
 	/* recomputes data[k].index for new value of grid,
 	   sorts data on index and radii, and throws away
 	   data which are now outside the usable limits. */
@@ -413,7 +413,7 @@ void set_index (struct SURFACE_INFO *C) {
 
 }
 
-void find_nearest_point (struct SURFACE_INFO *C) {
+GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	/* Determines the nearest data point epr bin and sets the
 	 * Briggs parameters or, if really close, sets the node value */
 	uint64_t ij_v2, k, last_index, iu_index, briggs_index;
@@ -494,7 +494,7 @@ void find_nearest_point (struct SURFACE_INFO *C) {
 	 }
 }
 
-void set_grid_parameters (struct SURFACE_INFO *C) {
+GMT_LOCAL void set_grid_parameters (struct SURFACE_INFO *C) {
 	/* Updates the grid space parameters given the new C->grid setting */
 	GMT_Surface_Global.block_ny = C->block_ny = (C->ny - 1) / C->grid + 1;
 	C->block_nx = (C->nx - 1) / C->grid + 1;
@@ -505,7 +505,7 @@ void set_grid_parameters (struct SURFACE_INFO *C) {
 	C->r_grid_yinc = 1.0 / C->grid_yinc;
 }
 
-void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/*
 	 * For the initial gridsize, compute weighted averages of data inside the search radius
 	 * and assign the values to u[i,j] where i,j are multiples of gridsize.
@@ -561,7 +561,7 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	}
 }
 
-int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
+GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options) {
 	/* Procdss input data into data structure */
 	int i, j, error;
 	uint64_t k, kmax = 0, kmin = 0, n_dup = 0;
@@ -748,7 +748,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 	return (0);
 }
 
-int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *grdfile) {
+GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *grdfile) {
 	/* Uses v.2.0 netCDF grd format - hence need to transpose original column grid to be GMT compatible.  This will be rewritten, maybe */
 	uint64_t index, k;
 	int i, j, err;
@@ -796,7 +796,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 	return (0);
 }
 
-uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
+GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
 	/* Main finite difference solver */
 	uint64_t ij, briggs_index, ij_v2, iteration_count = 0, ij_sw, ij_se;
 	unsigned int current_max_iterations = C->max_iterations * C->grid;
@@ -1023,7 +1023,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode) {
 	return (iteration_count);
 }
 
-void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Compute misfits at data locations */
 
 	int i, j, move_over[12];
@@ -1169,7 +1169,7 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
  }
 
-void remove_planar_trend (struct SURFACE_INFO *C) {
+GMT_LOCAL void remove_planar_trend (struct SURFACE_INFO *C) {
 	/* Fit LS plane and remove from data; we restore before output */
 	uint64_t i;
 	double a, b, c, d, xx, yy, zz;
@@ -1217,7 +1217,7 @@ void remove_planar_trend (struct SURFACE_INFO *C) {
 	}
 }
 
-void replace_planar_trend (struct SURFACE_INFO *C) {
+GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {
 	/* Restore the LS plan we removed */
 	int i, j;
 	uint64_t ij;
@@ -1231,7 +1231,7 @@ void replace_planar_trend (struct SURFACE_INFO *C) {
 	}
 }
 
-void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* This is a new routine to eliminate data which will become
 		unusable on the final iteration, when grid = 1.
 		It assumes grid = 1 and set_grid_parameters has been
@@ -1273,7 +1273,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	}
 }
 
-int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Find and normalize data by its rms */
 	uint64_t i;
 	double ssz = 0.0;
@@ -1304,7 +1304,7 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	return (0);
 }
 
-void suggest_sizes_for_surface (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny) {
+GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny) {
 	/* Calls GMT_optimal_dim_for_surface to determine if there are
 	 * better choices for nx, ny that might speed up calculations
 	 * by having many more common factors.
@@ -1378,7 +1378,7 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 	C->converge_limit_mode = Ctrl->C.mode;
 }
 
-void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline) {
+GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline) {
 	/* Add constraints from breaklines */
 
 	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
@@ -1472,7 +1472,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	GMT_free (GMT, z);
 }
 
-void *New_surface_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct SURFACE_CTRL);
@@ -1485,7 +1485,7 @@ void *New_surface_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	return (C);
 }
 
-void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->G.file);	
 	gmt_free (C->D.file);	
@@ -1494,7 +1494,7 @@ void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_surface_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	unsigned int ppm;
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
@@ -1550,7 +1550,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to surface and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -1706,7 +1706,7 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_surface_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_surface (void *V_API, int mode, void *args) {
 	int error = 0, key, one = 1;
@@ -1723,18 +1723,18 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_surface_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_surface_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_surface_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_surface_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the surface main code ----------------------------*/
 
@@ -1785,7 +1785,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
 	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.grid == 1 && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes_for_surface (GMT, C.Grid, C.factors, C.nx-1, C.ny-1);
+	if ((C.grid == 1 && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.nx-1, C.ny-1);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw

@@ -323,9 +323,7 @@ L2:
     return 0;
 } /* swap_ */
 
-/* Subroutine */ integer insert_(integer *k, integer *lp, integer *list, integer *
-	lptr, integer *lnew)
-{
+integer insert_(integer *k, integer *lp, integer *list, integer *lptr, integer *lnew) {
     static integer lsav;
 
 
@@ -382,9 +380,8 @@ L2:
     return 0;
 } /* insert_ */
 
-/* Subroutine */ integer bdyadd_(integer *kk, integer *i1, integer *i2, integer *
-	list, integer *lptr, integer *lend, integer *lnew)
-{
+integer bdyadd_(integer *kk, integer *i1, integer *i2, integer *
+	list, integer *lptr, integer *lend, integer *lnew) {
     static integer k, n1, n2, lp, lsav, nsav, next;
 
 /* *********************************************************** */
@@ -513,9 +510,8 @@ L4:
     return 0;
 } /* bdyadd_ */
 
-/* Subroutine */ integer intadd_(integer *kk, integer *i1, integer *i2, integer *
-	i3, integer *list, integer *lptr, integer *lend, integer *lnew)
-{
+integer intadd_(integer *kk, integer *i1, integer *i2, integer *
+	i3, integer *list, integer *lptr, integer *lend, integer *lnew) {
     static integer k, n1, n2, n3, lp;
 
 

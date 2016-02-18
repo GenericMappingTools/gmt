@@ -121,7 +121,7 @@ struct MAG_VAR4 {
 	double	t_dec, t_dip, m, m_dec, m_dip;
 } *mag_var4;
 
-void *New_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZOKB_CTRL *C;
 
 	C = GMT_memory (GMT, NULL, 1, struct XYZOKB_CTRL);
@@ -133,7 +133,7 @@ void *New_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	return (C);
 }
 
-void Free_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_free (C->F.file);
 	gmt_free (C->G.file);
@@ -144,16 +144,16 @@ void Free_gmtgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0);
-int read_t (struct GMT_CTRL *GMT, char *fname);
-int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
-int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
-void set_center (unsigned int n_triang);
-int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat);
-int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo);
-int check_triang_cw (unsigned int n, unsigned int type);
+GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname);
+GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
+GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
+GMT_LOCAL void set_center (unsigned int n_triang);
+GMT_LOCAL int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat);
+GMT_LOCAL int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo);
+GMT_LOCAL int check_triang_cw (unsigned int n, unsigned int type);
+GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0);
 
-int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-C<density>] [-G<outgrid>]\n");
@@ -188,7 +188,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to gmtgravmag3d and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -344,7 +344,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtgravmag3d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
@@ -379,21 +379,21 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtgravmag3d_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE)
-		bailout (GMT_gmtgravmag3d_usage (API, GMT_USAGE));		/* Return the usage message */
+		bailout (usage (API, GMT_USAGE));		/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS)
-		bailout (GMT_gmtgravmag3d_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+		bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtgravmag3d_parse (GMT, Ctrl, options)) != 0) Return (error);
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the gmtgravmag3d main code ----------------------------*/
 	
@@ -725,7 +725,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 }
 
 /* -------------------------------------------------------------------------*/
-int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
+GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
 	unsigned int ndata_xyz;
@@ -823,7 +823,7 @@ int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, doubl
 }
 
 /* -----------------------------------------------------------------*/
-int read_t (struct GMT_CTRL *GMT, char *fname) {
+GMT_LOCAL int read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
 	unsigned int ndata_t;
 	size_t n_alloc;
@@ -858,7 +858,7 @@ int read_t (struct GMT_CTRL *GMT, char *fname) {
 }
 
 /* -----------------------------------------------------------------*/
-int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
+GMT_LOCAL int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
 	unsigned int ndata_r;
 	size_t n_alloc;
@@ -896,7 +896,7 @@ int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 }
 
 /* -----------------------------------------------------------------*/
-int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
+GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
 	unsigned int ndata_s;
 	size_t n_alloc;
@@ -948,7 +948,7 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 }
 
 /* -----------------------------------------------------------------*/
-int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat) {
+GMT_LOCAL int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
 	GMT_UNUSED (bat);
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
@@ -1027,7 +1027,7 @@ int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, 
 }
 
 /* -----------------------------------------------------------------*/
-int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo) {
+GMT_LOCAL int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo) {
 	/* Sets coodinates for the facet in the RAW format */
 	double cos_a, cos_b, cos_c, x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1051,7 +1051,7 @@ int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned
 }
 
 /* ---------------------------------------------------------------------- */
-void set_center (unsigned int n_triang) {
+GMT_LOCAL void set_center (unsigned int n_triang) {
 	/* Calculates triangle center by an aproximate (iterative) formula */
 	unsigned int i, j, k = 5;
 	double x, y, z, xa[6], ya[6], xb[6], yb[6], xc[6], yc[6];
@@ -1081,7 +1081,7 @@ void set_center (unsigned int n_triang) {
 }
 
 #if 0
-void triang_norm (int n_triang) {
+GMT_LOCAL void triang_norm (int n_triang) {
 	/* Computes the unit normal to trianglular facet */
 	int i;
 	double v1[3], v2[3], v3[3], mod, n[3];
@@ -1107,7 +1107,7 @@ void triang_norm (int n_triang) {
 }
 #endif
 
-int check_triang_cw (unsigned int n, unsigned int type) {
+GMT_LOCAL int check_triang_cw (unsigned int n, unsigned int type) {
 	/* Checks that triangles are given in the correct clock-wise order.
 	If not swap them. This is a tricky issue. In the case of "classic"
 	trihedron (x positive right; y positive "north" and z positive up),
