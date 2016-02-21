@@ -111,11 +111,10 @@ Optional Arguments
 .. _-E:
 
 **-E**\ [*datum*\ ]
-    Convert from geodetic (lon, lat, height) to Earth Centered Earth
-    Fixed (ECEF) (x,y,z) coordinates (add **-I** for the inverse
-    conversion). Append datum ID (see **-Qd**) or give
+    Convert from geodetic (lon, lat, height) to Earth Centered Earth Fixed (ECEF) (x,y,z) coordinates
+    (add **-I** for the inverse conversion). Append datum ID (see **-Qd**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,*inv_f*], where *a* is the
+    ID (see **-Qe**) or given as *a*\ [,\ *inv_f*], where *a* is the
     semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84.
 
