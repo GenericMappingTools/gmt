@@ -66,36 +66,36 @@ struct GMT_ZSEARCH {	/* For -T */
 };
 
 struct GRDTRACK_CTRL {
-	struct In {
+	struct GRDTRACK_In {
 		bool active;
 		char *file;
 	} In;
-	struct Out {	/* -> */
+	struct GRDTRACK_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A[f|m|p|r|R][+l] */
+	struct GRDTRACK_A {	/* -A[f|m|p|r|R][+l] */
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct C {	/* -C<length>/<ds>[/<spacing>][+a] */
+	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a] */
 		bool active, alternate;
 		int mode;	/* May be negative */
 		char unit;
 		double ds, spacing, length;
 	} C;
-	struct D {	/* -Dresampfile */
+	struct GRDTRACK_D {	/* -Dresampfile */
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
+	struct GRDTRACK_E {	/* -E<line1>[,<line2>,...][+a<az>][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
 		bool active;
 		unsigned int mode;
 		char *lines;
 		double step;
 		char unit;
 	} E;
-	struct G {	/* -G<grdfile> */
+	struct GRDTRACK_G {	/* -G<grdfile> */
 		bool active;
 		unsigned int n_grids;
 		char *file[MAX_GRIDS];
@@ -103,17 +103,17 @@ struct GRDTRACK_CTRL {
 		int mode[MAX_GRIDS];
 		int type[MAX_GRIDS];	/*HIDDEN */
 	} G;
-	struct N {	/* -N */
+	struct GRDTRACK_N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S[<mode>][<modifiers>] */
+	struct GRDTRACK_S {	/* -S[<mode>][<modifiers>] */
 		bool active;
 		bool selected[STACK_N_OPT];	/* For +a +d +e +r +s */
 		unsigned int mode;		/* Type of stack a|m|p|l|L|u|U */
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
-	struct T {	/* -T[<radius>[unit]][+p|e] */
+	struct GRDTRACK_T {	/* -T[<radius>[unit]][+p|e] */
 		bool active;
 		double radius;		/* Max radius to search */
 		int dmode;		/* Distance mode; could be negative */
@@ -121,7 +121,7 @@ struct GRDTRACK_CTRL {
 		unsigned int mode;	/* 1 if +p was given, 2 if +e was given */
 		struct GMT_ZSEARCH *S;
 	} T;
-	struct Z {	/* -Z */
+	struct GRDTRACK_Z {	/* -Z */
 		bool active;
 	} Z;
 };
