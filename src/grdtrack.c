@@ -816,6 +816,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		else
 			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
+		if (Din->table == NULL)
+			Return (EXIT_FAILURE);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
 	}
 

@@ -355,7 +355,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	size_t n_alloc;
 
 	char format[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""};
-	char *type[2] = {"great", "small"}, *way[3] = {"L1","L2","L1 and L2"};
+	char *type[2] = {"great", "small"}, *way[4] = {"", "L1","L2","L1 and L2"};
 
 	double lonsum, latsum, rad, out[18], *work = NULL, *in = NULL;
 	double meanv[3], cross[3], cross_sum[3], gcpole[3], scpole[3];		/* Extra vectors  */
