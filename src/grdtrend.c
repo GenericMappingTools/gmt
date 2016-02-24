@@ -15,50 +15,50 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
-/* 
+/*
  * Brief synopsis: Reads a grid file and fits a trend surface.  Trend surface
  * is defined by:
- * 
+ *
  * m1 +m2*x + m3*y + m4*xy + m5*x*x + m6*y*y + m7*x*x*x
  * 	+ m8*x*x*y + m9*x*y*y + m10*y*y*y.
- * 
+ *
  * n_model is set by the user to be an integer in [1,10]
  * which sets the number of model coefficients to fit.
- * 
+ *
  * Author:		W. H. F. Smith
  * Date:		1 JAN, 2010
  * Version:	5 API
- * 
+ *
  * Explanations:
- * 
+ *
  * Thus:
  * n_model = 1 gives the mean value of the surface,
  * n_model = 3 fits a plane,
  * n_model = 4 fits a bilinear surface,
  * n_model = 6 fits a biquadratic,
  * n_model = 10 fits a bicubic surface.
- * 
+ *
  * The user may write out grid files of the fitted surface
  * [-T<trend.grd>] and / or of the residuals (input data
  * minus fitted trend) [-D<differences.grd] and / or of
  * the weights used in iterative fitting [-W<weight.grd].
  * This last option applies only when the surface is fit
  * iteratively [-N<n>[r]].
- * 
+ *
  * A robust fit may be achieved by iterative fitting of
  * a weighted least squares problem, where the weights
- * are set according to a scale length based on the 
+ * are set according to a scale length based on the
  * Median absolute deviation (MAD: Huber, 1982).  The
  * -N<n>r option achieves this.
- * 
+ *
  * Calls:		uses the QR solution of the Normal
  * 		equations furnished by Wm. Menke's
  * 		C routine "gauss".  We gratefully
  * 		acknowledge this contribution, now
  * 		as GMT_gauss in gmt_vector.c
- * 
+ *
  * Remarks:
- * 
+ *
  * We adopt a translation and scaling of the x,y coordinates.
  * We choose x,y such that they are in [-1,1] over the range
  * of the grid file.  If the problem is unweighted, all input
@@ -71,7 +71,7 @@
  * while they analytically cancel to zero, the addition errors
  * would likely prevent this.  Therefore we have written a
  * routine, grd_trivial_model(), to handle this case.
- * 
+ *
  * If the problem is more complex than the above trivial case,
  * (missing values, weighted problem, or n_model > 4), then
  * G'G is not trivial and we just naively accumulate sums in
@@ -116,21 +116,21 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 
 void *New_grdtrend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDTREND_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRDTREND_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
-		
+
 	return (C);
 }
 
 void Free_grdtrend_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);	
-	gmt_free (C->D.file);	
-	gmt_free (C->T.file);	
-	gmt_free (C->W.file);	
-	GMT_free (GMT, C);	
+	gmt_free (C->In.file);
+	gmt_free (C->D.file);
+	gmt_free (C->T.file);
+	gmt_free (C->W.file);
+	GMT_free (GMT, C);
 }
 
 int GMT_grdtrend_usage (struct GMTAPI_CTRL *API, int level) {
@@ -154,7 +154,7 @@ int GMT_grdtrend_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
 	GMT_Option (API, ".");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -206,7 +206,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 			case 'W':
 				Ctrl->W.active = true;
 				/* OK if this file doesn't exist; we always write to that file on output */
-				if (GMT_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || GMT_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID)) 
+				if (GMT_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || GMT_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID))
 					Ctrl->W.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -224,6 +224,7 @@ int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
+#if 0
 void set_up_vals (double *val, unsigned int nval, double vmin, double vmax, double dv, unsigned int pixel_reg)
 {	/* Store x[i], y[j] once for all to save time  */
 	unsigned int i;
@@ -243,6 +244,7 @@ void set_up_vals (double *val, unsigned int nval, double vmin, double vmax, doub
 	val[nval - 1] = 1.0;
 	return;
 }
+#endif
 
 void load_pstuff (double *pstuff, unsigned int n_model, double x, double y, unsigned int newx, unsigned int newy)
 {	/* Compute Legendre polynomials of x[i],y[j] as needed  */
@@ -291,7 +293,7 @@ void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T
 
 void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model)
 {
-	/* Routine to fit up elementary polynomial model of grd data, 
+	/* Routine to fit up elementary polynomial model of grd data,
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
@@ -481,9 +483,9 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	bool trivial, weighted,iterations, set_ones = true;
 	int error = 0;
 	unsigned int row, col;
-	
+
 	uint64_t ij;
-	
+
 	char format[GMT_BUFSIZ];
 
 	double chisq, old_chisq, scale = 1.0, dv;

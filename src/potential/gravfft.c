@@ -162,7 +162,6 @@ double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
 void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
                 float *raised, uint64_t n, double rho);
-void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl);
 void do_isostasy__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
 void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_below);
 void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top);
@@ -668,7 +667,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		error = do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
 		for (k = 0; k < Ctrl->In.n_grids; k++)
 			GMT_FFT_Destroy (API, &(FFT_info[k]));
-		
+
 		if (!error) {
 			Return (EXIT_SUCCESS);
 		}
@@ -1042,9 +1041,9 @@ int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRID
 		/* Cols 1-2 are xpower and std.err estimate */
 		S->coord[col++][k] = out[k];
 		S->coord[col++][k] = err_bar[k];
-		if (Ctrl->misc.from_below) 
+		if (Ctrl->misc.from_below)
 			S->coord[col++][k] = z_from_below[k];
-		else if (Ctrl->misc.from_top) 
+		else if (Ctrl->misc.from_top)
 			S->coord[col++][k] = z_from_top[k];
 	}
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)

@@ -428,6 +428,7 @@ double CartScaledRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, 
 	return (par[GRDFILTER_X_SCALE] * hypot (x0 - x1, y0 - y1));
 }
 
+#if 0
 double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Pass dx,dy via par[GRDFILTER_X|Y_DIST] and return a r that is either in or out */
 	double r;
@@ -437,6 +438,7 @@ double CartScaledRect (struct GMT_CTRL *GMT, double x0, double y0, double x1, do
 	r = (fabs (par[GRDFILTER_X_DIST]) > par[GRDFILTER_HALF_WIDTH] || fabs (par[GRDFILTER_Y_DIST]) > par[GRDFILTER_HALF_WIDTH]) ? 2.0 : 0.0;
 	return (r);
 }
+#endif
 
 double FlatEarthRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1, double par[])
 {	/* Cartesian radius with different scales */

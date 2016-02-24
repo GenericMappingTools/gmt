@@ -26,7 +26,7 @@
  * Author:	Joaquim Luis
  * Date:	1-Apr-2012
  *
- *          Removed #if 0 code that dealt with side faces in rev r12620 
+ *          Removed #if 0 code that dealt with side faces in rev r12620
  *
  */
 
@@ -153,11 +153,13 @@ double nucleoy(double u, double v, double w, double rl, double rm, double rn);
 double nucleoz(double u, double v, double w, double rl, double rm, double rn);
 void dircos(double incl, double decl, double azim, double *a, double *b, double *c);
 
+#if 0
 double fast_atan(double x) {
 	/* http://nghiaho.com/?p=997 */
 	/* Efficient approximations for the arctangent function, Rajan, S. Sichun Wang Inkol, R. Joyal, A., May 2006 */
 	return M_PI_4*x - x*(fabs(x) - 1)*(0.2447 + 0.0663*fabs(x));
 }
+#endif
 
 #define FATAN(x) (fabs(x) > 1) ? atan(x) : (M_PI_4*x - x*(fabs(x) - 1)*(0.2447 + 0.0663*fabs(x)))
 
@@ -425,7 +427,7 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 	                                "Error: Cannot specify -Q<pad>|<region> without -R option\n");
 	n_errors += GMT_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active,
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
-	n_errors += GMT_check_condition(GMT, Ctrl->C.active && Ctrl->H.active, 
+	n_errors += GMT_check_condition(GMT, Ctrl->C.active && Ctrl->H.active,
 	                                "Syntax error Cannot specify both -C and -H options\n");
 	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file,
 	                                "Syntax error -G option: Must specify output file\n");
@@ -866,7 +868,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		h3 = si0;
 
 		if (Ctrl->H.koningsberg != 0) {		/* This option is not currently implemented */
-			sa = (-Ctrl->H.t_dec - Ctrl->H.m_dec) * D2R;	// Earth field DEC - Mag DEC 
+			sa = (-Ctrl->H.t_dec - Ctrl->H.m_dec) * D2R;	// Earth field DEC - Mag DEC
 			ci = cos(Ctrl->H.m_dip * D2R);					// cos of mag INC
 			h1 += Ctrl->H.koningsberg * ci * sin(sa);
 			h2 += Ctrl->H.koningsberg * ci * cos(sa);
@@ -1190,7 +1192,7 @@ void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
     unsigned int r_stop         = t->r_stop;
 
 	int (*v_func[3])(struct GMT_CTRL *, struct GRDOKB_CTRL *, struct GMT_GRID *, struct BODY_DESC *, struct BODY_VERTS *,
-	      double *, double *, double *, unsigned int, unsigned int, unsigned int, unsigned int); 
+	      double *, double *, double *, unsigned int, unsigned int, unsigned int, unsigned int);
 	double (*d_func[3])(struct GMT_CTRL *, double, double, double, double, bool, struct BODY_DESC, struct BODY_VERTS *,
 	        unsigned int, unsigned int, struct LOC_OR *);
 
@@ -1233,8 +1235,8 @@ void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 			//GMT_Message (GMT->parent, GMT_TIME_NONE, "Thread %d\tRow = %d\t of = %.3d\r", t->thread_num+1, row+1, Grid->header->ny - !indf);
 
 		if (Ctrl->H.do_igrf) {                                     /* Compute a row of IGRF dec & dip */
-			for (col = 0; col < Grid->header->nx - 1 + MIN(indf,1); col++) { 
-				MGD77_igrf10syn(GMT, 0, 2000, 1, 0, t->x_grd_geo[col], t->y_grd_geo[row], out_igrf); 
+			for (col = 0; col < Grid->header->nx - 1 + MIN(indf,1); col++) {
+				MGD77_igrf10syn(GMT, 0, 2000, 1, 0, t->x_grd_geo[col], t->y_grd_geo[row], out_igrf);
 				igrf_dec[col] = out_igrf[5] * D2R;
 				igrf_dip[col] = out_igrf[6] * D2R;
 			}
@@ -1379,7 +1381,7 @@ double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double 
 	/* The MAG_PAR struct is used here to transmit the Ctrl->H members (components actually) */
 
 	int i, j, k, ijk;
-	double a[3][2], eps1, eps2, hx, hy, hz, tr, sc, xc, yc; 
+	double a[3][2], eps1, eps2, hx, hy, hz, tr, sc, xc, yc;
 	double xn, yn, f11, f12, f13, f21, f22, f23, u, v, w, r, c4, c5, c6;
 	GMT_UNUSED(GMT);
 	GMT_UNUSED(z_o);
@@ -1511,7 +1513,7 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
 !      2...the amplitude of earth's magnetic field (t0/nanoTeslas)
 !      3...inclination of earth's magnetic field (i0/degrees)
 !      4...declination of earth's magnetic field (d0/degrees)
-!         -> strike angle is taken clockwise from magnetic north 
+!         -> strike angle is taken clockwise from magnetic north
 !      5...K?ningsbergs ratio (Q)
 !      6...inclination of the prism magnetization (ir/degrees)
 !      7...azimuth of the prism magnetization (ar/degrees)
@@ -1534,7 +1536,7 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
 !   The strike and the azimuth of prism magnetization are taken
 !   clockwise from magnetic north (and the field declination, of course)
 !   Dip angle is taken from horizontal plate
-!   K?ningsberg's ratio is the ratio between the remanent and induced 
+!   K?ningsberg's ratio is the ratio between the remanent and induced
 !   magnetization (Mr/Mi)
 !   Demagnetization coefficients are computed outside this subroutine
 !
@@ -1555,7 +1557,7 @@ https://wiki.oulu.fi/display/~mpi/Magnetic+field+of+a+prism+model
     real :: cirsa,circa,sir,sf,cf,ctf,dx,si1,si2,si3,h1,h2,h3,zn,xn,yn
     real :: f11,f12,f13,f21,f22,f23,u,v,w,sc,p,q,r,c4,c5,c6,tr,hx,hy,hz
     real :: eps= 1.e-5, eps2= 5.e-3
-      
+
 ! set up computation
 
     pii= 4.*atan(1.)
@@ -1761,8 +1763,8 @@ c  Subroutine DIRCOS computes direction cosines from inclination
 c  and declination.
 c
 c  Input parameters:
-c    incl:  inclination in degrees positive below horizontal.  
-c    decl:  declination in degrees positive east of true north.  
+c    incl:  inclination in degrees positive below horizontal.
+c    decl:  declination in degrees positive east of true north.
 c    azim:  azimuth of x axis in degrees positive east of north.
 c
 c  Output parameters:

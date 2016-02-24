@@ -997,6 +997,7 @@ int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, double *p, 
  * ONLY APPLIES IF RHO_L == RHO_I
  */
 
+#if 0
 int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double restore)
 {
 	int i, row, off, error;
@@ -1075,6 +1076,7 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	}
 	return (0);
 }
+#endif
 
 int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore)
 {
@@ -1154,6 +1156,7 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	return (0);
 }
 
+#if 0
 int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx)
 {
 	int i, error, i_rx;
@@ -1224,6 +1227,7 @@ int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, do
 
 	return (error);
 }
+#endif
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtflexure_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
