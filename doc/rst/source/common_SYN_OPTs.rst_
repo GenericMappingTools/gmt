@@ -101,108 +101,162 @@
    <br />
 
 
+.. |h-x| raw:: html
 
-.. |-A| raw:: html
+   </span></a></strong>
 
-   <strong><a class="reference internal" href="#a"><span>-A</span></a></strong>
+.. |-A| replace:: |h-A| **-A**\ |h-x|
 
-.. |-B| raw:: html
+.. |h-A| raw:: html
 
-   <strong><a class="reference internal" href="#b"><span>-B</span></a></strong>
+   <a class="reference internal" href="#a"><span>
 
-.. |-C| raw:: html
+.. |-B| replace:: |h-B| **-B**\ |h-x|
 
-   <strong><a class="reference internal" href="#c"><span>-C</span></a></strong>
+.. |h-B| raw:: html
 
-.. |-D| raw:: html
+   <a class="reference internal" href="#b"><span>
 
-   <strong><a class="reference internal" href="#d"><span>-D</span></a></strong>
+.. |-C| replace:: |h-C| **-C**\ |h-x|
 
-.. |-E| raw:: html
+.. |h-C| raw:: html
 
-   <strong><a class="reference internal" href="#e"><span>-E</span></a></strong>
+   <a class="reference internal" href="#c"><span>
 
-.. |-F| raw:: html
+.. |-D| replace:: |h-D| **-D**\ |h-x|
 
-   <strong><a class="reference internal" href="#f"><span>-F</span></a></strong>
+.. |h-D| raw:: html
 
-.. |-G| raw:: html
+   <a class="reference internal" href="#d"><span>
 
-   <strong><a class="reference internal" href="#g"><span>-G</span></a></strong>
+.. |-E| replace:: |h-E| **-E**\ |h-x|
 
-.. |-H| raw:: html
+.. |h-E| raw:: html
 
-   <strong><a class="reference internal" href="#h"><span>-H</span></a></strong>
+   <a class="reference internal" href="#e"><span>
 
-.. |-I| raw:: html
+.. |-F| replace:: |h-F| **-F**\ |h-x|
 
-   <strong><a class="reference internal" href="#i"><span>-I</span></a></strong>
+.. |h-F| raw:: html
 
-.. |-J| raw:: html
+   <a class="reference internal" href="#f"><span>
 
-   <strong><a class="reference internal" href="#j"><span>-J</span></a></strong>
+.. |-G| replace:: |h-G| **-G**\ |h-x|
 
-.. |-K| raw:: html
+.. |h-G| raw:: html
 
-   <strong><a class="reference internal" href="#k"><span>-K</span></a></strong>
+   <a class="reference internal" href="#g"><span>
 
-.. |-L| raw:: html
+.. |-H| replace:: |h-H| **-H**\ |h-x|
 
-   <strong><a class="reference internal" href="#l"><span>-L</span></a></strong>
+.. |h-H| raw:: html
 
-.. |-M| raw:: html
+   <a class="reference internal" href="#h"><span>
 
-   <strong><a class="reference internal" href="#m"><span>-M</span></a></strong>
+.. |-I| replace:: |h-I| **-I**\ |h-x|
 
-.. |-N| raw:: html
+.. |h-I| raw:: html
 
-   <strong><a class="reference internal" href="#n"><span>-N</span></a></strong>
+   <a class="reference internal" href="#i"><span>
 
-.. |-O| raw:: html
+.. |-J| replace:: |h-J| **-J**\ |h-x|
 
-   <strong><a class="reference internal" href="#o"><span>-O</span></a></strong>
+.. |h-J| raw:: html
 
-.. |-P| raw:: html
+   <a class="reference internal" href="#j"><span>
 
-   <strong><a class="reference internal" href="#p"><span>-P</span></a></strong>
+.. |-K| replace:: |h-K| **-K**\ |h-x|
 
-.. |-Q| raw:: html
+.. |h-K| raw:: html
 
-   <strong><a class="reference internal" href="#q"><span>-Q</span></a></strong>
+   <a class="reference internal" href="#k"><span>
 
-.. |-R| raw:: html
+.. |-L| replace:: |h-L| **-L**\ |h-x|
 
-   <strong><a class="reference internal" href="#r"><span>-R</span></a></strong>
+.. |h-L| raw:: html
 
-.. |-S| raw:: html
+   <a class="reference internal" href="#l"><span>
 
-   <strong><a class="reference internal" href="#s"><span>-S</span></a></strong>
+.. |-M| replace:: |h-M| **-M**\ |h-x|
 
-.. |-T| raw:: html
+.. |h-M| raw:: html
 
-   <strong><a class="reference internal" href="#t"><span>-T</span></a></strong>
+   <a class="reference internal" href="#m"><span>
 
-.. |-U| raw:: html
+.. |-N| replace:: |h-N| **-N**\ |h-x|
 
-   <strong><a class="reference internal" href="#u"><span>-U</span></a></strong>
+.. |h-N| raw:: html
 
-.. |-V| raw:: html
+   <a class="reference internal" href="#n"><span>
 
-   <strong><a class="reference internal" href="#v"><span>-V</span></a></strong>
+.. |-O| replace:: |h-O| **-O**\ |h-x|
 
-.. |-W| raw:: html
+.. |h-O| raw:: html
 
-   <strong><a class="reference internal" href="#w"><span>-W</span></a></strong>
+   <a class="reference internal" href="#o"><span>
 
-.. |-X| raw:: html
+.. |-P| replace:: |h-P| **-P**\ |h-x|
 
-   <strong><a class="reference internal" href="#x"><span>-X</span></a></strong>
+.. |h-P| raw:: html
 
-.. |-Y| raw:: html
+   <a class="reference internal" href="#p"><span>
 
-   <strong><a class="reference internal" href="#y"><span>-Y</span></a></strong>
+.. |-Q| replace:: |h-Q| **-Q**\ |h-x|
 
-.. |-Z| raw:: html
+.. |h-Q| raw:: html
 
-   <strong><a class="reference internal" href="#z"><span>-Z</span></a></strong>
+   <a class="reference internal" href="#q"><span>
 
+.. |-R| replace:: |h-R| **-R**\ |h-x|
+
+.. |h-R| raw:: html
+
+   <a class="reference internal" href="#r"><span>
+
+.. |-S| replace:: |h-S| **-S**\ |h-x|
+
+.. |h-S| raw:: html
+
+   <a class="reference internal" href="#s"><span>
+
+.. |-T| replace:: |h-T| **-T**\ |h-x|
+
+.. |h-T| raw:: html
+
+   <a class="reference internal" href="#t"><span>
+
+.. |-U| replace:: |h-U| **-U**\ |h-x|
+
+.. |h-U| raw:: html
+
+   <a class="reference internal" href="#u"><span>
+
+.. |-V| replace:: |h-V| **-V**\ |h-x|
+
+.. |h-V| raw:: html
+
+   <a class="reference internal" href="#v"><span>
+
+.. |-W| replace:: |h-W| **-W**\ |h-x|
+
+.. |h-W| raw:: html
+
+   <a class="reference internal" href="#w"><span>
+
+.. |-X| replace:: |h-X| **-X**\ |h-x|
+
+.. |h-X| raw:: html
+
+   <a class="reference internal" href="#x"><span>
+
+.. |-Y| replace:: |h-Y| **-Y**\ |h-x|
+
+.. |h-Y| raw:: html
+
+   <a class="reference internal" href="#y"><span>
+
+.. |-Z| replace:: |h-Z| **-Z**\ |h-x|
+
+.. |h-Z| raw:: html
+
+   <a class="reference internal" href="#z"><span>
