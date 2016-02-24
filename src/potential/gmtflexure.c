@@ -1072,7 +1072,6 @@ GMT_LOCAL int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n
 	}
 	return (0);
 }
-#endif
 
 GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore) {
 	int i, row, off, error;
@@ -1151,7 +1150,6 @@ GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 	return (0);
 }
 
-#if 0
 GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx) {
 	int i, error, i_rx;
 	double restore_a, restore_b1, restore_b2, restore_b3, diff = 2 * LIMIT, dw, max_dw;
