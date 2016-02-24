@@ -73,7 +73,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [**0** \| **1** \| **2**]
+**-L**\ [**0**\ \|\ **1**\ \|\ **2**]
     **-L0**
         Report range of z after actually scanning the data, not just
         reporting what the header says.
