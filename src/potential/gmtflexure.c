@@ -1076,7 +1076,6 @@ int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double d
 	}
 	return (0);
 }
-#endif
 
 int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double dx, double *restore)
 {
@@ -1156,7 +1155,6 @@ int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n, double 
 	return (0);
 }
 
-#if 0
 int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[], int n, double dx, double rho_m, double rho_l, double rho_i, double rho_w, double rho_i2, double rx)
 {
 	int i, error, i_rx;
