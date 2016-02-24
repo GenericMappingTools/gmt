@@ -742,12 +742,14 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 	}
 }
 
+EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
+
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len, line_size = 0U;
 	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false;
-	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false;
+	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, add_grestore = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
@@ -960,9 +962,18 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Loop over all input files */
 
 	for (k = 0; k < Ctrl->In.n_files; k++) {
-		excessK = false;
+		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
-		strncpy (ps_file, ps_names[k], GMT_BUFSIZ-1);
+		if (GMT_File_Is_Memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
+			sprintf (ps_file, "%s/psconvert_stream_%d.ps", GMT->session.TMPDIR, (int)getpid());
+			if (GMT_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s.  Skipping.\n", ps_file, ps_names[k]);
+				continue;
+			}
+			delete = true;	/* Must delete this temporary file when done */
+		}
+		else
+			strncpy (ps_file, ps_names[k], GMT_BUFSIZ-1);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
 			continue;
@@ -978,6 +989,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				int kk;
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				fclose (fp);	/* Close original PS file */
+				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_free (ps_names[kk]);
 				Return (EXIT_FAILURE);
 			}
@@ -1023,10 +1035,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (sys_retval) {
 				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				remove (BB_file);
+				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 				Return (EXIT_FAILURE);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
+				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 				Return (EXIT_FAILURE);
 			}
 			while ((line_reader (GMT, &line, &line_size, fpb) != EOF) && !got_BB) {
@@ -1057,6 +1071,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							remove (tmp_file);
+							if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 							Return (EXIT_FAILURE);
 						}
 						/* must leave loop because fpb has been closed and line_reader would
@@ -1454,6 +1469,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		fclose (fpo);
 		fclose (fp);
+		if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 
 		/* Build the converting ghostscript command and execute it */
 
@@ -1558,7 +1574,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 
 		/* Remove input file, if requested */
-		if (Ctrl->Z.active) {
+		if (Ctrl->Z.active && !delete) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", ps_file);
 			remove (ps_file);
 		}
