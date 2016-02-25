@@ -69,11 +69,10 @@
  * Version:	5
  * Now 64-bit enabled.
  *
- * Public functions (4):
+ * Public functions (3):
  *
- *	GMT_bcr_init		Initialize structure for convolution interpolation
  *	GMT_bcr_get_z		Get interpolated grid value by convolution
- *	GMT_bcr_get_z_fast	Same but skips NaN or outside checking
+ *	GMT_bcr_get_z_fast	Same, but skips NaN or outside checking
  *	GMT_bcr_get_img		Get interpolated image value(s) by convolution
  */
 
@@ -226,6 +225,11 @@ GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, do
 
 	return (ij);
 }
+
+/*----------------------------------------------------------|
+ * Public functions that are part of the GMT Devel library  |
+ *----------------------------------------------------------|
+ */
 
 double GMT_bcr_get_z_fast (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy) {
 	/* Given xx, yy in user's grid file (in non-normalized units)

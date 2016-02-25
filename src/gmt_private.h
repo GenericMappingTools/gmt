@@ -146,10 +146,9 @@ struct GMTAPI_CTRL {
 	unsigned int n_shared_libs;		/* How many in lib */
 };
 
-#ifdef DEBUG
-EXTERN_MSC void GMT_list_API (struct GMTAPI_CTRL *ptr, char *txt);
+#ifdef DEBUG	/* May be used by developers to dump contents of API objects to stdout */
+EXTERN_MSC void api_list_objects (struct GMTAPI_CTRL *ptr, char *txt);
 #endif
-EXTERN_MSC int GMTAPI_report_error	(void *C, int error);
 
 /* Macro to test if filename is a special name indicating memory location */
 

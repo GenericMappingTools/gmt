@@ -43,13 +43,6 @@ int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 
-Private Functions used by the public functions:
-
-int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
-int WriteRecord (FILE *file, float *outz[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
-void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header)
-void SaveAGCHeader (char *remark, float *agchead)
-
 */
 
 # define ZBLOCKWIDTH 	40U
@@ -63,7 +56,9 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define AGCHEADINDICATOR	"agchd:"
 # define PARAMSIZE		((GMT_GRID_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
-GMT_LOCAL int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
+/* Local runctions used by the public functions: */
+
+GMT_LOCAL int agc_read_record (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
 	/* Reads one block of data, including pre- and post-headers */
 	size_t nitems;
 	float garbage[PREHEADSIZE];
@@ -79,7 +74,7 @@ GMT_LOCAL int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec) {
+GMT_LOCAL int agc_write_record (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec) {
 	/* Writes one block of data, including pre- and post-headers */
 	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE)
 		return (GMT_GRDIO_WRITE_FAILED);
@@ -90,7 +85,7 @@ GMT_LOCAL int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], flo
 	return (GMT_NOERROR);
 }
 
-GMT_LOCAL void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header) {
+GMT_LOCAL void agc_pack_header (float *prez, float *postz, struct GMT_GRID_HEADER *header) {
 	/* Places grd header info in the AGC header array */
 	GMT_memset (prez,  PREHEADSIZE,  float);
 	GMT_memset (postz, POSTHEADSIZE, float);
@@ -103,7 +98,7 @@ GMT_LOCAL void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER 
 	prez[PREHEADSIZE-1] = (float)RECORDLENGTH;
 }
 
-GMT_LOCAL void SaveAGCHeader (char *remark, float *agchead) {
+GMT_LOCAL void agc_save_header (char *remark, float *agchead) {
 	/* Place AGC header data in remark string */
 	char floatvalue[PARAMSIZE+1];	/* Allow space for final \0 */
 	unsigned int i;
@@ -116,6 +111,11 @@ GMT_LOCAL void SaveAGCHeader (char *remark, float *agchead) {
 		strcat (remark, floatvalue);
 	}
 }
+
+/*----------------------------------------------------------|
+ * Public functions that are part of the GMT Devel library  |
+ *----------------------------------------------------------|
+ */
 
 int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an AGC grid file. */
@@ -191,7 +191,7 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
 	agchead[BUFFHEADSIZE-2] = recdata[RECORDLENGTH-2];
 	agchead[BUFFHEADSIZE-1] = recdata[RECORDLENGTH-1];
-	SaveAGCHeader (header->remark, agchead);
+	agc_save_header (header->remark, agchead);
 	
 	GMT_fclose (GMT, fp);
 
@@ -212,7 +212,7 @@ int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	else if ((fp = GMT_fopen (GMT, header->name, "rb+")) == NULL && (fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
-	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
+	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
 	if (GMT_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 
@@ -274,7 +274,7 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
-		if (ReadRecord (fp, z)) return (GMT_GRDIO_READ_FAILED);
+		if (agc_read_record (fp, z)) return (GMT_GRDIO_READ_FAILED);
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
@@ -375,9 +375,9 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}
 
-	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
+	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	GMT_memset (outz, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* or WriteRecord (fp, outz, prez, postz); points to uninitialised buffer */
+	GMT_memset (outz, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* or agc_write_record (fp, outz, prez, postz); points to uninitialised buffer */
 
 	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
 	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
@@ -398,7 +398,7 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			}
 		}
 
-		if (WriteRecord (fp, outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
+		if (agc_write_record (fp, outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
 
 		if (++datablockrow >= n_blocks_y) {
 			datablockrow = 0;

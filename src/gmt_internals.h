@@ -293,8 +293,6 @@ EXTERN_MSC void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, cons
 /* Sub function needed by GMT_end to free memory used in modules and at end of session */
 
 EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level);
-EXTERN_MSC char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
-EXTERN_MSC const char *GMTAPI_get_moduleinfo (void *V_API, char *module);
 
 /* For supplements */
 EXTERN_MSC int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
