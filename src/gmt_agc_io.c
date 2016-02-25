@@ -63,7 +63,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define AGCHEADINDICATOR	"agchd:"
 # define PARAMSIZE		((GMT_GRID_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
-static int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
+GMT_LOCAL int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
 	/* Reads one block of data, including pre- and post-headers */
 	size_t nitems;
 	float garbage[PREHEADSIZE];
@@ -79,7 +79,7 @@ static int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
 	return (GMT_NOERROR);
 }
 
-static int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec) {
+GMT_LOCAL int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec) {
 	/* Writes one block of data, including pre- and post-headers */
 	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE)
 		return (GMT_GRDIO_WRITE_FAILED);
@@ -90,7 +90,7 @@ static int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float 
 	return (GMT_NOERROR);
 }
 
-static void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header) {
+GMT_LOCAL void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header) {
 	/* Places grd header info in the AGC header array */
 	GMT_memset (prez,  PREHEADSIZE,  float);
 	GMT_memset (postz, POSTHEADSIZE, float);
@@ -103,7 +103,7 @@ static void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *he
 	prez[PREHEADSIZE-1] = (float)RECORDLENGTH;
 }
 
-static void SaveAGCHeader (char *remark, float *agchead) {
+GMT_LOCAL void SaveAGCHeader (char *remark, float *agchead) {
 	/* Place AGC header data in remark string */
 	char floatvalue[PARAMSIZE+1];	/* Allow space for final \0 */
 	unsigned int i;
