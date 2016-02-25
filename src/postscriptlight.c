@@ -635,7 +635,7 @@ static void psl_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]) {
 	for (i = 0; i < 3; i++) cmyk[i] -= cmyk[3];
 }
 
-void psl_rgb_to_cmyk (double rgb[], double cmyk[]) {
+static void psl_rgb_to_cmyk (double rgb[], double cmyk[]) {
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	/* RGB is in 0-1, CMYK will be in 0-1 range */
 

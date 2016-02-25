@@ -1367,15 +1367,15 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			}
 			if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {	/* */
 				if (Ctrl->E.dip_grd_only) {		/* Use mag DEC = 0 */
-					dip_m = GMT_get_bcr_z(GMT, Gdip, slonm, slatm) * D2R;
+					dip_m = GMT_bcr_get_z(GMT, Gdip, slonm, slatm) * D2R;
 					dec_m = 0;
 					tau = -cos(dip_m);
 					mu  =  0;
 					nu  = -sin(dip_m);
 				}
 				else {			/* Get central window mag DEC & DIP from grids */
-					dip_m = GMT_get_bcr_z(GMT, Gdip, slonm, slatm) * D2R;
-					dec_m = GMT_get_bcr_z(GMT, Gdec, slonm, slatm) * D2R;
+					dip_m = GMT_bcr_get_z(GMT, Gdip, slonm, slatm) * D2R;
+					dec_m = GMT_bcr_get_z(GMT, Gdec, slonm, slatm) * D2R;
 					tau = -cos(dip_m) * cos(dec_m);
 					mu  =  cos(dip_m) * sin(dec_m);
 					nu  = -sin(dip_m);
@@ -1433,7 +1433,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 						Ctrl->C.dec = out_igrf[5] * D2R;
 						Ctrl->C.dip = out_igrf[6] * D2R;
 						if (Ctrl->E.dip_grd_only) {
-							dip_m = GMT_get_bcr_z(GMT, Gdip, ftlon[row], ftlat[row]) * D2R;
+							dip_m = GMT_bcr_get_z(GMT, Gdip, ftlon[row], ftlat[row]) * D2R;
 							dec_m = 0;
 							tau1 = -cos(dip_m);
 							mu1  =  0;
@@ -1441,8 +1441,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 							dt = tau1 - tau;	dm = mu1 - mu;		dn = nu1 - nu;
 						}
 						else if (Ctrl->E.dip_dec_grd) {
-							dec_m = GMT_get_bcr_z(GMT, Gdec, ftlon[col], ftlat[row]) * D2R;
-							dip_m = GMT_get_bcr_z(GMT, Gdip, ftlon[col], ftlat[row]) * D2R;
+							dec_m = GMT_bcr_get_z(GMT, Gdec, ftlon[col], ftlat[row]) * D2R;
+							dip_m = GMT_bcr_get_z(GMT, Gdip, ftlon[col], ftlat[row]) * D2R;
 							tau1 = -cos(dip_m) * cos(dec_m);
 							mu1  =  cos(dip_m) * sin(dec_m);
 							nu1  = -sin(dip_m);

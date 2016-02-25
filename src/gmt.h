@@ -142,7 +142,7 @@ EXTERN_MSC int          GMT_FFT_Destroy   (void *API, void *K);
 EXTERN_MSC int          GMT_FFT_1D        (void *API, float *data, uint64_t n, int direction, unsigned int mode);
 EXTERN_MSC int          GMT_FFT_2D        (void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
 
-/* 3 F77 basic grid i/ functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
+/* 3 F77 basic grid i/o functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 
 EXTERN_MSC int GMT_F77_readgrdinfo_	(unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file);
 EXTERN_MSC int GMT_F77_readgrd_		(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, const char *file);
