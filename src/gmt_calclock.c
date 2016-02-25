@@ -16,35 +16,180 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /* Routines for Generic Mapping Tools conversions
-	between [calendar, clock] and time.
-
-	Calendar conversions are inspired partly by
-	Dershowitz and Reingold.  We use "rata die"
-	integer day numbers with day 1 set at
-	proleptic Gregorian Mon Jan  1 00:00:00 0001.
-	Proleptic means we assume that modern calendar
-	can be extrapolated forward and backward; a
-	year zero is used, and Gregory's reforms after
-	Oct 1582 are extrapolated backward.  Note
-	that this is not historical.
-
-	W H F Smith, April 2000
+ *       between [calendar, clock] and time.
+ *
+ *       Calendar conversions are inspired partly by
+ *       Dershowitz and Reingold.  We use "rata die"
+ *       integer day numbers with day 1 set at
+ *       proleptic Gregorian Mon Jan  1 00:00:00 0001.
+ *       Proleptic means we assume that modern calendar
+ *       can be extrapolated forward and backward; a
+ *       year zero is used, and Gregory's reforms after
+ *       Oct 1582 are extrapolated backward.  Note
+ *       that this is not historical.
+ *
+ *       W H F Smith, April 2000
+ *       
+ * Public functions (18):
+ *
+ * GMT_dt2rdc           : 
+ * GMT_format_calendar  : 
+ * GMT_g_ymd_is_bad     : 
+ * GMT_gcal_from_dt     : 
+ * GMT_gcal_from_rd     : 
+ * GMT_get_time_label   : 
+ * GMT_gmonth_length    : 
+ * GMT_is_gleap         : 
+ * GMT_iso_ywd_is_bad   : 
+ * GMT_moment_interval  : 
+ * GMT_rd_from_gymd     : 
+ * GMT_rd_from_iywd     : 
+ * GMT_rdc2dt           : 
+ * GMT_splitinteger     : 
+ * GMT_verify_time_step : 
+ * GMT_y2_to_y4_yearfix : 
+ * gmt_cal_imod         : 
+ * gmt_gyear_from_rd    : 
 */
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
 /* Private functions to this file:
-   int gmt_kday_on_or_before (int date, int kday);
-   int gmt_kday_after (int date, int kday);
-   int gmt_kday_before (int date, int kday);
-   int gmt_nth_kday (int n, int kday, int date);
-   int gmt_cal_imod (int x, int y);
-   int gmt_gyear_from_rd (int date);
-   void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal);	Break internal time into calendar and clock struct info.
-   int GMT_gmonth_length (int year,  int month);	Get the number of days in a month by Gregorian leap rule
-   void gmt_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to GMT_moment_interval
+   int calclock_kday_on_or_before (int date, int kday);
+   int calclock_kday_after (int date, int kday);
+   int calclock_kday_before (int date, int kday);
+   int calclock_nth_kday (int n, int kday, int date);
+   int calclock_cal_imod (int x, int y);
+   int calclock_gyear_from_rd (int date);
+   void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to GMT_moment_interval
 */
+
+/* Modulo functions.  The C operation "x%y" and the POSIX
+	fmod(x,y) will return a negative result when x < 0
+	and y > 0.  The routines here below will always
+	return a positive value when y > 0, a necessary
+	feature in the calendar calculations.
+
+	It is not clear what to do when y == 0.  Clearly,
+	the result is not defined.  We should probably
+	print a domain error and return something anyway.
+*/
+
+GMT_LOCAL int calclock_cal_imod (int64_t x, int y) {
+	assert (y != 0);
+	return ((int)(x - y * lrint (floor ((double)x / (double)y))));
+}
+
+/* kday functions:
+   Let kday be the day of the week, defined with 0 = Sun,
+   1 = Mon, etc. through 6 = Sat.  (Note that ISO day of
+   the week is the same for all of these except ISO Sunday
+   is 7.)  Since rata die 1 is a Monday, we have kday from
+   rd is simply calclock_cal_imod(rd, 7).  The various functions
+   below take an rd and find another rd related to the first
+   through the fact that the related day falls on a given
+   kday of the week.  */
+
+GMT_LOCAL int64_t calclock_kday_on_or_before (int64_t date, int kday) {
+	/* Given date and kday, return the date of the nearest kday
+	   on or before the given date. */
+	return (date - calclock_cal_imod (date-kday, 7));
+}
+
+GMT_LOCAL int64_t calclock_kday_after (int64_t date, int kday) {
+	/* Given date and kday, return the date of the nearest kday
+	   after the given date. */
+	return (calclock_kday_on_or_before (date+7, kday));
+}
+
+GMT_LOCAL int64_t calclock_kday_before (int64_t date, int kday) {
+	/* Given date and kday, return the date of the nearest kday
+	   before the given date. */
+	return (calclock_kday_on_or_before (date-1, kday));
+}
+
+GMT_LOCAL int64_t calclock_nth_kday (int n, int kday, int64_t date) {
+	/* Given date, kday, and n, return the date of the n'th
+	   kday before or after the given date, according to the
+	   sign of n. */
+	if (n > 0)
+		return (7*n + calclock_kday_before (date, kday));
+	else
+		return (7*n + calclock_kday_after (date, kday));
+}
+
+GMT_LOCAL int calclock_gyear_from_rd (int64_t date) {
+	/* Given rata die integer day number, return proleptic Gregorian year  */
+
+	int64_t d0, d1, d2, d3;
+	int year, n400, n100, n4, n1;
+
+	d0 = date - 1;
+	n400 = irint (floor (d0 / 146097.0));
+	d1 = calclock_cal_imod (d0, 146097);
+	n100 = irint (floor (d1 / 36524.0));
+	d2 = calclock_cal_imod (d1, 36524);
+	n4 = irint (floor (d2 / 1461.0));
+	d3 = calclock_cal_imod (d2, 1461);
+	n1 = irint (floor (d3 / 365.0));
+	/* d4 = calclock_cal_imod (d3, 365) + 1; NOT USED (removed) */
+	year = 400*n400 + 100*n100 + 4*n4 + n1;
+
+	if (n100 != 4 && n1 != 4) year++;
+
+	return (year);
+}
+
+GMT_LOCAL void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, bool init) {
+
+	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
+	   0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
+
+	double x;
+
+	if (step_secs == GMT_DAY2SEC_I) {
+		/* Special case of a 1-day step.  */
+		if (p->sd[0] != 0.0) {	/* Floor it to start of day.  */
+			p->dt[0] -= (p->sd[0] * GMT->current.setting.time_system.i_scale);
+			p->sd[0] = 0.0;
+		}
+		/* Now we step to next day in rd first, and set dt from there.
+			This will work even when leap seconds are implemented.  */
+		p->rd[1] = p->rd[0] + 1;
+		GMT_gcal_from_rd (GMT, p->rd[1], &(p->cc[1]) );
+		p->sd[1] = 0.0;
+		p->dt[1] = GMT_rdc2dt (GMT, p->rd[1], p->sd[1]);
+	}
+	else {
+		if (init) {
+			x = step_secs * floor (p->sd[0] / step_secs);
+			if (x != p->sd[0]) {
+				p->dt[0] -= ((p->sd[0] - x) * GMT->current.setting.time_system.i_scale);
+			}
+		}
+		/* Step to next interval time.  If this would put GMT_DAY2SEC_I secs
+		in today, go to next day at zero.  This will work even when
+		leap seconds are implemented and today is a leap second say,
+		unless also step_secs == 1.  That special action will have to
+		be taken and will be coded later when leap seconds are put in.
+		*/
+		x = p->sd[0] + step_secs;
+		if (x >= GMT_DAY2SEC_F) {	/* Should not be greater than  */
+			p->sd[1] = 0.0;
+			p->rd[1] = p->rd[0] + 1;
+			GMT_gcal_from_rd (GMT, p->rd[1], &(p->cc[1]) );
+			p->dt[1] = GMT_rdc2dt (GMT, p->rd[1], p->sd[1]);
+		}
+		else {
+			p->sd[1] = x;
+			p->dt[1] = p->dt[0] + step_secs * GMT->current.setting.time_system.i_scale;
+			/* No call here to reset cc[1] struct, as rd hasn't changed.
+				Later, if it is desired to reset struct for clock
+				changes on same day, add a call here.  */
+		}
+	}
+}
 
 /* Functions to assemble/disassemble a continuous
 variable (double) and a calendar day (int)
@@ -86,60 +231,6 @@ void GMT_dt2rdc (struct GMT_CTRL *GMT, double t, int64_t *rd, double *s) {
 	*rd = GMT_splitinteger (t_sec, GMT_DAY2SEC_I, s) + GMT->current.setting.time_system.rata_die;
 }
 
-/* Modulo functions.  The C operation "x%y" and the POSIX
-	fmod(x,y) will return a negative result when x < 0
-	and y > 0.  The routines here below will always
-	return a positive value when y > 0, a necessary
-	feature in the calendar calculations.
-
-	It is not clear what to do when y == 0.  Clearly,
-	the result is not defined.  We should probably
-	print a domain error and return something anyway.
-*/
-
-int gmt_cal_imod (int64_t x, int y) {
-	assert (y != 0);
-	return ((int)(x - y * lrint (floor ((double)x / (double)y))));
-}
-
-/* kday functions:
-   Let kday be the day of the week, defined with 0 = Sun,
-   1 = Mon, etc. through 6 = Sat.  (Note that ISO day of
-   the week is the same for all of these except ISO Sunday
-   is 7.)  Since rata die 1 is a Monday, we have kday from
-   rd is simply gmt_cal_imod(rd, 7).  The various functions
-   below take an rd and find another rd related to the first
-   through the fact that the related day falls on a given
-   kday of the week.  */
-
-int64_t gmt_kday_on_or_before (int64_t date, int kday) {
-	/* Given date and kday, return the date of the nearest kday
-	   on or before the given date. */
-	return (date - gmt_cal_imod (date-kday, 7));
-}
-
-int64_t gmt_kday_after (int64_t date, int kday) {
-	/* Given date and kday, return the date of the nearest kday
-	   after the given date. */
-	return (gmt_kday_on_or_before (date+7, kday));
-}
-
-int64_t gmt_kday_before (int64_t date, int kday) {
-	/* Given date and kday, return the date of the nearest kday
-	   before the given date. */
-	return (gmt_kday_on_or_before (date-1, kday));
-}
-
-int64_t gmt_nth_kday (int n, int kday, int64_t date) {
-	/* Given date, kday, and n, return the date of the n'th
-	   kday before or after the given date, according to the
-	   sign of n. */
-	if (n > 0)
-		return (7*n + gmt_kday_before (date, kday));
-	else
-		return (7*n + gmt_kday_after (date, kday));
-}
-
 int GMT_gmonth_length (int year, int month) {
 	/* Return the number of days in a month,
 	   using the gregorian leap year rule.
@@ -167,11 +258,11 @@ bool GMT_is_gleap (int gyear) {
 
 	int y400;
 
-	if (gmt_cal_imod (gyear, 4) != 0) return (false);
+	if (calclock_cal_imod (gyear, 4) != 0) return (false);
 
-	y400 = gmt_cal_imod (gyear, 400);
+	y400 = calclock_cal_imod (gyear, 400);
 	if (y400 == 0) return (true);
-	if (gmt_cal_imod (y400, 100) == 0) return (false);
+	if (calclock_cal_imod (y400, 100) == 0) return (false);
 
 	return (true);
 }
@@ -201,28 +292,6 @@ int64_t GMT_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 	return (rd);
 }
 
-int gmt_gyear_from_rd (int64_t date) {
-	/* Given rata die integer day number, return proleptic Gregorian year  */
-
-	int64_t d0, d1, d2, d3;
-	int year, n400, n100, n4, n1;
-
-	d0 = date - 1;
-	n400 = irint (floor (d0 / 146097.0));
-	d1 = gmt_cal_imod (d0, 146097);
-	n100 = irint (floor (d1 / 36524.0));
-	d2 = gmt_cal_imod (d1, 36524);
-	n4 = irint (floor (d2 / 1461.0));
-	d3 = gmt_cal_imod (d2, 1461);
-	n1 = irint (floor (d3 / 365.0));
-	/* d4 = gmt_cal_imod (d3, 365) + 1; NOT USED (removed) */
-	year = 400*n400 + 100*n100 + 4*n4 + n1;
-
-	if (n100 != 4 && n1 != 4) year++;
-
-	return (year);
-}
-
 /* ISO calendar routine  */
 
 int64_t GMT_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id) {
@@ -233,7 +302,7 @@ int64_t GMT_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id) {
 
 	/* Add id to the iw'th Sunday after Dec 28 iy-1:  */
 	rdtemp = GMT_rd_from_gymd (GMT, iy-1, 12, 28);
-	return (id + gmt_nth_kday (iw, 0, rdtemp));
+	return (id + calclock_nth_kday (iw, 0, rdtemp));
 }
 
 /* Set calendar struct data from fixed date:  */
@@ -247,11 +316,11 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_GCAL *gcal
 
 	/* Day of the week in 0 thru 6:  */
 
-	gcal->day_w = gmt_cal_imod (date, 7);
+	gcal->day_w = calclock_cal_imod (date, 7);
 
 	/* proleptic Gregorian operations:  */
 
-	gcal->year = gmt_gyear_from_rd (date);
+	gcal->year = calclock_gyear_from_rd (date);
 	prior_days = date - GMT_rd_from_gymd (GMT, gcal->year, 1, 1);
 	gcal->day_y = (unsigned int)prior_days + 1;
 
@@ -474,56 +543,6 @@ int GMT_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 	return (retval);
 }
 
-void gmt_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, bool init) {
-
-	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
-	   0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
-
-	double x;
-
-	if (step_secs == GMT_DAY2SEC_I) {
-		/* Special case of a 1-day step.  */
-		if (p->sd[0] != 0.0) {	/* Floor it to start of day.  */
-			p->dt[0] -= (p->sd[0] * GMT->current.setting.time_system.i_scale);
-			p->sd[0] = 0.0;
-		}
-		/* Now we step to next day in rd first, and set dt from there.
-			This will work even when leap seconds are implemented.  */
-		p->rd[1] = p->rd[0] + 1;
-		GMT_gcal_from_rd (GMT, p->rd[1], &(p->cc[1]) );
-		p->sd[1] = 0.0;
-		p->dt[1] = GMT_rdc2dt (GMT, p->rd[1], p->sd[1]);
-	}
-	else {
-		if (init) {
-			x = step_secs * floor (p->sd[0] / step_secs);
-			if (x != p->sd[0]) {
-				p->dt[0] -= ((p->sd[0] - x) * GMT->current.setting.time_system.i_scale);
-			}
-		}
-		/* Step to next interval time.  If this would put GMT_DAY2SEC_I secs
-		in today, go to next day at zero.  This will work even when
-		leap seconds are implemented and today is a leap second say,
-		unless also step_secs == 1.  That special action will have to
-		be taken and will be coded later when leap seconds are put in.
-		*/
-		x = p->sd[0] + step_secs;
-		if (x >= GMT_DAY2SEC_F) {	/* Should not be greater than  */
-			p->sd[1] = 0.0;
-			p->rd[1] = p->rd[0] + 1;
-			GMT_gcal_from_rd (GMT, p->rd[1], &(p->cc[1]) );
-			p->dt[1] = GMT_rdc2dt (GMT, p->rd[1], p->sd[1]);
-		}
-		else {
-			p->sd[1] = x;
-			p->dt[1] = p->dt[0] + step_secs * GMT->current.setting.time_system.i_scale;
-			/* No call here to reset cc[1] struct, as rd hasn't changed.
-				Later, if it is desired to reset struct for clock
-				changes on same day, add a call here.  */
-		}
-	}
-}
-
 void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, double dt_in, bool init) {
 	/* Unchanged by this routine:
 	     p->step is a positive interval width;
@@ -584,7 +603,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 			if (GMT_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 				k = p->step;
-				gmt_small_moment_interval (GMT, p, k, init);
+				calclock_small_moment_interval (GMT, p, k, init);
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
@@ -594,17 +613,17 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 		case 'S':
 
 			k = p->step;
-			gmt_small_moment_interval (GMT, p, k, init);
+			calclock_small_moment_interval (GMT, p, k, init);
 			break;
 		case 'm':
 		case 'M':
 			k = GMT_MIN2SEC_I * p->step;
-			gmt_small_moment_interval (GMT, p, k, init);
+			calclock_small_moment_interval (GMT, p, k, init);
 			break;
 		case 'h':
 		case 'H':
 			k = GMT_HR2SEC_I * p->step;
-			gmt_small_moment_interval (GMT, p, k, init);
+			calclock_small_moment_interval (GMT, p, k, init);
 			break;
 		case 'd':
 		case 'D':
@@ -612,7 +631,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				/* Here we want every day (of the Gregorian month or year)
 					so the stepping is easy.  */
 				k = GMT_DAY2SEC_I;
-				gmt_small_moment_interval (GMT, p, k, init);
+				calclock_small_moment_interval (GMT, p, k, init);
 			}
 			else if (GMT->current.plot.calclock.date.day_of_year) {
 				/* Select every n'th day of the Gregorian year  */
@@ -722,7 +741,7 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				/* Floor to the first day of the week start.  */
 				k = p->cc[0].day_w - GMT->current.setting.time_week_start;
 				if (k) {
-					p->rd[0] -= gmt_cal_imod(k, 7);
+					p->rd[0] -= calclock_cal_imod(k, 7);
  					GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
  				}
 				p->sd[0] = 0.0;
@@ -806,12 +825,12 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				/* Floor to the step'th year, either ISO or Gregorian, depending on... */
 				if (GMT->current.plot.calclock.date.iso_calendar) {
 					p->sd[0] = 0.0;
-					if (p->step > 1) p->cc[0].iso_y -= gmt_cal_imod (p->cc[0].iso_y, p->step);
+					if (p->step > 1) p->cc[0].iso_y -= calclock_cal_imod (p->cc[0].iso_y, p->step);
 					p->rd[0] = GMT_rd_from_iywd (GMT, p->cc[0].iso_y, 1, 1);
 				}
 				else {
 					p->sd[0] = 0.0;
-					if (p->step > 1) p->cc[0].year -= gmt_cal_imod (p->cc[0].year, p->step);
+					if (p->step > 1) p->cc[0].year -= calclock_cal_imod (p->cc[0].year, p->step);
 					p->rd[0] = GMT_rd_from_gymd (GMT, p->cc[0].year, 1, 1);
 				}
 				GMT_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );

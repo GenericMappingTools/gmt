@@ -315,7 +315,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 
 GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_merge, uint64_t *map_base_start, uint64_t *map_base_end,
                           uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge) {
-	int i;
+	uint64_t i;
 
 	for (i = 0; i < n_base; i++)  GMT_free (GMT, pairs_base[i]);
 	for (i = 0; i < n_merge; i++) GMT_free (GMT, pairs_merge[i]);
