@@ -81,7 +81,7 @@ int GMT_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #ifdef HAVE_GDAL
-int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #endif
 
 EXTERN_MSC void api_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
@@ -614,7 +614,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		/* Check if file is an URL */
 		if (GMT_check_url_name(header->name)) {
 			/* Then check for GDAL grid */
-			if (GMT_is_gdal_grid (GMT, header) == GMT_NOERROR)
+			if (gmt_is_gdal_grid (GMT, header) == GMT_NOERROR)
 				return (GMT_NOERROR);
 		}
 #endif
@@ -648,7 +648,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 			return (GMT_NOERROR);
 #ifdef HAVE_GDAL
 		/* Then check for GDAL grid */
-		if (GMT_is_gdal_grid (GMT, header) == GMT_NOERROR)
+		if (gmt_is_gdal_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 #endif
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
@@ -2472,7 +2472,7 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 		file[k] = '\0';
 	}
 
-	if (GMT_gdalread (GMT, file, to_gdalread, from_gdalread)) {
+	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -2560,7 +2560,7 @@ int GMT_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	to_gdalread->c_ptr.active = true;
 	to_gdalread->c_ptr.grd = I->data;
 
-	if (GMT_gdalread (GMT, file, to_gdalread, from_gdalread)) {
+	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}

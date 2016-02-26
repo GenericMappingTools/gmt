@@ -58,7 +58,7 @@ struct GMT_GDALWRITE_CTRL {
 	} P;
 };
 
-/*! Structure to control which options are transmited to GMT_gdalread */
+/*! Structure to control which options are transmited to gmt_gdalread */
 struct GMT_GDALREAD_IN_CTRL {
 	struct GD_B {	/* Band selection */
 		int active;
@@ -133,7 +133,7 @@ struct GDAL_BAND_FNAMES {
 	double  ScaleOffset[2];
 };
 
-/*! Structure with the output data transmited by GMT_gdalread */
+/*! Structure with the output data transmited by gmt_gdalread */
 struct GMT_GDALREAD_OUT_CTRL {
 	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */

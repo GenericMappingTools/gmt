@@ -1404,7 +1404,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 				to_gdalread->W.active = true;
 				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
-				GMT_gdalread (GMT, NULL, to_gdalread, from_gdalread);
+				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
 				if (from_gdalread->ProjectionRefWKT != NULL) {
 					double x0, y0, x1;	/* Projected coordinates */
 					double h0, v0, h1;	/* Correspnding point coordinates */

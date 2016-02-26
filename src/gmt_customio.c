@@ -1554,7 +1554,7 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	to_gdalread->M.active = true;		/* Metadata only */
 
-	if (GMT_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
+	if (gmt_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
 		GMT_free (GMT, to_gdalread);	GMT_free (GMT, from_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -1694,7 +1694,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	/* If header->nan_value != NaN tell gdalread to replace nan_value by NaN (in floats only) */
 	to_gdalread->N.nan_value = header->nan_value;
 
-	if (GMT_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
+	if (gmt_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
 		return (GMT_GRDIO_OPEN_FAILED);
 	}

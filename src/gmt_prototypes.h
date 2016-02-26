@@ -122,7 +122,7 @@ EXTERN_MSC int gmt_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, doubl
 
 #ifdef HAVE_GDAL
 /* Format # 22 */
-EXTERN_MSC int GMT_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl);
+EXTERN_MSC int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD_IN_CTRL *prhs, struct GMT_GDALREAD_OUT_CTRL *Ctrl);
 EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GMT_GDALWRITE_CTRL *prhs);
 #endif
 
