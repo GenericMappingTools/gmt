@@ -10211,10 +10211,10 @@ unsigned int GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struc
 	I.unit = T->unit;
 	I.step = urint (T->interval);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
-	GMT_moment_interval (GMT, &I, min, true);	/* First time we pass true for initialization */
+	gmt_moment_interval (GMT, &I, min, true);	/* First time we pass true for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
 		if (I.dt[0] >= min || interval) val[n++] = I.dt[0];		/* Was inside region */
-		GMT_moment_interval (GMT, &I, 0.0, false);			/* Advance to next interval */
+		gmt_moment_interval (GMT, &I, 0.0, false);			/* Advance to next interval */
 		if (n == n_alloc) {					/* Allocate more space */
 			n_alloc <<= 1;
 			val = GMT_memory (GMT, val, n_alloc, double);
@@ -10336,7 +10336,7 @@ bool GMT_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLO
 			GMT_memset (&Inext, 1, struct GMT_MOMENT_INTERVAL);	/* Wipe it */
 			Inext.unit = T->unit;		/* Initialize MOMENT_INTERVAL structure members */
 			Inext.step = 1;
-			GMT_moment_interval (GMT, &Inext, coord[0], true);	/* Get this one interval only */
+			gmt_moment_interval (GMT, &Inext, coord[0], true);	/* Get this one interval only */
 			range = 0.5 * (Inext.dt[1] - Inext.dt[0]);	/* Half width of interval in internal representation */
 			start = MAX (min, Inext.dt[0]);			/* Start of interval, but not less that start of axis */
 			stop  = MIN (max, Inext.dt[1]);			/* Stop of interval,  but not beyond end of axis */
@@ -10379,7 +10379,7 @@ int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLO
 				sprintf (string, "10@+%ld@+", lrint (d_log10 (GMT, coord)));
 			break;
 		case GMT_TIME:
-			GMT_get_time_label (GMT, string, P, T, coord);
+			gmt_get_time_label (GMT, string, P, T, coord);
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Wrong type (%d) passed!\n", GMT->current.map.frame.axis[T->parent].type);

@@ -526,10 +526,10 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			dd[0] = (!D->H.mgd77[use]->Survey_Departure_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Day, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Day);
 			dd[1] = (!D->H.mgd77[use]->Survey_Arrival_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Day);
 			if (! (yy[0] == 0 && yy[1] == 0)) {	/* With year we can do something */
-				rata_die = GMT_rd_from_gymd (GMT, yy[0], mm[0], dd[0]);
-				tmin = GMT_rdc2dt (GMT, rata_die, 0.0);
-				rata_die = GMT_rd_from_gymd (GMT, yy[1], mm[1], dd[1]);
-				tmax = GMT_rdc2dt (GMT, rata_die, 0.0);
+				rata_die = gmt_rd_from_gymd (GMT, yy[0], mm[0], dd[0]);
+				tmin = gmt_rdc2dt (GMT, rata_die, 0.0);
+				rata_die = gmt_rd_from_gymd (GMT, yy[1], mm[1], dd[1]);
+				tmax = gmt_rdc2dt (GMT, rata_die, 0.0);
 			}
 		}			
 		if (Ctrl->E.active) {

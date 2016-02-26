@@ -885,7 +885,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* We want time to align on integer TIME_UNIT.  If epoch is not a multiple of TIME_UNIT
 		 * then we compute the offset and add to z */
 		tmp = GMT->current.setting.time_system.epoch_t0; GMT->current.setting.time_system.epoch_t0 = 0.0;	/* Save */
-		t_epoch_unit = GMT_rdc2dt (GMT, GMT->current.setting.time_system.rata_die, tmp * GMT_DAY2SEC_F);	/* Epoch in user units */
+		t_epoch_unit = gmt_rdc2dt (GMT, GMT->current.setting.time_system.rata_die, tmp * GMT_DAY2SEC_F);	/* Epoch in user units */
 		GMT->current.setting.time_system.epoch_t0 = tmp;	/* Restore */
 		t_epoch_unit_even = floor (t_epoch_unit / Ctrl->A.interval) * Ctrl->A.interval;	/* Offset to grid values in user units reuired to align contours on even epoch */
 		t_offset = t_epoch_unit - t_epoch_unit_even;	/* Offset to grid values in user units to align on even epoch */

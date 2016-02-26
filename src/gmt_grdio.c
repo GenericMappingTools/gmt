@@ -717,7 +717,7 @@ void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			default:
 				strcpy (unit, "seconds"); break;
 			}
-			GMT_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
+			gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, 0.0);
 			sprintf (string[i], "time [%s since %s %s]", unit, date, clock);
 			/* Warning for non-double grids */
 			if (i == 2 && GMT->session.grdformat[header->type][1] != 'd')

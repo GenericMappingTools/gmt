@@ -100,8 +100,8 @@ int (*MGD77_column_test_string[9]) (char *, char *, size_t);
 
 unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
-int64_t GMT_splitinteger (double value, int epsilon, double *doublepart);
-bool GMT_is_gleap (int gyear);
+int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
+bool gmt_is_gleap (int gyear);
 void GMT_str_toupper (char *string);
 
 int MGD77_nc_status (struct GMT_CTRL *GMT, int status) {
@@ -1239,7 +1239,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 		yyyy = irint (MGD77Record->number[MGD77_YEAR]);
 		mm = irint (MGD77Record->number[MGD77_MONTH]);
 		dd = irint (MGD77Record->number[MGD77_DAY]);
-		rata_die = GMT_rd_from_gymd (GMT, yyyy, mm, dd);
+		rata_die = gmt_rd_from_gymd (GMT, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
 		MGD77Record->time = MGD77_rdc2dt (GMT, F, rata_die, secs);	/* This gives GMT time in unix time */
@@ -1319,7 +1319,7 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 		MGD77Record->number[MGD77_HOUR]  = floor (r_time * 0.01) ;	/* Extract integer hour */
 		MGD77Record->number[MGD77_MIN]   = r_time - 100.0 * MGD77Record->number[MGD77_HOUR] ;	/* Extract decimal minutes */
 
-		rata_die = GMT_rd_from_gymd (GMT, yyyy, mm, dd);
+		rata_die = gmt_rd_from_gymd (GMT, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
 		MGD77Record->time = MGD77_rdc2dt (GMT, F, rata_die, secs);	/* This gives GMT time in unix time */
@@ -1363,7 +1363,7 @@ static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 		yyyy = irint (MGD77Record->number[MGD77_YEAR]);
 		mm = irint (MGD77Record->number[MGD77_MONTH]);
 		dd = irint (MGD77Record->number[MGD77_DAY]);
-		rata_die = GMT_rd_from_gymd (GMT, yyyy, mm, dd);
+		rata_die = gmt_rd_from_gymd (GMT, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
 		MGD77Record->time = MGD77_rdc2dt (GMT, F, rata_die, secs);	/* This gives GMT time in unix time */
@@ -2549,7 +2549,7 @@ static void MGD77_dt2rdc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double 
 	double t_sec;
 	GMT_UNUSED(GMT);
 	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
-	i = GMT_splitinteger (t_sec, 86400, s) + F->utime.rata_die;
+	i = gmt_splitinteger (t_sec, 86400, s) + F->utime.rata_die;
 	*rd = i;
 }
 
@@ -5764,7 +5764,7 @@ double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_GCAL *cal) {
 	/* Convert GMT calendar structure to decimal year for use with IGRF/CM4 function */
 	double n_days;
 	GMT_UNUSED(GMT);
-	n_days = (GMT_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
+	n_days = (gmt_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
 }
 
@@ -5797,9 +5797,9 @@ void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t
 	int i;
 
 	MGD77_dt2rdc (GMT, F, t, &rd, &x);
-	GMT_gcal_from_rd (GMT, rd, cal);
+	gmt_gcal_from_rd (GMT, rd, cal);
 	/* split double seconds and integer time */
-	i = (int)GMT_splitinteger (x, 60, &cal->sec);
+	i = (int)gmt_splitinteger (x, 60, &cal->sec);
 	cal->hour = i/60;
 	cal->min  = i%60;
 	return;
@@ -5820,7 +5820,7 @@ bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD
 	dd[1] = (!H->mgd77[use]->Survey_Arrival_Day[0] || !strncmp (H->mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, 2U)) ? 1 : atoi (H->mgd77[use]->Survey_Arrival_Day);
 	if (yy[0] == 0 || yy[1] == 0) return (false);	/* Withouts year we cannot do anything */
 	for (i = 0; i < 2; i++) {
-		rata_die = GMT_rd_from_gymd (GMT, yy[i], mm[i], dd[i]);
+		rata_die = gmt_rd_from_gymd (GMT, yy[i], mm[i], dd[i]);
 		t[i] = MGD77_rdc2dt (GMT, F, rata_die, 0.0);
 	}
 	if (t[1] <= t[0]) return (false);	/* Bad times */

@@ -1974,7 +1974,7 @@ void gmt_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char 
 void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text) {
 	char date[GMT_LEN16] = {""}, tclock[GMT_LEN16] = {""};
 
-	GMT_format_calendar (GMT, date, tclock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, dt);
+	gmt_format_calendar (GMT, date, tclock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, dt);
 	if (date[0] == '\0')	/* No date wanted hence dont use T */
 		sprintf (text, "%s", tclock);
 	else if (tclock[0] == '\0')	/* No clock wanted hence dont use T */
@@ -4303,9 +4303,9 @@ int gmt_scanf_ISO_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd) {
 	if (ival[2] < 1 || ival[2] > 7) return (-1);
 	if (GMT->current.io.date_input.Y2K_year) {
 		if (ival[0] < 0 || ival[0] > 99) return (-1);
-		ival[0] = GMT_y2_to_y4_yearfix (GMT, ival[0]);
+		ival[0] = gmt_y2_to_y4_yearfix (GMT, ival[0]);
 	}
-	*rd = GMT_rd_from_iywd (GMT, ival[0], ival[1], ival[2]);
+	*rd = gmt_rd_from_iywd (GMT, ival[0], ival[1], ival[2]);
 	return (0);
 }
 
@@ -4329,11 +4329,11 @@ int gmt_scanf_g_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd) {
 		}
 		if (GMT->current.io.date_input.Y2K_year) {
 			if (ival[0] < 0 || ival[0] > 99) return (-1);
-			ival[0] = GMT_y2_to_y4_yearfix (GMT, ival[0]);
+			ival[0] = gmt_y2_to_y4_yearfix (GMT, ival[0]);
 		}
-		k = (GMT_is_gleap (ival[0])) ? 366 : 365;
+		k = (gmt_is_gleap (ival[0])) ? 366 : 365;
 		if (ival[3] < 1 || ival[3] > k) return (-1);
-		*rd = GMT_rd_from_gymd (GMT, ival[0], 1, 1) + ival[3] - 1;
+		*rd = gmt_rd_from_gymd (GMT, ival[0], 1, 1) + ival[3] - 1;
 		return (0);
 	}
 
@@ -4373,12 +4373,12 @@ int gmt_scanf_g_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd) {
 	}
 	if (GMT->current.io.date_input.Y2K_year) {
 		if (ival[0] < 0 || ival[0] > 99) return (-1);
-		ival[0] = GMT_y2_to_y4_yearfix (GMT, ival[0]);
+		ival[0] = gmt_y2_to_y4_yearfix (GMT, ival[0]);
 	}
 
-	if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (-1);
+	if (gmt_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (-1);
 
-	*rd = GMT_rd_from_gymd (GMT, ival[0], ival[1], ival[2]);
+	*rd = gmt_rd_from_gymd (GMT, ival[0], ival[1], ival[2]);
 	return (0);
 }
 
@@ -4636,7 +4636,7 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 	while (s[k] && s[k] == ' ') k++;
 	if (s[k] == '-') negate_year = true;
 	if (s[k] == 'T') {	/* There is no calendar.  Set day to today and use that */
-		*t = GMT_rdc2dt (GMT, GMT->current.time.today_rata_die, x);
+		*t = gmt_rdc2dt (GMT, GMT->current.time.today_rata_die, x);
 		return (GMT_IS_ABSTIME);
 	}
 
@@ -4648,8 +4648,8 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 		if (negate_year) return (GMT_IS_NAN);			/* negative years not allowed in ISO calendar  */
 		if ( (j = sscanf(&s[k], "%4d-W%2d-%1d", &ival[0], &ival[1], &ival[2]) ) == 0) return (GMT_IS_NAN);
 		for (k = j; k < 3; k++) ival[k] = 1;
-		if (GMT_iso_ywd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
-		*t = GMT_rdc2dt (GMT, GMT_rd_from_iywd (GMT, ival[0], ival[1], ival[2]), x);
+		if (gmt_iso_ywd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
+		*t = gmt_rdc2dt (GMT, gmt_rd_from_iywd (GMT, ival[0], ival[1], ival[2]), x);
 		return (GMT_IS_ABSTIME);
 	}
 
@@ -4669,11 +4669,11 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t) {
 	if (negate_year) ival[0] = -ival[0];
 	if (got_yd) {
 		if (ival[1] < 1 || ival[1] > 366)  return (GMT_IS_NAN);	/* Simple range check on day-of-year (1-366) */
-		*t = GMT_rdc2dt (GMT, GMT_rd_from_gymd (GMT, ival[0], 1, 1) + ival[1] - 1, x);
+		*t = gmt_rdc2dt (GMT, gmt_rd_from_gymd (GMT, ival[0], 1, 1) + ival[1] - 1, x);
 	}
 	else {
-		if (GMT_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
-		*t = GMT_rdc2dt (GMT, GMT_rd_from_gymd (GMT, ival[0], ival[1], ival[2]), x);
+		if (gmt_g_ymd_is_bad (ival[0], ival[1], ival[2]) ) return (GMT_IS_NAN);
+		*t = gmt_rdc2dt (GMT, gmt_rd_from_gymd (GMT, ival[0], ival[1], ival[2]), x);
 	}
 
 	return (GMT_IS_ABSTIME);
@@ -4779,12 +4779,12 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		if (clocklen && gmt_scanf_clock (GMT, clockstring, &x)) return (GMT_IS_NAN);
 		rd = GMT->current.time.today_rata_die;	/* Default to today if no date is given */
 		if (callen && gmt_scanf_calendar (GMT, calstring, &rd)) return (GMT_IS_NAN);
-		*val = GMT_rdc2dt (GMT, rd, x);
+		*val = gmt_rdc2dt (GMT, rd, x);
 		if (GMT->current.setting.time_is_interval) {	/* Must truncate and center on time interval */
-			GMT_moment_interval (GMT, &GMT->current.time.truncate.T, *val, true);	/* Get the current interval */
+			gmt_moment_interval (GMT, &GMT->current.time.truncate.T, *val, true);	/* Get the current interval */
 			if (GMT->current.time.truncate.direction) {	/* Actually need midpoint of previous interval... */
 				x = GMT->current.time.truncate.T.dt[0] - 0.5 * (GMT->current.time.truncate.T.dt[1] - GMT->current.time.truncate.T.dt[0]);
-				GMT_moment_interval (GMT, &GMT->current.time.truncate.T, x, true);	/* Get the current interval */
+				gmt_moment_interval (GMT, &GMT->current.time.truncate.T, x, true);	/* Get the current interval */
 			}
 			/* Now get half-point of interval */
 			*val = 0.5 * (GMT->current.time.truncate.T.dt[1] + GMT->current.time.truncate.T.dt[0]);

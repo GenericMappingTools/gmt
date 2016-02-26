@@ -8192,7 +8192,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 	if (!GMT->current.map.frame.primary) flag = (char) toupper ((int)flag);
 
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
-		if (GMT_verify_time_step (GMT, irint (val), unit)) {
+		if (gmt_verify_time_step (GMT, irint (val), unit)) {
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		if ((fmod (val, 1.0) > GMT_CONV8_LIMIT)) {
@@ -11234,13 +11234,13 @@ int gmt_scanf_epoch (struct GMT_CTRL *GMT, char *s, int64_t *rata_die, double *t
 	if (!(s[i])) return (-1);
 	if (strchr (&s[i], 'W') ) {	/* ISO calendar string, date with or without clock */
 		if (sscanf (&s[i], "%5d-W%2d-%1d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
-		rd = GMT_rd_from_iywd (GMT, yy, mo, dd);
+		if (gmt_iso_ywd_is_bad (yy, mo, dd) ) return (-1);
+		rd = gmt_rd_from_iywd (GMT, yy, mo, dd);
 	}
 	else {				/* Gregorian calendar string, date with or without clock */
 		if (sscanf (&s[i], "%5d-%2d-%2d%[^0-9:-]%2d:%2d:%lf", &yy, &mo, &dd, tt, &hh, &mm, &ss) < 3) return (-1);
-		if (GMT_g_ymd_is_bad (yy, mo, dd) ) return (-1);
-		rd = GMT_rd_from_gymd (GMT, yy, mo, dd);
+		if (gmt_g_ymd_is_bad (yy, mo, dd) ) return (-1);
+		rd = gmt_rd_from_gymd (GMT, yy, mo, dd);
 	}
 	if (GMT_hms_is_bad (hh, mm, ss)) return (-1);
 
@@ -11550,7 +11550,7 @@ void gmt_set_today (struct GMT_CTRL *GMT) {
 	struct tm *moment = gmtime (&right_now);	/* Convert time to a TM structure */
 	/* Calculate rata die from yy, mm, and dd */
 	/* tm_mon is 0-11, so add 1 for 1-12 range, tm_year is years since 1900, so add 1900, but tm_mday is 1-31 so use as is */
-	GMT->current.time.today_rata_die = GMT_rd_from_gymd (GMT, 1900 + moment->tm_year, moment->tm_mon + 1, moment->tm_mday);
+	GMT->current.time.today_rata_die = gmt_rd_from_gymd (GMT, 1900 + moment->tm_year, moment->tm_mon + 1, moment->tm_mday);
 }
 
 #ifdef HARDWIRE_GMTCONF		/* Use Hardwired parames. I.e, no reading from share/gmt.conf */

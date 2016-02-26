@@ -189,8 +189,8 @@ int get_first_year (struct GMT_CTRL *GMT, double t) {
 	int64_t rd;
 	double s;
 	struct GMT_GCAL CAL;
-	GMT_dt2rdc (GMT, t, &rd, &s);
-	GMT_gcal_from_rd (GMT, rd, &CAL);
+	gmt_dt2rdc (GMT, t, &rd, &s);
+	gmt_gcal_from_rd (GMT, rd, &CAL);
 	return (CAL.year);
 }
 
@@ -734,8 +734,8 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 		return (-1);
 	}
 	p->year = year;
-	rata_day = GMT_rd_from_gymd (GMT, year, 1, 1);	/* Get the rata day for start of cruise year */
-	t_off = GMT_rdc2dt (GMT, rata_day, 0.0);		/* Secs to start of day */
+	rata_day = gmt_rd_from_gymd (GMT, year, 1, 1);	/* Get the rata day for start of cruise year */
+	t_off = gmt_rdc2dt (GMT, rata_day, 0.0);		/* Secs to start of day */
 
 
 	if (fread (&n_records, sizeof (int), 1U, fp) != 1U) {

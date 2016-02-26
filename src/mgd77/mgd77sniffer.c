@@ -51,7 +51,7 @@
 #define POS 1
 #define NEG 0
 
-bool GMT_is_gleap (int gyear);
+bool gmt_is_gleap (int gyear);
 
 GMT_LOCAL double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double *sorted = NULL, med;
@@ -2025,7 +2025,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					old_anom = GMT_memory (GMT, old_anom, n_alloc, double);
 				}
 				MGD77_gcal_from_dt (GMT, &M, D[i].time, &cal);	/* No adjust for TZ; this is GMT UTC time */
-				n_days = (GMT_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
+				n_days = (gmt_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 				/* Get date as decimal year */
 				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
 				MGD77_igrf10syn (GMT, 0, date, 1, 0.0, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], IGRF);
@@ -2213,7 +2213,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 			/* Check for time out of range */
 			if (D[curr].time > maxTime || D[curr].time < \
-			MGD77_rdc2dt (GMT, &M, GMT_rd_from_gymd(GMT, irint(mgd77snifferdefs[MGD77_YEAR].minValue), 1, 1),0.0)) {
+			MGD77_rdc2dt (GMT, &M, gmt_rd_from_gymd(GMT, irint(mgd77snifferdefs[MGD77_YEAR].minValue), 1, 1),0.0)) {
 				E[curr].flags[E77_NAV] |= NAV_TIME_OOR;
 				if (warn[TIME_WARN]) {
 					sprintf (buffer, "%s - Time out of range\n",placeStr);
@@ -2319,7 +2319,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if ((E[curr].flags[E77_VALUE] & (1 << MGD77_YEAR)) || (E[curr].flags[E77_VALUE] & (1 << MGD77_MONTH)))
 									last_day = irint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
 								else
-									last_day = (int)GMT_gmonth_length (irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
+									last_day = (int)gmt_gmonth_length (irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
 
 								if (GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
 									E[curr].flags[E77_VALUE] |= (1 << i);
