@@ -29,7 +29,7 @@
 #include <cpl_string.h>
 #include <cpl_conv.h>
 
-/*! Structure to control which options are transmited to GMT_gdalwrite */
+/*! Structure to control which options are transmited to gmt_gdalwrite */
 struct GMT_GDALWRITE_CTRL {
 	char *driver;		/* The GDAL diver name */
 	char *type;			/* Data type */

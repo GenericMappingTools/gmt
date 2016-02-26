@@ -32,11 +32,19 @@
  * Author:	Joaquim Luis
  * Date:	26-April-2011
  *
+ * Public functions (1):
+ *
+ *	gmt_gdalwrite : Write a GDAL grid
  */
 
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
 
-int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
+/*----------------------------------------------------------|
+ * Public functions that are part of the GMT Devel library  |
+ *----------------------------------------------------------|
+ */
+
+int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL *prhs) {
 	int	bStrict = false;
 	char **papszOptions = NULL, *projWKT = NULL;
 	char *pszFormat = "GTiff"; 
@@ -100,7 +108,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		n_byteOffset = 4;
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gdalwrite: Unsupported input data class!\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: Unsupported input data class!\n");
 		return(-1);
 	}
 
@@ -135,7 +143,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 			projWKT = pszPrettyWkt;
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: gmt_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
 					prhs->P.ProjectionRefPROJ4);
 		}
 
@@ -150,7 +158,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	hDriverOut = GDALGetDriverByName(pszFormat);	/* The true output format driver */
     
 	if (hDriverOut == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_gdalwrite: Output driver %s not recognized\n", pszFormat);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_gdalwrite: Output driver %s not recognized\n", pszFormat);
 		/* The following is s bit idiot. The loop should only be executed is verbose so requires */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n");
 		for (i = 0; i < GDALGetDriverCount(); i++) {

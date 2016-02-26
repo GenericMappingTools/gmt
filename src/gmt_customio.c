@@ -1841,7 +1841,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		/* See: osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
 		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
-		GMT_gdalwrite(GMT, header->name, to_GDALW);
+		gmt_gdalwrite(GMT, header->name, to_GDALW);
 		gmt_free (to_GDALW->driver);
 		gmt_free (to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
@@ -1900,7 +1900,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
-	GMT_gdalwrite(GMT, header->name, to_GDALW);
+	gmt_gdalwrite(GMT, header->name, to_GDALW);
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, to_GDALW->data);

@@ -973,7 +973,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->A.active) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image via GDAL\n");
 			to_GDALW->data = bitimage_8;
-			GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
+			gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 		}
 		else {
 #endif
@@ -985,7 +985,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	else if (Ctrl->A.active) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating 24-bit color image via GDAL\n");
 		to_GDALW->data = bitimage_24;
-		GMT_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
+		gmt_gdalwrite(GMT, Ctrl->A.file, to_GDALW);
 	}
 #endif
 	else {
