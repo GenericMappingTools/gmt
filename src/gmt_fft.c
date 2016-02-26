@@ -1652,7 +1652,7 @@ int GMT_FFT_1D (void *V_API, float *data, uint64_t n, int direction, unsigned in
 	status = GMT->session.fft1d[use] (GMT, data, (unsigned int)n, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * n;
-		GMT_scale_and_offset_f (GMT, data, nm, 2.0 / nm, 0);
+		gmt_scale_and_offset_f (GMT, data, nm, 2.0 / nm, 0);
 	}
 	return status;
 }
@@ -1680,7 +1680,7 @@ int GMT_FFT_2D (void *V_API, float *data, unsigned int nx, unsigned int ny, int 
 	status = GMT->session.fft2d[use] (GMT, data, nx, ny, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * nx * ny;
-		GMT_scale_and_offset_f (GMT, data, nm, 2.0 / nm, 0);
+		gmt_scale_and_offset_f (GMT, data, nm, 2.0 / nm, 0);
 	}
 	return status;
 }

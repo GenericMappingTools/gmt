@@ -1238,7 +1238,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	Ctrl->S.nx = nx_new;		Ctrl->S.ny = ny_new;
 
-	GMT_grd_init (GMT, Gin->header, options, true);
+	gmt_grd_init (GMT, Gin->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);

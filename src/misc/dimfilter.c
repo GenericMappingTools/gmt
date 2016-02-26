@@ -434,7 +434,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		GMT_grd_init (GMT, Gin->header, options, true);	/* Update command history only */
+		gmt_grd_init (GMT, Gin->header, options, true);	/* Update command history only */
 
 		slow  = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);	/* Will require sorting etc */
 		slow2 = (Ctrl->N.filter == 3 || Ctrl->N.filter == 4);	/* SCAN: Will also require sorting etc */

@@ -405,8 +405,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Precalculate coordinates xpos[], ypos[] and scale factors(lat) on the grid */
 
-	xpos = GMT_grd_coord (GMT, G_rad->header, GMT_X);
-	ypos = GMT_grd_coord (GMT, G_rad->header, GMT_Y);
+	xpos = gmt_grd_coord (GMT, G_rad->header, GMT_X);
+	ypos = gmt_grd_coord (GMT, G_rad->header, GMT_Y);
 
 	latfactor  = GMT_memory (GMT, NULL, G->header->ny, double);
 	ilatfactor = GMT_memory (GMT, NULL, G->header->ny, double);

@@ -1167,7 +1167,7 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 			return (GMT_GRDIO_DOMAIN_VIOLATION);	/* Calling program goofed... */
 
 		/* Make sure w,e,s,n are proper multiples of x_inc,y_inc away from x_min,y_min */
-		GMT_err_pass (GMT, GMT_adjust_loose_wesn (GMT, wesn, header), header->name);
+		GMT_err_pass (GMT, gmt_adjust_loose_wesn (GMT, wesn, header), header->name);
 
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
 		if ( is_global ) {	/* Deal with wrapping issues */
@@ -1275,7 +1275,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	GMT_err_fail (GMT, nc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
 
 	/* Set stride and offset if complex */
-	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 	pgrid = grid + imag_offset;	/* Start of this complex component (or start of non-complex grid) */
 
 #ifdef NC4_DEBUG
@@ -1442,7 +1442,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			do_round = false;
 	}
 
-	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	GMT_free (GMT, actual_col);
 
 	/* Adjust header */
@@ -1461,7 +1461,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		goto nc_err;
 
 	/* Set stride and offset if complex */
-	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 	pgrid = grid + imag_offset;	/* Beginning of this complex component (or the regular non-complex grid) */
 
 	/* Remove padding from grid */

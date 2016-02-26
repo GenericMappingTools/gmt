@@ -707,14 +707,14 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading the header of file %s - file skipped\n", file);
 		return NULL;
 	}
-	GMT_grd_init (GMT, Orig->header, options, true);	/* Update the header */
+	gmt_grd_init (GMT, Orig->header, options, true);	/* Update the header */
 	if ((Orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
  		GMT_GRID_IS_COMPLEX_REAL, NULL, file, Orig)) == NULL) {	/* Get data only */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reading the data of file %s - file skipped\n", file);
 		return NULL;
 	}
 	/* Note: If input grid is read-only then we must duplicate it; otherwise Grid points to Orig */
-	(void) GMT_set_outgrid (API->GMT, file, Orig, &Grid);
+	(void) gmt_set_outgrid (API->GMT, file, Orig, &Grid);
 	if (Ctrl->W.active) {	/* See if any part of the load sticks above water, and if so scale this amount as if it was submerged */
 		uint64_t node, n_subaerial = 0;
 		double boost = Ctrl->D.rhol / (Ctrl->D.rhol - Ctrl->D.rhow);
@@ -960,7 +960,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 
 		/* 4d. APPLY SCALING AND OFFSET */
-		GMT_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
+		gmt_scale_and_offset_f (GMT, Out->data, Out->header->size, 1.0, -Ctrl->Z.zm);
 
 		/* 4d. WRITE OUTPUT GRID */
 		if (Ctrl->T.active) { /* Separate output grid since there are many time steps */
@@ -982,7 +982,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 		if (t_eval < (Ctrl->T.n_eval_times-1)) {	/* Must put the total grid back into interleave mode */
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Re-multiplexing complex grid before accumulating new increments.\n");
-			GMT_grd_mux_demux (GMT, Out->header, Out->data, GMT_GRID_IS_INTERLEAVED);
+			gmt_grd_mux_demux (GMT, Out->header, Out->data, GMT_GRID_IS_INTERLEAVED);
 		}
 
 		if (Ctrl->L.active) {	/* Add filename and evaluation time to list */

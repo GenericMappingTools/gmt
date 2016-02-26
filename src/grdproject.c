@@ -415,9 +415,9 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_ny = Rect->header->ny;
 		}
 		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
-		GMT_set_grddim (GMT, Geo->header);
+		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Geo->header, options, true);
+		gmt_grd_init (GMT, Geo->header, options, true);
 		GMT_BC_init (GMT, Geo->header);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -453,7 +453,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			Rect->header->wesn[YLO] += GMT->current.proj.origin[GMT_Y];
 			Rect->header->wesn[YHI] += GMT->current.proj.origin[GMT_Y];
 		}
-		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
+		gmt_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
 
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
@@ -505,11 +505,11 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
-		GMT_set_grddim (GMT, Rect->header);
+		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		GMT_BC_init (GMT, Rect->header);
 		GMT_grd_project (GMT, Geo, Rect, false);
-		GMT_grd_init (GMT, Rect->header, options, true);
+		gmt_grd_init (GMT, Rect->header, options, true);
 
 		/* Modify output rect header if -F, -C, -M have been set */
 
@@ -536,7 +536,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			Rect->header->wesn[YHI] += Ctrl->C.northing;
 
 		}
-		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
+		gmt_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
 		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80-1);
 

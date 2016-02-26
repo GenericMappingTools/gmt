@@ -216,7 +216,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	/* Sort the data and find the division points */
 
 	GMT_memcpy (pad, Grid->header->pad, 4, int);	/* Save the original pad */
-	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
+	gmt_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) {
 		Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid); /* Must keep original if readonly */
 		if (Orig == NULL) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
@@ -266,7 +266,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 		}
 	}
 
-	GMT_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
 	GMT_free (GMT, cell);
 	return (0);
 }
@@ -367,12 +367,12 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (GMT_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (GMT_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-	(void)GMT_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array */
-	GMT_grd_init (GMT, Out->header, options, true);
+	(void)gmt_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array */
+	gmt_grd_init (GMT, Out->header, options, true);
 
 	if (Ctrl->N.active)
 		error = do_gaussian_scores (GMT, Out, Ctrl->N.norm);

@@ -706,7 +706,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
 		GMT_set_pad (GMT, 0U);		/* Change default pad to 0 only */
 		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
-		GMT_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
+		gmt_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
 		/* We allocate a 1-byte array separately instead of the 4-byte float array that GMT_Create_Data would have given us */
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
 
@@ -714,8 +714,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
 		}
-		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
-		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
+		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
+		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
 		/* Add GMT_CONV8_LIMIT to ensure that special case radius = inc --> lrint(0.5) actually rounds to 1 */
 		

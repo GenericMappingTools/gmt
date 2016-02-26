@@ -956,8 +956,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	Grid->header->registration = myras.h.registration;
 	Grid->header->z_min = DBL_MAX;
 	Grid->header->z_max = -DBL_MAX;
-	GMT_set_grddim (GMT, Grid->header);
-	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+	gmt_set_grddim (GMT, Grid->header);
+	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
 	grdlatorigin = GMT_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);

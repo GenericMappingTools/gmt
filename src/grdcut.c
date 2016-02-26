@@ -480,11 +480,11 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	/* Make sure output grid is kosher */
 
-	GMT_adjust_loose_wesn (GMT, wesn_new, G->header);
+	gmt_adjust_loose_wesn (GMT, wesn_new, G->header);
 
 	GMT_memcpy (test_header.wesn, wesn_new, 4, double);
 	GMT_memcpy (test_header.inc, G->header->inc, 2, double);
-	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
+	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
 
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 
@@ -505,7 +505,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_grd_init (GMT, G->header, options, true);
+	gmt_grd_init (GMT, G->header, options, true);
 
 	GMT_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->nx;		ny_old = G->header->ny;
@@ -519,7 +519,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		if (outside[YHI]) pad[YHI] += urint ((wesn_requested[YHI] - G->header->wesn[YHI]) * G->header->r_inc[GMT_Y]);
 		GMT_grd_setpad (GMT, G->header, pad);	/* Set the active pad */
 		GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Change default pad */
-		GMT_set_grddim (GMT, G->header);	/* Update dimensions given the change of pad */
+		gmt_set_grddim (GMT, G->header);	/* Update dimensions given the change of pad */
 	}
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
@@ -529,7 +529,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_memcpy (G->header->wesn, wesn_requested, 4, double);
 		GMT_memcpy (GMT->current.io.pad, def_pad, 4, unsigned int);	/* Reset default pad */
 		GMT_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
-		GMT_set_grddim (GMT, G->header);			/* Update dimensions given the change of wesn and pad */
+		gmt_set_grddim (GMT, G->header);			/* Update dimensions given the change of wesn and pad */
 		GMT_memcpy (wesn_new, wesn_requested, 4, double);	/* So reporting below is accurate */
 		xlo = GMT_grd_x_to_col (GMT, wesn_old[XLO], G->header);
 		xhi = GMT_grd_x_to_col (GMT, wesn_old[XHI], G->header);
@@ -563,7 +563,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
 		uint64_t n_nodes = 0;
-		double *grd_lon = GMT_grd_coord (GMT, G->header, GMT_X);
+		double *grd_lon = gmt_grd_coord (GMT, G->header, GMT_X);
 		
 		for (row = 0; row < G->header->ny; row++) {
 			lat = GMT_grd_row_to_y (GMT, row, G->header);

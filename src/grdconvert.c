@@ -174,16 +174,16 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdconvert main code ----------------------------*/
 
-	if ((Grid = GMT_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
-	GMT_grd_init (GMT, Grid->header, options, false);
+	if ((Grid = gmt_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
+	gmt_grd_init (GMT, Grid->header, options, false);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
-	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
+	GMT_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
 	type[0] = Grid->header->type;
 	strncpy (fname[0], Grid->header->name, GMT_BUFSIZ);
-	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
+	GMT_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
 	type[1] = Grid->header->type;
 	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
-	GMT_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
+	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
 
 	if (type[1] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
@@ -228,7 +228,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	strcat(command, "(old cmd) ");
 	strcat(command, Grid->header->command);
 
-	GMT_grd_init (GMT, Grid->header, options, true);
+	gmt_grd_init (GMT, Grid->header, options, true);
 
 	if (!GMT->common.R.active && ((type[0] >= GMT_GRID_IS_CB && type[0] <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
 	                              (type[0] >= GMT_GRID_IS_NB && type[0] <= GMT_GRID_IS_ND)) &&

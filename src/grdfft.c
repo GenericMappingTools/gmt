@@ -857,7 +857,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k]
 		 * From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 	 * we are done with using the addresses Orig[k] directly. */
-		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
+		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
 		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
@@ -931,10 +931,10 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 #ifdef DEBUG
-		grd_dump (Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
+		gmt_grd_dump (Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
 #endif
 
-		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
+		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 
 		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);

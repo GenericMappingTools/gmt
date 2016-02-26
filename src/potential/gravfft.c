@@ -614,12 +614,12 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
-		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
+		gmt_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
                                       GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
-		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
+		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
 	}
 
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
@@ -689,16 +689,16 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 
 		if (!doubleAlmostEqual (scale_out, 1.0))
-			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
+			gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 		if (!Ctrl->T.moho) {
 
 			if (false && Ctrl->N.info->trend_mode != GMT_FFT_REMOVE_MEAN) { /* Account also for the difference between detrend level and true mean  */
-				GMT_grd_detrend (GMT, Grid[0], GMT_FFT_REMOVE_MEAN, coeff);
-				GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
+				gmt_grd_detrend (GMT, Grid[0], GMT_FFT_REMOVE_MEAN, coeff);
+				gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 			}
 			else
-				GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
+				gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
 			/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0]))
@@ -721,9 +721,9 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_memcpy (topo, Grid[0]->data, Grid[0]->header->size, float);
 	/* Manually interleave this copy of topo [and hence raised] since we will call FFT repeatedly */
-	GMT_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
+	gmt_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
 	if (Ctrl->D.variable) {	/* Also interleave manually the rho grid */
-		GMT_grd_mux_demux (API->GMT, Rho->header, Rho->data, GMT_GRID_IS_INTERLEAVED);
+		gmt_grd_mux_demux (API->GMT, Rho->header, Rho->data, GMT_GRID_IS_INTERLEAVED);
 		for (m = 0; m < Grid[0]->header->size; m++)
 			raised[m] = topo[m] * Rho->data[m];
 	}
@@ -759,10 +759,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 
 	/* Manually demux back since we may do loops below */
-	GMT_grd_mux_demux (API->GMT, Grid[0]->header, Grid[0]->data, GMT_GRID_IS_SERIAL);
+	gmt_grd_mux_demux (API->GMT, Grid[0]->header, Grid[0]->data, GMT_GRID_IS_SERIAL);
 
 	if (!doubleAlmostEqual (scale_out, 1.0))
-		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
+		gmt_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 	switch (Ctrl->F.mode) {
 		case GRAVFFT_FAA:

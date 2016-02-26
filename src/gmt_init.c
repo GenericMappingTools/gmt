@@ -7256,7 +7256,7 @@ int gmt_setshorthand (struct GMT_CTRL *GMT) {
 			GMT->session.shorthand = GMT_malloc (GMT, GMT->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		GMT->session.shorthand[n].suffix = strdup (a);
-		if (GMT_grd_format_decoder (GMT, b, &id) != GMT_NOERROR) {
+		if (gmt_grd_format_decoder (GMT, b, &id) != GMT_NOERROR) {
 			/* no valid type id */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown shorthand format [%s]\n", file, b);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -11701,7 +11701,7 @@ bool GMT_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	if (direction == GMT_OUT) return true;		/* Cannot check any further */
 	if (file[0] == '=') k = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
 	if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
-		not_url = !GMT_check_url_name (&file[k]);
+		not_url = !gmt_check_url_name (&file[k]);
 	if (GMT_access (GMT, &file[k], F_OK) && not_url) {	/* Cannot find the file anywhere GMT looks */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
 		return false;	/* Could not find this file */

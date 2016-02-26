@@ -846,7 +846,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/* Determine the wesn to be used to actually read the grid file */
 
-	if (!GMT_grd_setregion (GMT, G->header, wesn, BCR_BILINEAR)) {
+	if (!gmt_grd_setregion (GMT, G->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 		if (make_plot) {
@@ -892,7 +892,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		use_t_offset = !doubleAlmostEqualZero (t_epoch_unit, t_epoch_unit_even);
 		if (use_t_offset) {	/* Must temporarily add t_offset to grid, quietly */
 			GMT_Report (API, GMT_MSG_DEBUG, "Adding %g to align grid times with TIME_UNIT steps\n", t_offset);
-			GMT_scale_and_offset_f (GMT, G->data, G->header->size, 1.0, t_offset);
+			gmt_scale_and_offset_f (GMT, G->data, G->header->size, 1.0, t_offset);
 			G->header->z_min += t_offset;
 			G->header->z_max += t_offset;
 		}
@@ -902,9 +902,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		G->header->z_min = (G->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		G->header->z_max = (G->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) double_swap (G->header->z_min, G->header->z_max);
-		/* Since GMT_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
+		/* Since gmt_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
 		Ctrl->Z.offset *= Ctrl->Z.scale;
-		GMT_scale_and_offset_f (GMT, G->data, G->header->size, Ctrl->Z.scale, -Ctrl->Z.offset);
+		gmt_scale_and_offset_f (GMT, G->data, G->header->size, Ctrl->Z.scale, -Ctrl->Z.offset);
 	}
 	if (Ctrl->L.low > G->header->z_min) G->header->z_min = Ctrl->L.low;	/* Possibly clip the z range */
 	if (Ctrl->L.high < G->header->z_max) G->header->z_max = Ctrl->L.high;
@@ -1088,7 +1088,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	GMT_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
 	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
 
-	GMT_grd_minmax (GMT, G, xyz);
+	gmt_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) {	/* Prep for crossing lines, if any */
 		GMT_free (GMT, contour);		GMT_free (GMT, cont_type);
 		GMT_free (GMT, cont_angle);		GMT_free (GMT, cont_do_tick);

@@ -116,7 +116,7 @@ EXTERN_MSC struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64
 EXTERN_MSC struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, unsigned int source_type);
 EXTERN_MSC int GMT_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_TEXTSET *D, int table);
 EXTERN_MSC struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET *Din, unsigned int mode);
-EXTERN_MSC bool GMT_init_complex (struct GMT_GRID_HEADER *h, unsigned int complex_mode, uint64_t *imag_offset);
+EXTERN_MSC bool gmt_init_complex (struct GMT_GRID_HEADER *h, unsigned int complex_mode, uint64_t *imag_offset);
 EXTERN_MSC struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, bool duplicate_data);
 EXTERN_MSC struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR *V_in, bool duplicate_data);
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
@@ -131,15 +131,15 @@ EXTERN_MSC int GMT_great_circle_intersection (struct GMT_CTRL *GMT, double A[], 
 EXTERN_MSC double GMT_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text);
-EXTERN_MSC bool GMT_check_url_name (char *fname);
+EXTERN_MSC bool gmt_check_url_name (char *fname);
 EXTERN_MSC int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool gmt_is_gleap (int gyear);
 EXTERN_MSC void GMT_str_tolower (char *string);
 EXTERN_MSC void GMT_str_toupper (char *string);
 EXTERN_MSC char *GMT_file_unitscale (char *name);
 EXTERN_MSC void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
-EXTERN_MSC int GMT_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
-EXTERN_MSC void GMT_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data);
+EXTERN_MSC int gmt_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
+EXTERN_MSC void gmt_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data);
 
 /* Functions declared in gmt_proj.c */
 
@@ -299,7 +299,6 @@ EXTERN_MSC void GMT_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *
 EXTERN_MSC void GMT_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data);
 EXTERN_MSC void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P);
-EXTERN_MSC unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid);
 EXTERN_MSC unsigned int GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix);
 EXTERN_MSC unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector);
 #ifdef HAVE_GDAL

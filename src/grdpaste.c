@@ -335,7 +335,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
 	}
 
-	GMT_set_grddim (GMT, C->header);
+	gmt_set_grddim (GMT, C->header);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL,
 		NULL, 0, 0, C) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */

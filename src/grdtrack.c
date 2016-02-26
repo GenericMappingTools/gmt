@@ -759,11 +759,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				GMT_free (GMT, GC);
 				Return (API->error);
 			}
-			if (GMT->common.R.active) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
+			if (GMT->common.R.active) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
 
 			if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
-			if (!GMT_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
+			if (!gmt_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 				GMT_free (GMT, GC);
 				Return (GMT_OK);
@@ -778,8 +778,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		}
 		else {	/* Sandwell/Smith Mercator grids */
-			if ((GC[g].G = GMT_create_grid (GMT)) == NULL) Return (API->error);
-			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], true);
+			if ((GC[g].G = gmt_create_grid (GMT)) == NULL) Return (API->error);
+			gmt_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], true);
 			img_conv_needed = true;
 		}
 	}
@@ -794,7 +794,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				else
-					GMT_free_grid (GMT, &GC[g].G, true);
+					gmt_free_grid (GMT, &GC[g].G, true);
 			}
 			GMT_free (GMT, GC);
 			Return (EXIT_FAILURE);
@@ -811,7 +811,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
-			GMT_grd_minmax (GMT, GC[0].G, xyz);
+			gmt_grd_minmax (GMT, GC[0].G, xyz);
 			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
 		}
 		else
@@ -1081,8 +1081,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Ctrl->T.S = GMT_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
 			Ctrl->T.S->C = &GC[0];	/* Since we know there is only one grid */
 			GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
-			Ctrl->T.S->x = GMT_grd_coord (GMT, GC[0].G->header, GMT_X);
-			Ctrl->T.S->y = GMT_grd_coord (GMT, GC[0].G->header, GMT_Y);
+			Ctrl->T.S->x = gmt_grd_coord (GMT, GC[0].G->header, GMT_X);
+			Ctrl->T.S->y = gmt_grd_coord (GMT, GC[0].G->header, GMT_Y);
 			Ctrl->T.S->max_radius = (Ctrl->T.radius == 0.0) ? DBL_MAX : Ctrl->T.radius;
 		}
 
@@ -1189,7 +1189,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else	/* IMG allocated locally */
-			GMT_free_grid (GMT, &GC[g].G, true);
+			gmt_free_grid (GMT, &GC[g].G, true);
 	}
 	GMT_free (GMT, value);
 	GMT_free (GMT, GC);

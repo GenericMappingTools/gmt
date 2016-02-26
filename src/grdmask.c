@@ -311,8 +311,8 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
-		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
+		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
+		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 		if (!Ctrl->S.variable_radius) {
 			radius = Ctrl->S.radius;
 			n_cols = 3;	/* Get x, y, radius */

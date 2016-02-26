@@ -442,8 +442,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 		
-		if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Grid->header, options, false);
+		if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
+		gmt_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = GMT_GRID_NODE_REG;
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {
@@ -476,8 +476,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->xy_off = 0.5 * Grid->header->registration;
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->nx - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->ny - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
-		GMT_set_grddim (GMT, Grid->header);
-		GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+		gmt_set_grddim (GMT, Grid->header);
+		GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 		n_left = Grid->header->nm;
@@ -544,7 +544,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
 	}
 
-	if (Ctrl->D.active) GMT_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
+	if (Ctrl->D.active) gmt_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
@@ -758,7 +758,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
+	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);

@@ -620,8 +620,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		double wesn[4];
 		GMT_memset (wesn, 4, double);
 		if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
-		if ((G = GMT_create_grid (GMT)) == NULL) Return (API->error);
-		GMT_read_img (GMT, Ctrl->A.file, G, wesn, Ctrl->A.parameters[IMG_SCALE], urint(Ctrl->A.parameters[IMG_MODE]),
+		if ((G = gmt_create_grid (GMT)) == NULL) Return (API->error);
+		gmt_read_img (GMT, Ctrl->A.file, G, wesn, Ctrl->A.parameters[IMG_SCALE], urint(Ctrl->A.parameters[IMG_MODE]),
 		              Ctrl->A.parameters[IMG_LAT], true);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}

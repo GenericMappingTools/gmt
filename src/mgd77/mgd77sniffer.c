@@ -248,8 +248,8 @@ GMT_LOCAL void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, do
 		}
 	}
 	else {	/* Read a Mercator grid Sandwell/Smith style */
-		if ((info->G = GMT_create_grid (GMT)) == NULL) return;
-		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, true);
+		if ((info->G = gmt_create_grid (GMT)) == NULL) return;
+		gmt_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, true);
 	}
 	info->mx = info->G->header->nx + 4;
 }

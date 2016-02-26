@@ -730,9 +730,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/* Determine the wesn to be used to read the grid file */
 
-	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR))
+	if (!gmt_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR))
 		nothing_inside = true;
-	else if (use_intensity_grid && !GMT_grd_setregion (GMT, Intens->header, wesn, BCR_BILINEAR))
+	else if (use_intensity_grid && !gmt_grd_setregion (GMT, Intens->header, wesn, BCR_BILINEAR))
 		nothing_inside = true;
 
 	if (nothing_inside) {
@@ -754,7 +754,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
 		Return (API->error);
 	}
-	t_reg = GMT_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
+	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (k = 0; k < n_drape; k++) {
@@ -764,19 +764,19 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (Drape[k]->header->nx != Topo->header->nx || Drape[k]->header->ny != Topo->header->ny) drape_resample = true;
-			d_reg[k] = GMT_change_grdreg (GMT, Drape[k]->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
+			d_reg[k] = gmt_change_grdreg (GMT, Drape[k]->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 		}
 		Z = Drape[0];
 	}
 	else
 		Z = Topo;
 
-	xval = GMT_grd_coord (GMT, Topo->header, GMT_X);
-	yval = GMT_grd_coord (GMT, Topo->header, GMT_Y);
+	xval = gmt_grd_coord (GMT, Topo->header, GMT_X);
+	yval = gmt_grd_coord (GMT, Topo->header, GMT_Y);
 
 	if (!GMT->current.proj.xyz_pos[2]) double_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
-	GMT_grd_set_ij_inc (GMT, Z->header->mx, ij_inc);	/* Offsets for ij (with pad) indices */
+	gmt_grd_set_ij_inc (GMT, Z->header->mx, ij_inc);	/* Offsets for ij (with pad) indices */
 	nw = GMT_IJP (Topo->header, 0, 0);
 	ne = GMT_IJP (Topo->header, 0, Topo->header->nx - 1);
 	sw = GMT_IJP (Topo->header, Topo->header->ny - 1, 0);
@@ -792,7 +792,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	j_start = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? Z->header->ny - 1 : 1;
 	j_stop  = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? 0 : Z->header->ny;
 	j_inc   = (GMT->current.proj.z_project.quadrant == 1 || GMT->current.proj.z_project.quadrant == 4) ? -1 : 1;
-	GMT_grd_set_ij_inc (GMT, Z->header->nx, bin_inc);	/* Offsets for bin (no pad) indices */
+	gmt_grd_set_ij_inc (GMT, Z->header->nx, bin_inc);	/* Offsets for bin (no pad) indices */
 
 	x_inc[0] = x_inc[3] = 0.0;	x_inc[1] = x_inc[2] = Z->header->inc[GMT_X];
 	y_inc[0] = y_inc[1] = 0.0;	y_inc[2] = y_inc[3] = Z->header->inc[GMT_Y];
@@ -868,7 +868,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			Topo = Z_orig;
 		}
 		Z = Z_orig;
-		GMT_change_grdreg (GMT, Z->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration, again */
+		gmt_change_grdreg (GMT, Z->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration, again */
 	}
 
 	if (use_intensity_grid) {	/* Illumination wanted */
@@ -882,7 +882,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity grid has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
-		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
+		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
 	}
 
 	inc2[GMT_X] = 0.5 * Z->header->inc[GMT_X];	inc2[GMT_Y] = 0.5 * Z->header->inc[GMT_Y];
@@ -1052,8 +1052,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
 			ix = GMT_memory (GMT, NULL, Z->header->nm, int);
 			iy = GMT_memory (GMT, NULL, Z->header->nm, int);
-			x_drape = GMT_grd_coord (GMT, Z->header, GMT_X);
-			y_drape = GMT_grd_coord (GMT, Z->header, GMT_Y);
+			x_drape = gmt_grd_coord (GMT, Z->header, GMT_X);
+			y_drape = gmt_grd_coord (GMT, Z->header, GMT_Y);
 			if (use_intensity_grid) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
 			bin = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
@@ -1791,9 +1791,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_free (GMT, binij);
 	}
 
-	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
+	gmt_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
 	if (use_intensity_grid) {
-		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
+		gmt_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
 		if (saved_data_pointer) {
 			GMT_free (GMT, Intens->data);
 			Intens->data = saved_data_pointer;
@@ -1806,7 +1806,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	GMT_free (GMT, z);
 	GMT_free (GMT, v);
 	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
-		GMT_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
+		gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
 	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Z\n");

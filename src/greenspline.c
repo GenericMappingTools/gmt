@@ -1661,7 +1661,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		(void)GMT_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
+		(void)gmt_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
 		n_ok = Grid->header->nm;
 		GMT_grd_loop (GMT, Grid, row, col, ij) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 		Z.nz = 1;
@@ -1682,7 +1682,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			Z.nz = 1;	/* So that output logic will work for 1-D */
 		}
 		else {	/* Just a temporary internal grid created and destroyed withing greenspline */
-			if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
+			if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
 			delete_grid = true;
 			Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
 			Grid->header->registration = GMT->common.r.registration;
@@ -1692,8 +1692,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
 				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
 				GMT_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
-				GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
-				GMT_set_grddim (GMT, Grid->header);
+				GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+				gmt_set_grddim (GMT, Grid->header);
 				/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];
@@ -1813,7 +1813,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
 		dump_green (GMT, G, dGdr, par, x0, x1, 10001, Lz, Lg);
-		GMT_free_grid (GMT, &Grid, dimension == 2);
+		gmt_free_grid (GMT, &Grid, dimension == 2);
 		for (p = 0; p < nm; p++) GMT_free (GMT, X[p]);
 		free_lookup (GMT, &Lz, 0);
 		free_lookup (GMT, &Lg, 1);
@@ -1919,7 +1919,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				GMT_free (GMT, v);
 				GMT_free (GMT, A);
 				GMT_free (GMT, obs);
-				if (dimension == 2) GMT_free_grid (GMT, &Grid, true);
+				if (dimension == 2) gmt_free_grid (GMT, &Grid, true);
 				Return (EXIT_SUCCESS);
 			}
 		}
@@ -2009,8 +2009,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
-		xp = GMT_grd_coord (GMT, Grid->header, GMT_X);
-		if (dimension > 1) yp = GMT_grd_coord (GMT, Grid->header, GMT_Y);
+		xp = gmt_grd_coord (GMT, Grid->header, GMT_X);
+		if (dimension > 1) yp = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ASCII table to named file or stdout for 1-D or 3-D */
@@ -2085,7 +2085,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		if (dimension == 2) {	/* Write the grid */
-			GMT_grd_init (GMT, Out->header, options, true);
+			gmt_grd_init (GMT, Out->header, options, true);
 			sprintf (Out->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
@@ -2093,7 +2093,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
-			GMT_free_grid (GMT, &Grid, dimension > 1);
+			gmt_free_grid (GMT, &Grid, dimension > 1);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}

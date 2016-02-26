@@ -1228,7 +1228,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			GMT_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] - L->data[ij_out];
-			GMT_grd_init (GMT, L->header, options, true);	/* Update command history only */
+			gmt_grd_init (GMT, L->header, options, true);	/* Update command history only */
 		}
 		else	/* Coregistered; no need to resample */
 			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];

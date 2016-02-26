@@ -631,8 +631,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 
 	for (row = 0; row < Z->header->ny; row++) lat_area[row] = area * cos (y_smt[row]);
 	
-	x_cva = GMT_grd_coord (GMT, G->header, GMT_X);
-	y_cva = GMT_grd_coord (GMT, G->header, GMT_Y);
+	x_cva = gmt_grd_coord (GMT, G->header, GMT_X);
+	y_cva = gmt_grd_coord (GMT, G->header, GMT_Y);
 
 	if (Ctrl->A.file) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */

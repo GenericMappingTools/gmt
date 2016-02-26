@@ -286,7 +286,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", G->header->name);
 
 		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
-			GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");
+			GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
@@ -389,8 +389,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 			/* Compute grid node positions once only */
 
-			x = GMT_grd_coord (GMT, G->header, GMT_X);
-			y = GMT_grd_coord (GMT, G->header, GMT_Y);
+			x = gmt_grd_coord (GMT, G->header, GMT_X);
+			y = gmt_grd_coord (GMT, G->header, GMT_Y);
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
 					GMT_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;

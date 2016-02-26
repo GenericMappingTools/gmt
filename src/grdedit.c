@@ -292,13 +292,13 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		scale_factor = G->header->z_scale_factor;
 		add_offset = G->header->z_add_offset;
 		nan_value = G->header->nan_value;
-		GMT_decode_grd_h_info (GMT, Ctrl->D.information, G->header);
+		gmt_decode_grd_h_info (GMT, Ctrl->D.information, G->header);
 		if (nan_value != G->header->nan_value) {
 			/* Must read data */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL)
 				Return (API->error);
 			/* Recalculate z_min/z_max */
-			GMT_grd_zminmax (GMT, G->header, G->data);
+			gmt_grd_zminmax (GMT, G->header, G->data);
 		}
 		if (scale_factor != G->header->z_scale_factor || add_offset != G->header->z_add_offset) {
 			G->header->z_min = (G->header->z_min - add_offset) / scale_factor * G->header->z_scale_factor + G->header->z_add_offset;
@@ -315,7 +315,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}
-		GMT_grd_shift (GMT, G, shift_amount);
+		gmt_grd_shift (GMT, G, shift_amount);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_OK) {
 			Return (API->error);
 		}
@@ -419,7 +419,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			h_tr->wesn[YHI] = G->header->wesn[XHI];
 			h_tr->inc[GMT_Y] = G->header->inc[GMT_X];
 			strncpy (h_tr->y_units, G->header->x_units, GMT_GRID_UNIT_LEN80);
-			GMT_set_grddim (GMT, h_tr);	/* Recompute nx, ny, mx, size, etc */
+			gmt_set_grddim (GMT, h_tr);	/* Recompute nx, ny, mx, size, etc */
 		}
 
 		/* Now transpose the matrix */
@@ -463,7 +463,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->T.active) {	/* Grid-line <---> Pixel toggling of the header */
-			GMT_change_grdreg (GMT, G->header, 1 - G->header->registration);
+			gmt_change_grdreg (GMT, G->header, 1 - G->header->registration);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Toggled registration mode in file %s from %s to %s\n",
 				Ctrl->In.file, registration[1-G->header->registration], registration[G->header->registration]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n",

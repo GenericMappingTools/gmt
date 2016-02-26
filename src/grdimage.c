@@ -475,7 +475,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (I->header->ProjRefPROJ4 != NULL)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Data projection (Proj4 type)\n\t%s\n", I->header->ProjRefPROJ4);
 
-		header_work = I->header;	/* OK, that's what what we'll use to send to GMT_grd_setregion */
+		header_work = I->header;	/* OK, that's what what we'll use to send to gmt_grd_setregion */
 	}
 #endif
 
@@ -520,9 +520,9 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
-	if (!GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant))
+	if (!gmt_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant))
 		nothing_inside = true;
-	else if (use_intensity_grid && !GMT_grd_setregion (GMT, Intens_orig->header, wesn, need_to_project * GMT->common.n.interpolant))
+	else if (use_intensity_grid && !gmt_grd_setregion (GMT, Intens_orig->header, wesn, need_to_project * GMT->common.n.interpolant))
 		nothing_inside = true;
 
 	if (nothing_inside) {
@@ -629,7 +629,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
 			if (Ctrl->A.active)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
-			GMT_set_grddim (GMT, Img_proj->header);
+			gmt_set_grddim (GMT, Img_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
 			GMT_img_project (GMT, I, Img_proj, false);
 			if (GMT_Destroy_Data (API, &I) != GMT_OK) {
@@ -644,7 +644,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
 			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
-			GMT_set_grddim (GMT, Grid_proj[k]->header);
+			gmt_set_grddim (GMT, Grid_proj[k]->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL) Return (API->error);
 			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);
 			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_OK) {
@@ -664,7 +664,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 				ny_proj = Intens_orig->header->ny;
 			}
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
-			GMT_set_grddim (GMT, Intens_proj->header);
+			gmt_set_grddim (GMT, Intens_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, false);
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_OK) {

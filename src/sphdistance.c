@@ -467,8 +467,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start processing distance grid\n");
 
-	grid_lon = GMT_grd_coord (GMT, Grid->header, GMT_X);
-	grid_lat = GMT_grd_coord (GMT, Grid->header, GMT_Y);
+	grid_lon = gmt_grd_coord (GMT, Grid->header, GMT_X);
+	grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
 	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->nx : Grid->header->nx - 1;
 	periodic = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);

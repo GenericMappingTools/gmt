@@ -478,11 +478,11 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	(void) GMT_set_outgrid (GMT, Ctrl->In.file, Grid, &Work);	/* true if input is a read-only array */
-	GMT_grd_init (GMT, Work->header, options, true);
+	(void) gmt_set_outgrid (GMT, Ctrl->In.file, Grid, &Work);	/* true if input is a read-only array */
+	gmt_grd_init (GMT, Work->header, options, true);
 
 	/* Set node increments relative to the lower-left node of a 4-point box */
-	GMT_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
+	gmt_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
 	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (Ctrl->S.active) {
@@ -503,9 +503,9 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) double_swap (Work->header->z_min, Work->header->z_max);
-		/* Since GMT_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
+		/* Since gmt_scale_and_offset_f applies z' = z * scale + offset we must adjust Z.offset first: */
 		Ctrl->Z.offset *= Ctrl->Z.scale;
-		GMT_scale_and_offset_f (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
+		gmt_scale_and_offset_f (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 	}
 
 	this_base = (Ctrl->L.active) ? Ctrl->L.value : 0.0;

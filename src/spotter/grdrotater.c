@@ -416,7 +416,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
-		if (!GMT_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
+		if (!gmt_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "No grid values inside selected region - aborting\n");
 			Return (EXIT_FAILURE);
 		}
@@ -568,8 +568,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* Precalculate node coordinates in both degrees and radians */
-		grd_x = GMT_grd_coord (GMT, G_rot->header, GMT_X);
-		grd_y = GMT_grd_coord (GMT, G_rot->header, GMT_Y);
+		grd_x = gmt_grd_coord (GMT, G_rot->header, GMT_X);
+		grd_y = gmt_grd_coord (GMT, G_rot->header, GMT_Y);
 		grd_yc = GMT_memory (GMT, NULL, G_rot->header->ny, double);
 		for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 

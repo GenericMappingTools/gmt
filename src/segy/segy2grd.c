@@ -324,13 +324,13 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* Decode grd information given, if any */
 
-	if (Ctrl->D.active) GMT_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header);
+	if (Ctrl->D.active) gmt_decode_grd_h_info (GMT, Ctrl->D.text, Grid->header);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	flag = GMT_memory (GMT, NULL, Grid->header->size, unsigned int);
 
-	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
+	gmt_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
 	idy = 1.0 / Grid->header->inc[GMT_Y];
 
@@ -554,7 +554,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	if (fpi != stdin) fclose (fpi);
 	GMT_free (GMT, flag);
 
-	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
+	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);

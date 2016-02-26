@@ -404,8 +404,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	GMT_grd_init (GMT, Surf->header, options, true);
+	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	gmt_grd_init (GMT, Surf->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
 		Return (API->error);
@@ -414,7 +414,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active) {	/* Want slope grid */
 		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Surf)) == NULL) Return (API->error);
 	}
-	new_grid = GMT_set_outgrid (GMT, Ctrl->In.file, Surf, &Out);	/* true if input is a read-only array */
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, Surf, &Out);	/* true if input is a read-only array */
 	
 	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
@@ -536,7 +536,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (!new_grid)	{	/* We got away with using the input grid by ignoring the pad.  Now we must put the pad back in */
 		GMT_memset (Out->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad in */
 		Out->header->mx = Out->header->nx;	Out->header->my = Out->header->ny;	/* Since there is no pad */
-		GMT_grd_pad_on (GMT, Out, GMT->current.io.pad);	/* Now reinstate the pad */
+		gmt_grd_pad_on (GMT, Out, GMT->current.io.pad);	/* Now reinstate the pad */
 	}
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Data is geographic */

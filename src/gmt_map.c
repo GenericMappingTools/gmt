@@ -6850,9 +6850,9 @@ int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 		inc[0], inc[1], nx, ny, dpi, offset);
 
 	GMT_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");
+	GMT_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	GMT_grd_setpad (GMT, header, GMT->current.io.pad);			/* Assign default pad */
-	GMT_set_grddim (GMT, header);	/* Set all dimensions before returning */
+	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid projection from size %dx%d to %dx%d\n", nx, ny, header->nx, header->ny);
 	return (GMT_NOERROR);
@@ -6899,10 +6899,10 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Precalculate grid coordinates */
 
-	x_in  = GMT_grd_coord (GMT, I->header, GMT_X);
-	y_in  = GMT_grd_coord (GMT, I->header, GMT_Y);
-	x_out = GMT_grd_coord (GMT, O->header, GMT_X);
-	y_out = GMT_grd_coord (GMT, O->header, GMT_Y);
+	x_in  = gmt_grd_coord (GMT, I->header, GMT_X);
+	y_in  = gmt_grd_coord (GMT, I->header, GMT_Y);
+	x_out = gmt_grd_coord (GMT, O->header, GMT_X);
+	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (GMT_IS_RECT_GRATICULE (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = GMT_memory (GMT, NULL, I->header->nx, double);
@@ -7080,10 +7080,10 @@ int GMT_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Precalculate grid coordinates */
 
-	x_in  = GMT_grd_coord (GMT, I->header, GMT_X);
-	y_in  = GMT_grd_coord (GMT, I->header, GMT_Y);
-	x_out = GMT_grd_coord (GMT, O->header, GMT_X);
-	y_out = GMT_grd_coord (GMT, O->header, GMT_Y);
+	x_in  = gmt_grd_coord (GMT, I->header, GMT_X);
+	y_in  = gmt_grd_coord (GMT, I->header, GMT_Y);
+	x_out = gmt_grd_coord (GMT, O->header, GMT_X);
+	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (GMT_IS_RECT_GRATICULE (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = GMT_memory (GMT, NULL, I->header->nx, double);

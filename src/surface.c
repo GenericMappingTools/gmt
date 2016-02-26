@@ -766,7 +766,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		/* Must reduce nx,ny by 1 to exclude the extra padding for pixel grids */
 		C->Grid->header->nx--;	C->nx--;
 		C->Grid->header->ny--;	C->ny--;
-		GMT_set_grddim (GMT, C->Grid->header);	/* Reset all integer dimensions and xy_off */
+		gmt_set_grddim (GMT, C->Grid->header);	/* Reset all integer dimensions and xy_off */
 	}
 	for (i = 0; i < C->nx; i++, index += C->my) {
 		for (j = 0; j < C->ny; j++) {

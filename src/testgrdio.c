@@ -58,14 +58,14 @@ int main (int argc, char *argv[]) {
 	
 	/* 4. Read in real components into one grid, multiplex, then demultiplex, then write out real again */
 	if ((G_real = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_REAL, NULL, name[0], NULL)) == NULL) exit (API->error);
-	GMT_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_INTERLEAVED);	/* First multiplex ... */
-	GMT_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_SERIAL);		/* Then demultiplex .. */
+	gmt_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_INTERLEAVED);	/* First multiplex ... */
+	gmt_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_SERIAL);		/* Then demultiplex .. */
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_REAL, NULL, name[4], G_real) != GMT_OK) exit (API->error);
 
 	/* 5. Read in imag component into one grid, multiplex, then demultiplex, then write out imag again */
 	if ((G_imag = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_IMAG, NULL, name[1], NULL)) == NULL) exit (API->error);
-	GMT_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_INTERLEAVED);	/* First multiplex ... */
-	GMT_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_SERIAL);		/* Then demultiplex .. */
+	gmt_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_INTERLEAVED);	/* First multiplex ... */
+	gmt_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_SERIAL);		/* Then demultiplex .. */
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_IMAG, NULL, name[5], G_imag) != GMT_OK) exit (API->error);
 
 	for (k = 0; k < 6; k++) gmt_free (name[k]);

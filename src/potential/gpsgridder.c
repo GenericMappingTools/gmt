@@ -610,7 +610,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		(void)GMT_set_outgrid (GMT, Ctrl->T.file, Grid, &Out[GMT_X]);	/* true if input is a read-only array; otherwise Out[GMT_X] is just a pointer to Grid */
+		(void)gmt_set_outgrid (GMT, Ctrl->T.file, Grid, &Out[GMT_X]);	/* true if input is a read-only array; otherwise Out[GMT_X] is just a pointer to Grid */
 		n_ok = Out[GMT_X]->header->nm;
 		GMT_grd_loop (GMT, Out[GMT_X], row, col, k) if (GMT_is_fnan (Out[GMT_X]->data[k])) n_ok--;
 		/* Duplicate to get grid for v */
@@ -731,7 +731,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				GMT_free (GMT, u);
 				GMT_free (GMT, v);
 				for (k = 0; k > 2; k++)
-					GMT_free_grid (GMT, &Out[k], true);
+					gmt_free_grid (GMT, &Out[k], true);
 				Return (EXIT_SUCCESS);
 			}
 		}
@@ -820,8 +820,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		double *xp = NULL, *yp = NULL, V[4];
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
-		xp = GMT_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
-		yp = GMT_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
+		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
+		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
 		GMT_memset (V, 4, double);
 #ifdef _OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,alpha_x,alpha_y,norm,n,normalize,geo)
@@ -845,7 +845,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 		}
 		for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
-			GMT_grd_init (GMT, Out[k]->header, options, true);
+			gmt_grd_init (GMT, Out[k]->header, options, true);
 			sprintf (Out[k]->header->remark, "Strain component %s", comp[k]);
 			sprintf (file, Ctrl->G.file, tag[k]);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);

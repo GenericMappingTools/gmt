@@ -7305,7 +7305,7 @@ void GMT_delaunay_free (struct GMT_CTRL *GMT, int **link) {
  *
  * Periodicities assume that the min,max are compatible with the inc;
  * that is, (x_max - x_min)modulo(x_inc) ~= 0.0 within precision tolerances,
- * and similarly for y.  It is assumed that this is OK and that GMT_grd_RI_verify
+ * and similarly for y.  It is assumed that this is OK and that gmt_grd_RI_verify
  * was called during read grd and found to be OK.
  *
  * In the geographical case, if x_max - x_min < 360 we will use the default

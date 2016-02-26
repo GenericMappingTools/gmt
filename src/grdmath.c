@@ -317,7 +317,7 @@ GMT_LOCAL void grd_ABS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand == 0!\n");
 	if (stack[last]->constant) a = (float)fabs (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : fabsf (stack[last]->G->data[node]);
-	GMT_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad, if needed */
+	gmt_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad, if needed */
 }
 
 GMT_LOCAL void grd_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1016,11 +1016,11 @@ GMT_LOCAL void grd_CORRCOEFF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 		return;
 	}
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[prev]->G);				/* Undo pad if one existed so we can sort */
-	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+	gmt_grd_pad_off (GMT, stack[prev]->G);				/* Undo pad if one existed so we can sort */
+	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
 	coeff = GMT_corrcoeff_f (GMT, stack[prev]->G->data, stack[last]->G->data, info->nm, 0);
-	GMT_grd_pad_on (GMT, stack[prev]->G, pad);		/* Reinstate the original pad */
-	GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, stack[prev]->G, pad);		/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = (float)coeff;
 }
 
@@ -1228,7 +1228,7 @@ GMT_LOCAL void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 			stack[last]->G->data[node] = (float)(c * (stack[last]->G->data[node+1] - 2.0 * stack[last]->G->data[node] + left));
 		}
 	}
-	GMT_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
+	gmt_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
 }
 
 GMT_LOCAL void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1263,7 +1263,7 @@ GMT_LOCAL void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 			stack[last]->G->data[ij] = (float)(c * (stack[last]->G->data[ij+mx] - 2.0 * stack[last]->G->data[ij] + bottom));
 		}
 	}
-	GMT_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
+	gmt_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
 }
 
 GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1385,7 +1385,7 @@ GMT_LOCAL void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 			stack[last]->G->data[ij] = (float)(c * (stack[last]->G->data[ij+mx] - bottom));
 		}
 	}
-	GMT_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
+	gmt_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
 }
 
 GMT_LOCAL void grd_DEG2KM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2466,7 +2466,7 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	/* Sort will put any NaNs to the end - we then count to find the real data */
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n) {
@@ -2478,7 +2478,7 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		lmsscl_f = GMT->session.f_NaN;
 
 	GMT_memset (stack[last]->G->data, info->size, float);	/* Wipes everything */
-	GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = lmsscl_f;
 
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
@@ -2565,7 +2565,7 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	/* Sort will put any NaNs to the end - we then count to find the real data */
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4U, unsigned int);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n) {
@@ -2576,7 +2576,7 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 	else
 		mad_f = GMT->session.f_NaN;
 
-	GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = mad_f;
 }
 
@@ -2630,7 +2630,7 @@ GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	}
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array (GMT, stack[last], info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
@@ -2638,7 +2638,7 @@ GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	else
 		med = GMT->session.f_NaN;
 
-	GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = med;
 }
 
@@ -2686,7 +2686,7 @@ GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	}
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
-	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
 	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
@@ -2694,7 +2694,7 @@ GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	else
 		mode = GMT->session.f_NaN;
 
-	GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+	gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)mode;
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 }
@@ -3030,11 +3030,11 @@ GMT_LOCAL void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	}
 	else {
 		GMT_memcpy (pad, stack[last]->G->header->pad, 4U, unsigned int);	/* Save original pad */
-		GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
+		gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
 		GMT_sort_array (GMT, stack[prev]->G->data, info->nm, GMT_FLOAT);
 		p = (float) GMT_quantile_f (GMT, stack[prev]->G->data, stack[last]->factor, info->nm);
 		GMT_memset (stack[last]->G->data, info->size, float);	/* Wipes everything */
-		GMT_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
+		gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
 	}
 
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = p;
@@ -4433,7 +4433,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				}
 			}
 			this_stack = nstack - 1;
-			GMT_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
+			gmt_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
 
 			GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
