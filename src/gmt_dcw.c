@@ -21,12 +21,13 @@
 
 /* Misc functions to find and read DCW polygons.
  * Some of the countries have state borders too.
- * The PUBLIC functions are:
+ * The PUBLIC functions are (5):
  *
- * GMT_DCW_option	: Present the DCW option and modifier usage
- * GMT_DCW_parse	: Parse the DCW option arguments
- * GMT_DCW_list 	: List the available polygons and exit
- * GMT_DCW_operation	: Get DCW polygons and operate on them
+ * gmt_DCW_option	: Present the DCW option and modifier usage
+ * gmt_DCW_parse	: Parse the DCW option arguments
+ * gmt_DCW_list 	: List the available polygons and exit
+ * gmt_DCW_operation	: Get DCW polygons and operate on them
+ * gmt_DCW_free		: Free memory allocated by gmt_DCW_parse
  *
  * Author:	Paul Wessel
  * Date:	1-MAY-2013
@@ -66,7 +67,9 @@ struct GMT_DCW_COUNTRY_STATE {		/* Information per country with state */
 
 static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica", "Asia", "Europe", "Oceania", "North America", "South America", "Miscellaneous"};
 
-bool gmt_get_dcw_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path) {
+/* Local functions only visible inside this file */
+
+GMT_LOCAL bool dcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *path) {
 	bool found = false;
 
 	/* This is the order of checking:
@@ -95,7 +98,7 @@ bool gmt_get_dcw_path (struct GMT_CTRL *GMT, char *name, char *suffix, char *pat
 	return (found);
 }
 
-int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[]) {
+GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[]) {
 	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
 	size_t n_alloc = 300;
 	unsigned int k, n;
@@ -105,7 +108,7 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 	struct GMT_DCW_STATE *State = NULL;
 	struct GMT_DCW_COUNTRY_STATE *Country_State = NULL;
 
-	if (!gmt_get_dcw_path (GMT, "dcw-countries", ".txt", path)) return -1;
+	if (!dcw_get_path (GMT, "dcw-countries", ".txt", path)) return -1;
 
 	/* Get countries first */
 	if ((fp = fopen (path, "r")) == NULL) {
@@ -128,7 +131,7 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 	Country = GMT_memory (GMT, Country, k, struct GMT_DCW_COUNTRY);
 
 	/* Get states */
-	if (!gmt_get_dcw_path (GMT, "dcw-states", ".txt", path)) return -1;
+	if (!dcw_get_path (GMT, "dcw-states", ".txt", path)) return -1;
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file %s [permission trouble?]\n", path);
 		return -1;
@@ -168,14 +171,14 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 	return 0;
 }
 
-int gmt_dcw_comp_countries (const void *p1, const void *p2) {
+GMT_LOCAL int dcw_comp_countries (const void *p1, const void *p2) {
 	/* Used to sort countries alphabetically */
 	struct GMT_DCW_COUNTRY *A = (struct GMT_DCW_COUNTRY *)p1;
 	struct GMT_DCW_COUNTRY *B = (struct GMT_DCW_COUNTRY *)p2;
 	return (strcmp (A->code, B->code));
 }
 
-int gmt_dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n) {
+GMT_LOCAL int dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n) {
 	/* Basic binary search for country with given code and an alphabetically sorted list */
 	int low = 0, high = n, mid, last = -1, way;
 
@@ -191,7 +194,7 @@ int gmt_dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n) {
 	return (low);
 }
 
-int gmt_dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns) {
+GMT_LOCAL int dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns) {
 	/* Return state id given country and state codes using a linear search */
 	int i;
 
@@ -199,14 +202,19 @@ int gmt_dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, i
 	return (-1);
 }
 
-bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, unsigned int n) {
+GMT_LOCAL bool gmt_dcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, unsigned int n) {
 	/* Return true if this country has interior state boundaries */
 	unsigned int i;
 	for (i = 0; i < n; i++) if (!strcmp (code, st_country[i].country)) return (true);
 	return (false);
 }
 
-struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode) {
+/*----------------------------------------------------------|
+ * Public functions that are part of the GMT Devel library  |
+ *----------------------------------------------------------|
+ */
+
+struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode) {
 	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits
 	 * mode = GMT_DCW_PLOT		: Plot the polygons
@@ -245,11 +253,11 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
 	}
 
-	if (gmt_load_dcw_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) return NULL;	/* Something went wrong */
+	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies)) return NULL;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 
-	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmt_dcw_comp_countries);	/* Sort on country code */
+	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), dcw_comp_countries);	/* Sort on country code */
 
 	n_alloc = n_bodies[0] + n_bodies[1];	/* Presumably max items considered */
 	order = GMT_memory (GMT, NULL, n_alloc, unsigned int);
@@ -276,7 +284,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
 
-	if (!gmt_get_dcw_path (GMT, "dcw-gmt", ".nc", path)) return NULL;
+	if (!dcw_get_path (GMT, "dcw-gmt", ".nc", path)) return NULL;
 
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
 		P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
@@ -320,14 +328,14 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			code[2] = '\0';
 			want_state = true;
 		}
-		ks = gmt_dcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
+		ks = dcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
 		if (ks == -1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No country code matching %s (skipped)\n", code);
 			continue;
 		}
 		k = ks;
 		if (want_state) {
-			if ((item = gmt_dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
+			if ((item = dcw_find_state (state, code, GMT_DCW_state, GMT_DCW_STATES)) == -1) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
@@ -492,14 +500,14 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	return (D);
 }
 
-unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
+unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 	/* List available countries [and optionally states]; then make program exit */
 	unsigned int i, j, k, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
 	if ((list_mode & 3) == 0) return 0;
-	if (gmt_load_dcw_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, n_bodies)) return 0;	/* Something went wrong */
+	if (dcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, n_bodies)) return 0;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
@@ -521,7 +529,7 @@ unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode) {
 	return ((list_mode & 3));
 }
 
-void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
+void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	/* Show the usage */
 	char *action[2] = {"extract", "plot"};
 	char *action2[2] = {"extracting", "plotting"};
@@ -546,7 +554,7 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	}
 }
 
-unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F) {
+unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F) {
 	/* Parse the F option in pscoast */
 	unsigned int n_errors = 0, pos = 0, n;
 	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL;
@@ -615,7 +623,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 	return (n_errors);
 }
 
-void GMT_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
+void gmt_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	/* Free what we might have allocated during parsing */
 	unsigned int k;
 	if (F->n_items == 0) return;	/* Nothing to free */

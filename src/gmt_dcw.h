@@ -59,10 +59,10 @@ struct GMT_DCW_SELECT {	/* -F<DWC-options> */
 	struct GMT_DCW_ITEM **item;	/* Pointer to array of n_items items */
 };
 
-EXTERN_MSC unsigned int GMT_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
-EXTERN_MSC unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
-EXTERN_MSC void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);
-EXTERN_MSC struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
-EXTERN_MSC void GMT_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
+EXTERN_MSC unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, unsigned list_mode);
+EXTERN_MSC unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F);
+EXTERN_MSC void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot);
+EXTERN_MSC struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode);
+EXTERN_MSC void gmt_DCW_free (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F);
 
 #endif /* _GMT_DCW_H */

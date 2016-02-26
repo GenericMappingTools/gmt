@@ -164,7 +164,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_DCW_free (GMT, &(C->E.info));
+	gmt_DCW_free (GMT, &(C->E.info));
 	if (C->L.scale.refpoint) GMT_free_refpoint (GMT, &C->L.scale.refpoint);
 	GMT_free (GMT, C->L.scale.panel);
 	if (C->T.rose.refpoint) GMT_free_refpoint (GMT, &C->T.rose.refpoint);
@@ -209,7 +209,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
-	GMT_DCW_option (API, 'E', 1U);
+	gmt_DCW_option (API, 'E', 1U);
 	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If using both -L and -T, you can repeat -F following each option.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Paint or clip \"dry\" areas.");
@@ -320,14 +320,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Select DCW items; repeatable */
 				Ctrl->E.active = true;
-				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
+				n_errors += gmt_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
 				break;
 			case 'F':
 				if (GMT_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
 					if (strstr (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -F option for DCW is deprecated, use -E instead.\n");
 						Ctrl->E.active = true;
-						n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
+						n_errors += gmt_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
 						continue;
 					}
 				}
@@ -496,7 +496,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	if (GMT_DCW_list (GMT, Ctrl->E.info.mode)) return 1;
+	if (gmt_DCW_list (GMT, Ctrl->E.info.mode)) return 1;
 
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
@@ -506,7 +506,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 		if (GMT->common.R.active)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning -E option: The -R option overrides the region found via -E.\n");
 		else {	/* Pick up region from chosen polygons */
-			(void) GMT_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
+			(void) gmt_DCW_operation (GMT, &Ctrl->E.info, GMT->common.R.wesn, GMT_DCW_REGION);
 			GMT->common.R.active = true;
 			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
 				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
@@ -1033,7 +1033,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT_shore_cleanup (GMT, &c);
 	}
 
-	(void)GMT_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
+	(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 
