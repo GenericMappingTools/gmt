@@ -2150,21 +2150,21 @@ void GMT_grdio_init (struct GMT_CTRL *GMT) {
 
 	id                        = GMT_GRID_IS_EI;
 	GMT->session.grdformat[id]  = "ei = ESRI Arc/Info ASCII Grid Interchange format (ASCII integer)";
-	GMT->session.readinfo[id]   = &GMT_esri_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_esri_write_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_esri_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_esri_read_grd;
-	GMT->session.writegrd[id]   = &GMT_esri_writei_grd;
+	GMT->session.readinfo[id]   = &gmt_esri_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_esri_write_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_esri_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_esri_read_grd;
+	GMT->session.writegrd[id]   = &gmt_esri_writei_grd;
 
 	/* FORMAT: ESRI Arc/Info ASCII Interchange Grid format (float) */
 
 	id                        = GMT_GRID_IS_EF;
 	GMT->session.grdformat[id]  = "ef = ESRI Arc/Info ASCII Grid Interchange format (ASCII float)";
-	GMT->session.readinfo[id]   = &GMT_esri_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_esri_write_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_esri_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_esri_read_grd;
-	GMT->session.writegrd[id]   = &GMT_esri_writef_grd;
+	GMT->session.readinfo[id]   = &gmt_esri_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_esri_write_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_esri_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_esri_read_grd;
+	GMT->session.writegrd[id]   = &gmt_esri_writef_grd;
 
 	/* FORMAT: Import via the GDAL interface */
 

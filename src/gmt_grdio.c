@@ -79,7 +79,7 @@ int GMT_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 int GMT_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-int GMT_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #ifdef HAVE_GDAL
 int GMT_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #endif
@@ -644,7 +644,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		if (gmt_is_agc_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		/* Then check for ESRI grid */
-		if (GMT_is_esri_grid (GMT, header) == GMT_NOERROR)
+		if (gmt_is_esri_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 #ifdef HAVE_GDAL
 		/* Then check for GDAL grid */
