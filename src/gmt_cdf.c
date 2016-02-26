@@ -28,13 +28,13 @@
  * Date:	1-JAN-2010
  * Version:	5
  *
- * Public functions:
+ * Public functions (5):
  *
- *	GMT_cdf_read_grd_info :		Read header from file
- *	GMT_cdf_read_grd :		Read header and data set from file
- *	GMT_cdf_update_grd_info :	Update header in existing file
- *	GMT_cdf_write_grd_info :	Write header to new file
- *	GMT_cdf_write_grd :		Write header and data set to new file
+ *	GMT_cdf_read_grd_info   : Read header from file
+ *	GMT_cdf_read_grd        : Read header and data set from file
+ *	GMT_cdf_update_grd_info : Update header in existing file
+ *	GMT_cdf_write_grd_info  : Write header to new file
+ *	GMT_cdf_write_grd       : Write header and data set to new file
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 

@@ -290,7 +290,7 @@ GMT_LOCAL unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO
 		if (x > info->G->header->wesn[XHI]) continue;  /* East of our area */
 
 		/* Get the value from the grid - it could be NaN */
-		g[n_grid][rec] = GMT_bcr_get_z (GMT, info->G, x, y);
+		g[n_grid][rec] = gmt_bcr_get_z (GMT, info->G, x, y);
 		pts++;
 	}
 	return (pts);

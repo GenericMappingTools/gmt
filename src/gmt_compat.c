@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 
 /*
- * Provides compatibility with module names no longer used.
+ * Provides backwards compatibility with module names no longer used.
  *
  * Author:	Paul Wessel
  * Date:	24-JUN-2013

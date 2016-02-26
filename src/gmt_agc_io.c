@@ -31,17 +31,17 @@
  * Author :	Paul Wessel, by modifying code from Robert Helie
  * Date :	09-APR-2006
  * Purpose:	To transform to/from AGC grid file format
- * Functions :	GMT_agc_read_grd_info, GMT_agc_write_grd_info,
- *		GMT_agc_write_grd_info, GMT_agc_read_grd, GMT_agc_write_grd
+ * Functions :	gmt_agc_read_grd_info, gmt_agc_write_grd_info,
+ *		gmt_agc_write_grd_info, gmt_agc_read_grd, gmt_agc_write_grd
  *-----------------------------------------------------------*/
 
 /* Public Functions:
 
-int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
-int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 
 */
 
@@ -117,7 +117,7 @@ GMT_LOCAL void agc_save_header (char *remark, float *agchead) {
  *----------------------------------------------------------|
  */
 
-int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
 	int nx, ny;
@@ -160,7 +160,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	return GMT_GRDIO_BAD_VAL;
 }
 
-int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Read header info. NOTE: All AGC files are assumed to be gridline-registered */
 	unsigned int i;
 	FILE *fp = NULL;
@@ -198,7 +198,7 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
+int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Write grd header info to file */
 	FILE *fp = NULL;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
@@ -221,7 +221,7 @@ int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* header:     	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -310,7 +310,7 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]

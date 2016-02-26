@@ -289,11 +289,6 @@ EXTERN_MSC struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT);
 /* From gmt_nc.c */
 EXTERN_MSC void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 
-/* From gmt_api.c */
-/* Sub function needed by GMT_end to free memory used in modules and at end of session */
-
-EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level);
-
 /* For supplements */
 EXTERN_MSC int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);

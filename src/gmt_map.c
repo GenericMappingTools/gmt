@@ -6994,7 +6994,7 @@ int GMT_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			z_int = GMT_bcr_get_z (GMT, I, x_proj, y_proj);
+			z_int = gmt_bcr_get_z (GMT, I, x_proj, y_proj);
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (float)z_int;
@@ -7176,7 +7176,7 @@ int GMT_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 			/* Here, (x_proj, y_proj) is the inversely projected grid point.  Now find nearest node on the input grid */
 
-			if (GMT_bcr_get_img (GMT, I, x_proj, y_proj, z_int))		/* So that nodes outside will have the NaN color */
+			if (gmt_bcr_get_img (GMT, I, x_proj, y_proj, z_int))		/* So that nodes outside will have the NaN color */
 				for (b = 0; b < 4; b++) z_int[b] = z_int_bg[b];
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */

@@ -76,8 +76,13 @@
 #define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
 #define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
-extern int gmt_geo_C_format (struct GMT_CTRL *GMT);
-extern void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
+EXTERN_MSC int gmt_geo_C_format (struct GMT_CTRL *GMT);
+EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
+
+/* From gmt_api.c */
+/* Sub function needed by GMT_end to free memory used in modules and at end of session */
+
+EXTERN_MSC void api_garbage_collection (struct GMTAPI_CTRL *API, int level);
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -7657,7 +7662,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		           GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
 	}
 
-	GMT_Garbage_Collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
+	api_garbage_collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
 

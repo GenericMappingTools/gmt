@@ -125,7 +125,7 @@
  *    The GMT objects (the "containers") are freed at the end of their level, if not before.
  * 3. Memory passed into modules as "input file" requires no special treatment since its level
  *    will be lower than that of the module it is used in, and when that module tries to free it
- *    (directly with GMT_Destroy_Data or via end-of-module GMT_Garbage_Collection) it will skip
+ *    (directly with GMT_Destroy_Data or via end-of-module api_garbage_collection) it will skip
  *    it as its level does not match the current module level.  A module can only free memory that
  *    it allocated; the exception is the top-level gmt application.
  * 4. Passing memory out of a module (i.e., "writing to memory") requires that the calling function
@@ -146,13 +146,13 @@
  *	c) The API object originally pointing to the GMT object is flagged by having its variable
  *         no_longer_owner set to true (this is how we avoid freeing something twice). [PW: Why not just set it to NULL]
  *    When the module ends there are two API objects with references to the GMT object: the internal
- *    module object and the output object.  The first is set to NULL by GMT_Garbage_Collection because
+ *    module object and the output object.  The first is set to NULL by api_garbage_collection because
  *    the object is no longer the owner of the data. The second is ignored because its level is too low.
  *    After that any empty API objects are removed (so the no_longer_owner one is removed), while
  *    the second survives the life of the module, as we require.
  *
  * Thus, at the session (gmt) level all GMT objects have alloc_level = 0 since anything higher will
- * have been freed by a module.  GMT_Destroy_Session finally calls GMT_Garbage_Collection a final
+ * have been freed by a module.  GMT_Destroy_Session finally calls api_garbage_collection a final
  * time and he frees any remaining GMT objects.
  */
 
@@ -3989,8 +3989,8 @@ GMT_LOCAL int api_destroy_coord (struct GMTAPI_CTRL *API, double **ptr) {
 }
 
 /*! Also called in gmt_init.c and prototyped in gmt_internals.h: */
-void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
-	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
+void api_garbage_collection (struct GMTAPI_CTRL *API, int level) {
+	/* api_garbage_collection frees all registered memory associated with the current module level,
 	 * or for the entire session if level == GMT_NOTSET (-1) */
 
 	unsigned int i, j, n_free = 0, u_level = 0;
@@ -4010,7 +4010,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
 		if (!S_obj) {		/* Skip empty object [Should not happen?] */
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection found empty object number %d [Bug?]\n", i++);
+			GMT_Report (API, GMT_MSG_NORMAL, "api_garbage_collection found empty object number %d [Bug?]\n", i++);
 			continue;
 		}
 		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session) */
@@ -4036,7 +4036,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 				via = (m / GMT_VIA_VECTOR) - 1;
 				m -= (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
 			}
-			if (m <= GMT_IS_REFERENCE) GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
+			if (m <= GMT_IS_REFERENCE) GMT_Report (API, GMT_MSG_DEBUG, "api_garbage_collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
 			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[m], GMT_status[S_obj->status&2],
 				(size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
 		}
@@ -4050,7 +4050,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level) {
 		}
 
 		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection failed to destroy memory for object % d [Bug?]\n", i++);
+			GMT_Report (API, GMT_MSG_NORMAL, "api_garbage_collection failed to destroy memory for object % d [Bug?]\n", i++);
 			/* Skip it for now; but this is possibly a fatal error [Bug]? */
 		}
 		else  {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
@@ -4407,7 +4407,7 @@ int GMT_Destroy_Session (void *V_API) {
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	GMT_Report (API, GMT_MSG_DEBUG, "Entering GMT_Destroy_Session\n");
-	GMT_Garbage_Collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
+	api_garbage_collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
 	api_free_sharedlibs (API);			/* Close shared libraries and free list */
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
@@ -6436,7 +6436,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	}
 	if (API->error) return_null (API, API->error);
 
-	if (!already_registered) {	/* Register this object so it can be deleted by GMT_Destroy_Data or GMT_Garbage_Collection */
+	if (!already_registered) {	/* Register this object so it can be deleted by GMT_Destroy_Data or api_garbage_collection */
 		enum GMT_enum_method method = GMT_IS_REFERENCE;
 		enum GMT_enum_family actual_family = family;
 		int direction, item = GMT_NOTSET;

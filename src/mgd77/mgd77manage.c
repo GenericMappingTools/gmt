@@ -988,7 +988,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (x > G->header->wesn[XHI]) continue;
 
 				if (interpolate) {	/* IMG has been corrected, and GRD is good to go */
-					colvalue[rec] = GMT_bcr_get_z (GMT, G, x, y);
+					colvalue[rec] = gmt_bcr_get_z (GMT, G, x, y);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
 					col = (unsigned int)GMT_grd_x_to_col (GMT, x, G->header);
