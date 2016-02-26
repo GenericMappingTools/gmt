@@ -128,13 +128,11 @@ EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GMT_G
 
 /* gmt_fft.c: */
 
-EXTERN_MSC void GMT_fft_initialization (struct GMT_CTRL *GMT);
-EXTERN_MSC void GMT_fft_cleanup (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_fft_set_k (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC int GMT_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print);
+EXTERN_MSC int gmt_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
+EXTERN_MSC double gmt_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
+EXTERN_MSC double gmt_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
+EXTERN_MSC void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print);
 
 /* gmt_grdio.c: */
 

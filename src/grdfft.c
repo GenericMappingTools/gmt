@@ -161,7 +161,7 @@ GMT_LOCAL unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, str
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0f;	/* Derivative of the mean is zero */
 	for (k = 2; k < Grid->header->size; k += 2) {
-		fact = scale * GMT_fft_get_wave (k, K);
+		fact = scale * gmt_fft_get_wave (k, K);
 		datac[k]   *= (float)fact;
 		datac[k+1] *= (float)fact;
 	}
@@ -177,7 +177,7 @@ GMT_LOCAL unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct 
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0f;
 	for (k = 2; k < Grid->header->size; k += 2) {
-		fact = 1.0 / (scale * GMT_fft_get_wave (k, K));
+		fact = 1.0 / (scale * gmt_fft_get_wave (k, K));
 		datac[k]   *= (float)fact;
 		datac[k+1] *= (float)fact;
 	}
@@ -191,7 +191,7 @@ GMT_LOCAL unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, s
 	/* If z is positive, the field will be upward continued using exp[- k z].  */
 
 	for (k = 2; k < Grid->header->size; k += 2) {
-		tmp = (float)exp (-(*zlevel) * GMT_fft_get_wave (k, K));
+		tmp = (float)exp (-(*zlevel) * gmt_fft_get_wave (k, K));
 		datac[k]   *= tmp;
 		datac[k+1] *= tmp;
 	}
@@ -207,7 +207,7 @@ GMT_LOCAL unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *a
 
 	datac[0] = datac[1] = 0.0f;
 	for (k = 2; k < Grid->header->size; k += 2) {
-		fact = (float)(sin_azim * GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K) + cos_azim * GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K));
+		fact = (float)(sin_azim * gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K) + cos_azim * gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K));
 		tempr = -(datac[k+1] * fact);
 		tempi =  (datac[k]   * fact);
 		datac[k]   = tempr;
@@ -250,7 +250,7 @@ GMT_LOCAL unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *C
 	d_over_restoring_force = rigidity_d / ((rm - ri) * NORMAL_GRAVITY);
 
 	for (k = 0; k < Grid->header->size; k += 2) {
-		mk = GMT_fft_get_wave (k, K);
+		mk = gmt_fft_get_wave (k, K);
 		k2 = mk * mk;
 		k4 = k2 * k2;
 		transfer_fn = airy_ratio / ((d_over_restoring_force * k4) + 1.0);
@@ -288,7 +288,7 @@ GMT_LOCAL double cosine_weight_grdfft (struct F_INFO *f_info, double freq, int j
 GMT_LOCAL double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K) {
 	double freq, return_value;
 
-	freq = GMT_fft_any_wave (k, f_info->k_type, K);
+	freq = gmt_fft_any_wave (k, f_info->k_type, K);
 	return_value = f_info->filter (f_info, freq, f_info->k_type);
 
 	return (return_value);
@@ -327,11 +327,11 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 #endif
 	if (*par > 0.0) {	/* X spectrum desired  */
 		delta_k = K->delta_kx;	nk = K->nx2 / 2;
-		GMT_fft_set_wave (GMT, GMT_FFT_K_IS_KX, K);
+		gmt_fft_set_wave (GMT, GMT_FFT_K_IS_KX, K);
 	}
 	else if (*par < 0.0) {	/* Y spectrum desired  */
 		delta_k = K->delta_ky;	nk = K->ny2 / 2;
-		GMT_fft_set_wave (GMT, GMT_FFT_K_IS_KY, K);
+		gmt_fft_set_wave (GMT, GMT_FFT_K_IS_KY, K);
 	}
 	else {	/* R spectrum desired  */
 		if (K->delta_kx < K->delta_ky) {
@@ -340,7 +340,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 		else {
 			delta_k = K->delta_ky;	nk = K->ny2 / 2;
 		}
-		GMT_fft_set_wave (GMT, GMT_FFT_K_IS_KR, K);
+		gmt_fft_set_wave (GMT, GMT_FFT_K_IS_KR, K);
 	}
 
 	/* Get arrays for summing stuff */
@@ -358,7 +358,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	r_delta_k = 1.0 / delta_k;
 
 	for (k = 2; k < GridX->header->size; k += 2) {
-		freq = GMT_fft_get_wave (k, K);
+		freq = gmt_fft_get_wave (k, K);
 		ifreq = lrint (fabs (freq) * r_delta_k);	/* Smallest value returned might be 0 when doing r spectrum*/
 		if (ifreq > 0) --ifreq;
 		if (ifreq >= nk) continue;	/* Might happen when doing r spectrum  */

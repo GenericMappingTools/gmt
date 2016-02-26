@@ -855,7 +855,7 @@ GMT_LOCAL void do_isostasy (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	}
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = GMT_fft_get_wave (k, K);
+		mk = gmt_fft_get_wave (k, K);
 		k2 = mk * mk;	k4 = k2 * k2;
 		transfer_fn = airy_ratio / ( (d_over_restoring_force * k4) + 1.0);
 		datac[k] *= (float)transfer_fn;
@@ -877,7 +877,7 @@ GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GR
 	c = 1.0e5 * 2.0 * M_PI * GRAVITATIONAL_CONST * rho / f; /* Gives mGal */
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = GMT_fft_get_wave (k, K);
+		mk = gmt_fft_get_wave (k, K);
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
@@ -903,7 +903,7 @@ GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GR
 				break;
 			case GRAVFFT_DEFL_EAST:
 				if (mk > 0.0) {	/* Scale tan (xslope) ~ slope to microradians */
-					kx = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
+					kx = gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
 					v *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
 				}
 				datac[k]   += (float) (-v * raised[k+1]);
@@ -911,7 +911,7 @@ GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GR
 				break;
 			case GRAVFFT_DEFL_NORTH:
 				if (mk > 0.0) {	/* Scale tan (yslope) ~ slope to microradians */
-					ky = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
+					ky = gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
 					v *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
 				}
 				datac[k]   += (float) ( v * raised[k+1]);
@@ -980,7 +980,7 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 	r_delta_k = 1.0 / delta_k;
 
 	for (k = 2; k < GridA->header->size; k+= 2) {
-		freq = GMT_fft_get_wave (k, K);
+		freq = gmt_fft_get_wave (k, K);
 		ifreq = lrint (fabs(freq) * r_delta_k);	/* Might be zero when doing r average  */
 		if (ifreq) ifreq--;
 		if (ifreq >= nk) continue;	/* Might happen when doing r average  */
@@ -1166,7 +1166,7 @@ GMT_LOCAL void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = GMT_fft_get_wave (k, K) / twopi;
+		mk = gmt_fft_get_wave (k, K) / twopi;
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
@@ -1207,7 +1207,7 @@ GMT_LOCAL void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid
 	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = GMT_fft_get_wave (k, K) / twopi;
+		mk = gmt_fft_get_wave (k, K) / twopi;
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)

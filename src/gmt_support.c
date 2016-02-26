@@ -12521,7 +12521,7 @@ int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int i
 	}
 	else if (mode == 2) {
 		struct GMT_FFT_SUGGESTION fft_sug[3];
-		GMT_suggest_fft_dim (GMT, in_dim[GMT_X], in_dim[GMT_Y], fft_sug, false);
+		gmt_suggest_fft_dim (GMT, in_dim[GMT_X], in_dim[GMT_Y], fft_sug, false);
 		if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 			/* The most accurate solution needs same or less storage
 			 * as the fastest solution; use the most accurate's dimensions */

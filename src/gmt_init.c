@@ -78,6 +78,8 @@
 
 EXTERN_MSC int gmt_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
+EXTERN_MSC void gmt_fft_initialization (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
 
 /* From gmt_api.c */
 /* Sub function needed by GMT_end to free memory used in modules and at end of session */
@@ -7702,7 +7704,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmt_reset_colformats (GMT);			/* Wipe previous settings */
 
-	GMT_fft_cleanup (GMT); /* Clean FFT resources */
+	gmt_fft_cleanup (GMT); /* Clean FFT resources */
 
 	/* Overwrite GMT with what we saved in GMT_begin_module */
 	GMT_memcpy (GMT, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
@@ -11671,7 +11673,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_setshorthand (GMT);	/* Load the short hand mechanism from gmt.io */
 
-	GMT_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
+	gmt_fft_initialization (GMT);	/* Determine which FFT algos are available and set pointers */
 
 	gmt_set_today (GMT);	/* Determine today's rata die value */
 

@@ -483,10 +483,10 @@ GMT_LOCAL void Apply_Transfer_Function (struct GMT_CTRL *GMT, struct GMT_GRID *G
 	/* Loop over complex grid and multiply with the real transfer function */
 	for (k = 0; k < Grid->header->size; k += 2) {
 		if (R->isotropic)	/* No in-plane forcing */
-			mk[GMT_FFT_K_IS_KR] = GMT_fft_get_wave (k, K);	/* Radial wavenumber */
+			mk[GMT_FFT_K_IS_KR] = gmt_fft_get_wave (k, K);	/* Radial wavenumber */
 		else {	/* Need kx, ky, and kr */
-			mk[GMT_FFT_K_IS_KX] = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);		/* kx wavenumber */
-			mk[GMT_FFT_K_IS_KY] = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K);		/* kx wavenumber */
+			mk[GMT_FFT_K_IS_KX] = gmt_fft_any_wave (k, GMT_FFT_K_IS_KX, K);		/* kx wavenumber */
+			mk[GMT_FFT_K_IS_KY] = gmt_fft_any_wave (k, GMT_FFT_K_IS_KY, K);		/* kx wavenumber */
 			mk[GMT_FFT_K_IS_KR] = hypot (mk[GMT_FFT_K_IS_KX], mk[GMT_FFT_K_IS_KY]);	/* kr wavenumber */
 		}
 		transfer_fn = R->transfer (mk, R);
