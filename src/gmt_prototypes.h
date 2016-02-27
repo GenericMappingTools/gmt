@@ -49,7 +49,6 @@ EXTERN_MSC struct GMT_CTRL * gmt_begin (struct GMTAPI_CTRL *API, const char *ses
 EXTERN_MSC void gmt_end (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_CTRL * gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy);
 EXTERN_MSC void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy);
-EXTERN_MSC int gmt_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
 EXTERN_MSC int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM *time_system);
 EXTERN_MSC int gmt_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name);
 EXTERN_MSC int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit);

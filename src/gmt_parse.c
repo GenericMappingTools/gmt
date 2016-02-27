@@ -49,6 +49,8 @@
  * of structures used by these functions, manipulate these lists, and perhaps even
  * creating text arrays from the linked list.  All these functions are pass the
  * API pointer and if that is NULL then errors will be issued.
+ *
+ * There are no GMT devel functions in this file.
  */
 
 /*!
@@ -72,6 +74,276 @@ EXTERN_MSC int api_report_error	(void *C, int error);	/* Lives in gmt_api.c */
 
 static inline struct GMTAPI_CTRL * parse_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 
+/* Local functions */
+
+/*! . */
+GMT_LOCAL int parse_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
+	/* Determines if the -B option indicates old GMT4-style switches and flags
+	 * or if it follows the GMT 5 specification.  This is only called when
+	 * compatibility mode has been selected; otherwise we only check GMT 5
+	 * style arguments.  We return 5 for GMT5 style, 4 for GMT4 style, 9
+	 * if no decision could be make and -1 if mixing of GMT4 & 5 styles are
+	 * found, which is an error. */
+	size_t k, j, last;
+	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
+	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
+	bool ignore5 = false;	/* true if label, title, prefix, suffix */
+	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
+	char mod = 0;
+	
+	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "either" syntax but it is an empty string */
+	last = strlen (in);
+	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
+	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
+	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
+	j = k;
+	while (j < last && (in[j] == 'x' || in[j] == 'y' || in[j] == 'z')) j++;
+	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */
+	for (k = 0; k < last; k++) {
+		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
+			continue;	/* Resume processing */
+		}
+		if (ignore5) continue;	/* Don't look inside a GMT5 title, label, suffix, or prefix */
+		if (in[k] == ':') {
+#ifdef _WIN32		/* Filenames under Windows may be X:\<name> which should not trigger "colon" test */
+			if (!(k && isalpha (in[k-1]) && k < last && in[k+1] == '\\'))
+#endif
+			if (k && in[k-1] == '@') {	/* Found a @:[<font>]: sequence, scan to end */
+				k++;	/* Skip past the colon */
+				while (in[k] && in[k] != ':') k++;	/* Find the matching colon */
+				continue;	/* Resume processing */
+			}
+			ignore = !ignore, n_colons++;	/* Possibly stepping into a label/title */
+			if (!ignore) continue;	/* End of title or label, skip check for next character */
+			if (k < last && in[k+1] == '.') colon_text++;	/* Title */
+			else if (k < last && in[k+1] == '=') colon_text++;	/* Annotation prefix */
+			else if (k < last && in[k+1] == ',') colon_text++;	/* Annotation suffix */
+		}
+		if (ignore) continue;	/* Don't look inside a title or label */
+		switch (in[k]) {
+			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
+			case '+':	/* Plus, might be GMT5 modifier switch */
+				if      (k < last && in[k+1] == 'u') {mod = 'u'; ignore5 = true;  gmt5++;}	/* unit (suffix) settings */
+				else if (k < last && in[k+1] == 'b') {mod = 'b'; ignore5 = false; gmt5++;}	/* 3-D box settings */
+				else if (k < last && in[k+1] == 'g') {mod = 'g'; ignore5 = false; gmt5++;}	/* fill settings */
+				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
+				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true;  gmt5++;}	/* prefix settings */
+				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true;  gmt5++;}	/* Label */
+				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true;  gmt5++;}	/* title */
+				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
+				break;
+			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
+				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
+			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
+				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
+				break;
+		}
+	}
+	if (!gmt5 && wesn_at_end) gmt4++;		/* Presumably got WESNwesn stuff towards the end of the option */
+	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
+	if (!custom && n_slashes) gmt4++;		/* Presumably / to separate axis in GMT4 style */
+	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: GMT4 = %d vs. GMT5 = %d\n", gmt4, gmt5);
+	if (gmt5 && !gmt4) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Detected GMT 5 style elements in -B option\n");
+		return (5);
+	}
+	else if (gmt4 && !gmt5) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
+		return (4);
+	}
+	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Error: Detected both GMT 4 and GMT 5 style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "parse_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		return (-1);
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "parse_B_arg_inspector: Assume GMT 5 style format in -B option\n");
+		return (9);
+	}
+}
+
+/*! . */
+GMT_LOCAL int parse_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* Determine how many -B options were given and if it is clear we are
+	 * dealing with GMT4 or GMT5 syntax just by looking at this information.
+	 * We also examine each argument for clues to version compatibility.
+	 * We return 5 if it is clear this is GMT5 syntax, 4 if it is clear it
+	 * is GMT 4 syntax, 9 if we cannot tell, and -1 if it is a mix of both.
+	 * The latter will result in a syntax error.
+	 */
+	struct GMT_OPTION *opt = NULL;
+	unsigned int n4_expected = 0, n_B = 0, gmt4 = 0, gmt5 = 0, k;
+	int verdict;
+	
+	for (opt = options; opt; opt = opt->next) {	/* Loop over all given options */
+		if (opt->option != 'B') continue;	/* Skip anything but -B options */
+		n_B++;					/* Count how many (max 2 in GMT4 if -Bp|s given) */
+		k = (opt->arg[0] == 'p' || opt->arg[0] == 's') ? 1 : 0;	/* Step over any p|s designation */
+		if (k == 1) n4_expected++;		/* Count how many -Bp or -Bs were given */
+		verdict = parse_B_arg_inspector (GMT, opt->arg);	/* Check this argument, return 5, 4, 1 (undetermined) or 0 (mixing) */
+		if (verdict == 4) gmt4++;
+		if (verdict == 5) gmt5++;
+		if (verdict == -1) gmt4++, gmt5++;	/* This is bad and will lead to a syntax error */
+	}
+	if (n4_expected == 0) n4_expected = 1;	/* If there are no -Bs|p options then GMT4 expects a single -B option */
+	if (n_B > n4_expected) gmt5++;		/* Gave more -B options than expected for GMT4 */
+	if (gmt5 && !gmt4)  return 5;		/* Matched GMT5 syntax only */
+	if (gmt4 && !gmt5)  return 4;		/* Matched GMT4 syntax only */
+	if (!gmt4 && !gmt5) return 9;		/* Could be either */
+	return (-1);				/* Error: Cannot be both */
+}
+
+/*! . */
+GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<nx>/<ny> we need access
+	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
+	 * make sure that if such a -R option is given we first process -I */
+	
+	struct GMT_OPTION *opt = NULL;
+	bool got_extended_R = false;
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'R' && strlen (opt->arg) > 2 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
+			got_extended_R = true;
+	}
+	if (!got_extended_R) return 0;	/* No such situation */
+	
+	/* Now look for -Idx[/dy] option */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'I' && opt->arg[0]) {
+			if (!GMT_getinc (GMT, opt->arg, GMT->common.API_I.inc)) {	/* Successful parsing */
+				GMT->common.API_I.active = true;
+			}
+		}
+	}
+	if (GMT->common.API_I.active)
+		return 0;
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<nx>/<ny> requires grid spacings via -I\n");
+	return 1;
+}
+
+#define Return { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found no history for option -%s\n", str); return (-1); }
+
+/*! . */
+GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* Go through the given arguments and look for shorthands,
+	 * i.e., -B, -J, -R, -X, -x, -Y, -c, -p. given without arguments.
+	 * If found, see if we have a matching command line history and then
+	 * update that entry in the option list.
+	 * Finally, keep the option arguments in the history list.
+	 * However, when func_level > 1, do update the entry, but do not
+	 * remember it in history. Note, there are two special cases here:
+	 * -J is special since we also need to deal with the sub-species
+	 *    like -JM, -JX, etc.  So these all have separate entries.
+	 * -B is special because the option is repeatable for different
+	 *    aspects of the basemap.  We concatenate all of them to store
+	 *    in the history file and use RS = ASCII 30 as separator.
+	 *    Also, a single -B in the options may expand to several
+	 *    separate -B<args> so the linked options list may grow.
+	 */
+	int id = 0, k, n_B = 0, B_id;
+	unsigned int pos = 0, B_replace = 1;
+	bool update, remember;
+	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
+	char str[3] = {""}, B_string[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
+
+	remember = (GMT->hidden.func_level == 1);   /* Only update the history for top level function */
+
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'B') {	/* Do some initial counting of how many -B options and determine if there is just one with no args */
+			if (n_B > 0 || opt->arg[0]) B_replace = 0;
+			n_B++;
+		}
+	}
+	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++)
+		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
+
+	for (opt = options; opt; opt = opt->next) {
+		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
+		update = false;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s.\n", opt->option, opt->arg);
+
+		str[0] = opt->option; str[1] = str[2] = '\0';
+		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
+			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
+			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;
+			if (id < 0) Return;	/* No -J found */
+			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
+				str[1] = opt->arg[0];
+				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
+				if (str[1] != 'Z' && str[1] != 'z' && remember) {
+					gmt_str_free (GMT->init.history[id]);
+					GMT->init.history[id] = strdup (&str[1]);
+				}
+				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
+			}
+			else {
+				if (!GMT->init.history[id]) Return;
+				str[1] = GMT->init.history[id][0];
+			}
+			/* Continue looking for -J<code> */
+			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;
+			if (id < 0) Return;
+		}
+		else if (opt->option == 'B') {          /* -B is also special since there may be many of these, or just -B */
+			if (B_replace) {                    /* Only -B is given and we want to use the history */
+				if (B_replace == 2) continue;   /* Already done this */
+				if (!GMT->init.history[B_id]) Return;
+				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
+				B_next = opt->next;             /* Pointer to option following the -B option */
+				gmt_str_free (opt2->arg);/* Free previous pointer to arg */
+				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
+				opt2->arg = strdup (p);         /* Update arg */
+				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
+					opt2->next = GMT_Make_Option (GMT->parent, 'B', p);	/* Create new struct */
+					opt2->next->previous = opt2;
+					opt2 = opt2->next;
+				}
+				opt2->next = B_next;            /* Hook back onto main option list */
+				B_replace = 2;                  /* Flag to let us know we are done with -B */
+			}
+			else {	/* One of possibly several -B<arg> options; concatenate and separate by RS */
+				if (B_string[0]) strcat (B_string, B_delim);	/* Add RS separator between args */
+				strcat (B_string, opt->arg);
+			}
+		}
+		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
+			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Find entry in history array */
+			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
+			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
+		}
+		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */
+			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
+			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
+				if (remember) {
+					gmt_str_free (GMT->init.history[id]);
+					GMT->init.history[id] = strdup (opt->arg);
+				}
+			}
+			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
+				if (!GMT->init.history[id]) Return;
+				gmt_str_free (opt->arg);   /* Free previous pointer to arg */
+				opt->arg = strdup (GMT->init.history[id]);
+			}
+		}
+	}
+
+	if (B_string[0] && B_id >= 0) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
+		gmt_str_free (GMT->init.history[B_id]);
+		GMT->init.history[B_id] = strdup (B_string);
+	}
+
+	return (GMT_NOERROR);
+}
+
+/*----------------------------------------------------------|
+ * Public functions that are part of the GMT API library    |
+ *----------------------------------------------------------|
+ */
 #ifdef DEBUG
 /*! . */
 int GMT_List_Args (void *V_API, struct GMT_OPTION *head) {
@@ -512,270 +784,6 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current) {
 }
 
 /*! . */
-int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
-	/* Determines if the -B option indicates old GMT4-style switches and flags
-	 * or if it follows the GMT 5 specification.  This is only called when
-	 * compatibility mode has been selected; otherwise we only check GMT 5
-	 * style arguments.  We return 5 for GMT5 style, 4 for GMT4 style, 9
-	 * if no decision could be make and -1 if mixing of GMT4 & 5 styles are
-	 * found, which is an error. */
-	size_t k, j, last;
-	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
-	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
-	bool ignore5 = false;	/* true if label, title, prefix, suffix */
-	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
-	char mod = 0;
-	
-	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "either" syntax but it is an empty string */
-	last = strlen (in);
-	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
-	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
-	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
-	j = k;
-	while (j < last && (in[j] == 'x' || in[j] == 'y' || in[j] == 'z')) j++;
-	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */
-	for (k = 0; k < last; k++) {
-		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
-			continue;	/* Resume processing */
-		}
-		if (ignore5) continue;	/* Don't look inside a GMT5 title, label, suffix, or prefix */
-		if (in[k] == ':') {
-#ifdef _WIN32		/* Filenames under Windows may be X:\<name> which should not trigger "colon" test */
-			if (!(k && isalpha (in[k-1]) && k < last && in[k+1] == '\\'))
-#endif
-			if (k && in[k-1] == '@') {	/* Found a @:[<font>]: sequence, scan to end */
-				k++;	/* Skip past the colon */
-				while (in[k] && in[k] != ':') k++;	/* Find the matching colon */
-				continue;	/* Resume processing */
-			}
-			ignore = !ignore, n_colons++;	/* Possibly stepping into a label/title */
-			if (!ignore) continue;	/* End of title or label, skip check for next character */
-			if (k < last && in[k+1] == '.') colon_text++;	/* Title */
-			else if (k < last && in[k+1] == '=') colon_text++;	/* Annotation prefix */
-			else if (k < last && in[k+1] == ',') colon_text++;	/* Annotation suffix */
-		}
-		if (ignore) continue;	/* Don't look inside a title or label */
-		switch (in[k]) {
-			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
-			case '+':	/* Plus, might be GMT5 modifier switch */
-				if      (k < last && in[k+1] == 'u') {mod = 'u'; ignore5 = true;  gmt5++;}	/* unit (suffix) settings */
-				else if (k < last && in[k+1] == 'b') {mod = 'b'; ignore5 = false; gmt5++;}	/* 3-D box settings */
-				else if (k < last && in[k+1] == 'g') {mod = 'g'; ignore5 = false; gmt5++;}	/* fill settings */
-				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
-				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true;  gmt5++;}	/* prefix settings */
-				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true;  gmt5++;}	/* Label */
-				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true;  gmt5++;}	/* title */
-				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
-				break;
-			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
-				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
-			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
-				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
-				break;
-		}
-	}
-	if (!gmt5 && wesn_at_end) gmt4++;		/* Presumably got WESNwesn stuff towards the end of the option */
-	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
-	if (!custom && n_slashes) gmt4++;		/* Presumably / to separate axis in GMT4 style */
-	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: GMT4 = %d vs. GMT5 = %d\n", gmt4, gmt5);
-	if (gmt5 && !gmt4) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: Detected GMT 5 style elements in -B option\n");
-		return (5);
-	}
-	else if (gmt4 && !gmt5) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
-		return (4);
-	}
-	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Error: Detected both GMT 4 and GMT 5 style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
-		return (-1);
-	}
-	else {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: Assume GMT 5 style format in -B option\n");
-		return (9);
-	}
-}
-
-/*! . */
-int gmt_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-	/* Determine how many -B options were given and if it is clear we are
-	 * dealing with GMT4 or GMT5 syntax just by looking at this information.
-	 * We also examine each argument for clues to version compatibility.
-	 * We return 5 if it is clear this is GMT5 syntax, 4 if it is clear it
-	 * is GMT 4 syntax, 9 if we cannot tell, and -1 if it is a mix of both.
-	 * The latter will result in a syntax error.
-	 */
-	struct GMT_OPTION *opt = NULL;
-	unsigned int n4_expected = 0, n_B = 0, gmt4 = 0, gmt5 = 0, k;
-	int verdict;
-	
-	for (opt = options; opt; opt = opt->next) {	/* Loop over all given options */
-		if (opt->option != 'B') continue;	/* Skip anything but -B options */
-		n_B++;					/* Count how many (max 2 in GMT4 if -Bp|s given) */
-		k = (opt->arg[0] == 'p' || opt->arg[0] == 's') ? 1 : 0;	/* Step over any p|s designation */
-		if (k == 1) n4_expected++;		/* Count how many -Bp or -Bs were given */
-		verdict = gmt_B_arg_inspector (GMT, opt->arg);	/* Check this argument, return 5, 4, 1 (undetermined) or 0 (mixing) */
-		if (verdict == 4) gmt4++;
-		if (verdict == 5) gmt5++;
-		if (verdict == -1) gmt4++, gmt5++;	/* This is bad and will lead to a syntax error */
-	}
-	if (n4_expected == 0) n4_expected = 1;	/* If there are no -Bs|p options then GMT4 expects a single -B option */
-	if (n_B > n4_expected) gmt5++;		/* Gave more -B options than expected for GMT4 */
-	if (gmt5 && !gmt4)  return 5;		/* Matched GMT5 syntax only */
-	if (gmt4 && !gmt5)  return 4;		/* Matched GMT4 syntax only */
-	if (!gmt4 && !gmt5) return 9;		/* Could be either */
-	return (-1);				/* Error: Cannot be both */
-}
-
-/*! . */
-unsigned int gmt_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-	/* In order to use -R[L|C|R][B|M|T]<lon0>/<lat0>/<nx>/<ny> we need access
-	 * to grid increments dx/dy, usually given via a -I option.  Hence, we here
-	 * make sure that if such a -R option is given we first process -I */
-	
-	struct GMT_OPTION *opt = NULL;
-	bool got_extended_R = false;
-	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == 'R' && strlen (opt->arg) > 2 && strchr ("LCRlcr", opt->arg[0]) && strchr ("TMBtmb", opt->arg[1]))
-			got_extended_R = true;
-	}
-	if (!got_extended_R) return 0;	/* No such situation */
-	
-	/* Now look for -Idx[/dy] option */
-	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == 'I' && opt->arg[0]) {
-			if (!GMT_getinc (GMT, opt->arg, GMT->common.API_I.inc)) {	/* Successful parsing */
-				GMT->common.API_I.active = true;
-			}
-		}
-	}
-	if (GMT->common.API_I.active)
-		return 0;
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -R[L|C|R][T|M|B]<x0>/<y0>/<nx>/<ny> requires grid spacings via -I\n");
-	return 1;
-}
-
-#define Return { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found no history for option -%s\n", str); return (-1); }
-
-/*! . */
-int gmt_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-	/* Go through the given arguments and look for shorthands,
-	 * i.e., -B, -J, -R, -X, -x, -Y, -c, -p. given without arguments.
-	 * If found, see if we have a matching command line history and then
-	 * update that entry in the option list.
-	 * Finally, keep the option arguments in the history list.
-	 * However, when func_level > 1, do update the entry, but do not
-	 * remember it in history. Note, there are two special cases here:
-	 * -J is special since we also need to deal with the sub-species
-	 *    like -JM, -JX, etc.  So these all have separate entries.
-	 * -B is special because the option is repeatable for different
-	 *    aspects of the basemap.  We concatenate all of them to store
-	 *    in the history file and use RS = ASCII 30 as separator.
-	 *    Also, a single -B in the options may expand to several
-	 *    separate -B<args> so the linked options list may grow.
-	 */
-	int id = 0, k, n_B = 0, B_id;
-	unsigned int pos = 0, B_replace = 1;
-	bool update, remember;
-	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
-	char str[3] = {""}, B_string[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
-
-	remember = (GMT->hidden.func_level == 1);   /* Only update the history for top level function */
-
-	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == 'B') {	/* Do some initial counting of how many -B options and determine if there is just one with no args */
-			if (n_B > 0 || opt->arg[0]) B_replace = 0;
-			n_B++;
-		}
-	}
-	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++)
-		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
-
-	for (opt = options; opt; opt = opt->next) {
-		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
-		update = false;
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s.\n", opt->option, opt->arg);
-
-		str[0] = opt->option; str[1] = str[2] = '\0';
-		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
-			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
-			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id < 0) Return;	/* No -J found */
-			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
-				str[1] = opt->arg[0];
-				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
-				if (str[1] != 'Z' && str[1] != 'z' && remember) {
-					gmt_str_free (GMT->init.history[id]);
-					GMT->init.history[id] = strdup (&str[1]);
-				}
-				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
-			}
-			else {
-				if (!GMT->init.history[id]) Return;
-				str[1] = GMT->init.history[id][0];
-			}
-			/* Continue looking for -J<code> */
-			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;
-			if (id < 0) Return;
-		}
-		else if (opt->option == 'B') {          /* -B is also special since there may be many of these, or just -B */
-			if (B_replace) {                    /* Only -B is given and we want to use the history */
-				if (B_replace == 2) continue;   /* Already done this */
-				if (!GMT->init.history[B_id]) Return;
-				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
-				B_next = opt->next;             /* Pointer to option following the -B option */
-				gmt_str_free (opt2->arg);/* Free previous pointer to arg */
-				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
-				opt2->arg = strdup (p);         /* Update arg */
-				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
-					opt2->next = GMT_Make_Option (GMT->parent, 'B', p);	/* Create new struct */
-					opt2->next->previous = opt2;
-					opt2 = opt2->next;
-				}
-				opt2->next = B_next;            /* Hook back onto main option list */
-				B_replace = 2;                  /* Flag to let us know we are done with -B */
-			}
-			else {	/* One of possibly several -B<arg> options; concatenate and separate by RS */
-				if (B_string[0]) strcat (B_string, B_delim);	/* Add RS separator between args */
-				strcat (B_string, opt->arg);
-			}
-		}
-		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
-			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
-				if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Find entry in history array */
-			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
-			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
-		}
-		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */
-			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
-			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
-				if (remember) {
-					gmt_str_free (GMT->init.history[id]);
-					GMT->init.history[id] = strdup (opt->arg);
-				}
-			}
-			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
-				if (!GMT->init.history[id]) Return;
-				gmt_str_free (opt->arg);   /* Free previous pointer to arg */
-				opt->arg = strdup (GMT->init.history[id]);
-			}
-		}
-	}
-
-	if (B_string[0] && B_id >= 0) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
-		gmt_str_free (GMT->init.history[B_id]);
-		GMT->init.history[B_id] = strdup (B_string);
-	}
-
-	return (GMT_NOERROR);
-}
-
-/*! . */
 int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION *options) {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
 	 * These are processed in the order required by GMT regardless of order given.
@@ -795,11 +803,11 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
 	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
-	if (gmt_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
+	if (parse_complete_options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
-	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmt_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
+	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = parse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
-	n_errors = gmt_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
+	n_errors = parse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
 	
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
 	for (i = 0; i < strlen (critical_opt_order); i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
