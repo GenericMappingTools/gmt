@@ -2110,11 +2110,11 @@ void GMT_grdio_init (struct GMT_CTRL *GMT) {
 
 	id                        = GMT_GRID_IS_RF;
 	GMT->session.grdformat[id]  = "rf = GEODAS grid format GRD98 (NGDC)";
-	GMT->session.readinfo[id]   = &GMT_mgg2_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_mgg2_write_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_mgg2_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_mgg2_read_grd;
-	GMT->session.writegrd[id]   = &GMT_mgg2_write_grd;
+	GMT->session.readinfo[id]   = &gmt_mgg2_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_mgg2_write_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_mgg2_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_mgg2_read_grd;
+	GMT->session.writegrd[id]   = &gmt_mgg2_write_grd;
 
 	/* FORMAT: GMT native binary (float) grdio (Surfer format) */
 

@@ -95,7 +95,7 @@ EXTERN_MSC int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *hea
 EXTERN_MSC int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int GMT_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-EXTERN_MSC int GMT_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #ifdef HAVE_GDAL
@@ -920,7 +920,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		if (GMT_is_srf_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		/* Then check for NGDC GRD98 grid */
-		if (GMT_is_mgg2_grid (GMT, header) == GMT_NOERROR)
+		if (gmt_is_mgg2_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		/* Then check for AGC grid */
 		if (gmt_is_agc_grid (GMT, header) == GMT_NOERROR)
