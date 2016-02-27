@@ -80,7 +80,39 @@
 #define GMT_PROJ_CONV_LIMIT	1e-9
 #define GMT_PROJ_IS_ZERO(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
 
-void gmt_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */ {
+GMT_LOCAL double proj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *x, double *y, double *c) {
+	/* Compute the interpolated values from the Robinson coefficients */
+
+	int j = 0, j1;
+	double yp, a, b, h, ih, dx;
+
+	if (xp < x[0] || xp > x[GMT_N_ROBINSON-1])	/* Desired point outside data range */
+		return (GMT->session.d_NaN);
+
+	while (j < GMT_N_ROBINSON && x[j] <= xp) j++;
+	if (j == GMT_N_ROBINSON) j--;
+	if (j > 0) j--;
+
+	dx = xp - x[j];
+	switch (GMT->current.setting.interpolant) {	/* gmt_vrobinson would not allow case 0 so only GMT_SPLINE_AKIMA | GMT_SPLINE_CUBIC is possible */
+		case GMT_SPLINE_AKIMA:
+			yp = ((c[3*j+2]*dx + c[3*j+1])*dx + c[3*j])*dx + y[j];
+			break;
+		case GMT_SPLINE_CUBIC:
+			j1 = j + 1;
+			h = x[j1] - x[j];
+			ih = 1.0 / h;
+			a = (x[j1] - xp) * ih;
+			b = dx * ih;
+			yp = a * y[j] + b * y[j1] + ((a*a*a - a) * c[j] + (b*b*b - b) * c[j1]) * (h*h) / 6.0;
+			break;
+		default:
+			yp = 0;
+	}
+	return (yp);
+}
+
+GMT_LOCAL void proj_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */ {
 	double lon0 = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	
 	if (GMT->current.map.is_world && lon0 != *clon) {
@@ -96,833 +128,54 @@ void gmt_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J a
 	}
 }
 
-/* LINEAR TRANSFORMATIONS */
+GMT_LOCAL void proj_iwinkel_sub (struct GMT_CTRL *GMT, double y, double *phi) {
+	/* Valid only along meridian 180 degree from central meridian.  Used in left/right_winkel only */
+	int n_iter = 0;
+	double c, phi0, delta, sp, cp;
 
-void GMT_translin (struct GMT_CTRL *GMT, double forw, double *inv)	/* Linear forward */ {
-	GMT_UNUSED(GMT);
-	*inv = forw;
-}
-
-void GMT_translind (struct GMT_CTRL *GMT, double forw, double *inv)	/* Linear forward, but with degrees*/ {
-	GMT_WIND_LON (GMT, forw)	/* Make sure forw is in -180/+180 range after removing central meridian */
-	*inv = forw ;
-}
-
-void GMT_itranslind (struct GMT_CTRL *GMT, double *forw, double inv)	/* Linear inverse, but with degrees*/ {
-	while (inv < -GMT_180) inv += 360.0;
-	while (inv > +GMT_180) inv -= 360.0;
-	*forw = inv + GMT->current.proj.central_meridian;
-}
-
-void GMT_itranslin (struct GMT_CTRL *GMT, double *forw, double inv)	/* Linear inverse */ {
-	GMT_UNUSED(GMT);
-	*forw = inv;
-}
-
-void GMT_translog10 (struct GMT_CTRL *GMT, double forw, double *inv)	/* Log10 forward */ {
-	*inv = d_log10 (GMT, forw);
-}
-
-void GMT_itranslog10 (struct GMT_CTRL *GMT, double *forw, double inv) /* Log10 inverse */ {
-	GMT_UNUSED(GMT);
-	*forw = pow (10.0, inv);
-}
-
-void GMT_transpowx (struct GMT_CTRL *GMT, double x, double *x_in)	/* pow x forward */ {
-	*x_in = pow (x, GMT->current.proj.xyz_pow[GMT_X]);
-}
-
-void GMT_itranspowx (struct GMT_CTRL *GMT, double *x, double x_in) /* pow x inverse */ {
-	*x = pow (x_in, GMT->current.proj.xyz_ipow[GMT_X]);
-}
-
-void GMT_transpowy (struct GMT_CTRL *GMT, double y, double *y_in)	/* pow y forward */ {
-	*y_in = pow (y, GMT->current.proj.xyz_pow[GMT_Y]);
-}
-
-void GMT_itranspowy (struct GMT_CTRL *GMT, double *y, double y_in) /* pow y inverse */ {
-	*y = pow (y_in, GMT->current.proj.xyz_ipow[GMT_Y]);
-}
-
-void GMT_transpowz (struct GMT_CTRL *GMT, double z, double *z_in)	/* pow z forward */ {
-	*z_in = pow (z, GMT->current.proj.xyz_pow[GMT_Z]);
-}
-
-void GMT_itranspowz (struct GMT_CTRL *GMT, double *z, double z_in) /* pow z inverse */ {
-	*z = pow (z_in, GMT->current.proj.xyz_ipow[GMT_Z]);
-}
-
-/* -JP POLAR (r-theta) PROJECTION */
-
-void GMT_vpolar (struct GMT_CTRL *GMT, double lon0) {
-	/* Set up a Polar (theta,r) transformation */
-
-	GMT->current.proj.p_base_angle = lon0;
-	GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XHI] + GMT->common.R.wesn[XLO]);
-
-	/* Plus pretend that it is kind of a geographic polar projection */
-
-	GMT->current.proj.north_pole = GMT->current.proj.got_elevations;
-	GMT->current.proj.pole = (GMT->current.proj.got_elevations) ? 90.0 : 0.0;
-}
-
-void GMT_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i) {
-	/* Transform x and y to polar(cylindrical) coordinates */
-	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
-	if (GMT->current.proj.got_elevations) y = 90.0 - y;		/* elevations */
-	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
-	(*x_i) *= y;
-	(*y_i) *= y;
-}
-
-void GMT_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double y_i) {
-	/* Inversely transform both x and y from polar(cylindrical) coordinates */
-	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
-	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
-	*y = hypot (x_i, y_i);
-	if (GMT->current.proj.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
-}
-
-/* -JM MERCATOR PROJECTION */
-
-void GMT_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
-	/* Set up a Mercator transformation */
-
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
-	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-}
-
-/* Mercator projection for the sphere */
-
-void GMT_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to Mercator x/y (GMT->current.proj.EQ_RAD in GMT->current.proj.j_x) */
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
-
-	*x = GMT->current.proj.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
-}
-
-void GMT_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Mercator x/y to lon/lat  (GMT->current.proj.EQ_RAD in GMT->current.proj.j_ix) */
-
-	*lon = x * GMT->current.proj.j_ix * R2D + GMT->current.proj.central_meridian;
-	*lat = atand (sinh (y * GMT->current.proj.j_ix));
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
-}
-
-/* -JY CYLINDRICAL EQUAL-AREA PROJECTION */
-
-void GMT_vcyleq (struct GMT_CTRL *GMT, double lon0, double slat) {
-	/* Set up a Cylindrical equal-area transformation */
-
-	gmt_check_R_J (GMT, &lon0);
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = GMT->current.proj.EQ_RAD * D2R * cosd (slat);
-	GMT->current.proj.j_y = GMT->current.proj.EQ_RAD / cosd (slat);
-	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
-}
-
-void GMT_cyleq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to Cylindrical equal-area x/y */
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_lata (GMT, lat);
-
-	*x = lon * GMT->current.proj.j_x;
-	*y = GMT->current.proj.j_y * sind (lat);
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-		(*x) *= GMT->current.proj.Dx;
-		(*y) *= GMT->current.proj.Dy;
+	c = 2.0 * y * GMT->current.proj.i_EQ_RAD;
+	*phi = y * GMT->current.proj.i_EQ_RAD;
+	do {
+		phi0 = *phi;
+		sincos (phi0, &sp, &cp);
+		*phi = phi0 - (phi0 + M_PI_2 * sp - c) / (1.0 + M_PI_2 * cp);
+		delta = fabs (*phi - phi0);
+		n_iter++;
 	}
+	while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
+	*phi *= R2D;
 }
 
-void GMT_icyleq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Cylindrical equal-area x/y to lon/lat */
+GMT_LOCAL void proj_ipolyconic_sub (struct GMT_CTRL *GMT, double y, double lon, double *x) {
+	/* Used in left/right_polyconic only */
+	double E, sp, cp, phi0, phi, delta;
+	int n_iter = 0;
 
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-		x *= GMT->current.proj.iDx;
-		y *= GMT->current.proj.iDy;
-	}
-	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
-	*lat = d_asind (y * GMT->current.proj.j_iy);
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_lata_to_latg (GMT, *lat);
-}
-
-/* -JQ CYLINDRICAL EQUIDISTANT PROJECTION */
-
-void GMT_vcyleqdist (struct GMT_CTRL *GMT, double lon0, double slat) {
-	/* Set up a Cylindrical equidistant transformation */
-
-	gmt_check_R_J (GMT, &lon0);
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD * cosd (slat);
-	GMT->current.proj.j_y = D2R * GMT->current.proj.EQ_RAD;
-	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
-}
-
-void GMT_cyleqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to Cylindrical equidistant x/y */
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	*x = lon * GMT->current.proj.j_x;
-	*y = lat * GMT->current.proj.j_y;
-}
-
-void GMT_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Cylindrical equal-area x/y to lon/lat */
-
-	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
-	*lat = y * GMT->current.proj.j_iy;
-}
-
-/* -JJ MILLER CYLINDRICAL PROJECTION */
-
-void GMT_vmiller (struct GMT_CTRL *GMT, double lon0) {
-	/* Set up a Miller Cylindrical transformation */
-
-	gmt_check_R_J (GMT, &lon0);
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD;
-	GMT->current.proj.j_y = 1.25 * GMT->current.proj.EQ_RAD;
-	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
-}
-
-void GMT_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to Miller Cylindrical x/y */
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	*x = lon * GMT->current.proj.j_x;
-	*y = GMT->current.proj.j_y * d_log (GMT, tand (45.0 + 0.4 * lat));
-}
-
-void GMT_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Miller Cylindrical x/y to lon/lat */
-
-	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
-	*lat = 2.5 * atand (exp (y * GMT->current.proj.j_iy)) - 112.5;
-}
-
-/* -JCyl_stere CYLINDRICAL STEREOGRAPHIC PROJECTION */
-
-void GMT_vcylstereo (struct GMT_CTRL *GMT, double lon0, double slat) {
-	/* Set up a Cylindrical Stereographic transformation */
-
-	gmt_check_R_J (GMT, &lon0);
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.j_x = GMT->current.proj.EQ_RAD * D2R * cosd (slat);
-	GMT->current.proj.j_y = GMT->current.proj.EQ_RAD * (1.0 + cosd (slat));
-	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
-	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
-}
-
-void GMT_cylstereo (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to Cylindrical Stereographic x/y */
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	*x = lon * GMT->current.proj.j_x;
-	*y = GMT->current.proj.j_y * tand (0.5 * lat);
-}
-
-void GMT_icylstereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Cylindrical Stereographic x/y to lon/lat */
-
-	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
-	*lat = 2.0 * atand (y * GMT->current.proj.j_iy);
-}
-
-/* -JS POLAR STEREOGRAPHIC PROJECTION */
-
-void GMT_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
-	/* Set up a Stereographic transformation */
-
-	double clat;
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Set Conformal radius and pole latitude */
-		gmt_scale_eqrad (GMT);
-		clat = GMT_latg_to_latc (GMT, lat0);
-	}
-	else
-		clat = lat0;
-
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.pole = lat0;		/* This is always geodetic */
-	sincosd (clat, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));	/* These may be conformal */
-	GMT->current.proj.north_pole = (lat0 > 0.0);
-	GMT->current.proj.s_c = 2.0 * GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor;
-	GMT->current.proj.s_ic = 1.0 / GMT->current.proj.s_c;
-	GMT->current.proj.f_horizon = horizon;
-	GMT->current.proj.rho_max = tand (0.5 * horizon) * GMT->current.proj.s_c;
-}
-
-void GMT_plrs_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to x/y using Spherical polar projection */
-	double rho, slon, clon;
-
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-
-	sincosd (lon, &slon, &clon);
-	if (GMT->current.proj.north_pole) {
-		rho = GMT->current.proj.s_c * tand (45.0 - 0.5 * lat);
-		*y = -rho * clon;
-		*x =  rho * slon;
-	}
+	*x = lon;
+	GMT_WIND_LON (GMT, *x);
+	y *= GMT->current.proj.i_EQ_RAD;
+	y += GMT->current.proj.pole * D2R;
+	if (GMT_PROJ_IS_ZERO (y))
+		*x *= GMT->current.proj.EQ_RAD * D2R;
 	else {
-		rho = GMT->current.proj.s_c * tand (45.0 + 0.5 * lat);
-		*y = rho * clon;
-		*x = rho * slon;
-	}
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-		(*x) *= GMT->current.proj.Dx;
-		(*y) *= GMT->current.proj.Dy;
-	}
-}
-
-void GMT_iplrs_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Spherical polar x/y to lon/lat */
-	double c;
-
-	if (x == 0.0 && y == 0.0) {
-		*lon = GMT->current.proj.central_meridian;
-		*lat = GMT->current.proj.pole;
-		return;
-	}
-
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
-		x *= GMT->current.proj.iDx;
-		y *= GMT->current.proj.iDy;
-	}
-	c = 2.0 * atan (hypot (x, y) * GMT->current.proj.s_ic);
-
-	if (GMT->current.proj.north_pole) {
-		*lon = GMT->current.proj.central_meridian + d_atan2d (x, -y);
-		*lat = d_asind (cos (c));
-	}
-	else {
-		*lon = GMT->current.proj.central_meridian + d_atan2d (x, y);
-		*lat = d_asind (-cos (c));
-	}
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
-
-}
-
-void GMT_stereo1_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to x/y using Spherical stereographic projection, oblique view */
-
-	double sin_dlon, cos_dlon, s, c, cc, A;
-
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
-	sincosd (lon - GMT->current.proj.central_meridian, &sin_dlon, &cos_dlon);
-	sincosd (lat, &s, &c);
-	cc = c * cos_dlon;
-	A = GMT->current.proj.s_c / (1.0 + GMT->current.proj.sinp * s + GMT->current.proj.cosp * cc);
-	*x = A * c * sin_dlon;
-	*y = A * (GMT->current.proj.cosp * s - GMT->current.proj.sinp * cc);
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-		(*x) *= GMT->current.proj.Dx;
-		(*y) *= GMT->current.proj.Dy;
-	}
-}
-
-void GMT_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	double rho, c, sin_c, cos_c;
-
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
-		x *= GMT->current.proj.iDx;
-		y *= GMT->current.proj.iDy;
-	}
-	rho = hypot (x, y);
-	if (rho > GMT->current.proj.rho_max) {
-		*lat = *lon = GMT->session.d_NaN;
-		return;
-	}
-	c = 2.0 * atan (rho * GMT->current.proj.s_ic);
-	sincos (c, &sin_c, &cos_c);
-	if (rho != 0.0) sin_c /= rho;
-	*lat = asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, cos_c * GMT->current.proj.cosp - y * sin_c * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
-}
-
-/* Spherical equatorial view */
-
-void GMT_stereo2_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to x/y using stereographic projection, equatorial view */
-
-	double dlon, s, c, clon, slon, A;
-
-	dlon = lon - GMT->current.proj.central_meridian;
-	if (doubleAlmostEqual (dlon, 180.0)) {
-		*x = *y = 0.0;
-	}
-	else {
-		if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
-		sincosd (lat, &s, &c);
-		sincosd (dlon, &slon, &clon);
-		A = GMT->current.proj.s_c / (1.0 + c * clon);
-		*x = A * c * slon;
-		*y = A * s;
-		if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-			(*x) *= GMT->current.proj.Dx;
-			(*y) *= GMT->current.proj.Dy;
+		phi = y;
+		do {
+			phi0 = phi;
+			sincos (phi, &sp, &cp);
+			E = (*x) * sp;
+			cp /= sp;	/* = cot(phi) */
+			phi = y - cp * (1.0 - cosd(E));
+			delta = fabs (phi - phi0);
+			n_iter++;
 		}
+		while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
+		*x = GMT->current.proj.EQ_RAD * cp * sin(E);
 	}
-}
-
-/* -JL LAMBERT CONFORMAL CONIC PROJECTION */
-
-void GMT_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, double phb) {
-	/* Set up a Lambert Conformal Conic projection (Spherical when e = 0) */
-
-	double sin_pha, cos_pha, sin_phb, cos_phb, t_pha, m_pha, t_phb, m_phb, t_rlat0;
-
-	gmt_check_R_J (GMT, &rlong0);
-	GMT->current.proj.north_pole = (GMT->common.R.wesn[YHI] > 0.0 && (GMT->common.R.wesn[YLO] >= 0.0 || (-GMT->common.R.wesn[YLO]) < GMT->common.R.wesn[YHI]));
-	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
-	sincosd (pha, &sin_pha, &cos_pha);
-	sincosd (phb, &sin_phb, &cos_phb);
-	
-	t_pha = tand (45.0 - 0.5 * pha) / pow ((1.0 - GMT->current.proj.ECC *
-		sin_pha) / (1.0 + GMT->current.proj.ECC * sin_pha), GMT->current.proj.half_ECC);
-	m_pha = cos_pha / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_pha * sin_pha);
-	t_phb = tand (45.0 - 0.5 * phb) / pow ((1.0 - GMT->current.proj.ECC *
-		sin_phb) / (1.0 + GMT->current.proj.ECC * sin_phb), GMT->current.proj.half_ECC);
-	m_phb = cos_phb / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_phb * sin_phb);
-	t_rlat0 = tand (45.0 - 0.5 * rlat0) /
-		pow ((1.0 - GMT->current.proj.ECC * sind (rlat0)) /
-		(1.0 + GMT->current.proj.ECC * sind (rlat0)), GMT->current.proj.half_ECC);
-
-	if (doubleAlmostEqualZero (pha, phb))
-		GMT->current.proj.l_N = sind (pha);
-	else
-		GMT->current.proj.l_N = (d_log (GMT, m_pha) - d_log (GMT, m_phb))/(d_log (GMT, t_pha) - d_log (GMT, t_phb));
-
-	GMT->current.proj.l_i_N = 1.0 / GMT->current.proj.l_N;
-	GMT->current.proj.l_F = m_pha / (GMT->current.proj.l_N * pow (t_pha, GMT->current.proj.l_N));
-	GMT->current.proj.central_meridian = rlong0;
-	GMT->current.proj.l_rF = GMT->current.proj.EQ_RAD * GMT->current.proj.l_F;
-	GMT->current.proj.l_i_rF = 1.0 / GMT->current.proj.l_rF;
-	GMT->current.proj.l_rho0 = GMT->current.proj.l_rF * pow (t_rlat0, GMT->current.proj.l_N);
-	GMT->current.proj.l_Nr = GMT->current.proj.l_N * D2R;
-	GMT->current.proj.l_i_Nr = 1.0 / GMT->current.proj.l_Nr;
-}
-
-void GMT_lamb (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	double rho, theta, hold1, hold2, hold3, es, s, c;
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-
-	es = GMT->current.proj.ECC * sind (lat);
-	hold2 = pow ((1.0 - es) / (1.0 + es), GMT->current.proj.half_ECC);
-	hold3 = tand (45.0 - 0.5 * lat);
-	hold1 = pow (hold3 / hold2, GMT->current.proj.l_N);
-	rho = GMT->current.proj.l_rF * hold1;
-	theta = GMT->current.proj.l_Nr * lon;
-	sincos (theta, &s, &c);
-	*x = rho * s;
-	*y = GMT->current.proj.l_rho0 - rho * c;
-}
-
-void GMT_ilamb (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	int i;
-	double theta, rho, t, tphi, phi, dy, r;
-
-	dy = GMT->current.proj.l_rho0 - y;
-	theta = (GMT->current.proj.l_N < 0.0) ? d_atan2 (-x, -dy) : d_atan2 (x, dy);
-	*lon = theta * GMT->current.proj.l_i_Nr + GMT->current.proj.central_meridian;
-
-	rho = copysign (hypot (x, dy), GMT->current.proj.l_N);
-	t = pow (rho * GMT->current.proj.l_i_rF, GMT->current.proj.l_i_N);
-	phi = 0.0; tphi = 999.0;	/* Initialize phi = 0 */
-	for (i = 0; i < GMT_PROJ_MAX_ITERATIONS && fabs (tphi - phi) > GMT_PROJ_CONV_LIMIT; i++) {
-		tphi = phi;
-		r = GMT->current.proj.ECC * sin (phi);
-		phi = M_PI_2 - 2.0 * atan (t * pow ((1.0 - r) / (1.0 + r), GMT->current.proj.half_ECC));
-	}
-	*lat = phi * R2D;
-}
-
-/* Spherical cases of Lambert */
-
-void GMT_lamb_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	double rho, theta, t, s, c;
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
-
-	t = MAX (0.0, tand (45.0 - 0.5 * lat));	/* Guard against negative t */
-	rho = GMT->current.proj.l_rF * pow (t, GMT->current.proj.l_N);
-	theta = GMT->current.proj.l_Nr * lon;
-
-	sincos (theta, &s, &c);
-	*x = rho * s;
-	*y = GMT->current.proj.l_rho0 - rho * c;
-}
-
-void GMT_ilamb_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	double theta, rho, t, dy;
-
-	dy = GMT->current.proj.l_rho0 - y;
-	theta = (GMT->current.proj.l_N < 0.0) ? d_atan2 (-x, -dy) : d_atan2 (x, dy);
-	*lon = theta * GMT->current.proj.l_i_Nr + GMT->current.proj.central_meridian;
-
-	rho = copysign (hypot (x, dy), GMT->current.proj.l_N);
-	t = pow (rho * GMT->current.proj.l_i_rF, GMT->current.proj.l_i_N);
-	*lat = 90.0 - 2.0 * atand (t);
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
-}
-
-/* -JO OBLIQUE MERCATOR PROJECTION */
-
-void GMT_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert a longitude/latitude point to Oblique Mercator coordinates
-	 * by way of rotation coordinates and then using regular Mercator */
-	double tlon, tlat;
-
-	GMT_obl (GMT, lon * D2R, lat * D2R, &tlon, &tlat);
-
-	*x = GMT->current.proj.j_x * tlon;
-	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) : copysign (DBL_MAX, tlat);
-}
-
-void GMT_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert a longitude/latitude point from Oblique Mercator coordinates
-	 * by way of regular Mercator and then rotate coordinates */
-	double tlon, tlat;
-
-	tlon = x * GMT->current.proj.j_ix;
-	tlat = atan (sinh (y * GMT->current.proj.j_ix));
-
-	GMT_iobl (GMT, lon, lat, tlon, tlat);
-
-	(*lon) *= R2D;	(*lat) *= R2D;
-}
-
-void GMT_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double *olat) {
-	/* Convert a longitude/latitude point to Oblique lon/lat (all in rads) */
-	double p_cross_x[3], X[3];
-
-	GMT_geo_to_cart (GMT, lat, lon, X, false);
-
-	*olat = d_asin (GMT_dot3v (GMT, X, GMT->current.proj.o_FP));
-
-	GMT_cross3v (GMT, GMT->current.proj.o_FP, X, p_cross_x);
-	GMT_normalize3v (GMT, p_cross_x);
-
-	*olon = copysign (d_acos (GMT_dot3v (GMT, p_cross_x, GMT->current.proj.o_FC)), GMT_dot3v (GMT, X, GMT->current.proj.o_FC));
-}
-
-void GMT_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat) {
-	/* Convert a longitude/latitude point from Oblique lon/lat  (all in rads) */
-	double p_cross_x[3], X[3];
-
-	GMT_geo_to_cart (GMT, olat, olon, X, false);
-	*lat = d_asin (GMT_dot3v (GMT, X, GMT->current.proj.o_IP));
-
-	GMT_cross3v (GMT, GMT->current.proj.o_IP, X, p_cross_x);
-	GMT_normalize3v (GMT, p_cross_x);
-
-	*lon = copysign (d_acos (GMT_dot3v (GMT, p_cross_x, GMT->current.proj.o_IC)), GMT_dot3v (GMT, X, GMT->current.proj.o_IC));
-
-	while ((*lon) < 0.0) (*lon) += TWO_PI;
-	while ((*lon) >= TWO_PI) (*lon) -= TWO_PI;
-}
-
-/* -JT TRANSVERSE MERCATOR PROJECTION */
-
-void GMT_vtm (struct GMT_CTRL *GMT, double lon0, double lat0) {
-	/* Set up an TM projection */
-	double e1, s2, c2;
-
-	/* gmt_check_R_J (&lon0); */
-	e1 = (1.0 - d_sqrt (GMT->current.proj.one_m_ECC2)) / (1.0 + d_sqrt (GMT->current.proj.one_m_ECC2));
-	GMT->current.proj.t_e2 = GMT->current.proj.ECC2 * GMT->current.proj.i_one_m_ECC2;
-	GMT->current.proj.t_c1 = 1.0 - (1.0/4.0) * GMT->current.proj.ECC2 - (3.0/64.0) * GMT->current.proj.ECC4 - (5.0/256.0) * GMT->current.proj.ECC6;
-	GMT->current.proj.t_c2 = -((3.0/8.0) * GMT->current.proj.ECC2 + (3.0/32.0) * GMT->current.proj.ECC4 + (25.0/768.0) * GMT->current.proj.ECC6);
-	GMT->current.proj.t_c3 = (15.0/128.0) * GMT->current.proj.ECC4 + (45.0/512.0) * GMT->current.proj.ECC6;
-	GMT->current.proj.t_c4 = -(35.0/768.0) * GMT->current.proj.ECC6;
-	GMT->current.proj.t_i1 = 1.0 / (GMT->current.proj.EQ_RAD * GMT->current.proj.t_c1);
-	GMT->current.proj.t_i2 = (3.0/2.0) * e1 - (29.0/12.0) * pow (e1, 3.0);
-	GMT->current.proj.t_i3 = (21.0/8.0) * e1 * e1 - (1537.0/128.0) * pow (e1, 4.0);
-	GMT->current.proj.t_i4 = (151.0/24.0) * pow (e1, 3.0);
-	GMT->current.proj.t_i5 = (1097.0/64.0) * pow (e1, 4.0);
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.t_lat0 = lat0 * D2R;	/* In radians */
-	sincos (2.0 * GMT->current.proj.t_lat0, &s2, &c2);
-	GMT->current.proj.t_M0 = GMT->current.proj.EQ_RAD * (GMT->current.proj.t_c1 * GMT->current.proj.t_lat0 + s2 * (GMT->current.proj.t_c2 + c2 * (GMT->current.proj.t_c3 + c2 * GMT->current.proj.t_c4)));
-	GMT->current.proj.t_r = GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor;
-	GMT->current.proj.t_ir = 1.0 / GMT->current.proj.t_r;
-}
-
-/* Ellipsoidal TM functions */
-
-void GMT_tm (struct GMT_CTRL *P, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to TM x/y */
-	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A5, s, c, s2, c2;
-
-	if (doubleAlmostEqual (fabs (lat), 90.0)) {
-		M = P->current.proj.EQ_RAD * P->current.proj.t_c1 * M_PI_2;
-		*x = 0.0;
-		*y = P->current.setting.proj_scale_factor * M;
-	}
-	else {
-		lat *= D2R;
-		sincos (lat, &s, &c);
-		sincos (2.0 * lat, &s2, &c2);
-		tan_lat = s / c;
-		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + c2 * (P->current.proj.t_c3 + c2 * P->current.proj.t_c4)));
-		dlon = lon - P->current.proj.central_meridian;
-		if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
-		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
-		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s * s);
-		T = tan_lat * tan_lat;
-		T2 = T * T;
-		C = P->current.proj.t_e2 * c * c;
-		A = dlon * D2R * c;
-		A2 = A * A;	A3 = A2 * A;	A5 = A3 * A2;
-		*x = P->current.setting.proj_scale_factor * N * (A + (1.0 - T + C) * (A3 * 0.16666666666666666667)
-			+ (5.0 - 18.0 * T + T2 + 72.0 * C - 58.0 * P->current.proj.t_e2) * (A5 * 0.00833333333333333333));
-		A3 *= A;	A5 *= A;
-		*y = P->current.setting.proj_scale_factor * (M - P->current.proj.t_M0 + N * tan_lat * (0.5 * A2 + (5.0 - T + 9.0 * C + 4.0 * C * C) * (A3 * 0.04166666666666666667)
-			+ (61.0 - 58.0 * T + T2 + 600.0 * C - 330.0 * P->current.proj.t_e2) * (A5 * 0.00138888888888888889)));
-	}
-}
-
-void GMT_itm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert TM x/y to lon/lat */
-	double M, mu, u2, s, c, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D5, tan_phi1, cp2;
-
-	M = y / GMT->current.setting.proj_scale_factor + GMT->current.proj.t_M0;
-	mu = M * GMT->current.proj.t_i1;
-
-	u2 = 2.0 * mu;
-	sincos (u2, &s, &c);
-	phi1 = mu + s * (GMT->current.proj.t_i2 + c * (GMT->current.proj.t_i3 + c * (GMT->current.proj.t_i4 + c * GMT->current.proj.t_i5)));
-
-	sincos (phi1, &s, &c);
-	tan_phi1 = s / c;
-	cp2 = c * c;
-	C1 = GMT->current.proj.t_e2 * cp2;
-	C12 = C1 * C1;
-	T1 = tan_phi1 * tan_phi1;
-	T12 = T1 * T1;
-	tmp = 1.0 - GMT->current.proj.ECC2 * (1.0 - cp2);
-	tmp2 = d_sqrt (tmp);
-	N1 = GMT->current.proj.EQ_RAD / tmp2;
-	R_1 = GMT->current.proj.EQ_RAD * GMT->current.proj.one_m_ECC2 / (tmp * tmp2);
-	D = x / (N1 * GMT->current.setting.proj_scale_factor);
-	D2 = D * D;	D3 = D2 * D;	D5 = D3 * D2;
-
-	*lon = GMT->current.proj.central_meridian + R2D * (D - (1.0 + 2.0 * T1 + C1) * (D3 * 0.16666666666666666667)
-		+ (5.0 - 2.0 * C1 + 28.0 * T1 - 3.0 * C12 + 8.0 * GMT->current.proj.t_e2 + 24.0 * T12)
-		* (D5 * 0.00833333333333333333)) / c;
-	D3 *= D;	D5 *= D;
-	*lat = phi1 - (N1 * tan_phi1 / R_1) * (0.5 * D2 -
-		(5.0 + 3.0 * T1 + 10.0 * C1 - 4.0 * C12 - 9.0 * GMT->current.proj.t_e2) * (D3 * 0.04166666666666666667)
-		+ (61.0 + 90.0 * T1 + 298 * C1 + 45.0 * T12 - 252.0 * GMT->current.proj.t_e2 - 3.0 * C12) * (D5 * 0.00138888888888888889));
-	(*lat) *= R2D;
-}
-
-/*Spherical TM functions */
-
-void GMT_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to TM x/y by spherical formula */
-	double dlon, b, clat, slat, clon, slon, xx, yy;
-
-	dlon = lon - GMT->current.proj.central_meridian;
-	if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
-	if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
-
-	if (fabs (lat) > 90.0) {
-		/* Invalid latitude.  Treat as in GMT_merc_sph(), but transversely:  */
-		*x = copysign (1.0e100, dlon);
-		*y = 0.0;
-		return;
-	}
-
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
-
-	sincosd (lat, &slat, &clat);
-	sincosd (dlon, &slon, &clon);
-	b = clat * slon;
-	if (fabs(b) >= 1.0) {
-		/* This corresponds to the transverse "pole"; the point at x = +-infinity, y = -lat0.
-			Treat as in GMT_merc_sph(), but transversely:  */
-		*x = copysign (1.0e100, dlon);
-		*y = -GMT->current.proj.t_r * GMT->current.proj.t_lat0;
-		return;
-	}
-
-	xx = atanh (b);
-
-	/* this should get us "over the pole";
-	   see not Snyder's formula but his example Fig. 10 on p. 50:  */
-
-	yy = atan2 (slat, (clat * clon)) - GMT->current.proj.t_lat0;
-	if (yy < -M_PI_2) yy += TWO_PI;
-	*x = GMT->current.proj.t_r * xx;
-	*y = GMT->current.proj.t_r * yy;
-}
-
-void GMT_itm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert TM x/y to lon/lat by spherical approximation.  */
-
-	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi;
-
-	xx = x * GMT->current.proj.t_ir;
-	yy = y * GMT->current.proj.t_ir + GMT->current.proj.t_lat0;
-
-	sinhxx = sinh (xx);
-	coshxx = cosh (xx);
-
-	sincos (yy, &sind, &cosd);
-	phi = asind (sind / coshxx);
-	*lat = phi;
-
-	lambda = atan2d (sinhxx, cosd);
-	*lon = lambda + GMT->current.proj.central_meridian;
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
-}
-
-/* -JU UNIVERSAL TRANSVERSE MERCATOR PROJECTION */
-
-/* Ellipsoidal UTM */
-
-void GMT_utm (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to UTM x/y */
-
-	if (lon < 0.0) lon += 360.0;
-	GMT_tm (GMT, lon, lat, x, y);
-	(*x) += GMT_FALSE_EASTING;
-	if (!GMT->current.proj.north_pole) (*y) += GMT_FALSE_NORTHING;	/* For S hemisphere, add 10^7 m */
-}
-
-void GMT_iutm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert UTM x/y to lon/lat */
-
-	x -= GMT_FALSE_EASTING;
-	if (!GMT->current.proj.north_pole) y -= GMT_FALSE_NORTHING;
-	GMT_itm (GMT, lon, lat, x, y);
-}
-
-/* Spherical UTM */
-
-void GMT_utm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to UTM x/y */
-
-	if (lon < 0.0) lon += 360.0;
-	GMT_tm_sph (GMT, lon, lat, x, y);
-	(*x) += GMT_FALSE_EASTING;
-	if (!GMT->current.proj.north_pole) (*y) += GMT_FALSE_NORTHING;	/* For S hemisphere, add 10^7 m */
-}
-
-void GMT_iutm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert UTM x/y to lon/lat */
-
-	x -= GMT_FALSE_EASTING;
-	if (!GMT->current.proj.north_pole) y -= GMT_FALSE_NORTHING;
-	GMT_itm_sph (GMT, lon, lat, x, y);
-}
-
-/* -JA LAMBERT AZIMUTHAL EQUAL AREA PROJECTION */
-
-void GMT_vlambeq (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
-	/* Set up Spherical Lambert Azimuthal Equal-Area projection */
-
-	GMT->current.proj.central_meridian = lon0;
-	GMT->current.proj.pole = lat0;
-	if (GMT->current.proj.GMT_convert_latitudes) lat0 = GMT_latg_to_lata (GMT, lat0);
-	sincosd (lat0, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));
-	GMT->current.proj.f_horizon = horizon;
-	GMT->current.proj.rho_max = 2.0 * sind (0.5 * horizon) * GMT->current.proj.EQ_RAD;
-}
-
-void GMT_lambeq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert lon/lat to Spherical Lambert Azimuthal Equal-Area x/y */
-	double k, tmp, sin_lat, cos_lat, sin_lon, cos_lon, c;
-
-	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
-	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_lata (GMT, lat);
-	sincosd (lat, &sin_lat, &cos_lat);
-	sincosd (lon, &sin_lon, &cos_lon);
-	c = cos_lat * cos_lon;
-	tmp = 1.0 + GMT->current.proj.sinp * sin_lat + GMT->current.proj.cosp * c;
-	if (tmp > 0.0) {
-		k = GMT->current.proj.EQ_RAD * d_sqrt (2.0 / tmp);
-		*x = k * cos_lat * sin_lon;
-		*y = k * (GMT->current.proj.cosp * sin_lat - GMT->current.proj.sinp * c);
-		if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
-			(*x) *= GMT->current.proj.Dx;
-			(*y) *= GMT->current.proj.Dy;
-		}
-	}
-	else
-		*x = *y = -DBL_MAX;
-}
-
-void GMT_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert Lambert Azimuthal Equal-Area x/y to lon/lat */
-	double rho, a, sin_c, cos_c;
-
-	if (GMT->current.proj.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
-		x *= GMT->current.proj.iDx;
-		y *= GMT->current.proj.iDy;
-	}
-
-	rho = hypot (x, y);
-	if (rho > GMT->current.proj.rho_max) {			/* Horizon		*/
-		*lat = *lon = GMT->session.d_NaN;
-		return;
-	}
-	a = 0.5 * rho * GMT->current.proj.i_EQ_RAD;			/* a = sin(c/2)		*/
-	a *= a;							/* a = sin(c/2)**2	*/
-	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
-	sin_c = sqrt (1.0 - a) * GMT->current.proj.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
-	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
-	*lon = d_atan2d (x * sin_c, GMT->current.proj.cosp * cos_c - y * GMT->current.proj.sinp * sin_c) + GMT->current.proj.central_meridian;
-	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_lata_to_latg (GMT, *lat);
-}
-
-/* -JG GENERAL PERSPECTIVE PROJECTION */
-
-/* Set up General Perspective projection */
-
-void gmt_genper_to_xtyt (struct GMT_CTRL *GMT, double angle, double x, double y, double offset, double *xt, double *yt) {
-	double A, theta, xp, yp;
-
-	theta = GMT->current.proj.g_azimuth - angle;
-
-	A = (y * GMT->current.proj.g_cos_azimuth + x * GMT->current.proj.g_sin_azimuth) * GMT->current.proj.g_sin_tilt / GMT->current.proj.g_H + GMT->current.proj.g_cos_tilt;
-
-	if (A > 0.0) {
-		xp = (x * GMT->current.proj.g_cos_azimuth - y * GMT->current.proj.g_sin_azimuth) * GMT->current.proj.g_cos_tilt / A;
-		yp = (y * GMT->current.proj.g_cos_azimuth + x * GMT->current.proj.g_sin_azimuth) / A;
-		if (fabs(yp) > fabs(GMT->current.proj.g_max_yt)) {
-			yp = -GMT->current.proj.g_max_yt;
-			xp = -yp * tand(theta);
-		}
-	}
-	else {
-		yp = -GMT->current.proj.g_max_yt;
-		xp = -yp * tand(theta);
-	}
-
-	yp -= offset;
-
-	*xt = xp * GMT->current.proj.g_cos_twist - yp * GMT->current.proj.g_sin_twist;
-	*yt = yp * GMT->current.proj.g_cos_twist + xp * GMT->current.proj.g_sin_twist;
-
-	return;
 }
 
 /* conversion from geodetic latitude to geocentric latitude */
 
-double gmt_genper_getgeocentric (struct GMT_CTRL *GMT, double phi, double h) {
+GMT_LOCAL double proj_genper_getgeocentric (struct GMT_CTRL *GMT, double phi, double h) {
 	double phig, sphi, cphi, N1;
 
 	sincosd (phi, &sphi, &cphi);
@@ -934,7 +187,7 @@ double gmt_genper_getgeocentric (struct GMT_CTRL *GMT, double phi, double h) {
 	return (phig);
 }
 
-void gmt_genper_toxy (struct GMT_CTRL *P, double lat, double lon, double h, double *x, double *y) {
+GMT_LOCAL void proj_genper_toxy (struct GMT_CTRL *P, double lat, double lon, double h, double *x, double *y) {
 	double angle;
 	double xp, yp, rp;
 	double N, C, S, K;
@@ -989,7 +242,35 @@ void gmt_genper_toxy (struct GMT_CTRL *P, double lat, double lon, double h, doub
 	}
 }
 
-int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, double *lat, double *lon) {
+GMT_LOCAL void proj_genper_to_xtyt (struct GMT_CTRL *GMT, double angle, double x, double y, double offset, double *xt, double *yt) {
+	double A, theta, xp, yp;
+
+	theta = GMT->current.proj.g_azimuth - angle;
+
+	A = (y * GMT->current.proj.g_cos_azimuth + x * GMT->current.proj.g_sin_azimuth) * GMT->current.proj.g_sin_tilt / GMT->current.proj.g_H + GMT->current.proj.g_cos_tilt;
+
+	if (A > 0.0) {
+		xp = (x * GMT->current.proj.g_cos_azimuth - y * GMT->current.proj.g_sin_azimuth) * GMT->current.proj.g_cos_tilt / A;
+		yp = (y * GMT->current.proj.g_cos_azimuth + x * GMT->current.proj.g_sin_azimuth) / A;
+		if (fabs(yp) > fabs(GMT->current.proj.g_max_yt)) {
+			yp = -GMT->current.proj.g_max_yt;
+			xp = -yp * tand(theta);
+		}
+	}
+	else {
+		yp = -GMT->current.proj.g_max_yt;
+		xp = -yp * tand(theta);
+	}
+
+	yp -= offset;
+
+	*xt = xp * GMT->current.proj.g_cos_twist - yp * GMT->current.proj.g_sin_twist;
+	*yt = yp * GMT->current.proj.g_cos_twist + xp * GMT->current.proj.g_sin_twist;
+
+	return;
+}
+
+GMT_LOCAL int proj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, double *lat, double *lon) {
 	double P, H, B, D;
 	double u, v, t, Kp, X, Y;
 	double E, S;
@@ -1024,7 +305,7 @@ int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, do
 
 	if (GMT->current.proj.g_debug > 1) {
 		gmt_message (GMT, "\n");
-		gmt_message (GMT, "gmt_genper_tolatlong - 1 \n");
+		gmt_message (GMT, "proj_genper_tolatlong - 1 \n");
 		gmt_message (GMT, "x    %12.1f\n", x);
 		gmt_message (GMT, "y    %12.1f\n", y);
 		gmt_message (GMT, "\n");
@@ -1052,7 +333,7 @@ int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, do
 
 	if (set_exit == 1) {
 		gmt_message (GMT, "\n");
-		gmt_message (GMT, "gmt_genper_tolatlong - 2\n");
+		gmt_message (GMT, "proj_genper_tolatlong - 2\n");
 		gmt_message (GMT, "x    %12.1f\n", x);
 		gmt_message (GMT, "y    %12.1f\n", y);
 		gmt_message (GMT, "\n");
@@ -1090,7 +371,7 @@ int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, do
 
 		if (GMT_is_dnan(E)) set_exit++;
 
-		if (set_exit == 1) gmt_message (GMT, "gmt_genper_tolatlong - 3\n");
+		if (set_exit == 1) gmt_message (GMT, "proj_genper_tolatlong - 3\n");
 		if (GMT->current.proj.g_debug > 1 || set_exit) {
 			gmt_message (GMT, "asinS %12.7f\n", asind(S));
 			gmt_message (GMT, "phi   %12.7f\n", R2D*phi);
@@ -1115,7 +396,7 @@ int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, do
 			E = t1 * t1 - e2*sphi*sphi*(1.0/(1.0 - e2*sphi*sphi) - t2);
 
 			if (GMT_is_dnan(Kp) || GMT_is_dnan(X) || GMT_is_dnan(Y) || GMT_is_dnan(S) || GMT_is_dnan(phi) || GMT_is_dnan(E)) set_exit++;
-			if (set_exit == 1) gmt_message (GMT, "gmt_genper_tolatlong - 4 \n");
+			if (set_exit == 1) gmt_message (GMT, "proj_genper_tolatlong - 4 \n");
 			if (set_exit || GMT->current.proj.g_debug > 1) {
 				gmt_message (GMT, "\niter %d\n", niter);
 				gmt_message (GMT, "t    %12.7f\n", t);
@@ -1129,7 +410,7 @@ int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, do
 		}
 		while (fabs(phi - phi_last) > 1e-7);
 	}
-	if (set_exit == 1) gmt_message (GMT, "gmt_genper_tolatlong - 5\n");
+	if (set_exit == 1) gmt_message (GMT, "proj_genper_tolatlong - 5\n");
 	if (set_exit || GMT->current.proj.g_debug > 1) {
 		gmt_message (GMT, "phi    %12.7f\n", phi*R2D);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -1139,7 +420,7 @@ int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, do
 	return (GMT_OK);
 }
 
-void gmt_genper_setup (struct GMT_CTRL *GMT, double h0, double altitude, double lat, double lon0) {
+GMT_LOCAL void proj_genper_setup (struct GMT_CTRL *GMT, double h0, double altitude, double lat, double lon0) {
 /* if ellipsoid lat0 is geodetic latitude and must convert to geocentric latitude */
 
 	double N1, phig_last;
@@ -1251,7 +532,803 @@ void gmt_genper_setup (struct GMT_CTRL *GMT, double h0, double altitude, double 
 	return;
 }
 
-void GMT_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitude, double azimuth, double tilt, double twist, double width, double height) {
+/* LINEAR TRANSFORMATIONS */
+
+void gmt_translin (struct GMT_CTRL *GMT, double forw, double *inv)	/* Linear forward */ {
+	GMT_UNUSED(GMT);
+	*inv = forw;
+}
+
+void gmt_translind (struct GMT_CTRL *GMT, double forw, double *inv)	/* Linear forward, but with degrees*/ {
+	GMT_WIND_LON (GMT, forw)	/* Make sure forw is in -180/+180 range after removing central meridian */
+	*inv = forw ;
+}
+
+void gmt_itranslind (struct GMT_CTRL *GMT, double *forw, double inv)	/* Linear inverse, but with degrees*/ {
+	while (inv < -GMT_180) inv += 360.0;
+	while (inv > +GMT_180) inv -= 360.0;
+	*forw = inv + GMT->current.proj.central_meridian;
+}
+
+void gmt_itranslin (struct GMT_CTRL *GMT, double *forw, double inv)	/* Linear inverse */ {
+	GMT_UNUSED(GMT);
+	*forw = inv;
+}
+
+void gmt_translog10 (struct GMT_CTRL *GMT, double forw, double *inv)	/* Log10 forward */ {
+	*inv = d_log10 (GMT, forw);
+}
+
+void gmt_itranslog10 (struct GMT_CTRL *GMT, double *forw, double inv) /* Log10 inverse */ {
+	GMT_UNUSED(GMT);
+	*forw = pow (10.0, inv);
+}
+
+void gmt_transpowx (struct GMT_CTRL *GMT, double x, double *x_in)	/* pow x forward */ {
+	*x_in = pow (x, GMT->current.proj.xyz_pow[GMT_X]);
+}
+
+void gmt_itranspowx (struct GMT_CTRL *GMT, double *x, double x_in) /* pow x inverse */ {
+	*x = pow (x_in, GMT->current.proj.xyz_ipow[GMT_X]);
+}
+
+void gmt_transpowy (struct GMT_CTRL *GMT, double y, double *y_in)	/* pow y forward */ {
+	*y_in = pow (y, GMT->current.proj.xyz_pow[GMT_Y]);
+}
+
+void gmt_itranspowy (struct GMT_CTRL *GMT, double *y, double y_in) /* pow y inverse */ {
+	*y = pow (y_in, GMT->current.proj.xyz_ipow[GMT_Y]);
+}
+
+void gmt_transpowz (struct GMT_CTRL *GMT, double z, double *z_in)	/* pow z forward */ {
+	*z_in = pow (z, GMT->current.proj.xyz_pow[GMT_Z]);
+}
+
+void gmt_itranspowz (struct GMT_CTRL *GMT, double *z, double z_in) /* pow z inverse */ {
+	*z = pow (z_in, GMT->current.proj.xyz_ipow[GMT_Z]);
+}
+
+/* -JP POLAR (r-theta) PROJECTION */
+
+void gmt_vpolar (struct GMT_CTRL *GMT, double lon0) {
+	/* Set up a Polar (theta,r) transformation */
+
+	GMT->current.proj.p_base_angle = lon0;
+	GMT->current.proj.central_meridian = 0.5 * (GMT->common.R.wesn[XHI] + GMT->common.R.wesn[XLO]);
+
+	/* Plus pretend that it is kind of a geographic polar projection */
+
+	GMT->current.proj.north_pole = GMT->current.proj.got_elevations;
+	GMT->current.proj.pole = (GMT->current.proj.got_elevations) ? 90.0 : 0.0;
+}
+
+void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i) {
+	/* Transform x and y to polar(cylindrical) coordinates */
+	if (GMT->current.proj.got_azimuths) x = 90.0 - x;		/* azimuths, not directions */
+	if (GMT->current.proj.got_elevations) y = 90.0 - y;		/* elevations */
+	sincosd (x - GMT->current.proj.p_base_angle, y_i, x_i);	/* Change base line angle */
+	(*x_i) *= y;
+	(*y_i) *= y;
+}
+
+void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double y_i) {
+	/* Inversely transform both x and y from polar(cylindrical) coordinates */
+	*x = d_atan2d (y_i, x_i) + GMT->current.proj.p_base_angle;
+	if (GMT->current.proj.got_azimuths) *x = 90.0 - (*x);		/* azimuths, not directions */
+	*y = hypot (x_i, y_i);
+	if (GMT->current.proj.got_elevations) *y = 90.0 - (*y);    /* elevations, presumably */
+}
+
+/* -JM MERCATOR PROJECTION */
+
+void gmt_vmerc (struct GMT_CTRL *GMT, double lon0, double slat) {
+	/* Set up a Mercator transformation */
+
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - GMT->current.proj.ECC2 * sind (slat) * sind (slat)) * GMT->current.proj.EQ_RAD;
+	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+}
+
+/* Mercator projection for the sphere */
+
+void gmt_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Mercator x/y (GMT->current.proj.EQ_RAD in GMT->current.proj.j_x) */
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
+
+	*x = GMT->current.proj.j_x * D2R * lon;
+	*y = (fabs (lat) < 90.0) ? GMT->current.proj.j_x * d_log (GMT, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
+}
+
+void gmt_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Mercator x/y to lon/lat  (GMT->current.proj.EQ_RAD in GMT->current.proj.j_ix) */
+
+	*lon = x * GMT->current.proj.j_ix * R2D + GMT->current.proj.central_meridian;
+	*lat = atand (sinh (y * GMT->current.proj.j_ix));
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
+}
+
+/* -JY CYLINDRICAL EQUAL-AREA PROJECTION */
+
+void gmt_vcyleq (struct GMT_CTRL *GMT, double lon0, double slat) {
+	/* Set up a Cylindrical equal-area transformation */
+
+	proj_check_R_J (GMT, &lon0);
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.j_x = GMT->current.proj.EQ_RAD * D2R * cosd (slat);
+	GMT->current.proj.j_y = GMT->current.proj.EQ_RAD / cosd (slat);
+	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
+}
+
+void gmt_cyleq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Cylindrical equal-area x/y */
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_lata (GMT, lat);
+
+	*x = lon * GMT->current.proj.j_x;
+	*y = GMT->current.proj.j_y * sind (lat);
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
+		(*x) *= GMT->current.proj.Dx;
+		(*y) *= GMT->current.proj.Dy;
+	}
+}
+
+void gmt_icyleq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Cylindrical equal-area x/y to lon/lat */
+
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
+		x *= GMT->current.proj.iDx;
+		y *= GMT->current.proj.iDy;
+	}
+	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
+	*lat = d_asind (y * GMT->current.proj.j_iy);
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_lata_to_latg (GMT, *lat);
+}
+
+/* -JQ CYLINDRICAL EQUIDISTANT PROJECTION */
+
+void gmt_vcyleqdist (struct GMT_CTRL *GMT, double lon0, double slat) {
+	/* Set up a Cylindrical equidistant transformation */
+
+	proj_check_R_J (GMT, &lon0);
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD * cosd (slat);
+	GMT->current.proj.j_y = D2R * GMT->current.proj.EQ_RAD;
+	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
+}
+
+void gmt_cyleqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Cylindrical equidistant x/y */
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	*x = lon * GMT->current.proj.j_x;
+	*y = lat * GMT->current.proj.j_y;
+}
+
+void gmt_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Cylindrical equal-area x/y to lon/lat */
+
+	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
+	*lat = y * GMT->current.proj.j_iy;
+}
+
+/* -JJ MILLER CYLINDRICAL PROJECTION */
+
+void gmt_vmiller (struct GMT_CTRL *GMT, double lon0) {
+	/* Set up a Miller Cylindrical transformation */
+
+	proj_check_R_J (GMT, &lon0);
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.j_x = D2R * GMT->current.proj.EQ_RAD;
+	GMT->current.proj.j_y = 1.25 * GMT->current.proj.EQ_RAD;
+	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
+}
+
+void gmt_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Miller Cylindrical x/y */
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	*x = lon * GMT->current.proj.j_x;
+	*y = GMT->current.proj.j_y * d_log (GMT, tand (45.0 + 0.4 * lat));
+}
+
+void gmt_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Miller Cylindrical x/y to lon/lat */
+
+	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
+	*lat = 2.5 * atand (exp (y * GMT->current.proj.j_iy)) - 112.5;
+}
+
+/* -JCyl_stere CYLINDRICAL STEREOGRAPHIC PROJECTION */
+
+void gmt_vcylstereo (struct GMT_CTRL *GMT, double lon0, double slat) {
+	/* Set up a Cylindrical Stereographic transformation */
+
+	proj_check_R_J (GMT, &lon0);
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.j_x = GMT->current.proj.EQ_RAD * D2R * cosd (slat);
+	GMT->current.proj.j_y = GMT->current.proj.EQ_RAD * (1.0 + cosd (slat));
+	GMT->current.proj.j_ix = 1.0 / GMT->current.proj.j_x;
+	GMT->current.proj.j_iy = 1.0 / GMT->current.proj.j_y;
+}
+
+void gmt_cylstereo (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Cylindrical Stereographic x/y */
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	*x = lon * GMT->current.proj.j_x;
+	*y = GMT->current.proj.j_y * tand (0.5 * lat);
+}
+
+void gmt_icylstereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Cylindrical Stereographic x/y to lon/lat */
+
+	*lon = x * GMT->current.proj.j_ix + GMT->current.proj.central_meridian;
+	*lat = 2.0 * atand (y * GMT->current.proj.j_iy);
+}
+
+/* -JS POLAR STEREOGRAPHIC PROJECTION */
+
+void gmt_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
+	/* Set up a Stereographic transformation */
+
+	double clat;
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Set Conformal radius and pole latitude */
+		gmt_scale_eqrad (GMT);
+		clat = GMT_latg_to_latc (GMT, lat0);
+	}
+	else
+		clat = lat0;
+
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.pole = lat0;		/* This is always geodetic */
+	sincosd (clat, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));	/* These may be conformal */
+	GMT->current.proj.north_pole = (lat0 > 0.0);
+	GMT->current.proj.s_c = 2.0 * GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor;
+	GMT->current.proj.s_ic = 1.0 / GMT->current.proj.s_c;
+	GMT->current.proj.f_horizon = horizon;
+	GMT->current.proj.rho_max = tand (0.5 * horizon) * GMT->current.proj.s_c;
+}
+
+void gmt_plrs_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to x/y using Spherical polar projection */
+	double rho, slon, clon;
+
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	sincosd (lon, &slon, &clon);
+	if (GMT->current.proj.north_pole) {
+		rho = GMT->current.proj.s_c * tand (45.0 - 0.5 * lat);
+		*y = -rho * clon;
+		*x =  rho * slon;
+	}
+	else {
+		rho = GMT->current.proj.s_c * tand (45.0 + 0.5 * lat);
+		*y = rho * clon;
+		*x = rho * slon;
+	}
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
+		(*x) *= GMT->current.proj.Dx;
+		(*y) *= GMT->current.proj.Dy;
+	}
+}
+
+void gmt_iplrs_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Spherical polar x/y to lon/lat */
+	double c;
+
+	if (x == 0.0 && y == 0.0) {
+		*lon = GMT->current.proj.central_meridian;
+		*lat = GMT->current.proj.pole;
+		return;
+	}
+
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
+		x *= GMT->current.proj.iDx;
+		y *= GMT->current.proj.iDy;
+	}
+	c = 2.0 * atan (hypot (x, y) * GMT->current.proj.s_ic);
+
+	if (GMT->current.proj.north_pole) {
+		*lon = GMT->current.proj.central_meridian + d_atan2d (x, -y);
+		*lat = d_asind (cos (c));
+	}
+	else {
+		*lon = GMT->current.proj.central_meridian + d_atan2d (x, y);
+		*lat = d_asind (-cos (c));
+	}
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
+
+}
+
+void gmt_stereo1_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to x/y using Spherical stereographic projection, oblique view */
+
+	double sin_dlon, cos_dlon, s, c, cc, A;
+
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
+	sincosd (lon - GMT->current.proj.central_meridian, &sin_dlon, &cos_dlon);
+	sincosd (lat, &s, &c);
+	cc = c * cos_dlon;
+	A = GMT->current.proj.s_c / (1.0 + GMT->current.proj.sinp * s + GMT->current.proj.cosp * cc);
+	*x = A * c * sin_dlon;
+	*y = A * (GMT->current.proj.cosp * s - GMT->current.proj.sinp * cc);
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
+		(*x) *= GMT->current.proj.Dx;
+		(*y) *= GMT->current.proj.Dy;
+	}
+}
+
+void gmt_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	double rho, c, sin_c, cos_c;
+
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
+		x *= GMT->current.proj.iDx;
+		y *= GMT->current.proj.iDy;
+	}
+	rho = hypot (x, y);
+	if (rho > GMT->current.proj.rho_max) {
+		*lat = *lon = GMT->session.d_NaN;
+		return;
+	}
+	c = 2.0 * atan (rho * GMT->current.proj.s_ic);
+	sincos (c, &sin_c, &cos_c);
+	if (rho != 0.0) sin_c /= rho;
+	*lat = asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
+	*lon = d_atan2d (x * sin_c, cos_c * GMT->current.proj.cosp - y * sin_c * GMT->current.proj.sinp) + GMT->current.proj.central_meridian;
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
+}
+
+/* Spherical equatorial view */
+
+void gmt_stereo2_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to x/y using stereographic projection, equatorial view */
+
+	double dlon, s, c, clon, slon, A;
+
+	dlon = lon - GMT->current.proj.central_meridian;
+	if (doubleAlmostEqual (dlon, 180.0)) {
+		*x = *y = 0.0;
+	}
+	else {
+		if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
+		sincosd (lat, &s, &c);
+		sincosd (dlon, &slon, &clon);
+		A = GMT->current.proj.s_c / (1.0 + c * clon);
+		*x = A * c * slon;
+		*y = A * s;
+		if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
+			(*x) *= GMT->current.proj.Dx;
+			(*y) *= GMT->current.proj.Dy;
+		}
+	}
+}
+
+/* -JL LAMBERT CONFORMAL CONIC PROJECTION */
+
+void gmt_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, double phb) {
+	/* Set up a Lambert Conformal Conic projection (Spherical when e = 0) */
+
+	double sin_pha, cos_pha, sin_phb, cos_phb, t_pha, m_pha, t_phb, m_phb, t_rlat0;
+
+	proj_check_R_J (GMT, &rlong0);
+	GMT->current.proj.north_pole = (GMT->common.R.wesn[YHI] > 0.0 && (GMT->common.R.wesn[YLO] >= 0.0 || (-GMT->common.R.wesn[YLO]) < GMT->common.R.wesn[YHI]));
+	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
+	sincosd (pha, &sin_pha, &cos_pha);
+	sincosd (phb, &sin_phb, &cos_phb);
+	
+	t_pha = tand (45.0 - 0.5 * pha) / pow ((1.0 - GMT->current.proj.ECC *
+		sin_pha) / (1.0 + GMT->current.proj.ECC * sin_pha), GMT->current.proj.half_ECC);
+	m_pha = cos_pha / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_pha * sin_pha);
+	t_phb = tand (45.0 - 0.5 * phb) / pow ((1.0 - GMT->current.proj.ECC *
+		sin_phb) / (1.0 + GMT->current.proj.ECC * sin_phb), GMT->current.proj.half_ECC);
+	m_phb = cos_phb / d_sqrt (1.0 - GMT->current.proj.ECC2 * sin_phb * sin_phb);
+	t_rlat0 = tand (45.0 - 0.5 * rlat0) /
+		pow ((1.0 - GMT->current.proj.ECC * sind (rlat0)) /
+		(1.0 + GMT->current.proj.ECC * sind (rlat0)), GMT->current.proj.half_ECC);
+
+	if (doubleAlmostEqualZero (pha, phb))
+		GMT->current.proj.l_N = sind (pha);
+	else
+		GMT->current.proj.l_N = (d_log (GMT, m_pha) - d_log (GMT, m_phb))/(d_log (GMT, t_pha) - d_log (GMT, t_phb));
+
+	GMT->current.proj.l_i_N = 1.0 / GMT->current.proj.l_N;
+	GMT->current.proj.l_F = m_pha / (GMT->current.proj.l_N * pow (t_pha, GMT->current.proj.l_N));
+	GMT->current.proj.central_meridian = rlong0;
+	GMT->current.proj.l_rF = GMT->current.proj.EQ_RAD * GMT->current.proj.l_F;
+	GMT->current.proj.l_i_rF = 1.0 / GMT->current.proj.l_rF;
+	GMT->current.proj.l_rho0 = GMT->current.proj.l_rF * pow (t_rlat0, GMT->current.proj.l_N);
+	GMT->current.proj.l_Nr = GMT->current.proj.l_N * D2R;
+	GMT->current.proj.l_i_Nr = 1.0 / GMT->current.proj.l_Nr;
+}
+
+void gmt_lamb (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	double rho, theta, hold1, hold2, hold3, es, s, c;
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	es = GMT->current.proj.ECC * sind (lat);
+	hold2 = pow ((1.0 - es) / (1.0 + es), GMT->current.proj.half_ECC);
+	hold3 = tand (45.0 - 0.5 * lat);
+	hold1 = pow (hold3 / hold2, GMT->current.proj.l_N);
+	rho = GMT->current.proj.l_rF * hold1;
+	theta = GMT->current.proj.l_Nr * lon;
+	sincos (theta, &s, &c);
+	*x = rho * s;
+	*y = GMT->current.proj.l_rho0 - rho * c;
+}
+
+void gmt_ilamb (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	int i;
+	double theta, rho, t, tphi, phi, dy, r;
+
+	dy = GMT->current.proj.l_rho0 - y;
+	theta = (GMT->current.proj.l_N < 0.0) ? d_atan2 (-x, -dy) : d_atan2 (x, dy);
+	*lon = theta * GMT->current.proj.l_i_Nr + GMT->current.proj.central_meridian;
+
+	rho = copysign (hypot (x, dy), GMT->current.proj.l_N);
+	t = pow (rho * GMT->current.proj.l_i_rF, GMT->current.proj.l_i_N);
+	phi = 0.0; tphi = 999.0;	/* Initialize phi = 0 */
+	for (i = 0; i < GMT_PROJ_MAX_ITERATIONS && fabs (tphi - phi) > GMT_PROJ_CONV_LIMIT; i++) {
+		tphi = phi;
+		r = GMT->current.proj.ECC * sin (phi);
+		phi = M_PI_2 - 2.0 * atan (t * pow ((1.0 - r) / (1.0 + r), GMT->current.proj.half_ECC));
+	}
+	*lat = phi * R2D;
+}
+
+/* Spherical cases of Lambert */
+
+void gmt_lamb_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	double rho, theta, t, s, c;
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
+
+	t = MAX (0.0, tand (45.0 - 0.5 * lat));	/* Guard against negative t */
+	rho = GMT->current.proj.l_rF * pow (t, GMT->current.proj.l_N);
+	theta = GMT->current.proj.l_Nr * lon;
+
+	sincos (theta, &s, &c);
+	*x = rho * s;
+	*y = GMT->current.proj.l_rho0 - rho * c;
+}
+
+void gmt_ilamb_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	double theta, rho, t, dy;
+
+	dy = GMT->current.proj.l_rho0 - y;
+	theta = (GMT->current.proj.l_N < 0.0) ? d_atan2 (-x, -dy) : d_atan2 (x, dy);
+	*lon = theta * GMT->current.proj.l_i_Nr + GMT->current.proj.central_meridian;
+
+	rho = copysign (hypot (x, dy), GMT->current.proj.l_N);
+	t = pow (rho * GMT->current.proj.l_i_rF, GMT->current.proj.l_i_N);
+	*lat = 90.0 - 2.0 * atand (t);
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
+}
+
+/* -JO OBLIQUE MERCATOR PROJECTION */
+
+void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert a longitude/latitude point to Oblique Mercator coordinates
+	 * by way of rotation coordinates and then using regular Mercator */
+	double tlon, tlat;
+
+	gmt_obl (GMT, lon * D2R, lat * D2R, &tlon, &tlat);
+
+	*x = GMT->current.proj.j_x * tlon;
+	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) : copysign (DBL_MAX, tlat);
+}
+
+void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert a longitude/latitude point from Oblique Mercator coordinates
+	 * by way of regular Mercator and then rotate coordinates */
+	double tlon, tlat;
+
+	tlon = x * GMT->current.proj.j_ix;
+	tlat = atan (sinh (y * GMT->current.proj.j_ix));
+
+	gmt_iobl (GMT, lon, lat, tlon, tlat);
+
+	(*lon) *= R2D;	(*lat) *= R2D;
+}
+
+void gmt_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double *olat) {
+	/* Convert a longitude/latitude point to Oblique lon/lat (all in rads) */
+	double p_cross_x[3], X[3];
+
+	GMT_geo_to_cart (GMT, lat, lon, X, false);
+
+	*olat = d_asin (GMT_dot3v (GMT, X, GMT->current.proj.o_FP));
+
+	GMT_cross3v (GMT, GMT->current.proj.o_FP, X, p_cross_x);
+	GMT_normalize3v (GMT, p_cross_x);
+
+	*olon = copysign (d_acos (GMT_dot3v (GMT, p_cross_x, GMT->current.proj.o_FC)), GMT_dot3v (GMT, X, GMT->current.proj.o_FC));
+}
+
+void gmt_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat) {
+	/* Convert a longitude/latitude point from Oblique lon/lat  (all in rads) */
+	double p_cross_x[3], X[3];
+
+	GMT_geo_to_cart (GMT, olat, olon, X, false);
+	*lat = d_asin (GMT_dot3v (GMT, X, GMT->current.proj.o_IP));
+
+	GMT_cross3v (GMT, GMT->current.proj.o_IP, X, p_cross_x);
+	GMT_normalize3v (GMT, p_cross_x);
+
+	*lon = copysign (d_acos (GMT_dot3v (GMT, p_cross_x, GMT->current.proj.o_IC)), GMT_dot3v (GMT, X, GMT->current.proj.o_IC));
+
+	while ((*lon) < 0.0) (*lon) += TWO_PI;
+	while ((*lon) >= TWO_PI) (*lon) -= TWO_PI;
+}
+
+/* -JT TRANSVERSE MERCATOR PROJECTION */
+
+void gmt_vtm (struct GMT_CTRL *GMT, double lon0, double lat0) {
+	/* Set up an TM projection */
+	double e1, s2, c2;
+
+	/* proj_check_R_J (&lon0); */
+	e1 = (1.0 - d_sqrt (GMT->current.proj.one_m_ECC2)) / (1.0 + d_sqrt (GMT->current.proj.one_m_ECC2));
+	GMT->current.proj.t_e2 = GMT->current.proj.ECC2 * GMT->current.proj.i_one_m_ECC2;
+	GMT->current.proj.t_c1 = 1.0 - (1.0/4.0) * GMT->current.proj.ECC2 - (3.0/64.0) * GMT->current.proj.ECC4 - (5.0/256.0) * GMT->current.proj.ECC6;
+	GMT->current.proj.t_c2 = -((3.0/8.0) * GMT->current.proj.ECC2 + (3.0/32.0) * GMT->current.proj.ECC4 + (25.0/768.0) * GMT->current.proj.ECC6);
+	GMT->current.proj.t_c3 = (15.0/128.0) * GMT->current.proj.ECC4 + (45.0/512.0) * GMT->current.proj.ECC6;
+	GMT->current.proj.t_c4 = -(35.0/768.0) * GMT->current.proj.ECC6;
+	GMT->current.proj.t_i1 = 1.0 / (GMT->current.proj.EQ_RAD * GMT->current.proj.t_c1);
+	GMT->current.proj.t_i2 = (3.0/2.0) * e1 - (29.0/12.0) * pow (e1, 3.0);
+	GMT->current.proj.t_i3 = (21.0/8.0) * e1 * e1 - (1537.0/128.0) * pow (e1, 4.0);
+	GMT->current.proj.t_i4 = (151.0/24.0) * pow (e1, 3.0);
+	GMT->current.proj.t_i5 = (1097.0/64.0) * pow (e1, 4.0);
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.t_lat0 = lat0 * D2R;	/* In radians */
+	sincos (2.0 * GMT->current.proj.t_lat0, &s2, &c2);
+	GMT->current.proj.t_M0 = GMT->current.proj.EQ_RAD * (GMT->current.proj.t_c1 * GMT->current.proj.t_lat0 + s2 * (GMT->current.proj.t_c2 + c2 * (GMT->current.proj.t_c3 + c2 * GMT->current.proj.t_c4)));
+	GMT->current.proj.t_r = GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor;
+	GMT->current.proj.t_ir = 1.0 / GMT->current.proj.t_r;
+}
+
+/* Ellipsoidal TM functions */
+
+void gmt_tm (struct GMT_CTRL *P, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to TM x/y */
+	double N, T, T2, C, A, M, dlon, tan_lat, A2, A3, A5, s, c, s2, c2;
+
+	if (doubleAlmostEqual (fabs (lat), 90.0)) {
+		M = P->current.proj.EQ_RAD * P->current.proj.t_c1 * M_PI_2;
+		*x = 0.0;
+		*y = P->current.setting.proj_scale_factor * M;
+	}
+	else {
+		lat *= D2R;
+		sincos (lat, &s, &c);
+		sincos (2.0 * lat, &s2, &c2);
+		tan_lat = s / c;
+		M = P->current.proj.EQ_RAD * (P->current.proj.t_c1 * lat + s2 * (P->current.proj.t_c2 + c2 * (P->current.proj.t_c3 + c2 * P->current.proj.t_c4)));
+		dlon = lon - P->current.proj.central_meridian;
+		if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
+		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+		N = P->current.proj.EQ_RAD / d_sqrt (1.0 - P->current.proj.ECC2 * s * s);
+		T = tan_lat * tan_lat;
+		T2 = T * T;
+		C = P->current.proj.t_e2 * c * c;
+		A = dlon * D2R * c;
+		A2 = A * A;	A3 = A2 * A;	A5 = A3 * A2;
+		*x = P->current.setting.proj_scale_factor * N * (A + (1.0 - T + C) * (A3 * 0.16666666666666666667)
+			+ (5.0 - 18.0 * T + T2 + 72.0 * C - 58.0 * P->current.proj.t_e2) * (A5 * 0.00833333333333333333));
+		A3 *= A;	A5 *= A;
+		*y = P->current.setting.proj_scale_factor * (M - P->current.proj.t_M0 + N * tan_lat * (0.5 * A2 + (5.0 - T + 9.0 * C + 4.0 * C * C) * (A3 * 0.04166666666666666667)
+			+ (61.0 - 58.0 * T + T2 + 600.0 * C - 330.0 * P->current.proj.t_e2) * (A5 * 0.00138888888888888889)));
+	}
+}
+
+void gmt_itm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert TM x/y to lon/lat */
+	double M, mu, u2, s, c, phi1, C1, C12, T1, T12, tmp, tmp2, N1, R_1, D, D2, D3, D5, tan_phi1, cp2;
+
+	M = y / GMT->current.setting.proj_scale_factor + GMT->current.proj.t_M0;
+	mu = M * GMT->current.proj.t_i1;
+
+	u2 = 2.0 * mu;
+	sincos (u2, &s, &c);
+	phi1 = mu + s * (GMT->current.proj.t_i2 + c * (GMT->current.proj.t_i3 + c * (GMT->current.proj.t_i4 + c * GMT->current.proj.t_i5)));
+
+	sincos (phi1, &s, &c);
+	tan_phi1 = s / c;
+	cp2 = c * c;
+	C1 = GMT->current.proj.t_e2 * cp2;
+	C12 = C1 * C1;
+	T1 = tan_phi1 * tan_phi1;
+	T12 = T1 * T1;
+	tmp = 1.0 - GMT->current.proj.ECC2 * (1.0 - cp2);
+	tmp2 = d_sqrt (tmp);
+	N1 = GMT->current.proj.EQ_RAD / tmp2;
+	R_1 = GMT->current.proj.EQ_RAD * GMT->current.proj.one_m_ECC2 / (tmp * tmp2);
+	D = x / (N1 * GMT->current.setting.proj_scale_factor);
+	D2 = D * D;	D3 = D2 * D;	D5 = D3 * D2;
+
+	*lon = GMT->current.proj.central_meridian + R2D * (D - (1.0 + 2.0 * T1 + C1) * (D3 * 0.16666666666666666667)
+		+ (5.0 - 2.0 * C1 + 28.0 * T1 - 3.0 * C12 + 8.0 * GMT->current.proj.t_e2 + 24.0 * T12)
+		* (D5 * 0.00833333333333333333)) / c;
+	D3 *= D;	D5 *= D;
+	*lat = phi1 - (N1 * tan_phi1 / R_1) * (0.5 * D2 -
+		(5.0 + 3.0 * T1 + 10.0 * C1 - 4.0 * C12 - 9.0 * GMT->current.proj.t_e2) * (D3 * 0.04166666666666666667)
+		+ (61.0 + 90.0 * T1 + 298 * C1 + 45.0 * T12 - 252.0 * GMT->current.proj.t_e2 - 3.0 * C12) * (D5 * 0.00138888888888888889));
+	(*lat) *= R2D;
+}
+
+/*Spherical TM functions */
+
+void gmt_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to TM x/y by spherical formula */
+	double dlon, b, clat, slat, clon, slon, xx, yy;
+
+	dlon = lon - GMT->current.proj.central_meridian;
+	if (fabs (dlon) > 360.0) dlon += copysign (360.0, -dlon);
+	if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+
+	if (fabs (lat) > 90.0) {
+		/* Invalid latitude.  Treat as in gmt_merc_sph(), but transversely:  */
+		*x = copysign (1.0e100, dlon);
+		*y = 0.0;
+		return;
+	}
+
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (GMT, lat);
+
+	sincosd (lat, &slat, &clat);
+	sincosd (dlon, &slon, &clon);
+	b = clat * slon;
+	if (fabs(b) >= 1.0) {
+		/* This corresponds to the transverse "pole"; the point at x = +-infinity, y = -lat0.
+			Treat as in gmt_merc_sph(), but transversely:  */
+		*x = copysign (1.0e100, dlon);
+		*y = -GMT->current.proj.t_r * GMT->current.proj.t_lat0;
+		return;
+	}
+
+	xx = atanh (b);
+
+	/* this should get us "over the pole";
+	   see not Snyder's formula but his example Fig. 10 on p. 50:  */
+
+	yy = atan2 (slat, (clat * clon)) - GMT->current.proj.t_lat0;
+	if (yy < -M_PI_2) yy += TWO_PI;
+	*x = GMT->current.proj.t_r * xx;
+	*y = GMT->current.proj.t_r * yy;
+}
+
+void gmt_itm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert TM x/y to lon/lat by spherical approximation.  */
+
+	double xx, yy, sinhxx, coshxx, sind, cosd, lambda, phi;
+
+	xx = x * GMT->current.proj.t_ir;
+	yy = y * GMT->current.proj.t_ir + GMT->current.proj.t_lat0;
+
+	sinhxx = sinh (xx);
+	coshxx = cosh (xx);
+
+	sincos (yy, &sind, &cosd);
+	phi = asind (sind / coshxx);
+	*lat = phi;
+
+	lambda = atan2d (sinhxx, cosd);
+	*lon = lambda + GMT->current.proj.central_meridian;
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (GMT, *lat);
+}
+
+/* -JU UNIVERSAL TRANSVERSE MERCATOR PROJECTION */
+
+/* Ellipsoidal UTM */
+
+void gmt_utm (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to UTM x/y */
+
+	if (lon < 0.0) lon += 360.0;
+	gmt_tm (GMT, lon, lat, x, y);
+	(*x) += GMT_FALSE_EASTING;
+	if (!GMT->current.proj.north_pole) (*y) += GMT_FALSE_NORTHING;	/* For S hemisphere, add 10^7 m */
+}
+
+void gmt_iutm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert UTM x/y to lon/lat */
+
+	x -= GMT_FALSE_EASTING;
+	if (!GMT->current.proj.north_pole) y -= GMT_FALSE_NORTHING;
+	gmt_itm (GMT, lon, lat, x, y);
+}
+
+/* Spherical UTM */
+
+void gmt_utm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to UTM x/y */
+
+	if (lon < 0.0) lon += 360.0;
+	gmt_tm_sph (GMT, lon, lat, x, y);
+	(*x) += GMT_FALSE_EASTING;
+	if (!GMT->current.proj.north_pole) (*y) += GMT_FALSE_NORTHING;	/* For S hemisphere, add 10^7 m */
+}
+
+void gmt_iutm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert UTM x/y to lon/lat */
+
+	x -= GMT_FALSE_EASTING;
+	if (!GMT->current.proj.north_pole) y -= GMT_FALSE_NORTHING;
+	gmt_itm_sph (GMT, lon, lat, x, y);
+}
+
+/* -JA LAMBERT AZIMUTHAL EQUAL AREA PROJECTION */
+
+void gmt_vlambeq (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
+	/* Set up Spherical Lambert Azimuthal Equal-Area projection */
+
+	GMT->current.proj.central_meridian = lon0;
+	GMT->current.proj.pole = lat0;
+	if (GMT->current.proj.GMT_convert_latitudes) lat0 = GMT_latg_to_lata (GMT, lat0);
+	sincosd (lat0, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));
+	GMT->current.proj.f_horizon = horizon;
+	GMT->current.proj.rho_max = 2.0 * sind (0.5 * horizon) * GMT->current.proj.EQ_RAD;
+}
+
+void gmt_lambeq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert lon/lat to Spherical Lambert Azimuthal Equal-Area x/y */
+	double k, tmp, sin_lat, cos_lat, sin_lon, cos_lon, c;
+
+	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+	if (GMT->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_lata (GMT, lat);
+	sincosd (lat, &sin_lat, &cos_lat);
+	sincosd (lon, &sin_lon, &cos_lon);
+	c = cos_lat * cos_lon;
+	tmp = 1.0 + GMT->current.proj.sinp * sin_lat + GMT->current.proj.cosp * c;
+	if (tmp > 0.0) {
+		k = GMT->current.proj.EQ_RAD * d_sqrt (2.0 / tmp);
+		*x = k * cos_lat * sin_lon;
+		*y = k * (GMT->current.proj.cosp * sin_lat - GMT->current.proj.sinp * c);
+		if (GMT->current.proj.GMT_convert_latitudes) {	/* Gotta fudge abit */
+			(*x) *= GMT->current.proj.Dx;
+			(*y) *= GMT->current.proj.Dy;
+		}
+	}
+	else
+		*x = *y = -DBL_MAX;
+}
+
+void gmt_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert Lambert Azimuthal Equal-Area x/y to lon/lat */
+	double rho, a, sin_c, cos_c;
+
+	if (GMT->current.proj.GMT_convert_latitudes) {	/* Undo effect of fudge factors */
+		x *= GMT->current.proj.iDx;
+		y *= GMT->current.proj.iDy;
+	}
+
+	rho = hypot (x, y);
+	if (rho > GMT->current.proj.rho_max) {			/* Horizon		*/
+		*lat = *lon = GMT->session.d_NaN;
+		return;
+	}
+	a = 0.5 * rho * GMT->current.proj.i_EQ_RAD;			/* a = sin(c/2)		*/
+	a *= a;							/* a = sin(c/2)**2	*/
+	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
+	sin_c = sqrt (1.0 - a) * GMT->current.proj.i_EQ_RAD;		/* sin_c = sin(c)/rho	*/
+	*lat = d_asind (cos_c * GMT->current.proj.sinp + y * sin_c * GMT->current.proj.cosp);
+	*lon = d_atan2d (x * sin_c, GMT->current.proj.cosp * cos_c - y * GMT->current.proj.sinp * sin_c) + GMT->current.proj.central_meridian;
+	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_lata_to_latg (GMT, *lat);
+}
+
+/* -JG GENERAL PERSPECTIVE PROJECTION */
+
+/* Set up General Perspective projection */
+
+void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitude, double azimuth, double tilt, double twist, double width, double height) {
 	double R, Req, Rpolar, Rlat0;
 	double H, P, PP;
 	double rho, rho2;
@@ -1290,11 +1367,11 @@ void GMT_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 
 	Rlat0 = sqrt ((t12*t12 + t22*t22)/(t1*t1 + t2*t2));
 
-	lat0 = gmt_genper_getgeocentric (GMT, lat0, 0.0);
+	lat0 = proj_genper_getgeocentric (GMT, lat0, 0.0);
 	sincosd (lat0, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));
 
 	if (!GMT_PROJ_IS_ZERO (GMT->current.proj.ECC2)) {
-		gmt_genper_setup (GMT, 0.0, altitude, lat0_save, lon0);
+		proj_genper_setup (GMT, 0.0, altitude, lat0_save, lon0);
 		GMT->current.proj.central_meridian = lon0;
 		GMT->current.proj.pole = GMT->current.proj.g_phig;
 	}
@@ -1490,7 +1567,7 @@ void GMT_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 			sincosd ((double)az, &x, &y);
 			x *= rmax;
 			y *= rmax;
-			gmt_genper_to_xtyt (GMT, (double)az, x, y, GMT->current.proj.g_yoffset, &xt, &yt);
+			proj_genper_to_xtyt (GMT, (double)az, x, y, GMT->current.proj.g_yoffset, &xt, &yt);
 
 			if (GMT->current.proj.g_debug > 2) fprintf (fp,"%3d x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
 
@@ -1522,7 +1599,7 @@ void GMT_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 	if (width != 0.0) GMT->current.proj.scale[GMT_Y] = GMT->current.proj.scale[GMT_X]/width*height;
 
 	if (GMT->current.proj.g_debug > 0) {
-		GMT_genper (GMT, lonvp, latvp, &xt_vp, &yt_vp);
+		gmt_genper (GMT, lonvp, latvp, &xt_vp, &yt_vp);
 		gmt_message (GMT, "\nvgenper: polar %d north %d\n", GMT->current.proj.polar, GMT->current.proj.north_pole);
 		gmt_message (GMT, "vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
 		gmt_message (GMT, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
@@ -1551,7 +1628,7 @@ void GMT_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 
 /* Convert lon/lat to General Perspective x/y */
 
-void GMT_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, double *yt) {
+void gmt_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, double *yt) {
 	double dlon, sin_lat, cos_lat, sin_dlon, cos_dlon;
 	double cosc, sinc;
 	double x, y, kp;
@@ -1562,7 +1639,7 @@ void GMT_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 	while (dlon > 180.0) dlon -= 360.0;
 	dlon *= D2R;
 
-	lat = gmt_genper_getgeocentric (GMT, lat, 0.0);
+	lat = proj_genper_getgeocentric (GMT, lat, 0.0);
 
 	sincosd (lat, &sin_lat, &cos_lat);
 	sincos (dlon, &sin_dlon, &cos_dlon);
@@ -1591,7 +1668,7 @@ void GMT_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 		angle *= R2D;
 	}
 	else if (GMT->current.proj.ECC2 != 0.0) { /* within field of view, ellipsoidal earth */
-		gmt_genper_toxy (GMT, lat, lon, 0.0, &x, &y);
+		proj_genper_toxy (GMT, lat, lon, 0.0, &x, &y);
 		/* angle = GMT->current.proj.g_azimuth; */
 		angle = atan2d(x, y);
 		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
@@ -1605,7 +1682,7 @@ void GMT_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
 	}
 
-	gmt_genper_to_xtyt (GMT, angle, x, y, GMT->current.proj.g_yoffset, xt, yt);
+	proj_genper_to_xtyt (GMT, angle, x, y, GMT->current.proj.g_yoffset, xt, yt);
 
 	if (GMT_is_dnan(*yt) || GMT_is_dnan(*xt)) {
 		gmt_message (GMT, "genper: yt or xt nan\n");
@@ -1616,7 +1693,7 @@ void GMT_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 
 /* Convert General Perspective x/y to lon/lat */
 
-void GMT_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double xt, double yt) {
+void gmt_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double xt, double yt) {
 	double H, P, R;
 	double sin_c, cos_c;
 	double x, y;
@@ -1659,7 +1736,7 @@ void GMT_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double xt, dou
 	com = P + 1.0;
 
 	if (GMT->current.proj.ECC2 != 0.0)
-		gmt_genper_tolatlong (GMT, x, y, 0.0, lat, lon);
+		proj_genper_tolatlong (GMT, x, y, 0.0, lat, lon);
 	else {
 		sin_c = (P - d_sqrt(1.0 - (rho * rho * com)/(R*R*con))) / (R * con / rho + rho/(R*con));
 		cos_c = d_sqrt(1.0 - sin_c * sin_c);
@@ -1670,7 +1747,7 @@ void GMT_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double xt, dou
 	return;
 }
 
-int GMT_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x, double *work_y) {
+int gmt_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x, double *work_y) {
 	uint64_t i;
 	double da, angle;
 	double x, y, xt, yt;
@@ -1689,7 +1766,7 @@ int GMT_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x,
 		y *= GMT->current.proj.g_rmax;
 
 		/* XXX forgotten R2D */
-		gmt_genper_to_xtyt (GMT, angle*R2D, x, y, GMT->current.proj.g_yoffset, &xt, &yt);
+		proj_genper_to_xtyt (GMT, angle*R2D, x, y, GMT->current.proj.g_yoffset, &xt, &yt);
 
 		if (GMT->current.proj.g_width != 0.0) {
 			xt = MAX (GMT->current.proj.g_xmin, MIN (xt, GMT->current.proj.g_xmax));
@@ -1703,7 +1780,7 @@ int GMT_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x,
 
 /* -JG ORTHOGRAPHIC PROJECTION */
 
-void GMT_vortho (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
+void gmt_vortho (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
 	/* Set up Orthographic projection */
 
 	GMT->current.proj.central_meridian = lon0;
@@ -1713,7 +1790,7 @@ void GMT_vortho (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon)
 	GMT->current.proj.rho_max = sind (horizon);
 }
 
-void GMT_ortho (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_ortho (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Orthographic x/y */
 	double sin_lat, cos_lat, sin_lon, cos_lon;
 
@@ -1725,7 +1802,7 @@ void GMT_ortho (struct GMT_CTRL *GMT, double lon, double lat, double *x, double 
 	*y = GMT->current.proj.EQ_RAD * (GMT->current.proj.cosp * sin_lat - GMT->current.proj.sinp * cos_lat * cos_lon);
 }
 
-void GMT_iortho (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_iortho (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Orthographic x/y to lon/lat */
 	double rho, cos_c;
 
@@ -1743,7 +1820,7 @@ void GMT_iortho (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doubl
 
 /* -JF GNOMONIC PROJECTION */
 
-void GMT_vgnomonic (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
+void gmt_vgnomonic (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
 	/* Set up Gnomonic projection */
 
 	GMT->current.proj.central_meridian = lon0;
@@ -1754,7 +1831,7 @@ void GMT_vgnomonic (struct GMT_CTRL *GMT, double lon0, double lat0, double horiz
 	sincosd (lat0, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));
 }
 
-void GMT_gnomonic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_gnomonic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Gnomonic x/y */
 	double k, sin_lat, cos_lat, sin_lon, cos_lon, cc;
 
@@ -1768,7 +1845,7 @@ void GMT_gnomonic (struct GMT_CTRL *GMT, double lon, double lat, double *x, doub
 	*y = k * (GMT->current.proj.cosp * sin_lat - GMT->current.proj.sinp * cc);
 }
 
-void GMT_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Gnomonic x/y to lon/lat */
 	double rho, c;
 
@@ -1786,7 +1863,7 @@ void GMT_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, do
 
 /* -JE AZIMUTHAL EQUIDISTANT PROJECTION */
 
-void GMT_vazeqdist (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
+void gmt_vazeqdist (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon) {
 	/* Set up azimuthal equidistant projection */
 
 	GMT->current.proj.central_meridian = lon0;
@@ -1796,7 +1873,7 @@ void GMT_vazeqdist (struct GMT_CTRL *GMT, double lon0, double lat0, double horiz
 	GMT->current.proj.rho_max = horizon * D2R;
 }
 
-void GMT_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to azimuthal equidistant x/y */
 	double k, cc, c, clat, slon, clon, slat, t;
 
@@ -1823,7 +1900,7 @@ void GMT_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, doub
 	}
 }
 
-void GMT_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert azimuthal equidistant x/y to lon/lat */
 	double rho, sin_c, cos_c;
 
@@ -1844,10 +1921,10 @@ void GMT_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, do
 
 /* -JW MOLLWEIDE EQUAL AREA PROJECTION */
 
-void GMT_vmollweide (struct GMT_CTRL *GMT, double lon0, double scale) {
+void gmt_vmollweide (struct GMT_CTRL *GMT, double lon0, double scale) {
 	/* Set up Mollweide Equal-Area projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.w_x = GMT->current.proj.EQ_RAD * D2R * d_sqrt (8.0) / M_PI;
 	GMT->current.proj.w_y = GMT->current.proj.EQ_RAD * M_SQRT2;
@@ -1855,7 +1932,7 @@ void GMT_vmollweide (struct GMT_CTRL *GMT, double lon0, double scale) {
 	GMT->current.proj.w_r = 0.25 * (scale * GMT->current.proj.M_PR_DEG * 360.0);	/* = Half the minor axis */
 }
 
-void GMT_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Mollweide Equal-Area x/y */
 	int i;
 	double phi, delta, psin_lat, c, s;
@@ -1886,7 +1963,7 @@ void GMT_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, dou
 	*y = GMT->current.proj.w_y * s;
 }
 
-void GMT_imollweide (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_imollweide (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Mollweide Equal-Area x/y to lon/lat */
 	double phi, phi2;
 
@@ -1904,15 +1981,15 @@ void GMT_imollweide (struct GMT_CTRL *GMT, double *lon, double *lat, double x, d
 
 /* -JH HAMMER-AITOFF EQUAL AREA PROJECTION */
 
-void GMT_vhammer (struct GMT_CTRL *GMT, double lon0, double scale) {
+void gmt_vhammer (struct GMT_CTRL *GMT, double lon0, double scale) {
 	/* Set up Hammer-Aitoff Equal-Area projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.w_r = 0.25 * (scale * GMT->current.proj.M_PR_DEG * 360.0);	/* = Half the minor axis */
 }
 
-void GMT_hammer (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_hammer (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Hammer-Aitoff Equal-Area x/y */
 	double slat, clat, slon, clon, D;
 
@@ -1932,7 +2009,7 @@ void GMT_hammer (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	*y = D * slat;
 }
 
-void GMT_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Hammer-Aitoff Equal-Area x/y to lon/lat */
 	double rho, a, sin_c, cos_c;
 
@@ -1953,16 +2030,16 @@ void GMT_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 
 /* -JV VAN DER GRINTEN PROJECTION */
 
-void GMT_vgrinten (struct GMT_CTRL *GMT, double lon0, double scale) {
+void gmt_vgrinten (struct GMT_CTRL *GMT, double lon0, double scale) {
 	/* Set up van der Grinten projection; scale is unused for now(?) */
 	GMT_UNUSED(scale);
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.v_r = M_PI * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.v_ir = 1.0 / GMT->current.proj.v_r;
 }
 
-void GMT_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to van der Grinten x/y */
 	double flat, A, A2, G, P, P2, Q, P2A2, i_P2A2, GP2, c, s, theta;
 
@@ -2004,7 +2081,7 @@ void GMT_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, doubl
 	*y = copysign (GMT->current.proj.v_r, lat) * (P * Q - A * sqrt ((A2 + 1.0) * P2A2 - Q * Q)) * i_P2A2;
 }
 
-void GMT_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert van der Grinten x/y to lon/lat */
 	double x2, c1, x2y2, y2, c2, c3, d, a1, m1, theta1, p;
 
@@ -2032,16 +2109,16 @@ void GMT_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat, double x, dou
 
 /* -JR WINKEL-TRIPEL MODIFIED GMT_IS_AZIMUTHAL PROJECTION */
 
-void GMT_vwinkel (struct GMT_CTRL *GMT, double lon0, double scale) {
+void gmt_vwinkel (struct GMT_CTRL *GMT, double lon0, double scale) {
 	/* Set up Winkel Tripel projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.r_cosphi1 = cosd (50.0+(28.0/60.0));
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.w_r = 0.25 * (scale * GMT->current.proj.M_PR_DEG * 360.0);	/* = Half the minor axis */
 }
 
-void GMT_winkel (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_winkel (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Winkel Tripel x/y */
 	double X, D, x1, x2, y1, c, s;
 
@@ -2072,7 +2149,7 @@ void GMT_winkel (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	*y = 0.5 * GMT->current.proj.EQ_RAD * (y1 + lat);
 }
 
-void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double y) {
+void gmt_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double y) {
 	/* Convert Winkel Tripel x/y to lon/lat */
 	/* Based on iterative solution published by:
 	 * Ipbuker, 2002, Cartography & Geographical Information Science, 20, 1, 37-42.
@@ -2124,50 +2201,32 @@ void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 	*lat *= R2D;
 }
 
-void gmt_iwinkel_sub (struct GMT_CTRL *GMT, double y, double *phi) {
-	/* Valid only along meridian 180 degree from central meridian.  Used in left/right_winkel only */
-	int n_iter = 0;
-	double c, phi0, delta, sp, cp;
-
-	c = 2.0 * y * GMT->current.proj.i_EQ_RAD;
-	*phi = y * GMT->current.proj.i_EQ_RAD;
-	do {
-		phi0 = *phi;
-		sincos (phi0, &sp, &cp);
-		*phi = phi0 - (phi0 + M_PI_2 * sp - c) / (1.0 + M_PI_2 * cp);
-		delta = fabs (*phi - phi0);
-		n_iter++;
-	}
-	while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
-	*phi *= R2D;
-}
-
-double GMT_left_winkel (struct GMT_CTRL *GMT, double y) {
+double gmt_left_winkel (struct GMT_CTRL *GMT, double y) {
 	double c, phi, x;
 
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
-	gmt_iwinkel_sub (GMT, y, &phi);
+	proj_iwinkel_sub (GMT, y, &phi);
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian - 180.0, phi, &x, &c);
 	return (x);
 }
 
-double GMT_right_winkel (struct GMT_CTRL *GMT, double y) {
+double gmt_right_winkel (struct GMT_CTRL *GMT, double y) {
 	double c, phi, x;
 
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
-	gmt_iwinkel_sub (GMT, y, &phi);
+	proj_iwinkel_sub (GMT, y, &phi);
 	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian + 180.0, phi, &x, &c);
 	return (x);
 }
 
 /* -JKf ECKERT IV PROJECTION */
 
-void GMT_veckert4 (struct GMT_CTRL *GMT, double lon0) {
+void gmt_veckert4 (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up Eckert IV projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.k4_x = 2.0 * GMT->current.proj.EQ_RAD / d_sqrt (M_PI * (4.0 + M_PI));
 	GMT->current.proj.k4_y = 2.0 * GMT->current.proj.EQ_RAD * d_sqrt (M_PI / (4.0 + M_PI));
 	GMT->current.proj.k4_ix = 1.0 / GMT->current.proj.k4_x;
@@ -2175,7 +2234,7 @@ void GMT_veckert4 (struct GMT_CTRL *GMT, double lon0) {
 	GMT->current.proj.central_meridian = lon0;
 }
 
-void GMT_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Eckert IV x/y */
 	int n_iter = 0;
 	double phi, delta, s_lat, s, c;
@@ -2197,7 +2256,7 @@ void GMT_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, double *x, doubl
 	*y = GMT->current.proj.k4_y * s;
 }
 
-void GMT_ieckert4 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ieckert4 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Eckert IV x/y to lon/lat */
 
 	double phi, s, c;
@@ -2214,7 +2273,7 @@ void GMT_ieckert4 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, dou
 	*lat = d_asind ((phi + s * c + 2.0 * s) / (2.0 + M_PI_2));
 }
 
-double GMT_left_eckert4 (struct GMT_CTRL *GMT, double y) {
+double gmt_left_eckert4 (struct GMT_CTRL *GMT, double y) {
 	double x, phi;
 
 	y -= GMT->current.proj.origin[GMT_Y];
@@ -2224,7 +2283,7 @@ double GMT_left_eckert4 (struct GMT_CTRL *GMT, double y) {
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
 
-double GMT_right_eckert4 (struct GMT_CTRL *GMT, double y) {
+double gmt_right_eckert4 (struct GMT_CTRL *GMT, double y) {
 	double x, phi;
 
 	y -= GMT->current.proj.origin[GMT_Y];
@@ -2236,16 +2295,16 @@ double GMT_right_eckert4 (struct GMT_CTRL *GMT, double y) {
 
 /* -JKs ECKERT VI PROJECTION */
 
-void GMT_veckert6 (struct GMT_CTRL *GMT, double lon0) {
+void gmt_veckert6 (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up Eckert VI projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.k6_r = GMT->current.proj.EQ_RAD / sqrt (2.0 + M_PI);
 	GMT->current.proj.k6_ir = 1.0 / GMT->current.proj.k6_r;
 	GMT->current.proj.central_meridian = lon0;
 }
 
-void GMT_eckert6 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_eckert6 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Eckert VI x/y */
 	int n_iter = 0;
 	double phi, delta, s_lat, s, c;
@@ -2266,7 +2325,7 @@ void GMT_eckert6 (struct GMT_CTRL *GMT, double lon, double lat, double *x, doubl
 	*y = 2.0 * GMT->current.proj.k6_r * phi;
 }
 
-void GMT_ieckert6 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ieckert6 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Eckert VI x/y to lon/lat */
 
 	double phi, c, s;
@@ -2283,7 +2342,7 @@ void GMT_ieckert6 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, dou
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_lata_to_latg (GMT, *lat);
 }
 
-double GMT_left_eckert6 (struct GMT_CTRL *GMT, double y) {
+double gmt_left_eckert6 (struct GMT_CTRL *GMT, double y) {
 	double x, phi;
 
 	y -= GMT->current.proj.origin[GMT_Y];
@@ -2293,7 +2352,7 @@ double GMT_left_eckert6 (struct GMT_CTRL *GMT, double y) {
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
 
-double GMT_right_eckert6 (struct GMT_CTRL *GMT, double y) {
+double gmt_right_eckert6 (struct GMT_CTRL *GMT, double y) {
 	double x, phi;
 
 	y -= GMT->current.proj.origin[GMT_Y];
@@ -2305,7 +2364,7 @@ double GMT_right_eckert6 (struct GMT_CTRL *GMT, double y) {
 
 /* -JN ROBINSON PSEUDOCYLINDRICAL PROJECTION */
 
-void GMT_vrobinson (struct GMT_CTRL *GMT, double lon0) {
+void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up Robinson projection */
 	int err_flag = 0;
 
@@ -2314,7 +2373,7 @@ void GMT_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 		GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	}
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.n_cx = 0.8487 * GMT->current.proj.EQ_RAD * D2R;
 	GMT->current.proj.n_cy = 1.3523 * GMT->current.proj.EQ_RAD;
 	GMT->current.proj.n_i_cy = 1.0 / GMT->current.proj.n_cy;
@@ -2349,61 +2408,29 @@ void GMT_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 		err_flag += GMT_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
 		err_flag += GMT_akima (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
-	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error:  Interpolation failed in GMT_vrobinson?\n");
+	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error:  Interpolation failed in gmt_vrobinson?\n");
 }
 
-double gmt_robinson_spline (struct GMT_CTRL *GMT, double xp, double *x, double *y, double *c) {
-	/* Compute the interpolated values from the Robinson coefficients */
-
-	int j = 0, j1;
-	double yp, a, b, h, ih, dx;
-
-	if (xp < x[0] || xp > x[GMT_N_ROBINSON-1])	/* Desired point outside data range */
-		return (GMT->session.d_NaN);
-
-	while (j < GMT_N_ROBINSON && x[j] <= xp) j++;
-	if (j == GMT_N_ROBINSON) j--;
-	if (j > 0) j--;
-
-	dx = xp - x[j];
-	switch (GMT->current.setting.interpolant) {	/* GMT_vrobinson would not allow case 0 so only GMT_SPLINE_AKIMA | GMT_SPLINE_CUBIC is possible */
-		case GMT_SPLINE_AKIMA:
-			yp = ((c[3*j+2]*dx + c[3*j+1])*dx + c[3*j])*dx + y[j];
-			break;
-		case GMT_SPLINE_CUBIC:
-			j1 = j + 1;
-			h = x[j1] - x[j];
-			ih = 1.0 / h;
-			a = (x[j1] - xp) * ih;
-			b = dx * ih;
-			yp = a * y[j] + b * y[j1] + ((a*a*a - a) * c[j] + (b*b*b - b) * c[j1]) * (h*h) / 6.0;
-			break;
-		default:
-			yp = 0;
-	}
-	return (yp);
-}
-
-void GMT_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
  	/* Convert lon/lat to Robinson x/y */
 	double phi, X, Y;
 
 	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	phi = fabs (lat);
 
-	X = gmt_robinson_spline (GMT, phi, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT->current.proj.n_x_coeff);
-	Y = gmt_robinson_spline (GMT, phi, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT->current.proj.n_y_coeff);
+	X = proj_robinson_spline (GMT, phi, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT->current.proj.n_x_coeff);
+	Y = proj_robinson_spline (GMT, phi, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT->current.proj.n_y_coeff);
 	*x = GMT->current.proj.n_cx * X * lon;	/* D2R is in n_cx already */
 	*y = GMT->current.proj.n_cy * copysign (Y, lat);
 }
 
-void GMT_irobinson (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_irobinson (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Robinson x/y to lon/lat */
 	double X, Y;
 
 	Y = fabs (y * GMT->current.proj.n_i_cy);
-	*lat = gmt_robinson_spline (GMT, Y, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT->current.proj.n_iy_coeff);
-	X = gmt_robinson_spline (GMT, *lat, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT->current.proj.n_x_coeff);
+	*lat = proj_robinson_spline (GMT, Y, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT->current.proj.n_iy_coeff);
+	X = proj_robinson_spline (GMT, *lat, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT->current.proj.n_x_coeff);
 	*lon = x / (GMT->current.proj.n_cx * X);
 	if ((fabs (*lon) - GMT_PROJ_CONV_LIMIT) > 180.0) {	/* Horizon */
 		*lat = *lon = GMT->session.d_NaN;
@@ -2413,14 +2440,14 @@ void GMT_irobinson (struct GMT_CTRL *GMT, double *lon, double *lat, double x, do
 	if (y < 0.0) *lat = -(*lat);
 }
 
-double GMT_left_robinson (struct GMT_CTRL *GMT, double y) {
+double gmt_left_robinson (struct GMT_CTRL *GMT, double y) {
 	double x, X, Y;
 
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (GMT_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
-		gmt_message (GMT, "GMT Internal error in GMT_left_robinson!\n");
+		gmt_message (GMT, "GMT Internal error in gmt_left_robinson!\n");
 		GMT_exit (GMT, EXIT_FAILURE); return GMT->session.d_NaN;
 	}
 
@@ -2428,14 +2455,14 @@ double GMT_left_robinson (struct GMT_CTRL *GMT, double y) {
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
 
-double GMT_right_robinson (struct GMT_CTRL *GMT, double y) {
+double gmt_right_robinson (struct GMT_CTRL *GMT, double y) {
 	double x, X, Y;
 
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (GMT_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
-		gmt_message (GMT, "GMT Internal error in GMT_right_robinson!\n");
+		gmt_message (GMT, "GMT Internal error in gmt_right_robinson!\n");
 		GMT_exit (GMT, EXIT_FAILURE); return GMT->session.d_NaN;
 	}
 
@@ -2445,14 +2472,14 @@ double GMT_right_robinson (struct GMT_CTRL *GMT, double y) {
 
 /* -JI SINUSOIDAL EQUAL AREA PROJECTION */
 
-void GMT_vsinusoidal (struct GMT_CTRL *GMT, double lon0) {
+void gmt_vsinusoidal (struct GMT_CTRL *GMT, double lon0) {
 	/* Set up Sinusoidal projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 }
 
-void GMT_sinusoidal (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_sinusoidal (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Sinusoidal Equal-Area x/y */
 
 	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
@@ -2464,7 +2491,7 @@ void GMT_sinusoidal (struct GMT_CTRL *GMT, double lon, double lat, double *x, do
 	*y = GMT->current.proj.EQ_RAD * lat;
 }
 
-void GMT_isinusoidal (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_isinusoidal (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Sinusoidal Equal-Area x/y to lon/lat */
 
 	*lat = y * GMT->current.proj.i_EQ_RAD;
@@ -2478,7 +2505,7 @@ void GMT_isinusoidal (struct GMT_CTRL *GMT, double *lon, double *lat, double x, 
 	if (GMT->current.proj.GMT_convert_latitudes) *lat = GMT_lata_to_latg (GMT, *lat);
 }
 
-double GMT_left_sinusoidal (struct GMT_CTRL *GMT, double y) {
+double gmt_left_sinusoidal (struct GMT_CTRL *GMT, double y) {
 	double x, lat;
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
@@ -2487,7 +2514,7 @@ double GMT_left_sinusoidal (struct GMT_CTRL *GMT, double y) {
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
 
-double GMT_right_sinusoidal (struct GMT_CTRL *GMT, double y) {
+double gmt_right_sinusoidal (struct GMT_CTRL *GMT, double y) {
 	double x, lat;
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
@@ -2498,12 +2525,12 @@ double GMT_right_sinusoidal (struct GMT_CTRL *GMT, double y) {
 
 /* -JC CASSINI PROJECTION */
 
-void GMT_vcassini (struct GMT_CTRL *GMT, double lon0, double lat0) {
+void gmt_vcassini (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	/* Set up Cassini projection */
 
 	double e1, s2, c2;
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.pole = lat0;
 	GMT->current.proj.c_p = lat0 * D2R;
@@ -2523,7 +2550,7 @@ void GMT_vcassini (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	GMT->current.proj.c_i5 = (1097.0/64.0) * pow (e1, 4.0);
 }
 
-void GMT_cassini (struct GMT_CTRL *P, double lon, double lat, double *x, double *y) {
+void gmt_cassini (struct GMT_CTRL *P, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Cassini x/y */
 
 	double tany, N, T, A, C, M, s, c, s2, c2, A2, A3;
@@ -2552,7 +2579,7 @@ void GMT_cassini (struct GMT_CTRL *P, double lon, double lat, double *x, double 
 	*y = M - P->current.proj.c_M0 + N * tany * (0.5 * A2 + (5.0 - T + 6.0 * C) * A2 * A2 / 24.0);
 }
 
-void GMT_icassini (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_icassini (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Cassini x/y to lon/lat */
 
 	double M1, u1, u2, s, c, phi1, tany, T1, N1, R_1, D, S2, D2, D3;
@@ -2583,7 +2610,7 @@ void GMT_icassini (struct GMT_CTRL *GMT, double *lon, double *lat, double x, dou
 
 /* Cassini functions for the Sphere */
 
-void GMT_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Cassini x/y for spherical earth */
 
 	double slon, clon, clat, tlat, slat;
@@ -2604,7 +2631,7 @@ void GMT_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, d
 }
 
 
-void GMT_icassini_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_icassini_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Cassini x/y to lon/lat */
 
 	double D, sD, cD, cx, tx, sx;
@@ -2620,12 +2647,12 @@ void GMT_icassini_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x,
 
 /* -JB ALBERS EQUAL-AREA CONIC PROJECTION */
 
-void GMT_valbers (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2) {
+void gmt_valbers (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2) {
 	/* Set up Albers projection */
 
 	double s0, s1, s2, c1, c2, q0, q1, q2, m1, m2;
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.north_pole = (GMT->common.R.wesn[YHI] > 0.0 && (GMT->common.R.wesn[YLO] >= 0.0 || (-GMT->common.R.wesn[YLO]) < GMT->common.R.wesn[YHI]));
 	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
@@ -2649,12 +2676,12 @@ void GMT_valbers (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, do
 
 }
 
-void GMT_valbers_sph (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2) {
+void gmt_valbers_sph (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2) {
 	/* Set up Spherical Albers projection (Snyder, page 100) */
 
 	double s1, c1;
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.north_pole = (GMT->common.R.wesn[YHI] > 0.0 && (GMT->common.R.wesn[YLO] >= 0.0 || (-GMT->common.R.wesn[YLO]) < GMT->common.R.wesn[YHI]));
 	GMT->current.proj.pole = (GMT->current.proj.north_pole) ? 90.0 : -90.0;
@@ -2669,7 +2696,7 @@ void GMT_valbers_sph (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1
 	GMT->current.proj.a_Cin = 0.5 * GMT->current.proj.a_C / GMT->current.proj.a_n;
 }
 
-void GMT_albers (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_albers (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Albers x/y */
 
 	double s, c, q, theta, rho, r;
@@ -2691,7 +2718,7 @@ void GMT_albers (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	*y = GMT->current.proj.a_rho0 - rho * c;
 }
 
-void GMT_ialbers (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ialbers (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Albers x/y to lon/lat */
 
 	int n_iter;
@@ -2725,7 +2752,7 @@ void GMT_ialbers (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 
 /* Spherical versions of Albers */
 
-void GMT_albers_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_albers_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Spherical Albers x/y */
 
 	double s, c, theta, rho;
@@ -2742,7 +2769,7 @@ void GMT_albers_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, do
 	*y = GMT->current.proj.a_rho0 - rho * c;
 }
 
-void GMT_ialbers_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ialbers_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Spherical Albers x/y to lon/lat */
 
 	double theta, A, dy;
@@ -2758,11 +2785,11 @@ void GMT_ialbers_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, 
 
 /* -JD EQUIDISTANT CONIC PROJECTION */
 
-void GMT_veconic (struct GMT_CTRL *GMT, double lon0, double lat0, double lat1, double lat2) {
+void gmt_veconic (struct GMT_CTRL *GMT, double lon0, double lat0, double lat1, double lat2) {
 	/* Set up Equidistant Conic projection */
 	double c1;
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.north_pole = (GMT->common.R.wesn[YHI] > 0.0 && (GMT->common.R.wesn[YLO] >= 0.0 || (-GMT->common.R.wesn[YLO]) < GMT->common.R.wesn[YHI]));
 	c1 = cosd (lat1);
 	GMT->current.proj.d_n = (doubleAlmostEqualZero (lat1, lat2)) ? sind (lat1) : (c1 - cosd (lat2)) / (D2R * (lat2 - lat1));
@@ -2772,7 +2799,7 @@ void GMT_veconic (struct GMT_CTRL *GMT, double lon0, double lat0, double lat1, d
 	GMT->current.proj.central_meridian = lon0;
 }
 
-void GMT_econic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_econic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Equidistant Conic x/y */
 	double rho, theta, s, c;
 
@@ -2786,7 +2813,7 @@ void GMT_econic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double
 	*y = GMT->current.proj.d_rho0 - rho * c;
 }
 
-void GMT_ieconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ieconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Equidistant Conic x/y to lon/lat */
 
 	double rho, theta;
@@ -2800,15 +2827,15 @@ void GMT_ieconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 
 /* -JPoly POLYCONIC PROJECTION */
 
-void GMT_vpolyconic (struct GMT_CTRL *GMT, double lon0, double lat0) {
+void gmt_vpolyconic (struct GMT_CTRL *GMT, double lon0, double lat0) {
 	/* Set up Polyconic projection */
 
-	gmt_check_R_J (GMT, &lon0);
+	proj_check_R_J (GMT, &lon0);
 	GMT->current.proj.central_meridian = lon0;
 	GMT->current.proj.pole = lat0;
 }
 
-void GMT_polyconic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+void gmt_polyconic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Convert lon/lat to Polyconic x/y */
 	double sE, cE, sp, cp;
 
@@ -2827,7 +2854,7 @@ void GMT_polyconic (struct GMT_CTRL *GMT, double lon, double lat, double *x, dou
 	}
 }
 
-void GMT_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+void gmt_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Convert Polyconic x/y to lon/lat */
 
 	double B, phi, phi0, tanp, delta;
@@ -2857,45 +2884,18 @@ void GMT_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, d
 	}
 }
 
-void gmt_ipolyconic_sub (struct GMT_CTRL *GMT, double y, double lon, double *x) {
-	/* Used in left/right_polyconic only */
-	double E, sp, cp, phi0, phi, delta;
-	int n_iter = 0;
-
-	*x = lon;
-	GMT_WIND_LON (GMT, *x);
-	y *= GMT->current.proj.i_EQ_RAD;
-	y += GMT->current.proj.pole * D2R;
-	if (GMT_PROJ_IS_ZERO (y))
-		*x *= GMT->current.proj.EQ_RAD * D2R;
-	else {
-		phi = y;
-		do {
-			phi0 = phi;
-			sincos (phi, &sp, &cp);
-			E = (*x) * sp;
-			cp /= sp;	/* = cot(phi) */
-			phi = y - cp * (1.0 - cosd(E));
-			delta = fabs (phi - phi0);
-			n_iter++;
-		}
-		while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
-		*x = GMT->current.proj.EQ_RAD * cp * sin(E);
-	}
-}
-
-double GMT_left_polyconic (struct GMT_CTRL *GMT, double y) {
+double gmt_left_polyconic (struct GMT_CTRL *GMT, double y) {
 	double x;
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
-	gmt_ipolyconic_sub (GMT, y, GMT->common.R.wesn[XLO], &x);
+	proj_ipolyconic_sub (GMT, y, GMT->common.R.wesn[XLO], &x);
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }
 
-double GMT_right_polyconic (struct GMT_CTRL *GMT, double y) {
+double gmt_right_polyconic (struct GMT_CTRL *GMT, double y) {
 	double x;
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
-	gmt_ipolyconic_sub (GMT, y, GMT->common.R.wesn[XHI], &x);
+	proj_ipolyconic_sub (GMT, y, GMT->common.R.wesn[XHI], &x);
 	return (x * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X]);
 }

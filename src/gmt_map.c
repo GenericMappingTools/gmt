@@ -2375,8 +2375,8 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 		case GMT_LINEAR:	/* Regular scaling */
 			if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_ABSTIME && GMT->current.proj.xyz_projection[GMT_X] != GMT_TIME)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -JX|x option: Your x-column contains absolute time but -JX|x...T was not specified!\n");
-			GMT->current.proj.fwd_x = ((GMT_x_is_lon (GMT, GMT_IN)) ? &GMT_translind  : &GMT_translin);
-			GMT->current.proj.inv_x = ((GMT_x_is_lon (GMT, GMT_IN)) ? &GMT_itranslind : &GMT_itranslin);
+			GMT->current.proj.fwd_x = ((GMT_x_is_lon (GMT, GMT_IN)) ? &gmt_translind  : &gmt_translin);
+			GMT->current.proj.inv_x = ((GMT_x_is_lon (GMT, GMT_IN)) ? &gmt_itranslind : &gmt_itranslin);
 			if (GMT->current.proj.xyz_pos[GMT_X]) {
 				(*GMT->current.proj.fwd_x) (GMT, GMT->common.R.wesn[XLO], &xmin);
 				(*GMT->current.proj.fwd_x) (GMT, GMT->common.R.wesn[XHI], &xmax);
@@ -2393,8 +2393,8 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 			}
 			xmin = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XLO]) : d_log10 (GMT, GMT->common.R.wesn[XHI]);
 			xmax = (GMT->current.proj.xyz_pos[GMT_X]) ? d_log10 (GMT, GMT->common.R.wesn[XHI]) : d_log10 (GMT, GMT->common.R.wesn[XLO]);
-			GMT->current.proj.fwd_x = &GMT_translog10;
-			GMT->current.proj.inv_x = &GMT_itranslog10;
+			GMT->current.proj.fwd_x = &gmt_translog10;
+			GMT->current.proj.inv_x = &gmt_itranslog10;
 			break;
 		case GMT_POW:	/* x^y transformation */
 			GMT->current.proj.xyz_pow[GMT_X] = GMT->current.proj.pars[2];
@@ -2402,8 +2402,8 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 			positive = !((GMT->current.proj.xyz_pos[GMT_X] + (GMT->current.proj.xyz_pow[GMT_X] > 0.0)) % 2);
 			xmin = (positive) ? pow (GMT->common.R.wesn[XLO], GMT->current.proj.xyz_pow[GMT_X]) : pow (GMT->common.R.wesn[XHI], GMT->current.proj.xyz_pow[GMT_X]);
 			xmax = (positive) ? pow (GMT->common.R.wesn[XHI], GMT->current.proj.xyz_pow[GMT_X]) : pow (GMT->common.R.wesn[XLO], GMT->current.proj.xyz_pow[GMT_X]);
-			GMT->current.proj.fwd_x = &GMT_transpowx;
-			GMT->current.proj.inv_x = &GMT_itranspowx;
+			GMT->current.proj.fwd_x = &gmt_transpowx;
+			GMT->current.proj.inv_x = &gmt_itranspowx;
 			break;
 	}
 	switch (GMT->current.proj.xyz_projection[GMT_Y]%3) {	/* Modulo 3 so that GMT_TIME (3) maps to GMT_LINEAR (0) */
@@ -2412,8 +2412,8 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -JX|x option:  Your y-column contains absolute time but -JX|x...T was not specified!\n");
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YLO] : GMT->common.R.wesn[YHI];
 			ymax = (GMT->current.proj.xyz_pos[GMT_Y]) ? GMT->common.R.wesn[YHI] : GMT->common.R.wesn[YLO];
-			GMT->current.proj.fwd_y = &GMT_translin;
-			GMT->current.proj.inv_y = &GMT_itranslin;
+			GMT->current.proj.fwd_y = &gmt_translin;
+			GMT->current.proj.inv_y = &gmt_itranslin;
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[YLO] <= 0.0 || GMT->common.R.wesn[YHI] <= 0.0) {
@@ -2422,8 +2422,8 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 			}
 			ymin = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YLO]) : d_log10 (GMT, GMT->common.R.wesn[YHI]);
 			ymax = (GMT->current.proj.xyz_pos[GMT_Y]) ? d_log10 (GMT, GMT->common.R.wesn[YHI]) : d_log10 (GMT, GMT->common.R.wesn[YLO]);
-			GMT->current.proj.fwd_y = &GMT_translog10;
-			GMT->current.proj.inv_y = &GMT_itranslog10;
+			GMT->current.proj.fwd_y = &gmt_translog10;
+			GMT->current.proj.inv_y = &gmt_itranslog10;
 			break;
 		case GMT_POW:	/* x^y transformation */
 			GMT->current.proj.xyz_pow[GMT_Y] = GMT->current.proj.pars[3];
@@ -2431,8 +2431,8 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 			positive = !((GMT->current.proj.xyz_pos[GMT_Y] + (GMT->current.proj.xyz_pow[GMT_Y] > 0.0)) % 2);
 			ymin = (positive) ? pow (GMT->common.R.wesn[YLO], GMT->current.proj.xyz_pow[GMT_Y]) : pow (GMT->common.R.wesn[YHI], GMT->current.proj.xyz_pow[GMT_Y]);
 			ymax = (positive) ? pow (GMT->common.R.wesn[YHI], GMT->current.proj.xyz_pow[GMT_Y]) : pow (GMT->common.R.wesn[YLO], GMT->current.proj.xyz_pow[GMT_Y]);
-			GMT->current.proj.fwd_y = &GMT_transpowy;
-			GMT->current.proj.inv_y = &GMT_itranspowy;
+			GMT->current.proj.fwd_y = &gmt_transpowy;
+			GMT->current.proj.inv_y = &gmt_itranspowy;
 	}
 
 	/* Was given axes length instead of scale? */
@@ -2484,7 +2484,7 @@ GMT_LOCAL bool map_init_linear (struct GMT_CTRL *GMT) {
 GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax;
 
-	GMT_vpolar (GMT, GMT->current.proj.pars[1]);
+	gmt_vpolar (GMT, GMT->current.proj.pars[1]);
 	if (GMT->current.proj.got_elevations) {	/* Requires s >= 0 and n <= 90 */
 		if (GMT->common.R.wesn[YLO] < 0.0 || GMT->common.R.wesn[YHI] > 90.0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -JP...r for elevation plots requires s >= 0 and n <= 90!\n");
@@ -2500,8 +2500,8 @@ GMT_LOCAL bool map_init_polar (struct GMT_CTRL *GMT) {
 	if (GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) GMT->current.proj.edge[1] = GMT->current.proj.edge[3] = false;
 	GMT->current.map.left_edge = &map_left_circle;
 	GMT->current.map.right_edge = &map_right_circle;
-	GMT->current.proj.fwd = &GMT_polar;
-	GMT->current.proj.inv = &GMT_ipolar;
+	GMT->current.proj.fwd = &gmt_polar;
+	GMT->current.proj.inv = &gmt_ipolar;
 	GMT->current.map.is_world = false;	/* There is no wrapping around here */
 	map_xy_search (GMT, &xmin, &xmax, &ymin, &ymax, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[0];
@@ -2539,11 +2539,11 @@ GMT_LOCAL bool map_init_merc (struct GMT_CTRL *GMT) {
 	}
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	map_cyl_validate_clon (GMT, 0);	/* Make sure the central longitude is valid */
-	GMT_vmerc (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vmerc (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT->current.proj.j_x *= D;
 	GMT->current.proj.j_ix /= D;
-	GMT->current.proj.fwd = &GMT_merc_sph;
-	GMT->current.proj.inv = &GMT_imerc_sph;
+	GMT->current.proj.fwd = &gmt_merc_sph;
+	GMT->current.proj.inv = &gmt_imerc_sph;
 	(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
 	(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= (D * GMT->current.proj.M_PR_DEG);
@@ -2589,16 +2589,16 @@ GMT_LOCAL bool map_init_cyleq (struct GMT_CTRL *GMT) {
 	GMT->current.proj.iDy = 1.0 / GMT->current.proj.Dy;
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	map_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
-	GMT_vcyleq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
-	GMT_cyleq (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-	GMT_cyleq (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+	gmt_vcyleq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_cyleq (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+	gmt_cyleq (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
 	GMT->current.map.n_lat_nodes = 2;
 	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT->current.proj.fwd = &GMT_cyleq;
-	GMT->current.proj.inv = &GMT_icyleq;
+	GMT->current.proj.fwd = &gmt_cyleq;
+	GMT->current.proj.inv = &gmt_icyleq;
 	GMT->current.map.outside = &map_wesn_outside;
 	GMT->current.map.crossing = &map_wesn_crossing;
 	GMT->current.map.overlap = &map_wesn_overlap;
@@ -2623,16 +2623,16 @@ GMT_LOCAL bool map_init_cyleqdist (struct GMT_CTRL *GMT) {
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	map_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
-	GMT_vcyleqdist (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
-	GMT_cyleqdist (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-	GMT_cyleqdist (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+	gmt_vcyleqdist (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_cyleqdist (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+	gmt_cyleqdist (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
 	GMT->current.map.n_lat_nodes = 2;
 	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT->current.proj.fwd = &GMT_cyleqdist;
-	GMT->current.proj.inv = &GMT_icyleqdist;
+	GMT->current.proj.fwd = &gmt_cyleqdist;
+	GMT->current.proj.inv = &gmt_icyleqdist;
 	GMT->current.map.outside = &map_wesn_outside;
 	GMT->current.map.crossing = &map_wesn_crossing;
 	GMT->current.map.overlap = &map_wesn_overlap;
@@ -2656,16 +2656,16 @@ GMT_LOCAL bool map_init_miller (struct GMT_CTRL *GMT) {
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	map_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
-	GMT_vmiller (GMT, GMT->current.proj.pars[0]);
-	GMT_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-	GMT_miller (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+	gmt_vmiller (GMT, GMT->current.proj.pars[0]);
+	gmt_miller (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+	gmt_miller (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.map.n_lat_nodes = 2;
 	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT->current.proj.fwd = &GMT_miller;
-	GMT->current.proj.inv = &GMT_imiller;
+	GMT->current.proj.fwd = &gmt_miller;
+	GMT->current.proj.inv = &gmt_imiller;
 	GMT->current.map.outside = &map_wesn_outside;
 	GMT->current.map.crossing = &map_wesn_crossing;
 	GMT->current.map.overlap = &map_wesn_overlap;
@@ -2689,16 +2689,16 @@ GMT_LOCAL bool map_init_cylstereo (struct GMT_CTRL *GMT) {
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	map_cyl_validate_clon (GMT, 1);	/* Make sure the central longitude is valid */
-	GMT_vcylstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
-	GMT_cylstereo (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-	GMT_cylstereo (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+	gmt_vcylstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_cylstereo (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+	gmt_cylstereo (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[2]);
 	GMT->current.map.n_lat_nodes = 2;
 	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
-	GMT->current.proj.fwd = &GMT_cylstereo;
-	GMT->current.proj.inv = &GMT_icylstereo;
+	GMT->current.proj.fwd = &gmt_cylstereo;
+	GMT->current.proj.inv = &gmt_icylstereo;
 	GMT->current.map.outside = &map_wesn_outside;
 	GMT->current.map.crossing = &map_wesn_crossing;
 	GMT->current.map.overlap = &map_wesn_overlap;
@@ -2733,7 +2733,7 @@ GMT_LOCAL bool map_init_stereo (struct GMT_CTRL *GMT) {
 
 	if (fabs (GMT->current.proj.pars[1]) < GMT_CONV4_LIMIT) GMT->current.proj.pars[1] = 0.001;
 
-	GMT_vstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+	gmt_vstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
 
 	if (GMT->current.proj.GMT_convert_latitudes) {	/* Set fudge factors when conformal latitudes are used */
 		double e1p, e1m, s, c;
@@ -2764,8 +2764,8 @@ GMT_LOCAL bool map_init_stereo (struct GMT_CTRL *GMT) {
 	GMT->current.proj.iDy = 1.0 / GMT->current.proj.Dy;
 
 	if (GMT->current.proj.polar) {	/* Polar aspect */
-		GMT->current.proj.fwd = &GMT_plrs_sph;
-		GMT->current.proj.inv = &GMT_iplrs_sph;
+		GMT->current.proj.fwd = &gmt_plrs_sph;
+		GMT->current.proj.inv = &gmt_iplrs_sph;
 		if (GMT->current.proj.units_pr_degree) {
 			(*GMT->current.proj.fwd) (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[4], &dummy, &radius);
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[3] / radius);
@@ -2775,17 +2775,17 @@ GMT_LOCAL bool map_init_stereo (struct GMT_CTRL *GMT) {
 		GMT->current.map.meridian_straight = 1;
 	}
 	else {
-		GMT->current.proj.fwd = (GMT_IS_ZERO (GMT->current.proj.pole)) ? &GMT_stereo2_sph : &GMT_stereo1_sph;
-		GMT->current.proj.inv = &GMT_istereo_sph;
+		GMT->current.proj.fwd = (GMT_IS_ZERO (GMT->current.proj.pole)) ? &gmt_stereo2_sph : &gmt_stereo1_sph;
+		GMT->current.proj.inv = &gmt_istereo_sph;
 		if (GMT->current.proj.units_pr_degree) {
-			GMT_vstereo (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
+			gmt_vstereo (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
 			(*GMT->current.proj.fwd) (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[3] / radius);
 		}
 		else
 			GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[3];
 
-		GMT_vstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+		gmt_vstereo (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
 	}
 
 
@@ -2866,16 +2866,16 @@ GMT_LOCAL bool map_init_lambert (struct GMT_CTRL *GMT) {
 
 	GMT->current.proj.GMT_convert_latitudes = map_quickconic (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmt_scale_eqrad (GMT);
-	GMT_vlamb (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
+	gmt_vlamb (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[4] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[4];
 	if (GMT_IS_SPHERICAL (GMT) || GMT->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		GMT->current.proj.fwd = &GMT_lamb_sph;
-		GMT->current.proj.inv = &GMT_ilamb_sph;
+		GMT->current.proj.fwd = &gmt_lamb_sph;
+		GMT->current.proj.inv = &gmt_ilamb_sph;
 	}
 	else {
-		GMT->current.proj.fwd = &GMT_lamb;
-		GMT->current.proj.inv = &GMT_ilamb;
+		GMT->current.proj.fwd = &gmt_lamb;
+		GMT->current.proj.inv = &gmt_ilamb;
 	}
 
 	if (GMT->common.R.oblique) {	/* Rectangular box given*/
@@ -3033,11 +3033,11 @@ GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
 	/* Here we have pole and origin */
 
 	gmt_set_oblique_pole_and_origin (GMT, GMT->current.proj.o_pole_lon, GMT->current.proj.o_pole_lat, o_x, o_y);
-	GMT_vmerc (GMT, 0.0, 0.0);
+	gmt_vmerc (GMT, 0.0, 0.0);
 
 	if (GMT->common.R.oblique) {	/* wesn is lower left and upper right corners in normal lon/lats */
-		GMT_oblmrc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_oblmrc (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_oblmrc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_oblmrc (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	}
 	else {	/* Gave oblique degrees */
 		/* Convert oblique wesn in degrees to meters using regular Mercator */
@@ -3045,17 +3045,17 @@ GMT_LOCAL bool map_init_oblique (struct GMT_CTRL *GMT) {
 			GMT->common.R.wesn[XLO] = -180.0;
 			GMT->common.R.wesn[XHI] = +180.0;
 		}
-		GMT_merc_sph (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_merc_sph (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_merc_sph (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_merc_sph (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->common.R.oblique = true;	/* Since wesn was oblique, not geographical wesn */
 	}
 
-	GMT_imerc_sph (GMT, &w, &s, xmin, ymin);	/* Get oblique wesn boundaries */
-	GMT_imerc_sph (GMT, &e, &n, xmax, ymax);
+	gmt_imerc_sph (GMT, &w, &s, xmin, ymin);	/* Get oblique wesn boundaries */
+	gmt_imerc_sph (GMT, &e, &n, xmax, ymax);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[4];
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[4]);
-	GMT->current.proj.fwd = &GMT_oblmrc;
-	GMT->current.proj.inv = &GMT_ioblmrc;
+	GMT->current.proj.fwd = &gmt_oblmrc;
+	GMT->current.proj.inv = &gmt_ioblmrc;
 	GMT->current.map.outside = &map_rect_outside;
 	GMT->current.map.crossing = &map_rect_crossing;
 	GMT->current.map.overlap = &map_rect_overlap;
@@ -3196,16 +3196,16 @@ GMT_LOCAL bool map_init_tm (struct GMT_CTRL *GMT) {
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 1.0;	/* Select default map scale for TM */
 	GMT->current.proj.GMT_convert_latitudes = map_quicktm (GMT, GMT->current.proj.pars[0], 10.0);
 	if (GMT->current.proj.GMT_convert_latitudes) gmt_scale_eqrad (GMT);
-	GMT_vtm (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vtm (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
 	if (GMT_IS_SPHERICAL (GMT) || GMT->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		GMT->current.proj.fwd = &GMT_tm_sph;
-		GMT->current.proj.inv = &GMT_itm_sph;
+		GMT->current.proj.fwd = &gmt_tm_sph;
+		GMT->current.proj.inv = &gmt_itm_sph;
 	}
 	else {
-		GMT->current.proj.fwd = &GMT_tm;
-		GMT->current.proj.inv = &GMT_itm;
+		GMT->current.proj.fwd = &gmt_tm;
+		GMT->current.proj.inv = &gmt_itm;
 	}
 
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
@@ -3217,12 +3217,12 @@ GMT_LOCAL bool map_init_tm (struct GMT_CTRL *GMT) {
 		GMT->common.R.wesn[YHI] = 90;
 		GMT->common.R.wesn[XHI] = e;
 		GMT->common.R.wesn[XLO] = w;
-		GMT_vtm (GMT, GMT->current.proj.pars[0], 0.0);
+		gmt_vtm (GMT, GMT->current.proj.pars[0], 0.0);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], 0.0, &xmin, &dummy);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XHI], 0.0, &xmax, &dummy);
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &dummy, &ymin);
 		ymax = ymin + (TWO_PI * GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor);
-		GMT_vtm (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+		gmt_vtm (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -3338,7 +3338,7 @@ GMT_LOCAL bool map_init_utm (struct GMT_CTRL *GMT) {
 	if (lon0 >= 360.0) lon0 -= 360.0;
 	GMT->current.proj.GMT_convert_latitudes = map_quicktm (GMT, lon0, 10.0);
 	if (GMT->current.proj.GMT_convert_latitudes) gmt_scale_eqrad (GMT);
-	GMT_vtm (GMT, lon0, 0.0);	/* Central meridian for this zone */
+	gmt_vtm (GMT, lon0, 0.0);	/* Central meridian for this zone */
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
 	switch (GMT->current.proj.utm_hemisphere) {	/* Set hemisphere */
@@ -3353,12 +3353,12 @@ GMT_LOCAL bool map_init_utm (struct GMT_CTRL *GMT) {
 			break;
 	}
 	if (GMT_IS_SPHERICAL (GMT) || GMT->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo conformal latitudes */
-		GMT->current.proj.fwd = &GMT_utm_sph;
-		GMT->current.proj.inv = &GMT_iutm_sph;
+		GMT->current.proj.fwd = &gmt_utm_sph;
+		GMT->current.proj.inv = &gmt_iutm_sph;
 	}
 	else {
-		GMT->current.proj.fwd = &GMT_utm;
-		GMT->current.proj.inv = &GMT_iutm;
+		GMT->current.proj.fwd = &gmt_utm;
+		GMT->current.proj.inv = &gmt_iutm;
 	}
 
 	if (fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) > 360.0) {	/* -R in UTM meters */
@@ -3433,7 +3433,7 @@ GMT_LOCAL bool map_init_lambeq (struct GMT_CTRL *GMT) {
 	map_set_polar (GMT);
 	GMT->current.proj.GMT_convert_latitudes = !GMT_IS_SPHERICAL (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmt_scale_eqrad (GMT);
-	GMT_vlambeq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+	gmt_vlambeq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
 
 	if (GMT->current.proj.GMT_convert_latitudes) {
 		double D, s, c;
@@ -3445,13 +3445,13 @@ GMT_LOCAL bool map_init_lambeq (struct GMT_CTRL *GMT) {
 	GMT->current.proj.iDx = 1.0 / GMT->current.proj.Dx;
 	GMT->current.proj.iDy = 1.0 / GMT->current.proj.Dy;
 
-	GMT->current.proj.fwd = &GMT_lambeq;
-	GMT->current.proj.inv = &GMT_ilambeq;
+	GMT->current.proj.fwd = &gmt_lambeq;
+	GMT->current.proj.inv = &gmt_ilambeq;
 	if (GMT->current.proj.units_pr_degree) {
-		GMT_vlambeq (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
-		GMT_lambeq (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
+		gmt_vlambeq (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
+		gmt_lambeq (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[3] / radius);
-		GMT_vlambeq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+		gmt_vlambeq (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
 	}
 	else
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[3];
@@ -3539,16 +3539,16 @@ GMT_LOCAL bool map_init_ortho (struct GMT_CTRL *GMT) {
 	map_set_polar (GMT);
 
 	if (GMT->current.proj.units_pr_degree) {
-		GMT_vortho (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
-		GMT_ortho (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
+		gmt_vortho (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
+		gmt_ortho (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[3] / radius);
 	}
 	else
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[3];
 
-	GMT_vortho (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
-	GMT->current.proj.fwd = &GMT_ortho;
-	GMT->current.proj.inv = &GMT_iortho;
+	gmt_vortho (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+	GMT->current.proj.fwd = &gmt_ortho;
+	GMT->current.proj.inv = &gmt_iortho;
 
 	if (GMT->common.R.oblique) {	/* Rectangular box given */
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
@@ -3653,8 +3653,8 @@ GMT_LOCAL bool map_init_genper (struct GMT_CTRL *GMT) {
 	map_set_polar (GMT);
 
 	if (GMT->current.proj.units_pr_degree) {
-		GMT_vgenper (GMT, 0.0, 90.0, alt, azimuth, tilt, twist, width, height);
-		GMT_genper (GMT, 0.0, fabs (GMT->current.proj.pars[3]), &dummy, &radius);
+		gmt_vgenper (GMT, 0.0, 90.0, alt, azimuth, tilt, twist, width, height);
+		gmt_genper (GMT, 0.0, fabs (GMT->current.proj.pars[3]), &dummy, &radius);
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[2] / radius);
 	}
 	else
@@ -3668,9 +3668,9 @@ GMT_LOCAL bool map_init_genper (struct GMT_CTRL *GMT) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gave_map_width %d \n",GMT->current.proj.gave_map_width);
 	}
 
-	GMT_vgenper (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], alt, azimuth, tilt, twist, width, height);
-	GMT->current.proj.fwd = &GMT_genper;
-	GMT->current.proj.inv = &GMT_igenper;
+	gmt_vgenper (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], alt, azimuth, tilt, twist, width, height);
+	GMT->current.proj.fwd = &gmt_genper;
+	GMT->current.proj.inv = &gmt_igenper;
 
 	GMT->common.R.wesn[XLO] = 0.0;
 	GMT->common.R.wesn[XHI] = 360.0;
@@ -3766,16 +3766,16 @@ GMT_LOCAL bool map_init_gnomonic (struct GMT_CTRL *GMT) {
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */	map_set_polar (GMT);
 
 	if (GMT->current.proj.units_pr_degree) {
-		GMT_vgnomonic (GMT, 0.0, 90.0, 60.0);
-		GMT_gnomonic (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
+		gmt_vgnomonic (GMT, 0.0, 90.0, 60.0);
+		gmt_gnomonic (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[3] / radius);
 	}
 	else
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[3];
 
-	GMT_vgnomonic (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
-	GMT->current.proj.fwd = &GMT_gnomonic;
-	GMT->current.proj.inv = &GMT_ignomonic;
+	gmt_vgnomonic (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+	GMT->current.proj.fwd = &gmt_gnomonic;
+	GMT->current.proj.inv = &gmt_ignomonic;
 
 	if (GMT->common.R.oblique) {	/* Rectangular box given */
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
@@ -3849,17 +3849,17 @@ GMT_LOCAL bool map_init_azeqdist (struct GMT_CTRL *GMT) {
 	map_set_polar (GMT);
 
 	if (GMT->current.proj.units_pr_degree) {
-		GMT_vazeqdist (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
-		GMT_azeqdist (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
+		gmt_vazeqdist (GMT, 0.0, 90.0, GMT->current.proj.pars[2]);
+		gmt_azeqdist (GMT, 0.0, fabs (GMT->current.proj.pars[4]), &dummy, &radius);
 		if (GMT_IS_ZERO (radius)) radius = GMT->current.proj.rho_max * GMT->current.proj.EQ_RAD;
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = fabs (GMT->current.proj.pars[3] / radius);
 	}
 	else
 		GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[3];
 
-	GMT_vazeqdist (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
-	GMT->current.proj.fwd = &GMT_azeqdist;
-	GMT->current.proj.inv = &GMT_iazeqdist;
+	gmt_vazeqdist (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2]);
+	GMT->current.proj.fwd = &gmt_azeqdist;
+	GMT->current.proj.inv = &gmt_iazeqdist;
 
 	if (GMT->common.R.oblique) {	/* Rectangular box given */
 		(*GMT->current.proj.fwd) (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
@@ -3934,13 +3934,13 @@ GMT_LOCAL bool map_init_mollweide (struct GMT_CTRL *GMT) {
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = M_PI * GMT->current.proj.pars[1] / sqrt (8.0);
-	GMT_vmollweide (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vmollweide (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 
 	if (GMT->common.R.oblique) {
-		GMT_mollweide (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_mollweide (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_mollweide (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_mollweide (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -3951,10 +3951,10 @@ GMT_LOCAL bool map_init_mollweide (struct GMT_CTRL *GMT) {
 	}
 	else {
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
-		GMT_mollweide (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_mollweide (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_mollweide (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_mollweide (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_mollweide (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_mollweide (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_mollweide (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_mollweide (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
@@ -3965,8 +3965,8 @@ GMT_LOCAL bool map_init_mollweide (struct GMT_CTRL *GMT) {
 		GMT->current.proj.polar = true;
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.proj.fwd = &GMT_mollweide;
-	GMT->current.proj.inv = &GMT_imollweide;
+	GMT->current.proj.fwd = &gmt_mollweide;
+	GMT->current.proj.inv = &gmt_imollweide;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
@@ -3990,13 +3990,13 @@ GMT_LOCAL bool map_init_hammer (struct GMT_CTRL *GMT) {
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = 0.5 * M_PI * GMT->current.proj.pars[1] / M_SQRT2;
-	GMT_vhammer (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vhammer (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 
 	if (GMT->common.R.oblique) {
-		GMT_hammer (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_hammer (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_hammer (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_hammer (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4009,10 +4009,10 @@ GMT_LOCAL bool map_init_hammer (struct GMT_CTRL *GMT) {
 		double x, y, dummy;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
-		GMT_hammer (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_hammer (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_hammer (GMT, x, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_hammer (GMT, x, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_hammer (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_hammer (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_hammer (GMT, x, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_hammer (GMT, x, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
@@ -4023,8 +4023,8 @@ GMT_LOCAL bool map_init_hammer (struct GMT_CTRL *GMT) {
 		GMT->current.proj.polar = true;
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.proj.fwd = &GMT_hammer;
-	GMT->current.proj.inv = &GMT_ihammer;
+	GMT->current.proj.fwd = &gmt_hammer;
+	GMT->current.proj.inv = &gmt_ihammer;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (GMT->common.R.oblique);
 }
@@ -4044,13 +4044,13 @@ GMT_LOCAL bool map_init_grinten (struct GMT_CTRL *GMT) {
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
-	GMT_vgrinten (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vgrinten (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 
 	if (GMT->common.R.oblique) {
-		GMT_grinten (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_grinten (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_grinten (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_grinten (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4063,10 +4063,10 @@ GMT_LOCAL bool map_init_grinten (struct GMT_CTRL *GMT) {
 		double x, y, dummy;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
-		GMT_grinten (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_grinten (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_grinten (GMT, x, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_grinten (GMT, x, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_grinten (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_grinten (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_grinten (GMT, x, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_grinten (GMT, x, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
@@ -4078,8 +4078,8 @@ GMT_LOCAL bool map_init_grinten (struct GMT_CTRL *GMT) {
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.proj.r = 0.5 * GMT->current.proj.rect[XHI];
-	GMT->current.proj.fwd = &GMT_grinten;
-	GMT->current.proj.inv = &GMT_igrinten;
+	GMT->current.proj.fwd = &gmt_grinten;
+	GMT->current.proj.inv = &gmt_igrinten;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (GMT->common.R.oblique);
 }
@@ -4098,12 +4098,12 @@ GMT_LOCAL bool map_init_winkel (struct GMT_CTRL *GMT) {
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
-	GMT_vwinkel (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vwinkel (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = 2.0 * GMT->current.proj.pars[1] / (1.0 + GMT->current.proj.r_cosphi1);
 
 	if (GMT->common.R.oblique) {
-		GMT_winkel (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_winkel (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_winkel (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_winkel (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4116,21 +4116,21 @@ GMT_LOCAL bool map_init_winkel (struct GMT_CTRL *GMT) {
 		double x, y, dummy;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
 		x = (fabs (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian) > fabs (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian)) ? GMT->common.R.wesn[XLO] : GMT->common.R.wesn[XHI];
-		GMT_winkel (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_winkel (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_winkel (GMT, x, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_winkel (GMT, x, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_winkel (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_winkel (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_winkel (GMT, x, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_winkel (GMT, x, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
 		GMT->current.map.clip = &map_wesn_clip;
-		GMT->current.map.left_edge = &GMT_left_winkel;
-		GMT->current.map.right_edge = &GMT_right_winkel;
+		GMT->current.map.left_edge = &gmt_left_winkel;
+		GMT->current.map.right_edge = &gmt_right_winkel;
 		GMT->current.map.frame.horizontal = 2;
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.proj.fwd = &GMT_winkel;
-	GMT->current.proj.inv = &GMT_iwinkel;
+	GMT->current.proj.fwd = &gmt_winkel;
+	GMT->current.proj.inv = &gmt_iwinkel;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	return (GMT->common.R.oblique);
 }
@@ -4150,12 +4150,12 @@ GMT_LOCAL bool map_init_eckert4 (struct GMT_CTRL *GMT) {
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
-	GMT_veckert4 (GMT, GMT->current.proj.pars[0]);
+	gmt_veckert4 (GMT, GMT->current.proj.pars[0]);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
 
 	if (GMT->common.R.oblique) {
-		GMT_eckert4 (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_eckert4 (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_eckert4 (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_eckert4 (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4167,21 +4167,21 @@ GMT_LOCAL bool map_init_eckert4 (struct GMT_CTRL *GMT) {
 	else {
 		double y, dummy;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
-		GMT_eckert4 (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_eckert4 (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_eckert4 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_eckert4 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_eckert4 (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_eckert4 (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_eckert4 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_eckert4 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
 		GMT->current.map.clip = &map_wesn_clip;
-		GMT->current.map.left_edge = &GMT_left_eckert4;
-		GMT->current.map.right_edge = &GMT_right_eckert4;
+		GMT->current.map.left_edge = &gmt_left_eckert4;
+		GMT->current.map.right_edge = &gmt_right_eckert4;
 		GMT->current.map.frame.horizontal = 2;
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.proj.fwd = &GMT_eckert4;
-	GMT->current.proj.inv = &GMT_ieckert4;
+	GMT->current.proj.fwd = &gmt_eckert4;
+	GMT->current.proj.inv = &gmt_ieckert4;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
@@ -4203,12 +4203,12 @@ GMT_LOCAL bool map_init_eckert6 (struct GMT_CTRL *GMT) {
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
-	GMT_veckert6 (GMT, GMT->current.proj.pars[0]);
+	gmt_veckert6 (GMT, GMT->current.proj.pars[0]);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = 0.5 * GMT->current.proj.pars[1] * sqrt (2.0 + M_PI);
 
 	if (GMT->common.R.oblique) {
-		GMT_eckert6 (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_eckert6 (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_eckert6 (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_eckert6 (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4220,21 +4220,21 @@ GMT_LOCAL bool map_init_eckert6 (struct GMT_CTRL *GMT) {
 	else {
 		double y, dummy;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
-		GMT_eckert6 (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_eckert6 (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_eckert6 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_eckert6 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_eckert6 (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_eckert6 (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_eckert6 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_eckert6 (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
 		GMT->current.map.clip = &map_wesn_clip;
-		GMT->current.map.left_edge = &GMT_left_eckert6;
-		GMT->current.map.right_edge = &GMT_right_eckert6;
+		GMT->current.map.left_edge = &gmt_left_eckert6;
+		GMT->current.map.right_edge = &gmt_right_eckert6;
 		GMT->current.map.frame.horizontal = 2;
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.proj.fwd = &GMT_eckert6;
-	GMT->current.proj.inv = &GMT_ieckert6;
+	GMT->current.proj.fwd = &gmt_eckert6;
+	GMT->current.proj.inv = &gmt_ieckert6;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
@@ -4255,12 +4255,12 @@ GMT_LOCAL bool map_init_robinson (struct GMT_CTRL *GMT) {
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
-	GMT_vrobinson (GMT, GMT->current.proj.pars[0]);
+	gmt_vrobinson (GMT, GMT->current.proj.pars[0]);
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1] / 0.8487;
 
 	if (GMT->common.R.oblique) {
-		GMT_robinson (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_robinson (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_robinson (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_robinson (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4272,21 +4272,21 @@ GMT_LOCAL bool map_init_robinson (struct GMT_CTRL *GMT) {
 	else {
 		double y, dummy;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
-		GMT_robinson (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_robinson (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
-		GMT_robinson (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_robinson (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_robinson (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_robinson (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_robinson (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_robinson (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
 		GMT->current.map.clip = &map_wesn_clip;
-		GMT->current.map.left_edge = &GMT_left_robinson;
-		GMT->current.map.right_edge = &GMT_right_robinson;
+		GMT->current.map.left_edge = &gmt_left_robinson;
+		GMT->current.map.right_edge = &gmt_right_robinson;
 		GMT->current.map.frame.horizontal = 2;
 	}
 	map_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
-	GMT->current.proj.fwd = &GMT_robinson;
-	GMT->current.proj.inv = &GMT_irobinson;
+	GMT->current.proj.fwd = &gmt_robinson;
+	GMT->current.proj.inv = &gmt_irobinson;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 	GMT->current.map.parallel_straight = 1;
 
@@ -4309,16 +4309,16 @@ GMT_LOCAL bool map_init_sinusoidal (struct GMT_CTRL *GMT) {
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
-	GMT_vsinusoidal (GMT, GMT->current.proj.pars[0]);
+	gmt_vsinusoidal (GMT, GMT->current.proj.pars[0]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[1];
-	GMT->current.proj.fwd = &GMT_sinusoidal;
-	GMT->current.proj.inv = &GMT_isinusoidal;
+	GMT->current.proj.fwd = &gmt_sinusoidal;
+	GMT->current.proj.inv = &gmt_isinusoidal;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (GMT->common.R.oblique) {
-		GMT_sinusoidal (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
-		GMT_sinusoidal (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
+		gmt_sinusoidal (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &xmin, &ymin);
+		gmt_sinusoidal (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 		GMT->current.map.outside = &map_rect_outside;
 		GMT->current.map.crossing = &map_rect_crossing;
 		GMT->current.map.overlap = &map_rect_overlap;
@@ -4330,16 +4330,16 @@ GMT_LOCAL bool map_init_sinusoidal (struct GMT_CTRL *GMT) {
 	else {
 		double dummy, y;
 		y = (GMT->common.R.wesn[YLO] * GMT->common.R.wesn[YHI] <= 0.0) ? 0.0 : MIN (fabs (GMT->common.R.wesn[YLO]), fabs (GMT->common.R.wesn[YHI]));
-		GMT_sinusoidal (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
-		GMT_sinusoidal (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
-		GMT_sinusoidal (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
-		GMT_sinusoidal (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
+		gmt_sinusoidal (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YLO], &dummy, &ymin);
+		gmt_sinusoidal (GMT, GMT->current.proj.central_meridian, GMT->common.R.wesn[YHI], &dummy, &ymax);
+		gmt_sinusoidal (GMT, GMT->common.R.wesn[XLO], y, &xmin, &dummy);
+		gmt_sinusoidal (GMT, GMT->common.R.wesn[XHI], y, &xmax, &dummy);
 		GMT->current.map.outside = &map_wesn_outside;
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
 		GMT->current.map.clip = &map_wesn_clip;
-		GMT->current.map.left_edge = &GMT_left_sinusoidal;
-		GMT->current.map.right_edge = &GMT_right_sinusoidal;
+		GMT->current.map.left_edge = &gmt_left_sinusoidal;
+		GMT->current.map.right_edge = &gmt_right_sinusoidal;
 		GMT->current.map.frame.horizontal = 2;
 		GMT->current.proj.polar = true;
 	}
@@ -4366,14 +4366,14 @@ GMT_LOCAL bool map_init_cassini (struct GMT_CTRL *GMT) {
 	}
 	too_big = map_quicktm (GMT, GMT->current.proj.pars[0], 4.0);
 	if (too_big) map_set_spherical (GMT, true);	/* Cannot use ellipsoidal series for this area */
-	GMT_vcassini (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vcassini (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	if (GMT_IS_SPHERICAL (GMT)) {
-		GMT->current.proj.fwd = &GMT_cassini_sph;
-		GMT->current.proj.inv = &GMT_icassini_sph;
+		GMT->current.proj.fwd = &gmt_cassini_sph;
+		GMT->current.proj.inv = &gmt_icassini_sph;
 	}
 	else {
-		GMT->current.proj.fwd = &GMT_cassini;
-		GMT->current.proj.inv = &GMT_icassini;
+		GMT->current.proj.fwd = &gmt_cassini;
+		GMT->current.proj.inv = &gmt_icassini;
 	}
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
@@ -4417,14 +4417,14 @@ GMT_LOCAL bool map_init_albers (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = map_quickconic (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmt_scale_eqrad (GMT);
 	if (GMT_IS_SPHERICAL (GMT) || GMT->current.proj.GMT_convert_latitudes) {	/* Spherical code w/wo authalic latitudes */
-		GMT_valbers_sph (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
-		GMT->current.proj.fwd = &GMT_albers_sph;
-		GMT->current.proj.inv = &GMT_ialbers_sph;
+		gmt_valbers_sph (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
+		GMT->current.proj.fwd = &gmt_albers_sph;
+		GMT->current.proj.inv = &gmt_ialbers_sph;
 	}
 	else {
-		GMT_valbers (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
-		GMT->current.proj.fwd = &GMT_albers;
-		GMT->current.proj.inv = &GMT_ialbers;
+		gmt_valbers (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
+		GMT->current.proj.fwd = &gmt_albers;
+		GMT->current.proj.inv = &gmt_ialbers;
 	}
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[4] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[4];
@@ -4476,9 +4476,9 @@ GMT_LOCAL bool map_init_econic (struct GMT_CTRL *GMT) {
 
 	GMT->current.proj.GMT_convert_latitudes = !GMT_IS_SPHERICAL (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmt_scale_eqrad (GMT);
-	GMT_veconic (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
-	GMT->current.proj.fwd = &GMT_econic;
-	GMT->current.proj.inv = &GMT_ieconic;
+	gmt_veconic (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1], GMT->current.proj.pars[2], GMT->current.proj.pars[3]);
+	GMT->current.proj.fwd = &gmt_econic;
+	GMT->current.proj.inv = &gmt_ieconic;
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[4] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[4];
 
@@ -4530,11 +4530,11 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 	GMT->current.map.is_world = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
-	GMT_vpolyconic (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
+	gmt_vpolyconic (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[2] /= GMT->current.proj.M_PR_DEG;
 	GMT->current.proj.scale[GMT_X] = GMT->current.proj.scale[GMT_Y] = GMT->current.proj.pars[2];
-	GMT->current.proj.fwd = &GMT_polyconic;
-	GMT->current.proj.inv = &GMT_ipolyconic;
+	GMT->current.proj.fwd = &gmt_polyconic;
+	GMT->current.proj.inv = &gmt_ipolyconic;
 	if (GMT->current.setting.map_frame_type & GMT_IS_FANCY) GMT->current.setting.map_frame_type = GMT_IS_PLAIN;
 
 	if (GMT->common.R.oblique) {
@@ -4559,8 +4559,8 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 		GMT->current.map.crossing = &map_wesn_crossing;
 		GMT->current.map.overlap = &map_wesn_overlap;
 		GMT->current.map.clip = &map_wesn_clip;
-		GMT->current.map.left_edge = &GMT_left_polyconic;
-		GMT->current.map.right_edge = &GMT_right_polyconic;
+		GMT->current.map.left_edge = &gmt_left_polyconic;
+		GMT->current.map.right_edge = &gmt_right_polyconic;
 		GMT->current.proj.polar = true;
 	}
 
@@ -5491,8 +5491,8 @@ GMT_LOCAL int map_init_three_D (struct GMT_CTRL *GMT) {
 		case GMT_LINEAR:	/* Regular scaling */
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZLO] : GMT->common.R.wesn[ZHI];
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? GMT->common.R.wesn[ZHI] : GMT->common.R.wesn[ZLO];
-			GMT->current.proj.fwd_z = &GMT_translin;
-			GMT->current.proj.inv_z = &GMT_itranslin;
+			GMT->current.proj.fwd_z = &gmt_translin;
+			GMT->current.proj.inv_z = &gmt_itranslin;
 			break;
 		case GMT_LOG10:	/* Log10 transformation */
 			if (GMT->common.R.wesn[ZLO] <= 0.0 || GMT->common.R.wesn[ZHI] <= 0.0) {
@@ -5501,8 +5501,8 @@ GMT_LOCAL int map_init_three_D (struct GMT_CTRL *GMT) {
 			}
 			zmin = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZLO]) : d_log10 (GMT, GMT->common.R.wesn[ZHI]);
 			zmax = (GMT->current.proj.xyz_pos[GMT_Z]) ? d_log10 (GMT, GMT->common.R.wesn[ZHI]) : d_log10 (GMT, GMT->common.R.wesn[ZLO]);
-			GMT->current.proj.fwd_z = &GMT_translog10;
-			GMT->current.proj.inv_z = &GMT_itranslog10;
+			GMT->current.proj.fwd_z = &gmt_translog10;
+			GMT->current.proj.inv_z = &gmt_itranslog10;
 			break;
 		case GMT_POW:	/* x^y transformation */
 			GMT->current.proj.xyz_pow[GMT_Z] = GMT->current.proj.z_pars[1];
@@ -5510,8 +5510,8 @@ GMT_LOCAL int map_init_three_D (struct GMT_CTRL *GMT) {
 			positive = !((GMT->current.proj.xyz_pos[GMT_Z] + (GMT->current.proj.xyz_pow[GMT_Z] > 0.0)) % 2);
 			zmin = (positive) ? pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]);
 			zmax = (positive) ? pow (GMT->common.R.wesn[ZHI], GMT->current.proj.xyz_pow[GMT_Z]) : pow (GMT->common.R.wesn[ZLO], GMT->current.proj.xyz_pow[GMT_Z]);
-			GMT->current.proj.fwd_z = &GMT_transpowz;
-			GMT->current.proj.inv_z = &GMT_itranspowz;
+			GMT->current.proj.fwd_z = &gmt_transpowz;
+			GMT->current.proj.inv_z = &gmt_itranspowz;
 	}
 	z_range = zmax - zmin;
 	if (z_range == 0.0)
@@ -5847,7 +5847,7 @@ void GMT_set_geocentric (struct GMT_CTRL *GMT, bool notify)
 
 /*! . */
 void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat) {
-	/* The set quantities are used in GMT_obl and GMT_iobl */
+	/* The set quantities are used in gmt_obl and gmt_iobl */
 	/* Get forward pole and origin vectors FP, FC */
 	double P[3];
 	GMT_geo_to_cart (GMT, plat, plon, GMT->current.proj.o_FP, true);	/* Set forward Cartesian pole o_FP */
@@ -5856,9 +5856,9 @@ void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double 
 	GMT_normalize3v (GMT, GMT->current.proj.o_FC);
 
 	/* Get inverse pole and origin vectors FP, FC */
-	GMT_obl (GMT, 0.0, M_PI_2, &plon, &plat);
+	gmt_obl (GMT, 0.0, M_PI_2, &plon, &plat);
 	GMT_geo_to_cart (GMT, plat, plon, GMT->current.proj.o_IP, false);	/* Set inverse Cartesian pole o_IP */
-	GMT_obl (GMT, 0.0, 0.0, &olon, &olat);
+	gmt_obl (GMT, 0.0, 0.0, &olon, &olat);
 	GMT_geo_to_cart (GMT, olat, olon, P, false);			/* P points to origin  */
 	GMT_cross3v (GMT, GMT->current.proj.o_IP, P, GMT->current.proj.o_IC);	/* Set inverse Cartesian center o_FC */
 	GMT_normalize3v (GMT, GMT->current.proj.o_IC);
@@ -7678,7 +7678,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				}
 				break;
 			case GMT_GENPER:
-				GMT_genper_map_clip_path (GMT, np, work_x, work_y);
+				gmt_genper_map_clip_path (GMT, np, work_x, work_y);
 				break;
 			case GMT_VANGRINTEN:
 				do_circle = GMT->current.map.is_world;

@@ -4922,8 +4922,8 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 
 	GMT->current.proj.projection = GMT_NO_PROJ;
 	/* We need some defaults here for the cases where we do not actually set these with gmt_map_setup */
-	GMT->current.proj.fwd_x = GMT->current.proj.fwd_y = GMT->current.proj.fwd_z = &GMT_translin;
-	GMT->current.proj.inv_x = GMT->current.proj.inv_y = GMT->current.proj.inv_z = &GMT_itranslin;
+	GMT->current.proj.fwd_x = GMT->current.proj.fwd_y = GMT->current.proj.fwd_z = &gmt_translin;
+	GMT->current.proj.inv_x = GMT->current.proj.inv_y = GMT->current.proj.inv_z = &gmt_itranslin;
 	/* z_level will be updated in GMT_init_three_D, but if it doesn't, it does not matter,
 	 * because by default, z_scale = 0.0 */
 	GMT->current.proj.z_level = DBL_MAX;
