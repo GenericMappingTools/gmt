@@ -73,6 +73,7 @@
  *  gmt_decode_grd_h_info   : Decodes a -Dstring into header text components
  *  gmt_grd_RI_verify       : Test to see if region and incs are compatible
  *  gmt_scale_and_offset_f  : Routine that scales and offsets the data in a vector
+ *  gmt_grd_flip_vertical  : Flips the grid in vertical direction
  *  grdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
  *
  *  Reading images via GDAL (if enabled):
@@ -91,7 +92,7 @@ struct GRD_PAD {	/* Local structure */
 };
 
 /* These functions live in other files and are extern'ed in here */
-EXTERN_MSC int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int GMT_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
@@ -903,7 +904,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		if (!gmt_getdatapath (GMT, tmp, header->name, R_OK))
 			return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
-		if ((val = GMT_is_nc_grid (GMT, header)) == GMT_NOERROR)
+		if ((val = gmt_is_nc_grid (GMT, header)) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		/* Continue only when file was a pipe or when nc_open didn't like the file. */
 		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED)
@@ -2454,6 +2455,31 @@ bool gmt_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_mode
 	*imag_offset = (complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? header->size / 2ULL : 0ULL;
 
 	return (do_header);
+}
+
+/* Reverses the grid vertically, that is, from north up to south up or vice versa. */
+void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
+	/* Note: when grid is complex, pass 2x n_rows */
+	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
+	unsigned row;
+	unsigned stride = n_cols; /* stride is the distance between rows. defaults to n_cols */
+	char *grid = (char*)gridp;
+	char *tmp = malloc (n_cols * cell_size);
+	char *top, *bottom;
+
+	if (n_stride != 0)
+		stride = n_stride;
+
+	for (row = 0; row < rows_over_2; ++row) {
+		/* pointer to top row: */
+		top = grid + row * stride * cell_size;
+		/* pointer to bottom row: */
+		bottom = grid + ( (n_rows - row) * stride - stride ) * cell_size;
+		memcpy (tmp, top, n_cols * cell_size);    /* save top row */
+		memcpy (top, bottom, n_cols * cell_size); /* copy bottom to top */
+		memcpy (bottom, tmp, n_cols * cell_size); /* copy tmp to bottom */
+	}
+	gmt_str_free (tmp);
 }
 
 bool gmt_check_url_name (char *fname) {

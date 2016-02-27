@@ -68,11 +68,11 @@ int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
 /* Defined in gmt_nc.c */
-int GMT_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-int GMT_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-int GMT_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
-int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+int gmt_nc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+int gmt_nc_update_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+int gmt_nc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
 /* CUSTOM I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -1940,51 +1940,51 @@ void GMT_grdio_init (struct GMT_CTRL *GMT) {
 
 	id                        = GMT_GRID_IS_NB;
 	GMT->session.grdformat[id]  = "nb = GMT netCDF format (8-bit integer), " GMT_NC_CONVENTION;
-	GMT->session.readinfo[id]   = &GMT_nc_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_nc_update_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_nc_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_nc_read_grd;
-	GMT->session.writegrd[id]   = &GMT_nc_write_grd;
+	GMT->session.readinfo[id]   = &gmt_nc_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_nc_update_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_nc_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_nc_read_grd;
+	GMT->session.writegrd[id]   = &gmt_nc_write_grd;
 
 	/* FORMAT: GMT netCDF-based (short) grdio (COARDS compliant) */
 
 	id                        = GMT_GRID_IS_NS;
 	GMT->session.grdformat[id]  = "ns = GMT netCDF format (16-bit integer), " GMT_NC_CONVENTION;
-	GMT->session.readinfo[id]   = &GMT_nc_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_nc_update_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_nc_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_nc_read_grd;
-	GMT->session.writegrd[id]   = &GMT_nc_write_grd;
+	GMT->session.readinfo[id]   = &gmt_nc_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_nc_update_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_nc_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_nc_read_grd;
+	GMT->session.writegrd[id]   = &gmt_nc_write_grd;
 
 	/* FORMAT: GMT netCDF-based (int) grdio (COARDS compliant) */
 
 	id                        = GMT_GRID_IS_NI;
 	GMT->session.grdformat[id]  = "ni = GMT netCDF format (32-bit integer), " GMT_NC_CONVENTION;
-	GMT->session.readinfo[id]   = &GMT_nc_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_nc_update_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_nc_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_nc_read_grd;
-	GMT->session.writegrd[id]   = &GMT_nc_write_grd;
+	GMT->session.readinfo[id]   = &gmt_nc_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_nc_update_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_nc_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_nc_read_grd;
+	GMT->session.writegrd[id]   = &gmt_nc_write_grd;
 
 	/* FORMAT: GMT netCDF-based (float) grdio (COARDS compliant) */
 
 	id                        = GMT_GRID_IS_NF;
 	GMT->session.grdformat[id]  = "nf = GMT netCDF format (32-bit float), " GMT_NC_CONVENTION;
-	GMT->session.readinfo[id]   = &GMT_nc_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_nc_update_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_nc_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_nc_read_grd;
-	GMT->session.writegrd[id]   = &GMT_nc_write_grd;
+	GMT->session.readinfo[id]   = &gmt_nc_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_nc_update_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_nc_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_nc_read_grd;
+	GMT->session.writegrd[id]   = &gmt_nc_write_grd;
 
 	/* FORMAT: GMT netCDF-based (double) grdio (COARDS compliant) */
 
 	id                        = GMT_GRID_IS_ND;
 	GMT->session.grdformat[id]  = "nd = GMT netCDF format (64-bit float), " GMT_NC_CONVENTION;
-	GMT->session.readinfo[id]   = &GMT_nc_read_grd_info;
-	GMT->session.updateinfo[id] = &GMT_nc_update_grd_info;
-	GMT->session.writeinfo[id]  = &GMT_nc_write_grd_info;
-	GMT->session.readgrd[id]    = &GMT_nc_read_grd;
-	GMT->session.writegrd[id]   = &GMT_nc_write_grd;
+	GMT->session.readinfo[id]   = &gmt_nc_read_grd_info;
+	GMT->session.updateinfo[id] = &gmt_nc_update_grd_info;
+	GMT->session.writeinfo[id]  = &gmt_nc_write_grd_info;
+	GMT->session.readgrd[id]    = &gmt_nc_read_grd;
+	GMT->session.writegrd[id]   = &gmt_nc_write_grd;
 
 	/* FORMAT: GMT netCDF-based (byte) grdio */
 

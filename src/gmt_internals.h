@@ -281,7 +281,7 @@ EXTERN_MSC int gmt_set_gap (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT);
 
 /* From gmt_nc.c */
-EXTERN_MSC void GMT_grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
+EXTERN_MSC void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 
 /* For supplements */
 EXTERN_MSC int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
