@@ -162,7 +162,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 	name = (file) ? file : h->name;
 	if ((c = GMT_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
 	mode = (c[1] == 'u') ? 0 : 1;
-	u_number = GMT_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
+	u_number = gmt_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return;
@@ -415,7 +415,7 @@ GMT_LOCAL void grdio_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 			/* Determine coordinates epoch and units (default is internal system) */
 			GMT_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
 			units = strchr (string[i], '[');
-			if (!units || GMT_get_time_system (GMT, ++units, &time_system) || GMT_init_time_system_structure (GMT, &time_system))
+			if (!units || gmt_get_time_system (GMT, ++units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
 
 			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
@@ -1930,7 +1930,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 
 	if (init) {
 		/* Select plain Mercator on a sphere with -Jm1 -R0/360/-lat/+lat */
-		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");
+		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");
 		GMT->current.proj.units_pr_degree = true;
 		GMT->current.proj.pars[0] = 180.0;
 		GMT->current.proj.pars[1] = 0.0;

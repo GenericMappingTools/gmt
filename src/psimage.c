@@ -102,13 +102,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or image file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
-	GMT_refpoint_syntax (API->GMT, 'D', "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
+	gmt_refpoint_syntax (API->GMT, 'D', "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Set width (and height) of image with +w<width>/[/<height>].  If <height> = 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value as width and interpolate image in PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set image dpi (dots per inch) with +r.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <nx> by <ny> times [Default is no replication].\n");
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gb and -Gf (1-bit images only) sets the background and foreground color,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   respectively. Set <color> = - for transparency [Default is black and white].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Gt (not for 1-bit images) indicate which color to be made transparent\n");
@@ -142,7 +142,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_IMAGE))
+				if (n_files++ == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_IMAGE))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				else
 					strcpy (string, opt->arg);
 				if (GMT_getpanel (GMT, opt->option, string, &(Ctrl->F.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
 					n_errors++;
 				}
 				break;
@@ -214,7 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
 							Ctrl->G.f_rgb[0] = -1;
 						else if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
-							GMT_rgb_syntax (GMT, 'G', " ");
+							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
 						break;
@@ -223,14 +223,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
 							Ctrl->G.b_rgb[0] = -1;
 						else if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
-							GMT_rgb_syntax (GMT, 'G', " ");
+							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
 						break;
 					case 't':
 						/* Set transparent color */
 						if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.t_rgb)) {
-							GMT_rgb_syntax (GMT, 'G', " ");
+							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
 						break;
@@ -238,7 +238,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						if (opt->arg[0] == '-' && opt->arg[1] == '\0')
 							Ctrl->G.f_rgb[0] = -1;
 						else if (GMT_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
-							GMT_rgb_syntax (GMT, 'G', " ");
+							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
 						break;
@@ -266,7 +266,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -362,7 +362,7 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 #undef Return
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 
 int GMT_psimage (void *V_API, int mode, void *args) {
@@ -400,7 +400,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -430,11 +430,11 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input raster via GDAL\n");
-		GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+		gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_set_pad (GMT, API->pad);	/* Reset to GMT default */
+		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
 		/* Handle transparent images */
 		if (I->ColorMap != NULL) {	/* Image has a color map */
@@ -534,7 +534,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', "X1i");
+		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
@@ -575,7 +575,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);	/* Draw basemap if requested */
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', "X1i");
+		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT->common.R.active = GMT->common.J.active = true;

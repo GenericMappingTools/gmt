@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -230,21 +230,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 			case 'E':	/* Set color for station in extensive part */
 				Ctrl->E.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
-					GMT_fill_syntax (GMT, 'E', " ");
+					gmt_fill_syntax (GMT, 'E', " ");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Set background color of beach ball */
 				Ctrl->F.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
-					GMT_fill_syntax (GMT, 'F', " ");
+					gmt_fill_syntax (GMT, 'F', " ");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Set color for station in compressive part */
 				Ctrl->C.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
@@ -298,13 +298,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 								char symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* But if -QsV...G|L things will screw here, no? */ 
 								if (txt[0] == '+') {	/* No size (use default), just attributes */
-									n_errors += GMT_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
+									n_errors += gmt_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
 								}
 								else {	/* Size, plus possible attributes */
 									n = sscanf (txt, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 									if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 									Ctrl->S2.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
-									n_errors += GMT_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
+									n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
 								}
 								/* NOTE, THIS IS NOT GOING TO WORK BECAUSE VEC PARAMS ARE NOW IN Ctrl->S2.S  WHICH IS NOT USED BELOW
 								   WOULD A COPY TO THE CORRESPONDING MEMBERS OF Ctrl->S2 BE GOOD ENOUGH? */
@@ -312,7 +312,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						}
 						if (strchr (opt->arg, 'G')) {
 							if (GMT_getfill (GMT, strchr (opt->arg+2,'G')+1, &Ctrl->S2.fill)) {
-								GMT_fill_syntax (GMT, 's', " ");
+								gmt_fill_syntax (GMT, 's', " ");
 								n_errors++;
 							}
 							Ctrl->S2.scolor = true;
@@ -378,11 +378,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 
 		}
@@ -396,7 +396,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pspolar (void *V_API, int mode, void *args) {
 	int k, n = 0, error = 0;
@@ -425,7 +425,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

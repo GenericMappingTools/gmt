@@ -132,10 +132,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
 					Ctrl->Out.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -194,7 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct G
 				else if (n == 1) Ctrl->Z.mode = 1;
 				break;
 			default:
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -512,7 +512,7 @@ GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_talwani2d (void *V_API, int mode, void *args) {
 	int srow, error = 0, ns;
@@ -547,7 +547,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -585,11 +585,11 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	else {	/* Got a dataset with output locations */
 		geometry = GMT_IS_PLP;	/* We dont really know */
-		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Out = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 	}
 
 	/* Specify input expected columns to be at least 2 */

@@ -216,7 +216,7 @@ int GMT_ras_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
@@ -251,7 +251,7 @@ int GMT_ras_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -294,7 +294,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	GMT_memset (&h, 1, struct rasterfile);
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
@@ -383,7 +383,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -483,7 +483,7 @@ int GMT_native_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
@@ -607,7 +607,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
@@ -695,7 +695,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -804,7 +804,7 @@ int GMT_native_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *hea
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -845,7 +845,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
@@ -946,7 +946,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -1210,7 +1210,7 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
@@ -1266,7 +1266,7 @@ int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	if (!strcmp (header->name, "="))	/* Write to pipe */
 	{
 #ifdef SET_IO_MODE
-	GMT_setmode (GMT, GMT_OUT);
+	gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -1318,7 +1318,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
@@ -1442,7 +1442,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}

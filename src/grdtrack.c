@@ -166,7 +166,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of a more 2-D binary data set to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See below if the file is a Sandwell/Smith Mercator grid (IMG format).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -G+l<list> to pass a list of file names.\n");
-	GMT_img_syntax (API->GMT);
+	gmt_img_syntax (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -C or -E are selected:\n");
@@ -234,7 +234,7 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 			return (0);
 		}
-		else if (GMT_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
+		else if (gmt_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
 			Ctrl->G.file[ng] = strdup (line);
 		else
 			return (0);
@@ -244,7 +244,7 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 		if (n_errors) return (0);
 	}
 	else {	/* Regular grid file */
-		if (GMT_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
+		if (gmt_check_filearg (GMT, '<', record, GMT_IN, GMT_IS_GRID))
 			Ctrl->G.file[ng] = strdup (record);
 		else
 			return (0);
@@ -271,10 +271,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case '>':	/* Specified output file */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
 					Ctrl->Out.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -385,7 +385,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -445,7 +445,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -458,7 +458,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0), "Syntax error -T: Only one non-img input grid can be specified\n");
-	n_errors += GMT_check_binary_io (GMT, 2);
+	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -528,7 +528,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 	}
 	if (*unit == 0) *unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
 	if (strchr (GMT_LEN_UNITS, *unit) && !GMT_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
-		GMT_parse_common_options (GMT, "f", 'f', "g");
+		gmt_parse_common_options (GMT, "f", 'f', "g");
 		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
 	}
 	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -E:  All lines must have the same distance units\n");
@@ -700,7 +700,7 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdtrack task */
@@ -733,7 +733,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -748,7 +748,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
-	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	GC = GMT_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
 
@@ -1193,7 +1193,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	GMT_free (GMT, value);
 	GMT_free (GMT, GC);
-	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad */
+	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad */
 
 	Return (EXIT_SUCCESS);
 }

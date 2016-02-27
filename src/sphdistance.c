@@ -187,7 +187,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -199,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 				if (GMT_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; duplicates are automatically removed.\n");
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'E':
 				Ctrl->E.active = true;
@@ -212,7 +212,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 				if (opt->arg[k]) Ctrl->E.dist = atof (&opt->arg[k]);
 				break;
 			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 			case 'I':
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
@@ -242,12 +242,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 				Ctrl->Q.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
@@ -260,7 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_sphdistance (void *V_API, int mode, void *args) {
 	bool first = false, periodic, duplicate_col;
@@ -300,8 +300,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
-	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	gmt_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -320,11 +320,11 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
-		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -Q files */
+		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -Q files */
 		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
@@ -336,11 +336,11 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
-			GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -N files */
+			gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -N files */
 			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
 			}
-			GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+			gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
 			if (NTable->n_segments != 1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "File %s can only have 1 segment!\n", Ctrl->N.file);

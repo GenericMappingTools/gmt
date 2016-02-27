@@ -102,7 +102,7 @@ enum GMT_profmode {
 };
 
 /*! . */
-enum GMT_ends {
+enum gmt_ends {
 	BEG = 0,
 	END = 1
 };
@@ -730,9 +730,9 @@ int GMT_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const ch
 
 	/* When error code is non-zero: print error message */
 	if (file && file[0])
-		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "%s [%s]\n", GMT_strerror(err), file);
+		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "%s [%s]\n", GMT_strerror(err), file);
 	else
-		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "%s\n", GMT_strerror(err));
+		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "%s\n", GMT_strerror(err));
 	/* Pass error code on or exit */
 	if (fail) {
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -892,7 +892,7 @@ int GMT_colorname2index (struct GMT_CTRL *GMT, char *name) {
 
 	strncpy (Lname, name, GMT_LEN64-1);
 	GMT_str_tolower (Lname);
-	k = GMT_hash_lookup (GMT, Lname, GMT->session.rgb_hashnode, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
+	k = gmt_hash_lookup (GMT, Lname, GMT->session.rgb_hashnode, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
 	return (k);
 }
@@ -1260,7 +1260,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 
 	/* Assign font size, type, and fill, if given */
 	if (!size[0] || size[0] == '-') { /* Skip */ }
-	else if ((pointsize = GMT_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
+	else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Representation of font size not recognised. Using default.\n");
 	else
 		F->size = pointsize;
@@ -1292,9 +1292,9 @@ char *GMT_putfont (struct GMT_CTRL *GMT, struct GMT_FONT F) {
 	static char text[GMT_BUFSIZ];
 
 	if (F.form & 2)
-		sprintf (text, "%gp,%s,%s=%s", F.size, GMT->session.font[F.id].name, GMT_putfill (GMT, &F.fill), GMT_putpen (GMT, F.pen));
+		sprintf (text, "%gp,%s,%s=%s", F.size, GMT->session.font[F.id].name, gmt_putfill (GMT, &F.fill), GMT_putpen (GMT, F.pen));
 	else
-		sprintf (text, "%gp,%s,%s", F.size, GMT->session.font[F.id].name, GMT_putfill (GMT, &F.fill));
+		sprintf (text, "%gp,%s,%s", F.size, GMT->session.font[F.id].name, gmt_putfill (GMT, &F.fill));
 	return (text);
 }
 
@@ -1340,7 +1340,7 @@ int gmt_getpenwidth (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing given, return */
 	if ((line[0] == '.' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9')) {
 		/* Pen thickness with optional unit at end */
-		P->width = GMT_convert_units (GMT, line, GMT_PT, GMT_PT);
+		P->width = gmt_convert_units (GMT, line, GMT_PT, GMT_PT);
 	}
 	else {	/* Pen name was given - these refer to fixed widths in points */
 		if ((n = gmt_name2pen (line)) < 0) {
@@ -1386,7 +1386,7 @@ int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	}
 	n = (int)strlen (line) - 1;
 	if (strchr (GMT_DIM_UNITS, line[n]))	/* Separate unit given to style string */
-		unit = GMT_unit_lookup (GMT, line[n], GMT->current.setting.proj_length_unit);
+		unit = gmt_unit_lookup (GMT, line[n], GMT->current.setting.proj_length_unit);
 
 	width = (P->width < GMT_CONV4_LIMIT) ? GMT_PENWIDTH : P->width;
 	if (isdigit ((int)line[0])) {	/* Specified numeric pattern will start with an integer */
@@ -1548,13 +1548,13 @@ bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 						P->end[n].V = GMT_memory (GMT, NULL, 1, struct GMT_SYMBOL);
 						sscanf (v_args[n], "%[^+]%s", T[BEG], T[END]);
 						P->end[n].V->size_x = GMT_to_inch (GMT, T[BEG]);
-						if (GMT_parse_vector (GMT, 'v', T[END], P->end[n].V)) {	/* Error decoding new vector syntax */
+						if (gmt_parse_vector (GMT, 'v', T[END], P->end[n].V)) {	/* Error decoding new vector syntax */
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error parsing vector specifications %s\n", T[END]);
 							return false;
 						}
 						if (P->end[n].V->v.status & GMT_VEC_BEGIN) P->end[n].V->v.status -= GMT_VEC_BEGIN;	/* Always at end in this context */
 						P->end[n].V->v.status |= GMT_VEC_END;	/* Always at end in this context */
-						GMT_init_vector_param (GMT, P->end[n].V, false, false, NULL, false, NULL);	/* Update vector head parameters */
+						gmt_init_vector_param (GMT, P->end[n].V, false, false, NULL, false, NULL);	/* Update vector head parameters */
 						if (may_differ)	/* Must allow different symbols at the two ends */
 							P->end[n].V->v.v_kind[END] = P->end[n].V->v.v_kind[n];
 						else
@@ -1648,16 +1648,16 @@ char *GMT_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen) {
 	k = gmt_pen2name (pen.width);
 	if (pen.style[0]) {
 		if (k < 0)
-			sprintf (text, "%.5gp,%s,%s:%.5gp", pen.width, GMT_putcolor (GMT, pen.rgb), pen.style, pen.offset);
+			sprintf (text, "%.5gp,%s,%s:%.5gp", pen.width, gmt_putcolor (GMT, pen.rgb), pen.style, pen.offset);
 		else
-			sprintf (text, "%s,%s,%s:%.5gp", GMT_penname[k].name, GMT_putcolor (GMT, pen.rgb), pen.style, pen.offset);
+			sprintf (text, "%s,%s,%s:%.5gp", GMT_penname[k].name, gmt_putcolor (GMT, pen.rgb), pen.style, pen.offset);
 		for (i = 0; text[i]; i++) if (text[i] == ' ') text[i] = '_';
 	}
 	else
 		if (k < 0)
-			sprintf (text, "%.5gp,%s", pen.width, GMT_putcolor (GMT, pen.rgb));
+			sprintf (text, "%.5gp,%s", pen.width, gmt_putcolor (GMT, pen.rgb));
 		else
-			sprintf (text, "%s,%s", GMT_penname[k].name, GMT_putcolor (GMT, pen.rgb));
+			sprintf (text, "%s,%s", GMT_penname[k].name, gmt_putcolor (GMT, pen.rgb));
 
 	return (text);
 }
@@ -2117,14 +2117,14 @@ int GMT_list_cpt (struct GMT_CTRL *GMT, char option) {
 		return (EXIT_FAILURE);
 	}
 
-	GMT_message (GMT, "\t-%c Specify a colortable [Default is rainbow]:\n", option);
-	GMT_message (GMT, "\t   [Original z-range is given in brackets]\n");
-	GMT_message (GMT, "\t   -----------------------------------------------------------------\n");
-	while (fgets (buffer, GMT_BUFSIZ, fpc)) if (!(buffer[0] == '#' || buffer[0] == 0)) GMT_message (GMT, "\t   %s", buffer);
-	GMT_message (GMT, "\t   -----------------------------------------------------------------\n");
-	GMT_message (GMT, "\t   [For more, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city/]\n");
-	GMT_message (GMT, "\t   Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear\n");
-	GMT_message (GMT, "\t   continuous CPT from those colors automatically.\n");
+	gmt_message (GMT, "\t-%c Specify a colortable [Default is rainbow]:\n", option);
+	gmt_message (GMT, "\t   [Original z-range is given in brackets]\n");
+	gmt_message (GMT, "\t   -----------------------------------------------------------------\n");
+	while (fgets (buffer, GMT_BUFSIZ, fpc)) if (!(buffer[0] == '#' || buffer[0] == 0)) gmt_message (GMT, "\t   %s", buffer);
+	gmt_message (GMT, "\t   -----------------------------------------------------------------\n");
+	gmt_message (GMT, "\t   [For more, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city/]\n");
+	gmt_message (GMT, "\t   Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear\n");
+	gmt_message (GMT, "\t   continuous CPT from those colors automatically.\n");
 	fclose (fpc);
 
 	return (GMT_NOERROR);
@@ -2140,7 +2140,7 @@ struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *GMT, char *file, unsi
 
 	if ((c = GMT_file_unitscale (file)) == NULL) return NULL;	/* Did not find any modifier */
 	mode = (c[1] == 'u') ? 0 : 1;
-	u_number = GMT_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
+	u_number = gmt_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CPT file z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
 		return NULL;
@@ -2982,33 +2982,33 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 
 		if (P->categorical) {
 			if (P->model & GMT_HSV)
-				fprintf (fp, format, P->range[i].z_low, GMT_puthsv (GMT, P->range[i].hsv_low), '\n');
+				fprintf (fp, format, P->range[i].z_low, gmt_puthsv (GMT, P->range[i].hsv_low), '\n');
 			else if (P->model & GMT_CMYK) {
 				gmt_rgb_to_cmyk (P->range[i].rgb_low, cmyk);
-				fprintf (fp, format, P->range[i].z_low, GMT_putcmyk (GMT, cmyk), '\n');
+				fprintf (fp, format, P->range[i].z_low, gmt_putcmyk (GMT, cmyk), '\n');
 			}
 			else if (P->model & GMT_NO_COLORNAMES)
-				fprintf (fp, format, P->range[i].z_low, GMT_putrgb (GMT, P->range[i].rgb_low), '\n');
+				fprintf (fp, format, P->range[i].z_low, gmt_putrgb (GMT, P->range[i].rgb_low), '\n');
 			else
-				fprintf (fp, format, P->range[i].z_low, GMT_putcolor (GMT, P->range[i].rgb_low), '\n');
+				fprintf (fp, format, P->range[i].z_low, gmt_putcolor (GMT, P->range[i].rgb_low), '\n');
 		}
 		else if (P->model & GMT_HSV) {
-			fprintf (fp, format, P->range[i].z_low, GMT_puthsv (GMT, P->range[i].hsv_low), '\t');
-			fprintf (fp, format, P->range[i].z_high, GMT_puthsv (GMT, P->range[i].hsv_high), '\n');
+			fprintf (fp, format, P->range[i].z_low, gmt_puthsv (GMT, P->range[i].hsv_low), '\t');
+			fprintf (fp, format, P->range[i].z_high, gmt_puthsv (GMT, P->range[i].hsv_high), '\n');
 		}
 		else if (P->model & GMT_CMYK) {
 			gmt_rgb_to_cmyk (P->range[i].rgb_low, cmyk);
-			fprintf (fp, format, P->range[i].z_low, GMT_putcmyk (GMT, cmyk), '\t');
+			fprintf (fp, format, P->range[i].z_low, gmt_putcmyk (GMT, cmyk), '\t');
 			gmt_rgb_to_cmyk (P->range[i].rgb_high, cmyk);
-			fprintf (fp, format, P->range[i].z_high, GMT_putcmyk (GMT, cmyk), '\n');
+			fprintf (fp, format, P->range[i].z_high, gmt_putcmyk (GMT, cmyk), '\n');
 		}
 		else if (P->model & GMT_NO_COLORNAMES) {
-			fprintf (fp, format, P->range[i].z_low, GMT_putrgb (GMT, P->range[i].rgb_low), '\t');
-			fprintf (fp, format, P->range[i].z_high, GMT_putrgb (GMT, P->range[i].rgb_high), '\n');
+			fprintf (fp, format, P->range[i].z_low, gmt_putrgb (GMT, P->range[i].rgb_low), '\t');
+			fprintf (fp, format, P->range[i].z_high, gmt_putrgb (GMT, P->range[i].rgb_high), '\n');
 		}
 		else {
-			fprintf (fp, format, P->range[i].z_low, GMT_putcolor (GMT, P->range[i].rgb_low), '\t');
-			fprintf (fp, format, P->range[i].z_high, GMT_putcolor (GMT, P->range[i].rgb_high), '\n');
+			fprintf (fp, format, P->range[i].z_low, gmt_putcolor (GMT, P->range[i].rgb_low), '\t');
+			fprintf (fp, format, P->range[i].z_high, gmt_putcolor (GMT, P->range[i].rgb_high), '\n');
 		}
 	}
 
@@ -3030,15 +3030,15 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 		if (P->patch[i].skip)
 			fprintf (fp, "%c\t-\n", code[i]);
 		else if (P->model & GMT_HSV)
-			fprintf (fp, "%c\t%s\n", code[i], GMT_puthsv (GMT, P->patch[i].hsv));
+			fprintf (fp, "%c\t%s\n", code[i], gmt_puthsv (GMT, P->patch[i].hsv));
 		else if (P->model & GMT_CMYK) {
 			gmt_rgb_to_cmyk (P->patch[i].rgb, cmyk);
-			fprintf (fp, "%c\t%s\n", code[i], GMT_putcmyk (GMT, cmyk));
+			fprintf (fp, "%c\t%s\n", code[i], gmt_putcmyk (GMT, cmyk));
 		}
 		else if (P->model & GMT_NO_COLORNAMES)
-			fprintf (fp, "%c\t%s\n", code[i], GMT_putrgb (GMT, P->patch[i].rgb));
+			fprintf (fp, "%c\t%s\n", code[i], gmt_putrgb (GMT, P->patch[i].rgb));
 		else
-			fprintf (fp, "%c\t%s\n", code[i], GMT_putcolor (GMT, P->patch[i].rgb));
+			fprintf (fp, "%c\t%s\n", code[i], gmt_putcolor (GMT, P->patch[i].rgb));
 	}
 	if (close_file) fclose (fp);
 	return (EXIT_SUCCESS);
@@ -3117,7 +3117,7 @@ void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 		for (k = 0; k < 4; k++) P->range[n].rgb_diff[k] = P->range[n].rgb_high[k] - P->range[n].rgb_low[k];
 		for (k = 0; k < 4; k++) P->range[n].hsv_diff[k] = P->range[n].hsv_high[k] - P->range[n].hsv_low[k];
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%d: %g to %g. R/G/B %s to %s. idz = %g diff R/G/B = %g/%g/%g\n", n,
-			P->range[n].z_low, P->range[n].z_high, GMT_putrgb (GMT, P->range[n].rgb_low), GMT_putrgb (GMT, P->range[n].rgb_high),
+			P->range[n].z_low, P->range[n].z_high, gmt_putrgb (GMT, P->range[n].rgb_low), gmt_putrgb (GMT, P->range[n].rgb_high),
 			P->range[n].i_dz, P->range[n].rgb_diff[0], P->range[n].rgb_diff[1], P->range[n].rgb_diff[2]);
 	}
 	/* Set background and foreground colors to the bottom and top of the colormap, plus use default NaN color */
@@ -3215,7 +3215,7 @@ int GMT_get_rgbtxt_from_z (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, char *te
 	}
 	z = atof (&text[2]);	/* Extract the z value */
 	GMT_get_rgb_from_z (GMT, P, z, rgb);	/* Convert via CPT to r/g/b */
-	sprintf (text, "%s", GMT_putcolor (GMT, rgb));
+	sprintf (text, "%s", gmt_putcolor (GMT, rgb));
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Gave z=%g and returned %s\n", z, text);
 	return 0;
 }
@@ -3806,7 +3806,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 						break;
 					case 'd':	/* Use the current plot distance in chosen units */
 						G->label_type = GMT_LABEL_IS_PDIST;
-						G->dist_unit = GMT_unit_lookup (GMT, p[2], GMT->current.setting.proj_length_unit);
+						G->dist_unit = gmt_unit_lookup (GMT, p[2], GMT->current.setting.proj_length_unit);
 						break;
 					case 'D':	/* Use current map distance in chosen units */
 						G->label_type = GMT_LABEL_IS_MDIST;
@@ -3862,7 +3862,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 			case 's':	/* Font size specification (for backward compatibility only since size is part of font specification) */
 				if (GMT_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+s<fontsize> in contour label spec is obsolete, now part of +f<font>\n");
-					G->font_label.size = GMT_convert_units (GMT, &p[1], GMT_PT, GMT_PT);
+					G->font_label.size = gmt_convert_units (GMT, &p[1], GMT_PT, GMT_PT);
 					if (G->font_label.size <= 0.0) bad++;
 				}
 				else
@@ -8606,7 +8606,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 
 	B->plot = true;
 	if (oldshit[0] && GMT_getpanel (GMT, 'F', oldshit, &(B->panel))) {
-		GMT_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map insert", 3);
+		gmt_mappanel_syntax (GMT, 'F', "Specify the rectanglar panel attributes for map insert", 3);
 		error++;
 	}
 	return (error);
@@ -8766,12 +8766,12 @@ int gmt_getscale_old (struct GMT_CTRL *GMT, char option, char *text, struct GMT_
 		error += bad;
 		text[options] = '+';	/* Restore original string */
 		if (ms->old_style && GMT_getpanel (GMT, 'F', oldshit, &(ms->panel))) {
-			GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+			gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
 			error++;
 		}
 	}
 	if (error)
-		GMT_mapscale_syntax (GMT, 'L', "Draw a map scale centered on <lon0>/<lat0>.");
+		gmt_mapscale_syntax (GMT, 'L', "Draw a map scale centered on <lon0>/<lat0>.");
 
 	ms->plot = true;
 	return (error);
@@ -8876,7 +8876,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	if (GMT_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
 		ms->unit = true;
 	if (error)
-		GMT_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
+		gmt_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
 
 	ms->plot = true;
 	return (error);
@@ -9540,11 +9540,11 @@ void GMT_list_custom_symbols (struct GMT_CTRL *GMT) {
 		return;
 	}
 
-	GMT_message (GMT, "\t     Available custom symbols (See Appendix N):\n");
-	GMT_message (GMT, "\t     ---------------------------------------------------------\n");
-	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) GMT_message (GMT, "\t     %s", buffer);
+	gmt_message (GMT, "\t     Available custom symbols (See Appendix N):\n");
+	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
+	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) gmt_message (GMT, "\t     %s", buffer);
 	fclose (fp);
-	GMT_message (GMT, "\t     ---------------------------------------------------------\n");
+	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
 }
 
 /*! . */
@@ -11094,7 +11094,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			if (fill_p[0] == '-')	/* Do not want to fill this polygon */
 				s->fill->rgb[0] = -1;
 			else if (GMT_getfill (GMT, fill_p, s->fill)) {
-				GMT_fill_syntax (GMT, 'G', " ");
+				gmt_fill_syntax (GMT, 'G', " ");
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
@@ -11105,7 +11105,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 			if (pen_p[0] == '-')	/* Do not want to draw outline */
 				s->pen->rgb[0] = -1;
 			else if (GMT_getpen (GMT, pen_p, s->pen)) {
-				GMT_pen_syntax (GMT, 'W', " ", 0);
+				gmt_pen_syntax (GMT, 'W', " ", 0);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
@@ -12973,14 +12973,14 @@ void GMT_enable_threads (struct GMT_CTRL *GMT) {
 	/* Control how many threads to use in Open MP section */
 #ifdef _OPENMP
 	if (GMT->common.x.active) {
-		if (GMT->common.x.n_threads < GMT_get_num_processors()) {
+		if (GMT->common.x.n_threads < gmt_get_num_processors()) {
 			omp_set_dynamic (0);   			/* Explicitly disable dynamic teams */
 			omp_set_num_threads (GMT->common.x.n_threads);	/* Use requested threads for all consecutive parallel regions */
 		}
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable %d threads of %d available\n", GMT->common.x.n_threads, GMT_get_num_processors());
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable %d threads of %d available\n", GMT->common.x.n_threads, gmt_get_num_processors());
 	}
 	else {	/* Default uses all cores */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable all available threads (up to %d)\n", GMT_get_num_processors());
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Enable all available threads (up to %d)\n", gmt_get_num_processors());
 	}
 #else
 	GMT_UNUSED(GMT);

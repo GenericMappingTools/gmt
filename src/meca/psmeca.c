@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -284,7 +284,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				if (txt[0] != 'P') {	/* Have a pen up front */
 					if (p) p[0] = '\0';
 					if (GMT_getpen (GMT, txt, &Ctrl->C.pen)) {
-						GMT_pen_syntax (GMT, 'C', " ", 0);
+						gmt_pen_syntax (GMT, 'C', " ", 0);
 						n_errors++;
 					}
 				}
@@ -296,7 +296,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 			case 'E':	/* Set color for extensive parts  */
 				Ctrl->E.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
@@ -321,35 +321,35 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 					case 'e':	/* Set color for T axis symbol */
 						Ctrl->E2.active = true;
 						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
-							GMT_fill_syntax (GMT, 'e', " ");
+							gmt_fill_syntax (GMT, 'e', " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
 						Ctrl->G2.active = true;
 						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
-							GMT_fill_syntax (GMT, 'g', " ");
+							gmt_fill_syntax (GMT, 'g', " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						Ctrl->P2.active = true;
 						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
-							GMT_pen_syntax (GMT, 'p', " ", 0);
+							gmt_pen_syntax (GMT, 'p', " ", 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
 						Ctrl->R2.active = true;
 						if (opt->arg[1] && GMT_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
-							GMT_fill_syntax (GMT, 'r', " ");
+							gmt_fill_syntax (GMT, 'r', " ");
 							n_errors++;
 						}
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
 						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
-							GMT_pen_syntax (GMT, 't', " ", 0);
+							gmt_pen_syntax (GMT, 't', " ", 0);
 							n_errors++;
 						}
 						break;
@@ -359,7 +359,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 					case 'z':	/* overlay zerotrace moment tensor */
 						Ctrl->Z2.active = true;
 						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
-							GMT_pen_syntax (GMT, 'z', " ", 0);
+							gmt_pen_syntax (GMT, 'z', " ", 0);
 							n_errors++;
 						}
 						break;
@@ -368,14 +368,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					GMT_pen_syntax (GMT, 'L', " ", 0);
+					gmt_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -391,8 +391,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				txt[0] = txt_b[0] = txt_c[0] = '\0';
 				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 				if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
-				if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
-				if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
+				if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+				if (txt_c[0]) Ctrl->S.offset = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 				if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
 
 				switch (opt->arg[0]) {
@@ -436,14 +436,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
-					GMT_pen_syntax (GMT, 'T', " ", 0);
+					gmt_pen_syntax (GMT, 'T', " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -453,7 +453,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -483,7 +483,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psmeca (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psmeca task */
@@ -520,7 +520,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

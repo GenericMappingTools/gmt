@@ -243,7 +243,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -336,7 +336,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -792,8 +792,8 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
-#define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
+#define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_filter1d (void *V_API, int mode, void *args) {
 	uint64_t col, tbl, row, seg;
@@ -821,7 +821,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_filter1d_parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");
@@ -893,11 +893,11 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in GMT_set_cols");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Always read the weights as floats */
-			GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -F files */
+			gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+			gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = save_col;	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;

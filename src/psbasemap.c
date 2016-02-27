@@ -102,13 +102,13 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].\n",
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");
-	GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
+	gmt_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map insert, scale or rose", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
 	GMT_Option (API, "K");
-	GMT_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
+	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
 	GMT_Option (API, "O,P");
-	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
+	gmt_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (EXIT_FAILURE);
@@ -151,15 +151,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					default : get_panel[0] = get_panel[1] = get_panel[2] = true; k = 0; break;
 				}
 				if (get_panel[0] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.insert.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
+					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
 				if (get_panel[1] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', kind[0], 3);
+					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
 				if (get_panel[2] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', kind[1], 3);
+					gmt_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}
 				break;
@@ -168,12 +168,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 					GMT->current.map.frame.paint = true;
 					if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
-						GMT_fill_syntax (GMT, 'G', " ");
+						gmt_fill_syntax (GMT, 'G', " ");
 						n_errors++;
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				break;
 #endif
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_psbasemap (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psbasemap task */
@@ -231,7 +231,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

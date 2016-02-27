@@ -447,7 +447,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -482,7 +482,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -490,7 +490,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 1.0, "Syntax error -C option: Condition number must be larger than unity\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.value < 0.0 || Ctrl->I.value > 1.0, "Syntax error -C option: Give 0 < confidence level < 1.0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Must request 1-10 parameters\n");
-	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
+	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	for (j = Ctrl->n_outputs = 0; j < TREND2D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xyzmrw", Ctrl->F.col[j])) {
@@ -509,7 +509,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_trend2d (void *V_API, int mode, void *args) {
 	unsigned int i, n_model, rank, np;
@@ -541,7 +541,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

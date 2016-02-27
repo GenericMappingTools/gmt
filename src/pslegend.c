@@ -86,17 +86,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_refpoint_syntax (API->GMT, 'D', "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
+	gmt_refpoint_syntax (API->GMT, 'D', "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify legend width with +w<width>; <height> is optional [estimated from <specfile>].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
-	GMT_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LEGEND, 2);
+	gmt_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l sets the linespacing factor in units of the current annotation font size [1.1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp].\n", GMT_FRAME_CLEARANCE);
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
 	GMT_Option (API, "O,P,R");
 	GMT_Option (API, "U,V,X,p,t,.");
@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 			case 'F':
 				Ctrl->F.active = true;
 				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 					n_errors++;
 				}
 				Ctrl->F.debug = Ctrl->F.panel->debug;	/* Hidden +d processing; this may go away */
@@ -215,13 +215,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					Ctrl->F.active = true;
 					sprintf (tmparg, "+g%s", opt->arg);
 					if (GMT_getpanel (GMT, opt->option, tmparg, &(Ctrl->F.panel))) {
-						GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
+						gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 						n_errors++;
 					}
 					Ctrl->F.panel->mode |= GMT_PANEL_FILL;
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':			/* Sets linespacing in units of fontsize [1.1] */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
@@ -229,7 +229,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -252,7 +252,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* Used to draw the current y-line for debug purposes only. */
 GMT_LOCAL void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0) {
@@ -382,7 +382,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -581,7 +581,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Estimating %d lines of typeset paragraph text [%.1f].\n", n_lines, x_lines);
 	}
 
-	scl = GMT_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
+	scl = gmt_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
 	if (Ctrl->D.dim[GMT_Y] == 0.0) {	/* Use the computed height */
 		Ctrl->D.dim[GMT_Y] = height;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height not given, use estimated height of %g %s.\n", scl*height,
@@ -597,7 +597,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		GMT_memset (wesn, 4, double);
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', "x1i");
+		gmt_parse_common_options (GMT, "J", 'J', "x1i");
 		wesn[XHI] = Ctrl->D.dim[GMT_X];	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
@@ -725,7 +725,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (txt_b[0] == '-')	/* Gave - as pen, meaning just note at what y-value we are but draw no line */
 							d_line_half_width = 0.0;
 						else {	/* Process the pen specification */
-							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) GMT_pen_syntax (GMT, 'W', " ", 0);
+							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) gmt_pen_syntax (GMT, 'W', " ", 0);
 							GMT_setpen (GMT, &current_pen);
 							d_line_half_width = 0.5 * current_pen.width / PSL_POINTS_PER_INCH;	/* Half the pen width */
 						}
@@ -949,7 +949,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (n_columns > n_col) for (col = 1; col < n_columns; col++) if (fill[0]) fill[col] = strdup (fill[0]);	/* Extend the fill array to match the new column numbers, if fill is active */
 						column_number = 0;
 						if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {
-							double s = GMT_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
+							double s = gmt_convert_units (GMT, "1", GMT_INCH, GMT->current.setting.proj_length_unit);
 							GMT_Report (API, GMT_MSG_DEBUG, "Selected %d columns.  Column widths are:\n", n_columns);
 							for (col = 1; col <= n_columns; col++)
 								GMT_Report (API, GMT_MSG_DEBUG, "Column %d: %g %s\n", col, s*(x_off_col[col]-x_off_col[col-1]), GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
@@ -1286,7 +1286,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							double v_line_y_stop = d_line_last_y0;
 							v_line_ver_offset = GMT_to_inch (GMT, txt_a);
 							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) {
-								GMT_pen_syntax (GMT, 'V', " ", 0);
+								gmt_pen_syntax (GMT, 'V', " ", 0);
 								Return (GMT_RUNTIME_ERROR);
 							}
 							GMT_setpen (GMT, &current_pen);

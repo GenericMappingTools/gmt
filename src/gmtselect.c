@@ -224,9 +224,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_GSHHG_syntax (API->GMT, 'A');
+	gmt_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t   (ignored  unless -N is set).\n");
-	GMT_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
+	gmt_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -250,7 +250,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     s will pass locations that otherwise would be skipped in -N.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     z will pass locations outside the range given in -Z.\n");
 	GMT_Option (API, "J");
-	GMT_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
+	gmt_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, or points [%s].\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -293,7 +293,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -347,7 +347,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
+				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_IN, GMT_IS_DATASET)))
 					Ctrl->F.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -382,7 +382,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				else {
-					if (GMT_check_filearg (GMT, 'L', &opt->arg[j+1], GMT_IN, GMT_IS_DATASET))
+					if (gmt_check_filearg (GMT, 'L', &opt->arg[j+1], GMT_IN, GMT_IS_DATASET))
 						Ctrl->L.file = strdup (&opt->arg[j+1]);
 					else
 						n_errors++;
@@ -454,7 +454,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				break;
 #endif
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -472,7 +472,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
-	n_errors += GMT_check_binary_io (GMT, Ctrl->Z.max_col);
+	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5], "Syntax error: -Iz can only be used with one -Z range\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -480,7 +480,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtselect (void *V_API, int mode, void *args) {
 	int err;	/* Required by GMT_err_fail */
@@ -518,7 +518,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -589,7 +589,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	else	/* Cartesian data */
 		GMT_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
 	
-	GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+	gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -686,7 +686,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 	
-	GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+	gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);

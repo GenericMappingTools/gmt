@@ -58,6 +58,10 @@
  
 #include "gmt_dev.h"
 
+static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
+#include "gmt_unique.h"
+};
+
 EXTERN_MSC int api_report_error	(void *C, int error);	/* Lives in gmt_api.c */
 
 /* Some private macros and inline function used in this file */
@@ -654,6 +658,123 @@ unsigned int gmt_check_extended_R (struct GMT_CTRL *GMT, struct GMT_OPTION *opti
 	return 1;
 }
 
+#define Return { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Found no history for option -%s\n", str); return (-1); }
+
+/*! . */
+int gmt_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* Go through the given arguments and look for shorthands,
+	 * i.e., -B, -J, -R, -X, -x, -Y, -c, -p. given without arguments.
+	 * If found, see if we have a matching command line history and then
+	 * update that entry in the option list.
+	 * Finally, keep the option arguments in the history list.
+	 * However, when func_level > 1, do update the entry, but do not
+	 * remember it in history. Note, there are two special cases here:
+	 * -J is special since we also need to deal with the sub-species
+	 *    like -JM, -JX, etc.  So these all have separate entries.
+	 * -B is special because the option is repeatable for different
+	 *    aspects of the basemap.  We concatenate all of them to store
+	 *    in the history file and use RS = ASCII 30 as separator.
+	 *    Also, a single -B in the options may expand to several
+	 *    separate -B<args> so the linked options list may grow.
+	 */
+	int id = 0, k, n_B = 0, B_id;
+	unsigned int pos = 0, B_replace = 1;
+	bool update, remember;
+	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
+	char str[3] = {""}, B_string[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
+
+	remember = (GMT->hidden.func_level == 1);   /* Only update the history for top level function */
+
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'B') {	/* Do some initial counting of how many -B options and determine if there is just one with no args */
+			if (n_B > 0 || opt->arg[0]) B_replace = 0;
+			n_B++;
+		}
+	}
+	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++)
+		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
+
+	for (opt = options; opt; opt = opt->next) {
+		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
+		update = false;
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "History: Process -%c%s.\n", opt->option, opt->arg);
+
+		str[0] = opt->option; str[1] = str[2] = '\0';
+		if (opt->option == 'J') {               /* -J is special since it can be -J or -J<code> */
+			/* Always look up "J" first. It comes before "J?" and tells what the last -J was */
+			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;
+			if (id < 0) Return;	/* No -J found */
+			if (opt->arg && opt->arg[0]) {      /* Gave -J<code>[<args>] so we either use or update history and continue */
+				str[1] = opt->arg[0];
+				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
+				if (str[1] != 'Z' && str[1] != 'z' && remember) {
+					gmt_free (GMT->init.history[id]);
+					GMT->init.history[id] = strdup (&str[1]);
+				}
+				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
+			}
+			else {
+				if (!GMT->init.history[id]) Return;
+				str[1] = GMT->init.history[id][0];
+			}
+			/* Continue looking for -J<code> */
+			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;
+			if (id < 0) Return;
+		}
+		else if (opt->option == 'B') {          /* -B is also special since there may be many of these, or just -B */
+			if (B_replace) {                    /* Only -B is given and we want to use the history */
+				if (B_replace == 2) continue;   /* Already done this */
+				if (!GMT->init.history[B_id]) Return;
+				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
+				B_next = opt->next;             /* Pointer to option following the -B option */
+				gmt_free (opt2->arg);/* Free previous pointer to arg */
+				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
+				opt2->arg = strdup (p);         /* Update arg */
+				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
+					opt2->next = GMT_Make_Option (GMT->parent, 'B', p);	/* Create new struct */
+					opt2->next->previous = opt2;
+					opt2 = opt2->next;
+				}
+				opt2->next = B_next;            /* Hook back onto main option list */
+				B_replace = 2;                  /* Flag to let us know we are done with -B */
+			}
+			else {	/* One of possibly several -B<arg> options; concatenate and separate by RS */
+				if (B_string[0]) strcat (B_string, B_delim);	/* Add RS separator between args */
+				strcat (B_string, opt->arg);
+			}
+		}
+		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
+			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++)
+				if (!strcmp (GMT_unique_option[k], str)) id = k;	/* Find entry in history array */
+			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
+			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -V<args> etc. so we we want to update history and continue */
+		}
+		if (opt->option != 'B') {               /* Do -B separately again after the loop so skip it here */
+			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
+			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
+				if (remember) {
+					gmt_free (GMT->init.history[id]);
+					GMT->init.history[id] = strdup (opt->arg);
+				}
+			}
+			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
+				if (!GMT->init.history[id]) Return;
+				gmt_free (opt->arg);   /* Free previous pointer to arg */
+				opt->arg = strdup (GMT->init.history[id]);
+			}
+		}
+	}
+
+	if (B_string[0] && B_id >= 0) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
+		gmt_free (GMT->init.history[B_id]);
+		GMT->init.history[B_id] = strdup (B_string);
+	}
+
+	return (GMT_NOERROR);
+}
+
 /*! . */
 int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION *options) {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
@@ -674,7 +795,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
 	API = parse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
-	if (GMT_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
+	if (gmt_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmt_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
@@ -686,7 +807,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 		list[0] = critical_opt_order[i];	/* Just look for this particular option in the linked opt list */
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option != list[0]) continue;
-			n_errors += GMT_parse_common_options (API->GMT, list, opt->option, opt->arg);
+			n_errors += gmt_parse_common_options (API->GMT, list, opt->option, opt->arg);
 		}
 	}
 
@@ -695,7 +816,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 		if (strchr (critical_opt_order, given_options[i])) continue;	/* Skip critical option */
 		list[0] = given_options[i];	/* Just look for this particular option */
 		for (opt = options; opt; opt = opt->next) {
-			n_errors += GMT_parse_common_options (API->GMT, list, opt->option, opt->arg);
+			n_errors += gmt_parse_common_options (API->GMT, list, opt->option, opt->arg);
 			if (opt->option != list[0]) continue;
 		}
 	}

@@ -603,7 +603,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					gmt_parse_o_option (GMT, opt->arg);
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'I':	/* Reverse output order */
 				Ctrl->I.active = true;
@@ -649,7 +649,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 		}
 	}
 
@@ -4241,8 +4241,8 @@ void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
 
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, &T_in); GMT_Destroy_Data (API, &Template); GMT_Destroy_Data (API, &Time); if (read_stdin) GMT_Destroy_Data (API, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); Free_Stack(API,stack); Free_Store(API,recall); Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); Free_Stack(API,stack); Free_Store(API,recall); Free_Misc;  gmt_end_module (GMT, GMT_cpy); bailout (code); }
 
 int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	unsigned int expect;
@@ -4258,7 +4258,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 
 	/* Check if argument is operator */
 
-	if ((key = GMT_hash_lookup (GMT, txt, H, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) >= GMTMATH_ARG_IS_OPERATOR) return (key);
+	if ((key = gmt_hash_lookup (GMT, txt, H, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS)) >= GMTMATH_ARG_IS_OPERATOR) return (key);
 
 	/* Next look for symbols with special meaning */
 
@@ -4381,7 +4381,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "gmtmath.macros")) == NULL) Return1 (EXIT_FAILURE);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, list)) Return1 (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -4401,7 +4401,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	t_check_required = !Ctrl->T.notime;	/* Turn off default GMT NaN-handling in t column */
 
-	GMT_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS);
+	gmt_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS);
 
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) stack[i] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STACK);
 
@@ -4452,12 +4452,12 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Cannot have data files when -A is specified\n");
 			Return (EXIT_FAILURE);
 		}
-		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -A files */
+		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -A files */
 		if ((A_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", Ctrl->A.file);
 			Return (API->error);
 		}
-		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		rhs = A_in->table[0];	/* Only one table */
 		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
 			if (rhs->n_columns < 3) {

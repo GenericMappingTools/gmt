@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 			case '<':	/* Count input files */
 				n_files++;
-				if (n_files == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
+				if (n_files == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -168,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 					Ctrl->Q.mode = 3;	/* Flag the error */
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gshhg (void *V_API, int mode, void *args) {
 	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
@@ -227,7 +227,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));		/* Return the synopsis */
 
 	/* Parse the command-line arguments */
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

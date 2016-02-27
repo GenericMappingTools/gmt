@@ -3638,7 +3638,7 @@ void MGD77_List_Header_Items (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	int i;
 	GMT_UNUSED(GMT); GMT_UNUSED(F);
 
-	for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) GMT_message (GMT, "\t\t%2d. %s\n", i+1, MGD77_Header_Lookup[i].name);
+	for (i = 0; i < MGD77_N_HEADER_ITEMS; i++) gmt_message (GMT, "\t\t%2d. %s\n", i+1, MGD77_Header_Lookup[i].name);
 }
 
 int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *item) {
@@ -3692,7 +3692,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: More than one item matched your string %s:\n", item);
-			for (i = 0; i < match; i++) GMT_message (GMT, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
+			for (i = 0; i < match; i++) gmt_message (GMT, "	-> %s\n", MGD77_Header_Lookup[pick[i]].name);
 			return -2;
 		}
 	}
@@ -3782,10 +3782,10 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	mgd77_init_columns (F);
 	F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = true;		/* true means programs will use error bitflags (if present) when returning data */
 	F->use_corrections[MGD77_M77_SET] = F->use_corrections[MGD77_CDF_SET] = true;	/* true means we will apply correction factors (if present) when reading data */
-	GMT_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
-	GMT_get_time_system (GMT, "unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
-	GMT_init_time_system_structure (GMT, &(F->utime));
+	gmt_get_time_system (GMT, "unix", &(GMT->current.setting.time_system));						/* MGD77+ uses GMT's Unix time epoch */
+	gmt_init_time_system_structure (GMT, &(GMT->current.setting.time_system));
+	gmt_get_time_system (GMT, "unix", &(F->utime));						/* MGD77+ uses GMT's Unix time epoch */
+	gmt_init_time_system_structure (GMT, &(F->utime));
 	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	GMT_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
@@ -4037,13 +4037,13 @@ void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *GMT) {
-	GMT_message (GMT, "\t<cruises> can be one of five kinds of specifiers:\n");
-	GMT_message (GMT, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.\n");
-	GMT_message (GMT, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
-	GMT_message (GMT, "\t3) 4-character <agency><vessel> codes, which will return all cruises from those vessels.\n");
-	GMT_message (GMT, "\t4) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
-	GMT_message (GMT, "\t5) If nothing is specified we return all cruises in the data base.\n");
-	GMT_message (GMT, "\t   [See the documentation for agency and vessel codes].\n");
+	gmt_message (GMT, "\t<cruises> can be one of five kinds of specifiers:\n");
+	gmt_message (GMT, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.\n");
+	gmt_message (GMT, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
+	gmt_message (GMT, "\t3) 4-character <agency><vessel> codes, which will return all cruises from those vessels.\n");
+	gmt_message (GMT, "\t4) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
+	gmt_message (GMT, "\t5) If nothing is specified we return all cruises in the data base.\n");
+	gmt_message (GMT, "\t   [See the documentation for agency and vessel codes].\n");
 }
 
 int compare_L (const void *p1, const void *p2) {
@@ -4277,7 +4277,7 @@ void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way) {
 				*scale = METERS_IN_A_SURVEY_FOOT;
 				break;
 			default:	/* Meter assumed */
-				GMT_message (GMT, "Not a valid unit: %c [meter assumed]\n", c);
+				gmt_message (GMT, "Not a valid unit: %c [meter assumed]\n", c);
 				*scale = 1.0;
 				break;
 		}
@@ -4289,61 +4289,61 @@ int MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error) {
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error [%d]: ", error);
 	switch (error) {
 		case MGD77_NO_HEADER_REC:
-			GMT_message (GMT, "Header record not found");
+			gmt_message (GMT, "Header record not found");
 			break;
 		case MGD77_ERROR_READ_HEADER_ASC:
-			GMT_message (GMT, "Error reading ASCII header record");
+			gmt_message (GMT, "Error reading ASCII header record");
 			break;
 		case MGD77_ERROR_READ_HEADER_BIN:
-			GMT_message (GMT, "Error reading binary header record");
+			gmt_message (GMT, "Error reading binary header record");
 			break;
 		case MGD77_ERROR_WRITE_HEADER_ASC:
-			GMT_message (GMT, "Error writing ASCII header record");
+			gmt_message (GMT, "Error writing ASCII header record");
 			break;
 		case MGD77_ERROR_WRITE_HEADER_BIN:
-			GMT_message (GMT, "Error writing binary header record");
+			gmt_message (GMT, "Error writing binary header record");
 			break;
 		case MGD77_WRONG_HEADER_REC:
-			GMT_message (GMT, "Wrong header record was read");
+			gmt_message (GMT, "Wrong header record was read");
 			break;
 		case MGD77_NO_DATA_REC:
-			GMT_message (GMT, "Data record not found");
+			gmt_message (GMT, "Data record not found");
 			break;
 		case MGD77_ERROR_READ_ASC_DATA:
-			GMT_message (GMT, "Error reading ASCII data record");
+			gmt_message (GMT, "Error reading ASCII data record");
 			break;
 		case MGD77_ERROR_READ_BIN_DATA:
-			GMT_message (GMT, "Error reading binary data record");
+			gmt_message (GMT, "Error reading binary data record");
 			break;
 		case MGD77_ERROR_WRITE_ASC_DATA:
-			GMT_message (GMT, "Error writing ASCII data record");
+			gmt_message (GMT, "Error writing ASCII data record");
 			break;
 		case MGD77_ERROR_WRITE_BIN_DATA:
-			GMT_message (GMT, "Error writing binary data record");
+			gmt_message (GMT, "Error writing binary data record");
 			break;
 		case MGD77_WRONG_DATA_REC_LEN:
-			GMT_message (GMT, "Data record has incorrect length");
+			gmt_message (GMT, "Data record has incorrect length");
 			break;
 		case MGD77_ERROR_CONV_DATA_REC:
-			GMT_message (GMT, "Error converting a field in current data record");
+			gmt_message (GMT, "Error converting a field in current data record");
 			break;
 		case MGD77_ERROR_NOT_MGD77PLUS:
-			GMT_message (GMT, "File is not in MGD77+ format");
+			gmt_message (GMT, "File is not in MGD77+ format");
 			break;
 		case MGD77_UNKNOWN_FORMAT:
-			GMT_message (GMT, "Unknown file format specifier");
+			gmt_message (GMT, "Unknown file format specifier");
 			break;
 		case MGD77_UNKNOWN_MODE:
-			GMT_message (GMT, "Unknown file open/create mode");
+			gmt_message (GMT, "Unknown file open/create mode");
 			break;
 		case MGD77_ERROR_NOSUCHCOLUMN:
-			GMT_message (GMT, "Column not in present file");
+			gmt_message (GMT, "Column not in present file");
 			break;
 		case MGD77_BAD_ARG:
-			GMT_message (GMT, "Bad arument given to MGD77_Place_Text");
+			gmt_message (GMT, "Bad arument given to MGD77_Place_Text");
 			break;
 		default:
-			GMT_message (GMT, "Unrecognized error");
+			gmt_message (GMT, "Unrecognized error");
 			break;
 	}
 

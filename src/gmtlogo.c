@@ -84,10 +84,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_refpoint_syntax (API->GMT, 'D', "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
-	GMT_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LOGO, 2);
+	gmt_refpoint_syntax (API->GMT, 'D', "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
+	gmt_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_LOGO, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo.\n");
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
 	GMT_Option (API, "U,V");
 	GMT_Option (API, "X,c,f,t,.");
@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 			case 'F':
 				Ctrl->F.active = true;
 				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo", 0);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo", 0);
 					n_errors++;
 				}
 				break;
@@ -142,7 +142,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -156,7 +156,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* High-level function that implements the gmtlogo task */
@@ -185,7 +185,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -203,7 +203,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', "X1i");
+		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -217,7 +217,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', "X1i");
+		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT->common.R.active = GMT->common.J.active = true;
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);

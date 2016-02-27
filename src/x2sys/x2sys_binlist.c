@@ -106,7 +106,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -122,7 +122,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -164,7 +164,7 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
@@ -204,7 +204,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -243,11 +243,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (EXIT_FAILURE);
 		}
-		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
+		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
 		GMT_Report (API, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
-		GMT_parse_common_options (GMT, "J", 'J', proj);
+		gmt_parse_common_options (GMT, "J", 'J', proj);
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		GMT_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
 		GMT_geo_to_xy (GMT, B.wesn[XHI], B.wesn[YHI], &B.wesn[XHI], &B.wesn[YHI]);

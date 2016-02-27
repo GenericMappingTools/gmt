@@ -208,7 +208,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Event requires a timestamp in the next column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Timespan requires begin and end timestamps in the next two columns\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (use NaN for unlimited begin and/or end times).\n");
-	GMT_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-Gf<color>) or label (-Gn<color>).");
+	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-Gf<color>) or label (-Gn<color>).");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default text label color is white.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Gf- to turn off polygon fill.\n");
@@ -233,7 +233,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -O and -K to organize features into groups.\n");
 	GMT_Option (API, "V");
-	GMT_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give width in pixels and append p.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading + applies cpt color (-C) to both polygon fill and outline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A leading - applies cpt color (-C) to the outline only.\n");
@@ -270,7 +270,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET))
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET))
 					n_errors++;
 				else if (n_files == 0)	/* Just keep name of first file */
 					Ctrl->In.file = strdup (opt->arg);
@@ -354,7 +354,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						if (opt->arg[1] == '-')
 				 			Ctrl->G.active[F_ID] = true;
 						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
-							GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
+							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
 						break;
@@ -363,12 +363,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 						if (opt->arg[1] == '-')
 							Ctrl->t_transp = 0.0;
 						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
-							GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
+							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
+						gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 						n_errors++;
 						break;
 				}
@@ -441,7 +441,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				if (opt->arg[k] == '-') {Ctrl->W.mode = 1; k++;}
 				if (opt->arg[k] == '+') {Ctrl->W.mode = 2; k++;}
 				if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 0);
+					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 0);
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
@@ -488,7 +488,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -669,7 +669,7 @@ GMT_LOCAL bool crossed_dateline (double this_x, double last_x) {
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act, no_text;
@@ -706,7 +706,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

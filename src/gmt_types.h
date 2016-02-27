@@ -276,8 +276,8 @@ struct GMT_SESSION {
 	FILE *std[3];			/* Pointers for standard input, output, and error */
 	void * (*input_ascii) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ASCII tables only */
 	int (*output_ascii) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ASCII tables only */
-	unsigned int n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
-	unsigned int n_user_media;	/* Total number of user media returned by gmt_load_user_media */
+	unsigned int n_fonts;		/* Total number of fonts returned by gmtinit_init_fonts */
+	unsigned int n_user_media;	/* Total number of user media returned by gmtinit_load_user_media */
 	size_t min_meminc;		/* with -DMEMDEBUG, sets min/max memory increments */
 	size_t max_meminc;
 	float f_NaN;			/* Holds the IEEE NaN for floats */

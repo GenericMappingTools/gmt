@@ -113,14 +113,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'G':	/* Optional defaults file on input and output */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -129,7 +129,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSET_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtset (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -155,7 +155,7 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -179,16 +179,16 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 
 		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path, R_OK))
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
-		GMT_getdefaults (GMT, path);
+		gmt_getdefaults (GMT, path);
 	}
 	else if (Ctrl->C.active)
-		GMT_getdefaults (GMT, ".gmtdefaults4");
+		gmt_getdefaults (GMT, ".gmtdefaults4");
 	else if (Ctrl->G.active)
-		GMT_getdefaults (GMT, Ctrl->G.file);
+		gmt_getdefaults (GMT, Ctrl->G.file);
 
-	if (GMT_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
+	if (gmt_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
 
-	GMT_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
+	gmt_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
 
 	Return (GMT_OK);
 }

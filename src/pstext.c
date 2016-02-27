@@ -339,7 +339,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add o for rectangle [Default] or O for rectangle with rounded corners,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   When -M is used you can also set c for concave and C for convex rectangle.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].", 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.\n");
@@ -374,7 +374,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -484,7 +484,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				else if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.mode = PSTEXT_CLIPPLOT;
 				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
@@ -495,7 +495,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				if (GMT_compat_check (GMT, 4)) /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 			case 'M':	/* Paragraph mode */
 				Ctrl->M.active = true;
 				break;
@@ -507,12 +507,12 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
 					Ctrl->S.active = true;
 					if (GMT_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
-						GMT_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
+						gmt_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
 						n_errors++;
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
@@ -527,7 +527,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 			case 'W':
 				Ctrl->W.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', "draws a box around the text with the specified pen [Default pen is %s]", 0);
+					gmt_pen_syntax (GMT, 'W', "draws a box around the text with the specified pen [Default pen is %s]", 0);
 					n_errors++;
 				}
 				break;
@@ -543,7 +543,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -611,7 +611,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pstext (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pstext task */
@@ -652,7 +652,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pstext_parse (GMT, Ctrl, options)) != 0) Return (error);

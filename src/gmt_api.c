@@ -1587,7 +1587,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 		case GMT_IS_STREAM:	/* Given a stream; no need to open (or close) anything */
 #ifdef SET_IO_MODE
 			if (S_obj->family == GMT_IS_DATASET && S_obj->fp == GMT->session.std[direction])
-				GMT_setmode (GMT, (int)direction);	/* Windows may need to have its read mode changed from text to binary */
+				gmt_setmode (GMT, (int)direction);	/* Windows may need to have its read mode changed from text to binary */
 #endif
 			kind = (S_obj->fp == GMT->session.std[direction]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
 			sprintf (GMT->current.io.current_filename[direction], "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
@@ -2206,7 +2206,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		switch (S_obj->method) {	/* File, array, stream etc ? */
 	 		case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
 #ifdef SET_IO_MODE
-				if (item == first_item) GMT_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
+				if (item == first_item) gmt_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
 #endif
 				/* GMT_read_table will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
@@ -2222,7 +2222,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 	 		case GMT_IS_FDESC:
 				/* GMT_read_table will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 #ifdef SET_IO_MODE
-				if (item == first_item) GMT_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
+				if (item == first_item) gmt_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
 #endif
 				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
@@ -2540,7 +2540,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 		default_method = (S_obj->method == GMT_IS_FILE) ? GMT_IS_STREAM : S_obj->method;
 		ptr = S_obj->fp;
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
+		gmt_setmode (GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
 #endif
 	}
 	GMT_set_dataset_minmax (GMT, D_obj);	/* Update all counters and min/max arrays */
@@ -2548,7 +2548,7 @@ GMT_LOCAL int api_export_dataset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	switch (S_obj->method) {	/* File, array, stream, etc. */
 	 	case GMT_IS_STREAM:
 #ifdef SET_IO_MODE
-			GMT_setmode (GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
+			gmt_setmode (GMT, GMT_OUT);	/* Windows may need to switch write mode from text to binary */
 #endif
 		case GMT_IS_FILE:
 	 	case GMT_IS_FDESC:
@@ -2707,7 +2707,7 @@ GMT_LOCAL struct GMT_TEXTSET *api_import_textset (struct GMTAPI_CTRL *API, int o
 		switch (S_obj->method) {	/* File, array, stream, etc. */
 			case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
 #ifdef SET_IO_MODE
-				if (item == first_item) GMT_setmode (GMT, GMT_IN);
+				if (item == first_item) gmt_setmode (GMT, GMT_IN);
 #endif
 				/* GMT_read_texttable will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %s\n", GMT_family[S_obj->family], GMT_method[S_obj->method], S_obj->filename);
@@ -2718,7 +2718,7 @@ GMT_LOCAL struct GMT_TEXTSET *api_import_textset (struct GMTAPI_CTRL *API, int o
 	 		case GMT_IS_STREAM:
 	 		case GMT_IS_FDESC:
 #ifdef SET_IO_MODE
-				if (item == first_item) GMT_setmode (GMT, GMT_IN);
+				if (item == first_item) gmt_setmode (GMT, GMT_IN);
 #endif
 				/* GMT_read_texttable will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %" PRIxS "\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (size_t)S_obj->fp);
@@ -2840,7 +2840,7 @@ GMT_LOCAL int api_export_textset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 	 	case GMT_IS_STREAM:
 #ifdef SET_IO_MODE
-			GMT_setmode (GMT, GMT_OUT);
+			gmt_setmode (GMT, GMT_OUT);
 #endif
 		case GMT_IS_FILE:
 	 	case GMT_IS_FDESC:
@@ -4356,14 +4356,14 @@ void *GMT_Create_Session (const char *session, unsigned int pad, unsigned int mo
 	API->tmp_dir = strdup ("/tmp");
 #endif
 
-	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
-	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
+	/* gmt_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
+	if (gmt_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
 		gmt_free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session initialized GMT structure\n");
 
-	API->n_cores = GMT_get_num_processors();	/* Get number of available CPU cores */
+	API->n_cores = gmt_get_num_processors();	/* Get number of available CPU cores */
 
 	/* Allocate memory to keep track of registered data resources */
 
@@ -4409,7 +4409,7 @@ int GMT_Destroy_Session (void *V_API) {
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) api_unregister_io (API, (int)API->object[i]->ID, (unsigned int)GMT_NOTSET);
 	GMT_free (API->GMT, API->object);
-	GMT_end (API->GMT);	/* Terminate GMT machinery */
+	gmt_end (API->GMT);	/* Terminate GMT machinery */
 	gmt_free (API->session_tag);
 	gmt_free (API->tmp_dir);
 	GMT_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
@@ -6363,9 +6363,9 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = gmt_create_grid (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
-				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
+				if (pad >= 0) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = api_init_grid (API, NULL, range, inc, registration, mode, def_direction, new_obj);
-				if (pad >= 0) GMT_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
+				if (pad >= 0) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {	/* Already registered so has_ID must be false */
 				if (has_ID || (new_obj = data) == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
@@ -6380,9 +6380,9 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = GMT_create_image (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
-				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
+				if (pad >= 0) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = api_init_image (API, NULL, range, inc, registration, mode, def_direction, new_obj);
-				if (pad >= 0) GMT_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
+				if (pad >= 0) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {
 				if ((new_obj = data) == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
@@ -7906,7 +7906,7 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 			strcpy (value, "rows");
 	}
 	else {	/* Must process as a GMT setting */
-		strcpy (value, GMT_putparameter (API->GMT, keyword));
+		strcpy (value, gmt_putparameter (API->GMT, keyword));
 		error = (value[0] == '\0') ? GMT_OPTION_NOT_FOUND : GMT_NOERROR;
 	}
 	return_error (V_API, error);
@@ -7936,7 +7936,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 	if (!strncmp (keyword, "API_PAD", 7U)) {	/* Change the grid padding setting */
 		int pad = atoi (value);
 		if (pad >= 0) {
-			GMT_set_pad (API->GMT, pad);	/* Change the default pad; give GMT_NOTSET to leave as is */
+			gmt_set_pad (API->GMT, pad);	/* Change the default pad; give GMT_NOTSET to leave as is */
 			API->pad = pad;
 		}
 	}
@@ -7958,7 +7958,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 		error = 1;
 	}
 	else	/* Must process as a GMT setting */
-		error = GMT_setparameter (API->GMT, keyword, value);
+		error = gmt_setparameter (API->GMT, keyword, value);
 	gmt_free (value);
 	return_error (V_API, (error) ? GMT_NOT_A_VALID_PARAMETER : GMT_NOERROR);
 }
@@ -7981,7 +7981,7 @@ int GMT_Option (void *V_API, const char *options) {
 	if (options == NULL) return_error (V_API, GMT_NO_PARAMETERS);
 	API = api_get_api_ptr (V_API);
 
-	/* The following does the translation between the rules for the option string and the convoluted items GMT_explain_options expects. */
+	/* The following does the translation between the rules for the option string and the convoluted items gmt_explain_options expects. */
 	while (GMT_strtok (options, ",", &pos, p) && k < GMT_LEN64) {
 		switch (p[0]) {
 			case 'B':	/* Let B be B and B- be b */
@@ -8023,7 +8023,7 @@ int GMT_Option (void *V_API, const char *options) {
 				break;
 		}
 	}
-	GMT_explain_options (API->GMT, arg);	/* Call the underlying explain_options machinery */
+	gmt_explain_options (API->GMT, arg);	/* Call the underlying explain_options machinery */
 	return_error (V_API, GMT_NOERROR);
 }
 
@@ -8156,7 +8156,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 		}
 		len--;	/* Position of last char, possibly a unit */
 		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit (c|i|p), return distance in GMT default length unit [inch or cm] */
-			value = GMT_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
+			value = gmt_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
 		else if (strchr (GMT_LEN_UNITS, p[len])) {	/* Distance units, return as meters [or degrees if arc] */
 			mode = GMT_get_distance (GMT, p, &value, &unit);
 			GMT_init_distaz (GMT, unit, mode, GMT_MAP_DIST);

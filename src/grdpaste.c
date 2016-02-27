@@ -96,9 +96,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (n_in == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+				else if (n_in == 1 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
@@ -109,14 +109,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
  			case 'G':
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -128,7 +128,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* True if grid is a COARDS/CF netCDF file */
 GMT_LOCAL inline bool is_nc_grid (struct GMT_GRID *grid) {
@@ -166,7 +166,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -174,7 +174,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdpaste main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grids\n");
-	GMT_set_pad (GMT, 0); /* No padding */
+	gmt_set_pad (GMT, 0); /* No padding */
 
 	/* Try to find a common side to join on  */
 
@@ -366,7 +366,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0U); /* Reset padding */
+				gmt_set_pad (GMT, 0U); /* Reset padding */
 			}
 			else {
 				GMT->current.io.pad[YHI] = 0;
@@ -398,7 +398,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0U); /* Reset padding */
+				gmt_set_pad (GMT, 0U); /* Reset padding */
 				B->header->data_offset = A->header->nx * (A->header->ny - one_or_zero);
 				if (way == 22)
 					B->header->data_offset -= A->header->nx;
@@ -443,7 +443,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0U); /* Reset padding */
+				gmt_set_pad (GMT, 0U); /* Reset padding */
 				B->header->stride = C->header->nx;
 			}
 			else {
@@ -478,7 +478,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0U); /* Reset padding */
+				gmt_set_pad (GMT, 0U); /* Reset padding */
 				B->header->stride = C->header->nx;
 				B->header->data_offset = A->header->nx - one_or_zero;
 				if (way == 44)
@@ -502,13 +502,13 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 			break;
 	}
 
-	GMT_set_pad (GMT, 0U); /* Reset padding */
+	gmt_set_pad (GMT, 0U); /* Reset padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, C) != GMT_OK) {
 		Return (API->error);
 	}
 	A->data = B->data = NULL; /* Since these were never actually allocated */
 
-	GMT_set_pad (GMT, API->pad); /* Restore to GMT Defaults */
+	gmt_set_pad (GMT, API->pad); /* Restore to GMT Defaults */
 	Return (GMT_OK);
 }

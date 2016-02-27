@@ -360,7 +360,7 @@ void gmt_lat_swap_init (struct GMT_CTRL *GMT) {
 	/* PW notes: Projections only convert latitudes if GMT->current.proj.GMT_convert_latitudes is true.
 	 *       This is set by GMT_map_setup if the ellipsoid is not a sphere.  Calling gmt_lat_swap_init by itself
 	 *	 does not affect the mapping machinery.  Since various situations call for the use
-	 *	 of auxilliary latitudes we initialize gmt_lat_swap_init in GMT_begin.  This means
+	 *	 of auxilliary latitudes we initialize gmt_lat_swap_init in gmt_begin.  This means
 	 *	 programs can use functions like GMT_lat_swap whenever needed.
 	 */
 
@@ -1436,7 +1436,7 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
 
-	/* Set up function pointers.  This could be done once in GMT_begin at some point */
+	/* Set up function pointers.  This could be done once in gmt_begin at some point */
 
 	clipper[GMT_BOTTOM] = gmt_clip_sn;	clipper[GMT_RIGHT] = gmt_clip_we; clipper[GMT_TOP] = gmt_clip_sn;	clipper[GMT_LEFT] = gmt_clip_we;
 	inside[GMT_RIGHT] = inside[GMT_TOP] = gmt_inside_upper_boundary;	outside[GMT_RIGHT] = outside[GMT_TOP] = gmt_outside_upper_boundary;
@@ -1703,7 +1703,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 	*total_nx = 1;	/* So that calling program will not discard the clipped polygon */
 
-	/* Set up function pointers.  This could be done once in GMT_begin at some point */
+	/* Set up function pointers.  This could be done once in gmt_begin at some point */
 
 	clipper[GMT_BOTTOM] = gmt_clip_sn;	clipper[GMT_RIGHT] = gmt_clip_we; clipper[GMT_TOP] = gmt_clip_sn;	clipper[GMT_LEFT] = gmt_clip_we;
 	inside[GMT_RIGHT] = inside[GMT_TOP] = gmt_inside_upper_boundary;	outside[GMT_RIGHT] = outside[GMT_TOP] = gmt_outside_upper_boundary;
@@ -7680,7 +7680,7 @@ int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Malformed <x>,<y>,<z> argument!\n");
 			return (-1);
 		}
-		if ((i = GMT_get_ellipsoid (GMT, ellipsoid)) >= 0) {	/* This includes looking for format <a>,<1/f> */
+		if ((i = gmt_get_ellipsoid (GMT, ellipsoid)) >= 0) {	/* This includes looking for format <a>,<1/f> */
 			D->a = GMT->current.setting.ref_ellipsoid[i].eq_radius;
 			D->f = GMT->current.setting.ref_ellipsoid[i].flattening;
 			D->ellipsoid_id = i;
@@ -7700,7 +7700,7 @@ int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Datum ID (%d) outside valid range (0-%d)!\n", i, GMT_N_DATUMS-1);
 			return (-1);
 		}
-		if ((k = GMT_get_ellipsoid (GMT, GMT->current.setting.proj_datum[i].ellipsoid)) < 0) {	/* This should not happen... */
+		if ((k = gmt_get_ellipsoid (GMT, GMT->current.setting.proj_datum[i].ellipsoid)) < 0) {	/* This should not happen... */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Ellipsoid %s not recognized!\n", GMT->current.setting.proj_datum[i].ellipsoid);
 			return (-1);
 		}
@@ -8589,7 +8589,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 	unsigned int proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
 
 	if (strchr (GMT_LEN_UNITS, unit) && !GMT_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
-		GMT_parse_common_options (GMT, "f", 'f', "g");
+		gmt_parse_common_options (GMT, "f", 'f', "g");
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", unit);
 	}
 

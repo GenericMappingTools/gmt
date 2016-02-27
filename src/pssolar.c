@@ -155,7 +155,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "B");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report selected via -I in a single line of numbers only.\n");
-	GMT_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
+	gmt_fill_syntax (API->GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip path instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
@@ -171,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n means nautical twilight.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a means astronomical twilight.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].", 0);
 	GMT_Option (API, "X,c,o,p");
 	GMT_Option (API, "t,.");
 
@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.clip = true;
 				else if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " "); n_errors++;
+					gmt_fill_syntax (GMT, 'G', " "); n_errors++;
 				}
 				break;
 			case 'I':		/* Infos -I[x/y][+d<date>][+z<TZ>] */
@@ -265,7 +265,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				if (opt->arg[j] == '-') {Ctrl->W.mode = 1; j++;}
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
 				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
+					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
@@ -273,7 +273,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				break;
 
 			default:		/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -287,11 +287,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */
 		if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
-			GMT_parse_common_options (GMT, "J", 'J', "X14cd/0d");
+			gmt_parse_common_options (GMT, "J", 'J', "X14cd/0d");
 			GMT->common.J.active = true;
 		}
 		if (!GMT->common.R.active) {	/*  */
-			GMT_parse_common_options (GMT, "R", 'R', "-180/180/-90/90");
+			gmt_parse_common_options (GMT, "R", 'R', "-180/180/-90/90");
 			GMT->common.R.active = true;
 		}
 	}
@@ -305,7 +305,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {
 	/* Adapted from https://github.com/joa-quim/mirone/blob/master/utils/solar_params.m  */
@@ -443,7 +443,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

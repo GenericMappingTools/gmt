@@ -343,7 +343,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 				buf[j-i]='\0';
 				reset_coltype (GMT, buf);	/* Make sure geo coordinates will be recognized */
 				GMT->common.R.active = false;	/* Forget that -R was used before */
-				if (GMT_parse_common_options (GMT, "R", 'R', buf)) {
+				if (gmt_parse_common_options (GMT, "R", 'R', buf)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
 					continue;
 				}
@@ -699,7 +699,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 			case 'I':
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
@@ -708,13 +708,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
 	/* Check that arguments were valid */
-	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+	gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
@@ -728,7 +728,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
@@ -772,7 +772,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	/* Hardwire a -fg setting since this is geographic data */
 	GMT_set_geographic (GMT, GMT_IN);
 	GMT_set_geographic (GMT, GMT_OUT);
@@ -790,7 +790,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	r_opt = GMT_Find_Option (GMT->parent, 'R', options);
 	GMT->common.R.active = false;	/* Forget that -R was used before */
 	reset_coltype (GMT, r_opt->arg);	/* Make sure geo coordinates will be recognized */
-	if (GMT_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
+	if (gmt_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error reprocessing -R?.\n");
 		Return (EXIT_FAILURE);
 	}

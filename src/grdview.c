@@ -356,7 +356,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
-		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
+		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qmx or -Qmy do waterfall type plots (row or column profiles).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw mesh-lines on the surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to raster-image.  Append effective dpi [100].\n");
@@ -364,12 +364,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append +m.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
-	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
+	gmt_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n"
 	                "\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
 	                "\t   Append o[<pen>] to draw tile outline [Default uses no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (API->GMT, P));
@@ -404,7 +404,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 			/* Common parameters */
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -423,22 +423,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				if (n_commas == 2) {	/* Three r,g,b grids for draping */
 					char A[GMT_LEN256] = {""}, B[GMT_LEN256] = {""}, C[GMT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
-					if (GMT_check_filearg (GMT, '<', A, GMT_IN, GMT_IS_GRID))
+					if (gmt_check_filearg (GMT, '<', A, GMT_IN, GMT_IS_GRID))
 						Ctrl->G.file[0] = strdup (A);
 					else
 						n_errors++;
-					if (GMT_check_filearg (GMT, '<', B, GMT_IN, GMT_IS_GRID))
+					if (gmt_check_filearg (GMT, '<', B, GMT_IN, GMT_IS_GRID))
 						Ctrl->G.file[1] = strdup (B);
 					else
 						n_errors++;
-					if (GMT_check_filearg (GMT, '<', C, GMT_IN, GMT_IS_GRID))
+					if (gmt_check_filearg (GMT, '<', C, GMT_IN, GMT_IS_GRID))
 						Ctrl->G.file[2] = strdup (C);
 					else
 						n_errors++;
 					Ctrl->G.image = true;
 				}
 				else if (n_commas == 0) {	/* Just got a single drape file */
-					if (GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+					if (gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 						Ctrl->G.file[0] = strdup (opt->arg);
 					else
 						n_errors++;
@@ -468,7 +468,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Facade */
 				if (opt->arg[0]) {
@@ -571,7 +571,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					Ctrl->T.outline = true;
 					k++;
 					if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
-						GMT_pen_syntax (GMT, 'T', " ", 0);
+						gmt_pen_syntax (GMT, 'T', " ", 0);
 						n_errors++;
 					}
 				}
@@ -591,7 +591,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-					GMT_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				if (j == 0)	/* Copy pen when using just -W */
@@ -600,7 +600,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -634,7 +634,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
@@ -678,7 +678,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1310,7 +1310,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
-		GMT_Report (API, GMT_MSG_VERBOSE, "Do mesh plot with mesh color %s\n", GMT_putcolor (GMT, Ctrl->Q.fill.rgb));
+		GMT_Report (API, GMT_MSG_VERBOSE, "Do mesh plot with mesh color %s\n", gmt_putcolor (GMT, Ctrl->Q.fill.rgb));
 		PSL_comment (PSL, "Start of mesh plot\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->Q.monochrome)

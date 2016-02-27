@@ -134,7 +134,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtconnect_link.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Link output excludes duplicates and segments already forming a closed polygon.\n");
 	GMT_Option (API, "V");
-	GMT_dist_syntax (API->GMT, 'T', "Set cutoff distance to determine if a segment is closed.");
+	gmt_dist_syntax (API->GMT, 'T', "Set cutoff distance to determine if a segment is closed.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append <nn_dist> which adds the requirement that the second closest\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>).\n");
@@ -162,10 +162,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
 					Ctrl->Out.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 					Ctrl->T.dist[0] = DBL_MAX;
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -253,7 +253,7 @@ GMT_LOCAL uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DAT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtconnect (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -294,7 +294,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

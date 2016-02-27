@@ -107,9 +107,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Input and Output files */
-				if (n_in == 0 && GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
+				if (n_in == 0 && gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID))
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
-				else if (n_in == 1 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
+				else if (n_in == 1 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
 				else {
 					n_in++;
@@ -118,7 +118,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 				}
 				break;
 			case '>':	/* Output file */
-				if (GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
+				if (gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_GRID))
 					Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
 				else
 					n_errors++;
@@ -132,7 +132,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -143,7 +143,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -167,7 +167,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

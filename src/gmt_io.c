@@ -606,7 +606,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 		else if (!strcmp (long_name, "time") || !strcmp (varname, "time")) {
 			GMT->current.io.col_type[GMT_IN][i] = GMT_IS_RELTIME;
 			GMT_memcpy (&time_system, &GMT->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
-			if (GMT_get_time_system (GMT, units, &time_system) || GMT_init_time_system_structure (GMT, &time_system))
+			if (gmt_get_time_system (GMT, units, &time_system) || gmt_init_time_system_structure (GMT, &time_system))
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Time units [%s] in NetCDF file not recognised, defaulting to gmt.conf.\n", units);
 			/* Determine scale between data and internal time system, as well as the offset (in internal units) */
 			GMT->current.io.scale_factor[i] = GMT->current.io.scale_factor[i] * time_system.scale * GMT->current.setting.time_system.i_scale;
@@ -2022,7 +2022,7 @@ void GMT_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir) {
 void GMT_io_init (struct GMT_CTRL *GMT) {
 	/* No need to memset the structure to NULL as this is done initlally.
 	 * The assignments here are done once per GMT session as GMT_io_init is called
-	 * from GMT_begin.  Some variables may change later due to --PAR=value parsing.
+	 * from gmt_begin.  Some variables may change later due to --PAR=value parsing.
 	 * GMT_io_init must be called before parsing of defaults. */
 
 	unsigned int i;
@@ -4077,8 +4077,8 @@ int gmt_geo_C_format (struct GMT_CTRL *GMT) {
 
 	if (S->decimal) {	/* Plain decimal degrees */
 		 /* here we depend on FORMAT_FLOAT_OUT begin set.  This will not be true when FORMAT_GEO_MAP is parsed but will be
-		  * handled at the end of GMT_begin.  For gmtset and --PAR later we will be OK as well. */
-		if (!GMT->current.setting.format_float_out[0]) return (GMT_NOERROR); /* Quietly return and deal with this later in GMT_begin */
+		  * handled at the end of gmt_begin.  For gmtset and --PAR later we will be OK as well. */
+		if (!GMT->current.setting.format_float_out[0]) return (GMT_NOERROR); /* Quietly return and deal with this later in gmt_begin */
 		sprintf (S->x_format, "%s", GMT->current.setting.format_float_out);
 		sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
 	}
@@ -4127,8 +4127,8 @@ void gmt_plot_C_format (struct GMT_CTRL *GMT) {
 	if (S->decimal) {	/* Plain decimal degrees */
 		int len;
 		 /* here we depend on FORMAT_FLOAT_OUT begin set.  This will not be true when FORMAT_GEO_MAP is parsed but will be
-		  * handled at the end of GMT_begin.  For gmtset and --PAR later we will be OK as well. */
-		if (!GMT->current.setting.format_float_out[0]) return; /* Quietly return and deal with this later in GMT_begin */
+		  * handled at the end of gmt_begin.  For gmtset and --PAR later we will be OK as well. */
+		if (!GMT->current.setting.format_float_out[0]) return; /* Quietly return and deal with this later in gmt_begin */
 
 		len = sprintf (S->x_format, "%s", GMT->current.setting.format_float_out);
 		      sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
@@ -6461,7 +6461,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	}
 
 #ifdef SET_IO_MODE
-	if (!ASCII) GMT_setmode (GMT, GMT_IN);
+	if (!ASCII) gmt_setmode (GMT, GMT_IN);
 #endif
 
 	pol_check = check_geometry = ((*geometry & GMT_IS_POLY) && (*geometry & GMT_IS_LINE));	/* Have to determine if these are closed polygons or not */

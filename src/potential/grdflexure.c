@@ -518,7 +518,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 					Ctrl->In.list = true;
 					Ctrl->In.file = strdup (&opt->arg[1]);
 				}
-				else if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
+				else if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -577,7 +577,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 					Ctrl->F.mode = FLX_FV1;
 				break;
 			case 'G':	/* Output file name or template */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -613,7 +613,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct 
 				Ctrl->Z.zm = atof (opt->arg);
 				break;
 			default:
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -685,7 +685,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION *options, struct GRDFLEXURE_CTRL *Ctrl, char *file, struct GMT_MODELTIME *this_time) {
 	struct GMT_GRID *Grid = NULL, *Orig = NULL;
@@ -697,7 +697,7 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	else
 		GMT_Report (API, GMT_MSG_VERBOSE, "Prepare load file %s\n", file);
 
-	if (!GMT_check_filearg (GMT, '<', file, GMT_IN, GMT_IS_DATASET)) {
+	if (!gmt_check_filearg (GMT, '<', file, GMT_IN, GMT_IS_DATASET)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Load file %s not found - skipped\n", file);
 		return NULL;
 	}
@@ -821,7 +821,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

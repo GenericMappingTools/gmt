@@ -921,7 +921,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 
 	strcpy (s->path, path);
 
-	GMT_parse_common_options (GMT, "b", 'b', "c");	/* Tell GMT this is a netCDF file */
+	gmt_parse_common_options (GMT, "b", 'b', "c");	/* Tell GMT this is a netCDF file */
 
 	if ((fp = GMT_fopen (GMT, path, "r")) == NULL)  {	/* Error in opening file */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_ncfile: Error opening file %s\n", fname);
@@ -1076,7 +1076,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 						parsed_command_R = true;	GMT->common.R.active = false;	/* Set to false so 2nd parse will work */
 						GMT_memcpy (save_R_wesn, GMT->common.R.wesn, 4, double);	/* Save command-line -R values */
 					}
-					if (GMT_parse_common_options (GMT, "R", 'R', &p[2])) {
+					if (gmt_parse_common_options (GMT, "R", 'R', &p[2])) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
@@ -1552,9 +1552,9 @@ int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
 	if (file && file[0])
-		GMT_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
 	else
-		GMT_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
 	return (err);
 }
 
@@ -1562,9 +1562,9 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
 	if (file && file[0])
-		GMT_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
 	else
-		GMT_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
 	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
 

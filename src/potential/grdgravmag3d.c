@@ -311,7 +311,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 					else {
 						Ctrl->H.do_igrf = true;                     /* Case when -H+i to mean use IGRF */
 						if (!GMT_is_geographic(GMT, GMT_IN))
-							GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+							gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					}
 					break;
 				}
@@ -323,7 +323,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				else if (opt->arg[0] == '+' && (opt->arg[1] == 'g' || opt->arg[1] == 'r' || opt->arg[1] == 'f' || opt->arg[1] == 'n')) {
 					Ctrl->H.do_igrf = true;                         /* Anny of -H+i|+g|+r|+f|+n is allowed to mean use IGRF */
 					if (!GMT_is_geographic(GMT, GMT_IN))
-						GMT_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
+						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 					break;
 				}
 
@@ -358,7 +358,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 			case 'I':
 				Ctrl->I.active = true;
 				if (GMT_getinc(GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
@@ -369,10 +369,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				if (GMT_compat_check(GMT, 4)) {
 					GMT_Report(API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 					if (!GMT_is_geographic(GMT, GMT_IN))
-						GMT_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
+						gmt_parse_common_options(GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
-					n_errors += GMT_default_error(GMT, opt->option);
+					n_errors += gmt_default_error(GMT, opt->option);
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
@@ -412,7 +412,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				Ctrl->H.bhatta = true;
 				break;
 			default:
-				n_errors += GMT_default_error(GMT, opt->option);
+				n_errors += gmt_default_error(GMT, opt->option);
 				break;
 		}
 	}
@@ -440,7 +440,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
@@ -483,7 +483,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	GMT->common.x.n_threads = 1;        /* Default to use only one core (we may change this to max cores) */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -557,7 +557,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			        wesn_new[YHI] + Ctrl->Q.pad_dist);
 
 		GMT->common.R.active = false;
-		GMT_parse_common_options(GMT, "R", 'R', Ctrl->Q.region);	/* Use the -R parsing machinery to handle this */
+		gmt_parse_common_options(GMT, "R", 'R', Ctrl->Q.region);	/* Use the -R parsing machinery to handle this */
 		GMT_memcpy(wesn_padded, GMT->common.R.wesn, 4, double);
 		GMT_memcpy(GMT->common.R.wesn, wesn_new, 4, double);		/* Reset previous WESN */
 		GMT->common.R.active = true;

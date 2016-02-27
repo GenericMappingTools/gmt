@@ -606,7 +606,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) bailout (API->error);
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
@@ -874,7 +874,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				custom_warn = true;
 				break;
 			default:
-				error += GMT_default_error (GMT, opt->option);
+				error += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}

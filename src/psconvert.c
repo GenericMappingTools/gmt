@@ -215,7 +215,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				if (!p[1])
 					Ctrl->A.pen = GMT->current.setting.map_default_pen;
 				else if (GMT_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					GMT_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
+					gmt_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
 					error++;
 				}
 				break;
@@ -226,7 +226,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 					error++;
 				}
 				else if (GMT_getfill (GMT, &p[1], &Ctrl->A.fill)) {
-					GMT_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
+					gmt_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
 					error++;
 				}
 				break;
@@ -520,7 +520,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				Ctrl->In.n_files++;
 				break;
 
@@ -533,7 +533,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
+				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
 					gmt_free (Ctrl->D.dir);
 					Ctrl->D.dir = strdup (opt->arg);
 				}
@@ -545,7 +545,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
-				if ((Ctrl->F.active = GMT_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
+				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
 					Ctrl->F.file = strdup (opt->arg);
 					if (!GMT_File_Is_Memory (Ctrl->F.file)) GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				}
@@ -553,7 +553,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 					n_errors++;
 				break;
 			case 'G':	/* Set GS path */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0) {
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0) {
 					gmt_free (Ctrl->G.file);
 					Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 					sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
@@ -565,7 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				if ((Ctrl->L.active = GMT_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
+				if ((Ctrl->L.active = gmt_check_filearg (GMT, 'L', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0)
 					Ctrl->L.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -580,7 +580,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				else if (opt->arg[0] == 't')
 					mode = 1;
 				else {
-					GMT_default_error (GMT, opt->option);
+					gmt_default_error (GMT, opt->option);
 					n_errors++;
 					continue;
 
@@ -632,7 +632,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 						case '-':	/* Just skip the trailing - for grayscale since it is handled separately */
 							break;
 						default:
-							GMT_default_error (GMT, opt->option);
+							gmt_default_error (GMT, opt->option);
 							n_errors++;
 							break;
 					}
@@ -647,7 +647,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -695,7 +695,7 @@ GMT_LOCAL int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FIL
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL inline char *alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
 	/* return alpha bits which are valid for the selected driver */
@@ -728,8 +728,8 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 	char *ptr = NULL;
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
 	if (A->paint) {	/* Paint the background of the page */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
-		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", GMT_putrgb (GMT, A->fill.rgb));
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, A->fill.rgb));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, A->fill.rgb));
 		ptr = PSL_makecolor (GMT->PSL, A->fill.rgb);
 		fprintf (fp, "gsave clippath %s F N U\n", ptr);
 	}
@@ -814,7 +814,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1581,13 +1581,13 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
 			struct GMT_IMAGE *I = NULL;
-			GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 				Return (API->error);
-			GMT_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
+			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
 			if (Ctrl->Z.active) {	/* Remove the image since it is returned to a calling program and -Z was given */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
 				remove (out_file);

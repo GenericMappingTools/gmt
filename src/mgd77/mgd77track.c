@@ -460,14 +460,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
 				if (GMT_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
-					GMT_fill_syntax (GMT, 'T', " ");
+					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
 				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by GMT_getpen */
 				GMT_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (GMT_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
-					GMT_fill_syntax (GMT, 'T', " ");
+					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
 				break;
@@ -475,13 +475,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 			case 'W':
 				Ctrl->W.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -558,7 +558,7 @@ GMT_LOCAL int bad_coordinates (double lon, double lat) {
 extern void gmt_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77track (void *V_API, int mode, void *args) {
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, use, n_paths, argno, n_cruises = 0;
@@ -592,7 +592,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, NULL));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (!options || options->option == GMT_OPT_USAGE) Return (usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) Return (usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */

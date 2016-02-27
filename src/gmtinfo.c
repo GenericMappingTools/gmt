@@ -163,7 +163,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -194,7 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				if (opt->arg[0]) {
 					Ctrl->D.ncol = GMT_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
 					Ctrl->D.mode = 1;
-					GMT_check_lattice (GMT, Ctrl->D.inc, NULL, &Ctrl->D.active);
+					gmt_check_lattice (GMT, Ctrl->D.inc, NULL, &Ctrl->D.active);
 				}
 				break;
 			case 'E':	/* Extrema reporting */
@@ -249,12 +249,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 				if (GMT_compat_check (GMT, 4)) break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
-	if (Ctrl->I.mode != ACTUAL_BOUNDS) GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+	if (Ctrl->I.mode != ACTUAL_BOUNDS) gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 	if (Ctrl->I.active && special && Ctrl->I.ncol > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Ip. Only a single increment is expected.\n");
 		n_errors++;
@@ -275,12 +275,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 		n_errors += GMT_check_condition (GMT, Ctrl->I.mode != ACTUAL_BOUNDS && Ctrl->I.inc[k] <= 0.0,
 		                                 "Syntax error -I option: Must specify positive increment(s)\n");
 	}
-	n_errors += GMT_check_binary_io (GMT, 1);
+	n_errors += gmt_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
@@ -311,7 +311,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

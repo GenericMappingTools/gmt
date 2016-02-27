@@ -221,7 +221,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -341,9 +341,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					                                 "Syntax error: Expected -L<file>[/[-|+]%s|c|C][+]\n", GMT_LEN_UNITS_DISPLAY);
 				}
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && !GMT_is_geographic (GMT, GMT_IN))
-					GMT_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
+					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
-				if (!GMT_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, 'L', Ctrl->L.file, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -393,7 +393,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -430,7 +430,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	                                 "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !(geodetic_calc || Ctrl->T.active || Ctrl->E.active ||
 	                                 Ctrl->N.active || Ctrl->Q.active), "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_binary_io (GMT, 2);
+	n_errors += gmt_check_binary_io (GMT, 2);
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -D and -F\n");
 	n_errors += GMT_check_condition (GMT, ((Ctrl->T.active && GMT->current.proj.datum.h_given) || Ctrl->E.active) &&
 	                                 GMT->common.b.active[GMT_IN] && GMT_get_cols (GMT, GMT_IN) < 3,
@@ -445,7 +445,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mapproject (void *V_API, int mode, void *args) {
 	int x, y, ks, rmode, n_fields, two, way, error = 0, o_type[2] = {GMT_Z, GMT_Z};
@@ -489,13 +489,13 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	if (!GMT->common.J.active && !GMT_is_geographic (GMT, GMT_IN)) { /* -J not given and input not specified as lon/lat; check if we should add -fg */
 		if ((Ctrl->G.active && Ctrl->G.unit != 'X') || (Ctrl->L.active && Ctrl->L.unit != 'X'))
-			GMT_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
+			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Not Cartesian unit so set -fg */
 	}
 
 	/*---------------------------- This is the mapproject main code ----------------------------*/
@@ -528,7 +528,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode) Return (EXIT_SUCCESS);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (Ctrl->D.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->D.unit), "-D");
+	if (Ctrl->D.active) GMT_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) GMT_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {
 		way = GMT_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
@@ -543,7 +543,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		proj_type = GMT_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
 	}
 	if (Ctrl->E.active) GMT_ECEF_init (GMT, &Ctrl->E.datum);
-	if (Ctrl->F.active) unit = GMT_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name);
+	if (Ctrl->F.active) unit = gmt_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name);
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
 
@@ -571,7 +571,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	else
 		datum_conv_only = Ctrl->T.active;
 
-	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (Ctrl->G.mode) {	/* save output format in case -J changes it */
 		save[GMT_X] = (Ctrl->G.unit == 'X') ? GMT_IS_FLOAT : GMT->current.io.col_type[GMT_OUT][GMT_X];
@@ -582,10 +582,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (!GMT->common.J.active) {	/* Supply dummy linear proj */
 		if (Ctrl->G.active && Ctrl->G.unit == 'X') {
 			GMT_set_cartesian (GMT, GMT_IN);
-			GMT_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear Cartesian projection */
+			gmt_parse_common_options (GMT, "J", 'J', "x1");	/* Fake linear Cartesian projection */
 		}
 		else
-			GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
+			gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
 		if (!GMT->common.R.active) {
 			GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
@@ -696,11 +696,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -L files */
+		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -L files */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */

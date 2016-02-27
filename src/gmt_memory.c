@@ -78,7 +78,7 @@ static inline double gmt_memtrack_mem (size_t mem, unsigned int *unit) {
 	return (val);
 }
 
-int GMT_memtrack_init (struct GMT_CTRL *GMT) { /* Called in GMT_begin() */
+int GMT_memtrack_init (struct GMT_CTRL *GMT) { /* Called in gmt_begin() */
 	time_t now = time (NULL);
 	char *env = getenv ("GMT_TRACK_MEMORY"); /* 0: off; any: track; 2: log to file */
 	struct MEMORY_TRACKER *M = calloc (1, sizeof (struct MEMORY_TRACKER));
@@ -296,13 +296,13 @@ static inline bool gmt_memtrack_sub (struct GMT_CTRL *GMT, const char *where, vo
 	M->n_freed++; /* Increment first to also count multiple frees on same address */
 	if (!entry) {
 		/* Error, trying to free something not allocated by GMT_memory_func */
-		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
+		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Wrongly tries to free item\n");
 		if (M->do_log)
 			fprintf (M->fp, "!!!: 0x%zx ---------- %7.0lf %s @%s\n", (size_t)ptr, M->current / 1024.0, GMT->init.module_name, where);
 		return false; /* Notify calling function that something went wrong */
 	}
 	if (entry->size > M->current) {
-		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Memory tracker reports < 0 bytes allocated!\n");
+		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;
 	}
 	else
@@ -334,7 +334,7 @@ static inline void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_ITEM *t) {
 }
 
 void GMT_memtrack_report (struct GMT_CTRL *GMT) {
-	/* Called at end of GMT_end() */
+	/* Called at end of gmt_end() */
 	unsigned int u, level;
 	uint64_t excess = 0, n_multi_frees = 0;
 	double size;
@@ -471,9 +471,9 @@ int die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char 
 	unsigned int k = 0;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-	GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
+	gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
-	GMT_report_func (GMT, GMT_MSG_NORMAL, where, "GMT_memory [realloc] called\n");
+	gmt_report_func (GMT, GMT_MSG_NORMAL, where, "GMT_memory [realloc] called\n");
 #endif
 	GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 }
@@ -490,9 +490,9 @@ void *GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size
 	void *tmp = NULL;
 
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
-		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
+		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
-		GMT_report_func (GMT, GMT_MSG_NORMAL, where, "GMT_memory called\n");
+		gmt_report_func (GMT, GMT_MSG_NORMAL, where, "GMT_memory called\n");
 #endif
 		GMT_exit (GMT, EXIT_FAILURE); return NULL;
 	}
@@ -558,7 +558,7 @@ void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *wh
 	if (addr == NULL) {
 #ifndef DEBUG
 		/* report freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */
-		GMT_report_func (GMT, GMT_MSG_DEBUG, where,
+		gmt_report_func (GMT, GMT_MSG_DEBUG, where,
 				"tried to free unallocated memory\n");
 #endif
 		return; /* Do not free a NULL pointer, although allowed */

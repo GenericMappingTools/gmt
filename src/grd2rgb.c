@@ -291,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -309,7 +309,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Get grid spacings */
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				Ctrl->I.active = true;
@@ -339,14 +339,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
 	/* Check that the options selected are mutually consistent */
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
 		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input raster file\n");
@@ -368,7 +368,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grd2rgb (void *V_API, int mode, void *args) {
 	unsigned int channel, row, col;
@@ -405,7 +405,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

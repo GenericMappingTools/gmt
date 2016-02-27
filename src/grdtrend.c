@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -185,7 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'D':
-				if ((Ctrl->D.active = GMT_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->D.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				if ((Ctrl->T.active = GMT_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
+				if ((Ctrl->T.active = gmt_check_filearg (GMT, 'T', opt->arg, GMT_OUT, GMT_IS_GRID)) != 0)
 					Ctrl->T.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -206,14 +206,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 			case 'W':
 				Ctrl->W.active = true;
 				/* OK if this file doesn't exist; we always write to that file on output */
-				if (GMT_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || GMT_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID))
+				if (gmt_check_filearg (GMT, 'W', opt->arg, GMT_IN, GMT_IS_GRID) || gmt_check_filearg (GMT, 'W', opt->arg, GMT_OUT, GMT_IS_GRID))
 					Ctrl->W.file = strdup (opt->arg);
 				else
 					n_errors++;
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -473,7 +473,7 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
@@ -510,7 +510,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -189,7 +189,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
-	GMT_label_syntax (API->GMT, 5, 0);
+	gmt_label_syntax (API->GMT, 5, 0);
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump contours as data line segments; no plotting takes place.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename template which may contain C-format specifiers.\n");
@@ -206,7 +206,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Control placement of labels along contours.  Choose from:\n");
-	GMT_cont_syntax (API->GMT, 3, 0);
+	gmt_cont_syntax (API->GMT, 3, 0);
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Only contour inside this range.\n");
 	GMT_Option (API, "O,P");
@@ -225,7 +225,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we use the as L and H.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., +llo,hi).\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The default pen settings are\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen:  %s.\n", GMT_putpen (API->GMT, P));
@@ -300,7 +300,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)) != 0)
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				n_errors += GMT_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
 				break;
 			case 'M': case 'm':	/* GMT4 Old-options no longer required - quietly skipped under compat */
-				if (!GMT_compat_check (GMT, 4)) n_errors += GMT_default_error (GMT, opt->option);
+				if (!GMT_compat_check (GMT, 4)) n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Limits on range */
 				Ctrl->L.active = true;
@@ -432,7 +432,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
 				if (j == k) {	/* Set both */
 					if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
-						GMT_pen_syntax (GMT, 'W', " ", 0);
+						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
 					else
@@ -446,7 +446,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					if (GMT_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
 					id = (opt->arg[k] == 'a') ? 1 : 0;
 					if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-						GMT_pen_syntax (GMT, 'W', " ", 0);
+						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
 					if (j == k) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* Must copy since it was not -Wc nor -Wa after all */
@@ -459,7 +459,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -772,7 +772,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdcontour (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
@@ -818,7 +818,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -51,7 +51,7 @@ struct GMT_XINGS {
 EXTERN_MSC void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 
 EXTERN_MSC struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode);
-EXTERN_MSC unsigned int GMT_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit);
+EXTERN_MSC unsigned int gmt_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit);
 EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, bool do_hemi, unsigned int lonlat, bool worldmap);
 EXTERN_MSC unsigned int GMT_coordinate_array (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels);
 EXTERN_MSC unsigned int GMT_linear_array (struct GMT_CTRL *GMT, double min, double max, double delta, double phase, double **array);

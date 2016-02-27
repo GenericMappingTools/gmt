@@ -72,7 +72,7 @@ int main (int argc, char *argv[]) {
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on.
 	 * Because first 2 bits of mode is used for other things we must left-shift by 2 */
-	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = GMT_get_V (argv[k][2]);
+	for (k = 1; k < argc; k++) if (!strncmp (argv[k], "-V", 2U)) v_mode = gmt_get_V (argv[k][2]);
 	if (v_mode) mode = ((unsigned int)v_mode) << 2;	/* Left-shift the mode by 2 */
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], GMT_PAD_DEFAULT, mode, NULL)) == NULL)

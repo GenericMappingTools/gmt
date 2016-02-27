@@ -350,7 +350,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		R->file = strdup (arg);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received GPlates pair: %s\n", arg);
 	}
-	else if (!GMT_access (GMT, &arg[k], F_OK) && GMT_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
+	else if (!GMT_access (GMT, &arg[k], F_OK) && gmt_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
 		R->file = strdup (&arg[k]);
 		if (k == 1) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);

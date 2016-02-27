@@ -448,7 +448,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see manual page for more examples.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
-	GMT_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
+	gmt_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Save internal on/off node grid to <grid> for testing [no grid saved].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -L+ to change inside nodes to NaNs or -L- to change outside nodes to NaNs.\n");
@@ -456,7 +456,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored unless -D is set.\n");
-	GMT_dist_syntax (API->GMT, 'S', "Set search radius to identify inside points.");
+	gmt_dist_syntax (API->GMT, 'S', "Set search radius to identify inside points.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This means nodes inside circles of <radius> centered on the input\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data points are considered to be reliable estimates of the surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
@@ -485,7 +485,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -529,14 +529,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 			case 'G':
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'I':
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
@@ -566,12 +566,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (Ctrl->C.active) {
 		n_errors += GMT_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Syntax error: Cannot specify -B option in -C mode\n");
@@ -588,14 +588,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error: -D cannot be used with -T\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.file == NULL, "Syntax error: -L requires an output gridfile name\n");
-		n_errors += GMT_check_binary_io (GMT, 2);
+		n_errors += gmt_check_binary_io (GMT, 2);
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psmask (void *V_API, int mode, void *args) {
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
@@ -634,7 +634,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -645,7 +645,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 	/* Now test also if we must provide a default -J */
 	if (Ctrl->D.active && GMT->current.proj.projection < 0) {	/* Is this the right way of testing it? */
-		GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
+		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 	}
 
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -704,7 +704,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		/* Enlarge region by 1 row/column */
 
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
-		GMT_set_pad (GMT, 0U);		/* Change default pad to 0 only */
+		gmt_set_pad (GMT, 0U);		/* Change default pad to 0 only */
 		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		gmt_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
 		/* We allocate a 1-byte array separately instead of the 4-byte float array that GMT_Create_Data would have given us */
@@ -928,7 +928,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Clipping on!\n");
 	}
 
-	GMT_set_pad (GMT, API->pad);		/* Reset default pad */
+	gmt_set_pad (GMT, API->pad);		/* Reset default pad */
 	if (make_plot) GMT_plotend (GMT);
 
 	Return (GMT_OK);

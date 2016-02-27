@@ -144,14 +144,14 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Will center the sectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
-	GMT_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
+	gmt_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute statistics - no plot is created.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is West/East/South/North (depending on GMT_LANGUAGE)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W/90E/-/0 for half-circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes (requires -C).\n");
-	GMT_vector_syntax (API->GMT, 15);
+	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [false].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
@@ -164,7 +164,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -R sets a half-circle domain.\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Wv<pen> to set a different pen for the vector (requires -C) [Same as rose outline].\n");
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting or use -Zu to give each item unit weight.\n");
@@ -195,7 +195,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set Gray shade */
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
@@ -258,13 +258,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
-						n_errors += GMT_parse_vector (GMT, 'v', opt->arg, &Ctrl->M.S);
+						n_errors += gmt_parse_vector (GMT, 'v', opt->arg, &Ctrl->M.S);
 					}
 					else {	/* Size, plus possible attributes */
 						n = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->M.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
-						n_errors += GMT_parse_vector (GMT, 'v', txt_b, &Ctrl->M.S);
+						n_errors += gmt_parse_vector (GMT, 'v', txt_b, &Ctrl->M.S);
 					}
 					Ctrl->M.S.v.status |= GMT_VEC_OUTLINE;
 				}
@@ -288,7 +288,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				n = (opt->arg[0] == 'v') ? 1 : 0;
 				Ctrl->W.active[n] = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen[n])) {
-					GMT_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -301,7 +301,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -326,13 +326,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
 				"Syntax error -R option: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
 	}
-	n_errors += GMT_check_binary_io (GMT, 2);
+	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psrose (void *V_API, int mode, void *args) {
 	bool find_mean = false, do_fill = false;
@@ -372,7 +372,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -573,7 +573,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/* Ready to plot.  So set up GMT projections (not used by psrose), we set region to actual plot width and scale to 1 */
 
-	GMT_parse_common_options (GMT, "J", 'J', "x1i");
+	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	GMT->common.R.active = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -707,7 +707,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			GMT_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
 			GMT_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
 		}
-		GMT_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
+		gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
 		Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		dim[2] = Ctrl->M.S.v.v_width, dim[3] = Ctrl->M.S.v.h_length, dim[4] = Ctrl->M.S.v.h_width;
 		dim[5] = GMT->current.setting.map_vector_shape;

@@ -149,11 +149,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_refpoint_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
+	gmt_refpoint_syntax (API->GMT, 'D', "Specify position and dimensions of the scale bar", GMT_ANCHOR_COLORBAR, 1);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>/<width> for the scale dimensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical].\n");
-	GMT_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_COLORBAR, 2);
+	gmt_refpoint_syntax (API->GMT, 'D', NULL, GMT_ANCHOR_COLORBAR, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to add sidebar triangles for back- and foreground colors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally, append triangle height [Default is half the barwidth].\n");
@@ -169,7 +169,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   add an extra column to the CPT file with a L, U, or B\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to annotate Lower, Upper, or Both color segment boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If a categorical CPT file is given the -Li is set automatically.\n");
-	GMT_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale", 3);
+	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one if the incoming limits, set to other to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0].\n");
@@ -352,7 +352,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			case 'F':
 				Ctrl->F.active = true;
 				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
-					GMT_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
+					gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
 					n_errors++;
 				}
 				break;
@@ -427,12 +427,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					}
 					Ctrl->F.active = true;
 					if (GMT_getpanel (GMT, opt->option, extra, &(Ctrl->F.panel))) {
-						GMT_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
+						gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 						n_errors++;
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
@@ -446,7 +446,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 #endif
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -1148,7 +1148,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
-			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since GMT_end_module will restore it for us */
+			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since gmt_end_module will restore it for us */
 			custum = GMT->current.map.frame.axis[GMT_Y].file_custom;	/* Need to remember what this was */
 			GMT_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
 			double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
@@ -1270,7 +1270,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
@@ -1301,7 +1301,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
@@ -1375,7 +1375,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', text);
+		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
 			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
@@ -1400,7 +1400,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
-		GMT_parse_common_options (GMT, "J", 'J', text);
+		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
 			if (!Ctrl->Z.active) GMT_free (GMT, z_width);

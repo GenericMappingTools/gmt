@@ -103,7 +103,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
-	GMT_inc_syntax (API->GMT, 'D', 0);
+	gmt_inc_syntax (API->GMT, 'D', 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for output grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Force projected values to be in actual distance units [Default uses the given map scale].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
@@ -135,7 +135,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -152,7 +152,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'D':	/* Grid spacings */
 				Ctrl->D.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->D.inc)) {
-					GMT_inc_syntax (GMT, 'D', 1);
+					gmt_inc_syntax (GMT, 'D', 1);
 					n_errors++;
 				}
 				break;
@@ -166,7 +166,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				if (GMT_compat_check (GMT, 5))	/* Honor old -A[<unit>] option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -F instead.\n");
 				else {
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 					break;
 				}
 				/* Fall through on purpose to get -F */
@@ -175,7 +175,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				Ctrl->F.unit = opt->arg[0];
 				break;
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -197,20 +197,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 					if (jj == 0) jj = ii;
 					sprintf (format, "%d+/%d+", ii, jj);
 					if (GMT_getinc (GMT, format, Ctrl->D.inc)) {
-						GMT_inc_syntax (GMT, 'D', 1);
+						gmt_inc_syntax (GMT, 'D', 1);
 						n_errors++;
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.registration, &Ctrl->D.active);
+	gmt_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.registration, &Ctrl->D.active);
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
@@ -224,7 +224,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdproject (void *V_API, int mode, void *args) {
 	bool set_n = false, shift_xy = false;
@@ -253,7 +253,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -261,13 +261,13 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((Ctrl->D.active + Ctrl->E.active) == 0) set_n = true;
-	if (Ctrl->M.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->M.unit), "-M");
+	if (Ctrl->M.active) GMT_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
 	
-	unit = GMT_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
-	GMT_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
+	unit = gmt_check_scalingopt (GMT, 'A', Ctrl->F.unit, scale_unit_name);
+	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
 		GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
@@ -280,7 +280,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		GMT_memcpy (wesn, G->header->wesn, 4, double);
 		if (!Ctrl->I.active) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-			GMT_parse_common_options (GMT, "R", 'R', opt_R);
+			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		}
 		else {			/* Do inverse transformation */
@@ -290,9 +290,9 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			y_c = (wesn[YLO] + wesn[YHI]) / 2.0; 
 			if (GMT->current.proj.projection == GMT_UTM && GMT->current.proj.utm_hemisphere == -1 && y_c > 0) y_c *= -1;
 			if (y_c > 0)
-				GMT_parse_common_options (GMT, "R", 'R', "-180/180/0/80");
+				gmt_parse_common_options (GMT, "R", 'R', "-180/180/0/80");
 			else
-				GMT_parse_common_options (GMT, "R", 'R', "-180/180/-80/0");
+				gmt_parse_common_options (GMT, "R", 'R', "-180/180/-80/0");
 			if (GMT->current.proj.projection == GMT_UTM && GMT->current.proj.utm_hemisphere == -1 && y_c < 0) y_c *= -1;	/* Undo the *-1 (only for the UTM case) */ 
 			if (shift_xy) {
 				x_c -= Ctrl->C.easting;
@@ -317,7 +317,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
-			GMT_parse_common_options (GMT, "R", 'R', opt_R);
+			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 			/* Finally obtain the good limits */
@@ -340,7 +340,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", ww, ss, ee, nn);
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = false;
-			GMT_parse_common_options (GMT, "R", 'R', opt_R);
+			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
 		}
 		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
@@ -462,7 +462,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		GMT_grd_project (GMT, Rect, Geo, true);
 
-		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Geo)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Geo) != GMT_OK) {
 			Return (API->error);
@@ -544,7 +544,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
-		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Rect)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Rect) != GMT_OK) {
 			Return (API->error);

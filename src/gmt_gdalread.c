@@ -714,7 +714,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		wesn[XLO] = GMT->common.R.wesn[XLO];		wesn[XHI] = GMT->common.R.wesn[XHI];
 		wesn[YLO] = GMT->common.R.wesn[YLO];		wesn[YHI] = GMT->common.R.wesn[YHI];
 		GMT->common.R.active = false;	/* Reset because -R was already parsed when reading header info */
-		error += GMT_parse_common_options (GMT, "R", 'R', prhs->R.region);
+		error += gmt_parse_common_options (GMT, "R", 'R', prhs->R.region);
 		if (!error) {
 			double dx = 0, dy = 0;
 			if (!prhs->registration.val) {	/* Subregion coords are grid-reg. Need to convert to pix-reg */
@@ -737,7 +737,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (prhs->r.active) { 		/* Region is given in pixels */
 		got_r = true;
 		GMT->common.R.active = false;
-		error += GMT_parse_common_options (GMT, "R", 'R', prhs->r.region);
+		error += gmt_parse_common_options (GMT, "R", 'R', prhs->r.region);
 		if (!error) {
 			dfULX = GMT->common.R.wesn[XLO];	dfLRX = GMT->common.R.wesn[XHI];
 			dfLRY = GMT->common.R.wesn[YLO];	dfULY = GMT->common.R.wesn[YHI];

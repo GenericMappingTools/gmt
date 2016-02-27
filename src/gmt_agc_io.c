@@ -168,7 +168,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
@@ -205,7 +205,7 @@ int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
@@ -246,7 +246,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_IN);
+		gmt_setmode (GMT, GMT_IN);
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
@@ -336,7 +336,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
+		gmt_setmode (GMT, GMT_OUT);
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}

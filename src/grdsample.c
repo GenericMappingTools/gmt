@@ -111,7 +111,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
-				if ((Ctrl->In.active = GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
+				if ((Ctrl->In.active = gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_GRID)))
 					Ctrl->In.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output file */
-				if ((Ctrl->G.active = GMT_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
+				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_OUT, GMT_IS_GRID)))
 					Ctrl->G.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -128,7 +128,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
@@ -145,7 +145,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
 				if (GMT_compat_check (GMT, 4)) {
@@ -155,12 +155,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 					if (jj == 0) jj = ii;
 					sprintf (format, "%d+/%d+", ii, jj);
 					if (GMT_getinc (GMT, format, Ctrl->I.inc)) {
-						GMT_inc_syntax (GMT, 'I', 1);
+						gmt_inc_syntax (GMT, 'I', 1);
 						n_errors++;
 					}
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				Ctrl->T.active = true;
@@ -168,12 +168,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, (n_files != 1), "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
@@ -185,7 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdsample (void *V_API, int mode, void *args) {
 
@@ -215,7 +215,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -224,7 +224,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -325,7 +325,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			Gout->header->z_min, Gout->header->z_max, Gin->header->z_min, Gin->header->z_max);
 	}
 
-	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {

@@ -707,7 +707,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				n_files[GMT_IN]++;
 				break;
 			case '>':	/* Got named output file */
@@ -768,7 +768,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 							Ctrl->D.I.inside = 1;
 							break;
 						case 'f':	/* Gave a file name */
-							if (GMT_check_filearg (GMT, 'D', &p[1], GMT_IN, GMT_IS_DATASET))
+							if (gmt_check_filearg (GMT, 'D', &p[1], GMT_IN, GMT_IS_DATASET))
 								Ctrl->D.file = strdup (&p[1]);
 							else
 								n_errors++;
@@ -891,7 +891,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -912,7 +912,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -941,7 +941,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -1182,7 +1182,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		char line[GMT_BUFSIZ];
 		
 		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
-			GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
+			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		}
 		geo = GMT_is_geographic (GMT, GMT_IN);
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
@@ -1271,11 +1271,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
-				GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
+				gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
-				GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+				gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				uint64_t dim[4] = {1, 1, 5, 2};
@@ -1462,11 +1462,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -D files */
+			gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -D files */
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
-			GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+			gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 			from = Ctrl->D.file;
 		}
 		else {
@@ -1563,9 +1563,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj for Cartesian or geographic data */
 			if (GMT_is_geographic (GMT, GMT_IN))
-				GMT_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
+				gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
 			else
-				GMT_parse_common_options (GMT, "J", 'J', "x1");		/* Fake linear Cartesian projection */
+				gmt_parse_common_options (GMT, "J", 'J', "x1");		/* Fake linear Cartesian projection */
 		}
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
@@ -1599,11 +1599,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		
-		GMT_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -CN files */
+		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
+		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
 			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);

@@ -29,8 +29,6 @@
 
 #define GMT_PROG_OPTIONS "-RVbn"
 
-int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
-
 #define N_PAR		7
 #define COL_SCALE	0
 #define COL_OFFSET	1
@@ -62,6 +60,8 @@ int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 #define MODE_t		8
 
 #define set_bit(k) (1 << (k))
+
+EXTERN_MSC int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -171,7 +171,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   g: Sample a GMT grid along track. (also see -n; use -R to select a sub-region).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append filename of the GMT grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n; use -R to select a sub-region).\n");
-	GMT_img_syntax (API->GMT);
+	gmt_img_syntax (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   n: Give filename with (rec_no, data) for a new column.  We expect a two-column file\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.\n");
@@ -464,12 +464,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				
 			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
 				if (GMT_compat_check (GMT, 4))
-					n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
+					n_errors += gmtinit_backwards_SQ_parsing (GMT, 'Q', opt->arg);
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -495,7 +495,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
@@ -543,14 +543,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 
-	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	MGD77_Init (GMT, &In);	/* Initialize MGD77 Machinery */
 
 	/* Default e77_skip_mode will apply header and fix corrections if prefix is Y and set all data bits */
@@ -632,7 +632,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		if (Ctrl->A.file[0] == '-') {   /* Just read from standard input */
 			fp = GMT->session.std[GMT_IN];
 #ifdef SET_IO_MODE
-			GMT_setmode (GMT, GMT_IN);
+			gmt_setmode (GMT, GMT_IN);
 #endif
 		}
 		else {
@@ -1623,7 +1623,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &In);
-	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	GMT_free (GMT, tmp_string);		/* A Coverity issue pointed out that 'tmp_string' could not had been freed yet */
 	Return (GMT_OK);

@@ -1693,9 +1693,9 @@ int GMT_FFT_2D_ (float *data, unsigned int *nx, unsigned int *ny, int *direction
 #endif
 
 void gmt_fft_initialization (struct GMT_CTRL *GMT) {
-	/* Called by GMT_begin and sets up pointers to the available FFT calls */
+	/* Called by gmt_begin and sets up pointers to the available FFT calls */
 #if defined HAVE_FFTW3F_THREADS
-	int n_cpu = GMT_get_num_processors();
+	int n_cpu = gmt_get_num_processors();
 
 	if (n_cpu > 1 && !GMT->current.setting.fftwf_threads) {
 		/* one-time initialization required to use FFTW3 threads */
@@ -1731,7 +1731,7 @@ void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 }
 
 void gmt_fft_cleanup (struct GMT_CTRL *GMT) {
-	/* Called by GMT_end */
+	/* Called by gmt_end */
 #if defined HAVE_FFTW3F_THREADS
 	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
 #endif

@@ -406,12 +406,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +o sets the offset <off> between bar and label [6p]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +r rotates the label to be vertical [horizontal]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Center the bins.\n");
-	GMT_fill_syntax (API->GMT, 'G', "Select color/pattern for columns.");
+	gmt_fill_syntax (API->GMT, 'G', "Select color/pattern for columns.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to output the resulting x, y data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append O to output all resulting x, y data even with y=0.\n");
 	GMT_Option (API, "K");
-	GMT_pen_syntax (API->GMT, 'L', "Specify pen to draw histogram.", 0);
+	gmt_pen_syntax (API->GMT, 'L', "Specify pen to draw histogram.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   0 = mean and standard deviation [Default]\n");
@@ -454,10 +454,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 			case '>':	/* Got named output file */
-				if (n_files++ == 0 && GMT_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
+				if (n_files++ == 0 && gmt_check_filearg (GMT, '>', opt->arg, GMT_OUT, GMT_IS_DATASET))
 					Ctrl->Out.file = strdup (opt->arg);
 				else
 					n_errors++;
@@ -502,7 +502,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 			case 'G':
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
@@ -514,7 +514,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 			case 'L':		/* Set line attributes */
 				Ctrl->L.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					GMT_pen_syntax (GMT, 'L', " ", 0);
+					gmt_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -531,7 +531,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {
 					if (GMT_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
-						GMT_pen_syntax (GMT, 'L', " ", 0);
+						gmt_pen_syntax (GMT, 'L', " ", 0);
 						n_errors++;
 					}
 				}
@@ -548,7 +548,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 					n_errors += gmt_parse_i_option (GMT, opt->arg);
 				}
 				else
-					n_errors += GMT_default_error (GMT, opt->option);
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'W':
 				Ctrl->W.active = true;
@@ -575,7 +575,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -587,14 +587,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 	/* Now must specify either fill color with -G or outline pen with -L */
 	n_errors += GMT_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->L.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-L), or both.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
-	n_errors += GMT_check_binary_io (GMT, 0);
+	n_errors += gmt_check_binary_io (GMT, 0);
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pshistogram (void *V_API, int mode, void *args) {
 	bool automatic = false;
@@ -626,7 +626,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_compat_check (GMT, 4)) {	/* Must see if -E was given and temporarily change it */
 		struct GMT_OPTION *opt = NULL;
 		for (opt = options; opt->next; opt = opt->next) {

@@ -136,7 +136,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:\n");
-	GMT_vector_syntax (API->GMT, 15);
+	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale>. (Se and Sw only)i\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -199,13 +199,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				}
 				else {
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
-						n_errors += GMT_parse_vector (GMT, symbol, opt->arg, &Ctrl->A.S);
+						n_errors += gmt_parse_vector (GMT, symbol, opt->arg, &Ctrl->A.S);
 					}
 					else {	/* Size, plus possible attributes */
 						n = sscanf (opt->arg, "%[^+]%s", txt, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
 						Ctrl->A.S.size_x = GMT_to_inch (GMT, txt);	/* Length of vector */
-						n_errors += GMT_parse_vector (GMT, symbol, txt_b, &Ctrl->A.S);
+						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->A.S);
 					}
 				}
 				break;
@@ -215,7 +215,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':	/* Set color for error ellipse  */
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
-					GMT_fill_syntax (GMT, 'E', " ");
+					gmt_fill_syntax (GMT, 'E', " ");
 					n_errors++;
 				}
 				Ctrl->E.active = true;
@@ -223,7 +223,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 			case 'G':	/* Set Gray shade for polygon */
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
+					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
 					/* confidence scaling */
 					Ctrl->S.conrad = sqrt (-2.0 * log (1.0 - Ctrl->S.confidence));
-					if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+					if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				}
 				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[1]);
 				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
@@ -280,7 +280,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					GMT_pen_syntax (GMT, 'W', " ", 0);
+					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -304,7 +304,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, k, n_k, justify;
@@ -335,7 +335,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -354,7 +354,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	if (Ctrl->E.active) Ctrl->L.active = true;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	GMT_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
+	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 

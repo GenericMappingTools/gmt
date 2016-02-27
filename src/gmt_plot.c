@@ -2851,7 +2851,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	double x1, x2, y1, y2, tx, ty, dist_to_annot, scale_height, x_left, x_right, bar_length_km, dim[4];
 	double XL, YL, XR, YR, dist, scl, bar_width, dx, x0_scl, y0_scl;
 	char txt[GMT_LEN256] = {""}, format[GMT_LEN64] = {""}, *this_label = NULL;
-	/* inch, cm, pt is not used here but in the array since GMT_get_unit_number uses this sequence */
+	/* inch, cm, pt is not used here but in the array since gmt_get_unit_number uses this sequence */
 	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
 	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -2862,7 +2862,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 	if (!GMT_is_geographic (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default distance unit */
-	if ((unit = GMT_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
+	if ((unit = gmt_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}

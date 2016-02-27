@@ -154,7 +154,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 				if (opt->arg[1] == '/' && opt->arg[2] == 'm') Ctrl->W.via = GMT_VIA_MATRIX;
 				break;
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -168,7 +168,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct GMT
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); bailout (code);}
-//#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+//#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_testapi (void *V_API, int mode, void *args) {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
@@ -206,7 +206,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	//GMT = GMT_begin_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	//GMT = gmt_begin_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	GMT = API->GMT;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -258,7 +258,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+	if (Ctrl->T.mode == GMT_IS_IMAGE) gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 	switch (Ctrl->I.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
 			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, ifile[Ctrl->T.mode])) == GMT_NOTSET) {
@@ -333,7 +333,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	if ((In = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, API->pad);	/* Reset to GMT default */
+	if (Ctrl->T.mode == GMT_IS_IMAGE) gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];

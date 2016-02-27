@@ -402,7 +402,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   implied by the information provided in -C.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
-	GMT_label_syntax (API->GMT, 5, 0);
+	gmt_label_syntax (API->GMT, 5, 0);
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump contours as data line segments; no plotting takes place.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename template which may contain C-format specifiers.\n");
@@ -418,10 +418,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-E File with triplets of point indices for each triangle\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs the Delaunay triangulation on xyz-data].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Control placement of labels along contours.  Choose among five algorithms:\n");
-	GMT_cont_syntax (API->GMT, 3, 0);
+	gmt_cont_syntax (API->GMT, 3, 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Color triangles using the CPT file.\n");
 	GMT_Option (API, "K");
-	GMT_pen_syntax (API->GMT, 'L', "Draws the triangular mesh with the specified pen.", 0);
+	gmt_pen_syntax (API->GMT, 'L', "Draws the triangular mesh with the specified pen.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
@@ -436,7 +436,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we use the as L and H.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., +llo,hi).\n");
 	GMT_Option (API, "U,V");
-	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
+	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The default settings are\n");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", GMT_putpen (API->GMT, P));
@@ -506,7 +506,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -565,7 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 			case 'L':	/* Draw triangular mesh lines */
 				Ctrl->L.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-					GMT_pen_syntax (GMT, 'L', " ", 0);
+					gmt_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
 				break;
@@ -639,7 +639,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
 				if (j == k) {	/* Set both */
 					if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
-						GMT_pen_syntax (GMT, 'W', " ", 0);
+						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
 					else Ctrl->W.pen[1] = Ctrl->W.pen[0];
@@ -652,7 +652,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					if (GMT_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
 					id = (opt->arg[k] == 'a') ? 1 : 0;
 					if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-						GMT_pen_syntax (GMT, 'W', " ", 0);
+						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
 					if (j == k) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* Must copy since it was not -Wc nor -Wa after all */
@@ -660,7 +660,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -683,13 +683,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && GMT_access (GMT, Ctrl->E.file, F_OK),
 	                                 "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
-	n_errors += GMT_check_binary_io (GMT, 3);
+	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscontour (void *V_API, int mode, void *args) {
 	int add, error = 0;
@@ -734,7 +734,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -160,7 +160,7 @@ int GMT_fitcircle_parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (!GMT_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -191,7 +191,7 @@ int GMT_fitcircle_parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, stru
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
 	}
@@ -199,7 +199,7 @@ int GMT_fitcircle_parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, Ctrl->F.mode & 16 && !Ctrl->S.active, "Syntax error -F option: Cannot select c without setting -S\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option: Choose between 1, 2, or 3\n");
-	n_errors += GMT_check_binary_io (GMT, 2);
+	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -345,7 +345,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_fitcircle_Ctrl (GMT, Ctrl); GMT_free (GMT, data); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_fitcircle_Ctrl (GMT, Ctrl); GMT_free (GMT, data); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_fitcircle (void *V_API, int mode, void *args) {
 	bool greenwich = false;
@@ -377,7 +377,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_fitcircle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_fitcircle_parse (GMT, Ctrl, options)) != 0) Return (error);

@@ -152,8 +152,8 @@
 
 /*! Macros to do conversion to inches with PROJ_LENGTH_UNIT as default */
 
-#define GMT_to_inch(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
-#define GMT_to_points(GMT,value) GMT_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
+#define GMT_to_inch(GMT,value) gmt_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
+#define GMT_to_points(GMT,value) gmt_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
 
 /*! Determine default justification for box item */
 #define GMT_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? GMT_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)

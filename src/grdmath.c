@@ -186,7 +186,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"\n\tUse macros for frequently used long expressions; see the grdmath man page.\n"
 		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
 		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n");
-	GMT_GSHHG_syntax (API->GMT, 'A');
+	gmt_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-A is only relevant to the LDISTG operator)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions to use with the LDISTG operator:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
@@ -255,7 +255,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
@@ -267,11 +267,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				n_errors += gmt_default_error (GMT, opt->option);
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
+	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (missing_equal) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
@@ -2316,7 +2316,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATASET *D = NULL;
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
-		GMT_parse_common_options (GMT, "f", 'f', "g");
+		gmt_parse_common_options (GMT, "f", 'f', "g");
 	GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 
 	/* We use the global GSHHG data set to construct distances to. Although we know that the
@@ -4072,8 +4072,8 @@ GMT_LOCAL void grd_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 #include "grdmath.h"
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, recall, &info); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, recall, &info); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
@@ -4106,7 +4106,7 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 
 	/* Check if argument is operator */
 
-	if ((i = GMT_hash_lookup (GMT, opt->arg, H, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS)) >= GRDMATH_ARG_IS_OPERATOR) return (i);
+	if ((i = gmt_hash_lookup (GMT, opt->arg, H, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS)) >= GRDMATH_ARG_IS_OPERATOR) return (i);
 
 	/* Next look for symbols with special meaning */
 
@@ -4249,7 +4249,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if ((list = gmt_substitute_macros (GMT, options, "grdmath.macros")) == NULL) Return1 (EXIT_FAILURE);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return1 (API->error);
@@ -4263,7 +4263,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
-	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	/* The list is now the active options list. */
 	/* Internally replace the = file sequence with an output option ->file*/
@@ -4285,7 +4285,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);
+	gmt_hash_init (GMT, localhashnode, operator, GRDMATH_N_OPERATORS, GRDMATH_N_OPERATORS);
 
 	GMT_memset (wesn, 4, double);
 
@@ -4435,13 +4435,13 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			this_stack = nstack - 1;
 			gmt_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
 
-			GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+			gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_OK) {
 				Return (API->error);
 			}
-			GMT_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
+			gmt_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
 			stack[this_stack]->alloc_mode = (GMT_File_Is_Memory (opt->arg)) ? 3 : 2;	/* Since it now is registered (but set to 3 for external memory) */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;
