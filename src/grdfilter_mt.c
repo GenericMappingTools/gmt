@@ -1246,29 +1246,29 @@ void threaded_function (struct THREAD_STRUCT *t) {
 				if (n_in_median) {	/* Found valid values inside filter circle */
 					switch (filter_type) {
 						case GRDFILTER_MEDIAN:	/* Median */
-							GMT_median (GMT, work_array, n_in_median, Gin->header->z_min, Gin->header->z_max, last_median, &this_estimate);
+							gmt_median (GMT, work_array, n_in_median, Gin->header->z_min, Gin->header->z_max, last_median, &this_estimate);
 							last_median = this_estimate;
 							break;
 						case GRDFILTER_MODE:	/* Mode */
-							GMT_mode (GMT, work_array, n_in_median, n_in_median/2, true, Ctrl->F.mode, &GMT_n_multiples, &this_estimate);
+							gmt_mode (GMT, work_array, n_in_median, n_in_median/2, true, Ctrl->F.mode, &GMT_n_multiples, &this_estimate);
 							break;
 						case GRDFILTER_MIN:	/* Lowest of all values */
-							this_estimate = GMT_extreme (GMT, work_array, n_in_median, DBL_MAX, 0, -1);
+							this_estimate = gmt_extreme (GMT, work_array, n_in_median, DBL_MAX, 0, -1);
 							break;
 						case GRDFILTER_MINPOS:	/* Lowest of positive values */
-							this_estimate = GMT_extreme (GMT, work_array, n_in_median, 0.0, +1, -1);
+							this_estimate = gmt_extreme (GMT, work_array, n_in_median, 0.0, +1, -1);
 							break;
 						case GRDFILTER_MAX:	/* Upper of all values */
-							this_estimate = GMT_extreme (GMT, work_array, n_in_median, -DBL_MAX, 0, +1);
+							this_estimate = gmt_extreme (GMT, work_array, n_in_median, -DBL_MAX, 0, +1);
 							break;
 						case GRDFILTER_MAXNEG:	/* Upper of negative values */
-							this_estimate = GMT_extreme (GMT, work_array, n_in_median, 0.0, -1, +1);
+							this_estimate = gmt_extreme (GMT, work_array, n_in_median, 0.0, -1, +1);
 							break;
 						case GRDFILTER_MEDIAN_SPH:	/* Spherical Median */
-							this_estimate = GMT_median_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
+							this_estimate = gmt_median_weighted (GMT, work_data, n_in_median, Ctrl->F.quantile);
 							break;
 						case GRDFILTER_MODE_SPH: /* Spherical Mode */
-							this_estimate = GMT_mode_weighted (GMT, work_data, n_in_median);
+							this_estimate = gmt_mode_weighted (GMT, work_data, n_in_median);
 							break;
 					}
 					Gout->data[ij_out] = (float)this_estimate;	/* Truncate to float */

@@ -420,8 +420,8 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	
 	GMT_row_loop (GMT, Grid, row) {					/* For each output latitude */
 		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
-		/* Compute all P_lm needed for this latitude at once via GMT_plm_bar_all */
-		GMT_plm_bar_all (GMT, L_sign * L_max, sind (lat), ortho, P_lm);	/* sind(lat) = cosine of colatitude */
+		/* Compute all P_lm needed for this latitude at once via gmt_plm_bar_all */
+		gmt_plm_bar_all (GMT, L_sign * L_max, sind (lat), ortho, P_lm);	/* sind(lat) = cosine of colatitude */
 		if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give user feedback on progress every 10 percent */
 			percent += percent_inc;
 			if (percent > (double)next_10_percent) {

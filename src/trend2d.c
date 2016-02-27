@@ -612,7 +612,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 				c_chisq = get_chisq_2d (data, n_data, n_model);
-				significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
+				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 				GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
@@ -643,7 +643,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 					solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 					calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 					c_chisq = get_chisq_2d (data, n_data, n_model);
-					significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
+					significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 					GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
 				} while (significant);
 				/* Go back to previous model only if w_chisq < c_chisq  */
@@ -654,7 +654,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				}
 			}
 			/* Next [robust] model has been found  */
-			significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, o_chisq, n_data-n_model-1, Ctrl->I.value, &prob);
+			significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, o_chisq, n_data-n_model-1, Ctrl->I.value, &prob);
 		}
 
 		if (!significant) {	/* Go back to previous [robust] model, stored in o_model  */
@@ -680,7 +680,7 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 				solve_system_2d (GMT,gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 				calc_m_and_r_2d (data, n_data, c_model, n_model, workb);
 				c_chisq = get_chisq_2d (data, n_data, n_model);
-				significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
+				significant = gmt_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
 				GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */

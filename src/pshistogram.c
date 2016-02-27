@@ -357,16 +357,16 @@ GMT_LOCAL int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, doubl
 
 	/* Get mode */
 
-	GMT_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
+	gmt_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
 	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", n_multiples);
 
 	/* Get MAD for L1 */
 
-	GMT_getmad (GMT, data, n, stats[1], &stats[4]);
+	gmt_getmad (GMT, data, n, stats[1], &stats[4]);
 
 	/* Get LMSscale for mode */
 
-	GMT_getmad (GMT, data, n, stats[2], &stats[5]);
+	gmt_getmad (GMT, data, n, stats[2], &stats[5]);
 
 	/* Calculate mean and stdev in two passes to minimize risk of overflow */
 

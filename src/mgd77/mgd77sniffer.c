@@ -68,7 +68,7 @@ GMT_LOCAL double lms (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double mode;
 	unsigned int GMT_n_multiples = 0;
 
-	GMT_mode (GMT, x, n, n/2, 1, 0, &GMT_n_multiples, &mode);
+	gmt_mode (GMT, x, n, n/2, 1, 0, &GMT_n_multiples, &mode);
 	return mode;
 }
 
@@ -212,13 +212,13 @@ GMT_LOCAL void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned
 	}
 	/* Now do LS regression on the 'good' points */
 	regress_ls (xx, yy, n, stats, col);
-	/*stats[MGD77_RLS_CORR] = GMT_corrcoeff (xx, yy, n, 0);*/
+	/*stats[MGD77_RLS_CORR] = gmt_corrcoeff (xx, yy, n, 0);*/
 	corr=stats[MGD77_RLS_CORR];
 	if (stats[MGD77_RLS_CORR] == 1.0) corr=stats[MGD77_RLS_CORR]-FLT_EPSILON;
 	if (n > 2) {	/* Determine if correlation is significant at 95% */
 		double t, tcrit;
 		t = corr * sqrt (n - 2.0) / sqrt (1.0 - corr * corr);
-		tcrit = GMT_tcrit (GMT, 0.95, (double)n - 2.0);
+		tcrit = gmt_tcrit (GMT, 0.95, (double)n - 2.0);
 		stats[MGD77_RLS_SIG] = (double)(t > tcrit);	/* 1.0 if significant, 0.0 otherwise */
 	}
 	else
@@ -1511,7 +1511,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						if (!decimateData && forced) {
 							regress_rls (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, stats, this_grid[i].col);
 							decimated = false;
-							tcrit = GMT_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
+							tcrit = gmt_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
 							npts=(nvalues - this_grid[i].n_nan);
 						}
 						else {
@@ -1526,13 +1526,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							if (decimateData && forced) {
 								regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
 								decimated = true;
-								tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
+								tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 							}
 							else {
 								if (npts < 3) {
 									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats, this_grid[i].col);
 									decimated = false;
-									tcrit = GMT_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
+									tcrit = gmt_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
 									GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to insufficient bins\n");
 								} else {
 									regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
@@ -1545,7 +1545,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										npts=(nvalues - this_grid[i].n_nan);
 										decimated = false;
 									}
-									tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
+									tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 								}
 							}
 							gmt_free (GMT, decimated_orig);
@@ -1827,7 +1827,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 					decimated = false;
-					tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
+					tcrit = gmt_tcrit (GMT, 0.975, (double)n - 2.0);
 					npts=n;
 				}
 				else {
@@ -1841,13 +1841,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (decimateData && forced) {
 						regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
 						decimated = true;
-						tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
+						tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 					}
 					else {
 						if (npts < 3) {
 							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 							decimated = false;
-							tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
+							tcrit = gmt_tcrit (GMT, 0.975, (double)n - 2.0);
 							GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to insufficient bins\n");
 						} else {
 							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
@@ -1860,7 +1860,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								npts=n;
 								decimated = false;
 							}
-							tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
+							tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 						}
 					}
 				}
@@ -2040,7 +2040,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 					decimated = false;
-					tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
+					tcrit = gmt_tcrit (GMT, 0.975, (double)n - 2.0);
 					npts=n;
 				}
 				else {
@@ -2054,13 +2054,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (decimateData && forced) {
 						regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
 						decimated = true;
-						tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
+						tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 					}
 					else {
 						if (npts < 3) {
 							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
 							decimated = false;
-							tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
+							tcrit = gmt_tcrit (GMT, 0.975, (double)n - 2.0);
 							GMT_Report (API, GMT_MSG_VERBOSE, "Regression on undecimated data due to insufficient bins\n");
 						} else {
 							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
@@ -2073,7 +2073,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								npts=n;
 								decimated = false;
 							}
-							tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
+							tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 						}
 					}
 					gmt_free (GMT, decimated_orig);

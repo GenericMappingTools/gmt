@@ -358,7 +358,7 @@ double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int no
 			intercept = gmt_sum (e, n) / n;
 			break;
 		case GMTREGRESS_NORM_LMS:	/* Return mode */
-			GMT_mode (GMT, ee, n, n/2, 0, -1, &GMT_n_multiples, &intercept);
+			gmt_mode (GMT, ee, n, n/2, 0, -1, &GMT_n_multiples, &intercept);
 			break;
 	}
 	if (norm != GMTREGRESS_NORM_L2) gmt_free (GMT, ee);
@@ -381,13 +381,13 @@ double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, u
 	}
 	switch (norm) {
 		case GMTREGRESS_NORM_L1:	/* Return weighted median */
-			intercept = GMT_median_weighted (GMT, ee, n, 0.5);
+			intercept = gmt_median_weighted (GMT, ee, n, 0.5);
 			break;
 		case GMTREGRESS_NORM_L2:	/* Return weighted mean */
-			intercept = GMT_mean_weighted (GMT, e, W, n);
+			intercept = gmt_mean_weighted (GMT, e, W, n);
 			break;
 		case GMTREGRESS_NORM_LMS:	/* Return weighted mode */
-			intercept = GMT_mode_weighted (GMT, ee, n);
+			intercept = gmt_mode_weighted (GMT, ee, n);
 			break;
 	}
 	if (norm != GMTREGRESS_NORM_L2) gmt_free (GMT, ee);
@@ -459,7 +459,7 @@ double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double
 		ee[k].weight = (float)W[k];
 		ee[k].value  = (float)fabs (ey[k]);
 	}
-	MAD = GMT_median_weighted (GMT, ee, n, 0.5);
+	MAD = gmt_median_weighted (GMT, ee, n, 0.5);
 	gmt_free (GMT, ee);
 	return (MAD);
 }
@@ -624,8 +624,8 @@ double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_
 	double *W = gmt_memory (GMT, NULL, n, double), *Q = gmt_memory (GMT, NULL, n, double);
 	double mean_x, mean_y, sig_x, sig_y, sum_u2, sum_v2, sum_uv, part1, part2, r, scale, a[2], b[2], E[2];
 	
-	mean_x = GMT_mean_and_std (GMT, x, n, &sig_x);
-	mean_y = GMT_mean_and_std (GMT, y, n, &sig_y);
+	mean_x = gmt_mean_and_std (GMT, x, n, &sig_x);
+	mean_y = gmt_mean_and_std (GMT, y, n, &sig_y);
 	/* Normalize the data */
 	gmt_add (x, -mean_x, u, n);	/* Get reduced x-coordinates u */
 	gmt_add (y, -mean_y, v, n);	/* Get reduced y-coordinates v */
@@ -670,8 +670,8 @@ double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[],
 	double *U = gmt_memory (GMT, NULL, n, double), *V = gmt_memory (GMT, NULL, n, double), *W = gmt_memory (GMT, NULL, n, double);
 	GMT_memset (par, GMTREGRESS_NPAR, double);
 	(void)gmt_demeaning (GMT, x, y, w, n, par, U, V, W, NULL, NULL);
-	mx = GMT_mean_and_std (GMT, U, n, &sx);
-	my = GMT_mean_and_std (GMT, V, n, &sy);
+	mx = gmt_mean_and_std (GMT, U, n, &sx);
+	my = gmt_mean_and_std (GMT, V, n, &sy);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "mx and my should be zero: %g %g\n", mx, my);
 	par[GMTREGRESS_SLOPE] = sy / sx;
 	par[GMTREGRESS_ICEPT] = par[GMTREGRESS_YMEAN] - par[GMTREGRESS_SLOPE] * par[GMTREGRESS_XMEAN];
@@ -1171,7 +1171,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, buffer);	/* Also include in segment header */
 
 					if (Ctrl->F.band)	/* For confidence band we need the student-T scale given the significance level and degrees of freedom */
-						t_scale = fabs (GMT_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), S->n_rows - 2.0));
+						t_scale = fabs (gmt_tcrit (GMT, 0.5 * (1.0 - Ctrl->C.value), S->n_rows - 2.0));
 
 					if (Ctrl->T.active) {	/* Evaluate the model at the chosen equidistant output points */
 						if (Ctrl->T.reset) {	/* Got -T<n>, so must recompute a new increment for the present segment's x-range */

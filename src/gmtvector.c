@@ -412,7 +412,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	E[0] = 90.0 - atan2 (Y, L * scl) * R2D;	/* Get azimuth */
 	/* Convert to 95% confidence (in km, if geographic) */
 
-	scl = (n_components == 3) ? GMT->current.proj.DIST_KM_PR_DEG * R2D * sqrt (GMT_chi2crit (GMT, conf, 3)) : sqrt (GMT_chi2crit (GMT, conf, 2));
+	scl = (n_components == 3) ? GMT->current.proj.DIST_KM_PR_DEG * R2D * sqrt (gmt_chi2crit (GMT, conf, 3)) : sqrt (gmt_chi2crit (GMT, conf, 2));
 	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
 	E[2] = 2.0 * sqrt (lambda[1]) * scl;
 

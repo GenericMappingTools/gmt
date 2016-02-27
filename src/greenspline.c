@@ -810,7 +810,7 @@ GMT_LOCAL double spline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], 
 	GMT_UNUSED(unused);
 	if (x == +1.0) return (1.0);
 	if (x == -1.0) return (0.0);
-	return (GMT_dilog (GMT, 0.5 - 0.5 * x) * par[0]);
+	return (gmt_dilog (GMT, 0.5 - 0.5 * x) * par[0]);
 }
 
 GMT_LOCAL double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *unused) {

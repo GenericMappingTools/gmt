@@ -1478,7 +1478,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 #if 0
 	if (rot_debug) spotter_confregion_radial_debug (alpha, p);	/* For testing purposes only */
 #endif	
-	c2 = GMT_chi2crit (GMT, alpha, nu);
+	c2 = gmt_chi2crit (GMT, alpha, nu);
 	c = sqrt (c2);
 	GMT_memset (phi, SPOTTER_N_FINE_STEPS+1, double);
 	GMT_memset (t, SPOTTER_N_FINE_STEPS+1, double);
@@ -1658,7 +1658,7 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 
 	double nu = 3.0;	/* Three degrees of freedom for the rotation pole */
 	
-	mu = sqrt (GMT_chi2crit (GMT, alpha, nu));	/* Scaling of all axes */
+	mu = sqrt (gmt_chi2crit (GMT, alpha, nu));	/* Scaling of all axes */
 	spotter_tangentplane (GMT, p->lon, p->lat, R);	/* Rotation that relates tangent plane coordinates (p,q,s) with Earth (x,y,z) */
 	spotter_matrix_transpose (GMT, Rt, R);				/* Get the transpose of R */
 	spotter_matrix_mult (GMT, R, p->C, T);				/* Compute C' = R * C * Rt */

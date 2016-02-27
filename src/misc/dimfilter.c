@@ -374,7 +374,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 	unsigned short int **sector = NULL;
 
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
-	unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
+	unsigned int gmt_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
 	bool full_360, shift = false, slow, slow2, fast_way;
 	int j_origin, *i_origin = NULL, ii, jj, scol, srow, error = 0;
 
@@ -814,11 +814,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 							}
 #endif
 							if (Ctrl->F.filter == 3) {
-								GMT_median (GMT, work_array[s], n_in_median[s], z_min, z_max, last_median, &this_median);
+								gmt_median (GMT, work_array[s], n_in_median[s], z_min, z_max, last_median, &this_median);
 								last_median = this_median;
 							}
 							else
-								GMT_mode (GMT, work_array[s], n_in_median[s], n_in_median[s]/2, true, GMT_mode_selection, &GMT_n_multiples, &this_median);
+								gmt_mode (GMT, work_array[s], n_in_median[s], n_in_median[s]/2, true, gmt_mode_selection, &GMT_n_multiples, &this_median);
 							value[k] = this_median;
 #ifdef OBSOLETE
 							if (Ctrl->E.active) value[k] += intercept;	/* I.e., intercept + x * slope_x + y * slope_y, but x == y == 0 at node */
@@ -851,11 +851,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 				if (slow2) {	/* Get median (or mode) of all the medians (or modes) */
 					if (Ctrl->F.filter == 3) {
-						GMT_median (GMT, value, k, z2_min, z2_max, last_median2, &this_median2);
+						gmt_median (GMT, value, k, z2_min, z2_max, last_median2, &this_median2);
 						last_median2 = this_median2;
 					}
 					else
-						GMT_mode (GMT, value, k, k/2, true, GMT_mode_selection, &GMT_n_multiples, &this_median2);
+						gmt_mode (GMT, value, k, k/2, true, gmt_mode_selection, &GMT_n_multiples, &this_median2);
 					z = this_median2;
 				}
 				else {	/* Get min, max, or mean */
@@ -894,7 +894,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
 						GMT_sort_array (GMT, work_array2, n, GMT_DOUBLE);
-						GMT_getmad (GMT, work_array2, n, z, &scale);
+						gmt_getmad (GMT, work_array2, n, z, &scale);
 					}
 					else {		/* Get weighted stdev. */
 						scale = sqrt ((Sxx - Sw * z * z) / (Sw * (n - 1) / n));
@@ -996,7 +996,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			}
 
 			/* calculate MEDIAN and MAD for each row */
-			GMT_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_median);
+			gmt_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_median);
 			err_workarray[0] = fabs (err_workarray[0] - err_median);
 			err_min = err_max = err_workarray[0];
 			for (i = 1; i < Ctrl->Q.err_cols; i++) {
@@ -1004,7 +1004,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				if (err_workarray[i] < err_min) err_min=err_workarray[i];
 				if (err_workarray[i] > err_max) err_max=err_workarray[i];
 			}
-			GMT_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_mad);
+			gmt_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_mad);
 			err_mad *= 1.482;
 
 			/* calculate MEAN for each row */

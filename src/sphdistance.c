@@ -557,7 +557,9 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 				}
 				else
 					col = p_col;
-				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
+				//side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
+				side = GMT_inonout (GMT, grid_lon[col], grid_lat[row], P);
+				
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)

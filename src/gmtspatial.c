@@ -428,7 +428,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			            length[0], separation[0], close[0], np, S->n_rows);
 			if (I->mode) {
 				if (np) {
-					GMT_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
+					gmt_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
 					med_close[0] = med_separation[0] / use_length;
 				}
 				else med_close[0] = DBL_MAX;
@@ -462,7 +462,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[1], separation[1], close[1], np, Sp->n_rows);
 			if (I->mode) {
 				if (np) {
-					GMT_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
+					gmt_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
 					med_close[1] = med_separation[1] / use_length;
 				}
 				else med_close[1] = DBL_MAX;
@@ -1623,7 +1623,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		count = gmt_memory (GMT, NULL, D->n_segments, unsigned int);
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
-			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
+			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in gmt_inonout */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */

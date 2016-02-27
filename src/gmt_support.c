@@ -769,8 +769,8 @@ bool gmt_check_cmyk (double cmyk[]) {
 }
 
 /*! . */
-void GMT_init_fill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, double r, double g, double b)
-{	/* Initialize FILL structure */
+void GMT_init_fill (struct GMT_CTRL *GMT, struct GMT_FILL *fill, double r, double g, double b) {
+	/* Initialize FILL structure */
 
 	/* Set whole structure to null (0, 0.0) */
 	GMT_UNUSED(GMT);

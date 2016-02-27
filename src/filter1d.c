@@ -502,17 +502,17 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64
 	double low, high, last, temp;
 
 	if (F->filter_type > FILTER1D_MODE)
-		temp = GMT_extreme (GMT, F->work[j], n, F->extreme, F->kind, F->way);
+		temp = gmt_extreme (GMT, F->work[j], n, F->extreme, F->kind, F->way);
 	else if (F->filter_type == FILTER1D_MODE) {
 		n_smooth = n / 2;
-		GMT_mode (GMT, F->work[j], n, n_smooth, sort_me, F->mode_selection, &F->n_multiples, &temp);
+		gmt_mode (GMT, F->work[j], n, n_smooth, sort_me, F->mode_selection, &F->n_multiples, &temp);
 	}
 	else {
 		low = F->min_loc[j];
 		high = F->max_loc[j];
 		last = F->last_loc[j];
 
-		GMT_median (GMT, F->work[j], n, low, high, last, &temp);
+		gmt_median (GMT, F->work[j], n, low, high, last, &temp);
 	}
 
 	F->last_loc[j] = F->this_loc[j] = temp;
@@ -522,7 +522,7 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64
 		low = F->min_scl[j];
 		high = F->max_scl[j];
 		last = F->last_scl[j];
-		GMT_median (GMT, F->work[j], n, low, high, last, &temp);
+		gmt_median (GMT, F->work[j], n, low, high, last, &temp);
 		F->last_scl[j] = F->this_scl[j] = temp;
 	}
 }

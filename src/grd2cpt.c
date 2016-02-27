@@ -554,7 +554,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	else {	/* This is completely ad-hoc.  It chooses z based on equidistant steps [of 0.1 unless -Sn set] for a Gaussian CDF:  */
 		double z_inc = 1.0 / (Ctrl->E.levels - 1);		/* Increment between selected points [0.1] */
-		double zcrit_tail = GMT_zcrit (GMT, 1.0 - z_inc);	/* Get the +/- z-value containing bulk of distribution, with z_inc in each tail */
+		double zcrit_tail = gmt_zcrit (GMT, 1.0 - z_inc);	/* Get the +/- z-value containing bulk of distribution, with z_inc in each tail */
 		cdf_cpt = gmt_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		if ((mean - zcrit_tail*sd) <= G[0]->header->z_min || (mean + zcrit_tail*sd) >= G[0]->header->z_max) {
 			/* Adjust mean/std so that our critical locations are still inside the min/max of the data */
@@ -568,7 +568,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 		/* So we go in steps of z_inc in the Gaussian CDF except we start and stop at actual min/max */
 		cdf_cpt[0].z = G[0]->header->z_min;
-		for (j = 1; j < (Ctrl->E.levels - 1); j++) cdf_cpt[j].z = mean + GMT_zcrit (GMT, j *z_inc) * sd;
+		for (j = 1; j < (Ctrl->E.levels - 1); j++) cdf_cpt[j].z = mean + gmt_zcrit (GMT, j *z_inc) * sd;
 		cdf_cpt[Ctrl->E.levels-1].z = G[0]->header->z_max;
 	}
 
