@@ -94,7 +94,7 @@ enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GPSGRIDDER_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GPSGRIDDER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GPSGRIDDER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->S.nu = 0.25;	/* Poisson's ratio */
@@ -107,7 +107,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* 
 	gmt_str_free (C->G.file);
 	gmt_str_free (C->N.file);
 	gmt_str_free (C->T.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -488,11 +488,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	X = GMT_memory (GMT, NULL, n_alloc, double *);
-	u = GMT_memory (GMT, NULL, n_alloc, double);
-	v = GMT_memory (GMT, NULL, n_alloc, double);
+	X = gmt_memory (GMT, NULL, n_alloc, double *);
+	u = gmt_memory (GMT, NULL, n_alloc, double);
+	v = gmt_memory (GMT, NULL, n_alloc, double);
 	n_cols = (Ctrl->W.active) ? 4 : 2;	/* So X[k][2-3] will have the x,y weights, if -W is active */
-	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, n_cols, double);
+	for (k = 0; k < n_alloc; k++) X[k] = gmt_memory (GMT, NULL, n_cols, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read input data and check for data constraint duplicates\n");
 	n = n_read = 0;
@@ -551,10 +551,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (n == n_alloc) {	/* Get more memory */
 			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
-			X = GMT_memory (GMT, X, n_alloc, double *);
-			u = GMT_memory (GMT, u, n_alloc, double);
-			v = GMT_memory (GMT, v, n_alloc, double);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, X[k], n_cols, double);
+			X = gmt_memory (GMT, X, n_alloc, double *);
+			u = gmt_memory (GMT, u, n_alloc, double);
+			v = gmt_memory (GMT, v, n_alloc, double);
+			for (k = old_n_alloc; k < n_alloc; k++) X[k] = gmt_memory (GMT, X[k], n_cols, double);
 		}
 	} while (true);
 
@@ -563,10 +563,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 
 	n2 = 2 * n;	/* Dimension of array is twice since using u & v */
-	for (k = n; k < n_alloc; k++) GMT_free (GMT, X[k]);	/* Remove what was not used */
-	X = GMT_memory (GMT, X, n, double *);	/* Realloc to exact size */
-	u = GMT_memory (GMT, u, n2, double *);	/* We will append v to the end of u later so need the extra space */
-	v = GMT_memory (GMT, v, n, double *);
+	for (k = n; k < n_alloc; k++) gmt_free (GMT, X[k]);	/* Remove what was not used */
+	X = gmt_memory (GMT, X, n, double *);	/* Realloc to exact size */
+	u = gmt_memory (GMT, u, n2, double *);	/* We will append v to the end of u later so need the extra space */
+	v = gmt_memory (GMT, v, n, double *);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n);
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
@@ -579,10 +579,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 		if (!Ctrl->C.active || GMT_IS_ZERO (Ctrl->C.value)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running gpsgridder since they will result in a singular matrix\n");
-			for (p = 0; p < n; p++) GMT_free (GMT, X[p]);
-			GMT_free (GMT, X);
-			GMT_free (GMT, u);
-			GMT_free (GMT, v);
+			for (p = 0; p < n; p++) gmt_free (GMT, X[p]);
+			gmt_free (GMT, X);
+			gmt_free (GMT, u);
+			gmt_free (GMT, v);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		else
@@ -650,7 +650,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	unit = 0;
 	while (mem > 1024.0 && unit < 2) { mem /= 1024.0; unit++; }	/* Select next unit */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %.1f %s\n", mem, mem_unit[unit]);
-	A = GMT_memory (GMT, NULL, n2 * n2, double);
+	A = gmt_memory (GMT, NULL, n2 * n2, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system Ax = b\n");
 
@@ -692,12 +692,12 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Note: SVD solution without LAPACK will be very very slow.\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "We strongly recommend you install LAPACK and recompile GMT.\n");
 #endif
-		V = GMT_memory (GMT, NULL, n2 * n2, double);
-		s = GMT_memory (GMT, NULL, n2, double);
+		V = gmt_memory (GMT, NULL, n2 * n2, double);
+		s = gmt_memory (GMT, NULL, n2, double);
 		if ((error = GMT_svdcmp (GMT, A, (unsigned int)n2, (unsigned int)n2, s, V)) != 0) Return (error);
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
-			double *eig = GMT_memory (GMT, NULL, n2, double);
+			double *eig = gmt_memory (GMT, NULL, n2, double);
 			uint64_t e_dim[4] = {1, 1, n2, 2};
 			struct GMT_DATASET *E = NULL;
 			GMT_memcpy (eig, s, n2, double);
@@ -720,31 +720,31 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
-			GMT_free (GMT, eig);
+			gmt_free (GMT, eig);
 
 			if (Ctrl->C.value < 0.0) {	/* We are done */
-				for (p = 0; p < n; p++) GMT_free (GMT, X[p]);
-				GMT_free (GMT, X);
-				GMT_free (GMT, s);
-				GMT_free (GMT, V);
-				GMT_free (GMT, A);
-				GMT_free (GMT, u);
-				GMT_free (GMT, v);
+				for (p = 0; p < n; p++) gmt_free (GMT, X[p]);
+				gmt_free (GMT, X);
+				gmt_free (GMT, s);
+				gmt_free (GMT, V);
+				gmt_free (GMT, A);
+				gmt_free (GMT, u);
+				gmt_free (GMT, v);
 				for (k = 0; k > 2; k++)
 					gmt_free_grid (GMT, &Out[k], true);
 				Return (EXIT_SUCCESS);
 			}
 		}
-		b = GMT_memory (GMT, NULL, n2, double);
+		b = gmt_memory (GMT, NULL, n2, double);
 		GMT_memcpy (b, obs, n2, double);
 		limit = Ctrl->C.value;
 		n_use = GMT_solve_svd (GMT, A, (unsigned int)n2, (unsigned int)n2, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.2f %% of data variance]\n", n_use, n2, limit);
 
-		GMT_free (GMT, s);
-		GMT_free (GMT, V);
-		GMT_free (GMT, b);
+		gmt_free (GMT, s);
+		gmt_free (GMT, V);
+		gmt_free (GMT, b);
 	}
 	else {				/* Gauss-Jordan elimination */
 		int error;
@@ -767,7 +767,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	for (p = 0; p < n; p++) fprintf (fp, "%g\t%g\n", alpha_x[p], alpha_y[p]);
 	fclose (fp);
 #endif
-	GMT_free (GMT, A);
+	gmt_free (GMT, A);
 
 	if (Ctrl->N.file) {	/* Predict solution at specified discrete points only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
@@ -853,16 +853,16 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		GMT_free (GMT, xp);
-		GMT_free (GMT, yp);
+		gmt_free (GMT, xp);
+		gmt_free (GMT, yp);
 	}
 
 	/* Clean up */
 
-	for (p = 0; p < n; p++) GMT_free (GMT, X[p]);
-	GMT_free (GMT, X);
-	GMT_free (GMT, u);
-	GMT_free (GMT, v);
+	for (p = 0; p < n; p++) gmt_free (GMT, X[p]);
+	gmt_free (GMT, X);
+	gmt_free (GMT, u);
+	gmt_free (GMT, v);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 

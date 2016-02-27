@@ -59,7 +59,7 @@ struct BINCROSS {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_BINLIST_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_BINLIST_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_BINLIST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -69,7 +69,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->T.TAG);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -259,22 +259,22 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	jump_180 = irint (180.0 / B.inc[GMT_X]);
 	jump_360 = irint (360.0 / B.inc[GMT_X]);
 
-	X = GMT_memory (GMT, NULL, nx_alloc, struct BINCROSS);
+	X = gmt_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	
 	if (Ctrl->D.active) {
 		gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST);
-		dist_bin = GMT_memory (GMT, NULL, B.nm_bin, double);
+		dist_bin = gmt_memory (GMT, NULL, B.nm_bin, double);
 	}
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-		GMT_free (GMT, X);
-		if (Ctrl->D.active) GMT_free (GMT, dist_bin);
+		gmt_free (GMT, X);
+		if (Ctrl->D.active) gmt_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-		GMT_free (GMT, X);
-		if (Ctrl->D.active) GMT_free (GMT, dist_bin);
+		gmt_free (GMT, X);
+		if (Ctrl->D.active) gmt_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
@@ -377,7 +377,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					nx++;
 					if (nx == nx_alloc) {
 						nx_alloc <<= 1;
-						X = GMT_memory (GMT, X, nx_alloc, struct BINCROSS);
+						X = gmt_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
 				}
 				for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
@@ -394,7 +394,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					nx++;
 					if (nx == nx_alloc) {
 						nx_alloc <<= 1;
-						X = GMT_memory (GMT, X, nx_alloc, struct BINCROSS);
+						X = gmt_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
 				}
 				
@@ -445,17 +445,17 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 
-		if (Ctrl->D.active) GMT_free (GMT, dist_km);
+		if (Ctrl->D.active) gmt_free (GMT, dist_km);
 	}
 	
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	GMT_free (GMT, X);
+	gmt_free (GMT, X);
 	x2sys_end (GMT, s);
-	GMT_free (GMT, B.binflag);
-	if (Ctrl->D.active) GMT_free (GMT, dist_bin);
+	gmt_free (GMT, B.binflag);
+	if (Ctrl->D.active) gmt_free (GMT, dist_bin);
 	x2sys_free_list (GMT, trk_name, n_tracks);
 
 	Return (GMT_OK);

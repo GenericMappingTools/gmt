@@ -1988,7 +1988,7 @@ GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 		}
 
 		if (n == n_alloc)
-			GMT->session.shorthand = GMT_malloc (GMT, GMT->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
+			GMT->session.shorthand = gmt_malloc (GMT, GMT->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		GMT->session.shorthand[n].suffix = strdup (a);
 		if (gmt_grd_format_decoder (GMT, b, &id) != GMT_NOERROR) {
@@ -2004,7 +2004,7 @@ GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 
 	n_alloc = GMT->session.n_shorthands = n;
 	gmt_reset_meminc (GMT);
-	GMT->session.shorthand = GMT_malloc (GMT, GMT->session.shorthand, 0, &n_alloc, struct GMT_SHORTHAND);
+	GMT->session.shorthand = gmt_malloc (GMT, GMT->session.shorthand, 0, &n_alloc, struct GMT_SHORTHAND);
 	return GMT_OK;
 }
 
@@ -2019,7 +2019,7 @@ GMT_LOCAL void gmtinit_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used
 		gmt_str_free (GMT->session.shorthand[i].suffix);
 		gmt_str_free (GMT->session.shorthand[i].format);
 	}
-	GMT_free (GMT, GMT->session.shorthand);
+	gmt_free (GMT, GMT->session.shorthand);
 }
 
 /*! . */
@@ -2159,9 +2159,9 @@ GMT_LOCAL int gmtinit_put_history (struct GMT_CTRL *GMT) {
 /*! . */
 GMT_LOCAL void gmtinit_free_plot_array (struct GMT_CTRL *GMT) {
 	if (GMT->current.plot.n_alloc) {
-		GMT_free (GMT, GMT->current.plot.x);
-		GMT_free (GMT, GMT->current.plot.y);
-		GMT_free (GMT, GMT->current.plot.pen);
+		gmt_free (GMT, GMT->current.plot.x);
+		gmt_free (GMT, GMT->current.plot.y);
+		gmt_free (GMT, GMT->current.plot.pen);
 	}
 	GMT->current.plot.n = GMT->current.plot.n_alloc = 0;
 }
@@ -4239,7 +4239,7 @@ GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
 	size_t n_alloc = 0;
 
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
-	GMT->session.font = GMT_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC); 
+	GMT->session.font = gmt_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC); 
 
 	/* Use strdup() because the non-hardwired version uses it too and somewhere there must be a free() */
 	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica");
@@ -4646,7 +4646,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
 	while (fgets (buf, GMT_BUFSIZ, in)) {
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-		if (i == n_alloc) GMT->session.font = GMT_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
+		if (i == n_alloc) GMT->session.font = gmt_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &GMT->session.font[i].height) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding font info for font %d\n", i);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -4669,7 +4669,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 
 		while (fgets (buf, GMT_BUFSIZ, in)) {
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
-			if (i == n_alloc) GMT->session.font = GMT_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
+			if (i == n_alloc) GMT->session.font = gmt_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &GMT->session.font[i].height) != 2) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -4680,7 +4680,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 		GMT->session.n_fonts = i;
 	}
 	n_alloc = i;
-	GMT->session.font = GMT_malloc (GMT, GMT->session.font, 0, &n_alloc, struct GMT_FONTSPEC);
+	GMT->session.font = gmt_malloc (GMT, GMT->session.font, 0, &n_alloc, struct GMT_FONTSPEC);
 	gmt_reset_meminc (GMT);
 	return (GMT_NOERROR);
 }
@@ -4703,8 +4703,8 @@ GMT_LOCAL void gmtinit_free_user_media (struct GMT_CTRL *GMT) {
 
 	for (i = 0; i < GMT->session.n_user_media; i++)
 		gmt_str_free (GMT->session.user_media_name[i]);
-	GMT_free (GMT, GMT->session.user_media_name);
-	GMT_free (GMT, GMT->session.user_media);
+	gmt_free (GMT, GMT->session.user_media_name);
+	gmt_free (GMT, GMT->session.user_media);
 	GMT->session.n_user_media = 0;
 }
 
@@ -4733,9 +4733,9 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 		GMT_str_tolower (media);	/* Convert string to lower case */
 
 		if (n == n_alloc) {
-			size_t k = n_alloc;	/* So we don't update n_alloc in the first GMT_malloc call */
-			GMT->session.user_media = GMT_malloc (GMT, GMT->session.user_media, n, &k, struct GMT_MEDIA);
-			GMT->session.user_media_name = GMT_malloc (GMT, GMT->session.user_media_name, n, &n_alloc, char *);
+			size_t k = n_alloc;	/* So we don't update n_alloc in the first gmt_malloc call */
+			GMT->session.user_media = gmt_malloc (GMT, GMT->session.user_media, n, &k, struct GMT_MEDIA);
+			GMT->session.user_media_name = gmt_malloc (GMT, GMT->session.user_media_name, n, &n_alloc, char *);
 		}
 		GMT->session.user_media_name[n] = strdup (media);
 		GMT->session.user_media[n].width  = w;
@@ -4745,8 +4745,8 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 	fclose (fp);
 
 	n_alloc = n;
-	GMT->session.user_media = GMT_malloc (GMT, GMT->session.user_media, 0, &n_alloc, struct GMT_MEDIA);
-	GMT->session.user_media_name = GMT_malloc (GMT, GMT->session.user_media_name, 0, &n_alloc, char *);
+	GMT->session.user_media = gmt_malloc (GMT, GMT->session.user_media, 0, &n_alloc, struct GMT_MEDIA);
+	GMT->session.user_media_name = gmt_malloc (GMT, GMT->session.user_media_name, 0, &n_alloc, char *);
 	gmt_reset_meminc (GMT);
 
 	GMT->session.n_user_media = n;
@@ -4857,7 +4857,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	};
 	GMT_UNUSED(session);
 
-	/* Alloc using calloc since GMT_memory may use resources not yet initialized */
+	/* Alloc using calloc since gmt_memory may use resources not yet initialized */
 	GMT = calloc (1U, sizeof (struct GMT_CTRL));
 	GMT_memcpy (GMT->current.setting.ref_ellipsoid, ref_ellipsoid, 1, ref_ellipsoid);
 	GMT_memcpy (GMT->current.setting.proj_datum, datum, 1, datum);
@@ -4936,7 +4936,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT_grdio_init (GMT);
 	gmt_set_pad (GMT, pad); /* Sets default number of rows/cols for boundary padding in this session */
 	GMT->current.proj.f_horizon = 90.0;
-	GMT->current.proj.proj4 = GMT_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
+	GMT->current.proj.proj4 = gmt_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
 	for (i = 0; i < GMT_N_PROJ4; i++) {	/* Load up proj4 structure once and for all */
 		GMT->current.proj.proj4[i].name = strdup (GMT_proj4[i].name);
 		GMT->current.proj.proj4[i].id = GMT_proj4[i].id;
@@ -9789,10 +9789,10 @@ void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file) {
 		gmtinit_savedefaults (GMT, this_file);
 	else if (GMT->session.TMPDIR) {	/* Write GMT->session.TMPDIR/gmt.conf */
 		char *path = NULL;
-		path = GMT_memory (GMT, NULL, strlen (GMT->session.TMPDIR) + 10, char);
+		path = gmt_memory (GMT, NULL, strlen (GMT->session.TMPDIR) + 10, char);
 		sprintf (path, "%s/gmt.conf", GMT->session.TMPDIR);
 		gmtinit_savedefaults (GMT, path);
-		GMT_free (GMT, path);
+		gmt_free (GMT, path);
 	}
 	else	/* Write gmt.conf in current directory */
 		gmtinit_savedefaults (GMT, "gmt.conf");
@@ -10127,7 +10127,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	/* Remove font structures */
 	for (i = 0; i < GMT->session.n_fonts; i++)
 		gmt_str_free (GMT->session.font[i].name);
-	GMT_free (GMT, GMT->session.font);
+	gmt_free (GMT, GMT->session.font);
 #ifdef __FreeBSD__
 #ifdef _i386_
 	fpresetsticky (FP_X_DZ | FP_X_INV);
@@ -10148,7 +10148,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	gmt_str_free (GMT->session.CUSTOM_LIBS);
 	for (i = 0; i < GMT_N_PROJ4; i++)
 		gmt_str_free (GMT->current.proj.proj4[i].name);
-	GMT_free (GMT, GMT->current.proj.proj4);
+	gmt_free (GMT, GMT->current.proj.proj4);
 	for (i = 0; i < GMT_N_UNIQUE; i++)
 		gmt_str_free (GMT->init.history[i]);
 	gmtinit_reset_colformats (GMT);	/* Wipe settings */
@@ -10205,17 +10205,17 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	/* GMT_INIT */
 	if (GMT->session.n_user_media) {
 		Csave->session.n_user_media = GMT->session.n_user_media;
-		Csave->session.user_media = GMT_memory (GMT, NULL, GMT->session.n_user_media, struct GMT_MEDIA);
-		Csave->session.user_media_name = GMT_memory (GMT, NULL, GMT->session.n_user_media, char *);
+		Csave->session.user_media = gmt_memory (GMT, NULL, GMT->session.n_user_media, struct GMT_MEDIA);
+		Csave->session.user_media_name = gmt_memory (GMT, NULL, GMT->session.n_user_media, char *);
 		for (i = 0; i < GMT->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (GMT->session.user_media_name[i]);
 	}
 
 	/* GMT_PLOT */
 	if (GMT->current.plot.n_alloc) {
 		Csave->current.plot.n_alloc = GMT->current.plot.n_alloc;
-		Csave->current.plot.x = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
-		Csave->current.plot.y = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
-		Csave->current.plot.pen = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, unsigned int);
+		Csave->current.plot.x = gmt_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
+		Csave->current.plot.y = gmt_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
+		Csave->current.plot.pen = gmt_memory (GMT, NULL, GMT->current.plot.n_alloc, unsigned int);
 		GMT_memcpy (Csave->current.plot.x, GMT->current.plot.x, GMT->current.plot.n_alloc, double);
 		GMT_memcpy (Csave->current.plot.y, GMT->current.plot.y, GMT->current.plot.n_alloc, double);
 		GMT_memcpy (Csave->current.plot.pen, GMT->current.plot.pen, GMT->current.plot.n_alloc, unsigned int);
@@ -10299,7 +10299,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* GMT_PLOT */
 
 	gmtinit_free_plot_array (GMT);	/* Free plot arrays and reset n_alloc, n */
-	GMT_free_custom_symbols (GMT);	/* Free linked list of custom psxy[z] symbols, if any */
+	gmt_free_custom_symbols (GMT);	/* Free linked list of custom psxy[z] symbols, if any */
 	gmtinit_free_user_media (GMT);	/* Free user-specified media formats */
 
 	/* GMT_IO */
@@ -10318,8 +10318,8 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* Now fix things that were allocated separately */
 	if (Ccopy->session.n_user_media) {
 		GMT->session.n_user_media = Ccopy->session.n_user_media;
-		GMT->session.user_media = GMT_memory (GMT, NULL, Ccopy->session.n_user_media, struct GMT_MEDIA);
-		GMT->session.user_media_name = GMT_memory (GMT, NULL, Ccopy->session.n_user_media, char *);
+		GMT->session.user_media = gmt_memory (GMT, NULL, Ccopy->session.n_user_media, struct GMT_MEDIA);
+		GMT->session.user_media_name = gmt_memory (GMT, NULL, Ccopy->session.n_user_media, char *);
 		for (i = 0; i < Ccopy->session.n_user_media; i++) GMT->session.user_media_name[i] = strdup (Ccopy->session.user_media_name[i]);
 	}
 

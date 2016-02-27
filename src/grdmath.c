@@ -136,7 +136,7 @@ struct GRDMATH_STORE {
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GRDMATH_CTRL *C = GMT_memory (GMT, NULL, 1, struct GRDMATH_CTRL);
+	struct GRDMATH_CTRL *C = gmt_memory (GMT, NULL, 1, struct GRDMATH_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -147,7 +147,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1180,8 +1180,8 @@ GMT_LOCAL void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
 
-	z = GMT_memory (GMT, NULL, info->size, float);
-	cx = GMT_memory (GMT, NULL, info->G->header->ny, double);
+	z = gmt_memory (GMT, NULL, info->size, float);
+	cx = gmt_memory (GMT, NULL, info->G->header->ny, double);
 	GMT_row_loop (GMT, info->G, row) cx[row] = 1.0 / (info->dx[row] * info->dx[row]);
 
 	mx = info->G->header->mx;
@@ -1193,8 +1193,8 @@ GMT_LOCAL void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	}
 
 	GMT_memcpy (stack[last]->G->data, z, info->size, float);
-	GMT_free (GMT, z);
-	GMT_free (GMT, cx);
+	gmt_free (GMT, z);
+	gmt_free (GMT, cx);
 }
 
 GMT_LOCAL void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1292,8 +1292,8 @@ GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
 
-	z = GMT_memory (GMT, NULL, info->size, float);
-	cx = GMT_memory (GMT, NULL, info->G->header->ny, double);
+	z = gmt_memory (GMT, NULL, info->size, float);
+	cx = gmt_memory (GMT, NULL, info->G->header->ny, double);
 	GMT_row_loop (GMT, info->G, row) cx[row] = 0.5 / (info->dx[row] * info->dx[row]);
 
 	mx = info->G->header->mx;
@@ -1305,8 +1305,8 @@ GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	}
 
 	GMT_memcpy (stack[last]->G->data, z, info->size, float);
-	GMT_free (GMT, z);
-	GMT_free (GMT, cx);
+	gmt_free (GMT, z);
+	gmt_free (GMT, cx);
 }
 
 GMT_LOCAL void grd_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -1645,7 +1645,7 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
 
-	z = GMT_memory (GMT, NULL, info->size, float);
+	z = gmt_memory (GMT, NULL, info->size, float);
 
 	/* We will visit each node on the grid and determine if there are extrema.  We do this
 	 * by looking at the along-x and along-y profiles separately.  If both of them shows the
@@ -1688,7 +1688,7 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 
 	GMT_memcpy (stack[last]->G->data, z, info->size, float);
 	GMT_memset (stack[last]->G->header->BC, 4, unsigned int);	/* No BC padding in this array */
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 }
 
 GMT_LOCAL void grd_FCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2960,7 +2960,7 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	if (T->n_segments > 1) {	/* Must build a single table for GMT_centroid */
 		uint64_t seg;
 		size_t n_alloc = 0;
-		GMT_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
+		gmt_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
 		for (seg = 0; seg < T->n_segments; seg++) {
 			GMT_memcpy (&x[n], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
 			GMT_memcpy (&y[n], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows, double);
@@ -2984,8 +2984,8 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	/* The next stack needs to be filled */
 	for (node = 0; node < info->size; node++) stack[next]->G->data[node] = (float)stack[next]->factor;
 	if (T->n_segments > 1) {	/* Free what we allocated */
-		GMT_free (GMT, x);
-		GMT_free (GMT, y);
+		gmt_free (GMT, x);
+		gmt_free (GMT, y);
 	}
 	ASCII_free (GMT, info, &D, "POINT");	/* Free memory used for points */
 }
@@ -3268,16 +3268,16 @@ GMT_LOCAL void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	nx = info->G->header->nx;
 	/* Set up permutation vector */
 
-	new_col = GMT_memory (GMT, NULL, nx, unsigned int);
-	z = GMT_memory (GMT, NULL, nx, float);
+	new_col = gmt_memory (GMT, NULL, nx, unsigned int);
+	z = gmt_memory (GMT, NULL, nx, float);
 	for (col = colx = 0; col < info->G->header->nx; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->nx;	/* Move by shift but rotate around */
 	GMT_row_loop (GMT, info->G, row) {	/* For each row */
 		GMT_col_loop (GMT, info->G, row, col, node) z[new_col[col]] = stack[prev]->G->data[node];	/* Copy one row of data to z with shift */
 		node = GMT_IJP (info->G->header, row, 0);		/* First col */
 		GMT_memcpy (&stack[prev]->G->data[node], z, nx, float);	/* Replace this row */
 	}
-	GMT_free (GMT, z);
-	GMT_free (GMT, new_col);
+	gmt_free (GMT, z);
+	gmt_free (GMT, new_col);
 }
 
 GMT_LOCAL void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3299,15 +3299,15 @@ GMT_LOCAL void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	if (shift < 0) shift += info->G->header->ny;	/* Same thing */
 	/* Set up permutation vector */
 
-	new_row = GMT_memory (GMT, NULL, info->G->header->ny, unsigned int);
-	z = GMT_memory (GMT, NULL, info->G->header->ny, float);
+	new_row = gmt_memory (GMT, NULL, info->G->header->ny, unsigned int);
+	z = gmt_memory (GMT, NULL, info->G->header->ny, float);
 	for (row = rowx = 0; row < info->G->header->ny; row++, rowx++) new_row[rowx] = (rowx + info->G->header->ny - shift) % info->G->header->ny;	/* Move by shift but rotate around */
 	for (col = 0; col < info->G->header->nx; col++) {	/* For each column */
 		for (row = 0; row < info->G->header->ny; row++) z[new_row[row]] = stack[prev]->G->data[GMT_IJP(info->G->header, row, col)];	/* Copy one column of data to z with shift */
 		for (row = 0; row < info->G->header->ny; row++) stack[prev]->G->data[GMT_IJP(info->G->header, row, col)] = z[row];	/* Replace this column */
 	}
-	GMT_free (GMT, z);
-	GMT_free (GMT, new_row);
+	gmt_free (GMT, z);
+	gmt_free (GMT, new_row);
 }
 
 GMT_LOCAL void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -3699,7 +3699,7 @@ GMT_LOCAL void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	}
 
 	/* First compute and store x taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin */
-	w_x = GMT_memory (GMT, NULL, info->G->header->mx, double);
+	w_x = gmt_memory (GMT, NULL, info->G->header->mx, double);
 	if (stack[prev]->factor == 0.0) {	/* No taper in x so set weights to 1 */
 		GMT_col_padloop2 (GMT, info->G, col) w_x[col] = 1.0;
 	}
@@ -3733,7 +3733,7 @@ GMT_LOCAL void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 			stack[prev]->G->data[node] = (float)(w_y * w_x[col]);
 		}
 	}
-	GMT_free (GMT, w_x);
+	gmt_free (GMT, w_x);
 }
 
 GMT_LOCAL void grd_TN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4184,7 +4184,7 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 		else if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
-		GMT_free (GMT, stack[k]);
+		gmt_free (GMT, stack[k]);
 	}
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
 		if (recall[k] == NULL) continue;
@@ -4193,20 +4193,20 @@ GMT_LOCAL void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[]
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 			}
 		}
-		GMT_free (GMT, recall[k]);
+		gmt_free (GMT, recall[k]);
 	}
 	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
 	}
-	GMT_free (GMT, info->d_grd_x);
-	GMT_free (GMT, info->d_grd_y);
-	GMT_free (GMT, info->d_grd_xn);
-	GMT_free (GMT, info->d_grd_yn);
-	GMT_free (GMT, info->f_grd_x);
-	GMT_free (GMT, info->f_grd_y);
-	GMT_free (GMT, info->f_grd_xn);
-	GMT_free (GMT, info->f_grd_yn);
-	GMT_free (GMT, info->dx);
+	gmt_free (GMT, info->d_grd_x);
+	gmt_free (GMT, info->d_grd_y);
+	gmt_free (GMT, info->d_grd_xn);
+	gmt_free (GMT, info->d_grd_yn);
+	gmt_free (GMT, info->f_grd_x);
+	gmt_free (GMT, info->f_grd_y);
+	gmt_free (GMT, info->f_grd_xn);
+	gmt_free (GMT, info->f_grd_yn);
+	gmt_free (GMT, info->dx);
 	gmt_str_free (info->ASCII_file);
 }
 
@@ -4262,7 +4262,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
-	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
+	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = gmt_memory (GMT, NULL, 1, struct GRDMATH_STACK);
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	/* The list is now the active options list. */
@@ -4341,14 +4341,14 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/* Get x and y vectors (these extend onto the pad) */
 
-	info.d_grd_x  = GMT_memory (GMT, NULL, info.G->header->mx, double);
-	info.d_grd_y  = GMT_memory (GMT, NULL, info.G->header->my, double);
-	info.d_grd_xn = GMT_memory (GMT, NULL, info.G->header->mx, double);
-	info.d_grd_yn = GMT_memory (GMT, NULL, info.G->header->my, double);
-	info.f_grd_x  = GMT_memory (GMT, NULL, info.G->header->mx, float);
-	info.f_grd_y  = GMT_memory (GMT, NULL, info.G->header->my, float);
-	info.f_grd_xn = GMT_memory (GMT, NULL, info.G->header->mx, float);
-	info.f_grd_yn = GMT_memory (GMT, NULL, info.G->header->my, float);
+	info.d_grd_x  = gmt_memory (GMT, NULL, info.G->header->mx, double);
+	info.d_grd_y  = gmt_memory (GMT, NULL, info.G->header->my, double);
+	info.d_grd_xn = gmt_memory (GMT, NULL, info.G->header->mx, double);
+	info.d_grd_yn = gmt_memory (GMT, NULL, info.G->header->my, double);
+	info.f_grd_x  = gmt_memory (GMT, NULL, info.G->header->mx, float);
+	info.f_grd_y  = gmt_memory (GMT, NULL, info.G->header->my, float);
+	info.f_grd_xn = gmt_memory (GMT, NULL, info.G->header->mx, float);
+	info.f_grd_yn = gmt_memory (GMT, NULL, info.G->header->my, float);
 	for (k = 0, start = info.G->header->pad[XLO], colx = -start; k < (int)info.G->header->mx; colx++, k++) info.d_grd_x[k] = GMT_grd_col_to_x (GMT, colx, info.G->header);
 	for (k = 0, start = info.G->header->pad[YHI], rowx = -start; k < (int)info.G->header->my; rowx++, k++) info.d_grd_y[k] = GMT_grd_row_to_y (GMT, rowx, info.G->header);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
@@ -4372,7 +4372,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 		info.f_grd_yn[kk] = (float)info.d_grd_yn[kk];
 	}
 	x_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_X];	y_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_Y];
-	info.dx = GMT_memory (GMT, NULL, info.G->header->my, double);
+	info.dx = gmt_memory (GMT, NULL, info.G->header->my, double);
 	if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
 	info.gshhg_res = Ctrl->D.set;	/* Selected GSHHG resolution, if used */
 	info.A = &Ctrl->A.info;		/* Selected GSHHG flags, if used */
@@ -4489,7 +4489,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				}
 				else {	/* Need new named storage place */
 					k = n_stored;
-					recall[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STORE);
+					recall[k] = gmt_memory (GMT, NULL, 1, struct GRDMATH_STORE);
 					recall[k]->label = strdup (label);
 					if (!stack[last]->constant) recall[k]->stored.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, stack[last]->G);
 					added_new = true;
@@ -4536,7 +4536,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 				}
 
 				gmt_str_free (recall[k]->label);
-				GMT_free (GMT, recall[k]);
+				gmt_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;
 			}
@@ -4658,7 +4658,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", kk);
 		}
 		gmt_str_free (recall[kk]->label);
-		GMT_free (GMT, recall[kk]);
+		gmt_free (GMT, recall[kk]);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "\n");

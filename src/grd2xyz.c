@@ -53,7 +53,7 @@ struct GRD2XYZ_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2XYZ_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -67,7 +67,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -330,7 +330,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				Return (EXIT_FAILURE);
 			}
 			n_alloc = G->header->nx * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
-			record = GMT_memory (GMT, NULL, G->header->nx, char);
+			record = gmt_memory (GMT, NULL, G->header->nx, char);
 			
 			sprintf (record, "ncols %d\nnrows %d", G->header->nx, G->header->ny);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
@@ -372,7 +372,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					len = strlen (item);
 					if ((rec_len + len + 1) >= n_alloc) {	/* Must get more memory */
 						n_alloc <<= 1;
-						record = GMT_memory (GMT, record, G->header->nx, char);
+						record = gmt_memory (GMT, record, G->header->nx, char);
 					}
 					strcat (record, item);
 					rec_len += len;
@@ -380,7 +380,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				}
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a whole y line */
 			}
-			GMT_free (GMT, record);
+			gmt_free (GMT, record);
 		}
 		else {	/* Regular x,y,z[,w] output */
 			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_OK) {	/* Establishes data output */
@@ -440,8 +440,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
 				if (write_error != 0) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
-			GMT_free (GMT, x);
-			GMT_free (GMT, y);
+			gmt_free (GMT, x);
+			gmt_free (GMT, y);
 		}
 	}
 

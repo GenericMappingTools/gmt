@@ -77,7 +77,7 @@ GMT_LOCAL double *filterxy_setup (struct GMT_CTRL *GMT) {
 	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
-	fwork = GMT_memory (GMT, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
+	fwork = gmt_memory (GMT, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
 	tmp = M_PI / SPLITXYZ_F_RES;
 	for (i = 0; i < SPLITXYZ_F_RES; i++) {
 		fwork[i] = 1.0 + cos (i * tmp);
@@ -98,8 +98,8 @@ GMT_LOCAL void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin
 	half_width = 0.5 * fabs (filter_width);
 	dt = SPLITXYZ_F_RES / half_width;
 	ndata = end - begin;
-	w = GMT_memory (GMT, NULL, n_cols, double *);
-	for (k = 0; k < n_cols; k++) w[k] = GMT_memory (GMT, NULL, ndata, double);	/* Initialized to zeros */
+	w = gmt_memory (GMT, NULL, n_cols, double *);
+	for (k = 0; k < n_cols; k++) w[k] = gmt_memory (GMT, NULL, ndata, double);	/* Initialized to zeros */
 	j = istart = istop = begin;
 	while (j < end) {
 		while (istart < end && data[d_col][istart] - data[d_col][j] <= -half_width) istart++;
@@ -120,14 +120,14 @@ GMT_LOCAL void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin
 	else {
 		for (i = begin; i < end; i++) for (p = 0; p < n_cols; p++) data[cols[p]][i] = w[p][i];
 	}
-	for (p = 0; p < n_cols; p++) GMT_free (GMT, w[p]);
-	GMT_free (GMT, w);
+	for (p = 0; p < n_cols; p++) gmt_free (GMT, w[p]);
+	gmt_free (GMT, w);
 }
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPLITXYZ_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct SPLITXYZ_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct SPLITXYZ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.azimuth = 90.0;
@@ -140,7 +140,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_str_free (C->Out.file);	
 	gmt_str_free (C->N.name);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -440,24 +440,24 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		h_col = no_z_column + 3;
 	}
 	z_cols = 2;
-	S_out = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+	S_out = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 	
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 		T = D[GMT_IN]->table[tbl];
 		if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
-			T->min = GMT_memory (GMT, T->min, n_columns, double);
-			T->max = GMT_memory (GMT, T->max, n_columns, double);
+			T->min = gmt_memory (GMT, T->min, n_columns, double);
+			T->max = gmt_memory (GMT, T->max, n_columns, double);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
 			if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
-				S->coord = GMT_memory (GMT, S->coord, n_columns, double *);
-				S->min = GMT_memory (GMT, S->min, n_columns, double);
-				S->max = GMT_memory (GMT, S->max, n_columns, double);
-				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) S->coord[col] = GMT_memory (GMT, NULL, S->n_rows, double);
+				S->coord = gmt_memory (GMT, S->coord, n_columns, double *);
+				S->min = gmt_memory (GMT, S->min, n_columns, double);
+				S->max = gmt_memory (GMT, S->max, n_columns, double);
+				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) S->coord[col] = gmt_memory (GMT, NULL, S->n_rows, double);
 			}
 			
 			if (Ctrl->S.active) S->coord[h_col][0] = D2R * (90.0 - S->coord[h_col][0]);	/* Angles are stored as CCW angles in radians */
@@ -541,7 +541,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 							}
 							if (seg2 == n_alloc_seg) {
 								n_alloc_seg = (n_alloc_seg == 0) ? D[GMT_IN]->n_segments : n_alloc_seg * 2;
-								rec = GMT_memory (GMT, rec, n_alloc_seg, uint64_t);
+								rec = gmt_memory (GMT, rec, n_alloc_seg, uint64_t);
 							}
 							rec[seg2++] = k;
 							n_total += n_out;
@@ -551,10 +551,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 				begin = end;
 			}
 			if (!Ctrl->S.active) {	/* Must remove the 2 cols we added  */
-				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) GMT_free (GMT, S->coord[col]);
-				S->coord = GMT_memory (GMT, S->coord, S->n_columns, double *);
-				S->min = GMT_memory (GMT, S->min, S->n_columns, double);
-				S->max = GMT_memory (GMT, S->max, S->n_columns, double);
+				for (col = D[GMT_IN]->n_columns; col < n_columns; col++) gmt_free (GMT, S->coord[col]);
+				S->coord = gmt_memory (GMT, S->coord, S->n_columns, double *);
+				S->min = gmt_memory (GMT, S->min, S->n_columns, double);
+				S->max = gmt_memory (GMT, S->max, S->n_columns, double);
 			}
 		}
 	}
@@ -568,7 +568,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 
 	dim[GMT_SEG] = seg2;	dim[GMT_COL] = n_outputs;
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_free (GMT, rec);
+		gmt_free (GMT, rec);
 		Return (API->error);	/* An empty table */
 	}
 	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the coord pointers to point to various points in our single S_out arrays */
@@ -600,8 +600,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	for (seg = 0; seg < seg2; seg++)
 		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
 	gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
-	if (Ctrl->F.active) GMT_free (GMT, fwork);
-	GMT_free (GMT, rec);
+	if (Ctrl->F.active) gmt_free (GMT, fwork);
+	gmt_free (GMT, rec);
 
 	Return (GMT_OK);
 }

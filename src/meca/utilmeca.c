@@ -557,11 +557,11 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 	double *a, *d, *b, *z, *v;
 	double az[3], pl[3];
 
-	a = GMT_memory (GMT, NULL, np*np, double);
-	d = GMT_memory (GMT, NULL, np, double);
-	b = GMT_memory (GMT, NULL, np, double);
-	z = GMT_memory (GMT, NULL, np, double);
-	v = GMT_memory (GMT, NULL, np*np, double);
+	a = gmt_memory (GMT, NULL, np*np, double);
+	d = gmt_memory (GMT, NULL, np, double);
+	b = gmt_memory (GMT, NULL, np, double);
+	z = gmt_memory (GMT, NULL, np, double);
+	v = gmt_memory (GMT, NULL, np*np, double);
 
 	a[0]=mt.f[0];	a[1]=mt.f[3];	a[2]=mt.f[4];
 	a[3]=mt.f[3];	a[4]=mt.f[1];	a[5]=mt.f[5];
@@ -588,9 +588,9 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 	N->val = d[1];	N->e = mt.expo; N->str = az[1]; N->dip = pl[1];
 	P->val = d[2];	P->e = mt.expo; P->str = az[2]; P->dip = pl[2];
 
-	GMT_free (GMT, a);	GMT_free (GMT, d);
-	GMT_free (GMT, b);	GMT_free (GMT, z);
-	GMT_free (GMT, v);
+	gmt_free (GMT, a);	gmt_free (GMT, d);
+	gmt_free (GMT, b);	gmt_free (GMT, z);
+	gmt_free (GMT, v);
 }
 
 /***************************************************************************************/

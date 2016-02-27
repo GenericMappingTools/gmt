@@ -121,7 +121,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPHDISTANCE_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct SPHDISTANCE_CTRL);
 	C->E.dist = 1.0;	/* Default is 1 degree Voronoi edge resampling */
 	C->L.unit = 'e';	/* Default is meter distances */
 	return (C);
@@ -132,7 +132,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/*
 	gmt_str_free (C->G.file);
 	gmt_str_free (C->N.file);
 	gmt_str_free (C->Q.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -327,8 +327,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		Table = Qin->table[0];	/* Only one table in a file */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " segments\n", Table->n_segments);
-	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
-	 	lat = GMT_memory (GMT, NULL, Table->n_segments, double);
+	 	lon = gmt_memory (GMT, NULL, Table->n_segments, double);
+	 	lat = gmt_memory (GMT, NULL, Table->n_segments, double);
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
 			struct GMT_DATASET *Nin = NULL;
 			struct GMT_DATATABLE *NTable = NULL;
@@ -385,10 +385,10 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
 
 		n_alloc = 0;
-		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+		if (!Ctrl->C.active) gmt_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		n_alloc = 0;
-		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
-		if (Ctrl->E.mode == SPHD_VALUES) z_val = GMT_memory (GMT, NULL, n_alloc, float);
+		gmt_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
+		if (Ctrl->E.mode == SPHD_VALUES) z_val = gmt_memory (GMT, NULL, n_alloc, float);
 
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -432,29 +432,29 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			if (Ctrl->E.mode == SPHD_VALUES) z_val[n] = (float)in[GMT_Z];
 
 			if (++n == n_alloc) {	/* Get more memory */
-				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
-				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
-				if (Ctrl->E.mode == SPHD_VALUES) z_val = GMT_memory (GMT, z_val, n_alloc, float);
+				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; gmt_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
+				gmt_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
+				if (Ctrl->E.mode == SPHD_VALUES) z_val = gmt_memory (GMT, z_val, n_alloc, float);
 			}
 			first = false;
 		} while (true);
 
 		n_alloc = n;
-		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
-		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
+		if (!Ctrl->C.active) gmt_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+		gmt_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
 		if (n_dup) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
 		stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
-		GMT_free (GMT, T.D.tri);	/* Don't need the triangulation */
+		gmt_free (GMT, T.D.tri);	/* Don't need the triangulation */
 		if (Ctrl->C.active) {	/* Recompute lon,lat and set pointers */
 			cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
 			lon = xx;
 			lat = yy;
 		}
-		GMT_free (GMT,  zz);
+		gmt_free (GMT,  zz);
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}
@@ -490,12 +490,12 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
-				P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
-				P->coord = GMT_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
-				P->min = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
-				P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
+				P = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
+				P->coord = gmt_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
+				P->min = gmt_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
+				P->max = gmt_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */
 				P->n_columns = 2;	p_alloc = 0;
-				GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
+				gmt_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], GMT_TINY_CHUNK, &p_alloc, double);
 			}
 			node_new = node_stop = V->lend[node];
 			vertex_new = V->listc[node_new];
@@ -515,13 +515,13 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 				if (P->coord[GMT_X][vertex] < 0.0) P->coord[GMT_X][vertex] += 360.0;
 				if (P->coord[GMT_X][vertex] == 360.0) P->coord[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+				if (vertex == p_alloc) gmt_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];	/* Close polygon explicitly */
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
-			if ((++vertex) == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+			if ((++vertex) == p_alloc) gmt_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 			switch (Ctrl->E.mode) {
 				case SPHD_NODES:	f_val = (float)node;	break;
@@ -574,26 +574,26 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing polygon %7ld\n", node);
 
 	if (!Ctrl->Q.active) {
-		GMT_free (GMT, P->coord[GMT_X]);
-		GMT_free (GMT, P->coord[GMT_Y]);
-		GMT_free (GMT, P->min);
-		GMT_free (GMT, P->max);
-		GMT_free (GMT, P->coord);
-		GMT_free (GMT, P);
-		GMT_free (GMT, T.V.lon);
-		GMT_free (GMT, T.V.lat);
-		GMT_free (GMT, T.V.lend);
-		GMT_free (GMT, T.V.listc);
-		GMT_free (GMT, T.V.lptr);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, P->coord[GMT_X]);
+		gmt_free (GMT, P->coord[GMT_Y]);
+		gmt_free (GMT, P->min);
+		gmt_free (GMT, P->max);
+		gmt_free (GMT, P->coord);
+		gmt_free (GMT, P);
+		gmt_free (GMT, T.V.lon);
+		gmt_free (GMT, T.V.lat);
+		gmt_free (GMT, T.V.lend);
+		gmt_free (GMT, T.V.listc);
+		gmt_free (GMT, T.V.lptr);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 	}
-	GMT_free (GMT, grid_lon);	GMT_free (GMT, grid_lat);
+	gmt_free (GMT, grid_lon);	gmt_free (GMT, grid_lat);
 	if (!Ctrl->C.active) {
-		GMT_free (GMT, lon);
-		GMT_free (GMT, lat);
+		gmt_free (GMT, lon);
+		gmt_free (GMT, lat);
 	}
-	if (Ctrl->E.mode == SPHD_VALUES) GMT_free (GMT, z_val);
+	if (Ctrl->E.mode == SPHD_VALUES) gmt_free (GMT, z_val);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {

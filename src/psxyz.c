@@ -115,7 +115,7 @@ EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXYZ_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSXYZ_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSXYZ_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -130,7 +130,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *C) {	/* Deall
 	if (!C) return;
 	gmt_str_free (C->C.file);
 	gmt_str_free (C->S.arg);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -763,7 +763,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (P->skip) continue;	/* Chosen CPT file indicates skip for this t */
 			}
 
-			if (n == n_alloc) data = GMT_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
+			if (n == n_alloc) data = gmt_malloc (GMT, data, n, &n_alloc, struct PSXYZ_DATA);
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || GMT_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].z = gmt_z_to_zz (GMT, in[GMT_Z]);
@@ -995,7 +995,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
-					data[n].custom = GMT_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
+					data[n].custom = gmt_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 					GMT_memcpy (data[n].custom, S.custom, 1, struct GMT_CUSTOM_SYMBOL);
 					break;
 			}
@@ -1016,7 +1016,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 
 		n_alloc = n;
-		data = GMT_malloc (GMT, data, 0, &n_alloc, struct PSXYZ_DATA);
+		data = gmt_malloc (GMT, data, 0, &n_alloc, struct PSXYZ_DATA);
 
 		/* Sort according to distance from viewer */
 
@@ -1178,7 +1178,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						}
 						if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
 						GMT_draw_custom_symbol (GMT, xpos[item], data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
-						GMT_free (GMT, data[i].custom);
+						gmt_free (GMT, data[i].custom);
 						break;
 				}
 			}
@@ -1186,7 +1186,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		PSL_command (GMT->PSL, "U\n");
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
-		GMT_free (GMT, data);
+		gmt_free (GMT, data);
 		gmt_reset_meminc (GMT);
 	}
 	else {	/* Line/polygon part */
@@ -1253,8 +1253,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
 
-				xp = GMT_memory (GMT, NULL, n, double);
-				yp = GMT_memory (GMT, NULL, n, double);
+				xp = gmt_memory (GMT, NULL, n, double);
+				yp = gmt_memory (GMT, NULL, n, double);
 
 				if (polygon) {
 					GMT_plane_perspective (GMT, -1, 0.0);
@@ -1354,8 +1354,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							end += 3;
 						}
 						/* Project and get ready */
-						xp = GMT_memory (GMT, xp, end, double);	/* Extend these arrays */
-						yp = GMT_memory (GMT, yp, end, double);
+						xp = gmt_memory (GMT, xp, end, double);	/* Extend these arrays */
+						yp = gmt_memory (GMT, yp, end, double);
 						for (i = 0; i < end; i++)
 							gmt_geoz_to_xy (GMT, GMT->hidden.mem_coord[GMT_X][i], GMT->hidden.mem_coord[GMT_Y][i], GMT->hidden.mem_coord[GMT_Z][i], &xp[i], &yp[i]);
 						if (Ctrl->L.outline) GMT_setpen (GMT, &Ctrl->L.pen);	/* Select separate pen for polygon outline */
@@ -1382,8 +1382,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.f.f_pen == 0) GMT_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}
 
-				GMT_free (GMT, xp);
-				GMT_free (GMT, yp);
+				gmt_free (GMT, xp);
+				gmt_free (GMT, yp);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {

@@ -129,7 +129,7 @@ struct BACKTRACKER_CTRL {	/* All control options for this program (except common
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct BACKTRACKER_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct BACKTRACKER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct BACKTRACKER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -141,7 +141,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	/*
 	gmt_str_free (C->E.rot.file);	
 	gmt_str_free (C->F.file);	
 	gmt_str_free (C->S.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -599,7 +599,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
-			GMT_free (GMT, c);
+			gmt_free (GMT, c);
 		}
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */
@@ -641,7 +641,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 
 	/* Clean up and exit */
 
-	if (!Ctrl->E.rot.single) GMT_free (GMT, p);
+	if (!Ctrl->E.rot.single) gmt_free (GMT, p);
 
 	Return (GMT_OK);
 }

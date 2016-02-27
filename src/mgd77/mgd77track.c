@@ -119,7 +119,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77TRACK_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct MGD77TRACK_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct MGD77TRACK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -146,7 +146,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl) {
@@ -640,7 +640,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	both = (Ctrl->L.info.annot_int_time && Ctrl->L.info.annot_int_dist);
 	
-	if (Ctrl->N.active) cruise_id = GMT_memory (GMT, NULL, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
+	if (Ctrl->N.active) cruise_id = gmt_memory (GMT, NULL, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
 
 	MGD77_Select_Columns (GMT, "time,lon,lat", &M, MGD77_SET_ALLEXACT);	/* This sets up which columns to read */
 
@@ -746,7 +746,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 						if (n_id == n_alloc_c) {
 							size_t old_n_alloc = n_alloc_c;
 							n_alloc_c <<= 1;
-							cruise_id = GMT_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
+							cruise_id = gmt_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
 							GMT_memset (&(cruise_id[old_n_alloc]), n_alloc_c - old_n_alloc,  struct MGD77TRACK_LEG_ANNOT);	/* Set to NULL/0 */
 						}
 					}
@@ -855,7 +855,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 			}
 		}
 		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
-		GMT_free (GMT, track_dist);
+		gmt_free (GMT, track_dist);
 		n_cruises++;
 	}
 		
@@ -870,7 +870,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		for (id = 0; id < n_id; id++)
 			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat,
 			               cruise_id[id].angle, cruise_id[id].text, size);
-		GMT_free (GMT, cruise_id);
+		gmt_free (GMT, cruise_id);
 	}
 
 	GMT_plane_perspective (GMT, -1, 0.0);

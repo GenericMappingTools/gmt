@@ -99,7 +99,7 @@ struct REDPOL_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct REDPOL_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct REDPOL_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct REDPOL_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.use_igrf = true;
@@ -119,7 +119,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Deal
 	gmt_str_free (C->E.dipfile);	
 	gmt_str_free (C->E.decfile);	
 	gmt_str_free (C->Z.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar, 
@@ -1276,36 +1276,36 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
-	cosphi = GMT_memory (GMT, NULL, n_coef, double);
-	sinphi = GMT_memory (GMT, NULL, n_coef, double);
-	cospsi = GMT_memory (GMT, NULL, n_coef, double);
-	sinpsi = GMT_memory (GMT, NULL, n_coef, double);
-	gxr    = GMT_memory (GMT, NULL, n_coef, double);
-	gxi    = GMT_memory (GMT, NULL, n_coef, double);
-	gxar   = GMT_memory (GMT, NULL, n_coef, double);
-	gxai   = GMT_memory (GMT, NULL, n_coef, double);
-	gxbr   = GMT_memory (GMT, NULL, n_coef, double);
-	gxbi   = GMT_memory (GMT, NULL, n_coef, double);
-	gxgr   = GMT_memory (GMT, NULL, n_coef, double);
-	gxgi   = GMT_memory (GMT, NULL, n_coef, double);
-	fxr    = GMT_memory (GMT, NULL, n_coef, double);
-	fix    = GMT_memory (GMT, NULL, n_coef, double);
-	fxar   = GMT_memory (GMT, NULL, n_coef, double);
-	fxbr   = GMT_memory (GMT, NULL, n_coef, double);
-	fxgr   = GMT_memory (GMT, NULL, n_coef, double);
-	ftlon  = GMT_memory (GMT, NULL, Gin->header->nx, double);
-	ftlat  = GMT_memory (GMT, NULL, Gin->header->ny, double);
+	cosphi = gmt_memory (GMT, NULL, n_coef, double);
+	sinphi = gmt_memory (GMT, NULL, n_coef, double);
+	cospsi = gmt_memory (GMT, NULL, n_coef, double);
+	sinpsi = gmt_memory (GMT, NULL, n_coef, double);
+	gxr    = gmt_memory (GMT, NULL, n_coef, double);
+	gxi    = gmt_memory (GMT, NULL, n_coef, double);
+	gxar   = gmt_memory (GMT, NULL, n_coef, double);
+	gxai   = gmt_memory (GMT, NULL, n_coef, double);
+	gxbr   = gmt_memory (GMT, NULL, n_coef, double);
+	gxbi   = gmt_memory (GMT, NULL, n_coef, double);
+	gxgr   = gmt_memory (GMT, NULL, n_coef, double);
+	gxgi   = gmt_memory (GMT, NULL, n_coef, double);
+	fxr    = gmt_memory (GMT, NULL, n_coef, double);
+	fix    = gmt_memory (GMT, NULL, n_coef, double);
+	fxar   = gmt_memory (GMT, NULL, n_coef, double);
+	fxbr   = gmt_memory (GMT, NULL, n_coef, double);
+	fxgr   = gmt_memory (GMT, NULL, n_coef, double);
+	ftlon  = gmt_memory (GMT, NULL, Gin->header->nx, double);
+	ftlat  = gmt_memory (GMT, NULL, Gin->header->ny, double);
 
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
-		gxtr = GMT_memory (GMT, NULL, n_coef, double);
-		gxti = GMT_memory (GMT, NULL, n_coef, double);
-		gxmr = GMT_memory (GMT, NULL, n_coef, double);
-		gxmi = GMT_memory (GMT, NULL, n_coef, double);
-		gxnr = GMT_memory (GMT, NULL, n_coef, double);
-		gxni = GMT_memory (GMT, NULL, n_coef, double);
-		fxtr = GMT_memory (GMT, NULL, n_coef, double);
-		fxmr = GMT_memory (GMT, NULL, n_coef, double);
-		fxnr = GMT_memory (GMT, NULL, n_coef, double);
+		gxtr = gmt_memory (GMT, NULL, n_coef, double);
+		gxti = gmt_memory (GMT, NULL, n_coef, double);
+		gxmr = gmt_memory (GMT, NULL, n_coef, double);
+		gxmi = gmt_memory (GMT, NULL, n_coef, double);
+		gxnr = gmt_memory (GMT, NULL, n_coef, double);
+		gxni = gmt_memory (GMT, NULL, n_coef, double);
+		fxtr = gmt_memory (GMT, NULL, n_coef, double);
+		fxmr = gmt_memory (GMT, NULL, n_coef, double);
+		fxnr = gmt_memory (GMT, NULL, n_coef, double);
 	}
 
 	/* Generate vectors of lon & lats */
@@ -1495,24 +1495,24 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
 
-	GMT_free (GMT, cosphi);      GMT_free (GMT, sinphi);
-	GMT_free (GMT, cospsi);      GMT_free (GMT, sinpsi);
-	GMT_free (GMT, gxr);         GMT_free (GMT, gxi);
-	GMT_free (GMT, ftlat);       GMT_free (GMT, ftlon);
-	GMT_free (GMT, fxr);
+	gmt_free (GMT, cosphi);      gmt_free (GMT, sinphi);
+	gmt_free (GMT, cospsi);      gmt_free (GMT, sinpsi);
+	gmt_free (GMT, gxr);         gmt_free (GMT, gxi);
+	gmt_free (GMT, ftlat);       gmt_free (GMT, ftlon);
+	gmt_free (GMT, fxr);
 
-	GMT_free (GMT, fxar);		GMT_free (GMT, fxbr);
-	GMT_free (GMT, fxgr);		GMT_free (GMT, fix);
+	gmt_free (GMT, fxar);		gmt_free (GMT, fxbr);
+	gmt_free (GMT, fxgr);		gmt_free (GMT, fix);
 
-	GMT_free (GMT, gxar);		GMT_free (GMT, gxai);
-	GMT_free (GMT, gxbr);		GMT_free (GMT, gxbi);
-	GMT_free (GMT, gxgr);		GMT_free (GMT, gxgi);
+	gmt_free (GMT, gxar);		gmt_free (GMT, gxai);
+	gmt_free (GMT, gxbr);		gmt_free (GMT, gxbi);
+	gmt_free (GMT, gxgr);		gmt_free (GMT, gxgi);
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) {
-		GMT_free (GMT, gxtr);	GMT_free (GMT, gxti);
-		GMT_free (GMT, gxmr);	GMT_free (GMT, gxmi);
-		GMT_free (GMT, gxnr);	GMT_free (GMT, gxni);
-		GMT_free (GMT, fxtr);	GMT_free (GMT, fxmr);
-		GMT_free (GMT, fxnr);
+		gmt_free (GMT, gxtr);	gmt_free (GMT, gxti);
+		gmt_free (GMT, gxmr);	gmt_free (GMT, gxmi);
+		gmt_free (GMT, gxnr);	gmt_free (GMT, gxni);
+		gmt_free (GMT, fxtr);	gmt_free (GMT, fxmr);
+		gmt_free (GMT, fxnr);
 	}
 
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");

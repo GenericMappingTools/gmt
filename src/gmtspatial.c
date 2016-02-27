@@ -144,7 +144,7 @@ struct PAIR {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSPATIAL_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GMTSPATIAL_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GMTSPATIAL_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.unit = 'X';		/* Cartesian units as default */
@@ -166,7 +166,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* 
 	gmt_str_free (C->D.file);	
 	gmt_str_free (C->N.file);	
 	gmt_str_free (C->T.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo) {
@@ -185,7 +185,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 		wesn[YLO] = MIN (wesn[YLO], y[i]);
 		wesn[YHI] = MAX (wesn[YHI], y[i]);
 	}
-	xp = GMT_memory (GMT, NULL, n, double);	yp = GMT_memory (GMT, NULL, n, double);
+	xp = gmt_memory (GMT, NULL, n, double);	yp = gmt_memory (GMT, NULL, n, double);
 	if (*geo == 1) {	/* Initializes GMT projection parameters to the -JA settings */
 		GMT->current.proj.projection = GMT_LAMB_AZ_EQ;
 		GMT->current.proj.unit = 1.0;
@@ -215,8 +215,8 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 	}
 	
 	size = GMT_pol_area (xp, yp, n);
-	GMT_free (GMT, xp);
-	GMT_free (GMT, yp);
+	gmt_free (GMT, xp);
+	gmt_free (GMT, yp);
 	if (geo) size *= (GMT->current.map.dist[GMT_MAP_DIST].scale * GMT->current.map.dist[GMT_MAP_DIST].scale);
 	out[GMT_Z] = fabs (size);
 	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
@@ -230,7 +230,7 @@ GMT_LOCAL void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64
 
 	/* Estimate 'average' position */
 	
-	s = GMT_memory (GMT, NULL, n, double);
+	s = gmt_memory (GMT, NULL, n, double);
 	for (i = 1; i < n; i++) {
 		length += gmt_distance (GMT, x[i-1], y[i-1], x[i], y[i]);
 		s[i] = length;
@@ -242,7 +242,7 @@ GMT_LOCAL void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64
 	out[GMT_X] = x[i-1] + f * (x[i] - x[i-1]);
 	out[GMT_Y] = y[i-1] + f * (y[i] - y[i-1]);
 	out[GMT_Z] = length;
-	GMT_free (GMT, s);
+	gmt_free (GMT, s);
 }
 
 GMT_LOCAL int comp_pairs (const void *a, const void *b) {
@@ -404,7 +404,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	
 			separation[0] = 0.0;
 			if (I->mode) {	/* Various items needed to compute median separation */
-				sep = GMT_memory (GMT, NULL, MAX (S->n_rows, Sp->n_rows), double);
+				sep = gmt_memory (GMT, NULL, MAX (S->n_rows, Sp->n_rows), double);
 				low = DBL_MAX;
 				high = -DBL_MAX;
 			}
@@ -466,7 +466,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 					med_close[1] = med_separation[1] / use_length;
 				}
 				else med_close[1] = DBL_MAX;
-				GMT_free (GMT, sep);
+				gmt_free (GMT, sep);
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n", med_separation[1], med_close[1]);
 				k = (med_close[0] <= med_close[1]) ? 0 : 1;	/* Pick the setup with the smallest robust closeness */
 				closest = med_close[k];		/* The longer the segment and the closer they are, the smaller the closeness */
@@ -563,7 +563,7 @@ GMT_LOCAL struct NN_DIST *NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASE
 	uint64_t np = 0, k, tbl, seg, row, col, n_cols;
 	double distance;
 	struct GMT_DATASEGMENT *S = NULL;
-	struct NN_DIST *P = GMT_memory (GMT, NULL, D->n_records, struct NN_DIST);
+	struct NN_DIST *P = gmt_memory (GMT, NULL, D->n_records, struct NN_DIST);
 	
 	n_cols = MIN (D->n_columns, 4);
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
@@ -607,7 +607,7 @@ GMT_LOCAL int compare_nn_info (const void *point_1v, const void *point_2v) {
 GMT_LOCAL struct NN_INFO *NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points) {
 	/* Return revised array of NN ID lookups via sorting on neighbor IDs */
 	uint64_t k;
-	struct NN_INFO *info = (I) ? I : GMT_memory (GMT, NULL, n_points, struct NN_INFO);
+	struct NN_INFO *info = (I) ? I : gmt_memory (GMT, NULL, n_points, struct NN_INFO);
 	for (k = 0; k < n_points; k++) {
 		info[k].sort_rec = k;
 		info[k].orig_rec = int64_abs (NN_dist[k].ID);
@@ -1095,7 +1095,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if (GMT->common.R.active) {
 				int geo = GMT_is_geographic (GMT, GMT_IN) ? 1 : 0;
 				double info[3], d_expect, R_index;
-				struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+				struct GMT_DATASEGMENT *S = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 				gmt_alloc_segment (GMT, S, 5, 2, true);
 				S->coord[GMT_X][0] = S->coord[GMT_X][3] = S->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
 				S->coord[GMT_X][1] = S->coord[GMT_X][2] = GMT->common.R.wesn[XHI];
@@ -1114,8 +1114,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		GMT_free (GMT, NN_dist);	
-		GMT_free (GMT, NN_info);	
+		gmt_free (GMT, NN_dist);	
+		gmt_free (GMT, NN_info);	
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->L.active) {	/* Remove tile lines only */
@@ -1329,10 +1329,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								double *xx = NULL, *yy = NULL, *kk = NULL;
 								struct PAIR *pair = NULL;
 								
-								pair = GMT_memory (GMT, NULL, nx, struct PAIR);
-								xx = GMT_memory (GMT, NULL, nx, double);
-								yy = GMT_memory (GMT, NULL, nx, double);
-								kk = GMT_memory (GMT, NULL, nx, double);
+								pair = gmt_memory (GMT, NULL, nx, struct PAIR);
+								xx = gmt_memory (GMT, NULL, nx, double);
+								yy = gmt_memory (GMT, NULL, nx, double);
+								kk = gmt_memory (GMT, NULL, nx, double);
 								for (px = 0; px < nx; px++) pair[px].node = XC.xnode[1][px], pair[px].pos = px;
 								qsort (pair, nx, sizeof (struct PAIR), comp_pairs);
 								for (px = 0; px < nx; px++) {
@@ -1340,7 +1340,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									yy[px] = XC.y[pair[px].pos];
 									kk[px] = XC.xnode[1][pair[px].pos];
 								}
-								GMT_free (GMT, pair);
+								gmt_free (GMT, pair);
 								in = GMT_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows);
 								go = first = true;
 								row0 = px = 0;
@@ -1391,9 +1391,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 										go = false;
 									}
 								}
-								GMT_free (GMT, xx);
-								GMT_free (GMT, yy);
-								GMT_free (GMT, kk);
+								gmt_free (GMT, xx);
+								gmt_free (GMT, yy);
+								gmt_free (GMT, kk);
 							}
 							else {	/* Just report */
 								if (mseg){
@@ -1424,7 +1424,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								}
 							}
 						}
-						GMT_free (GMT, ylist2);
+						gmt_free (GMT, ylist2);
 						if (Ctrl->S.mode == POL_UNION) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Computing polygon union not implemented yet\n");
 						}
@@ -1433,7 +1433,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						}
 					}
 				}
-				GMT_free (GMT, ylist1);
+				gmt_free (GMT, ylist1);
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
@@ -1473,11 +1473,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			C = D;	/* Compare with itself */
 			same_feature = true;
 			from = in;
-			S2 = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+			S2 = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			gmt_alloc_segment (GMT, S2, 0, C->n_columns, true);
 		}
-		Info = GMT_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
-		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = GMT_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
+		Info = gmt_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
+		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = gmt_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 			
 		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 			Return (API->error);	/* Registers default output destination, unless already set */
@@ -1543,8 +1543,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			for (col = 0; col < S2->n_columns; col++) S2->coord[col] = NULL;	/* Since they were not allocated */
 			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 		}
-		for (tbl = 0; tbl < C->n_tables; tbl++) GMT_free (GMT, Info[tbl]);
-		GMT_free (GMT, Info);
+		for (tbl = 0; tbl < C->n_tables; tbl++) gmt_free (GMT, Info[tbl]);
+		gmt_free (GMT, Info);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
@@ -1580,7 +1580,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				for (p = 0; p < np; p++) gmt_xy_to_geo (GMT, &cp[GMT_X][p], &cp[GMT_Y][p], cp[GMT_X][p], cp[GMT_Y][p]);
 				for (col = 0; col < 2; col++) {
 					GMT_memcpy (S->coord[col], cp[col], np, double);
-					GMT_free (GMT, cp[col]);
+					gmt_free (GMT, cp[col]);
 				}
 				S->n_rows = np;
 			}
@@ -1620,7 +1620,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (Ctrl->N.mode == 2) gmt_adjust_dataset (GMT, D, D->n_columns + 1);	/* Add one more output column */
 		
 		T = C->table[0];	/* Only one input file so only one table */
-		count = GMT_memory (GMT, NULL, D->n_segments, unsigned int);
+		count = gmt_memory (GMT, NULL, D->n_segments, unsigned int);
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
@@ -1693,7 +1693,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &C) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_free (GMT, count);
+		gmt_free (GMT, count);
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active && Ctrl->S.mode == POL_SPLIT) {	/* Split polygons at dateline */
@@ -1712,7 +1712,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			T = Dout->table[tbl];
 			n_segs = D->table[tbl]->n_segments;
 			Dout->table[tbl]->n_segments = 0;
-			T->segment = GMT_memory (GMT, NULL, n_segs, struct GMT_DATASEGMENT *);	/* Need at least this many segments */
+			T->segment = gmt_memory (GMT, NULL, n_segs, struct GMT_DATASEGMENT *);	/* Need at least this many segments */
 			for (seg = seg_out = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];	/* Current input segment */
 				if (S->n_rows == 0) continue;	/* Just skip empty segments */
@@ -1722,7 +1722,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (Dout->table[tbl]->n_segments > n_segs) {	/* Must allocate more segment space */
 					uint64_t old_n_segs = n_segs;
 					n_segs = Dout->table[tbl]->n_segments;
-					T->segment = GMT_memory (GMT, T->segment, n_segs, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
+					T->segment = gmt_memory (GMT, T->segment, n_segs, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
 					GMT_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_DATASEGMENT *);	/* Set to NULL */
 				}
 				/* Here there are space for all segments if new ones are added via splitting */
@@ -1732,7 +1732,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						//gmt_free_segment (GMT, &(T->segment[seg_out]), Dout->alloc_mode);
 						T->segment[seg_out++] = L[kseg];	/* Add the remaining segments to the end */
 					}
-					GMT_free (GMT, L);
+					gmt_free (GMT, L);
 				}
 				else {	/* Just duplicate */
 					T->segment[seg_out++] = gmt_duplicate_segment (GMT, S);

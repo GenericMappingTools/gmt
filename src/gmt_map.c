@@ -1344,7 +1344,7 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
-	GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
+	gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
 	/* Get Cartesian map coordinates */
 
@@ -1369,22 +1369,22 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+				if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
 			}
 		}
 		if (polygon && GMT_polygon_is_open (GMT, xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
 	}
 
-	GMT_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
-	GMT_free (GMT, ytmp[1]);
+	gmt_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
+	gmt_free (GMT, ytmp[1]);
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
 		n_alloc = m;
-		GMT_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
+		gmt_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
 		*x = xtmp[0];
 		*y = ytmp[0];
 #ifdef DEBUG
@@ -1396,8 +1396,8 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 #endif
 	}
 	else {	/* Nothing survived the clipping - free the output arrays */
-		GMT_free (GMT, xtmp[0]);
-		GMT_free (GMT, ytmp[0]);
+		gmt_free (GMT, xtmp[0]);
+		gmt_free (GMT, ytmp[0]);
 	}
 
 	return (m);
@@ -1572,7 +1572,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
-	GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
+	gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
 	/* Make copy of lon/lat coordinates */
 
@@ -1581,8 +1581,8 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 	/* Preallocate space for crossing information */
 
-	x_index = GMT_malloc (GMT, NULL, GMT_TINY_CHUNK, &n_x_alloc, uint64_t);
-	x_type = GMT_malloc (GMT, NULL,  GMT_TINY_CHUNK, &n_t_alloc, char);
+	x_index = gmt_malloc (GMT, NULL, GMT_TINY_CHUNK, &n_x_alloc, uint64_t);
+	x_type = gmt_malloc (GMT, NULL,  GMT_TINY_CHUNK, &n_t_alloc, char);
 
 #ifdef DEBUG
 	if (dump) {
@@ -1600,7 +1600,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		if (side%2 && periodic) {	/* No clipping can take place on w or e border; just copy all and go to next side */
 			m = n;
-			if (m == n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 			GMT_memcpy (xtmp[out], xtmp[in], m, double);
 			GMT_memcpy (ytmp[out], ytmp[in], m, double);
 			continue;
@@ -1625,17 +1625,17 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
 				x_type[n_cross] = (char)cross;	/* -1 going out, +1 going in */
 				if (++n_cross == n_x_alloc) {
-					x_index = GMT_malloc (GMT, x_index, n_cross, &n_x_alloc, uint64_t);
-					x_type = GMT_malloc (GMT, x_type,  n_cross, &n_t_alloc, char);
+					x_index = gmt_malloc (GMT, x_index, n_cross, &n_x_alloc, uint64_t);
+					x_type = gmt_malloc (GMT, x_type,  n_cross, &n_t_alloc, char);
 				}
 			}
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+				if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
 			}
 		}
 		if (polygon && GMT_polygon_is_open (GMT, xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
 		if (polygon && curved && n_cross) {	/* Must resample between crossing points */
@@ -1649,14 +1649,14 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 			/* First copy the current polygon */
 
-			GMT_malloc2 (GMT, x_cpy, y_cpy, m, &np, double);
+			gmt_malloc2 (GMT, x_cpy, y_cpy, m, &np, double);
 			GMT_memcpy (x_cpy, xtmp[out], m, double);
 			GMT_memcpy (y_cpy, ytmp[out], m, double);
 
 			for (p = np = 0; p < n_cross; p++) {	/* Process each crossing point */
 				if (last_index < x_index[p]) {	/* Copy over segment from were we left off to this crossing point */
 					add = x_index[p] - last_index;
-					if ((new_n = (np+add)) >= n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+					if ((new_n = (np+add)) >= n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
 					GMT_memcpy (&xtmp[out][np], &x_cpy[last_index], add, double);
 					GMT_memcpy (&ytmp[out][np], &y_cpy[last_index], add, double);
 					np += add;
@@ -1673,34 +1673,34 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 							stop_lon -= 360.0;
 					}
 					add = gmt_map_path (GMT, start_lon, y_cpy[x_index[p]], stop_lon, y_cpy[x_index[p_next]], &x_add, &y_add);
-					if ((new_n = (np+add)) >= n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+					if ((new_n = (np+add)) >= n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
 					GMT_memcpy (&xtmp[out][np], x_add, add, double);
 					GMT_memcpy (&ytmp[out][np], y_add, add, double);
-					if (add) { GMT_free (GMT, x_add);	GMT_free (GMT, y_add); }
+					if (add) { gmt_free (GMT, x_add);	gmt_free (GMT, y_add); }
 					np += add;
 					last_index = x_index[p_next];
 				}
 			}
 			if (x_index[0] > 0) {	/* First point was clean inside, must add last connection */
 				add = m - last_index;
-				if ((new_n = (np+add)) >= n_alloc) GMT_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+				if ((new_n = (np+add)) >= n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
 				GMT_memcpy (&xtmp[out][np], &x_cpy[last_index], add, double);
 				GMT_memcpy (&ytmp[out][np], &y_cpy[last_index], add, double);
 				np += add;
 			}
 			m = np;	/* New total of points */
-			GMT_free (GMT, x_cpy);	GMT_free (GMT, y_cpy);
+			gmt_free (GMT, x_cpy);	gmt_free (GMT, y_cpy);
 		}
 	}
 
-	GMT_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
-	GMT_free (GMT, ytmp[1]);
-	GMT_free (GMT, x_index);	/* Free the pairs of arrays that holds the crossing info */
-	GMT_free (GMT, x_type);
+	gmt_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
+	gmt_free (GMT, ytmp[1]);
+	gmt_free (GMT, x_index);	/* Free the pairs of arrays that holds the crossing info */
+	gmt_free (GMT, x_type);
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
 		n_alloc = m;
-		GMT_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
+		gmt_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
 		/* Convert to map coordinates */
 		for (i = 0; i < m; i++) gmt_geo_to_xy (GMT, xtmp[0][i], ytmp[0][i], &xtmp[0][i], &ytmp[0][i]);
 
@@ -1715,8 +1715,8 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 #endif
 	}
 	else {	/* Nothing survived the clipping - free the output arrays */
-		GMT_free (GMT, xtmp[0]);
-		GMT_free (GMT, ytmp[0]);
+		gmt_free (GMT, xtmp[0]);
+		gmt_free (GMT, ytmp[0]);
 	}
 
 	return (m);
@@ -1740,7 +1740,7 @@ GMT_LOCAL uint64_t map_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, 
 	da = d_az / (n_arc - 1);	/* Reset da to get exact steps */
 	if (n_arc <= 2) return (0);	/* Arc is too short to have intermediate points */
 	n_arc -= 2;	/* We do not include the end points since these are the crossing points handled in the calling function */
-	GMT_malloc2 (GMT, xx, yy, n_arc, NULL, double);
+	gmt_malloc2 (GMT, xx, yy, n_arc, NULL, double);
 	for (k = 1; k <= n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
 		sincosd (az1 + k * da, &yr, &xr);
 		pt = (this_way) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
@@ -1783,7 +1783,7 @@ GMT_LOCAL uint64_t map_radial_clip (struct GMT_CTRL *GMT, double *lon, double *l
 	if (np == 0) return (0);
 
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
-		GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+		gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 		gmt_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
 		n++;
 	}
@@ -1792,7 +1792,7 @@ GMT_LOCAL uint64_t map_radial_clip (struct GMT_CTRL *GMT, double *lon, double *l
 		this_side = gmt_map_outside (GMT, lon[i], lat[i]);
 		if (map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides)) {
 			if (this_side) {	/* Crossing boundary and leaving circle: Add exit point to the path */
-				if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+				if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			}
 			end_x[nx] = xc[0] - GMT->current.proj.r;	end_y[nx] = yc[0] - GMT->current.proj.r;
@@ -1809,40 +1809,40 @@ GMT_LOCAL uint64_t map_radial_clip (struct GMT_CTRL *GMT, double *lon, double *l
 				 * inside the polygon.  This would require that GMT_inonout_sphpol be called.
 				 */
 				if ((n_arc = map_radial_boundary_arc (GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
-					if ((n + n_arc) >= n_alloc) GMT_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
+					if ((n + n_arc) >= n_alloc) gmt_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 					GMT_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 					GMT_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
 					n += n_arc;	/* Number of arc points added (end points are done separately) */
-					GMT_free (GMT, xarc);	GMT_free (GMT,  yarc);
+					gmt_free (GMT, xarc);	gmt_free (GMT,  yarc);
 				}
 				add_boundary = false;
 				nx -= 2;	/* Done with those two crossings */
 			}
 			if (!this_side) {	/* Crossing boundary and entering circle: Add entry point to the path */
-				if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+				if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			}
 		}
 		gmt_geo_to_xy (GMT, lon[i], lat[i], &xr, &yr);
 		if (!this_side) {	/* Only add points actually inside the map to the path */
-			if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+			if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 			xx[n] = xr;	yy[n] = yr;	n++;
 		}
 	}
 
 	if (nx == 2) {	/* Must close polygon by adding boundary arc */
 		if ((n_arc = map_radial_boundary_arc (GMT, this_side, end_x, end_y, &xarc, &yarc)) > 0) {
-			if ((n + n_arc) >= n_alloc) GMT_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
+			if ((n + n_arc) >= n_alloc) gmt_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 			GMT_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 			GMT_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
 			n += n_arc;	/* Number of arc points added (end points are done separately) */
-			GMT_free (GMT, xarc);	GMT_free (GMT,  yarc);
+			gmt_free (GMT, xarc);	gmt_free (GMT,  yarc);
 		}
-		if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+		if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 		xx[n] = xx[0];	yy[n] = yy[0];	n++;	/* Close the polygon */
 	}
 	n_alloc = n;
-	GMT_malloc2 (GMT, xx, yy, 0U, &n_alloc, double);
+	gmt_malloc2 (GMT, xx, yy, 0U, &n_alloc, double);
 	*x = xx;
 	*y = yy;
 #ifdef DEBUG
@@ -4587,7 +4587,7 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 	dx = (xmax - xmin) / GMT->current.map.n_lon_nodes;
 	dy = (ymax - ymin) / GMT->current.map.n_lat_nodes;
 	/* Need temp array to hold all the longitudes we compute */
-	lon = GMT_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double);
+	lon = gmt_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double);
 	w = s = DBL_MAX;	e = n = -DBL_MAX;
 	for (i = k = 0; i <= GMT->current.map.n_lon_nodes; i++) {
 		x = (i == GMT->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
@@ -4604,7 +4604,7 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 		if (lat < s) s = lat;	if (lat > n) n = lat;
 	}
 	gmt_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
-	GMT_free (GMT, lon);
+	gmt_free (GMT, lon);
 
 	/* Then check if one or both poles are inside map; then the above wont be correct */
 
@@ -5913,7 +5913,7 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 		out += (abs (GMT->current.map.this_x_status) == 2 || abs (GMT->current.map.this_y_status) == 2);
 	}
 	if (out == 0) {		/* All points are inside map boundary; no clipping required */
-		GMT_malloc2 (GMT, xx, yy, np, NULL, double);
+		gmt_malloc2 (GMT, xx, yy, np, NULL, double);
 		for (i = 0; i < np; i++) gmt_geo_to_xy (GMT, lon[i], lat[i], &xx[i], &yy[i]);
 		*x = xx;	*y = yy;	n = np;
 	}
@@ -5935,8 +5935,8 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				if (!ok) {
 					/* Polygon does NOT contain the region and we delete it */
 					n = 0;
-					GMT_free (GMT, *x);
-					GMT_free (GMT, *y);
+					gmt_free (GMT, *x);
+					gmt_free (GMT, *y);
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
 			}
@@ -5944,8 +5944,8 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
 				   This results in a rectangular closed polygon after the clipping. */
 				n = 0;
-				GMT_free (GMT, *x);
-				GMT_free (GMT, *y);
+				gmt_free (GMT, *x);
+				gmt_free (GMT, *y);
 			}
 		}
 	}
@@ -5969,13 +5969,13 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
-	L = GMT_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
+	L = gmt_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
 
 	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		if (S->n_rows == 0) continue;	/* Nothing! */
-		L[side] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+		L[side] = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 		gmt_alloc_segment (GMT, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
 		m = 0;		/* Start with nuthin' */
@@ -6638,9 +6638,9 @@ uint64_t *gmt_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 	for (n_seg = 0, i = 1; i < *nn; i++) {
 		if ((l_or_r = map_jump_x (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
-				pos = GMT_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
+				pos = gmt_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
 				n_alloc = n_seg;
-				way = GMT_malloc (GMT, way, n_seg, &n_alloc, char);
+				way = gmt_malloc (GMT, way, n_seg, &n_alloc, char);
 			}
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
 			way[n_seg] = (char)l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */
@@ -6656,8 +6656,8 @@ uint64_t *gmt_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 	n = *nn;				/* Original line count */
 	if (add_crossings) n += 2 * n_seg;	/* Must add 2 crossing points per jump */
 	n_alloc = 0;
-	GMT_malloc2 (GMT, x, y, n, &n_alloc, double);
-	split = GMT_memory (GMT, NULL, n_seg+2, uint64_t);
+	gmt_malloc2 (GMT, x, y, n, &n_alloc, double);
+	split = gmt_memory (GMT, NULL, n_seg+2, uint64_t);
 	split[0] = n_seg;
 
 	x[0] = xin[0];	y[0] = yin[0];
@@ -6681,10 +6681,10 @@ uint64_t *gmt_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 
 	/* Time to return the pointers to new data */
 
-	GMT_free (GMT, pos);
-	GMT_free (GMT, way);
-	GMT_free (GMT, xin);
-	GMT_free (GMT, yin);
+	gmt_free (GMT, pos);
+	gmt_free (GMT, way);
+	gmt_free (GMT, xin);
+	gmt_free (GMT, yin);
 	*xx = x;
 	*yy = y;
 	*nn = j;
@@ -6715,7 +6715,7 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 	/* Close graticule from point 0 through point 4 */
 
 	if (GMT_IS_RECT_GRATICULE(GMT)) {	/* Simple rectangle in this projection */
-		GMT_malloc2 (GMT, xx, yy, 5U, NULL, double);
+		gmt_malloc2 (GMT, xx, yy, 5U, NULL, double);
 		xx[0] = xx[4] = px0;	xx[1] = px1;	xx[2] = px2;	xx[3] = px3;
 		yy[0] = yy[1] = yy[4] = s;	yy[2] = yy[3] = n;
 		np = 5U;
@@ -6728,7 +6728,7 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 		/* SOUTH BORDER */
 
 		if (GMT_is_geographic (GMT, GMT_IN) && s == -90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
-			GMT_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
+			gmt_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
 			xx[0] = px1;	yy[0] = -90.0;
 		}
 		else
@@ -6739,40 +6739,40 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		add = gmt_lonpath (GMT, px1, s, n, &xtmp, &ytmp);	/* east (or west if dir == -1) */
 		k = n_alloc + add;
-		GMT_malloc2 (GMT, xx, yy, k, &n_alloc, double);
+		gmt_malloc2 (GMT, xx, yy, k, &n_alloc, double);
 		GMT_memcpy (&xx[np], xtmp, add, double);
 		GMT_memcpy (&yy[np], ytmp, add, double);
 		np += add;
-		GMT_free (GMT, xtmp);	GMT_free (GMT, ytmp);
+		gmt_free (GMT, xtmp);	gmt_free (GMT, ytmp);
 
 		/* NORTH BORDER */
 
 		if (GMT_is_geographic (GMT, GMT_IN) && n == 90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
 			add = 0;
-			GMT_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
+			gmt_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
 			xtmp[0] = px3;	ytmp[0] = +90.0;
 		}
 		else
 			add = gmt_latpath (GMT, n, px2, px3, &xtmp, &ytmp);	/* North */
 
 		k = n_alloc + add;
-		GMT_malloc2 (GMT, xx, yy, k, &n_alloc, double);
+		gmt_malloc2 (GMT, xx, yy, k, &n_alloc, double);
 		GMT_memcpy (&xx[np], xtmp, add, double);
 		GMT_memcpy (&yy[np], ytmp, add, double);
 		np += add;
-		GMT_free (GMT, xtmp);	GMT_free (GMT, ytmp);
+		gmt_free (GMT, xtmp);	gmt_free (GMT, ytmp);
 
 		/* WEST (OR EAST) BORDER */
 
 		add = gmt_lonpath (GMT, px3, n, s, &xtmp, &ytmp);	/* west */
 		k = n_alloc + add;
-		GMT_malloc2 (GMT, xx, yy, k, &n_alloc, double);
+		gmt_malloc2 (GMT, xx, yy, k, &n_alloc, double);
 		GMT_memcpy (&xx[np], xtmp, add, double);
 		GMT_memcpy (&yy[np], ytmp, add, double);
 		np += add;
 		n_alloc = np;
-		GMT_free (GMT, xtmp);	GMT_free (GMT, ytmp);
-		GMT_malloc2 (GMT, xx, yy, 0, &n_alloc, double);
+		gmt_free (GMT, xtmp);	gmt_free (GMT, ytmp);
+		gmt_malloc2 (GMT, xx, yy, 0, &n_alloc, double);
 	}
 
 	if (check && GMT_x_is_lon (GMT, GMT_IN)) {
@@ -6807,7 +6807,7 @@ uint64_t gmt_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double lat2
 	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
 	if (GMT->current.map.meridian_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
-		GMT_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
+		gmt_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlon[0] = tlon[1] = lon;
 		tlat[0] = lat1;	tlat[1] = lat2;
 		*x = tlon;
@@ -6816,7 +6816,7 @@ uint64_t gmt_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double lat2
 	}
 
 	if (GMT->current.map.meridian_straight) {	/* Easy, just a straight line connect via quarter-points */
-		GMT_malloc2 (GMT, tlon, tlat, 5, &n_alloc, double);
+		gmt_malloc2 (GMT, tlon, tlat, 5, &n_alloc, double);
 		tlon[0] = tlon[1] = tlon[2] = tlon[3] = tlon[4] = lon;
 		dlat = lat2 - lat1;
 		tlat[0] = lat1;	tlat[1] = lat1 + 0.25 * dlat;	tlat[2] = lat1 + 0.5 * dlat;
@@ -6836,7 +6836,7 @@ uint64_t gmt_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double lat2
 	pos = (dlat0 > 0.0);
 
 	k = n_alloc;	n_alloc = 0;
-	GMT_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
+	gmt_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
 
 	tlon[0] = lon;
 	tlat[0] = lat1;
@@ -6845,8 +6845,8 @@ uint64_t gmt_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double lat2
 		n++;
 		if (n == n_alloc-1) {
 			n_alloc += GMT_SMALL_CHUNK;
-			tlon = GMT_memory (GMT, tlon, n_alloc, double);
-			tlat = GMT_memory (GMT, tlat, n_alloc, double);
+			tlon = gmt_memory (GMT, tlon, n_alloc, double);
+			tlat = gmt_memory (GMT, tlat, n_alloc, double);
 		}
 		n_try = 0;
 		keep_trying = true;
@@ -6876,8 +6876,8 @@ uint64_t gmt_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double lat2
 	n++;
 
 	if (n != n_alloc) {
-		tlon = GMT_memory (GMT, tlon, n, double);
-		tlat = GMT_memory (GMT, tlat, n, double);
+		tlon = gmt_memory (GMT, tlon, n, double);
+		tlat = gmt_memory (GMT, tlat, n, double);
 	}
 
 	*x = tlon;	*y = tlat;
@@ -6893,14 +6893,14 @@ uint64_t gmt_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double lon2
 	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
 	if (GMT->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
-		GMT_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
+		gmt_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlat[0] = tlat[1] = lat;
 		tlon[0] = lon1;	tlon[1] = lon2;
 		*x = tlon;	*y = tlat;
 		return (2ULL);
 	}
 	if (GMT->current.map.parallel_straight) {	/* Easy, just a straight line connection via quarter points */
-		GMT_malloc2 (GMT, tlon, tlat, 5U, NULL, double);
+		gmt_malloc2 (GMT, tlon, tlat, 5U, NULL, double);
 		tlat[0] = tlat[1] = tlat[2] = tlat[3] = tlat[4] = lat;
 		dlon = lon2 - lon1;
 		tlon[0] = lon1;	tlon[1] = lon1 + 0.25 * dlon;	tlon[2] = lon1 + 0.5 * dlon;
@@ -6917,13 +6917,13 @@ uint64_t gmt_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double lon2
 	pos = (dlon0 > 0.0);
 
 	k = n_alloc;	n_alloc = 0;
-	GMT_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
+	gmt_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
 	tlon[0] = lon1;	tlat[0] = lat;
 	gmt_geo_to_xy (GMT, tlon[0], tlat[0], &x0, &y0);
 	n = 0;
 	while ((pos && (tlon[n] < lon2)) || (!pos && (tlon[n] > lon2))) {
 		n++;
-		if (n == n_alloc) GMT_malloc2 (GMT, tlon, tlat, n, &n_alloc, double);
+		if (n == n_alloc) gmt_malloc2 (GMT, tlon, tlat, n, &n_alloc, double);
 		n_try = 0;
 		keep_trying = true;
 		dlon = dlon0;
@@ -6950,7 +6950,7 @@ uint64_t gmt_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double lon2
 	tlat[n] = lat;
 	n++;
 	n_alloc = n;
-	GMT_malloc2 (GMT, tlon, tlat, 0, &n_alloc, double);
+	gmt_malloc2 (GMT, tlon, tlat, 0, &n_alloc, double);
 
 	*x = tlon;	*y = tlat;
 	return (n);
@@ -7026,7 +7026,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		if (n_sections == 2) k = j;	/* Start of 2nd section */
 	}
 	if (n_sections == 2 && doubleAlmostEqualZero (GMT->current.plot.x[0], GMT->current.plot.x[np-1]) && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
-		double *tmp = GMT_memory (GMT, NULL, np, double);
+		double *tmp = gmt_memory (GMT, NULL, np, double);
 		/* Shuffle x-array safely */
 		GMT_memcpy (tmp, &GMT->current.plot.x[k], np-k, double);
 		GMT_memcpy (&tmp[np-k], GMT->current.plot.x, k, double);
@@ -7038,7 +7038,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		/* Change PSL_MOVE to PSL_DRAW at start of 2nd section */
 		GMT->current.plot.pen[k] = PSL_DRAW;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_geo_to_xy_line: Clipping in two separate abutting lines that were joined into a single line\n");
-		GMT_free (GMT, tmp);
+		gmt_free (GMT, tmp);
 	}
 
 	return (np);
@@ -7053,7 +7053,7 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 	char *flag = NULL;
 
 	if (n < 3) return (n);	/* Nothing to do */
-	flag = GMT_memory (GMT, NULL, n, char);
+	flag = gmt_memory (GMT, NULL, n, char);
 
 	dx = x[1] - x[0];
 	old_slope = (doubleAlmostEqualZero (x[1], x[0])) ? copysign (HALF_DBL_MAX, y[1] - y[0]) : (y[1] - y[0]) / dx;
@@ -7075,7 +7075,7 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 			j++;
 		}
 	}
-	GMT_free (GMT, flag);
+	gmt_free (GMT, flag);
 
 	return (j);
 }
@@ -7180,10 +7180,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (GMT_IS_RECT_GRATICULE (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = GMT_memory (GMT, NULL, I->header->nx, double);
-		y_in_proj  = GMT_memory (GMT, NULL, I->header->ny, double);
-		x_out_proj = GMT_memory (GMT, NULL, O->header->nx, double);
-		y_out_proj = GMT_memory (GMT, NULL, O->header->ny, double);
+		x_in_proj  = gmt_memory (GMT, NULL, I->header->nx, double);
+		y_in_proj  = gmt_memory (GMT, NULL, I->header->ny, double);
+		x_out_proj = gmt_memory (GMT, NULL, O->header->nx, double);
+		y_out_proj = gmt_memory (GMT, NULL, O->header->ny, double);
 		if (inverse) {
 			GMT_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			GMT_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -7211,7 +7211,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int nx = O->header->nx, ny = O->header->ny;
-		nz = GMT_memory (GMT, NULL, O->header->size, short int);
+		nz = gmt_memory (GMT, NULL, O->header->size, short int);
 		GMT_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (GMT)) y_proj = y_in_proj[row_in];
 			GMT_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -7301,17 +7301,17 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Time to clean up our mess */
 
-	GMT_free (GMT, x_in);
-	GMT_free (GMT, y_in);
-	GMT_free (GMT, x_out);
-	GMT_free (GMT, y_out);
+	gmt_free (GMT, x_in);
+	gmt_free (GMT, y_in);
+	gmt_free (GMT, x_out);
+	gmt_free (GMT, y_out);
 	if (GMT_IS_RECT_GRATICULE(GMT)) {
-		GMT_free (GMT, x_in_proj);
-		GMT_free (GMT, y_in_proj);
-		GMT_free (GMT, x_out_proj);
-		GMT_free (GMT, y_out_proj);
+		gmt_free (GMT, x_in_proj);
+		gmt_free (GMT, y_in_proj);
+		gmt_free (GMT, x_out_proj);
+		gmt_free (GMT, y_out_proj);
 	}
-	if (GMT->common.n.antialias) GMT_free (GMT, nz);
+	if (GMT->common.n.antialias) gmt_free (GMT, nz);
 
 	return (GMT_NOERROR);
 }
@@ -7361,10 +7361,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (GMT_IS_RECT_GRATICULE (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = GMT_memory (GMT, NULL, I->header->nx, double);
-		y_in_proj  = GMT_memory (GMT, NULL, I->header->ny, double);
-		x_out_proj = GMT_memory (GMT, NULL, O->header->nx, double);
-		y_out_proj = GMT_memory (GMT, NULL, O->header->ny, double);
+		x_in_proj  = gmt_memory (GMT, NULL, I->header->nx, double);
+		y_in_proj  = gmt_memory (GMT, NULL, I->header->ny, double);
+		x_out_proj = gmt_memory (GMT, NULL, O->header->nx, double);
+		y_out_proj = gmt_memory (GMT, NULL, O->header->ny, double);
 		if (inverse) {
 			GMT_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			GMT_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -7393,7 +7393,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int nx = O->header->nx, ny = O->header->ny;
-		nz = GMT_memory (GMT, NULL, O->header->size, short int);
+		nz = gmt_memory (GMT, NULL, O->header->size, short int);
 		GMT_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (GMT_IS_RECT_GRATICULE (GMT)) y_proj = y_in_proj[row_in];
 			GMT_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -7468,17 +7468,17 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Time to clean up our mess */
 
-	GMT_free (GMT, x_in);
-	GMT_free (GMT, y_in);
-	GMT_free (GMT, x_out);
-	GMT_free (GMT, y_out);
+	gmt_free (GMT, x_in);
+	gmt_free (GMT, y_in);
+	gmt_free (GMT, x_out);
+	gmt_free (GMT, y_out);
 	if (GMT_IS_RECT_GRATICULE(GMT)) {
-		GMT_free (GMT, x_in_proj);
-		GMT_free (GMT, y_in_proj);
-		GMT_free (GMT, x_out_proj);
-		GMT_free (GMT, y_out_proj);
+		gmt_free (GMT, x_in_proj);
+		gmt_free (GMT, y_in_proj);
+		gmt_free (GMT, x_out_proj);
+		gmt_free (GMT, y_out_proj);
 	}
-	if (GMT->common.n.antialias) GMT_free (GMT, nz);
+	if (GMT->common.n.antialias) gmt_free (GMT, nz);
 
 	return (GMT_NOERROR);
 }
@@ -7599,8 +7599,8 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		}
 	}
 
-	work_x = GMT_memory (GMT, NULL, np, double);
-	work_y = GMT_memory (GMT, NULL, np, double);
+	work_x = gmt_memory (GMT, NULL, np, double);
+	work_y = gmt_memory (GMT, NULL, np, double);
 
 	if (GMT->common.R.oblique) {
 		work_x[0] = work_x[3] = GMT->current.proj.rect[XLO];	work_y[0] = work_y[1] = GMT->current.proj.rect[YLO];
@@ -8073,7 +8073,7 @@ double * gmt_dist_array (struct GMT_CTRL *GMT, double x[], double y[], uint64_t 
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 
 	if (n == 0) return (NULL);
-	d = GMT_memory (GMT, NULL, n, double);
+	d = gmt_memory (GMT, NULL, n, double);
 	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
 	for (this_p = 1, prev = 0; this_p < n; this_p++) {
 		xy_not_NaN = !(GMT_is_dnan (x[this_p]) || GMT_is_dnan (y[this_p]));
@@ -8109,7 +8109,7 @@ double * gmt_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_
 	if (dist_flag < 0 || dist_flag > 3) return (NULL);
 
 	do_scale = (scale != 1.0);
-	d = GMT_memory (GMT, NULL, n, double);
+	d = gmt_memory (GMT, NULL, n, double);
 	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
 	for (this_p = 1, prev = 0; this_p < n; this_p++) {
 		xy_not_NaN = !(GMT_is_dnan (x[this_p]) || GMT_is_dnan (y[this_p]));
@@ -8158,7 +8158,7 @@ unsigned int gmt_map_latcross (struct GMT_CTRL *GMT, double lat, double west, do
 	struct GMT_XINGS *X = NULL;
 
 
-	X = GMT_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
+	X = gmt_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
 
 	lon_old = west - 2.0 * GMT_CONV4_LIMIT;
 	gmt_map_outside (GMT, lon_old, lat);
@@ -8191,7 +8191,7 @@ unsigned int gmt_map_latcross (struct GMT_CTRL *GMT, double lat, double west, do
 			nc++;
 			if (nc == n_alloc) {
 				n_alloc <<= 1;
-				X = GMT_memory (GMT, X, n_alloc, struct GMT_XINGS);
+				X = gmt_memory (GMT, X, n_alloc, struct GMT_XINGS);
 			}
 			go = false;
 		}
@@ -8200,11 +8200,11 @@ unsigned int gmt_map_latcross (struct GMT_CTRL *GMT, double lat, double west, do
 	}
 
 	if (nc > 0) {
-		X = GMT_memory (GMT, X, nc, struct GMT_XINGS);
+		X = gmt_memory (GMT, X, nc, struct GMT_XINGS);
 		*xings = X;
 	}
 	else
-		GMT_free (GMT, X);
+		gmt_free (GMT, X);
 
 	return (nc);
 }
@@ -8217,7 +8217,7 @@ unsigned int gmt_map_loncross (struct GMT_CTRL *GMT, double lon, double south, d
 	double lat, lat_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
 
-	X = GMT_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
+	X = gmt_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
 
 	lat_old = ((south - (2.0 * GMT_CONV4_LIMIT)) >= -90.0) ? south - 2.0 * GMT_CONV4_LIMIT : south;	/* Outside */
 	if ((north + 2.0 * GMT_CONV4_LIMIT) <= 90.0) north += 2.0 * GMT_CONV4_LIMIT;
@@ -8250,7 +8250,7 @@ unsigned int gmt_map_loncross (struct GMT_CTRL *GMT, double lon, double south, d
 			nc++;
 			if (nc == n_alloc) {
 				n_alloc <<= 1;
-				X = GMT_memory (GMT, X, n_alloc, struct GMT_XINGS);
+				X = gmt_memory (GMT, X, n_alloc, struct GMT_XINGS);
 			}
 			go = false;
 		}
@@ -8259,11 +8259,11 @@ unsigned int gmt_map_loncross (struct GMT_CTRL *GMT, double lon, double south, d
 	}
 
 	if (nc > 0) {
-		X = GMT_memory (GMT, X, nc, struct GMT_XINGS);
+		X = gmt_memory (GMT, X, nc, struct GMT_XINGS);
 		*xings = X;
 	}
 	else
-		GMT_free (GMT, X);
+		gmt_free (GMT, X);
 
 	return (nc);
 }
@@ -8621,7 +8621,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;
 	
-	S = GMT_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
+	S = gmt_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
 	if (gmt_alloc_segment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
 
 	plat = gmt_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */

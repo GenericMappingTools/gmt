@@ -100,7 +100,7 @@ struct MAKECPT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MAKECPT_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct MAKECPT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct MAKECPT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
@@ -112,7 +112,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Dea
 	gmt_str_free (C->Out.file);
 	gmt_str_free (C->C.file);
 	gmt_str_free (C->T.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -374,7 +374,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		else
 			nz = irint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
 
-		z = GMT_memory (GMT, NULL, nz, double);
+		z = gmt_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = Ctrl->T.low + i * Ctrl->T.inc;	/* Desired z values */
 	}
 	else if (Ctrl->E.active) {
@@ -390,7 +390,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 		col = (unsigned int)(D->n_columns - 1);	/* Use the last column of the input as z */
 		nz = Ctrl->E.levels;
 		inc = (D->max[col] - D->min[col]) / (nz - 1);
-		z = GMT_memory (GMT, NULL, nz, double);
+		z = gmt_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = D->min[col] + i * inc;	/* Desired z values */
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
@@ -398,7 +398,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just copy what was in the CPT file */
 		nz = Pin->n_colors + 1;
-		z = GMT_memory (GMT, NULL, nz, double);
+		z = gmt_memory (GMT, NULL, nz, double);
 		if (Ctrl->I.active) {
 			/* Reverse the intervals (only relavant for non-equidistant color maps) */
 			for (i = 0; i < nz-1; i++) z[i] = Pin->range[0].z_low + Pin->range[Pin->n_colors-1].z_high - Pin->range[Pin->n_colors-1-i].z_high;
@@ -415,7 +415,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	Pout = GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 
-	if (!Ctrl->T.file) GMT_free (GMT, z);
+	if (!Ctrl->T.file) gmt_free (GMT, z);
 
 	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 

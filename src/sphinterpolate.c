@@ -68,14 +68,14 @@ struct SPHINTERPOLATE_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPHINTERPOLATE_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct SPHINTERPOLATE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct SPHINTERPOLATE_CTRL);
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg) {
@@ -267,7 +267,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	GMT->session.min_meminc = GMT_INITIAL_MEM_ROW_ALLOC;	/* Start by allocating a 32 Mb chunk */ 
 
-	GMT_malloc4 (GMT, xx, yy, zz, ww, GMT_CHUNK, &n_alloc, double);
+	gmt_malloc4 (GMT, xx, yy, zz, ww, GMT_CHUNK, &n_alloc, double);
 	n = 0;
 	w_min = DBL_MAX;	w_max = -DBL_MAX;
 	
@@ -289,7 +289,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
 		}
-		if (++n == n_alloc) GMT_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
+		if (++n == n_alloc) gmt_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
@@ -297,7 +297,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	}
 
 	n_alloc = n;
-	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
+	gmt_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
 	GMT->session.min_meminc = GMT_MIN_MEMINC;		/* Reset to the default value */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
@@ -311,26 +311,26 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc,
 		                         GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
-		GMT_free (GMT, xx);	GMT_free (GMT, yy);
-		GMT_free (GMT, zz);	GMT_free (GMT, ww);
+		gmt_free (GMT, xx);	gmt_free (GMT, yy);
+		gmt_free (GMT, zz);	gmt_free (GMT, ww);
 		Return (API->error);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate output grid\n");
-	surfd = GMT_memory (GMT, NULL, Grid->header->nm, double);
+	surfd = gmt_memory (GMT, NULL, Grid->header->nm, double);
 	
 	/* Do the interpolation */
 	
 	ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd);
 
-	GMT_free (GMT, xx);	GMT_free (GMT, yy);
-	GMT_free (GMT, zz);	GMT_free (GMT, ww);
+	gmt_free (GMT, xx);	gmt_free (GMT, yy);
+	gmt_free (GMT, zz);	gmt_free (GMT, ww);
 	
 	/* Convert the doubles to float and unto the Fortran transpose order */
 	
 	sf = (w_max - w_min);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
-		GMT_free (GMT, surfd);
+		gmt_free (GMT, surfd);
 		Return (API->error);
 	}
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
@@ -338,7 +338,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (float)sf;
 	}
-	GMT_free (GMT, surfd);
+	gmt_free (GMT, surfd);
 	
 	/* Write solution */
 	

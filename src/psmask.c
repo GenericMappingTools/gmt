@@ -174,8 +174,8 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 		if (n > m) {	/* Must allocate more memory for x,y arrays */
 			*max <<= 1;	/* Double the memory */
 			m = *max - 2;	/* But still check for 2 less in case we add 2 points */
-			*xx = GMT_memory (GMT, *xx, *max, double);
-			*yy = GMT_memory (GMT, *yy, *max, double);
+			*xx = gmt_memory (GMT, *xx, *max, double);
+			*yy = gmt_memory (GMT, *yy, *max, double);
 		}
 		if (n_cuts == 0) {	/* Close interior contour and return  [Will add 1 or 2 points] */
 			/* if (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X]) == 0.0) */	/* On side 1 or 3 */
@@ -312,8 +312,8 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	if (n>2) {	/* Properly connect last and first point given the half-pixel steps */
 		if (n >= (*max)) {	/* Awkward, must allocate memory for one more point */
 			(*max)++;
-			*x = GMT_memory (GMT, *x, *max, double);
-			*y = GMT_memory (GMT, *y, *max, double);
+			*x = gmt_memory (GMT, *x, *max, double);
+			*y = gmt_memory (GMT, *y, *max, double);
 		}
 		(*x)[n-1] = (*x)[n-2];	/* Change next to last point's x-coordinate to not cut over by 0.5*dx */
 		(*x)[n] = (*x)[0];	/* Because of that, close the polygon explicitly by adding duplicate point */
@@ -411,7 +411,7 @@ GMT_LOCAL void shrink_clip_contours (double *x, double *y, uint64_t np, double w
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSMASK_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct PSMASK_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
@@ -423,7 +423,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Deal
 	if (!C) return;
 	gmt_str_free (C->D.file);	
 	gmt_str_free (C->L.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -708,7 +708,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		gmt_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
 		/* We allocate a 1-byte array separately instead of the 4-byte float array that GMT_Create_Data would have given us */
-		grd = GMT_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
+		grd = gmt_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
@@ -823,11 +823,11 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		if (!Ctrl->T.active) {	/* Must trace the outline of ON/OFF values in grd */
 			uint64_t max_alloc_points = GMT_CHUNK;
 			/* Arrays holding the contour xy values; preallocate space */
-			x = GMT_memory (GMT, NULL, max_alloc_points, double);
-			y = GMT_memory (GMT, NULL, max_alloc_points, double);
+			x = gmt_memory (GMT, NULL, max_alloc_points, double);
+			y = gmt_memory (GMT, NULL, max_alloc_points, double);
 
 			n_edges = Grid->header->ny * (urint (ceil (Grid->header->nx / 16.0)));
-			edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
+			edge = gmt_memory (GMT, NULL, n_edges, unsigned int);
 
 			if (make_plot) GMT_map_basemap (GMT);
 
@@ -844,7 +844,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					/* Select which table this segment should be added to */
 					if (n_seg == n_seg_alloc) {
 						size_t n_old_alloc = n_seg_alloc;
-						D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+						D->table[0]->segment = gmt_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
 						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[0]->segment[n_seg++] = S;
@@ -863,12 +863,12 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 			if (make_plot) draw_clip_contours (GMT, PSL, x, y, 0, Ctrl->G.fill.rgb, section, 2);	/* Activate clip-path */
 
-			GMT_free (GMT, edge);
-			GMT_free (GMT, x);
-			GMT_free (GMT, y);
+			gmt_free (GMT, edge);
+			gmt_free (GMT, x);
+			gmt_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				if (n_seg > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Set -mo if > 1 segment */
-				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
+				D->table[0]->segment = gmt_memory (GMT, D->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 					Return (API->error);
 				}
@@ -888,8 +888,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 					np = gmt_graticule_path (GMT, &xx, &yy, 1, true, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);
 					plot_n = gmt_clip_to_map (GMT, xx, yy, np, &xp, &yp);
-					GMT_free (GMT, xx);
-					GMT_free (GMT, yy);
+					gmt_free (GMT, xx);
+					gmt_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
 					
 					GMT_setfill (GMT, &Ctrl->G.fill, false);
@@ -909,8 +909,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					}
 					else
 						PSL_plotpolygon (PSL, xp, yp, (int)plot_n);
-					GMT_free (GMT, xp);
-					GMT_free (GMT, yp);
+					gmt_free (GMT, xp);
+					gmt_free (GMT, yp);
 				}
 			}
 			GMT_map_basemap (GMT);
@@ -918,13 +918,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (make_plot) GMT_plane_perspective (GMT, -1, 0.0);
 
-		GMT_free (GMT, grd);
+		gmt_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid\n");
 		}
-		if (Ctrl->S.active) GMT_free (GMT, d_col);
-		GMT_free (GMT, grd_x0);
-		GMT_free (GMT, grd_y0);
+		if (Ctrl->S.active) gmt_free (GMT, d_col);
+		gmt_free (GMT, grd_x0);
+		gmt_free (GMT, grd_y0);
 		if (make_plot && !Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Clipping on!\n");
 	}
 

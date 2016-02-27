@@ -83,7 +83,7 @@ struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct NEARNEIGHBOR_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_CTRL);
+	C = gmt_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.sectors = C->N.min_sectors = NN_DEF_SECTORS;
@@ -93,14 +93,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->G.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
 	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
-	struct NEARNEIGHBOR_NODE *new_node = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
-	new_node->distance = GMT_memory (GMT, NULL, n, float);
-	new_node->datum = GMT_memory (GMT, NULL, n, int64_t);
+	struct NEARNEIGHBOR_NODE *new_node = gmt_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
+	new_node->distance = gmt_memory (GMT, NULL, n, float);
+	new_node->datum = gmt_memory (GMT, NULL, n, int64_t);
 	while (n > 0) new_node->datum[--n] = -1;
 
 	return (new_node);
@@ -120,9 +120,9 @@ void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
 	/* Frees allocated node space */
 
 	if (!node) return;	/* Nothing to do */
-	GMT_free (GMT, node->distance);
-	GMT_free (GMT, node->datum);
-	GMT_free (GMT, node);
+	gmt_free (GMT, node->distance);
+	gmt_free (GMT, node->datum);
+	gmt_free (GMT, node);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -312,8 +312,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of sectors = %d, minimum number of filled sectors = %d\n", Ctrl->N.sectors, Ctrl->N.min_sectors);
 
-	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
-	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
+	grid_node = gmt_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
+	point = gmt_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
 
 	x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
 	y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
@@ -343,8 +343,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
-		GMT_free (GMT, x0);		GMT_free (GMT, y0);		GMT_free (GMT, grid_node);
-		GMT_free (GMT, point);	GMT_free (GMT, d_col);
+		gmt_free (GMT, x0);		gmt_free (GMT, y0);		gmt_free (GMT, grid_node);
+		gmt_free (GMT, point);	gmt_free (GMT, d_col);
 		Return (API->error);
 	}
 
@@ -438,7 +438,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 			n_alloc <<= 1;
-			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
+			point = gmt_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
 			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
 		}
 	} while (true);
@@ -448,7 +448,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processed record %10ld\n", n);
 
-	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
+	if (n < n_alloc) point = gmt_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	/* Compute weighted averages based on the nearest neighbors */
 
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
@@ -512,11 +512,11 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		(GMT_is_dnan (Ctrl->E.value)) ? GMT_Message (API, GMT_TIME_NONE, "NaN)\n") : GMT_Message (API, GMT_TIME_NONE,  line, Ctrl->E.value);
 	}
 
-	GMT_free (GMT, point);
-	GMT_free (GMT, grid_node);
-	GMT_free (GMT, d_col);
-	GMT_free (GMT, x0);
-	GMT_free (GMT, y0);
+	gmt_free (GMT, point);
+	gmt_free (GMT, grid_node);
+	gmt_free (GMT, d_col);
+	gmt_free (GMT, x0);
+	gmt_free (GMT, y0);
 
 	Return (GMT_OK);
 }

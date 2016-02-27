@@ -162,7 +162,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {GMT_Destroy_Data (API, &Grid); GMT_free (GMT, zw); GMT_free (GMT, xy); GMT_free (GMT, np); GMT_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_free (GMT, zw); gmt_free (GMT, xy); gmt_free (GMT, np); gmt_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_blockmean (void *V_API, int mode, void *args) {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
@@ -208,10 +208,10 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	use_xy = !Ctrl->C.active;	/* If not -C then we must keep track of x,y locations */
-	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
-	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
-	if (Ctrl->E.active) slhg = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLHG);
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, uint64_t);
+	zw = gmt_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
+	if (use_xy) xy = gmt_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
+	if (Ctrl->E.active) slhg = gmt_memory (GMT, NULL, Grid->header->nm, struct BLK_SLHG);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = gmt_memory (GMT, NULL, Grid->header->nm, uint64_t);
 
 	/* Specify input and output expected columns */
 	n_input = (Ctrl->S.mode == 3) ? 2 : 3;
@@ -401,7 +401,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) gmt_free (GMT, np);
 	
 	Return (GMT_OK);
 }

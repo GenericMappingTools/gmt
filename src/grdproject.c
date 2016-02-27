@@ -72,7 +72,7 @@ struct GRDPROJECT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDPROJECT_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDPROJECT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDPROJECT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 		
@@ -83,7 +83,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/* 
 	if (!C) return;
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

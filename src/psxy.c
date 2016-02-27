@@ -122,7 +122,7 @@ EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSXY_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSXY_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -137,8 +137,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_str_free (C->C.file);
 	gmt_str_free (C->S.arg);
-	GMT_freepen (GMT, &C->W.pen);
-	GMT_free (GMT, C);
+	gmt_freepen (GMT, &C->W.pen);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x[], double error_width2, int line, int kind) {
@@ -1500,7 +1500,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					size_t n_alloc;
 					L->n_rows++;
 					n_alloc = L->n_rows;
-					GMT_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
+					gmt_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
 					L->coord[GMT_X][L->n_rows-1] = L->coord[GMT_X][0];
 					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
 				}
@@ -1533,12 +1533,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							/* Make a copy of this section's coordinates */
 							/* Get temp array of length n_section since GMT_hold_contour may change length */
 							n_alloc = 0;
-							GMT_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
+							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
 							GMT_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
 							GMT_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
 							GMT_hold_contour (GMT, &xxx, &yyy, n_section, 0.0, "N/A", 'A', S.G.label_angle, false, false, &S.G);
 							k0 = k1;	/* Goto start of next section */
-							GMT_free (GMT, xxx);	GMT_free (GMT, yyy);
+							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
 						}
 					}
 					else {	/* Just one line, which may even be closed */
@@ -1568,12 +1568,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							/* Make a copy of this section's coordinates */
 							/* Get temp array of length n_section since GMT_decorated_line may change length */
 							n_alloc = 0;
-							GMT_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
+							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
 							GMT_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
 							GMT_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
 							GMT_decorated_line (GMT, &xxx, &yyy, n_section, &S.D, Decorate, seg_out);
 							k0 = k1;	/* Goto start of next section */
-							GMT_free (GMT, xxx);	GMT_free (GMT, yyy);
+							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
 						}
 					}
 					else	/* Just one line, which may even be closed */

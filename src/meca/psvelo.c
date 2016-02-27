@@ -95,7 +95,7 @@ struct PSVELO_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSVELO_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSVELO_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSVELO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -117,7 +117,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -365,7 +365,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	station_name = GMT_memory (GMT, NULL, 64, char);
+	station_name = gmt_memory (GMT, NULL, 64, char);
 
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
@@ -529,7 +529,7 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_free (GMT, station_name);
+	gmt_free (GMT, station_name);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
 

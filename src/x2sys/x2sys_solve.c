@@ -163,7 +163,7 @@ GMT_LOCAL double basis_z (double **P, unsigned int which, uint64_t row) {	/* Bas
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_SOLVE_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_SOLVE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_SOLVE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -178,7 +178,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/*
 	gmt_str_free (C->I.file);
 #endif
 	gmt_str_free (C->T.TAG);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -305,8 +305,8 @@ GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char **
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 
-	p = GMT_memory (GMT, NULL, n_alloc, char *);
-	T = GMT_memory (GMT, NULL, n_alloc, double);
+	p = gmt_memory (GMT, NULL, n_alloc, char *);
+	T = gmt_memory (GMT, NULL, n_alloc, double);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
@@ -318,14 +318,14 @@ GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char **
 		n++;
 		if (n == n_alloc) {
 			n_alloc <<= 1;
-			p = GMT_memory (GMT, p, n_alloc, char *);
-			T = GMT_memory (GMT, T, n_alloc, double);
+			p = gmt_memory (GMT, p, n_alloc, char *);
+			T = gmt_memory (GMT, T, n_alloc, double);
 		}
 	}
 	fclose (fp);
 
-	p = GMT_memory (GMT, p, n, char *);
-	T = GMT_memory (GMT, T, n, double);
+	p = gmt_memory (GMT, p, n, char *);
+	T = gmt_memory (GMT, T, n, double);
 
 	*list = p;
 	*start = T;
@@ -453,12 +453,12 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	GMT_memset (data, N_COE_PARS, double *);
 	for (i = n_active = 0; i < N_COE_PARS; i++) {
 		if (active_col[i]) {
-			data[i] = GMT_memory (GMT, NULL, n_alloc, double);
+			data[i] = gmt_memory (GMT, NULL, n_alloc, double);
 			n_active++;
 		}
 	}
-	if (!data[COL_WW]) data[COL_WW] = GMT_memory (GMT, NULL, n_alloc, double);
-	for (i = 0; i < 2; i++) ID[i] = GMT_memory (GMT, NULL, n_alloc, int);
+	if (!data[COL_WW]) data[COL_WW] = gmt_memory (GMT, NULL, n_alloc, double);
+	for (i = 0; i < 2; i++) ID[i] = gmt_memory (GMT, NULL, n_alloc, int);
 
 	/* Read the crossover info */
 
@@ -470,7 +470,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	if (n_tracks == 0 && !GMT->common.b.active[GMT_IN])	{	/* Create track list on the go */
 		grow_list = true;
-		trk_list = GMT_memory (GMT, NULL, n_alloc_t, char *);
+		trk_list = gmt_memory (GMT, NULL, n_alloc_t, char *);
 	}
 
 	n_expected_fields = 2 + n_active + Ctrl->W.active;
@@ -532,8 +532,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			n_COE++;
 			if (n_COE == n_alloc) {
 				n_alloc <<= 1;
-				for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_alloc, double);
-				data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_alloc, double);
+				for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = gmt_memory (GMT, data[i], n_alloc, double);
+				data[COL_WW] = gmt_memory (GMT, data[COL_WW], n_alloc, double);
 			}
 		}
 		/* Check that IDs are all contained within 0 <= ID < n_tracks and that there are no gaps */
@@ -545,19 +545,19 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		else {	/* Either no tracks read before or the two numbers did match properly */
 			/* Look for ID gaps */
 			n_tracks = n_tracks2;
-			check = GMT_memory (GMT, NULL, n_tracks, char);
+			check = gmt_memory (GMT, NULL, n_tracks, char);
 			for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) check[ID[i][k]] = true;	/* Flag those tracks that have been mentioned */
 			for (k = 0; k < n_tracks && check[k]; k++);	/* Loop until end of until first non-used ID */
-			GMT_free (GMT, check);
+			gmt_free (GMT, check);
 			if (k < n_tracks) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: The ID numbers in the binary file %s do not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
 				error = true;
 			}
 		}
 		if (error) {	/* Delayed the cleanup until here */
-			for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) GMT_free (GMT, data[i]);
-			GMT_free (GMT, data[COL_WW]);
-			for (i = 0; i < 2; i++) GMT_free (GMT, ID[i]);
+			for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) gmt_free (GMT, data[i]);
+			gmt_free (GMT, data[COL_WW]);
+			for (i = 0; i < 2; i++) gmt_free (GMT, ID[i]);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -632,7 +632,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 						ID[i][n_COE] = (int)n_tracks++;
 						if (n_tracks == n_alloc_t) {
 							n_alloc_t <<= 1;
-							trk_list = GMT_memory (GMT, trk_list, n_alloc_t, char *);
+							trk_list = gmt_memory (GMT, trk_list, n_alloc_t, char *);
 						}
 					}
 #ifdef SAVEFORLATER
@@ -647,16 +647,16 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			n_COE++;
 			if (n_COE == n_alloc) {
 				n_alloc <<= 1;
-				for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_alloc, double);
-				data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_alloc, double);
-				for (i = 0; i < 2; i++) ID[i] = GMT_memory (GMT, ID[i], n_alloc, int);
+				for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = gmt_memory (GMT, data[i], n_alloc, double);
+				data[COL_WW] = gmt_memory (GMT, data[COL_WW], n_alloc, double);
+				for (i = 0; i < 2; i++) ID[i] = gmt_memory (GMT, ID[i], n_alloc, int);
 			}
 		}
 	}
 	gmt_fclose (GMT, fp);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %d COE records\n", n_COE);
-	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_COE, double);
-	data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_COE, double);
+	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = gmt_memory (GMT, data[i], n_COE, double);
+	data[COL_WW] = gmt_memory (GMT, data[COL_WW], n_COE, double);
 
 	normalize = (Ctrl->E.mode == F_IS_DRIFT_T || Ctrl->E.mode == F_IS_DRIFT_D);	/* Only when the linear drift term is in effect */
 	if (normalize) {	/* For numerical stability, normalize distances or times to fall in 0-1 range */
@@ -695,8 +695,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	old_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 
 	/* Because it can happen that a track has less crossovers than n_par, we must determine R(track), the max parameters per track we can fit */
-	R = GMT_memory (GMT, NULL, n_tracks, uint64_t);		/* Number of parameter for each track p, so that 1 <= R(p) < n_par */
-	col_off = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Since R(p) may vary, need cumulative sum of R(p) to get correct column */
+	R = gmt_memory (GMT, NULL, n_tracks, uint64_t);		/* Number of parameter for each track p, so that 1 <= R(p) < n_par */
+	col_off = gmt_memory (GMT, NULL, n_tracks, uint64_t);	/* Since R(p) may vary, need cumulative sum of R(p) to get correct column */
 	for (k = 0; k < n_COE; k++) {	/* Count number of crossovers per track */
 		i = ID[0][k];	/* Get track # 1 ID */
 		j = ID[1][k];	/* Get track # 2 ID */
@@ -724,9 +724,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		uint64_t ij, g, n_in_cluster, *member = NULL;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Determine number of independent track clusters\n");
-		C = GMT_memory (GMT, NULL, n_tracks*n_tracks, double);	/* For the connectivity matrix that shows which tracks cross */
-		used = GMT_memory (GMT, NULL, n_tracks, double);	/* Array to remember which tracks we have dealt with so far */
-		cluster = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Array to remember which cluster a track belongs to */
+		C = gmt_memory (GMT, NULL, n_tracks*n_tracks, double);	/* For the connectivity matrix that shows which tracks cross */
+		used = gmt_memory (GMT, NULL, n_tracks, double);	/* Array to remember which tracks we have dealt with so far */
+		cluster = gmt_memory (GMT, NULL, n_tracks, uint64_t);	/* Array to remember which cluster a track belongs to */
 		/* First build the adjacency matrix C */
 		for (k = 0; k < n_COE; k++) {	/* Identify crossing pairs (the # of crossings doesn't matter) */
 			i = ID[0][k];	/* Get track # 1 ID */
@@ -735,7 +735,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			if (C[ij] == 0) C[ij] = C[j*n_tracks+i] = 1;	/* Make C symmetric */
 		}
 
-		member = GMT_memory (GMT, NULL, n_tracks, uint64_t);	/* Temp array to keep all members of current cluster */
+		member = gmt_memory (GMT, NULL, n_tracks, uint64_t);	/* Temp array to keep all members of current cluster */
 		n_constraints = 0;
 		/* Below, cluster[] array will use counting from 1 to n_constraints, but later we reset to run from 0 instead */
 		while ((p = next_unused_track (cluster, n_tracks)) < n_tracks) {	/* Still more clusters to form */
@@ -761,9 +761,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			}
 		}
 		for (g = 0; g < n_tracks; g++) cluster[g]--;	/* Shift cluster numbers to start at zero instead of 1 */
-		GMT_free (GMT, member);
-		GMT_free (GMT, C);
-		GMT_free (GMT, used);
+		gmt_free (GMT, member);
+		gmt_free (GMT, C);
+		gmt_free (GMT, used);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			if (n_constraints > 1) {	/* Report on the clusters */
@@ -788,8 +788,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	m = n + n_constraints;	/* Need extra row(s)/column(s) to handle Lagrange's multiplier(s) for unknown absolute level(s) */
 	/* Allocate arrays for N*x = b, the m x m linear system */
-	N = GMT_memory (GMT, NULL, m*m, double);
-	b = GMT_memory (GMT, NULL, m, double);
+	N = gmt_memory (GMT, NULL, m*m, double);
+	b = gmt_memory (GMT, NULL, m, double);
 
 	/* Build A'A and A'b ==> N*x = b normal equation matrices directly since A may be too big to do A'A by multiplication.
 	 * For all corrections that involve a constant shift we must add the constraint that such shifts sum to zero; this
@@ -821,7 +821,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		for (k = 0, row_off = m * n; k < n_constraints; k++, row_off += m) {	/* For each cluster */
 			for (p = 0; p < n_tracks; p++) if (cluster[p] == k) N[row_off+col_off[p]] = 1.0;
 		}
-		GMT_free (GMT, cluster);
+		gmt_free (GMT, cluster);
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Matrix equation N * a = b: (N = %" PRIu64 " x %" PRIu64 ")\n", m, m);
@@ -840,7 +840,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_free (GMT, N);
+	gmt_free (GMT, N);
 	a = b;	/* Convenience since the solution is called a in the notes and in Wessel [2010] */
 
 	/* Estimate new st.dev. */
@@ -916,15 +916,15 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Free up memory */
 
-	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) GMT_free (GMT, data[i]);
-	GMT_free (GMT, data[COL_WW]);
-	for (i = 0; i < 2; i++) GMT_free (GMT, ID[i]);
-	GMT_free (GMT, b);
-	GMT_free (GMT, R);
-	GMT_free (GMT, col_off);
+	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) gmt_free (GMT, data[i]);
+	gmt_free (GMT, data[COL_WW]);
+	for (i = 0; i < 2; i++) gmt_free (GMT, ID[i]);
+	gmt_free (GMT, b);
+	gmt_free (GMT, R);
+	gmt_free (GMT, col_off);
 	if (!GMT->common.b.active[GMT_IN]) x2sys_free_list (GMT, trk_list, n_tracks);
 #ifdef SAVEFORLATER
-	GMT_free (GMT, start);
+	gmt_free (GMT, start);
 #endif
 
 	x2sys_end (GMT, S);

@@ -300,7 +300,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			datablockcol++;
 		}
 	}
-	GMT_free (GMT, k);
+	gmt_free (GMT, k);
 
 	header->nx = width_in;	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
@@ -405,7 +405,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			datablockcol++;
 		}
 	}
-	GMT_free (GMT, k);
+	gmt_free (GMT, k);
 
 	gmt_fclose (GMT, fp);
 

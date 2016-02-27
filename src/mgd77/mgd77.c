@@ -123,11 +123,11 @@ static inline void MGD77_Set_Home (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
 	if ((this_c = getenv ("MGD77_HOME")) != NULL) {	/* MGD77_HOME was set */
-		F->MGD77_HOME = GMT_memory (GMT, NULL, strlen (this_c) + 1, char);
+		F->MGD77_HOME = gmt_memory (GMT, NULL, strlen (this_c) + 1, char);
 		strcpy (F->MGD77_HOME, this_c);
 	}
 	else {	/* Set default path via GMT->session.SHAREDIR */
-		F->MGD77_HOME = GMT_memory (GMT, NULL, strlen (GMT->session.SHAREDIR) + 7, char);
+		F->MGD77_HOME = gmt_memory (GMT, NULL, strlen (GMT->session.SHAREDIR) + 7, char);
 		sprintf (F->MGD77_HOME, "%s/mgd77", GMT->session.SHAREDIR);
 	}
 #ifdef WIN32
@@ -273,14 +273,14 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Path file %s for MGD77 files not found.\n", file);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Will only look in current directory and %s for such files.\n", F->MGD77_HOME);
-		F->MGD77_datadir = GMT_memory (GMT, NULL, 1, char *);
-		F->MGD77_datadir[0] = GMT_memory (GMT, NULL, strlen (F->MGD77_HOME) + 1, char);
+		F->MGD77_datadir = gmt_memory (GMT, NULL, 1, char *);
+		F->MGD77_datadir[0] = gmt_memory (GMT, NULL, strlen (F->MGD77_HOME) + 1, char);
 		strcpy (F->MGD77_datadir[0], F->MGD77_HOME);
 		F->n_MGD77_paths = 1;
 		return;
 	}
 
-	F->MGD77_datadir = GMT_memory (GMT, NULL, n_alloc, char *);
+	F->MGD77_datadir = gmt_memory (GMT, NULL, n_alloc, char *);
 	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;    /* Blank line, \n included in count */
@@ -289,16 +289,16 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 		GMT_strrepc(line, '/', '\\');                       /* Replace slashes with backslashes because later the dir /b path would fail */
 #endif
 		GMT_chop (line);
-		F->MGD77_datadir[F->n_MGD77_paths] = GMT_memory (GMT, NULL, strlen (line) + 1, char);
+		F->MGD77_datadir[F->n_MGD77_paths] = gmt_memory (GMT, NULL, strlen (line) + 1, char);
 		strcpy (F->MGD77_datadir[F->n_MGD77_paths], line);
 		F->n_MGD77_paths++;
 		if (F->n_MGD77_paths == n_alloc) {
 			n_alloc <<= 1;
-			F->MGD77_datadir = GMT_memory (GMT, F->MGD77_datadir, n_alloc, char *);
+			F->MGD77_datadir = gmt_memory (GMT, F->MGD77_datadir, n_alloc, char *);
 		}
 	}
 	gmt_fclose (GMT, fp);
-	F->MGD77_datadir = GMT_memory (GMT, F->MGD77_datadir, F->n_MGD77_paths, char *);
+	F->MGD77_datadir = gmt_memory (GMT, F->MGD77_datadir, F->n_MGD77_paths, char *);
 }
 
 static inline double MGD77_Copy (double z) {
@@ -1013,7 +1013,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 	/* Read Sequences No 01-24: */
 
 	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) {
-		MGD77_header[sequence] = GMT_memory (GMT, NULL, MGD77_HEADER_LENGTH + 3, char);	/* +3 to account for an eventual '\r' and '\n\0' */
+		MGD77_header[sequence] = gmt_memory (GMT, NULL, MGD77_HEADER_LENGTH + 3, char);	/* +3 to account for an eventual '\r' and '\n\0' */
 		if ((err = MGD77_Read_Header_Sequence (GMT, F->fp, MGD77_header[sequence], sequence+1)) != 0) return (err);
 	}
 	if (F->format == MGD77_FORMAT_TBL) {		/* Skip the column header for tables */
@@ -1023,10 +1023,10 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 		}
 	}
 
-	for (i = 0; i < 2; i++) H->mgd77[i] = GMT_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
+	for (i = 0; i < 2; i++) H->mgd77[i] = gmt_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
 
 	if ((err = MGD77_Decode_Header_m77 (GMT, H->mgd77[MGD77_ORIG], MGD77_header, MGD77_FROM_HEADER)) != 0) return (err);	/* Decode individual items in the text headers */
-	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) GMT_free (GMT, MGD77_header[sequence]);
+	for (sequence = 0; sequence < MGD77_N_HEADER_RECORDS; sequence++) gmt_free (GMT, MGD77_header[sequence]);
 
 	/* Fill in info in F */
 
@@ -1055,16 +1055,16 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
-	MGD77_header = GMT_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
+	MGD77_header = gmt_memory (GMT, NULL, MGD77T_HEADER_LENGTH, char);
 	if (!fgets (MGD77_header, BUFSIZ, F->fp)) {			/* Read the entire header record  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
-	for (i = 0; i < 2; i++) H->mgd77[i] = GMT_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
+	for (i = 0; i < 2; i++) H->mgd77[i] = gmt_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
 
 	if ((err = MGD77_Decode_Header_m77t (GMT, H->mgd77[MGD77_ORIG], MGD77_header)) != 0) return (err);	/* Decode individual items in the text headers */
-	GMT_free (GMT, MGD77_header);
+	gmt_free (GMT, MGD77_header);
 
 	/* Fill in info in F */
 
@@ -1131,7 +1131,7 @@ static double *MGD77_Read_Column (struct GMT_CTRL *GMT, int id, size_t start[], 
 	double *values;
 	size_t k;
 
-	values = GMT_memory (GMT, NULL, count[0], double);
+	values = gmt_memory (GMT, NULL, count[0], double);
 	if (col->constant) {	/* Scalar, must read one value and then replicate */
 		MGD77_nc_status (GMT, nc_get_var1_double (id, col->var_id, start, values));
 		MGD77_do_scale_offset_after_read (GMT, values, 1, scale, offset, MGD77_NaN_val[col->type]);	/* Just modify one point */
@@ -1415,8 +1415,8 @@ static int MGD77_Read_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	GMT_memset (mgd77_col, MGD77_SET_COLS, int);
 	GMT_memset (&MGD77Record, 1, struct MGD77_DATA_RECORD);
 
-	for (k = 0; k < F->n_out_columns - n_txt; k++) values[k] = GMT_memory (GMT, NULL, S->H.n_records, double);
-	for (k = 0; k < n_txt; k++) text[k] = GMT_memory (GMT, NULL, S->H.n_records*Clength[k], char);
+	for (k = 0; k < F->n_out_columns - n_txt; k++) values[k] = gmt_memory (GMT, NULL, S->H.n_records, double);
+	for (k = 0; k < n_txt; k++) text[k] = gmt_memory (GMT, NULL, S->H.n_records*Clength[k], char);
 	S->H.info[MGD77_M77_SET].bit_pattern = S->H.info[MGD77_CDF_SET].bit_pattern = 0;
 
 	for (col = 0; col < F->n_out_columns; col++) {
@@ -1763,7 +1763,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 		k = strlen (string);
 		for (k0 = 0; k0 < k; k0++) if (string[k0] == '\n') string[k0] = ' ';	/* Remove the \n returned by ctime() */
 		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
-		H->history = GMT_memory (GMT, NULL, k + 1, char);		/* Don't understand why by I need the +1 JL */
+		H->history = gmt_memory (GMT, NULL, k + 1, char);		/* Don't understand why by I need the +1 JL */
 		strcpy (H->history, string);
 	}
 	/* else, history already filled out, use as is */
@@ -1885,7 +1885,7 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 				}
 				else {	/* Must write the entire array */
 					if (transform) {	/* Must use temporary storage for scalings so that original values in S->values remain unchanged */
-						if (not_allocated) xtmp = GMT_memory (GMT, NULL, count[0], double);	/* Get mem the first time */
+						if (not_allocated) xtmp = gmt_memory (GMT, NULL, count[0], double);	/* Get mem the first time */
 						not_allocated = false;	/* No longer the first time */
 						n_bad = (int)MGD77_do_scale_offset_before_write (GMT, xtmp, values, S->H.n_records, scale, offset, S->H.info[set].col[id].type);	/* mod copy */
 						x = xtmp;	/* Points to modified copy */
@@ -1907,7 +1907,7 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 		}
 	}
 
-	GMT_free (GMT, xtmp);
+	gmt_free (GMT, xtmp);
 
 	return (MGD77_NO_ERROR);
 }
@@ -1969,7 +1969,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		}
 		if (S->H.info[c].col[id].text) {	/* Text variable */
 			count[1] = S->H.info[c].col[id].text;	/* Get length of each string */
-			text = GMT_memory (GMT, NULL, count[0] * count[1], char);
+			text = gmt_memory (GMT, NULL, count[0] * count[1], char);
 			if (S->H.info[c].col[id].constant) {	/* Scalar, must read one and then replicate */
 				MGD77_nc_status (GMT, nc_get_vara_schar (F->nc_id, S->H.info[c].col[id].var_id, start, &count[1], (signed char *)text));
 				for (rec = 1; rec < count[0]; rec++) strncpy (&text[rec*count[1]], text, count[1]);	/* Replicate one string */
@@ -1980,7 +1980,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 			S->H.info[c].bit_pattern |= MGD77_this_bit[id];		/* We return this data field */
 		}
 		else if (S->H.no_time && !strcmp (S->H.info[c].col[id].abbrev, "time")) {	/* Fake NaN time and bit_pattern not set */
-			values = GMT_memory (GMT, NULL, count[0], double);
+			values = gmt_memory (GMT, NULL, count[0], double);
 			for (rec = 0; rec < count[0]; rec++) values[rec] = GMT->session.d_NaN;
 			S->values[col] = values;
 		}
@@ -2068,7 +2068,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 			else {	/* Not read, must read separately, and use the nc_id array to get proper column number) */
 				scale = S->H.info[MGD77_M77_SET].col[nc_id[i]].factor;
 				offset = S->H.info[MGD77_M77_SET].col[nc_id[i]].offset;
-				E.aux[i] = GMT_memory (GMT, NULL, count[0], double);
+				E.aux[i] = gmt_memory (GMT, NULL, count[0], double);
 				E.aux[i] = MGD77_Read_Column (GMT, F->nc_id, start, count, scale, offset, &(S->H.info[MGD77_M77_SET].col[nc_id[i]]));
 				E.needed[i] = 2;	/* So we know which aux columns to deallocate when done */
 			}
@@ -2127,7 +2127,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		}
 
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {	/* Free auxilliary columns not part of the output */
-			if (E.needed[i] == 2) GMT_free (GMT, E.aux[i]);
+			if (E.needed[i] == 2) gmt_free (GMT, E.aux[i]);
 		}
 	}
 
@@ -2136,7 +2136,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	GMT_memset (apply_bits, MGD77_N_SETS, bool);
 	for (k = 0; k < MGD77_N_SETS; k++) {
 		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &nc_id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
-			flags = GMT_memory (GMT, NULL, count[0], unsigned int);
+			flags = gmt_memory (GMT, NULL, count[0], unsigned int);
 			MGD77_nc_status (GMT, nc_get_vara_int (F->nc_id, nc_id, start, count, (int *)flags));
 			S->flags[k] = flags;
 			apply_bits[k] = F->use_flags[MGD77_M77_SET]; /* Consider the bitflags for this set */
@@ -2164,7 +2164,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 					if (rec_in > rec) values[rec] = values[rec_in];	/* Must shuffle records */
 					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */
 				}
-				values = GMT_memory (GMT, values, count[0], double);
+				values = gmt_memory (GMT, values, count[0], double);
 				S->values[i] = values;
 			}
 			for (i = 0; i < F->n_out_columns; i++) {	/* Only loop over columns that are desired */
@@ -2177,7 +2177,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 					if (rec_in > rec) strncpy (&text[rec*count[1]], &text[rec_in*count[1]], count[1]);	/* Must shuffle text records */
 					if (! (S->flags[MGD77_M77_SET][rec_in] & bad_nav_bits)) rec++;	/* Record was OK so increment output rec number */
 				}
-				text = GMT_memory (GMT, text, count[0] * count[1], char);
+				text = gmt_memory (GMT, text, count[0] * count[1], char);
 				S->values[i] = text;
 			}
 			S->H.n_records = count[0];
@@ -2264,7 +2264,7 @@ static int MGD77_Free_Header_Record_asc (struct GMT_CTRL *GMT, struct MGD77_HEAD
 	/* Applies to MGD77 files */
 	int i;
 
-	for (i = 0; i < 2; i++) GMT_free (GMT, H->mgd77[i]);
+	for (i = 0; i < 2; i++) gmt_free (GMT, H->mgd77[i]);
 	mgd77_free_plain_mgd77 (H);
 	return (MGD77_NO_ERROR);	/* Success, it seems */
 }
@@ -2272,10 +2272,10 @@ static int MGD77_Free_Header_Record_asc (struct GMT_CTRL *GMT, struct MGD77_HEAD
 static int MGD77_Free_Header_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_HEADER *H) {
 	/* Will free the entire 24-section header structure */
 	int i;
-	GMT_free (GMT, H->author);
-	GMT_free (GMT, H->history);
-	GMT_free (GMT, H->E77);
-	for (i = 0; i < 2; i++) GMT_free (GMT, H->mgd77[i]);
+	gmt_free (GMT, H->author);
+	gmt_free (GMT, H->history);
+	gmt_free (GMT, H->E77);
+	for (i = 0; i < 2; i++) gmt_free (GMT, H->mgd77[i]);
 
 	mgd77_free_plain_mgd77 (H);
 	return (MGD77_NO_ERROR);	/* Success, it seems */
@@ -2297,24 +2297,24 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, struc
 	/* GET AUTHOR, HISTORY INFORMATION */
 
 	MGD77_nc_status (GMT, nc_inq_attlen (F->nc_id, NC_GLOBAL, "Author", count));		/* Get length of author */
-	H->author = GMT_memory (GMT, NULL, count[0] + 1, char);	/* Get memory for author */
+	H->author = gmt_memory (GMT, NULL, count[0] + 1, char);	/* Get memory for author */
 	MGD77_nc_status (GMT, nc_get_att_text (F->nc_id, NC_GLOBAL, "Author",  H->author));
 	MGD77_nc_status (GMT, nc_inq_attlen (F->nc_id, NC_GLOBAL, "history", count));		/* Get length of history */
-	H->history = GMT_memory (GMT, NULL, count[0] + 1, char);	/* Get memory for history */
+	H->history = gmt_memory (GMT, NULL, count[0] + 1, char);	/* Get memory for history */
 	MGD77_nc_status (GMT, nc_get_att_text (F->nc_id, NC_GLOBAL, "history", H->history));
 	H->history[count[0]] = '\0';
 
 	/* GET E77 INFORMATION (IF PRESENT) */
 
 	if (nc_inq_attlen (F->nc_id, NC_GLOBAL, "E77", count) == NC_NOERR) {	/* Get length of E77 if present */
-		H->E77 = GMT_memory (GMT, NULL, count[0] + 1, char);	/* Get memory for E77 */
+		H->E77 = gmt_memory (GMT, NULL, count[0] + 1, char);	/* Get memory for E77 */
 		MGD77_nc_status (GMT, nc_get_att_text (F->nc_id, NC_GLOBAL, "E77",  H->E77));
 		H->E77[count[0]] = '\0';
 	}
 
 	/* GET MGD77 HEADER INFORMATION */
 
-	for (i = 0; i < 2; i++) H->mgd77[i] = GMT_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
+	for (i = 0; i < 2; i++) H->mgd77[i] = gmt_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
 	MGD77_Read_Header_Params (GMT, F, H->mgd77);	/* Get all the MGD77 header attributes */
 
 	/* DETERMINE DIMENSION OF GMT_TIME-SERIES */
@@ -2423,12 +2423,12 @@ int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD7
 	GMT_UNUSED(file);
 
 	use = (F->original || F->format != MGD77_FORMAT_CDF) ? MGD77_ORIG : MGD77_REVISED;
-	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) MGD77_header[i] = GMT_memory (GMT, NULL, MGD77_HEADER_LENGTH + 1, char);
+	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) MGD77_header[i] = gmt_memory (GMT, NULL, MGD77_HEADER_LENGTH + 1, char);
 	if ((err = MGD77_Decode_Header_m77 (GMT, H->mgd77[use], MGD77_header, MGD77_TO_HEADER)) != 0) return (err);	/* Encode individual header attributes in the text headers */
 
 	for (i = 0; i < MGD77_N_HEADER_RECORDS; i++) {
 		fprintf (F->fp, "%s\n", MGD77_header[i]);
-		GMT_free (GMT, MGD77_header[i]);
+		gmt_free (GMT, MGD77_header[i]);
 	}
 
 	return (MGD77_NO_ERROR);
@@ -3790,7 +3790,7 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	GMT_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
 	strncpy (F->user, GMT_putusername(GMT), MGD77_COL_ABBREV_LEN);
-	F->desired_column = GMT_memory (GMT, NULL, MGD77_MAX_COLS, char *);	/* Allocate array pointer for column names */
+	F->desired_column = gmt_memory (GMT, NULL, MGD77_MAX_COLS, char *);	/* Allocate array pointer for column names */
 	F->verbose_level = 0;
 	F->verbose_dest = 2;
 	F->format = MGD77_FORMAT_ANY;
@@ -4025,14 +4025,14 @@ int MGD77_Get_Set (struct GMT_CTRL *GMT, char *word) {
 void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	/* Free memory used by MGD77 machinery */
 	unsigned int i;
-	GMT_free (GMT, F->MGD77_HOME);
+	gmt_free (GMT, F->MGD77_HOME);
 	for (i = 0; i < F->n_MGD77_paths; i++)
-		GMT_free (GMT, F->MGD77_datadir[i]);
+		gmt_free (GMT, F->MGD77_datadir[i]);
 	if (F->MGD77_datadir)
-		GMT_free (GMT, F->MGD77_datadir);
+		gmt_free (GMT, F->MGD77_datadir);
 	if (F->desired_column) {
 		for (i = 0; i < MGD77_MAX_COLS; i++) gmt_str_free (F->desired_column[i]);
-		GMT_free (GMT, F->desired_column);
+		gmt_free (GMT, F->desired_column);
 	}
 }
 
@@ -4089,8 +4089,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
-			if (n == n_alloc) L = GMT_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
-			L[n] = GMT_memory (GMT, NULL, length + 1, char);
+			if (n == n_alloc) L = gmt_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
+			L[n] = gmt_memory (GMT, NULL, length + 1, char);
 			strcpy (L[n++], line);
 		}
 		gmt_fclose (GMT, fp);
@@ -4119,8 +4119,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				NGDC_ID_likely = false;
 			}
 			if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
-				if (n == n_alloc) L = GMT_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
-				L[n] = GMT_memory (GMT, NULL, length + 1, char);
+				if (n == n_alloc) L = gmt_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
+				L[n] = gmt_memory (GMT, NULL, length + 1, char);
 				strcpy (L[n++], this_arg);
 				continue;
 			}
@@ -4148,8 +4148,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				if (length && strncmp (d_name, this_arg, length)) continue;
 				k = (unsigned int)strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
-				if (n == n_alloc) L = GMT_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
-				L[n] = GMT_memory (GMT, NULL, k + 1, char);
+				if (n == n_alloc) L = gmt_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
+				L[n] = gmt_memory (GMT, NULL, k + 1, char);
 				strncpy (L[n], d_name, k);
 				L[n++][k] = '\0';
 			}
@@ -4172,7 +4172,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 		n = k;
 	}
 
-	if (n != n_alloc) L = GMT_memory (GMT, L, n, char *);
+	if (n != n_alloc) L = gmt_memory (GMT, L, n, char *);
 	*list = L;
 	return (n);
 }
@@ -4182,8 +4182,8 @@ void MGD77_Path_Free (struct GMT_CTRL *GMT, uint64_t n, char **list) {
 	uint64_t i;
 	if (n == 0) return;
 
-	for (i = 0; i < n; i++) GMT_free (GMT, list[i]);
-	GMT_free (GMT, list);
+	for (i = 0; i < n; i++) gmt_free (GMT, list[i]);
+	gmt_free (GMT, list);
 }
 
 void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec, bool apply_bits[]) {
@@ -4371,20 +4371,20 @@ void MGD77_Free_Dataset (struct GMT_CTRL *GMT, struct MGD77_DATASET **D) {
 	int i;
 	struct MGD77_DATASET *S = *D;
 
-	for (i = 0; i < S->n_fields; i++) GMT_free (GMT, S->values[i]);
-	for (i = 0; i < MGD77_N_SETS; i++) GMT_free (GMT, S->flags[i]);
-	for (i = 0; i < 2; i++) GMT_free (GMT, S->H.mgd77[i]);
+	for (i = 0; i < S->n_fields; i++) gmt_free (GMT, S->values[i]);
+	for (i = 0; i < MGD77_N_SETS; i++) gmt_free (GMT, S->flags[i]);
+	for (i = 0; i < 2; i++) gmt_free (GMT, S->H.mgd77[i]);
 	mgd77_free_plain_mgd77 (&S->H);
-	GMT_free (GMT, S->H.author);
-	GMT_free (GMT, S->H.history);
-	GMT_free (GMT, S);
+	gmt_free (GMT, S->H.author);
+	gmt_free (GMT, S->H.history);
+	gmt_free (GMT, S);
 	D = NULL;
 }
 
 struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *GMT) {
 	struct MGD77_DATASET *S;
 
-	S = GMT_memory (GMT, NULL, 1, struct MGD77_DATASET);
+	S = gmt_memory (GMT, NULL, 1, struct MGD77_DATASET);
 	return (S);
 }
 
@@ -5462,7 +5462,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
-	list = GMT_memory (GMT, NULL, n_alloc, char *);
+	list = gmt_memory (GMT, NULL, n_alloc, char *);
 
 	sorted = (mode & 1);	/* true if we pass a sorted trackname list */
 
@@ -5500,7 +5500,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 					n_list++;
 					if (n_list == n_alloc) {
 						n_alloc <<= 1;
-						list = GMT_memory (GMT, list, n_alloc, char *);
+						list = gmt_memory (GMT, list, n_alloc, char *);
 					}
 				}
 			}
@@ -5508,11 +5508,11 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	}
 	gmt_fclose (GMT, fp);
 	if (n_list) {
-		list = GMT_memory (GMT, list, n_list, char *);
+		list = gmt_memory (GMT, list, n_list, char *);
 		*item_names = list;
 	}
 	else
-		GMT_free (GMT, list);
+		gmt_free (GMT, list);
 
 	return (n_list);
 }
@@ -5521,7 +5521,7 @@ void MGD77_Free_Table (struct GMT_CTRL *GMT, unsigned int n_items, char **item_n
 	unsigned int i;
 	if (!n_items) return;
 	for (i = 0; i < n_items; i++) gmt_str_free (item_names[i]);	/* free because they were allocated with strdup */
-	GMT_free (GMT, item_names);
+	gmt_free (GMT, item_names);
 	
 }
 
@@ -5590,8 +5590,8 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 
 	/* Allocate empty correction table */
 
-	C_table = GMT_memory (GMT, NULL, n_cruises, struct MGD77_CORRTABLE *);
-	for (pos = 0; pos < n_cruises; pos++) C_table[pos] = GMT_memory (GMT, NULL, MGD77_SET_COLS, struct MGD77_CORRTABLE);
+	C_table = gmt_memory (GMT, NULL, n_cruises, struct MGD77_CORRTABLE *);
+	for (pos = 0; pos < n_cruises; pos++) C_table[pos] = gmt_memory (GMT, NULL, MGD77_SET_COLS, struct MGD77_CORRTABLE);
 
 	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		rec++;
@@ -5603,7 +5603,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 		pos = 0;
 		previous = &C_table[cruise_id][id].term;
 		while (GMT_strtok (arguments, GMT_TOKEN_SEPARATORS, &pos, word)) {
-			c = GMT_memory (GMT, NULL, 1, struct MGD77_CORRECTION);
+			c = gmt_memory (GMT, NULL, 1, struct MGD77_CORRECTION);
 			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) == NULL) {	/* No basis function, just a constant, the intercept term */
 				c->factor = atof (word);
@@ -5744,13 +5744,13 @@ void MGD77_Free_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE **CORR,
 			while (current->next) {
 				past = current;
 				current = current->next;
-				GMT_free (GMT, past);
+				gmt_free (GMT, past);
 			}
-			GMT_free (GMT, current);
+			gmt_free (GMT, current);
 		}
-		GMT_free (GMT, T);
+		gmt_free (GMT, T);
 	}
-	GMT_free (GMT, CORR);
+	gmt_free (GMT, CORR);
 }
 
 double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time) {
@@ -5828,7 +5828,7 @@ bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD
 		GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 	slowness = (t[1] - t[0]) / dist[nrec-1];				/* Inverse average speed */
 	for (i = 0; i < nrec; i++) times[i] = t[0] + slowness * dist[i];	/* Fake time prediction */
-	GMT_free (GMT, dist);
+	gmt_free (GMT, dist);
 	return (true);
 }
 

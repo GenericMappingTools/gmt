@@ -141,7 +141,7 @@ struct PSCOUPE_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCOUPE_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSCOUPE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSCOUPE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -162,7 +162,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->Z.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar) {

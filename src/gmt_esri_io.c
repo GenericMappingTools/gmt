@@ -479,9 +479,9 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	n_expected = header->nx;
 
 	if (nBits == 32)		/* Either an ASCII file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
-		tmp = GMT_memory (GMT, NULL, n_expected, float);
+		tmp = gmt_memory (GMT, NULL, n_expected, float);
 	else
-		tmp16 = GMT_memory (GMT, NULL, n_expected, int16_t);
+		tmp16 = gmt_memory (GMT, NULL, n_expected, int16_t);
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
@@ -529,7 +529,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			}
 		}
 
-		if (nBits == 16) GMT_free (GMT, tmp16);
+		if (nBits == 16) gmt_free (GMT, tmp16);
 	}
 	else {		/* ASCII */
 		n_left = header->nm;
@@ -567,8 +567,8 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	}
 
 	gmt_fclose (GMT, fp);
-	GMT_free (GMT, actual_col);
-	GMT_free (GMT, tmp);
+	gmt_free (GMT, actual_col);
+	gmt_free (GMT, tmp);
 
 	if (n_left) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
@@ -630,7 +630,7 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 	}
 
-	GMT_free (GMT, actual_col);
+	gmt_free (GMT, actual_col);
 	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);

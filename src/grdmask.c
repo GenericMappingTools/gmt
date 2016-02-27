@@ -68,7 +68,7 @@ struct GRDMASK_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDMASK_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
@@ -78,7 +78,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -341,9 +341,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		error = API->error;
 	if (Ctrl->S.active && error) {
-		GMT_free (GMT, d_col);
-		GMT_free (GMT, grd_x0);
-		GMT_free (GMT, grd_y0);
+		gmt_free (GMT, d_col);
+		gmt_free (GMT, grd_x0);
+		gmt_free (GMT, grd_y0);
 		Return (error);
 	}
 	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
@@ -386,7 +386,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
 					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
-						GMT_free (GMT, d_col);
+						gmt_free (GMT, d_col);
 						d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
 						last_radius = radius;
 					}
@@ -474,9 +474,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->S.active) {
-		GMT_free (GMT, d_col);
-		GMT_free (GMT, grd_x0);
-		GMT_free (GMT, grd_y0);
+		gmt_free (GMT, d_col);
+		gmt_free (GMT, grd_x0);
+		gmt_free (GMT, grd_y0);
 	}
 
 	Return (GMT_OK);

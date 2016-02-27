@@ -372,7 +372,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 		node = GMT_IJP (Grid->header, row, col);	/* Bin node */
 
-		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
+		if (n_pitched == n_alloc) data = gmt_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].ij = node;
 		data[n_pitched].src_id = (Ctrl->E.mode & BLK_DO_SRC_ID) ? (uint64_t)lrint (in[sid_col]) : n_read;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
@@ -402,13 +402,13 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (n_pitched < n_alloc) {
 		n_alloc = n_pitched;
-		data = GMT_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
+		data = gmt_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
 	}
 
 	/* Ready to go. */
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-		GMT_free (GMT, data);
+		gmt_free (GMT, data);
 		Return (API->error);
 	}
 
@@ -429,7 +429,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
 		if (do_extra) {
-			if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
+			if (nz == nz_alloc) z_tmp = gmt_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
 		}
@@ -437,7 +437,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].ij == data[first_in_cell].ij)) {
 			weight += data[first_in_new_cell].a[BLK_W];
 			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
-				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);
+				if (nz == nz_alloc) z_tmp = gmt_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz++] = data[first_in_new_cell].a[BLK_Z];
 			}
 			first_in_new_cell++;
@@ -476,8 +476,8 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		first_in_cell = first_in_new_cell;
 	}
 
-	GMT_free (GMT, data);
-	if (do_extra) GMT_free (GMT, z_tmp);
+	gmt_free (GMT, data);
+	if (do_extra) gmt_free (GMT, z_tmp);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);

@@ -96,7 +96,7 @@ struct SEGY2GRD_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SEGY2GRD_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct SEGY2GRD_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct SEGY2GRD_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -113,7 +113,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* De
 	gmt_str_free (C->In.file);
 	gmt_str_free (C->D.text);
 	gmt_str_free (C->G.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
@@ -328,7 +328,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
-	flag = GMT_memory (GMT, NULL, Grid->header->size, unsigned int);
+	flag = gmt_memory (GMT, NULL, Grid->header->size, unsigned int);
 
 	gmt_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
@@ -552,7 +552,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		}
 	}
 	if (fpi != stdin) fclose (fpi);
-	GMT_free (GMT, flag);
+	gmt_free (GMT, flag);
 
 	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);

@@ -31,31 +31,31 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 
 /*! Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #if defined (DEBUG) || defined (MEMDEBUG)
-#define GMT_malloc(C,a,n,n_alloc,type) gmt_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)
+#define gmt_malloc(C,a,n,n_alloc,type) gmt_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE_FUNC)
 #else
-#define GMT_malloc(C,a,n,n_alloc,type) gmt_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
+#define gmt_malloc(C,a,n,n_alloc,type) gmt_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
 #endif
-/* The __kp = n_alloc below is needed since NULL may be passed. __k is used to ensure only the final GMT_malloc call changes n_alloc (unless it is NULL) */
-#define GMT_malloc2(C,a,b,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
-#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
-#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); __k = (__kp) ? *__kp : 0U; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
+/* The __kp = n_alloc below is needed since NULL may be passed. __k is used to ensure only the final gmt_malloc call changes n_alloc (unless it is NULL) */
+#define gmt_malloc2(C,a,b,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = gmt_malloc(C,a,n,&__k,type); b = gmt_malloc(C,b,n,n_alloc,type); }
+#define gmt_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = gmt_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = gmt_malloc(C,b,n,&__k,type); c = gmt_malloc(C,c,n,n_alloc,type); }
+#define gmt_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = gmt_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = gmt_malloc(C,b,n,&__k,type); __k = (__kp) ? *__kp : 0U; c = gmt_malloc(C,c,n,&__k,type); d = gmt_malloc(C,d,n,n_alloc,type); }
 
 /*! Convenience macro for gmt_memory_func */
 #if defined (DEBUG) || defined (MEMDEBUG)
-#define GMT_memory(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE_FUNC)
-#define GMT_memory_aligned(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE_FUNC)
+#define gmt_memory(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE_FUNC)
+#define gmt_memory_aligned(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE_FUNC)
 #else
-#define GMT_memory(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),false,__func__)
-#define GMT_memory_aligned(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),true,__func__)
+#define gmt_memory(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),false,__func__)
+#define gmt_memory_aligned(C,ptr,n,type) gmt_memory_func(C,ptr,n,sizeof(type),true,__func__)
 #endif
 
 /*! Convenience macro for gmt_free_func */
 #if defined (DEBUG) || defined (MEMDEBUG)
-#define GMT_free(C,ptr) (gmt_free_func(C,ptr,false,__SOURCE_LINE_FUNC),(ptr)=NULL)
-#define GMT_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__SOURCE_LINE_FUNC),(ptr)=NULL)
+#define gmt_free(C,ptr) (gmt_free_func(C,ptr,false,__SOURCE_LINE_FUNC),(ptr)=NULL)
+#define gmt_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__SOURCE_LINE_FUNC),(ptr)=NULL)
 #else
-#define GMT_free(C,ptr) (gmt_free_func(C,ptr,false,__func__),(ptr)=NULL)
-#define GMT_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__func__),(ptr)=NULL)
+#define gmt_free(C,ptr) (gmt_free_func(C,ptr,false,__func__),(ptr)=NULL)
+#define gmt_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__func__),(ptr)=NULL)
 #endif
 
 /*! Convenience macro for free that excplicitly sets freed pointer to NULL */
@@ -77,9 +77,9 @@ struct MEMORY_TRACKER {
 	bool search;	/* Normally true but can be changed to skip searching when we know we add a new item */
 	bool do_log;	/* true if we wish to write detailed alloc/free log */
 	uint64_t n_ptr;		/* Number of unique pointers to allocated memory */
-	uint64_t n_allocated;	/* Number of items allocated by GMT_memory */
-	uint64_t n_reallocated;	/* Number of items reallocated by GMT_memory */
-	uint64_t n_freed;	/* Number of items freed by GMT_free */
+	uint64_t n_allocated;	/* Number of items allocated by gmt_memory */
+	uint64_t n_reallocated;	/* Number of items reallocated by gmt_memory */
+	uint64_t n_freed;	/* Number of items freed by gmt_free */
 	uint64_t n_ID;		/* Running number assigned to new allocations */
 	uint64_t find;		/* If > 0 then we look for this ID to be allocated */
 	size_t current;		/* Memory allocated at current time */

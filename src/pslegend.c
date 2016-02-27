@@ -56,7 +56,7 @@ struct PSLEGEND_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSLEGEND_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSLEGEND_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSLEGEND_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -67,9 +67,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free_refpoint (GMT, &C->D.refpoint);
-	GMT_free (GMT, C->F.panel);
-	GMT_free (GMT, C);
+	gmt_free_refpoint (GMT, &C->D.refpoint);
+	gmt_free (GMT, C->F.panel);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -786,7 +786,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
-						if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = GMT_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
+						if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = gmt_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number = 0;
 						if (Ctrl->F.debug) drawbase (GMT, PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->x + Ctrl->D.dim[GMT_X], row_base_y);
 						drawn = true;
@@ -850,7 +850,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
-						if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = GMT_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
+						if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = gmt_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number++;
 						drawn = true;
 						break;
@@ -999,7 +999,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						Ts[PAR] = T[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", buffer);
 						Ts[PAR]->record[Ts[PAR]->n_rows++] = strdup (buffer);
-						if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = GMT_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
+						if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = gmt_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
 						flush_paragraph = true;
 						column_number = 0;
 						drawn = true;
@@ -1235,11 +1235,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							strcat (buffer, " -W"); strcat (buffer, txt_d);
 							Ts[SYM]->record[Ts[SYM]->n_rows++] = strdup (buffer);
 							GMT_Report (API, GMT_MSG_DEBUG, "SYM: %s\n", buffer);
-							if (Ts[SYM]->n_rows == Ts[SYM]->n_alloc) Ts[SYM]->record = GMT_memory (GMT, Ts[SYM]->record, Ts[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
+							if (Ts[SYM]->n_rows == Ts[SYM]->n_alloc) Ts[SYM]->record = gmt_memory (GMT, Ts[SYM]->record, Ts[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
 							GMT_Report (API, GMT_MSG_DEBUG, "SYM: %s\n", buffer);
 							Ts[SYM]->record[Ts[SYM]->n_rows++] = strdup (buffer);
-							if (Ts[SYM]->n_rows == Ts[SYM]->n_alloc) Ts[SYM]->record = GMT_memory (GMT, Ts[SYM]->record, Ts[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
+							if (Ts[SYM]->n_rows == Ts[SYM]->n_alloc) Ts[SYM]->record = gmt_memory (GMT, Ts[SYM]->record, Ts[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
 						/* Finally, print text; skip when empty */
 						row_base_y -= half_line_spacing;	/* Go back to bottom of box */
@@ -1248,7 +1248,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 							sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, row_base_y + d_off, GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, text);
 							Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
-							if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = GMT_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
+							if (Ts[TXT]->n_rows == Ts[TXT]->n_alloc) Ts[TXT]->record = gmt_memory (GMT, Ts[TXT]->record, Ts[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 							GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
 						}
 						column_number++;
@@ -1265,12 +1265,12 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							sprintf (buffer, "%c %g %g %g,%d,%s 0 TL %gi %gi j", save_EOF, col_left_x, row_base_y - d_off, GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, one_line_spacing, Ctrl->D.dim[GMT_X] - 2.0 * Ctrl->C.off[GMT_X]);
 							Ts[PAR]->record[Ts[PAR]->n_rows++] = strdup (buffer);
 							GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", buffer);
-							if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = GMT_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
+							if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = gmt_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
 						sscanf (&line[2], "%[^\n]", text);
 						Ts[PAR]->record[Ts[PAR]->n_rows++] = strdup (text);
 						GMT_Report (API, GMT_MSG_DEBUG, "PAR: %s\n", text);
-						if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = GMT_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
+						if (Ts[PAR]->n_rows == Ts[PAR]->n_alloc) Ts[PAR]->record = gmt_memory (GMT, Ts[PAR]->record, Ts[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
 						flush_paragraph = true;
 						column_number = 0;
 						drawn = true;

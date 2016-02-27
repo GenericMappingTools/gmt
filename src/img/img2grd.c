@@ -111,7 +111,7 @@ struct IMG2GRD_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct IMG2GRD_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct IMG2GRD_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct IMG2GRD_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.min = GMT_IMG_MINLAT;
@@ -127,7 +127,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Dea
 	if (!C) return;
 	gmt_str_free (C->In.file);
 	gmt_str_free (C->G.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -527,8 +527,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
 	/* Now malloc some space for integer pixel index, and int16_t data buffer.  */
 
-	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
-	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
+	row = gmt_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
+	ix = gmt_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
 
 	/* Load ix with the index to the correct column, for each output desired.  This helps for Greenwich,
 	   also faster averaging of the file, etc.  Note for averaging each n by n block is looped in turn. */
@@ -566,8 +566,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Read failure at jin = %d.\n", jin);
-			GMT_free (GMT, ix);
-			GMT_free (GMT, row);
+			gmt_free (GMT, ix);
+			gmt_free (GMT, row);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
@@ -626,8 +626,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	}
 	fclose (fp);
 
-	GMT_free (GMT, ix);
-	GMT_free (GMT, row);
+	gmt_free (GMT, ix);
+	gmt_free (GMT, row);
 
 	/* We now have the Mercator grid in Grid. */
 

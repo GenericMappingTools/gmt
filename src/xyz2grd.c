@@ -72,7 +72,7 @@ struct XYZ2GRD_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZ2GRD_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->Z.type = 'a';
@@ -86,7 +86,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Dea
 	gmt_str_free (C->D.information);	
 	gmt_str_free (C->G.file);	
 	gmt_str_free (C->S.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -482,7 +482,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 		n_left = Grid->header->nm;
 
-		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nm, float);
+		Grid->data = gmt_memory_aligned (GMT, NULL, Grid->header->nm, float);
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
 		if (fscanf (fp, "%s", line) != 1) {
@@ -564,22 +564,22 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 	else {
 		zcol = GMT_Z;
-		flag = GMT_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
+		flag = gmt_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
 		GMT_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_OK) {
-		GMT_free (GMT, flag);
+		gmt_free (GMT, flag);
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
-		GMT_free (GMT, flag);
+		gmt_free (GMT, flag);
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
-		GMT_free (GMT, flag);
+		gmt_free (GMT, flag);
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
 
@@ -744,7 +744,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				n_stuffed++;
 			}
 		}
-		GMT_free (GMT, flag);
+		gmt_free (GMT, flag);
 		
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];

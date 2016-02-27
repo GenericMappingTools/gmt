@@ -66,7 +66,7 @@ struct GRD2RGB_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2RGB_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRD2RGB_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRD2RGB_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -81,7 +81,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Dea
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->C.file);	
 	gmt_str_free (C->G.name);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byte_per_pixel, int nx, int ny, unsigned char **P) {
@@ -107,14 +107,14 @@ GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *heade
 	nm = (size_t)nx * (size_t)ny * (size_t)byte_per_pixel;
 	header->length = (int)nm;
 
-	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
+	buffer = gmt_memory (GMT, NULL, nm, unsigned char);
 	if (GMT_fread (buffer, 1U, nm, fp) != nm) {
 		if (byte_per_pixel == 3)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 32-bit rasterfile!\n");
 		gmt_fclose (GMT, fp);
-		GMT_free (GMT, buffer);
+		gmt_free (GMT, buffer);
 		return (EXIT_FAILURE);
 	}
 
@@ -149,10 +149,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 
 	n_pix = (unsigned int) (img_size / byte_per_pixel);
 
-	buffer  = GMT_memory (GMT, NULL, img_size, unsigned char);
-	datac   = GMT_memory (GMT, NULL, 2*n_pix, float);
-	work    = GMT_memory (GMT, NULL, 2*n_pix, float);
-	img_pow = GMT_memory (GMT, NULL, n_pix/2, float);
+	buffer  = gmt_memory (GMT, NULL, img_size, unsigned char);
+	datac   = gmt_memory (GMT, NULL, 2*n_pix, float);
+	work    = gmt_memory (GMT, NULL, 2*n_pix, float);
+	img_pow = gmt_memory (GMT, NULL, n_pix/2, float);
 	GMT_memset (work, 2*n_pix, float);
 
 	if (GMT_fread (buffer, 1U, img_size, fp) != img_size) {
@@ -160,10 +160,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 32-bit rasterfile!\n");
-		GMT_free (GMT, buffer);
-		GMT_free (GMT, datac);
-		GMT_free (GMT, work);
-		GMT_free (GMT, img_pow);
+		gmt_free (GMT, buffer);
+		gmt_free (GMT, datac);
+		gmt_free (GMT, work);
+		gmt_free (GMT, img_pow);
 		return (EXIT_FAILURE);
 	}
 	gmt_fclose (GMT, fp);
@@ -230,10 +230,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 		return (EXIT_FAILURE);
 	}
 
-	GMT_free (GMT, buffer);
-	GMT_free (GMT, datac);
-	GMT_free (GMT, work);
-	GMT_free (GMT, img_pow);
+	gmt_free (GMT, buffer);
+	gmt_free (GMT, datac);
+	gmt_free (GMT, work);
+	gmt_free (GMT, img_pow);
 
 	return (EXIT_SUCCESS);
 }
@@ -539,7 +539,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			gmt_str_free (grdfile);
 		}
 		if (Ctrl->W.active)
-			GMT_free (GMT, picture);
+			gmt_free (GMT, picture);
 		else
 			PSL_free (picture);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {

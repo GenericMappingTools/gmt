@@ -180,7 +180,7 @@ struct BLK_DATA {
 void *NEW_BLK (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 #if defined(BLOCKMODE)	/* Only used by blockmode */
@@ -196,7 +196,7 @@ void *NEW_BLK (struct GMT_CTRL *GMT) {
 void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	if (!C) return;
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 #if !defined(BLOCKMEAN)	/* Only used by blockmean */

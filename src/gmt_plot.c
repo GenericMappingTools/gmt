@@ -552,13 +552,13 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			if (!faro) PSL_command (PSL, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
 		}
 
-		if (nx) GMT_free (GMT, knots);
+		if (nx) gmt_free (GMT, knots);
 		if (label_c) {
 			for (i = 0; i < nx; i++) gmt_str_free (label_c[i]);
-			GMT_free (GMT, label_c);
+			gmt_free (GMT, label_c);
 		}
 	}
-	if (np) GMT_free (GMT, knots_p);
+	if (np) gmt_free (GMT, knots_p);
 
 	/* Finally do axis label */
 
@@ -626,8 +626,8 @@ void gmt_map_latline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, do
 		}
 		GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 	}
-	GMT_free (GMT, llon);
-	GMT_free (GMT, llat);
+	gmt_free (GMT, llon);
+	gmt_free (GMT, llat);
 }
 
 void gmt_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, double south, double north)	/* Draws a line of constant longitude */ {
@@ -668,8 +668,8 @@ void gmt_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, do
 		}
 		GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 	}
-	GMT_free (GMT, llon);
-	GMT_free (GMT, llat);
+	gmt_free (GMT, llon);
+	gmt_free (GMT, llat);
 }
 
 void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -708,7 +708,7 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, x[i], ys, yn);
 		gmt_map_lonline (GMT, PSL, x[i], ys, yn);
 	}
-	if (nx) GMT_free (GMT, x);
+	if (nx) gmt_free (GMT, x);
 
 	if (cap) {	/* Also draw the polar cap(s) */
 		nx = 0;
@@ -728,7 +728,7 @@ void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			}
 			gmt_map_latline (GMT, PSL, p_cap, w, e);
 		}
-		if (nx) GMT_free (GMT, x);
+		if (nx) gmt_free (GMT, x);
 	}
 }
 
@@ -753,8 +753,8 @@ void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 	nx = GMT_linear_array (GMT, 0.0, TWO_PI, D2R * dval, D2R * GMT->current.map.frame.axis[GMT_X].phase, &x);
 	np = GMT_linear_array (GMT, -90.0, 90.0, tval, 0.0, &lat_obl);
 	np1 = nc2 = np - 1;	/* Nominal number of points in path */
-	lon = GMT_memory (GMT, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
-	lat = GMT_memory (GMT, NULL, np+2, double);
+	lon = gmt_memory (GMT, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
+	lat = gmt_memory (GMT, NULL, np+2, double);
 	for (i = 0; i < nx - idup; i++) {	/* For each oblique meridian to draw */
 		/* Create lon,lat arrays of oblique coordinates for this meridian */
 		for (k = j = 0; k < np; k++, j++) {
@@ -780,7 +780,7 @@ void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 		}
 		GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 	}
-	if (nx) GMT_free (GMT, x);
+	if (nx) gmt_free (GMT, x);
 	if (cap) {	/* Draw the polar cap(s) meridians with a separate lon spacing */
 		nx = GMT_linear_array (GMT, 0.0, TWO_PI, D2R * GMT->current.setting.map_polar_cap[1], D2R * GMT->current.map.frame.axis[GMT_X].phase, &x);
 		for (i = 0; i < nx - idup; i++) {
@@ -803,11 +803,11 @@ void GMT_linearx_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 			if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, &lon[nc2], &lat[nc2], j-nc2)) > 0)
 				GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 		}
-		if (nx) GMT_free (GMT, x);
+		if (nx) gmt_free (GMT, x);
 	}
-	GMT_free (GMT, lat_obl);
-	GMT_free (GMT, lon);
-	GMT_free (GMT, lat);
+	gmt_free (GMT, lat_obl);
+	gmt_free (GMT, lon);
+	gmt_free (GMT, lat);
 }
 
 void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -826,7 +826,7 @@ void gmt_lineary_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Draw %s = %g from %g to %g\n", type, y[i], w, e);
 		gmt_map_latline (GMT, PSL, y[i], w, e);
 	}
-	if (ny) GMT_free (GMT, y);
+	if (ny) gmt_free (GMT, y);
 
 }
 
@@ -856,8 +856,8 @@ void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 	ny = GMT_linear_array (GMT, -M_PI_2, M_PI_2, D2R * dval, D2R * GMT->current.map.frame.axis[GMT_Y].phase, &y);
 	tval = (e - w) * GMT->current.setting.map_line_step / GMT->current.map.width;
 	np = GMT_linear_array (GMT, 0.0, TWO_PI, D2R * tval, 0.0, &lon_obl);
-	lon = GMT_memory (GMT, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
-	lat = GMT_memory (GMT, NULL, np+2, double);
+	lon = gmt_memory (GMT, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
+	lat = gmt_memory (GMT, NULL, np+2, double);
 	for (i = 0; i < ny; i++) {
 		for (k = 0; k < np; k++) {
 			GMT_iobl (GMT, &lon[k], &lat[k], lon_obl[k], y[i]);	/* Get regular coordinates of this point */
@@ -866,7 +866,7 @@ void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, np)) == 0) continue;
 		GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 	}
-	if (ny) GMT_free (GMT, y);
+	if (ny) gmt_free (GMT, y);
 	p_cap = fabs (GMT->current.setting.map_polar_cap[0]);
 	cap = !doubleAlmostEqual (p_cap, 90.0);	/* true if we have a polar cap specified */
 	if (cap) {	/* Draw the polar cap(s) with a separate spacing */
@@ -884,9 +884,9 @@ void GMT_lineary_oblgrid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, 
 		if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, lon, lat, np)) > 0)
 			GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 	}
-	GMT_free (GMT, lon_obl);
-	GMT_free (GMT, lon);
-	GMT_free (GMT, lat);
+	gmt_free (GMT, lon_obl);
+	gmt_free (GMT, lon);
+	gmt_free (GMT, lat);
 }
 
 void gmt_y_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double *y, unsigned int ny) {
@@ -906,7 +906,7 @@ void gmt_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, doubl
 
 	nx = GMT_time_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[item], &x);
 	gmt_x_grid (GMT, PSL, s, n, x, nx);
-	if (nx) GMT_free (GMT, x);
+	if (nx) gmt_free (GMT, x);
 }
 
 void gmt_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item) {
@@ -915,7 +915,7 @@ void gmt_timey_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, doubl
 
 	ny = GMT_time_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[item], &y);
 	gmt_y_grid (GMT, PSL, w, e, y, ny);
-	if (ny) GMT_free (GMT, y);
+	if (ny) gmt_free (GMT, y);
 }
 
 void gmt_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -924,7 +924,7 @@ void gmt_logx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 	nx = GMT_log_array (GMT, w, e, dval, &x);
 	gmt_x_grid (GMT, PSL, s, n, x, nx);
-	if (nx) GMT_free (GMT, x);
+	if (nx) gmt_free (GMT, x);
 }
 
 void gmt_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -933,7 +933,7 @@ void gmt_logy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 	ny = GMT_log_array (GMT, s, n, dval, &y);
 	gmt_y_grid (GMT, PSL, w, e, y, ny);
-	if (ny) GMT_free (GMT, y);
+	if (ny) gmt_free (GMT, y);
 }
 
 void gmt_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -942,7 +942,7 @@ void gmt_powx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 	nx = GMT_pow_array (GMT, w, e, dval, 0, &x);
 	gmt_x_grid (GMT, PSL, s, n, x, nx);
-	if (nx) GMT_free (GMT, x);
+	if (nx) gmt_free (GMT, x);
 }
 
 void gmt_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, double dval) {
@@ -951,7 +951,7 @@ void gmt_powy_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double
 
 	ny = GMT_pow_array (GMT, s, n, dval, 1, &y);
 	gmt_y_grid (GMT, PSL, w, e, y, ny);
-	if (ny) GMT_free (GMT, y);
+	if (ny) gmt_free (GMT, y);
 }
 
 double gmt_shift_gridline (struct GMT_CTRL *GMT, double val, unsigned int type) {
@@ -1272,8 +1272,8 @@ void gmt_wesn_map_boundary_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		for (i = 0; i < np; i++)
 			gmt_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 		return;
 	}
 
@@ -1284,32 +1284,32 @@ void gmt_wesn_map_boundary_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 		for (i = 0; i < np; i++)
 			gmt_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 	}
 	if (GMT->current.map.frame.side[E_SIDE]) {	/* East */
 		np = gmt_map_path (GMT, e, s, e, n, &xx, &yy);
 		for (i = 0; i < np; i++)
 			gmt_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 	}
 	if (GMT->current.map.frame.side[S_SIDE]) {	/* South */
 		np = gmt_map_path (GMT, w, s, e, s, &xx, &yy);
 		for (i = 0; i < np; i++)
 			gmt_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 	}
 	if (GMT->current.map.frame.side[N_SIDE]) {	/* North */
 		np = gmt_map_path (GMT, w, n, e, n, &xx, &yy);
 		for (i = 0; i < np; i++)
 			gmt_geo_to_xy (GMT, xx[i], yy[i], &xx[i], &yy[i]);
 		PSL_plotline (PSL, xx, yy, (int)np, PSL_MOVE + PSL_STROKE);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 	}
 }
 #endif
@@ -1354,8 +1354,8 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_wesn_map_boundary doing side %d with flag = %d\n", this, flag);
 
 		PSL_plotline (PSL, xx, yy, (int)np, flag);
-		GMT_free (GMT, xx);
-		GMT_free (GMT, yy);
+		gmt_free (GMT, xx);
+		gmt_free (GMT, yy);
 		n_set++;
 		flag = 0;
 	}
@@ -1696,7 +1696,7 @@ void gmt_map_lontick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, do
 	nc = gmt_map_loncross (GMT, lon, south, north, &xings);
 	for (i = 0; i < nc; i++)
 		gmt_map_tick (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 0, len);
-	if (nc) GMT_free (GMT, xings);
+	if (nc) gmt_free (GMT, xings);
 }
 
 void gmt_map_lattick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, double west, double east, double len) {
@@ -1707,7 +1707,7 @@ void gmt_map_lattick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, do
 	nc = gmt_map_latcross (GMT, lat, west, east, &xings);
 	for (i = 0; i < nc; i++)
 		gmt_map_tick (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, xings[i].nx, 1, len);
-	if (nc) GMT_free (GMT, xings);
+	if (nc) gmt_free (GMT, xings);
 }
 
 bool gmt_annot_too_crowded (struct GMT_CTRL *GMT, double x, double y, unsigned int side) {
@@ -1723,7 +1723,7 @@ bool gmt_annot_too_crowded (struct GMT_CTRL *GMT, double x, double y, unsigned i
 
 	/* OK to plot and add to list */
 
-	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) GMT_malloc2 (GMT, GMT_x_annotation[side], GMT_y_annotation[side], GMT_n_annotations[side], &(GMT_alloc_annotations[side]), double);
+	if (GMT_n_annotations[side] == GMT_alloc_annotations[side]) gmt_malloc2 (GMT, GMT_x_annotation[side], GMT_y_annotation[side], GMT_n_annotations[side], &(GMT_alloc_annotations[side]), double);
 	GMT_x_annotation[side][GMT_n_annotations[side]] = x, GMT_y_annotation[side][GMT_n_annotations[side]] = y, GMT_n_annotations[side]++;
 
 	return (false);
@@ -1782,7 +1782,7 @@ void gmt_map_symbol_ew (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lat, 
 	nc = gmt_map_latcross (GMT, lat, west, east, &xings);
 	for (i = 0; i < nc; i++)
 		gmt_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 1, annot, level, form);
-	if (nc) GMT_free (GMT, xings);
+	if (nc) gmt_free (GMT, xings);
 }
 
 void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, char *label, double south, double north, bool annot, unsigned int level, unsigned int form) {
@@ -1797,7 +1797,7 @@ void gmt_map_symbol_ns (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double lon, 
 		}
 		gmt_map_symbol (GMT, PSL, xings[i].xx, xings[i].yy, xings[i].sides, xings[i].angle, label, xings[i].nx, 0, annot, level, form);
 	}
-	if (nc) GMT_free (GMT, xings);
+	if (nc) gmt_free (GMT, xings);
 }
 
 void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, double zmax, int plane) {
@@ -1827,7 +1827,7 @@ void gmt_z_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double zmin, d
 		}
 
 		PSL_setdash (PSL, NULL, 0);
-		GMT_free (GMT, z);
+		gmt_free (GMT, z);
 	}
 }
 
@@ -1853,7 +1853,7 @@ void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 
 		if (GMT->current.map.frame.axis[GMT_X].special == GMT_CUSTOM && (np = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[GMT_X], 'g', &v, NULL))) {
 			gmt_x_grid (GMT, PSL, s, n, v, np);
-			GMT_free (GMT, v);
+			gmt_free (GMT, v);
 		}
 		else if (!GMT->current.map.frame.axis[GMT_X].item[item[k]].active || fabs(dx) == 0.0) { /* Nothing */ }
 		else if (GMT->current.proj.xyz_projection[GMT_X] == GMT_TIME)
@@ -1869,7 +1869,7 @@ void gmt_map_gridlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 
 		if (GMT->current.map.frame.axis[GMT_Y].special == GMT_CUSTOM && (np = gmt_load_custom_annot (GMT, &GMT->current.map.frame.axis[GMT_Y], 'g', &v, NULL))) {
 			gmt_y_grid (GMT, PSL, w, e, v, np);
-			GMT_free (GMT, v);
+			gmt_free (GMT, v);
 		}
 		else if (!GMT->current.map.frame.axis[GMT_Y].item[item[k]].active || fabs(dy) == 0.0) { /* Nothing */ }
 		else if (GMT->current.proj.xyz_projection[GMT_Y] == GMT_TIME)
@@ -1957,8 +1957,8 @@ void gmt_map_gridcross (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, do
 				}
 			}
 		}
-		if (nx) GMT_free (GMT, x);
-		if (ny) GMT_free (GMT, y);
+		if (nx) gmt_free (GMT, x);
+		if (ny) gmt_free (GMT, y);
 
 		PSL_setdash (PSL, NULL, 0);
 
@@ -1998,7 +1998,7 @@ void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			shift = gmt_shift_gridline (GMT, val[i], GMT_X);
 			gmt_map_lontick (GMT, PSL, val[i] + shift, s, n, len);
 		}
-		if (nx) GMT_free (GMT, val);
+		if (nx) gmt_free (GMT, val);
 	}
 
 	if (do_y) {	/* Draw grid lines that go S to N */
@@ -2020,7 +2020,7 @@ void gmt_map_tickitem (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 			shift = gmt_shift_gridline (GMT, val[i], GMT_Y);
 			gmt_map_lattick (GMT, PSL, val[i] + shift, w, e, len);
 		}
-		if (ny) GMT_free (GMT, val);
+		if (ny) gmt_free (GMT, val);
 	}
 
 	GMT->current.map.on_border_is_outside = false;	/* Reset back to default */
@@ -2186,10 +2186,10 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 				shift = gmt_shift_gridline (GMT, val[i], GMT_X);
 				gmt_map_symbol_ns (GMT, PSL, val[i]+shift, label, s, n, annot, k, form);
 			}
-			if (nx) GMT_free (GMT, val);
+			if (nx) gmt_free (GMT, val);
 			if (label_c) {
 				for (i = 0; i < nx; i++) gmt_str_free (label_c[i]);
-				GMT_free (GMT, label_c);
+				gmt_free (GMT, label_c);
 			}
 		}
 
@@ -2211,7 +2211,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 					ny = GMT_coordinate_array (GMT, 0.0, n-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
 				else
 					ny = GMT_linear_array (GMT, 0.0, n-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
-				val = GMT_memory (GMT, NULL, ny, double);
+				val = gmt_memory (GMT, NULL, ny, double);
 				for (i = 0; i < ny; i++)
 					val[i] = GMT->common.R.wesn[YHI] - tval[i];	/* These are the radial values needed for positioning */
 			}
@@ -2245,12 +2245,12 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 				shift = gmt_shift_gridline (GMT, val[i], GMT_Y);
 				gmt_map_symbol_ew (GMT, PSL, val[i]+shift, label, w, e, annot, k, form);
 			}
-			if (ny) GMT_free (GMT, val);
+			if (ny) gmt_free (GMT, val);
 			if (label_c) {
 				for (i = 0; i < ny; i++) gmt_str_free (label_c[i]);
-				GMT_free (GMT, label_c);
+				gmt_free (GMT, label_c);
 			}
-			if (GMT->current.proj.z_down) GMT_free (GMT, tval);
+			if (GMT->current.proj.z_down) gmt_free (GMT, tval);
 		}
 	}
 
@@ -2423,8 +2423,8 @@ void GMT_map_basemap (struct GMT_CTRL *GMT) {
 
 	for (side = 0; side < 4; side++) {	/* Reset annotation crowdedness arrays */
 		if (GMT_n_annotations[side]) {
-			GMT_free (GMT, GMT_x_annotation[side]);
-			GMT_free (GMT, GMT_y_annotation[side]);
+			gmt_free (GMT, GMT_x_annotation[side]);
+			gmt_free (GMT, GMT_y_annotation[side]);
 			GMT_n_annotations[side] = GMT_alloc_annotations[side] = 0;
 		}
 	}
@@ -2530,8 +2530,8 @@ void GMT_map_clip_on (struct GMT_CTRL *GMT, double rgb[], unsigned int flag) {
 	else
 		PSL_beginclipping (PSL, work_x, work_y, (int)np, rgb, flag);
 
-	GMT_free (GMT, work_x);
-	GMT_free (GMT, work_y);
+	gmt_free (GMT, work_x);
+	gmt_free (GMT, work_y);
 }
 
 void GMT_map_clip_off (struct GMT_CTRL *GMT) {
@@ -2807,7 +2807,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			uint64_t np;
 			int outline;
 			double *lon = NULL, *lat = NULL;
-			struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+			struct GMT_DATASEGMENT *S = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			np = gmt_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 			gmt_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
 			S->coord[GMT_X] = lon;	S->coord[GMT_Y] = lat;
@@ -3116,7 +3116,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 			x[1] = mr->refpoint->x + (R[level] - scale[level]*tlen[k]) * c, y[1] = mr->refpoint->y + (R[level] - scale[level]*tlen[k]) * s;
 			PSL_plotsegment (PSL, x[0], y[0], x[1], y[1]);
 		}
-		GMT_free (GMT, val);
+		gmt_free (GMT, val);
 
 		form = GMT_setfont (GMT, &GMT->current.setting.font_annot[level]);
 		n_tick = GMT_linear_array (GMT, 0.0, 360.0, mr->a_int[level], 0.0, &val);
@@ -3140,7 +3140,7 @@ void gmt_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_M
 				t_angle = 90.0, just = PSL_BC;
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_annot[level].size, label, t_angle, just, form);
 		}
-		GMT_free (GMT, val);
+		gmt_free (GMT, val);
 	}
 
 	/* Draw extra tick for the 4 main compass directions */
@@ -3673,7 +3673,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case GMT_SYMBOL_MOVE:	/* Flush existing polygon and start a new path */
 				if (flush) gmt_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				n = 0;
-				if (n >= n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+				if (n >= n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				p = (s->pen) ? s->pen : current_pen;
 				f = (s->fill) ? s->fill : current_fill;
@@ -3687,7 +3687,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case GMT_SYMBOL_DRAW:	/* Append another point to the path */
 				flush = true;
-				if (n >= n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+				if (n >= n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = x, yy[n] = y, n++;
 				break;
 
@@ -3695,11 +3695,11 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				flush = true;
 				na = GMT_get_arc (GMT, x, y, 0.5 * s->p[0] * size[0], s->p[1], s->p[2], &xp, &yp);
 				for (i = 0; i < na; i++) {
-					if (n >= n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+					if (n >= n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 					xx[n] = xp[i], yy[n] = yp[i], n++;
 				}
-				GMT_free (GMT, xp);
-				GMT_free (GMT, yp);
+				gmt_free (GMT, xp);
+				gmt_free (GMT, yp);
 				break;
 
 			case GMT_SYMBOL_ROTATE:		/* Rotate the symbol coordinate system by a fixed amount */
@@ -3832,8 +3832,8 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 	/* Restore settings */
 	GMT_setpen (GMT, &save_pen);
-	if (xx) GMT_free (GMT, xx);
-	if (yy) GMT_free (GMT, yy);
+	if (xx) gmt_free (GMT, xx);
+	if (yy) gmt_free (GMT, yy);
 
 	return (GMT_OK);
 }
@@ -3917,10 +3917,10 @@ void gmt_contlabel_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT
 		uint64_t seg;
 		unsigned int *pen = NULL;
 		for (seg = 0; seg < G->xp->n_segments; seg++) {
-			pen = GMT_memory (GMT, NULL, G->xp->segment[seg]->n_rows, unsigned int);
+			pen = gmt_memory (GMT, NULL, G->xp->segment[seg]->n_rows, unsigned int);
 			for (row = 1, pen[0] = PSL_MOVE; row < G->xp->segment[seg]->n_rows; row++) pen[row] = PSL_DRAW;
 			GMT_plot_line (GMT, G->xp->segment[seg]->coord[GMT_X], G->xp->segment[seg]->coord[GMT_Y], pen, G->xp->segment[seg]->n_rows, PSL_LINEAR);
-			GMT_free (GMT, pen);
+			gmt_free (GMT, pen);
 		}
 	}
 }
@@ -3933,11 +3933,11 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (L->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
 		GMT_setpen (GMT, &L->pen);
-		pen = GMT_memory (GMT, NULL, L->n, unsigned int);
+		pen = gmt_memory (GMT, NULL, L->n, unsigned int);
 		for (k = 1, pen[0] = PSL_MOVE; k < L->n; k++) pen[k] = PSL_DRAW;
 		PSL_comment (PSL, "%s: %s\n", G->line_name, L->name);
 		GMT_plot_line (GMT, L->x, L->y, pen, L->n, PSL_LINEAR);
-		GMT_free (GMT, pen);
+		gmt_free (GMT, pen);
 	}
 }
 
@@ -3980,21 +3980,21 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 
 		if (n_labels == 0) return;	/* There are no labels */
 
-		GMT_malloc2 (GMT, xpath, ypath, n_points, NULL, double);
-		GMT_malloc2 (GMT, npoints_per_segment, nlabels_per_segment, n_segments, NULL, int);
+		gmt_malloc2 (GMT, xpath, ypath, n_points, NULL, double);
+		gmt_malloc2 (GMT, npoints_per_segment, nlabels_per_segment, n_segments, NULL, int);
 		if (G->curved_text) {	/* Must pass node locations of labels */
-			node = GMT_memory (GMT, NULL, n_labels, int);
+			node = gmt_memory (GMT, NULL, n_labels, int);
 			A1 = node;
 		}
 		else {			/* Must pass x,y locations of labels */
-			GMT_malloc2 (GMT, xtxt, ytxt, n_points, NULL, double);
+			gmt_malloc2 (GMT, xtxt, ytxt, n_points, NULL, double);
 			A1 = xtxt;
 			A2 = ytxt;
 		}
-		angle = GMT_memory (GMT, NULL, n_labels, double);
-		txt   = GMT_memory (GMT, NULL, n_labels, char *);
-		pen   = GMT_memory (GMT, NULL, n_segments, char *);
-		fonts = GMT_memory (GMT, NULL, n_labels, char *);
+		angle = gmt_memory (GMT, NULL, n_labels, double);
+		txt   = gmt_memory (GMT, NULL, n_labels, char *);
+		pen   = gmt_memory (GMT, NULL, n_segments, char *);
+		fonts = gmt_memory (GMT, NULL, n_labels, char *);
 		PSL_setfont (PSL, G->font_label.id);
 		//psl_encodefont (PSL, PSL->current.font_no);
 		for (seg = m = this_seg = 0; seg < G->n_segments; seg++) {	/* Process all segments, skip those without labels */
@@ -4027,33 +4027,33 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struc
 		psl_set_txt_array (PSL, "path_pen", pen, n_segments);
 		/* While all contours & quoted lines have same justification and font (except maybe color), this is not true of pstext items
 		 * so we use separate arrays for both font and justify [here justify and possibly font are constants]  */
-		just = GMT_memory (GMT, NULL, n_labels, int);
+		just = gmt_memory (GMT, NULL, n_labels, int);
 		for (k = 0; k < n_labels; k++)
 			just[k] = abs (justify);
 		PSL_comment (PSL, "Store text justification for each text label:\n");
 		psl_set_int_array   (PSL, "label_justify", just, n_labels);
 		PSL_comment (PSL, "Store font setting for each text label:\n");
 		psl_set_txt_array   (PSL, "label_font", fonts, n_labels);
-		GMT_free (GMT, just);
+		gmt_free (GMT, just);
 		for (k = 0; k < n_labels; k++)
 			gmt_str_free (fonts[k]);
-		GMT_free (GMT, fonts);
+		gmt_free (GMT, fonts);
 	}
 	PSL_plottextline (PSL, xpath, ypath, npoints_per_segment, n_segments, A1, A2, txt, angle, nlabels_per_segment, G->font_label.size, justify, G->clearance, form);
 	if (mode & PSL_TXT_INIT) {	/* Free up the things we allocated above */
-		GMT_free (GMT, npoints_per_segment);
-		GMT_free (GMT, nlabels_per_segment);
+		gmt_free (GMT, npoints_per_segment);
+		gmt_free (GMT, nlabels_per_segment);
 		for (k = 0; k < n_segments; k++) gmt_str_free (pen[k]);
-		GMT_free (GMT, pen);
-		GMT_free (GMT, angle);
-		GMT_free (GMT, txt);
-		GMT_free (GMT, xpath);
-		GMT_free (GMT, ypath);
+		gmt_free (GMT, pen);
+		gmt_free (GMT, angle);
+		gmt_free (GMT, txt);
+		gmt_free (GMT, xpath);
+		gmt_free (GMT, ypath);
 		if (G->curved_text)
-			GMT_free (GMT, node);
+			gmt_free (GMT, node);
 		else {
-			GMT_free (GMT, xtxt);
-			GMT_free (GMT, ytxt);
+			gmt_free (GMT, xtxt);
+			gmt_free (GMT, ytxt);
 		}
 	}
 }
@@ -4482,8 +4482,8 @@ void GMT_plotcanvas (struct GMT_CTRL *GMT) {
 		np = gmt_map_clip_path (GMT, &x, &y, &donut);
 		GMT_setfill (GMT, &GMT->current.map.frame.fill, false);
 		PSL_plotpolygon (GMT->PSL, x, y, (int)((1 + donut) * np));
-		GMT_free (GMT, x);
-		GMT_free (GMT, y);
+		gmt_free (GMT, x);
+		gmt_free (GMT, y);
 	}
 }
 
@@ -4512,7 +4512,7 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 	PSL_endplot (PSL, !GMT->common.K.active);
 	
 	if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
-		struct GMT_PS *P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
+		struct GMT_PS *P = gmt_memory (GMT, NULL, 1, struct GMT_PS);
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
 		P->n = PSL->internal.n;         /* Length of plot buffer */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (1,2,3) */
@@ -4520,7 +4520,7 @@ void GMT_plotend (struct GMT_CTRL *GMT) {
 		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
-		GMT_free(GMT, P);
+		gmt_free(GMT, P);
 	}
 }
 
@@ -4578,8 +4578,8 @@ uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 		PSL_comment (PSL, comment);
 		PSL_plotpolygon (PSL, xp, yp, (unsigned int)GMT->current.plot.n);	/* Fill Cartesian polygon and possibly draw outline */
 		/* Free the memory we are done with */
-		GMT_free (GMT, xp);
-		GMT_free (GMT, yp);
+		gmt_free (GMT, xp);
+		gmt_free (GMT, yp);
 		total = GMT->current.plot.n;
 	}
 	else {
@@ -4612,7 +4612,7 @@ uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 
 		/* Temporary array to hold the modified x values */
 
-		xp = GMT_memory (GMT, NULL, GMT->current.plot.n, double);
+		xp = gmt_memory (GMT, NULL, GMT->current.plot.n, double);
 
 		x_on_border[JUMP_R] = map_left_boundary;	/* Pointers to functions that supply the x-coordinate of boundary for given y */
 		x_on_border[JUMP_L] = map_right_boundary;
@@ -4660,7 +4660,7 @@ uint64_t gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 		}
 
 		/* Free the memory we are done with */
-		GMT_free (GMT, xp);
+		gmt_free (GMT, xp);
 	}
 	return (total);
 }
@@ -4724,8 +4724,8 @@ uint64_t gmt_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct GMT_DATASEG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);
 	/* 2. Allocate enough space for new polar cap polygon */
 	n_new = 2 * perim_n + n;
-	plon = GMT_memory (GMT, NULL, n_new, double);
-	plat = GMT_memory (GMT, NULL, n_new, double);
+	plon = gmt_memory (GMT, NULL, n_new, double);
+	plat = gmt_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
 	GMT_memcpy (plon, x_perim, perim_n, double);
 	GMT_memcpy (plat, y_perim, perim_n, double);
@@ -4749,7 +4749,7 @@ uint64_t gmt_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct GMT_DATASEG
 	/* Finally add the duplicate pole at the end of polygon so it is closed */
 	plon[m] = stop_lon;
 	plat[m++] = pole_lat;
-	GMT_free (GMT, x_perim);	GMT_free (GMT, y_perim);	/* No longer needed */
+	gmt_free (GMT, x_perim);	gmt_free (GMT, y_perim);	/* No longer needed */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "New path has %d points, we allocated %d points\n", m, n_new);
 #if 0
 	fp = fopen ("shit.txt", "w");
@@ -4759,7 +4759,7 @@ uint64_t gmt_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct GMT_DATASEG
 	fclose (fp);
 #endif
 	k = gmt_geo_polygon (GMT, plon, plat, m, first, comment);	/* Plot filled polygon [no outline] */
-	GMT_free (GMT, plon);	GMT_free (GMT, plat);			/* No longer needed */
+	gmt_free (GMT, plon);	gmt_free (GMT, plat);			/* No longer needed */
 	return (k);	/* Number of points plotted */
 }
 #endif
@@ -4814,8 +4814,8 @@ uint64_t GMT_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Created path from %g/%g to %g/%g [%d points]\n", start_lon, pole_lat, start_lon, yc, perim_n);
 	/* 2. Allocate enough space for new polar cap polygon */
 	n_new = 2 * perim_n + n;
-	plon = GMT_memory (GMT, NULL, n_new, double);
-	plat = GMT_memory (GMT, NULL, n_new, double);
+	plon = gmt_memory (GMT, NULL, n_new, double);
+	plat = gmt_memory (GMT, NULL, n_new, double);
 	/* Start off with the path from the pole to the crossing */
 	GMT_memcpy (plon, x_perim, perim_n, double);
 	GMT_memcpy (plat, y_perim, perim_n, double);
@@ -4839,7 +4839,7 @@ uint64_t GMT_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* Finally add the duplicate pole at the end of polygon so it is closed */
 	plon[m] = stop_lon;
 	plat[m++] = pole_lat;
-	GMT_free (GMT, x_perim);	GMT_free (GMT, y_perim);	/* No longer needed */
+	gmt_free (GMT, x_perim);	gmt_free (GMT, y_perim);	/* No longer needed */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "New path has %d points, we allocated %d points\n", m, n_new);
 #if 0
 	fp = fopen ("shit.txt", "w");
@@ -4865,8 +4865,8 @@ uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *
 		if ((n = GMT_geo_polarcap_segment (GMT, S, &plon, &plat)) == 0) {	/* Not a global map */
 			/* Here we must detour to the N or S pole, then resample the path */
 			n = S->n_rows + 2;	/* Add new first and last point to connect to the pole */
-			plon = GMT_memory (GMT, NULL, n, double);
-			plat = GMT_memory (GMT, NULL, n, double);
+			plon = gmt_memory (GMT, NULL, n, double);
+			plat = gmt_memory (GMT, NULL, n, double);
 			plat[0] = plat[n-1] = S->pole * 90.0;
 			plon[0] = S->coord[GMT_X][0];
 			plon[n-1] = S->coord[GMT_X][S->n_rows-1];
@@ -4877,8 +4877,8 @@ uint64_t gmt_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *
 	}
 	k = gmt_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
 	if (add_pole) {		/* Delete what we made */
-		GMT_free (GMT, plon);
-		GMT_free (GMT, plat);
+		gmt_free (GMT, plon);
+		gmt_free (GMT, plat);
 	}
 	return (k);	/* Number of points plotted */
 }
@@ -4958,7 +4958,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	int i;
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c;
 	double sin_c, cos_c, center, *px = NULL, *py = NULL;
-	struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+	struct GMT_DATASEGMENT *S = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
 	gmt_alloc_segment (GMT, S, GMT_ELLIPSE_APPROX+1, 2, true);
 	px = S->coord[GMT_X];	py = S->coord[GMT_Y];
@@ -5040,7 +5040,7 @@ uint64_t gmt_great_circle_arc (struct GMT_CTRL *GMT, double *A, double *B, doubl
 	if (GMT_IS_ZERO (step)) step = GMT->current.map.path_step;	/* Use default map-step if given as 0 */
 	n = lrint (ceil (c / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
-	GMT_malloc2 (GMT, xx, yy, n, NULL, double);	/* Allocate space for arrays */
+	gmt_malloc2 (GMT, xx, yy, n, NULL, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
 		w = k * step;					/* Opening angle from A to this point X */
@@ -5062,7 +5062,7 @@ uint64_t gmt_small_circle_arc (struct GMT_CTRL *GMT, double *A, double step, dou
 	if (GMT_IS_ZERO (step)) step = GMT->current.map.path_step;	/* Use default map-step if given as 0 */
 	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);	/* Adjust step for exact fit, convert to radians */
-	GMT_malloc2 (GMT, xx, yy, n, NULL, double);	/* Allocate space for arrays */
+	gmt_malloc2 (GMT, xx, yy, n, NULL, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
 		w = k * step;					/* Opening angle from A to this point X */
@@ -5092,7 +5092,7 @@ void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longw
  	 * drawn on the map.  Use small circle pole and its opening rot */
 	uint64_t k, n, n2;
 	double Ai[3], Ao[3], Px[3], X[3], R[3][3], R0[3][3], w, step;
-	struct GMT_DATASEGMENT *L = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+	struct GMT_DATASEGMENT *L = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 	GMT_UNUSED(B);
 
 	GMT_cross3v (GMT, A, C->P, Px);	/* Px is Pole to plane through A and P  */
@@ -5279,9 +5279,9 @@ void gmt_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_
 		nin = n;
 		PSL_command (GMT->PSL, "O0\n");	/* Temporary turn off outline; must draw outline separately when head is split */
 		if (close) nin++;
-		xin = GMT_memory (GMT, NULL, nin, double);
-		yin = GMT_memory (GMT, NULL, nin, double);
-		pin = GMT_memory (GMT, NULL, nin, unsigned int);
+		xin = gmt_memory (GMT, NULL, nin, double);
+		yin = gmt_memory (GMT, NULL, nin, double);
+		pin = gmt_memory (GMT, NULL, nin, unsigned int);
 		GMT_memcpy (xin, GMT->current.plot.x, n, double);
 		GMT_memcpy (yin, GMT->current.plot.y, n, double);
 		GMT_memcpy (pin, GMT->current.plot.pen, n, unsigned int);
@@ -5294,8 +5294,8 @@ void gmt_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_
 	if ((*GMT->current.map.will_it_wrap) (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &start)) {	/* Polygon does indeed wrap */
 		double *xtmp = NULL, *ytmp = NULL;	/* Temp vector for map truncating */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector head polygon will wrap at periodic boundary and will be split into two sections\n");
-		xtmp = GMT_memory (GMT, NULL, n, double);
-		ytmp = GMT_memory (GMT, NULL, n, double);
+		xtmp = gmt_memory (GMT, NULL, n, double);
+		ytmp = gmt_memory (GMT, NULL, n, double);
 		GMT_memcpy (xtmp, GMT->current.plot.x, n, double);
 		GMT_memcpy (ytmp, GMT->current.plot.y, n, double);
 		/* First truncate against left border */
@@ -5312,7 +5312,7 @@ void gmt_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_
 		PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
 		if (GMT_vec_outline (S->v.status)) GMT_plot_line (GMT, xin, yin, pin, nin, PSL_LINEAR);
 		PSL_endclipping (GMT->PSL, 1);
-		GMT_free (GMT, xtmp);		GMT_free (GMT, ytmp);
+		gmt_free (GMT, xtmp);		gmt_free (GMT, ytmp);
 	}
 	else {	/* No wrapping but may be clipped */
 		PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, (int)GMT->current.plot.n, GMT->session.no_rgb, 3);
@@ -5323,9 +5323,9 @@ void gmt_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *yp, uint64_
 	PSL_setlinecap (GMT->PSL, cap);
 	if (GMT_vec_outline (S->v.status)) {	/* Turn on outline again and free temp memory */
 		PSL_command (GMT->PSL, "O1\n");
-		GMT_free (GMT, xin);
-		GMT_free (GMT, yin);
-		GMT_free (GMT, pin);
+		gmt_free (GMT, xin);
+		gmt_free (GMT, yin);
+		gmt_free (GMT, pin);
 	}
 }
 
@@ -5517,15 +5517,15 @@ unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, dou
 		n2 = (unsigned int)gmt_small_circle_arc (GMT, C.A, 0.0, Pa, arc, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side[0] == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
-		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
+		gmt_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
 			GMT_cart_to_geo (GMT, &yp[n-1], &xp[n-1], Ax, true);	/* Add geo coordinates of this new back mid point for arc */
 		}
 		gmt_plot_vector_head (GMT, xp, yp, n, S);
-		GMT_free (GMT, xp);	GMT_free (GMT, yp);
-		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
+		gmt_free (GMT, xp);	gmt_free (GMT, yp);
+		gmt_free (GMT, xp2);	gmt_free (GMT, yp2);
 	}
 	if (heads & 2) { /* Place arrow head at B */
 		if (C.longway) az[1] += 180.0;
@@ -5558,15 +5558,15 @@ unsigned int  gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, dou
 		n2 = (unsigned int)gmt_small_circle_arc (GMT, C.B, 0.0, Pa, -arc, &xp2, &yp2);	/* Compute small circle arc from B to P */
 		add = (side[1] == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
-		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
+		gmt_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
 			GMT_cart_to_geo (GMT, &yp[n-1], &xp[n-1], Bx, true);	/* Add geo coordinates of this new back-mid point for arc */
 		}
 		gmt_plot_vector_head (GMT, xp, yp, n, S);
-		GMT_free (GMT, xp);	GMT_free (GMT, yp);
-		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
+		gmt_free (GMT, xp);	gmt_free (GMT, yp);
+		gmt_free (GMT, xp2);	gmt_free (GMT, yp2);
 	}
 	PSL_command (GMT->PSL, "U\n");
 	return (warn);
@@ -5729,15 +5729,15 @@ unsigned int gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, doub
 		n2 = gmt_great_circle_arc (GMT, C.A, P, 0.0, false, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side[0] == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
-		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
+		gmt_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
 			xp[n-1] = mlon;	yp[n-1] = mlat;
 		}
 		gmt_plot_vector_head (GMT, xp, yp, n, S);
-		GMT_free (GMT, xp);	GMT_free (GMT, yp);
-		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
+		gmt_free (GMT, xp);	gmt_free (GMT, yp);
+		gmt_free (GMT, xp2);	gmt_free (GMT, yp2);
 	}
 	if (heads & 2) { /* Place arrow head at B */
 		if (C.longway) az[1] += 180.0;
@@ -5768,15 +5768,15 @@ unsigned int gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, doub
 		n2 = gmt_great_circle_arc (GMT, C.B, P, 0.0, false,  &xp2, &yp2);	/* Compute great circle arc from B to P */
 		add = (side[1] == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
-		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
+		gmt_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
 			xp[n-1] = mlon;	yp[n-1] = mlat;
 		}
 		gmt_plot_vector_head (GMT, xp, yp, n, S);
-		GMT_free (GMT, xp);	GMT_free (GMT, yp);
-		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
+		gmt_free (GMT, xp);	gmt_free (GMT, yp);
+		gmt_free (GMT, xp2);	gmt_free (GMT, yp2);
 	}
 	PSL_command (GMT->PSL, "U\n");
 	return (warn);
@@ -5882,7 +5882,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 
 	if (n < 2) return;
 
-	s = GMT_memory (GMT, NULL, n, double);
+	s = gmt_memory (GMT, NULL, n, double);
 	for (i = 1, s[0] = 0.0; i < n; i++) {
 		/* Watch out for longitude wraps */
 		dx = x[i] - x[i-1];
@@ -6075,7 +6075,7 @@ void GMT_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 		}
 		i++;
 	}
-	GMT_free (GMT, s);
+	gmt_free (GMT, s);
 	if (f->f_symbol) {	/* Switch line join style back */
 		PSL_setlinejoin (PSL, tmp_join);
 		PSL_setmiterlimit (PSL, tmp_limit);
@@ -6161,7 +6161,7 @@ void GMT_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT) {
 	/* Makes an empty PS struct - no buffer is allocated by since done in PSL */
 	struct GMT_PS *P = NULL;
-	P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
+	P = gmt_memory (GMT, NULL, 1, struct GMT_PS);
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -6170,11 +6170,11 @@ struct GMT_PS * GMT_create_ps (struct GMT_CTRL *GMT) {
 }
 
 /*! . */
-void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
+void gmt_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
 	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
 	if (P->n_alloc && P->data) {
 		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
-			GMT_free (GMT, P->data);
+			gmt_free (GMT, P->data);
 		/* We never need to free the array allocated in PSL since PSL always destroys it */
 		P->data = NULL;
 	}
@@ -6183,10 +6183,10 @@ void GMT_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
 }
 
 /*! . */
-void GMT_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
+void gmt_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
 	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
-	GMT_free_ps_ptr (GMT, *P);
-	GMT_free (GMT, *P);
+	gmt_free_ps_ptr (GMT, *P);
+	gmt_free (GMT, *P);
 	*P = NULL;
 }
 
@@ -6261,19 +6261,19 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading PS from %s\n", ps_file);
 
-	P = GMT_memory (GMT, NULL, 1, struct GMT_PS);
+	P = gmt_memory (GMT, NULL, 1, struct GMT_PS);
 
-	if (n_alloc) P->data = GMT_memory (GMT, NULL, n_alloc, char);
+	if (n_alloc) P->data = gmt_memory (GMT, NULL, n_alloc, char);
 	
 	while ((c = fgetc (fp)) != EOF ) {
 		if (P->n >= n_alloc) {
 			n_alloc = (n_alloc == 0) ? GMT_INITIAL_MEM_ROW_ALLOC : n_alloc << 1;	/* Start at 2 Mb, then double */
-			P->data = GMT_memory (GMT, P->data, n_alloc, char);
+			P->data = gmt_memory (GMT, P->data, n_alloc, char);
 		}
 		P->data[P->n++] = c;
 	}
 	if (P->n > n_alloc)
-		P->data = GMT_memory (GMT, P->data, P->n, char);
+		P->data = gmt_memory (GMT, P->data, P->n, char);
 	P->n_alloc = P->n;
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT can free the data array */
 
@@ -6353,7 +6353,7 @@ struct GMT_PS * GMT_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, u
 
 void GMT_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
-	P_copy->data = GMT_memory (GMT, NULL, P_obj->n, char);
+	P_copy->data = gmt_memory (GMT, NULL, P_obj->n, char);
 	GMT_memcpy (P_copy->data, P_obj->data, P_obj->n, char);
 	P_copy->n_alloc = P_copy->n = P_obj->n;
 	P_copy->mode =P_obj->mode;

@@ -168,7 +168,7 @@ struct HOTSPOTTER_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct HOTSPOTTER_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct HOTSPOTTER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct HOTSPOTTER_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -182,7 +182,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* 
 	gmt_str_free (C->E.file);	
 	gmt_str_free (C->G.file);	
 	gmt_str_free (C->S.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -408,8 +408,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	xpos = gmt_grd_coord (GMT, G_rad->header, GMT_X);
 	ypos = gmt_grd_coord (GMT, G_rad->header, GMT_Y);
 
-	latfactor  = GMT_memory (GMT, NULL, G->header->ny, double);
-	ilatfactor = GMT_memory (GMT, NULL, G->header->ny, double);
+	latfactor  = gmt_memory (GMT, NULL, G->header->ny, double);
+	ilatfactor = gmt_memory (GMT, NULL, G->header->ny, double);
 
 	for (row = 0; row < G->header->ny; row++) {
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
@@ -418,7 +418,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Allocate T/F array */
 
-	processed_node = GMT_memory (GMT, NULL, G->header->size, char);
+	processed_node = gmt_memory (GMT, NULL, G->header->size, char);
 
 	/* Start to read input data */
 
@@ -533,7 +533,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 			}
 		}
 
-		GMT_free (GMT, c);	/* Free the flowline vector */
+		gmt_free (GMT, c);	/* Free the flowline vector */
 
 		n_smts++;	/* Go to next seamount */
 
@@ -575,12 +575,12 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Clean up memory */
 
-	GMT_free (GMT, processed_node);
-	GMT_free (GMT, latfactor);
-	GMT_free (GMT, ilatfactor);
-	GMT_free (GMT, xpos);
-	GMT_free (GMT, ypos);
-	GMT_free (GMT, p);
+	gmt_free (GMT, processed_node);
+	gmt_free (GMT, latfactor);
+	gmt_free (GMT, ilatfactor);
+	gmt_free (GMT, xpos);
+	gmt_free (GMT, ypos);
+	gmt_free (GMT, p);
 	if (GMT_Destroy_Data (API, &G_rad) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}

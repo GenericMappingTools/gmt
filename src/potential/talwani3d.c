@@ -124,7 +124,7 @@ enum Talwani3d_fields {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TALWANI3D_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct TALWANI3D_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct TALWANI3D_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -136,7 +136,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* D
 	gmt_str_free (C->N.file);	
 	gmt_str_free (C->G.file);	
 	gmt_str_free (C->Z.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -748,7 +748,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/* Set up cake slice array and pointers */
 	
 	n_alloc1 = GMT_CHUNK;
-	cake = GMT_memory (GMT, NULL, n_alloc1, struct CAKE);
+	cake = gmt_memory (GMT, NULL, n_alloc1, struct CAKE);
 	
 	/* Read polygon information from multiple segment file */
 	GMT_Report (API, GMT_MSG_VERBOSE, "All x/y-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI3D_HOR]]);
@@ -769,18 +769,18 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 						x[n] = x[0];	y[n] = y[0];
 						n++;
 					}
-					x = GMT_memory (GMT, x, n, double);
-					y = GMT_memory (GMT, y, n, double);
+					x = gmt_memory (GMT, x, n, double);
+					y = gmt_memory (GMT, y, n, double);
 					k = 0;
 					while (k < ndepths && depth != cake[k].depth) k++;	/* Get the cake index for this depth */
 
 					if (k == ndepths) {	/* New depth, must allocate another cake */
 						if (ndepths == n_alloc1) {
 							n_alloc1 <<= 1;
-							cake = GMT_memory (GMT, cake, n_alloc1, struct CAKE);
+							cake = gmt_memory (GMT, cake, n_alloc1, struct CAKE);
 						}
 						cake[k].depth = depth;
-						cake[k].first_slice = GMT_memory (GMT, NULL, 1, struct SLICE);
+						cake[k].first_slice = gmt_memory (GMT, NULL, 1, struct SLICE);
 						cake[k].first_slice->rho = rho;
 						cake[k].first_slice->x = x;
 						cake[k].first_slice->y = y;
@@ -790,7 +790,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 					else {	/* Hook onto existing list of slices at same depth */
 						sl = cake[k].first_slice;
 						while (sl->next) sl = sl->next;	/* Get to end of the slices */
-						sl->next = GMT_memory (GMT, NULL, 1, struct SLICE);
+						sl->next = gmt_memory (GMT, NULL, 1, struct SLICE);
 						sl->next->rho = rho;
 						sl->next->x = x;
 						sl->next->y = y;
@@ -812,8 +812,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				if (Ctrl->A.active) depth = -depth;	/* Make positive down */
 				/* Allocate array for this slice */
 				n_alloc = GMT_CHUNK;
-				x = GMT_memory (GMT, NULL, n_alloc, double);
-				y = GMT_memory (GMT, NULL, n_alloc, double);
+				x = gmt_memory (GMT, NULL, n_alloc, double);
+				y = gmt_memory (GMT, NULL, n_alloc, double);
 				n = 0;
 				continue;
 			}
@@ -835,8 +835,8 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			n++;
 			if (n == n_alloc) {
 				n_alloc += GMT_CHUNK;
-				x = GMT_memory (GMT, x, n_alloc, double);
-				y = GMT_memory (GMT, y, n_alloc, double);
+				x = gmt_memory (GMT, x, n_alloc, double);
+				y = gmt_memory (GMT, y, n_alloc, double);
 			}
 		}
 	} while (true);
@@ -852,7 +852,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	}
 	/* Finish allocation and sort on layers */
 	
-	cake = GMT_memory (GMT, cake, ndepths, struct CAKE);
+	cake = gmt_memory (GMT, cake, ndepths, struct CAKE);
 	qsort (cake, ndepths, sizeof (struct CAKE), comp_cakes);
 
 	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
@@ -891,7 +891,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 
 	/* Set up depths array needed by get_one_output3D */
-	depths = GMT_memory (GMT, NULL, ndepths, double);
+	depths = gmt_memory (GMT, NULL, ndepths, double);
 	for (k = 0; k < ndepths; k++) depths[k] = cake[k].depth;	/* Used by the parabolic integrator */
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? METERS_IN_A_MILE : 1.0;	/* Perhaps convert to km */
@@ -940,7 +940,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	else {	/* Dealing with a grid */
 		int64_t row;
 		int col, nx = (int)G->header->nx, ny = (int)G->header->ny;	/* To shut up compiler warnings */
-		double y_obs, *x_obs = GMT_memory (GMT, NULL, G->header->nx, double);
+		double y_obs, *x_obs = gmt_memory (GMT, NULL, G->header->nx, double);
 		for (col = 0; col < nx; col++) {
 			x_obs[col] = GMT_grd_col_to_x (GMT, col, G->header);
 			if (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) x_obs[col] /= METERS_IN_A_KM;	/* Convert to km */
@@ -962,7 +962,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				G->data[node] = (float) get_one_output3D (x_obs[col], y_obs, z_level, cake, depths, ndepths, Ctrl->F.mode, flat_earth);
 			}
 		}
-		GMT_free (GMT, x_obs);
+		gmt_free (GMT, x_obs);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Create %s\n", Ctrl->G.file);
 		sprintf (remark, "Calculated 3-D %s", kind[Ctrl->F.mode]);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remark, G)) Return (API->error);
@@ -978,18 +978,18 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		sl = cake[k].first_slice;
 		slnext = cake[k].first_slice->next;
 		while (slnext) {
-			GMT_free (GMT, sl->x);
-			GMT_free (GMT, sl->y);
-			GMT_free (GMT, sl);
+			gmt_free (GMT, sl->x);
+			gmt_free (GMT, sl->y);
+			gmt_free (GMT, sl);
 			sl = slnext;
 			slnext = sl->next;
 		}
-		GMT_free (GMT, sl->x);
-		GMT_free (GMT, sl->y);
-		GMT_free (GMT, sl);
+		gmt_free (GMT, sl->x);
+		gmt_free (GMT, sl->y);
+		gmt_free (GMT, sl);
 	}
-	GMT_free (GMT, cake);
-	GMT_free (GMT, depths);
+	gmt_free (GMT, cake);
+	gmt_free (GMT, depths);
 
 	Return (EXIT_SUCCESS);
 }

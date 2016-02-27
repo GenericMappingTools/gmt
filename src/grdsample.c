@@ -59,7 +59,7 @@ struct GRDSAMPLE_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSAMPLE_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDSAMPLE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDSAMPLE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
@@ -69,7 +69,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* D
 	if (!C) return;
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -285,7 +285,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/* Precalculate longitudes */
 
-	lon = GMT_memory (GMT, NULL, Gout->header->nx, double);
+	lon = gmt_memory (GMT, NULL, Gout->header->nx, double);
 	for (col = 0; col < (int)Gout->header->nx; col++) {
 		lon[col] = GMT_grd_col_to_x (GMT, col, Gout->header);
 		if (!Gin->header->nxp)
@@ -318,7 +318,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];
 		}
 	}
-	GMT_free (GMT, lon);
+	gmt_free (GMT, lon);
 
 	if (!GMT->common.n.truncate && (Gout->header->z_min < Gin->header->z_min || Gout->header->z_max > Gin->header->z_max)) {	/* Report and possibly truncate output to input extrama */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output grid extrema [%g/%g] exceeds extrema of input grid [%g/%g]; to clip output use -n...+c""\n",

@@ -299,7 +299,7 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 
 	iet = 0;  /* initial error flags, one for triagularization*/
 	ieb = 0;  /* one for backsolving */
-	GMT_malloc2 (GMT, line, isub, n, &n_alloc, unsigned int);
+	gmt_malloc2 (GMT, line, isub, n, &n_alloc, unsigned int);
 
 /* triangularize the matrix a */
 /* replacing the zero elements of the triangularized matrix */
@@ -394,8 +394,8 @@ int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, uns
 		line[j] = line[i];
 	}
 
-	GMT_free (GMT, isub);
-	GMT_free (GMT, line);
+	gmt_free (GMT, isub);
+	gmt_free (GMT, line);
 	return (iet + ieb);   /* Return final error flag*/
 }
 
@@ -474,7 +474,7 @@ int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned 
 
 	/* allocate work space */
 
-	rv1 = GMT_memory (GMT, NULL, n, double);
+	rv1 = gmt_memory (GMT, NULL, n, double);
 
 	/* do householder reduction to bidiagonal form */
 
@@ -675,7 +675,7 @@ int GMT_svdcmp_nr (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned 
 			w[k]=x;
 		}
 	}
-	GMT_free (GMT, rv1);
+	gmt_free (GMT, rv1);
 	return (GMT_NOERROR);
 }
 
@@ -693,7 +693,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
         lwork = -1;
         dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
         lwork = (int)wkopt;
-	work = GMT_memory (GMT, NULL, lwork, double);
+	work = gmt_memory (GMT, NULL, lwork, double);
         /* Solve eigenproblem */
         dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
         /* Check for convergence */
@@ -702,7 +702,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 		return (EXIT_FAILURE);
         }
        /* Free workspace */
-        GMT_free (GMT, work);
+        gmt_free (GMT, work);
 	/* No separate v matrix but stored in a, so... */
 	v = a;
 	return (GMT_NOERROR);
@@ -736,7 +736,7 @@ int compare_singular_values (const void *point_1v, const void *point_2v) {
 int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode) {
 	double w_abs, sing_max, total_variance, variance = 0.0, limit;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
-	double s, *tmp = GMT_memory (GMT, NULL, n, double);
+	double s, *tmp = gmt_memory (GMT, NULL, n, double);
 	GMT_UNUSED(m);	/* Since we are actually only doing square matrices... */
 	GMT_UNUSED(k);	/* Since we are actually only doing one rhs row here */
 #ifdef HAVE_LAPACK
@@ -763,7 +763,7 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			unsigned int order;
 		} *eigen;
 		int n_eigen = 0;
-		eigen = GMT_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
+		eigen = gmt_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
 		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
 			eigen[i].value = fabs (w[i]);
 			eigen[i].order = i;
@@ -781,7 +781,7 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 			else	/* Sorry, we're letting you go */
 				w[eigen[i].order] = 0.0;
 		}
-		GMT_free (GMT, eigen);
+		gmt_free (GMT, eigen);
 	}
 	else {	/* Loop through singular values removing small ones (if limit is nonzero) */
 		limit = *cutoff;
@@ -843,7 +843,7 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	}
 #endif
 
-	GMT_free (GMT, tmp);
+	gmt_free (GMT, tmp);
 	n_use = n;
 	return (n_use);
 }
@@ -1065,7 +1065,7 @@ uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **
 	}
 
 	/* Destroy old allocated memory and put the new one in place */
-	GMT_free (GMT, x);	GMT_free (GMT, y);
+	gmt_free (GMT, x);	gmt_free (GMT, y);
 	*a_x = gmt_assign_vector (GMT, n_new, GMT_X);
 	*a_y = gmt_assign_vector (GMT, n_new, GMT_Y);
 
@@ -1197,8 +1197,8 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	}
 
 	/* Destroy old allocated memory and put the new one in place */
-	GMT_free (GMT, lon);
-	GMT_free (GMT, lat);
+	gmt_free (GMT, lon);
+	gmt_free (GMT, lat);
 	gmt_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);	/* Ensure longitudes are in the same quadrants */
 	*a_lon = gmt_assign_vector (GMT, n_new, GMT_X);
 	*a_lat = gmt_assign_vector (GMT, n_new, GMT_Y);
@@ -1280,7 +1280,7 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 	}
 
 	/* Destroy old allocated memory and put the new one in place */
-	GMT_free (GMT, x);	GMT_free (GMT, y);
+	gmt_free (GMT, x);	gmt_free (GMT, y);
 	*a_x = gmt_assign_vector (GMT, n_new, GMT_X);
 	*a_y = gmt_assign_vector (GMT, n_new, GMT_Y);
 
@@ -1327,8 +1327,8 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 
-	lon_out = GMT_memory (GMT, NULL, n_out, double);
-	lat_out = GMT_memory (GMT, NULL, n_out, double);
+	lon_out = gmt_memory (GMT, NULL, n_out, double);
+	lat_out = gmt_memory (GMT, NULL, n_out, double);
 
 	lon_out[0] = lon_in[0];	lat_out[0] = lat_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -1387,9 +1387,9 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 
 	/* Destroy old allocated memory and put the new one in place */
 
-	GMT_free (GMT, lon_in);
-	GMT_free (GMT, lat_in);
-	GMT_free (GMT, dist_in);
+	gmt_free (GMT, lon_in);
+	gmt_free (GMT, lat_in);
+	gmt_free (GMT, dist_in);
 	*lon = lon_out;
 	*lat = lat_out;
 	return (n_out);
@@ -1427,8 +1427,8 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 
-	x_out = GMT_memory (GMT, NULL, n_out, double);
-	y_out = GMT_memory (GMT, NULL, n_out, double);
+	x_out = gmt_memory (GMT, NULL, n_out, double);
+	y_out = gmt_memory (GMT, NULL, n_out, double);
 
 	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -1451,9 +1451,9 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 
 	/* Destroy old allocated memory and put the new one in place */
 
-	GMT_free (GMT, x_in);
-	GMT_free (GMT, y_in);
-	GMT_free (GMT, dist_in);
+	gmt_free (GMT, x_in);
+	gmt_free (GMT, y_in);
+	gmt_free (GMT, dist_in);
 	*x = x_out;
 	*y = y_out;
 	return (n_out);

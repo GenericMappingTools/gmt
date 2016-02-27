@@ -155,11 +155,11 @@ struct GMTMATH_STORED {
 };
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GMTMATH_CTRL *C = GMT_memory (GMT, NULL, 1, struct GMTMATH_CTRL);
+	struct GMTMATH_CTRL *C = gmt_memory (GMT, NULL, 1, struct GMTMATH_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->C.cols = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, bool);
+	C->C.cols = gmt_memory (GMT, NULL, GMT_MAX_COLUMNS, bool);
 	C->E.eigen = 1e-7;	/* Default cutoff of small eigenvalues */
 	C->N.ncol = 2;
 
@@ -170,9 +170,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Dea
 	if (!C) return;
 	gmt_str_free (C->Out.file);
 	gmt_str_free (C->A.file);
-	GMT_free (GMT, C->C.cols);
+	gmt_free (GMT, C->C.cols);
 	gmt_str_free (C->T.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t_col) {
@@ -260,8 +260,8 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		n--;					/* Account for w, the rhs vector, to get row & col dimensions of normal matrix N */
 	}
 
-	N = GMT_memory (GMT, NULL, n*n, double);
-	r = GMT_memory (GMT, NULL, T->n_records, double);
+	N = gmt_memory (GMT, NULL, n*n, double);
+	r = gmt_memory (GMT, NULL, T->n_records, double);
 
 #if 0
 	fprintf (stderr, "Printout of A | b matrix\n");
@@ -325,8 +325,8 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		fprintf (stderr, "%g\n", r[k]);
 	fprintf (stderr, "------------------------------------------------------------------\n");
 #endif
-	d = GMT_memory (GMT, NULL, n, double);
-	x = GMT_memory (GMT, NULL, n, double);
+	d = gmt_memory (GMT, NULL, n, double);
+	x = gmt_memory (GMT, NULL, n, double);
 	if (svd || ((ier = GMT_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0)) {	/* Cholesky decomposition failed, use SVD method, or use SVD if specified */
 		unsigned int nrots;
 		double *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
@@ -335,10 +335,10 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			GMT_chol_recover (GMT, N, d, n, n, ier, true);	/* Restore to former matrix N */
 		}
 		/* Solve instead using the SVD of a square matrix via GMT_jacobi */
-		lambda = GMT_memory (GMT, NULL, n, double);
-		b = GMT_memory (GMT, NULL, n, double);
-		z = GMT_memory (GMT, NULL, n, double);
-		v = GMT_memory (GMT, NULL, n*n, double);
+		lambda = gmt_memory (GMT, NULL, n, double);
+		b = gmt_memory (GMT, NULL, n, double);
+		z = gmt_memory (GMT, NULL, n, double);
+		v = gmt_memory (GMT, NULL, n*n, double);
 
 		if (GMT_jacobi (GMT, N, n, n, lambda, v, b, z, &nrots)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
@@ -362,10 +362,10 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		/* Finally do x = v * d */
 		for (j = 0; j < n; j++) for (k = 0; k < n; k++) x[j] += v[k*n+j] * d[k];
 
-		GMT_free (GMT, b);
-		GMT_free (GMT, z);
-		GMT_free (GMT, v);
-		GMT_free (GMT, lambda);
+		gmt_free (GMT, b);
+		gmt_free (GMT, z);
+		gmt_free (GMT, v);
+		gmt_free (GMT, lambda);
 	}
 	else {	/* Decomposition worked, now solve system */
 		GMT_chol_solv (GMT, N, x, r, n, n);
@@ -425,10 +425,10 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		}
 	}
 
-	GMT_free (GMT, x);
-	GMT_free (GMT, d);
-	GMT_free (GMT, N);
-	GMT_free (GMT, r);
+	gmt_free (GMT, x);
+	gmt_free (GMT, d);
+	gmt_free (GMT, N);
+	gmt_free (GMT, r);
 	return (EXIT_SUCCESS);
 }
 
@@ -1375,8 +1375,8 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	}
 
 	if (!info->local) {	/* Compute correlation across the entire table */
-		a = GMT_memory (GMT, NULL, info->T->n_records, double);
-		b = GMT_memory (GMT, NULL, info->T->n_records, double);
+		a = gmt_memory (GMT, NULL, info->T->n_records, double);
+		b = gmt_memory (GMT, NULL, info->T->n_records, double);
 		for (s = i = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++, i++) a[i] = (S[prev]->constant) ? S[prev]->factor : T_prev->segment[s]->coord[col][row];
 		for (s = i = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++, i++) b[i] = (S[last]->constant) ? S[last]->factor : T->segment[s]->coord[col][row];
 		coeff = GMT_corrcoeff (GMT, a, b, info->T->n_records, 0);
@@ -1386,13 +1386,13 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	/* Local, or per-segment calculations */
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (S[prev]->constant) {		/* Must create the missing (constant) column */
-			a = GMT_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
+			a = gmt_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
 			for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) a[row] = S[prev]->factor;
 			b = T->segment[s]->coord[col];
 		}
 		else if (S[last]->constant) {	/* Must create the missing (constant) column */
 			a = T_prev->segment[s]->coord[col];
-			b = GMT_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
+			b = gmt_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
 			for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) b[row] = S[last]->factor;
 		}
 		else {
@@ -1401,8 +1401,8 @@ GMT_LOCAL int table_CORRCOEFF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		}
 		coeff = GMT_corrcoeff (GMT, a, b, info->T->segment[s]->n_rows, 0);
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = coeff;
-		if (S[prev]->constant) GMT_free (GMT, a);
-		if (S[last]->constant) GMT_free (GMT, b);
+		if (S[prev]->constant) gmt_free (GMT, a);
+		if (S[last]->constant) gmt_free (GMT, b);
 	}
 	return 0;
 }
@@ -2492,7 +2492,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		return 0;
 	}
 
-	if (!info->local) z = GMT_memory (GMT, NULL, info->T->n_records, double);
+	if (!info->local) z = gmt_memory (GMT, NULL, info->T->n_records, double);
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
@@ -2525,7 +2525,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = lmsscl;
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 	return 0;
 }
 
@@ -2685,7 +2685,7 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 		return 0;
 	}
 
-	if (!info->local) z = GMT_memory (GMT, NULL, info->T->n_records, double);
+	if (!info->local) z = gmt_memory (GMT, NULL, info->T->n_records, double);
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
@@ -2714,7 +2714,7 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 	else
 		mad = GMT->session.d_NaN;
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mad;
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 	return 0;
 }
 
@@ -2778,7 +2778,7 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		return 0;
 	}
 
-	if (!info->local) z = GMT_memory (GMT, NULL, info->T->n_records, double);
+	if (!info->local) z = gmt_memory (GMT, NULL, info->T->n_records, double);
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
@@ -2805,7 +2805,7 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		med = GMT->session.d_NaN;
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = med;
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 	return 0;
 }
 
@@ -2859,7 +2859,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		return 0;
 	}
 
-	if (!info->local) z = GMT_memory (GMT, NULL, info->T->n_records, double);
+	if (!info->local) z = gmt_memory (GMT, NULL, info->T->n_records, double);
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
@@ -2887,7 +2887,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mode;
 	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 	return 0;
 }
 
@@ -3192,7 +3192,7 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		return 0;
 	}
 
-	if (!info->local) z = GMT_memory (GMT, NULL, info->T->n_records, double);
+	if (!info->local) z = gmt_memory (GMT, NULL, info->T->n_records, double);
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
@@ -3209,7 +3209,7 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	GMT_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	p = GMT_quantile (GMT, z, S[last]->factor, info->T->n_records);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 	return 0;
 }
 
@@ -3468,13 +3468,13 @@ GMT_LOCAL int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	if (S[prev]->constant || !shift) return 0;	/* Easy, constant or no shift */
 	if (!info->local) {
 		if (shift < 0) shift += (int)info->T->n_records;		/* Same thing */
-		z = GMT_memory (GMT, NULL, info->T->n_records, double);
+		z = gmt_memory (GMT, NULL, info->T->n_records, double);
 	}
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
 			shift = irint (S[last]->factor / info->t_inc);
 			if (shift < 0) shift += (int)info->T->segment[s]->n_rows;		/* Same thing */
-			z = GMT_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
+			z = gmt_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
 		}
 
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
@@ -3483,12 +3483,12 @@ GMT_LOCAL int table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 		}
 		if (info->local) {
 			GMT_memcpy (T_prev->segment[s]->coord[col], z, info->T->segment[s]->n_rows, double);
-			GMT_free (GMT, z);
+			gmt_free (GMT, z);
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
 	for (s = k = 0; s < info->T->n_segments; s++, k += info->T->segment[s]->n_rows) GMT_memcpy (T_prev->segment[s]->coord[col], &z[k], info->T->segment[s]->n_rows, double);
-	GMT_free (GMT, z);
+	gmt_free (GMT, z);
 	return 0;
 }
 
@@ -4192,7 +4192,7 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Argument to operator ROOTS must be a column number 0 < col < %d. Reset to 0\n", info->n_col);
 		info->r_col = 0;
 	}
-	roots = GMT_memory (GMT, NULL, T->n_records, double);
+	roots = gmt_memory (GMT, NULL, T->n_records, double);
 	info->n_roots = 0;
 	if (T_prev->segment[0]->coord[info->r_col][0] == 0.0) roots[info->n_roots++] = info->T->segment[0]->coord[COL_T][0];
 	for (seg = 0; seg < info->T->n_segments; seg++) {
@@ -4209,7 +4209,7 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 		}
 	}
 	for (i = 0; i < info->n_roots; i++) T_prev->segment[0]->coord[info->r_col][i] = roots[i];
-	GMT_free (GMT, roots);
+	gmt_free (GMT, roots);
 	info->roots_found = true;
 	return 0;
 }
@@ -4225,7 +4225,7 @@ void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
 			GMT_Destroy_Data (API, &stack[i]->D);
 		else if (stack[i]->alloc_mode == 1 && stack[i]->D)
 			gmt_free_dataset (API->GMT, &stack[i]->D);
-		GMT_free (API->GMT, stack[i]);
+		gmt_free (API->GMT, stack[i]);
 	}
 }
 
@@ -4234,7 +4234,7 @@ void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
 	for (i = 0; i < GMTMATH_STORE_SIZE; i++) {
 		if (recall[i] && !recall[i]->stored.constant) {
 			gmt_free_dataset (API->GMT, &recall[i]->stored.D);
-			GMT_free (API->GMT, recall[i]);
+			gmt_free (API->GMT, recall[i]);
 		}
 	}
 }
@@ -4403,7 +4403,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	gmt_hash_init (GMT, localhashnode, operator, GMTMATH_N_OPERATORS, GMTMATH_N_OPERATORS);
 
-	for (i = 0; i < GMTMATH_STACK_SIZE; i++) stack[i] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STACK);
+	for (i = 0; i < GMTMATH_STACK_SIZE; i++) stack[i] = gmt_memory (GMT, NULL, 1, struct GMTMATH_STACK);
 
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling of x/y (e.g. lon/lat columns) */
 	GMT->current.io.skip_if_NaN[Ctrl->N.tcol] = t_check_required;	/* Determines if the t-column may have NaNs */
@@ -4673,7 +4673,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				else {	/* Need new named storage place; use gmt_duplicate_dataset/gmt_free_dataset since no point adding to registered resources since internal use only */
 					k = n_stored;
-					recall[k] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STORED);
+					recall[k] = gmt_memory (GMT, NULL, 1, struct GMTMATH_STORED);
 					recall[k]->label = strdup (label);
 					if (!stack[last]->constant) recall[k]->stored.D = gmt_duplicate_dataset (GMT, stack[last]->D, GMT_ALLOC_NORMAL, NULL);
 					new = true;
@@ -4718,7 +4718,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 				}
 				if (recall[k]->stored.D) gmt_free_dataset (GMT, &recall[k]->stored.D);
 				gmt_str_free (recall[k]->label);
-				GMT_free (GMT, recall[k]);
+				gmt_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;	/* Just go back and process next item */
 			}
@@ -4947,7 +4947,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */
 		if (recall[kk]->stored.D) gmt_free_dataset (GMT, &recall[kk]->stored.D);
 		gmt_str_free (recall[kk]->label);
-		GMT_free (GMT, recall[kk]);
+		gmt_free (GMT, recall[kk]);
 	}
 
 	if (nstack > 1) GMT_Report (API, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack-1);

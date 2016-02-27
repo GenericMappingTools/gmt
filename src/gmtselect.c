@@ -126,7 +126,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	int i;
 	struct GMTSELECT_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GMTSELECT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GMTSELECT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -146,8 +146,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	gmt_str_free (C->C.file);	
 	gmt_str_free (C->F.file);	
 	gmt_str_free (C->L.file);	
-	if (C->Z.n_tests) GMT_free (GMT, C->Z.limit);	
-	GMT_free (GMT, C);	
+	if (C->Z.n_tests) gmt_free (GMT, C->Z.limit);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
@@ -431,7 +431,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min [and z_max]\n");
 					n_errors++;
 				}
-				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = GMT_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
+				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = gmt_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
@@ -459,7 +459,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 		}
 	}
 	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active)) Ctrl->Z.max_col = 2;
-	if (Ctrl->Z.n_tests) Ctrl->Z.limit = GMT_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
+	if (Ctrl->Z.n_tests) Ctrl->Z.limit = gmt_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
@@ -620,7 +620,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 			/* Copy xp into struct data, sort, and copy back */
 
-			data = GMT_memory (GMT, NULL, point->n_records, struct GMTSELECT_DATA);
+			data = gmt_memory (GMT, NULL, point->n_records, struct GMTSELECT_DATA);
 
 			for (seg = k = 0; seg < point->n_segments; seg++) {
 				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
@@ -640,7 +640,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 					if (Ctrl->C.dist == 0.0) point->segment[seg]->coord[GMT_Z][row] = data[k].d ;
 				}
 			}
-			GMT_free (GMT, data);
+			gmt_free (GMT, data);
 		}
 	}
 
@@ -810,7 +810,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				while (ind < c.nb && c.bins[ind] != bin) ind++;	/* Set ind to right bin */
 				if (ind == c.nb) continue;			/* Bin not among the chosen ones */
 				last_bin = bin;
-				GMT_free_shore (GMT, &c);	/* Free previously allocated arrays */
+				gmt_free_shore (GMT, &c);	/* Free previously allocated arrays */
 				if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 					Return (EXIT_FAILURE);
@@ -818,8 +818,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 				/* Must use polygons.  Go in both directions to cover both land and sea */
 				for (id = 0; id < 2; id++) {
-					GMT_free_shore_polygons (GMT, p[id], np[id]);
-					if (np[id]) GMT_free (GMT, p[id]);
+					gmt_free_shore_polygons (GMT, p[id], np[id]);
+					if (np[id]) gmt_free (GMT, p[id]);
 					np[id] = GMT_assemble_shore (GMT, &c, wd[id], true, west_border, east_border, &p[id]);
 					np[id] = GMT_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
 				}
@@ -895,11 +895,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
-		GMT_free_shore (GMT, &c);
+		gmt_free_shore (GMT, &c);
 		GMT_shore_cleanup (GMT, &c);
 		for (id = 0; id < 2; id++) {
-			GMT_free_shore_polygons (GMT, p[id], np[id]);
-			if (np[id]) GMT_free (GMT, p[id]);
+			gmt_free_shore_polygons (GMT, p[id], np[id]);
+			if (np[id]) gmt_free (GMT, p[id]);
 		}
 	}
 	

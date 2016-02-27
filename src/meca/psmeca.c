@@ -140,7 +140,7 @@ struct PSMECA_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSMECA_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSMECA_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSMECA_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -164,7 +164,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->Z.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

@@ -116,7 +116,7 @@ struct PSSEGYZ_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSEGYZ_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSSEGYZ_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSSEGYZ_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -131,7 +131,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Dea
 	if (!C) return;
 	gmt_str_free (C->In.file);
 	gmt_str_free (C->T.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -695,7 +695,7 @@ use a few of these*/
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
-	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
+	bitmap = gmt_memory (GMT, NULL, nm, unsigned char);
 
 	ix = 0;
 	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
@@ -819,7 +819,7 @@ use a few of these*/
 
 	GMT_plotend (GMT);
 
-	GMT_free (GMT, bitmap);
+	gmt_free (GMT, bitmap);
 
 	Return (EXIT_SUCCESS);
 }

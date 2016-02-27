@@ -145,7 +145,7 @@ struct FLX_GRID {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFLEXURE_CTRL *C = NULL;
 
-	C = GMT_memory (GMT, NULL, 1, struct GRDFLEXURE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDFLEXURE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.E = YOUNGS_MODULUS;
@@ -161,9 +161,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *C) {	/* 
 	gmt_str_free (C->In.file);
 	gmt_str_free (C->G.file);
 	gmt_str_free (C->L.file);
-	GMT_free (GMT, C->N.info);
-	GMT_free (GMT, C->T.time);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C->N.info);
+	gmt_free (GMT, C->T.time);
+	gmt_free (GMT, C);
 }
 
 double gmt_get_modeltime (char *A, char *unit, double *scale) {
@@ -215,7 +215,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		}
 		/* Read the file successfully */
 		n_eval_times = (unsigned int)Tin->n_records;
-		T = GMT_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
+		T = gmt_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
 		for (seg = 0, k = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, k++) {
 				s_time = gmt_get_modeltime (Tin->table[0]->segment[seg]->record[row], &s_unit, &s_scale);
@@ -252,7 +252,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 			if (*log) {	/* Equidistant spacing in log10(time).  Here we got number of output points directly, compute log10 (increment) */
 				n_eval_times = urint (i_time);
 				i_time = (log10 (s_time) - log10 (e_time)) / (n_eval_times - 1);	/* Convert n to log10 (i_time) */
-				T = GMT_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
+				T = gmt_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
 				/* Pick the finest unit used for start and end times as the user unit (and scale) */
 				if (s_unit == 'M' && e_unit != 'M') s_unit = e_unit, s_scale = e_scale;
 				if (s_unit == 'k' && e_unit == 'y') s_unit = e_unit, s_scale = e_scale;
@@ -263,7 +263,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 				n_eval_times = urint ((s_time - e_time) / i_time) + 1;
 				/* Use the increment unit and scale for the array */
 				s_unit = i_unit;	s_scale = i_scale;
-				T = GMT_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
+				T = gmt_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with times */
 				for (k = 0; k < (n_eval_times-1); k++)
 					T[k].value = s_time - k * i_time;	/* In years */
 				T[k].value = e_time;	/* In years */
@@ -271,7 +271,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		}
 		else {	/* Gave a single time */
 			n_eval_times = 1;
-			T = GMT_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with one time */
+			T = gmt_memory (GMT, NULL, n_eval_times, struct GMT_MODELTIME);	/* Array with one time */
 			T[0].value = s_time;
 		}
 		u = (s_unit == 'M') ? 2 : ((s_unit == 'k') ? 1 : 0);
@@ -727,7 +727,7 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 		if (n_subaerial) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were subarial so heights were scaled for the equivalent submerged case\n", n_subaerial);
 	}
 	/* From here we address the grid via Grid; we are done with using the address Orig directly. */
-	G = GMT_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
+	G = gmt_memory (GMT, NULL, 1, struct FLX_GRID);	/* Allocate a Flex structure */
 	G->K = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);	/* Also detrends, if requested */
 	/* Do the forward FFT */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Forward FFT\n");
@@ -737,7 +737,7 @@ GMT_LOCAL struct FLX_GRID *Prepare_Load (struct GMT_CTRL *GMT, struct GMT_OPTION
 	}
 	G->Grid = Grid;	/* Pass grid back via the grid array */
 	if (this_time) {	/* Deal with load time */
-		G->Time = GMT_memory (GMT, NULL, 1, struct GMT_MODELTIME);	/* Allocate one Model time structure */
+		G->Time = gmt_memory (GMT, NULL, 1, struct GMT_MODELTIME);	/* Allocate one Model time structure */
 		GMT_memcpy (G->Time, this_time, 1, struct GMT_MODELTIME);	/* Just duplicate input time (unless NULL) */
 	}
 	return (G);
@@ -756,7 +756,7 @@ GMT_LOCAL struct RHEOLOGY *Select_Rheology (struct GMT_CTRL *GMT, struct GRDFLEX
 	else				/* Elastic */
 		fmode = FLX_E;
 
-	R = GMT_memory (GMT, NULL, 1, struct RHEOLOGY);	/* Allocate rheology structure */
+	R = gmt_memory (GMT, NULL, 1, struct RHEOLOGY);	/* Allocate rheology structure */
 
 	switch (fmode) {	/* Set function pointers */
 		case FLX_E:
@@ -836,7 +836,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	if (Ctrl->In.many) {	/* Must read in load grids, possibly one for each time increment set by -T */
 		n_load_times = Ctrl->T.n_eval_times;	/* This (or fewer) loads and times will be used */
-		Load = GMT_memory (GMT, NULL, n_load_times, struct FLX_GRID *);	/* Allocate load array structure */
+		Load = gmt_memory (GMT, NULL, n_load_times, struct FLX_GRID *);	/* Allocate load array structure */
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each time step there may be a load file */
 			gmt_modeltime_name (GMT, file, Ctrl->In.file, &Ctrl->T.time[t_load]);	/* Load time equal eval time */
 			Load[t_load] = Prepare_Load (GMT, options, Ctrl, file, &Ctrl->T.time[t_load]);
@@ -854,7 +854,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		}
 		/* Read the file successfully */
 		n_load_times = (unsigned int)Tin->n_records;
-		Load = GMT_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate load grid array structure */
+		Load = gmt_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate load grid array structure */
 		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
 				sscanf (Tin->table[0]->segment[seg]->record[row], "%s %s", file, t_arg);
@@ -873,7 +873,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 	}
 	else {	/* Just read the single load grid */
 		n_load_times = 1;
-		Load = GMT_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate grid array structure with one entry */
+		Load = gmt_memory (GMT, NULL, n_load_times, struct FLX_GRID *);		/* Allocate grid array structure with one entry */
 		Load[0] = Prepare_Load (GMT, options, Ctrl, Ctrl->In.file, NULL);	/* The single load grid (no time info) */
 	}
 
@@ -887,7 +887,7 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 
 	retain_original = (n_load_times > 1 || Ctrl->T.n_eval_times > 1);	/* True when we will have to loop over the loads */
 	if (retain_original) {	/* We may need to reuse loads for different times and will have to keep copy of unchanged H(kx,ky) */
-		orig_load = GMT_memory (GMT, NULL, Load[0]->Grid->header->size, float);	/* Single temporary storage to hold one original H(kx,ky) grid */
+		orig_load = gmt_memory (GMT, NULL, Load[0]->Grid->header->size, float);	/* Single temporary storage to hold one original H(kx,ky) grid */
 		/* We must also allocate a separate output grid */
 		if ((Out = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Load[0]->Grid)) == NULL) Return (API->error);	/* Output grid of same size as input */
 	}
@@ -1011,12 +1011,12 @@ int GMT_grdflexure (void *V_API, int mode, void *args) {
 		if (This_Load == NULL) continue;		/* Quietly skip containers with no grids */
 		GMT_Destroy_Data (API, &This_Load->Grid);	/* Free up grid used */
 		GMT_FFT_Destroy (API, &This_Load->K);		/* Free up wavenumber vectors and info structure created by GMT_FFT_Create */
-		GMT_free (GMT, This_Load->Time);	/* Free time array, if used */
-		GMT_free (GMT, This_Load);			/* Free load structure */
+		gmt_free (GMT, This_Load->Time);	/* Free time array, if used */
+		gmt_free (GMT, This_Load);			/* Free load structure */
 	}
-	GMT_free (GMT, Load);
-	GMT_free (GMT, R);
-	if (retain_original) GMT_free (GMT, orig_load);
+	gmt_free (GMT, Load);
+	gmt_free (GMT, R);
+	if (retain_original) gmt_free (GMT, orig_load);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

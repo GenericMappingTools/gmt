@@ -76,7 +76,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDLANDMASK_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -92,7 +92,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -320,8 +320,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
 	gmt_set_geographic (GMT, GMT_OUT);
 	/* All data nodes are thus initialized to 0 */
-	x = GMT_memory (GMT, NULL, Grid->header->nx, double);
-	y = GMT_memory (GMT, NULL, Grid->header->ny, double);
+	x = gmt_memory (GMT, NULL, Grid->header->nx, double);
+	y = gmt_memory (GMT, NULL, Grid->header->ny, double);
 
 	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
 
@@ -402,8 +402,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				}
 			}
 
-			GMT_free_shore_polygons (GMT, p, np_new);
-			GMT_free (GMT, p);
+			gmt_free_shore_polygons (GMT, p, np_new);
+			gmt_free (GMT, p);
 		}
 
 		if (!used_polygons) {	/* Lack of polygons or clipping etc resulted in no polygons after all, must deal with background */
@@ -452,12 +452,12 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			}
 		}
 
-		GMT_free_shore (GMT, &c);
+		gmt_free_shore (GMT, &c);
 	}
 
 	GMT_shore_cleanup (GMT, &c);
-	GMT_free (GMT, x);
-	GMT_free (GMT, y);
+	gmt_free (GMT, x);
+	gmt_free (GMT, y);
 
 	GMT_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);

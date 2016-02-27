@@ -100,8 +100,8 @@ GMT_LOCAL void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
 	C->n_spec = C->window/2;	/* This means we skip zero frequency; data are detrended  */
 	C->window_2 = 2 * C->window;		/* This is for complex array stuff  */
 
-	C->spec = GMT_memory (GMT, NULL, C->n_spec, struct SPEC);
-	C->datac = GMT_memory (GMT, NULL, C->window_2, float);
+	C->spec = gmt_memory (GMT, NULL, C->n_spec, struct SPEC);
+	C->datac = gmt_memory (GMT, NULL, C->window_2, float);
 }
 
 GMT_LOCAL void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode) {
@@ -296,7 +296,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 	delta_f = 1.0 / (C->window * C->dt);
 	eps_pow = 1.0 / sqrt(C->d_n_windows);	/* Multiplicative error bars for power spectra  */
 
-	f_or_w = GMT_memory (GMT, NULL, C->n_spec, double);
+	f_or_w = gmt_memory (GMT, NULL, C->n_spec, double);
 	for (i = 0; i < C->n_spec; i++) f_or_w[i] = (write_wavelength) ? 1.0 / ((i + 1) * delta_f) : (i + 1) * delta_f;
 
 	/* loop through output choices */
@@ -419,7 +419,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.coh", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
-				GMT_free (GMT, f_or_w);
+				gmt_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
@@ -434,7 +434,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 		}
 	}
 
-	GMT_free (GMT, f_or_w);
+	gmt_free (GMT, f_or_w);
 	return (0);
 }
 
@@ -446,7 +446,7 @@ GMT_LOCAL void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D
 	delta_f = 1.0 / (C->window * C->dt);
 	eps_pow = 1.0 / sqrt(C->d_n_windows);	/* Multiplicative error bars for power spectra  */
 
-	f_or_w = GMT_memory (GMT, NULL, C->n_spec, double);
+	f_or_w = gmt_memory (GMT, NULL, C->n_spec, double);
 	for (i = 0; i < C->n_spec; i++) f_or_w[i] = (write_wavelength) ? 1.0 / ((i + 1) * delta_f) : (i + 1) * delta_f;
 
 	for (i = 0; i < C->n_spec; i++) {
@@ -498,18 +498,18 @@ GMT_LOCAL void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D
 		}
 	}
 	
-	GMT_free (GMT, f_or_w);
+	gmt_free (GMT, f_or_w);
 }
 
 GMT_LOCAL void free_space_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C) {
-	GMT_free (GMT, C->spec);
-	GMT_free (GMT, C->datac);
+	gmt_free (GMT, C->spec);
+	gmt_free (GMT, C->datac);
 }
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPECTRUM1D_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct SPECTRUM1D_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct SPECTRUM1D_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.inc = 1.0;
@@ -528,7 +528,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->N.name);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

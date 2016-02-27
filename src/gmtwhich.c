@@ -49,7 +49,7 @@ struct GMTWHICH_CTRL {	/* All control options for this program (except common ar
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTWHICH_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GMTWHICH_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GMTWHICH_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 		
@@ -58,7 +58,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

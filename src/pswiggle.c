@@ -182,7 +182,7 @@ GMT_LOCAL void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSWIGGLE_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->T.pen = C->W.pen = GMT->current.setting.map_default_pen;
@@ -195,7 +195,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->S.label);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -375,9 +375,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 
 GMT_LOCAL void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **yy, double **zz) {
 	(*n_alloc) <<= 1;
-	*xx = GMT_memory (GMT, *xx, *n_alloc, double);
-	*yy = GMT_memory (GMT, *yy, *n_alloc, double);
-	*zz = GMT_memory (GMT, *zz, *n_alloc, double);
+	*xx = gmt_memory (GMT, *xx, *n_alloc, double);
+	*yy = gmt_memory (GMT, *yy, *n_alloc, double);
+	*zz = gmt_memory (GMT, *zz, *n_alloc, double);
 }
 
 int GMT_pswiggle (void *V_API, int mode, void *args) {
@@ -452,9 +452,9 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/* Allocate memory */
 
-	xx  = GMT_memory (GMT, NULL, n_alloc, double);
-	yy  = GMT_memory (GMT, NULL, n_alloc, double);
-	zz  = GMT_memory (GMT, NULL, n_alloc, double);
+	xx  = gmt_memory (GMT, NULL, n_alloc, double);
+	yy  = gmt_memory (GMT, NULL, n_alloc, double);
+	zz  = gmt_memory (GMT, NULL, n_alloc, double);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
@@ -527,9 +527,9 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_free (GMT, xx);
-	GMT_free (GMT, yy);
-	GMT_free (GMT, zz);
+	gmt_free (GMT, xx);
+	gmt_free (GMT, yy);
+	gmt_free (GMT, zz);
 
 	Return (GMT_OK);
 }

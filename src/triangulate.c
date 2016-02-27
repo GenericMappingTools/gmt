@@ -92,7 +92,7 @@ GMT_LOCAL int compare_edge (const void *p1, const void *p2) {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TRIANGULATE_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.dir = 2;	/* No derivatives */
@@ -102,7 +102,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -310,15 +310,15 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	triplets[GMT_IN] = (n_input == 3);
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	xx = GMT_memory (GMT, NULL, n_alloc, double);
-	yy = GMT_memory (GMT, NULL, n_alloc, double);
-	if (triplets[GMT_IN]) zz = GMT_memory (GMT, NULL, n_alloc, double);
+	xx = gmt_memory (GMT, NULL, n_alloc, double);
+	yy = gmt_memory (GMT, NULL, n_alloc, double);
+	if (triplets[GMT_IN]) zz = gmt_memory (GMT, NULL, n_alloc, double);
 
 	n = 0;
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) {		/* Bail if there are any read errors */
-				GMT_free (GMT, xx);		GMT_free (GMT, yy);		GMT_free (GMT, zz);
+				gmt_free (GMT, xx);		gmt_free (GMT, yy);		gmt_free (GMT, zz);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
@@ -335,15 +335,15 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 		if (n == n_alloc) {	/* Get more memory */
 			n_alloc <<= 1;
-			xx = GMT_memory (GMT, xx, n_alloc, double);
-			yy = GMT_memory (GMT, yy, n_alloc, double);
-			if (triplets[GMT_IN]) zz = GMT_memory (GMT, zz, n_alloc, double);
+			xx = gmt_memory (GMT, xx, n_alloc, double);
+			yy = gmt_memory (GMT, yy, n_alloc, double);
+			if (triplets[GMT_IN]) zz = gmt_memory (GMT, zz, n_alloc, double);
 		}
 		if (n == INT_MAX) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
-			GMT_free (GMT, xx);
-			GMT_free (GMT, yy);
-			if (triplets[GMT_IN]) GMT_free (GMT, zz);
+			gmt_free (GMT, xx);
+			gmt_free (GMT, yy);
+			if (triplets[GMT_IN]) gmt_free (GMT, zz);
 			Return (EXIT_FAILURE);
 		}
 	} while (true);
@@ -352,9 +352,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	xx = GMT_memory (GMT, xx, n, double);
-	yy = GMT_memory (GMT, yy, n, double);
-	if (triplets[GMT_IN]) zz = GMT_memory (GMT, zz, n, double);
+	xx = gmt_memory (GMT, xx, n, double);
+	yy = gmt_memory (GMT, yy, n, double);
+	if (triplets[GMT_IN]) zz = gmt_memory (GMT, zz, n, double);
 
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
@@ -364,8 +364,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (map_them) {	/* Must make parallel arrays for projected x/y */
 		double *xxp = NULL, *yyp = NULL;
 
-		xxp = GMT_memory (GMT, NULL, n, double);
-		yyp = GMT_memory (GMT, NULL, n, double);
+		xxp = gmt_memory (GMT, NULL, n, double);
+		yyp = gmt_memory (GMT, NULL, n, double);
 		for (i = 0; i < n; i++) gmt_geo_to_xy (GMT, xx[i], yy[i], &xxp[i], &yyp[i]);
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on projected coordinates\n");
@@ -378,8 +378,8 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		else
 			np = GMT_delaunay (GMT, xxp, yyp, n, &link);
 
-		GMT_free (GMT, xxp);
-		GMT_free (GMT, yyp);
+		gmt_free (GMT, xxp);
+		gmt_free (GMT, yyp);
 	}
 	else {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on given coordinates\n");
@@ -486,12 +486,12 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
-				GMT_free (GMT, xe);
-				GMT_free (GMT, ye);
+				gmt_free (GMT, xe);
+				gmt_free (GMT, ye);
 			}
 			else {	/* Triangle edges */
 				n_edge = 3 * np;
-				edge = GMT_memory (GMT, NULL, n_edge, struct TRIANGULATE_EDGE);
+				edge = gmt_memory (GMT, NULL, n_edge, struct TRIANGULATE_EDGE);
 				for (i = ij1 = 0, ij2 = 1, ij3 = 2; i < np; i++, ij1 += 3, ij2 += 3, ij3 += 3) {
 					edge[ij1].begin = link[ij1];	edge[ij1].end = link[ij2];
 					edge[ij2].begin = link[ij2];	edge[ij2].end = link[ij3];
@@ -516,7 +516,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 					out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
-				GMT_free (GMT, edge);
+				gmt_free (GMT, edge);
 			}
 		}
 		else if (Ctrl->S.active)  {	/* Write triangle polygons */
@@ -544,9 +544,9 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_free (GMT, xx);
-	GMT_free (GMT, yy);
-	if (triplets[GMT_IN]) GMT_free (GMT, zz);
+	gmt_free (GMT, xx);
+	gmt_free (GMT, yy);
+	if (triplets[GMT_IN]) gmt_free (GMT, zz);
 	if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

@@ -77,7 +77,7 @@ struct GRDEDIT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDEDIT_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GRDEDIT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDEDIT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -90,7 +90,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Dea
 	gmt_str_free (C->D.information);
 	gmt_str_free (C->G.file);
 	gmt_str_free (C->N.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -408,7 +408,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 				break;
 		}
 
-		h_tr = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
+		h_tr = gmt_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 		GMT_memcpy (h_tr, G->header, 1, struct GMT_GRID_HEADER);	/* First make a copy of header */
 		if (strchr ("ltr", Ctrl->E.mode)) {	/* These operators interchange x and y */
 			h_tr->wesn[XLO] = G->header->wesn[YLO];
@@ -424,7 +424,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 		/* Now transpose the matrix */
 
-		a_tr = GMT_memory (GMT, NULL, G->header->size, float);
+		a_tr = gmt_memory (GMT, NULL, G->header->size, float);
 		GMT_grd_loop (GMT, G, row, col, ij) {
 			switch (Ctrl->E.mode) {
 				case 'a': /* Rotate grid around 180 degrees */
@@ -451,12 +451,12 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		save_grid_pointer = G->data;	/* Save original grid pointer and hook on the modified grid instead */
 		G->data = a_tr;
 		GMT_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
-		GMT_free (GMT, h_tr);
+		gmt_free (GMT, h_tr);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_OK) {
 			Return (API->error);
 		}
 		G->data = save_grid_pointer;
-		GMT_free (GMT, a_tr);
+		gmt_free (GMT, a_tr);
 	}
 	else {	/* Change the domain boundaries */
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */

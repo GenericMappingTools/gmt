@@ -127,7 +127,7 @@ int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_
 	size_t n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	double *in = NULL;
 
-	*data = GMT_memory (GMT, NULL, n_alloc, struct TREND1D_DATA);
+	*data = gmt_memory (GMT, NULL, n_alloc, struct TREND1D_DATA);
 
 	i = 0;
 	do {	/* Keep returning records until we reach EOF */
@@ -157,27 +157,27 @@ int read_data_trend1d (struct GMT_CTRL *GMT, struct TREND1D_DATA **data, uint64_
 
 		if (++i == n_alloc) {
 			n_alloc <<= 1;
-			*data = GMT_memory (GMT, *data, n_alloc, struct TREND1D_DATA);
+			*data = gmt_memory (GMT, *data, n_alloc, struct TREND1D_DATA);
 		}
 	} while (true);
 
-	*data = GMT_memory (GMT, *data, i, struct TREND1D_DATA);
-	*work = GMT_memory (GMT, NULL, i, double);
+	*data = gmt_memory (GMT, *data, i, struct TREND1D_DATA);
+	*work = gmt_memory (GMT, NULL, i, double);
 
 	*n_data = i;
 	return (0);
 }
 
 GMT_LOCAL void allocate_the_memory (struct GMT_CTRL *GMT, unsigned int np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model) {
-	*gtg = GMT_memory (GMT, NULL, np*np, double);
-	*v = GMT_memory (GMT, NULL, np*np, double);
-	*gtd = GMT_memory (GMT, NULL, np, double);
-	*lambda = GMT_memory (GMT, NULL, np, double);
-	*workb = GMT_memory (GMT, NULL, np, double);
-	*workz = GMT_memory (GMT, NULL, np, double);
-	*c_model = GMT_memory (GMT, NULL, np, double);
-	*o_model = GMT_memory (GMT, NULL, np, double);
-	*w_model = GMT_memory (GMT, NULL, np, double);
+	*gtg = gmt_memory (GMT, NULL, np*np, double);
+	*v = gmt_memory (GMT, NULL, np*np, double);
+	*gtd = gmt_memory (GMT, NULL, np, double);
+	*lambda = gmt_memory (GMT, NULL, np, double);
+	*workb = gmt_memory (GMT, NULL, np, double);
+	*workz = gmt_memory (GMT, NULL, np, double);
+	*c_model = gmt_memory (GMT, NULL, np, double);
+	*o_model = gmt_memory (GMT, NULL, np, double);
+	*w_model = gmt_memory (GMT, NULL, np, double);
 }
 
 GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND1D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs) {
@@ -211,17 +211,17 @@ GMT_LOCAL void write_output_trend (struct GMT_CTRL *GMT, struct TREND1D_DATA *da
 
 GMT_LOCAL void free_the_memory (struct GMT_CTRL *GMT, double *gtg, double *v, double *gtd, double *lambda, double *workb,
                       double *workz, double *c_model, double *o_model, double *w_model, struct TREND1D_DATA *data, double *work) {
-	GMT_free (GMT, work);
-	GMT_free (GMT, data);
-	GMT_free (GMT, w_model);
-	GMT_free (GMT, o_model);
-	GMT_free (GMT, c_model);
-	GMT_free (GMT, workz);
-	GMT_free (GMT, workb);
-	GMT_free (GMT, lambda);
-	GMT_free (GMT, gtd);
-	GMT_free (GMT, v);
-	GMT_free (GMT, gtg);
+	gmt_free (GMT, work);
+	gmt_free (GMT, data);
+	gmt_free (GMT, w_model);
+	gmt_free (GMT, o_model);
+	gmt_free (GMT, c_model);
+	gmt_free (GMT, workz);
+	gmt_free (GMT, workb);
+	gmt_free (GMT, lambda);
+	gmt_free (GMT, gtd);
+	gmt_free (GMT, v);
+	gmt_free (GMT, gtg);
 }
 
 GMT_LOCAL void transform_x_1d (struct TREND1D_DATA *data, uint64_t n_data, struct GMT_MODEL *M, double xmin, double xmax) {
@@ -436,8 +436,8 @@ GMT_LOCAL void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n
 	 unsigned int j, k;
 	 double sv, cnst, fac, *d, *dd;
 
-	 d  = GMT_memory (GMT, NULL, n, double);
-	 dd = GMT_memory (GMT, NULL, n, double);
+	 d  = gmt_memory (GMT, NULL, n, double);
+	 dd = gmt_memory (GMT, NULL, n, double);
 
 	 /* First we generate coefficients for a polynomial in t */
 
@@ -470,14 +470,14 @@ GMT_LOCAL void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n
 
 	GMT_memcpy (c, d, n, double);
 
-	GMT_free (GMT, d);
-	GMT_free (GMT, dd);
+	gmt_free (GMT, d);
+	gmt_free (GMT, dd);
 }
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TREND1D_CTRL *C = NULL;
 
-	C = GMT_memory (GMT, NULL, 1, struct TREND1D_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct TREND1D_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.value = 1.0e06;		/* Condition number for matrix solution  */
@@ -487,7 +487,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TREND1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

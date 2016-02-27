@@ -132,11 +132,11 @@ struct GRDVIEW_POINT {
 GMT_LOCAL struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t bin, struct GRDVIEW_BIN *binij, double value) {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
-	if (!binij[bin].first_cont) binij[bin].first_cont = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
+	if (!binij[bin].first_cont) binij[bin].first_cont = gmt_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
 
 	for (cont = binij[bin].first_cont; cont->next_cont && cont->next_cont->value <= value; cont = cont->next_cont);
 
-	new_cont = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
+	new_cont = gmt_memory (GMT, NULL, 1, struct GRDVIEW_CONT);
 	if (cont->next_cont) {	/* Put it in the link */
 		new_cont->next_cont = cont->next_cont;
 		cont->next_cont = new_cont;
@@ -147,7 +147,7 @@ GMT_LOCAL struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, uint64_t b
 }
 
 GMT_LOCAL struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y) {
-	struct GRDVIEW_POINT *point = GMT_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
+	struct GRDVIEW_POINT *point = gmt_memory (GMT, NULL, 1, struct GRDVIEW_POINT);
 	point->x = x;
 	point->y = y;
 	return (point);
@@ -298,7 +298,7 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 }
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GRDVIEW_CTRL *C = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CTRL);
+	struct GRDVIEW_CTRL *C = gmt_memory (GMT, NULL, 1, struct GRDVIEW_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
@@ -317,7 +317,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Dea
 	gmt_str_free (C->C.file);
 	for (i = 0; i < 3; i++) gmt_str_free (C->G.file[i]);
 	gmt_str_free (C->I.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -801,8 +801,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		struct GMT_GRID *Z_orig = NULL;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Find contours\n");
 		n_edges = Z->header->ny * (urint (ceil (Z->header->nx / 16.0)));
-		edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
-		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
+		edge = gmt_memory (GMT, NULL, n_edges, unsigned int);
+		binij = gmt_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_CONV4_LIMIT * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) Return (API->error);	/* Original copy of Z grid used for contouring */
@@ -844,14 +844,14 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					this_point->next_point = get_point (GMT, x[pt], y[pt]);
 					this_point = this_point->next_point;
 				}
-				GMT_free (GMT, x);
-				GMT_free (GMT, y);
+				gmt_free (GMT, x);
+				gmt_free (GMT, y);
 			}
 		}
 
 		/* Remove temporary variables */
 
-		GMT_free (GMT, edge);
+		gmt_free (GMT, edge);
 
 		/* Destroy original grid and use the copy in Z_orig instead */
 
@@ -903,15 +903,15 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	x = GMT_memory (GMT, NULL, max_alloc, double);
-	y = GMT_memory (GMT, NULL, max_alloc, double);
-	z = GMT_memory (GMT, NULL, max_alloc, double);
-	v = GMT_memory (GMT, NULL, max_alloc, double);
+	x = gmt_memory (GMT, NULL, max_alloc, double);
+	y = gmt_memory (GMT, NULL, max_alloc, double);
+	z = gmt_memory (GMT, NULL, max_alloc, double);
+	v = gmt_memory (GMT, NULL, max_alloc, double);
 
 	PSL_setformat (PSL, 3);
 
@@ -921,8 +921,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	GMT_plane_perspective (GMT, -1, 0.0);
 
-	xx = GMT_memory (GMT, NULL, max_alloc, double);
-	yy = GMT_memory (GMT, NULL, max_alloc, double);
+	xx = gmt_memory (GMT, NULL, max_alloc, double);
+	yy = gmt_memory (GMT, NULL, max_alloc, double);
 	if (Ctrl->N.active) {
 		PSL_comment (PSL, "Plot the plane at desired level\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[2]);
@@ -1005,7 +1005,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		if (Ctrl->T.outline) GMT_setpen (GMT, &Ctrl->T.pen);
 		GMT_memset (&S, 1, struct GMT_DATASEGMENT);
-		S.coord = GMT_memory (GMT, NULL, 2, double *);
+		S.coord = gmt_memory (GMT, NULL, 2, double *);
 		GMT_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
 			if (use_intensity_grid && Ctrl->T.skip && GMT_is_fnan (Intens->data[ij])) continue;
@@ -1018,12 +1018,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			GMT_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
 			GMT_geo_polygons (GMT, &S);
-			GMT_free (GMT, xx);
-			GMT_free (GMT, yy);
+			gmt_free (GMT, xx);
+			gmt_free (GMT, yy);
 		}
-		GMT_free (GMT, S.coord);
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
+		gmt_free (GMT, S.coord);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_IMAGE) {	/* Plot image */
@@ -1050,11 +1050,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		if (drape_resample) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
-			ix = GMT_memory (GMT, NULL, Z->header->nm, int);
-			iy = GMT_memory (GMT, NULL, Z->header->nm, int);
+			ix = gmt_memory (GMT, NULL, Z->header->nm, int);
+			iy = gmt_memory (GMT, NULL, Z->header->nm, int);
 			x_drape = gmt_grd_coord (GMT, Z->header, GMT_X);
 			y_drape = gmt_grd_coord (GMT, Z->header, GMT_Y);
-			if (use_intensity_grid) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
+			if (use_intensity_grid) int_drape = gmt_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
 			bin = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = gmt_bcr_get_z (GMT, Topo, x_drape[col], y_drape[row]);
@@ -1069,16 +1069,16 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				if (use_intensity_grid) int_drape[ij] = (float)gmt_bcr_get_z (GMT, Intens, x_drape[col], y_drape[row]);
 				bin++;
 			}
-			GMT_free (GMT, x_drape);
-			GMT_free (GMT, y_drape);
+			gmt_free (GMT, x_drape);
+			gmt_free (GMT, y_drape);
 			if (use_intensity_grid) {	/* Reset intensity grid so that we have no boundary row/cols */
 				saved_data_pointer = Intens->data;
 				Intens->data = int_drape;
 			}
 		}
 		else {
-			ix = GMT_memory (GMT, NULL, Topo->header->nm, int);
-			iy = GMT_memory (GMT, NULL, Topo->header->nm, int);
+			ix = gmt_memory (GMT, NULL, Topo->header->nm, int);
+			iy = gmt_memory (GMT, NULL, Topo->header->nm, int);
 			bin = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				if (GMT_is_fnan (Topo->data[ij]))	/* Outside -R or NaNs not used */
@@ -1092,8 +1092,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				bin++;
 			}
 		}
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
 
 		/* Allocate image array and set background to PAGE_COLOR */
 
@@ -1102,7 +1102,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 			nm_i = (uint64_t)nx_i * ny_i;
 			layers = 1;
-			bitimage_8 = GMT_memory (GMT, NULL, nm_i, unsigned char);
+			bitimage_8 = gmt_memory (GMT, NULL, nm_i, unsigned char);
 			gray = GMT_u255 (GMT_YIQ (GMT->current.setting.ps_page_rgb));
 			memset (bitimage_8, gray, nm_i * sizeof (unsigned char));
 		}
@@ -1110,7 +1110,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			nm_i = nx_i * ny_i * 3;
 			layers = 3;
 			if (Ctrl->Q.mask) PS_colormask_off = 3;
-			bitimage_24 = GMT_memory (GMT, NULL, nm_i + PS_colormask_off, unsigned char);
+			bitimage_24 = gmt_memory (GMT, NULL, nm_i + PS_colormask_off, unsigned char);
 			if (Ctrl->C.active && Ctrl->Q.mask)
 				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
 			else
@@ -1122,8 +1122,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		}
 
 		if (!Ctrl->Q.mask) {	/* Set up arrays for staircase clippath and initialize them */
-			top_jp = GMT_memory (GMT, NULL, nx_i, int);
-			bottom_jp = GMT_memory (GMT, NULL, nx_i, int);
+			top_jp = gmt_memory (GMT, NULL, nx_i, int);
+			bottom_jp = gmt_memory (GMT, NULL, nx_i, int);
 			for (ip = 0; ip < nx_i; ip++) bottom_jp[ip] = ny_i;
 		}
 
@@ -1220,8 +1220,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			x_pixel_size = x_width / (double)nx_i;
 			y_pixel_size = y_width / (double)ny_i;
 			n4 = 4 * nx_i;
-			x_imask = GMT_memory (GMT, NULL, n4, double);
-			y_imask = GMT_memory (GMT, NULL, n4, double);
+			x_imask = gmt_memory (GMT, NULL, n4, double);
+			y_imask = gmt_memory (GMT, NULL, n4, double);
 			nk = n4 - 1;
 
 			for (ip = k = 0; ip < nx_i; ip++, k += 2) {
@@ -1237,8 +1237,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 			PSL_beginclipping (PSL, x_imask, y_imask, 4 * nx_i, GMT->session.no_rgb, 3);
-			GMT_free (GMT, x_imask);
-			GMT_free (GMT, y_imask);
+			gmt_free (GMT, x_imask);
+			gmt_free (GMT, y_imask);
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating PostScript image ");
@@ -1246,23 +1246,23 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[B/W image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
 			                    x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
-			GMT_free (GMT, bitimage_8);
+			gmt_free (GMT, bitimage_8);
 		}
 		else {
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[color image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin,
 			                    x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
-			GMT_free (GMT, bitimage_24);
+			gmt_free (GMT, bitimage_24);
 		}
 
 		if (!Ctrl->Q.mask){
 			PSL_endclipping (PSL, 1);	/* Undo mask clipping */
-			GMT_free (GMT, top_jp);
-			GMT_free (GMT, bottom_jp);
+			gmt_free (GMT, top_jp);
+			gmt_free (GMT, bottom_jp);
 		}
 
-		GMT_free (GMT, ix);
-		GMT_free (GMT, iy);
+		gmt_free (GMT, ix);
+		gmt_free (GMT, iy);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_Y) {	/* Plot Y waterfall */
@@ -1282,8 +1282,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 		}
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
@@ -1305,8 +1305,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 			//PSL_plotline (PSL, xx, yy, k+2, PSL_MOVE + PSL_STROKE);
 		}
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
@@ -1351,8 +1351,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
 	}
 
 	else if (Ctrl->Q.mode == GRDVIEW_SURF) {	/* Plot surface using closed polygons */
@@ -1384,10 +1384,10 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			   of the 4 nodes as the other 3 will pull the average into the middle somewhere.
 		*/
 
-		xcont = GMT_memory (GMT, NULL, max_alloc, double);
-		ycont = GMT_memory (GMT, NULL, max_alloc, double);
-		zcont = GMT_memory (GMT, NULL, max_alloc, double);
-		vcont = GMT_memory (GMT, NULL, max_alloc, double);
+		xcont = gmt_memory (GMT, NULL, max_alloc, double);
+		ycont = gmt_memory (GMT, NULL, max_alloc, double);
+		zcont = gmt_memory (GMT, NULL, max_alloc, double);
+		vcont = gmt_memory (GMT, NULL, max_alloc, double);
 
 		PSL_comment (PSL, "Start of filled surface\n");
 		if (Ctrl->Q.outline) GMT_setpen (GMT, &Ctrl->W.pen[1]);
@@ -1703,12 +1703,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		GMT_free (GMT, xval);
-		GMT_free (GMT, yval);
-		GMT_free (GMT, xcont);
-		GMT_free (GMT, ycont);
-		GMT_free (GMT, zcont);
-		GMT_free (GMT, vcont);
+		gmt_free (GMT, xval);
+		gmt_free (GMT, yval);
+		gmt_free (GMT, xcont);
+		gmt_free (GMT, ycont);
+		gmt_free (GMT, zcont);
+		gmt_free (GMT, vcont);
 	}
 
 	PSL_setdash (PSL, NULL, 0);
@@ -1778,33 +1778,33 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				if (this_cont->first_point) {
 					last_point = this_cont->first_point;
 					for (this_point = this_cont->first_point->next_point; this_point; this_point = this_point->next_point) {
-						GMT_free (GMT, last_point);
+						gmt_free (GMT, last_point);
 						last_point = this_point;
 					}
-					GMT_free (GMT, last_point);
+					gmt_free (GMT, last_point);
 				}
-				GMT_free (GMT, last_cont);
+				gmt_free (GMT, last_cont);
 				last_cont = this_cont;
 			}
-			GMT_free (GMT, last_cont);
+			gmt_free (GMT, last_cont);
 		}
-		GMT_free (GMT, binij);
+		gmt_free (GMT, binij);
 	}
 
 	gmt_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
 	if (use_intensity_grid) {
 		gmt_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
 		if (saved_data_pointer) {
-			GMT_free (GMT, Intens->data);
+			gmt_free (GMT, Intens->data);
 			Intens->data = saved_data_pointer;
 		}
 	}
-	GMT_free (GMT, xx);
-	GMT_free (GMT, yy);
-	GMT_free (GMT, x);
-	GMT_free (GMT, y);
-	GMT_free (GMT, z);
-	GMT_free (GMT, v);
+	gmt_free (GMT, xx);
+	gmt_free (GMT, yy);
+	gmt_free (GMT, x);
+	gmt_free (GMT, y);
+	gmt_free (GMT, z);
+	gmt_free (GMT, v);
 	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
 		gmt_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}

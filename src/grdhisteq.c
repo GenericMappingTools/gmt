@@ -72,7 +72,7 @@ struct	CELL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDHISTEQ_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.value = 16;
@@ -84,7 +84,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->D.file);	
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -211,7 +211,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
 	
-	cell = GMT_memory (GMT, NULL, n_cells, struct CELL);
+	cell = gmt_memory (GMT, NULL, n_cells, struct CELL);
 
 	/* Sort the data and find the division points */
 
@@ -267,7 +267,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	}
 
 	gmt_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
-	GMT_free (GMT, cell);
+	gmt_free (GMT, cell);
 	return (0);
 }
 
@@ -290,7 +290,7 @@ GMT_LOCAL int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, d
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
 
-	indexed_data = GMT_memory (GMT, NULL, Grid->header->nm, struct INDEXED_DATA);
+	indexed_data = gmt_memory (GMT, NULL, Grid->header->nm, struct INDEXED_DATA);
 
 	nxy = Grid->header->nm;
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
@@ -326,7 +326,7 @@ GMT_LOCAL int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, d
 	i = 0;
 	GMT_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */
 
-	GMT_free (GMT, indexed_data);
+	gmt_free (GMT, indexed_data);
 	return (0);
 }
 

@@ -165,7 +165,7 @@ GMT_LOCAL double fast_atan(double x) {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDOKB_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GRDOKB_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDOKB_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.thickness = 500;
@@ -185,7 +185,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* Deal
 	gmt_str_free (C->H.magfile);
 	gmt_str_free (C->H.decfile);
 	gmt_str_free (C->H.incfile);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -688,11 +688,11 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	nx_p = !Ctrl->F.active ? Gout->header->nx : ndata;
 	ny_p = !Ctrl->F.active ? Gout->header->ny : ndata;
-	x_grd = GMT_memory (GMT, NULL, GridA->header->nx + Ctrl->H.pirtt, double);
-	y_grd = GMT_memory (GMT, NULL, GridA->header->ny + Ctrl->H.pirtt, double);
-	x_obs = GMT_memory (GMT, NULL, nx_p, double);
-	y_obs = GMT_memory (GMT, NULL, ny_p, double);
-	if (Ctrl->F.active) g = GMT_memory (GMT, NULL, ndata, double);
+	x_grd = gmt_memory (GMT, NULL, GridA->header->nx + Ctrl->H.pirtt, double);
+	y_grd = gmt_memory (GMT, NULL, GridA->header->ny + Ctrl->H.pirtt, double);
+	x_obs = gmt_memory (GMT, NULL, nx_p, double);
+	y_obs = gmt_memory (GMT, NULL, ny_p, double);
+	if (Ctrl->F.active) g = gmt_memory (GMT, NULL, ndata, double);
 
 	d = GridA->header->xy_off;		/*  0.5 : 0.0 */
 
@@ -737,8 +737,8 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		d = GridB->header->xy_off;		/*  0.5 : 0.0 */
 		if (Ctrl->H.pirtt)
 			d -= 0.5;			/* because for prisms we want all corner coords to be in pixel registration */
-		x_grd2 = GMT_memory (GMT, NULL, GridB->header->nx + Ctrl->H.pirtt, double);
-		y_grd2 = GMT_memory (GMT, NULL, GridB->header->ny + Ctrl->H.pirtt, double);
+		x_grd2 = gmt_memory (GMT, NULL, GridB->header->nx + Ctrl->H.pirtt, double);
+		y_grd2 = gmt_memory (GMT, NULL, GridB->header->ny + Ctrl->H.pirtt, double);
 		for (i = 0; i < GridB->header->nx; i++)
 			x_grd2[i] = (i == (GridB->header->nx-1)) ? GridB->header->wesn[XHI] + d*GridB->header->inc[GMT_X] :
 					GridB->header->wesn[XLO] + (i + d) * GridB->header->inc[GMT_X];
@@ -759,11 +759,11 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/* --------------------------------------------------------------------------------------------- */
 
 	/* ---------- Pre-compute a vector of cos(lat) to use in the Geog cases ------------------------ */
-	cos_vec = GMT_memory (GMT, NULL, GridA->header->ny, double);
+	cos_vec = gmt_memory (GMT, NULL, GridA->header->ny, double);
 	for (j = 0; j < GridA->header->ny; j++)
 		cos_vec[j] = (Ctrl->box.is_geog) ? cos(y_grd[j]*D2R): 1;
 	if (two_grids) {
-		cos_vec2 = GMT_memory (GMT, NULL, GridB->header->ny, double);
+		cos_vec2 = gmt_memory (GMT, NULL, GridB->header->ny, double);
 		for (j = 0; j < GridB->header->ny; j++)
 			cos_vec2[j] = (Ctrl->box.is_geog) ? cos(y_grd2[j]*D2R): 1;
 	}
@@ -772,8 +772,8 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/* ------ Convert distances to arc distances at Earth surface *** NEEDS CONFIRMATION *** ------- */
 	if (Ctrl->box.is_geog) {
 		if (Ctrl->H.do_igrf) {          /* We need a copy in Geogs to use in IGRF */
-			x_grd_geo = GMT_memory (GMT, NULL, GridA->header->nx + Ctrl->H.pirtt, double);
-			y_grd_geo = GMT_memory (GMT, NULL, GridA->header->ny + Ctrl->H.pirtt, double);
+			x_grd_geo = gmt_memory (GMT, NULL, GridA->header->nx + Ctrl->H.pirtt, double);
+			y_grd_geo = gmt_memory (GMT, NULL, GridA->header->ny + Ctrl->H.pirtt, double);
 			GMT_memcpy(x_grd_geo, x_grd, GridA->header->nx + Ctrl->H.pirtt, double);
 			GMT_memcpy(y_grd_geo, y_grd, GridA->header->ny + Ctrl->H.pirtt, double);
 		}
@@ -815,7 +815,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->H.active) { /* 1e2 is a factor to obtain nT from magnetization in A/m */
-		mag_param = GMT_memory (GMT, NULL, 1, struct MAG_PARAM);
+		mag_param = gmt_memory (GMT, NULL, 1, struct MAG_PARAM);
 		mag_param[0].rim[0] = 1e2 * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
 		mag_param[0].rim[1] = 1e2 * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
 		mag_param[0].rim[2] = 1e2 * sin(Ctrl->H.t_dip*D2R);
@@ -823,7 +823,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		cs_t = cos(Ctrl->H.m_dip*D2R) * sin((Ctrl->H.m_dec - 90.)*D2R);
 		s_t  = sin(Ctrl->H.m_dip*D2R);
 		/* Case of constant magnetization */
-		mag_var = GMT_memory (GMT, NULL, 1, struct MAG_VAR);
+		mag_var = gmt_memory (GMT, NULL, 1, struct MAG_VAR);
 		mag_var[0].rk[0] = Ctrl->H.m_int * cc_t;
 		mag_var[0].rk[1] = Ctrl->H.m_int * cs_t;
 		mag_var[0].rk[2] = Ctrl->H.m_int * s_t;
@@ -843,7 +843,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	for (i = 1; i < body_desc.n_f; i++)
 		n_vert_max = MAX(body_desc.n_v[i], n_vert_max);
 
-	loc_or = GMT_memory (GMT, NULL, (n_vert_max+1), struct LOC_OR);
+	loc_or = gmt_memory (GMT, NULL, (n_vert_max+1), struct LOC_OR);
 
 	if (Ctrl->H.bhatta) {
 		dircos(Ctrl->H.m_dip, Ctrl->H.m_dec, 0, &loc_or[0].x, &loc_or[0].y, &loc_or[0].z);
@@ -986,23 +986,23 @@ L1:
 			Return (API->error);
 	}
 
-	GMT_free (GMT, x_grd);
-	GMT_free (GMT, y_grd);
-	GMT_free (GMT, x_grd2);
-	GMT_free (GMT, y_grd2);
-	GMT_free (GMT, cos_vec2);
-	GMT_free (GMT, g);
-	GMT_free (GMT, x_obs);
-	GMT_free (GMT, y_obs);
-	GMT_free (GMT, cos_vec);
-	GMT_free (GMT, loc_or);
-	GMT_free (GMT, body_desc.n_v);
-	GMT_free (GMT, body_desc.ind);
-	GMT_free (GMT, body_verts);
-	GMT_free (GMT, mag_param);
-	GMT_free (GMT, mag_var);
+	gmt_free (GMT, x_grd);
+	gmt_free (GMT, y_grd);
+	gmt_free (GMT, x_grd2);
+	gmt_free (GMT, y_grd2);
+	gmt_free (GMT, cos_vec2);
+	gmt_free (GMT, g);
+	gmt_free (GMT, x_obs);
+	gmt_free (GMT, y_obs);
+	gmt_free (GMT, cos_vec);
+	gmt_free (GMT, loc_or);
+	gmt_free (GMT, body_desc.n_v);
+	gmt_free (GMT, body_desc.ind);
+	gmt_free (GMT, body_verts);
+	gmt_free (GMT, mag_param);
+	gmt_free (GMT, mag_var);
 	if (Ctrl->H.do_igrf) {
-		GMT_free (GMT, x_grd_geo);		GMT_free (GMT, y_grd_geo);
+		gmt_free (GMT, x_grd_geo);		gmt_free (GMT, y_grd_geo);
 	}
 
 	Return (GMT_OK);
@@ -1034,24 +1034,24 @@ GMT_LOCAL int grdgravmag3d_body_desc_tri(struct GMT_CTRL *GMT, struct GRDOKB_CTR
 	if (face == 0) {			/* Decompose the TOP square surface in 2 triangles using CW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, unsigned int);
+			body_desc->n_v = gmt_memory (GMT, NULL, body_desc->n_f, unsigned int);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], unsigned int);
+			body_desc->ind = gmt_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], unsigned int);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 1; 	body_desc->ind[2] = 2;	/* 1st top triang (0 1 3)*/
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 2; 	body_desc->ind[5] = 3;	/* 2nd top triang (1 2 3) */
-		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
+		if (*body_verts == NULL) *body_verts = gmt_memory (GMT, NULL, 4, struct BODY_VERTS);
 	}
 	else if (face == 5) {			/* Decompose the BOT square surface in 2 triangles using CCW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, unsigned int);
+			body_desc->n_v = gmt_memory (GMT, NULL, body_desc->n_f, unsigned int);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], unsigned int);
+			body_desc->ind = gmt_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], unsigned int);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 2; 	body_desc->ind[2] = 1;	/* 1st bot triang */
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 3; 	body_desc->ind[5] = 2;	/* 2nd bot triang */
-		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
+		if (*body_verts == NULL) *body_verts = gmt_memory (GMT, NULL, 4, struct BODY_VERTS);
 	}
 	/* Other face cases will go here */
 	return 0;
@@ -1065,11 +1065,11 @@ GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_C
 
 	body_desc->n_f = 1;
 	if (body_desc->n_v == NULL)		/* First time this function is called */
-		body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, unsigned int);
+		body_desc->n_v = gmt_memory (GMT, NULL, body_desc->n_f, unsigned int);
 	body_desc->n_v[0] = 2;
 	if (body_desc->ind == NULL)
-		body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0], unsigned int);
-	if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 2, struct BODY_VERTS);
+		body_desc->ind = gmt_memory (GMT, NULL, body_desc->n_v[0], unsigned int);
+	if (*body_verts == NULL) *body_verts = gmt_memory (GMT, NULL, 2, struct BODY_VERTS);
 
 	body_desc->ind[0] = 0;	body_desc->ind[1] = 1;	/* NOT USED REALY AREN'T THEY? */
 
@@ -1197,7 +1197,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 
 	/* IDEALY THIS SHOULD BE A MUTEX. BUT FIRST: HOW? AND SECOND, WOULDN'T IT BREAK THE WHOLE TREADING MECHANICS? */
 	if (body_verts == NULL)
-		body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);		/* 4 is good enough for Okabe (tri = 4) and Mprism (prism = 2) cases */
+		body_verts = gmt_memory (GMT, NULL, 4, struct BODY_VERTS);		/* 4 is good enough for Okabe (tri = 4) and Mprism (prism = 2) cases */
 
 	v_func[0] = grdgravmag3d_body_set_tri;
 	v_func[1] = grdgravmag3d_body_set_prism;
@@ -1223,8 +1223,8 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 	}
 
 	if (Ctrl->H.do_igrf) {
-		igrf_dip = GMT_memory (GMT, NULL, (size_t)(Grid->header->nx + 1), double);
-		igrf_dec = GMT_memory (GMT, NULL, (size_t)(Grid->header->nx + 1), double);
+		igrf_dip = gmt_memory (GMT, NULL, (size_t)(Grid->header->nx + 1), double);
+		igrf_dec = gmt_memory (GMT, NULL, (size_t)(Grid->header->nx + 1), double);
 	}
 
 	for (row = r_start; row < r_stop; row++) {                     /* Loop over input grid rows */
@@ -1289,9 +1289,9 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 		}
 	}
 
-	GMT_free (GMT, body_verts);
+	gmt_free (GMT, body_verts);
 	if (Ctrl->H.do_igrf) {
-		GMT_free (GMT, igrf_dip);		GMT_free (GMT, igrf_dec);
+		gmt_free (GMT, igrf_dip);		gmt_free (GMT, igrf_dec);
 	}
 }
 
@@ -1309,14 +1309,14 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 #ifdef HAVE_GLIB_GTHREAD
 	GThread **threads = NULL;
 	if (GMT->common.x.n_threads > 1)
-		threads = GMT_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
+		threads = gmt_memory (GMT, NULL, GMT->common.x.n_threads, GThread *);
 #endif
 
 	GMT_tic(GMT);
 
 	indf = (Ctrl->H.pirtt) ? 1 : 0;
 
-	threadArg = GMT_memory (GMT, NULL, GMT->common.x.n_threads, struct THREAD_STRUCT);
+	threadArg = gmt_memory (GMT, NULL, GMT->common.x.n_threads, struct THREAD_STRUCT);
 
 	for (i = 0; i < GMT->common.x.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
@@ -1359,10 +1359,10 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 	}
 
 	if (GMT->common.x.n_threads > 1)
-		GMT_free (GMT, threads);
+		gmt_free (GMT, threads);
 #endif
 
-	GMT_free (GMT, threadArg);
+	gmt_free (GMT, threadArg);
 
 	GMT_toc(GMT,"");
 }

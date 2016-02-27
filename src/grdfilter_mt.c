@@ -190,7 +190,7 @@ void threaded_function (struct THREAD_STRUCT *t);
 void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.mode = GRDFILTER_NOTSET;	
@@ -205,7 +205,7 @@ void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* D
 	gmt_str_free (C->F.file);	
 	gmt_str_free (C->G.file);	
 	gmt_str_free (C->A.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 /* -----------------------------------------------------------------------------------*/
@@ -742,8 +742,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
-	col_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
-	if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
+	col_origin = gmt_memory (GMT, NULL, Gout->header->nx, int);
+	if (!fast_way) x_shift = gmt_memory (GMT, NULL, Gout->header->nx, double);
 
 	if (fast_way && Gin->header->registration == one_or_zero) {	/* multiple of grid spacings but one is pix, other is grid so adjust for 1/2 cell */
 		x_fix = 0.5 * Gin->header->inc[GMT_X];
@@ -853,13 +853,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		}
 	}
 	visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
-	F.x = GMT_memory (GMT, NULL, F.x_half_width+1, double);
-	F.y = GMT_memory (GMT, NULL, F.y_half_width+1, double);
-	if (visit_check) F.visit = GMT_memory (GMT, NULL, Gin->header->nx, char);
+	F.x = gmt_memory (GMT, NULL, F.x_half_width+1, double);
+	F.y = gmt_memory (GMT, NULL, F.y_half_width+1, double);
+	if (visit_check) F.visit = gmt_memory (GMT, NULL, Gin->header->nx, char);
 	for (ii = 0; ii <= F.x_half_width; ii++) F.x[ii] = ii * F.dx;
 	for (jj = 0; jj <= F.y_half_width; jj++) F.y[jj] = jj * F.dy;
 	
-	weight = GMT_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
+	weight = gmt_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
 	
 	if (Ctrl->F.custom) {	/* Read convolution grid from file */
 		ij_wt = 0;	wt_sum = 0.0;
@@ -941,10 +941,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 #ifdef HAVE_GLIB_GTHREAD
 	if (Ctrl->z.n_threads > 1)
-		threads = GMT_memory (GMT, NULL, Ctrl->z.n_threads, GThread *);
+		threads = gmt_memory (GMT, NULL, Ctrl->z.n_threads, GThread *);
 #endif
 
-	threadArg = GMT_memory (GMT, NULL, Ctrl->z.n_threads, struct THREAD_STRUCT);
+	threadArg = gmt_memory (GMT, NULL, Ctrl->z.n_threads, struct THREAD_STRUCT);
 
 	for (i = 0; i < Ctrl->z.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
@@ -990,20 +990,20 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->z.n_threads > 1)
-		GMT_free (GMT, threads);
+		gmt_free (GMT, threads);
 #endif
 
-	GMT_free (GMT, threadArg);
+	gmt_free (GMT, threadArg);
 
 	GMT_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
-	GMT_free (GMT, weight);
-	GMT_free (GMT, F.x);
-	GMT_free (GMT, F.y);
-	if (visit_check) GMT_free (GMT, F.visit);
+	gmt_free (GMT, weight);
+	gmt_free (GMT, F.x);
+	gmt_free (GMT, F.y);
+	if (visit_check) gmt_free (GMT, F.visit);
 
-	GMT_free (GMT, col_origin);
-	if (!fast_way) GMT_free (GMT, x_shift);
+	gmt_free (GMT, col_origin);
+	if (!fast_way) gmt_free (GMT, x_shift);
 	if (GMT_Destroy_Data (API, &A) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free A\n");
 	}
@@ -1128,9 +1128,9 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
-			work_data = GMT_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
+			work_data = gmt_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
 		else
-			work_array = GMT_memory (GMT, NULL, F.nx*F.ny, double);
+			work_array = gmt_memory (GMT, NULL, F.nx*F.ny, double);
 	}
 
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
@@ -1294,7 +1294,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing output line %d\n", row_out);
 
 	if (slow) {
-		if (slower) GMT_free (GMT, work_data);
-		else GMT_free (GMT, work_array);
+		if (slower) gmt_free (GMT, work_data);
+		else gmt_free (GMT, work_array);
 	}
 }

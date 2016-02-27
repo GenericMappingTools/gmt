@@ -138,7 +138,7 @@ bool sphericity = false;
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRAVFFT_CTRL *C = NULL;
 
-	C = GMT_memory (GMT, NULL, 1, struct GRAVFFT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRAVFFT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -148,13 +148,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C->par);
+	gmt_free (GMT, C->par);
 	gmt_str_free (C->In.file[0]);
 	gmt_str_free (C->In.file[1]);
 	gmt_str_free (C->D.file);
 	gmt_str_free (C->G.file);
-	GMT_free (GMT, C->N.info);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C->N.info);
+	gmt_free (GMT, C);
 }
 
 double	scale_out = 1.0;
@@ -519,9 +519,9 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		double *z_top_or_bot = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
-		struct GMT_FFT_WAVENUMBER *K = GMT_memory (GMT, NULL, 1, struct GMT_FFT_WAVENUMBER);
+		struct GMT_FFT_WAVENUMBER *K = gmt_memory (GMT, NULL, 1, struct GMT_FFT_WAVENUMBER);
 
-		z_top_or_bot = GMT_memory (GMT, NULL, (size_t)Ctrl->C.n_pt, double);
+		z_top_or_bot = gmt_memory (GMT, NULL, (size_t)Ctrl->C.n_pt, double);
 
 		delta_pt = 2 * M_PI / (Ctrl->C.n_pt * Ctrl->C.theor_inc);	/* Times 2PI because frequency will be used later */
 		compute_only_admitts (GMT, Ctrl, K, z_top_or_bot, delta_pt);
@@ -534,8 +534,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		dim[GMT_ROW] = Ctrl->C.n_pt;
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
-			GMT_free (GMT, K);
-			GMT_free (GMT, z_top_or_bot);
+			gmt_free (GMT, K);
+			gmt_free (GMT, z_top_or_bot);
 			Return (API->error);
 		}
 		S = D->table[0]->segment[0];	/* Only one table with one segment here */
@@ -549,8 +549,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->G.file, D) != GMT_OK)
 			Return (API->error);
 
-		GMT_free (GMT, K);
-		GMT_free (GMT, z_top_or_bot);
+		gmt_free (GMT, K);
+		gmt_free (GMT, z_top_or_bot);
 		Return (EXIT_SUCCESS);
 	}
 	/* ---------------------------------------------------------------------------------- */
@@ -672,8 +672,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 	}
 
-	topo   = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
-	raised = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
+	topo   = gmt_memory (GMT, NULL, Grid[0]->header->size, float);
+	raised = gmt_memory (GMT, NULL, Grid[0]->header->size, float);
 
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
@@ -708,8 +708,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			GMT_FFT_Destroy (API, &(FFT_info[0]));
-			GMT_free (GMT, topo);
-			GMT_free (GMT, raised);
+			gmt_free (GMT, topo);
+			gmt_free (GMT, raised);
 			Return (EXIT_SUCCESS);
 		}
 		else {
@@ -802,7 +802,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_FFT_Destroy (API, &(FFT_info[k]));
 	if (Ctrl->D.variable)
 		GMT_FFT_Destroy (API, &Rho_info);
-	GMT_free (GMT, raised);
+	gmt_free (GMT, raised);
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
@@ -810,7 +810,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_free (GMT, topo);
+	gmt_free (GMT, topo);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
@@ -958,19 +958,19 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 		{delta_k = K->delta_ky;	nk = K->ny2/2;}
 	n_alloc = nk;
 	/* Get an array for summing stuff */
-	b_pow   = GMT_memory (GMT, NULL, n_alloc, double );
-	g_pow   = GMT_memory (GMT, NULL, n_alloc, double);
-	err_bar = GMT_memory (GMT, NULL, n_alloc, double);
-	co_spec = GMT_memory (GMT, NULL, n_alloc, double);
-	quad    = GMT_memory (GMT, NULL, n_alloc, double);
-	coh     = GMT_memory (GMT, NULL, n_alloc, double);
-	out     = GMT_memory (GMT, NULL, n_alloc, double);
+	b_pow   = gmt_memory (GMT, NULL, n_alloc, double );
+	g_pow   = gmt_memory (GMT, NULL, n_alloc, double);
+	err_bar = gmt_memory (GMT, NULL, n_alloc, double);
+	co_spec = gmt_memory (GMT, NULL, n_alloc, double);
+	quad    = gmt_memory (GMT, NULL, n_alloc, double);
+	coh     = gmt_memory (GMT, NULL, n_alloc, double);
+	out     = gmt_memory (GMT, NULL, n_alloc, double);
 	if (Ctrl->misc.from_below)
-		z_from_below = GMT_memory (GMT, NULL, n_alloc, double);
+		z_from_below = gmt_memory (GMT, NULL, n_alloc, double);
 	if (Ctrl->misc.from_top)
-		z_from_top = GMT_memory (GMT, NULL, n_alloc, double);
+		z_from_top = gmt_memory (GMT, NULL, n_alloc, double);
 	n_alloc   = K->nx2 * K->ny2;
-	nused   = GMT_memory (GMT, NULL, n_alloc, unsigned int);
+	nused   = gmt_memory (GMT, NULL, n_alloc, unsigned int);
 
 	if (Ctrl->misc.coherence)
 		Ctrl->I.active = false;
@@ -1046,16 +1046,16 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 		error = GMT->parent->error;
 
 Lfree:
-	GMT_free (GMT, out);
-	GMT_free (GMT, b_pow);
-	GMT_free (GMT, g_pow);
-	GMT_free (GMT, err_bar);
-	GMT_free (GMT, co_spec);
-	GMT_free (GMT, coh);
-	GMT_free (GMT, quad);
-	GMT_free (GMT, nused);
-	if (Ctrl->misc.from_below) GMT_free (GMT, z_from_below);
-	if (Ctrl->misc.from_top) GMT_free (GMT, z_from_top);
+	gmt_free (GMT, out);
+	gmt_free (GMT, b_pow);
+	gmt_free (GMT, g_pow);
+	gmt_free (GMT, err_bar);
+	gmt_free (GMT, co_spec);
+	gmt_free (GMT, coh);
+	gmt_free (GMT, quad);
+	gmt_free (GMT, nused);
+	if (Ctrl->misc.from_below) gmt_free (GMT, z_from_below);
+	if (Ctrl->misc.from_top) gmt_free (GMT, z_from_top);
 
 	return error;
 }

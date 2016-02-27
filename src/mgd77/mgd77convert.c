@@ -61,7 +61,7 @@ struct MGD77CONVERT_CTRL {	/* All control options for this program (except commo
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77CONVERT_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct MGD77CONVERT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct MGD77CONVERT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -72,7 +72,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -369,10 +369,10 @@ int GMT_mgd77convert (void *V_API, int mode, void *args) {
 		M.format = Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
 		M.original = true;					/* Always write to original attributes */
 		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? true : false;	/* Only allow the specified output format */
-		GMT_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
-		D->H.author = GMT_memory (GMT, NULL, strlen (M.user)+1, char);	/* Allocate space for author */
+		gmt_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
+		D->H.author = gmt_memory (GMT, NULL, strlen (M.user)+1, char);	/* Allocate space for author */
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */
-		GMT_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
+		gmt_free (GMT, D->H.history);	/* Make sure history is blank so it is reset by MGD77_Write_File */
 		if (MGD77_Write_File (GMT, file, &M, D)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing new file for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);

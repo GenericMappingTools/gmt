@@ -63,20 +63,20 @@ struct PSBASEMAP_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSBASEMAP_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->A.file);
-	if (C->D.insert.refpoint) GMT_free_refpoint (GMT, &C->D.insert.refpoint);
-	GMT_free (GMT, C->D.insert.panel);
-	if (C->L.scale.refpoint) GMT_free_refpoint (GMT, &C->L.scale.refpoint);
-	GMT_free (GMT, C->L.scale.panel);
-	if (C->T.rose.refpoint) GMT_free_refpoint (GMT, &C->T.rose.refpoint);
-	GMT_free (GMT, C->T.rose.panel);
-	GMT_free (GMT, C);
+	if (C->D.insert.refpoint) gmt_free_refpoint (GMT, &C->D.insert.refpoint);
+	gmt_free (GMT, C->D.insert.panel);
+	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
+	gmt_free (GMT, C->L.scale.panel);
+	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
+	gmt_free (GMT, C->T.rose.panel);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -265,7 +265,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 		S->coord[GMT_X][k] = S->coord[GMT_X][0];	S->coord[GMT_Y][k++] = S->coord[GMT_Y][0];	/* Close polygon */
 		S->n_rows = dim[GMT_ROW];
 		D->table[0]->n_headers = 1;
-		D->table[0]->header = GMT_memory (GMT, NULL, 1U, char *);
+		D->table[0]->header = gmt_memory (GMT, NULL, 1U, char *);
 		sprintf (msg, " Geographical coordinates for a (%s) rectangular plot domain outline polygon", kind[GMT->common.R.oblique]);
 		D->table[0]->header[0] = strdup (msg);
 		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */

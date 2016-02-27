@@ -135,7 +135,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77LIST_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct MGD77LIST_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct MGD77LIST_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -157,7 +157,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* D
 	if (!C) return;
 	gmt_str_free (C->F.flags);
 	gmt_str_free (C->L.file);
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -840,12 +840,12 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxillary columns are requested (if any) */
 	if (Ctrl->L.active) {
 		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxillary columns are needed by -L */
-		for (kk = 0; kk < n_items; kk++) GMT_free (GMT, item_names[kk]);
-		if (n_items) GMT_free (GMT, item_names);
+		for (kk = 0; kk < n_items; kk++) gmt_free (GMT, item_names[kk]);
+		if (n_items) gmt_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
 	}
-	aux_tvalue[MGD77_AUX_ID] = GMT_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
-	aux_tvalue[MGD77_AUX_DA] = GMT_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_ID] = gmt_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_DA] = gmt_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 	
 	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the
@@ -1002,7 +1002,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				MGD77_Free_Dataset (GMT, &D);
 				Return (EXIT_FAILURE);
 			}
-			if (!string_output) out = GMT_memory (GMT, NULL, n_out_columns, double);
+			if (!string_output) out = gmt_memory (GMT, NULL, n_out_columns, double);
 
 		}
 		
@@ -1127,10 +1127,10 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			if (Ctrl->A.cable_adjust && rec == 0) {
 			/* For the cable correction we need to know ALL cumulative distances. So compute them now. */
 				uint64_t rec_;
-				cumdist = GMT_memory(GMT, NULL, D->H.n_records, double);
-				mtf_bak = GMT_memory(GMT, NULL, D->H.n_records, double);       /* We need a copy */
-				mtf_int = GMT_memory(GMT, NULL, D->H.n_records, double);       /* And another to store reinterped mtf1 */
-				cumdist_off = GMT_memory(GMT, NULL, D->H.n_records, double);   /* To put positions where mag was really measured */
+				cumdist = gmt_memory(GMT, NULL, D->H.n_records, double);
+				mtf_bak = gmt_memory(GMT, NULL, D->H.n_records, double);       /* We need a copy */
+				mtf_int = gmt_memory(GMT, NULL, D->H.n_records, double);       /* And another to store reinterped mtf1 */
+				cumdist_off = gmt_memory(GMT, NULL, D->H.n_records, double);   /* To put positions where mag was really measured */
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][0]) || GMT_is_dnan (dvalue[y_col][0]));
 				prevrec = 0;
 				mtf_bak[0] = dvalue[m1_col][0];
@@ -1396,11 +1396,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 							GMT_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
 						else {
 							/* Need to allocate these auxiliary vectors */
-							ind = GMT_memory(GMT, NULL, D->H.n_records, int);
-							cumdist_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
-							cumdist_off_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
-							mtf_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
-							mtf_int_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
+							ind = gmt_memory(GMT, NULL, D->H.n_records, int);
+							cumdist_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
+							cumdist_off_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
+							mtf_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
+							mtf_int_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
 
 							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
 								ind[k_off] = !GMT_is_dnan (mtf_bak[k_off]);  /* Find indices of valid values */
@@ -1422,9 +1422,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						dvalue[m1_col][rec] = mtf_int[rec];
 						/* We can free these right now because they won't be used anymore for this file */
-						GMT_free (GMT, ind);
-						GMT_free (GMT, cumdist_cl);         GMT_free (GMT, cumdist_off_cl);
-						GMT_free (GMT, mtf_cl);             GMT_free (GMT, mtf_int_cl);
+						gmt_free (GMT, ind);
+						gmt_free (GMT, cumdist_cl);         gmt_free (GMT, cumdist_off_cl);
+						gmt_free (GMT, mtf_cl);             gmt_free (GMT, mtf_int_cl);
 						first_time_on_sensor_offset = false;
 					}
 					else                               /* All other times, just pull out current val of interped mtf1 */
@@ -1504,18 +1504,18 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 
 		if (cumdist) {
-			GMT_free (GMT, cumdist_off);	/* Free and reset for eventual reuse */
-			GMT_free (GMT, cumdist);	/* Free and reset for eventual reuse */
-			GMT_free (GMT, mtf_bak);	/* Free and reset for eventual reuse */
-			GMT_free (GMT, mtf_int);	/* Free and reset for eventual reuse */
+			gmt_free (GMT, cumdist_off);	/* Free and reset for eventual reuse */
+			gmt_free (GMT, cumdist);	/* Free and reset for eventual reuse */
+			gmt_free (GMT, mtf_bak);	/* Free and reset for eventual reuse */
+			gmt_free (GMT, mtf_int);	/* Free and reset for eventual reuse */
 		}
 		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;
 	}
 	
-	if (!string_output) GMT_free (GMT, out);
-	GMT_free (GMT, aux_tvalue[MGD77_AUX_ID]);
-	GMT_free (GMT, aux_tvalue[MGD77_AUX_DA]);
+	if (!string_output) gmt_free (GMT, out);
+	gmt_free (GMT, aux_tvalue[MGD77_AUX_ID]);
+	gmt_free (GMT, aux_tvalue[MGD77_AUX_DA]);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
 	

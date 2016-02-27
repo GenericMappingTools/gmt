@@ -424,14 +424,14 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			char *pch;
 			GMT_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
 			gmt_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			pch = GMT_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
+			pch = gmt_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
 			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
 			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
-			GMT_free (GMT, pch);
+			gmt_free (GMT, pch);
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
-		xy = GMT_memory (GMT, NULL, MAX(header->nx,header->ny), double);
+		xy = gmt_memory (GMT, NULL, MAX(header->nx,header->ny), double);
 
 		/* Get information about x variable */
 		gmt_nc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
@@ -475,7 +475,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		header->inc[GMT_Y] = GMT_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
-		GMT_free (GMT, xy);
+		gmt_free (GMT, xy);
 
 		/* Get information about z variable */
 		gmt_nc_get_units (GMT, ncid, z_id, header->z_units);
@@ -669,7 +669,7 @@ L100:
 			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
 		}
 		GMT_err_trap (nc_enddef (ncid));
-		xy = GMT_memory (GMT, NULL,  MAX (header->nx,header->ny), double);
+		xy = gmt_memory (GMT, NULL,  MAX (header->nx,header->ny), double);
 		for (col = 0; col < header->nx; col++) xy[col] = GMT_grd_col_to_x (GMT, col, header);
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
 		if (header->row_order == k_nc_start_south) {
@@ -679,7 +679,7 @@ L100:
 			for (row = 0; row < header->ny; row++) xy[row] = (double) GMT_row_to_y (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[1]], xy));
-		GMT_free (GMT, xy);
+		gmt_free (GMT, xy);
 	}
 
 	/* Close NetCDF file, unless job == 'W' */
@@ -1443,7 +1443,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	GMT_free (GMT, actual_col);
+	gmt_free (GMT, actual_col);
 
 	/* Adjust header */
 	GMT_memcpy (header->wesn, wesn, 4, double);

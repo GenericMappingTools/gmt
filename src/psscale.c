@@ -115,7 +115,7 @@ struct PSSCALE_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
@@ -129,11 +129,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->C.file);
-	GMT_free_refpoint (GMT, &C->D.refpoint);
+	gmt_free_refpoint (GMT, &C->D.refpoint);
 	gmt_str_free (C->D.etext);
-	GMT_free (GMT, C->F.panel);
+	gmt_free (GMT, C->F.panel);
 	gmt_str_free (C->Z.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -656,7 +656,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		inc_i = length / nx;
 		inc_j = (ny > 1) ? (max_intens[1] - max_intens[0]) / (ny - 1) : 0.0;
 		barmem = (Ctrl->M.active || P->is_gray) ? nm : 3 * nm;
-		bar = GMT_memory (GMT, NULL, barmem, unsigned char);
+		bar = gmt_memory (GMT, NULL, barmem, unsigned char);
 
 		/* Load bar image */
 
@@ -809,7 +809,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 	/* Set up array with x-coordinates for the CPT z_lows + final z_high */
 	n_xpos = P->n_colors + 1;
-	xpos = GMT_memory (GMT, NULL, n_xpos, double);
+	xpos = gmt_memory (GMT, NULL, n_xpos, double);
 	for (i = 0, x1 = xleft; i < P->n_colors; i++) {		/* For all z_low coordinates */
 		xpos[i] = (reverse) ? xright - x1 : x1;	/* x-coordinate of z_low boundary */
 		x1 += z_width[i];	/* Step to next boundary */
@@ -831,14 +831,14 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					GMT_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
-					tmp = GMT_memory (GMT, NULL, ny*nb, unsigned char);
+					tmp = gmt_memory (GMT, NULL, ny*nb, unsigned char);
 					for (j = 0, k = i*nb; j < ny*nb; k+=(nx-1)*nb) {
 						tmp[j++] = bar[k++];
 						tmp[j++] = bar[k++];
 						tmp[j++] = bar[k++];
 					}
 					PSL_plotcolorimage (PSL, x0 + gap, 0.0, z_width[ii] - 2*gap, width, PSL_BL, tmp, 1, ny, depth);
-					GMT_free (GMT, tmp);
+					gmt_free (GMT, tmp);
 					PSL_setfill (PSL, GMT->session.no_rgb, center);
 				}
 				else {
@@ -1026,14 +1026,14 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					GMT_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
-					tmp = GMT_memory (GMT, NULL, ny*nb, unsigned char);
+					tmp = gmt_memory (GMT, NULL, ny*nb, unsigned char);
 					for (j = 0, k = i*nb; j < ny*nb; k+=(nx-1)*nb) {
 						tmp[j++] = bar[k++];
 						tmp[j++] = bar[k++];
 						tmp[j++] = bar[k++];
 					}
 					PSL_plotcolorimage (PSL, x0 + gap, 0.0, z_width[ii] - 2*gap, width, PSL_BL, tmp, 1, ny, depth);
-					GMT_free (GMT, tmp);
+					gmt_free (GMT, tmp);
 					PSL_setfill (PSL, GMT->session.no_rgb, center);
 				}
 				else {
@@ -1262,8 +1262,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 		PSL_setorigin (PSL, -width, 0.0, -90.0, PSL_INV);
 	}
-	GMT_free (GMT, xpos);
-	if (use_image || Ctrl->I.active) GMT_free (GMT, bar);
+	gmt_free (GMT, xpos);
+	if (use_image || Ctrl->I.active) gmt_free (GMT, bar);
 	/* Reset back to original line cap and join */
 	PSL_setlinecap (PSL, cap);
 	PSL_setlinejoin (PSL, join);
@@ -1348,12 +1348,12 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->L.active) {
-		z_width = GMT_memory (GMT, NULL, P->n_colors, double);
+		z_width = gmt_memory (GMT, NULL, P->n_colors, double);
 		dz = fabs (Ctrl->D.dim[GMT_X]) / P->n_colors;
 		for (i = 0; i < P->n_colors; i++) z_width[i] = dz;
 	}
 	else {
-		z_width = GMT_memory (GMT, NULL, P->n_colors, double);
+		z_width = gmt_memory (GMT, NULL, P->n_colors, double);
 		for (i = 0; i < P->n_colors; i++) z_width[i] = fabs (Ctrl->D.dim[GMT_X]) * (P->range[i].z_high - P->range[i].z_low) / (P->range[P->n_colors-1].z_high - P->range[0].z_low);
 	}
 
@@ -1378,24 +1378,24 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
-			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
-			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
-			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
-			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -1403,7 +1403,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
-			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
 	}
@@ -1429,7 +1429,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 
 	GMT_plotend (GMT);
 
-	if (!Ctrl->Z.active) GMT_free (GMT, z_width);
+	if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 
 	Return (EXIT_SUCCESS);
 }

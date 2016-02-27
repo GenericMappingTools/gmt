@@ -71,7 +71,7 @@ struct X2SYS_GET_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_GET_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_GET_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_GET_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -85,7 +85,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 	gmt_str_free (C->L.file);
 	gmt_str_free (C->N.flags);
 	gmt_str_free (C->T.TAG);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -264,7 +264,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {
 		n_flags = urint (ceil (n_tracks / 32.0));
-		include = GMT_memory (GMT, NULL, n_tracks, bool);
+		include = gmt_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
@@ -286,14 +286,14 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		else {	/* Use all */
 			for (ii = 0; ii < n_tracks; ii++) include[ii] = true;
 		}
-		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags + n_tracks / 32, uint32_t);
-		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, uint64_t);
+		matrix = gmt_memory (GMT, NULL, n_tracks * n_flags + n_tracks / 32, uint32_t);
+		ids_in_bin = gmt_memory (GMT, NULL, n_tracks, uint64_t);
 	}
 	else {
-		y_match = GMT_memory (GMT, NULL, n_tracks, char);
-		n_match = GMT_memory (GMT, NULL, n_tracks, char);
+		y_match = gmt_memory (GMT, NULL, n_tracks, char);
+		n_match = gmt_memory (GMT, NULL, n_tracks, char);
 	}
-	in_bin_flag = GMT_memory (GMT, NULL, n_tracks, uint32_t);
+	in_bin_flag = gmt_memory (GMT, NULL, n_tracks, uint32_t);
 	
 	/* Ok, now we can start finding the tracks requested */
 
@@ -373,9 +373,9 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_TEXT, line);
 			}
 		}
-		GMT_free (GMT, matrix);
-		GMT_free (GMT, include);
-		GMT_free (GMT, ids_in_bin);
+		gmt_free (GMT, matrix);
+		gmt_free (GMT, include);
+		gmt_free (GMT, ids_in_bin);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
@@ -422,9 +422,9 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
-	GMT_free (GMT, y_match);
-	GMT_free (GMT, n_match);
-	GMT_free (GMT, in_bin_flag);
+	gmt_free (GMT, y_match);
+	gmt_free (GMT, n_match);
+	gmt_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");

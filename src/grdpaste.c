@@ -47,7 +47,7 @@ struct GRDPASTE_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDPASTE_CTRL *C = NULL;
 
-	C = GMT_memory (GMT, NULL, 1, struct GRDPASTE_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDPASTE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -59,7 +59,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* De
 	gmt_str_free (C->G.file);	
 	gmt_str_free (C->In.file[GMT_IN]);	
 	gmt_str_free (C->In.file[GMT_OUT]);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

@@ -75,7 +75,7 @@ struct GRDCLIP_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCLIP_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 			
@@ -86,8 +86,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Dea
 	if (!C) return;
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->G.file);	
-	GMT_free (GMT, C->S.class);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C->S.class);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 					Ctrl->S.mode |= GRDCLIP_BETWEEN;
 					if (n_class == Ctrl->S.n_class) {	/* Need more memory */
 						n_alloc <<= 2;
-						Ctrl->S.class = GMT_memory (GMT, Ctrl->S.class, n_alloc, struct GRDCLIP_RECLASSIFY);
+						Ctrl->S.class = gmt_memory (GMT, Ctrl->S.class, n_alloc, struct GRDCLIP_RECLASSIFY);
 					}
 					if (n_to_expect == 3) {
 						n = sscanf (&opt->arg[1], "%f/%f/%s", &Ctrl->S.class[n_class].low, &Ctrl->S.class[n_class].high, txt);
@@ -227,7 +227,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 	}
 	if (Ctrl->S.mode & GRDCLIP_BETWEEN) {	/* Reallocate, sort and check that no classes overlap */
 		unsigned int k;
-		Ctrl->S.class = GMT_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
+		Ctrl->S.class = gmt_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
 		Ctrl->S.n_class = n_class;
 		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
 		for (k = 1; k < Ctrl->S.n_class; k++) {

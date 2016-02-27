@@ -89,7 +89,7 @@ struct PSSOLAR_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSOLAR_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->T.radius[0] = 90.833;		/* (for example if -I only) Sun radius (16' + 34.5' from the light refraction effect) */
@@ -98,7 +98,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
@@ -450,7 +450,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pssolar main code ----------------------------*/
 
-	Sun = GMT_memory (GMT, NULL, 1, struct SUN_PARAMS);
+	Sun = gmt_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
 	if (Ctrl->I.active) {
 		solar_params (Ctrl, Sun);
@@ -553,8 +553,8 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				}
 				PSL_beginclipping (PSL, lon, lat, n_pts, GMT->session.no_rgb, 2 + first);
 				if (must_free) {
-					GMT_free (GMT, lon);
-					GMT_free (GMT, lat);
+					gmt_free (GMT, lon);
+					gmt_free (GMT, lat);
 				}
 			}
 			else {
@@ -572,7 +572,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		GMT_plotend (GMT);
 	}
 
-	GMT_free (GMT, Sun);
+	gmt_free (GMT, Sun);
 
 	Return (GMT_OK);
 }

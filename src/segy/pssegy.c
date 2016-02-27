@@ -111,7 +111,7 @@ struct PSSEGY_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSEGY_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -126,7 +126,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Deal
 	if (!C) return;
 	gmt_str_free (C->In.file);
 	gmt_str_free (C->T.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -513,7 +513,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 
 	if (Ctrl->T.active) { /* must read in file of desired trace locations */
-		tracelist = GMT_memory (GMT, NULL, GMT_CHUNK, double);
+		tracelist = gmt_memory (GMT, NULL, GMT_CHUNK, double);
 		n_tracelist = GMT_CHUNK;
 		ix = 0;
 		while ((fscanf (fpt, "%lf", &test)) != EOF) {
@@ -521,7 +521,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 			ix++;
 			if (ix == n_tracelist) {	/* need more memory in array */
 				n_tracelist += GMT_CHUNK;
-				tracelist = GMT_memory (GMT, tracelist, n_tracelist, double);
+				tracelist = gmt_memory (GMT, tracelist, n_tracelist, double);
 			}
 		}
 		n_tracelist = (int)ix;
@@ -594,7 +594,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	bitmap = GMT_memory (GMT, NULL, nm, unsigned char);
+	bitmap = gmt_memory (GMT, NULL, nm, unsigned char);
 
 	ix = 0;
 	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
@@ -697,8 +697,8 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_free (GMT, bitmap);
-	if (Ctrl->T.active) GMT_free (GMT, tracelist);
+	gmt_free (GMT, bitmap);
+	if (Ctrl->T.active) gmt_free (GMT, tracelist);
 
 	Return (EXIT_SUCCESS);
 }

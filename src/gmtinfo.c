@@ -95,7 +95,7 @@ GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MINMAX_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct MINMAX_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct MINMAX_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.col = UINT_MAX;	/* Meaning not set */
@@ -104,7 +104,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -280,7 +280,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_free (GMT, xyzmin); gmt_free (GMT, xyzmax); gmt_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
@@ -557,7 +557,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			ncol = gmt_get_cols (GMT, GMT_IN);
 			if (Ctrl->E.active) {
 				if (Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
-				if (GMT->common.b.active[GMT_IN]) dchosen = GMT_memory (GMT, NULL, ncol, double);
+				if (GMT->common.b.active[GMT_IN]) dchosen = gmt_memory (GMT, NULL, ncol, double);
 			}
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
@@ -578,8 +578,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			/* Now we know number of columns, so allocate memory */
 
 			Q = gmt_quad_init (GMT, ncol);
-			xyzmin = GMT_memory (GMT, NULL, ncol, double);
-			xyzmax = GMT_memory (GMT, NULL, ncol, double);
+			xyzmin = gmt_memory (GMT, NULL, ncol, double);
+			xyzmax = gmt_memory (GMT, NULL, ncol, double);
 
 			for (col = 0; col < ncol; col++) {	/* Initialize */
 				xyzmin[col] = DBL_MAX;
@@ -657,7 +657,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, GMT_MAX_COLUMNS, int);
 	}
 	if (Ctrl->E.active && GMT->common.b.active[GMT_IN])
-		GMT_free (GMT, dchosen);
+		gmt_free (GMT, dchosen);
 
 	Return (GMT_OK);
 }

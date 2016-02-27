@@ -91,7 +91,7 @@ struct X2SYS_LIST_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_LIST_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_LIST_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_LIST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -109,7 +109,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/* 
 	gmt_str_free (C->S.file);
 	gmt_str_free (C->T.TAG);
 	gmt_str_free (C->W.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -378,8 +378,8 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	
 	/* Must count to see total number of COE per track */
 	
-	trk_nx = GMT_memory (GMT, NULL, n_tracks, uint64_t);
-	trk_name = GMT_memory (GMT, NULL, n_tracks, char *);
+	trk_nx = gmt_memory (GMT, NULL, n_tracks, uint64_t);
+	trk_name = gmt_memory (GMT, NULL, n_tracks, char *);
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 		for (k = 0; k < 2; k++) {
 			trk_nx[P[p].id[k]] += P[p].nx;
@@ -464,8 +464,8 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (Ctrl->A.active) {	/* Requested asymmetry estimates */
 		int *x_side[2] = {NULL, NULL}, half;
 		double mid[2];
-		for (j = 0; j < 2; j++) x_side[j] = GMT_memory (GMT, NULL, n_tracks, int);
-		trk_symm = GMT_memory (GMT, NULL, n_tracks, double);
+		for (j = 0; j < 2; j++) x_side[j] = gmt_memory (GMT, NULL, n_tracks, int);
+		trk_symm = gmt_memory (GMT, NULL, n_tracks, double);
 		for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 			for (j = 0; j < 2; j++) {	/* Set mid-point for these two tracks */
 				if (GMT_is_dnan (P[p].start[j]))
@@ -485,7 +485,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		}
 		/* Compute symmetry */
 		for (k = 0; k < n_tracks; k++) trk_symm[k] = (double)( (x_side[1][k] - x_side[0][k]) / (x_side[1][k] + x_side[0][k]) );
-		for (j = 0; j < 2; j++) GMT_free (GMT, x_side[j]);
+		for (j = 0; j < 2; j++) gmt_free (GMT, x_side[j]);
 	}
 	/* Time to issue output */
 
@@ -522,7 +522,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 		cmd = GMT_Create_Cmd (API, options);
 		sprintf (record, " Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
-		GMT_free (GMT, cmd);
+		gmt_free (GMT, cmd);
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, "");
 		record[0] = 0;	/* Clean slate */
 		for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
@@ -747,11 +747,11 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	/* Done, free up data base array */
 	
 	x2sys_free_coe_dbase (GMT, P, np);
-	GMT_free (GMT, trk_nx);
-	if (Ctrl->A.active) GMT_free (GMT,  trk_symm);
+	gmt_free (GMT, trk_nx);
+	if (Ctrl->A.active) gmt_free (GMT,  trk_symm);
 
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
-	GMT_free (GMT, trk_name);
+	gmt_free (GMT, trk_name);
 	x2sys_end (GMT, s);
 
 	Return (GMT_OK);

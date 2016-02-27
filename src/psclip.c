@@ -56,7 +56,7 @@ struct PSCLIP_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCLIP_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSCLIP_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSCLIP_CTRL);
 	C->C.n = 1;	/* Default undoes one level of clipping */
 
 	return (C);
@@ -64,7 +64,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

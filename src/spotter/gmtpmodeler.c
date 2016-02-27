@@ -76,7 +76,7 @@ struct GMTPMODELER_CTRL {	/* All control options for this program (except common
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTPMODELER_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GMTPMODELER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GMTPMODELER_CTRL);
 		
 	return (C);
 }
@@ -86,7 +86,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/*
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->E.rot.file);	
 	gmt_str_free (C->F.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *Ctrl, struct
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {if (p) GMT_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {if (p) gmt_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	unsigned int inside, stage, n_stages, k;
@@ -266,7 +266,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
 		n_stages = 1;
-		p = GMT_memory (GMT, NULL, n_stages, struct EULER);
+		p = gmt_memory (GMT, NULL, n_stages, struct EULER);
 		p[0].lon = Ctrl->E.rot.lon; p[0].lat = Ctrl->E.rot.lat; p[0].omega = Ctrl->E.rot.w;
 		if (GMT_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
 			Ctrl->T.active = true;
@@ -300,7 +300,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	/* Set up output */
-	out = GMT_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
+	out = gmt_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
@@ -455,7 +455,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 	if (n_old) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that exceeded the limit of the rotation model\n", n_old);
 	if (n_NaN) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points had ages that were NaN\n", n_NaN);
 
-	GMT_free (GMT, out);
+	gmt_free (GMT, out);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

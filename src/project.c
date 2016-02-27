@@ -309,7 +309,7 @@ GMT_LOCAL void copy_text_from_col3 (char *line, char *z_cols) {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PROJECT_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1U, struct PROJECT_CTRL);
+	C = gmt_memory (GMT, NULL, 1U, struct PROJECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -319,7 +319,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -580,7 +580,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 	}
 
 	n_items = P->n_outputs + ((P->want_z_output && P->n_z) ? P->n_z - 1 : 0);
-	out = GMT_memory (GMT, NULL, n_items, double);
+	out = gmt_memory (GMT, NULL, n_items, double);
 
 	if (P->first && (error = gmt_set_cols (GMT, GMT_OUT, n_items)) != 0) return (error);
 
@@ -616,7 +616,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 	}
-	GMT_free (GMT, out);
+	gmt_free (GMT, out);
 	return (0);
 }
 
@@ -732,7 +732,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	p_data = GMT_memory (GMT, NULL, n_alloc, struct PROJECT_DATA);
+	p_data = gmt_memory (GMT, NULL, n_alloc, struct PROJECT_DATA);
 
 	if (Ctrl->G.active && Ctrl->E.active && (Ctrl->L.min == Ctrl->L.max)) Ctrl->L.constrain = true;	/* Default generate from A to B  */
 
@@ -842,7 +842,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (P.n_used == (n_alloc-1)) {
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
-				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
+				p_data = gmt_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
 				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		}
@@ -1002,11 +1002,11 @@ int GMT_project (void *V_API, int mode, void *args) {
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 			if (P.n_z) {	/* Copy over z column(s) */
 				if (pure_ascii) {	/* Must store all text beyond x,y columns */
-					p_data[P.n_used].t = GMT_memory (GMT, NULL, strlen (GMT->current.io.current_record), char);
+					p_data[P.n_used].t = gmt_memory (GMT, NULL, strlen (GMT->current.io.current_record), char);
 					copy_text_from_col3 (GMT->current.io.current_record, p_data[P.n_used].t);
 				}
 				else {
-					p_data[P.n_used].z = GMT_memory (GMT, NULL, P.n_z, double);
+					p_data[P.n_used].z = gmt_memory (GMT, NULL, P.n_z, double);
 					GMT_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
 				}
 			}
@@ -1014,12 +1014,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (P.n_used == n_alloc) {
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
-				p_data = GMT_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
+				p_data = gmt_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
 				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		} while (true);
 
-		if (P.n_used < n_alloc) p_data = GMT_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
+		if (P.n_used < n_alloc) p_data = gmt_memory (GMT, p_data, P.n_used, struct PROJECT_DATA);
 
 		if (P.n_used) {	/* Finish last segment output */
 			if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
@@ -1037,11 +1037,11 @@ int GMT_project (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
-		GMT_free (GMT, p_data[rec].t);
-		GMT_free (GMT, p_data[rec].z);
+		gmt_free (GMT, p_data[rec].t);
+		gmt_free (GMT, p_data[rec].z);
 	}
 
-	GMT_free (GMT, p_data);
+	gmt_free (GMT, p_data);
 
 	Return (GMT_OK);
 }

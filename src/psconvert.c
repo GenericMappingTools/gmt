@@ -346,7 +346,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PS2RASTER_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PS2RASTER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PS2RASTER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
@@ -375,7 +375,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	gmt_str_free (C->W.overlayname);
 	gmt_str_free (C->W.foldername);
 	gmt_str_free (C->W.URL);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -685,7 +685,7 @@ GMT_LOCAL int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FIL
 		}
 		if ((size_t)in == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed */
 			(*size) <<= 1;	/* Double the current buffer space */
-			line = *L = GMT_memory (GMT, *L, *size, char);
+			line = *L = gmt_memory (GMT, *L, *size, char);
 		}
 		line[in++] = (char)c;	/* Add this char to our buffer */
 	}
@@ -886,7 +886,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (Ctrl->E.dpi <= 0) Ctrl->E.dpi = (Ctrl->T.device == GS_DEV_PDF) ? 720 : 300;
 
 	line_size = GMT_BUFSIZ;
-	line = GMT_memory (GMT, NULL, line_size, char);	/* Initial buffer size */
+	line = gmt_memory (GMT, NULL, line_size, char);	/* Initial buffer size */
 
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
@@ -894,14 +894,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
-		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
+		ps_names = gmt_memory (GMT, NULL, n_alloc, char *);
 		while (line_reader (GMT, &line, &line_size, fpl) != EOF) {
 			if (!*line || *line == '#') /* Empty line or comment */
 				continue;
 			ps_names[Ctrl->In.n_files++] = strdup (line);
 			if (Ctrl->In.n_files > n_alloc) {
 				n_alloc <<= 1;
-				ps_names = GMT_memory (GMT, ps_names, n_alloc, char *);
+				ps_names = gmt_memory (GMT, ps_names, n_alloc, char *);
 			}
 		}
 		fclose (fpl);
@@ -910,7 +910,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* One or more files given on command line */
 
 	else if (Ctrl->In.n_files) {
-		ps_names = GMT_memory (GMT, NULL, Ctrl->In.n_files, char *);
+		ps_names = gmt_memory (GMT, NULL, Ctrl->In.n_files, char *);
 		j = 0;
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option != '<') continue;
@@ -933,12 +933,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		n_alloc = 0;
 		for (k = 0; k < Ctrl->In.n_files; k++)
 			n_alloc += (strlen (ps_names[k]) + 3);	/* 3 = 2 quotes plus space */
-		all_names_in = GMT_memory (GMT, NULL, n_alloc, char);
+		all_names_in = gmt_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
 			add_to_qlist (all_names_in, ps_names[k]);
 			gmt_str_free (ps_names[k]);
 		}
-		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
+		cmd2 = gmt_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%c%s.pdf%c %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, alpha_bits(Ctrl), Ctrl->E.dpi, quote, Ctrl->F.file, quote, all_names_in);
 
@@ -951,10 +951,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->S.active)
 			GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd2);
 
-		GMT_free (GMT, all_names_in);
-		GMT_free (GMT, cmd2);
-		GMT_free (GMT, ps_names);
-		GMT_free (GMT, line);
+		gmt_free (GMT, all_names_in);
+		gmt_free (GMT, cmd2);
+		gmt_free (GMT, ps_names);
+		gmt_free (GMT, line);
 		Return (GMT_OK);
 	}
 	/* ----------------------------------------------------------------------------------------------- */
@@ -1306,7 +1306,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
 					int n_scan = 0;
 					size_t Lsize = 128U;
-					char *line_ = GMT_memory (GMT, NULL, Lsize, char);
+					char *line_ = gmt_memory (GMT, NULL, Lsize, char);
 					BeginPageSetup_here = true;	/* Signal that on next line the job must be done */
 					line_reader (GMT, &line_, &Lsize, fp);   /* Read also next line which is to be overwritten (unless a comment) */
 					while (line_[0] == '%') {	/* Skip all comments until we get the first actionable line */
@@ -1336,7 +1336,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					else {
 						old_scale_x = atof (c2);		old_scale_y = atof (c3);
 					}
-					GMT_free (GMT, line_);
+					gmt_free (GMT, line_);
 				}
 				else if (BeginPageSetup_here) {
 					BeginPageSetup_here = false;
@@ -1400,8 +1400,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				/* Write a GeoPDF registration info */
 
 				/* Allocate new control structures */
-				to_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
-				from_gdalread = GMT_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
+				to_gdalread = gmt_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
+				from_gdalread = gmt_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 				to_gdalread->W.active = true;
 				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
 				gmt_gdalread (GMT, NULL, to_gdalread, from_gdalread);
@@ -1449,8 +1449,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "\t>>]\n");
 					fprintf (fpo, ">> /PUT pdfmark\n\n");
 				}
-				GMT_free (GMT, to_gdalread);
-				GMT_free (GMT, from_gdalread);
+				gmt_free (GMT, to_gdalread);
+				gmt_free (GMT, from_gdalread);
 				continue;
 			}
 #endif
@@ -1772,8 +1772,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	for (k = 0; k < Ctrl->In.n_files; k++) gmt_str_free (ps_names[k]);
-	GMT_free (GMT, ps_names);
-	GMT_free (GMT, line);
+	gmt_free (GMT, ps_names);
+	gmt_free (GMT, line);
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);
 
 	Return (GMT_OK);

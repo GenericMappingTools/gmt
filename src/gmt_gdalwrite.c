@@ -81,7 +81,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (!strcmp(prhs->type,"byte")) {		/* This case arrives here via grdimage */
 		typeCLASS = GDT_Byte;
 		n_byteOffset = 1;
-		outByte = GMT_memory (GMT, NULL, nx*ny, unsigned char);
+		outByte = gmt_memory (GMT, NULL, nx*ny, unsigned char);
 	}
 	else if (!strcmp(prhs->type,"uint8")) {
 		typeCLASS = GDT_Byte;
@@ -271,7 +271,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	OGRFree(pszSRS_WKT);
 	GDALClose(hDstDS);
 	GDALDestroyDriverManager();
-	GMT_free(GMT, outByte);
+	gmt_free(GMT, outByte);
 	if (papszOptions != NULL) CSLDestroy (papszOptions);
 
 	if (GMT_strlcmp(pszFormat,"netCDF")) {

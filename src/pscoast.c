@@ -143,7 +143,7 @@ struct PSCOAST_CTRL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	unsigned int k;
-	struct PSCOAST_CTRL *C = GMT_memory (GMT, NULL, 1, struct PSCOAST_CTRL);
+	struct PSCOAST_CTRL *C = gmt_memory (GMT, NULL, 1, struct PSCOAST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -165,11 +165,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_DCW_free (GMT, &(C->E.info));
-	if (C->L.scale.refpoint) GMT_free_refpoint (GMT, &C->L.scale.refpoint);
-	GMT_free (GMT, C->L.scale.panel);
-	if (C->T.rose.refpoint) GMT_free_refpoint (GMT, &C->T.rose.refpoint);
-	GMT_free (GMT, C->T.rose.panel);
-	GMT_free (GMT, C);
+	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
+	gmt_free (GMT, C->L.scale.panel);
+	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
+	gmt_free (GMT, C->T.rose.panel);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -852,8 +852,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		}
 		else
 			PSL_plotpolygon (PSL, xtmp, ytmp, n);
-		GMT_free (GMT, xtmp);
-		GMT_free (GMT, ytmp);
+		gmt_free (GMT, xtmp);
+		gmt_free (GMT, ytmp);
 		level_to_be_painted[0] = level_to_be_painted[1] = 1;
 	}
 	if (double_recursive) {	/* Must recursively paint both land and ocean */
@@ -977,8 +977,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 						GMT_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
-						GMT_free (GMT, xtmp);
-						GMT_free (GMT, ytmp);
+						gmt_free (GMT, xtmp);
+						gmt_free (GMT, ytmp);
 					}
 					else {
 						GMT_setfill (GMT, &fill[p[k].fid], false);
@@ -987,13 +987,13 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				}
 			}
 
-			GMT_free_shore_polygons (GMT, p, np_new);
-			GMT_free (GMT, p);
+			gmt_free_shore_polygons (GMT, p, np_new);
+			gmt_free (GMT, p);
 		}
 
 		if (Ctrl->W.active && c.ns) {	/* Draw or dump shorelines, no need to assemble polygons */
 			if ((np = GMT_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {
-				GMT_free_shore (GMT, &c);
+				gmt_free_shore (GMT, &c);
 				continue;
 			}
 
@@ -1021,11 +1021,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				}
 			}
 
-			GMT_free_shore_polygons (GMT, p, np);
-			GMT_free (GMT, p);
+			gmt_free_shore_polygons (GMT, p, np);
+			gmt_free (GMT, p);
 		}
 
-		GMT_free_shore (GMT, &c);
+		gmt_free_shore (GMT, &c);
 
 	}
 	if (need_coast_base) {
@@ -1056,7 +1056,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			}
 
 			if ((np = GMT_assemble_br (GMT, &r, shift, edge, &p)) == 0) {
-				GMT_free_br (GMT, &r);
+				gmt_free_br (GMT, &r);
 				continue;
 			}
 
@@ -1085,9 +1085,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			/* Free up memory */
 
-			GMT_free_br (GMT, &r);
-			GMT_free_shore_polygons (GMT, p, np);
-			GMT_free (GMT, p);
+			gmt_free_br (GMT, &r);
+			gmt_free_shore_polygons (GMT, p, np);
+			gmt_free (GMT, p);
 		}
 		GMT_br_cleanup (GMT, &r);
 	}
@@ -1117,7 +1117,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			}
 
 			if ((np = GMT_assemble_br (GMT, &b, shift, edge, &p)) == 0) {
-				GMT_free_br (GMT, &b);
+				gmt_free_br (GMT, &b);
 				continue;
 			}
 
@@ -1147,9 +1147,9 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			/* Free up memory */
 
-			GMT_free_br (GMT, &b);
-			GMT_free_shore_polygons (GMT, p, np);
-			GMT_free (GMT, p);
+			gmt_free_br (GMT, &b);
+			gmt_free_shore_polygons (GMT, p, np);
+			gmt_free (GMT, p);
 		}
 		GMT_br_cleanup (GMT, &b);
 	}

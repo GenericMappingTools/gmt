@@ -63,7 +63,7 @@ struct MGD77MAGREF_CTRL {	/* All control options for this program (except common
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77MAGREF_CTRL *C = NULL;
 
-	C = GMT_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
 	C->CM4 = calloc (1U, sizeof (struct MGD77_CM4));
 
 	/* Initialize values whose defaults are not 0/false/NULL */
@@ -78,7 +78,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/*
 	gmt_str_free (C->CM4->CM4_D.path);
 	gmt_str_free (C->CM4->CM4_I.path);
 	gmt_str_free (C->CM4);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -577,12 +577,12 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 			need = T->segment[s]->n_rows;   /* Size of output array needed in MGD77_cm4field */
 			if (need > n_alloc) {           /* Need to reallocate */
 				n_alloc = need;
-				Ctrl->CM4->CM4_DATA.out_field = GMT_memory (GMT, Ctrl->CM4->CM4_DATA.out_field, n_alloc * n_field_components, double);
+				Ctrl->CM4->CM4_DATA.out_field = gmt_memory (GMT, Ctrl->CM4->CM4_DATA.out_field, n_alloc * n_field_components, double);
 				if (!(Ctrl->A.years || Ctrl->A.fixed_time))
-					time_years = GMT_memory (GMT, time_years, n_alloc, double);
+					time_years = gmt_memory (GMT, time_years, n_alloc, double);
 
 				if (Ctrl->joint_IGRF_CM4)
-					igrf_xyz = GMT_memory (GMT, igrf_xyz, n_alloc * 3, double);
+					igrf_xyz = gmt_memory (GMT, igrf_xyz, n_alloc * 3, double);
 			}
 
 			if (!Ctrl->A.fixed_alt) {	/* Assign the alt_array to the provided altitude array */
@@ -677,9 +677,9 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	}
 
 	gmt_str_free (Ctrl->CM4->CM4_D.dst);
-	GMT_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
-	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) GMT_free (GMT, time_years);
-	if (Ctrl->joint_IGRF_CM4) GMT_free (GMT, igrf_xyz);
+	gmt_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
+	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) gmt_free (GMT, time_years);
+	if (Ctrl->joint_IGRF_CM4) gmt_free (GMT, igrf_xyz);
 
 	MGD77_end (GMT, &M);
 

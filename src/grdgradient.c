@@ -77,7 +77,7 @@ struct GRDGRADIENT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDGRADIENT_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDGRADIENT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDGRADIENT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.ambient = 0.55;
@@ -93,7 +93,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *C) {	/*
 	gmt_str_free (C->In.file);	
 	gmt_str_free (C->G.file);	
 	gmt_str_free (C->S.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL double specular (double nx, double ny, double nz, double *s) {

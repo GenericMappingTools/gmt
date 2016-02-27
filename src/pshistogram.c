@@ -124,7 +124,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	unsigned int k;
 	struct PSHISTOGRAM_CTRL *C = NULL;
 
-	C = GMT_memory (GMT, NULL, 1, struct PSHISTOGRAM_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSHISTOGRAM_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.offset = 6.0 / 72.0;	/* 6 points */
@@ -140,7 +140,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/*
 	if (!C) return;
 	gmt_str_free (C->Out.file);
 	gmt_str_free (C->C.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, uint64_t n) {
@@ -159,7 +159,7 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 
 	if (F->n_boxes == 0) return (-1);
 
-	F->boxh = GMT_memory (GMT, NULL, F->n_boxes, uint64_t);
+	F->boxh = gmt_memory (GMT, NULL, F->n_boxes, uint64_t);
 
 	F->n_counted = 0;
 
@@ -664,7 +664,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Return (GMT_DATA_READ_ERROR);
 	}
 
-	data = GMT_memory (GMT, NULL, n_alloc , double);
+	data = gmt_memory (GMT, NULL, n_alloc , double);
 
 	n = 0;
 	x_min = DBL_MAX;	x_max = -DBL_MAX;
@@ -690,7 +690,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 		if (n == n_alloc) {
 			n_alloc <<= 1;
-			data = GMT_memory (GMT, data,  n_alloc, double);
+			data = gmt_memory (GMT, data,  n_alloc, double);
 		}
 	} while (true);
 
@@ -705,7 +705,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points read\n", n);
 
-	data = GMT_memory (GMT, data, n, double);
+	data = gmt_memory (GMT, data, n, double);
 
 	get_loc_scl (GMT, data, n, stats);
 
@@ -821,8 +821,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			}
 			GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4U, unsigned int);	/* Restore 4 current output col types */
 		}
-		GMT_free (GMT, data);
-		GMT_free (GMT, F.boxh);
+		gmt_free (GMT, data);
+		gmt_free (GMT, F.boxh);
 		Return (EXIT_SUCCESS);
 	}
 
@@ -887,8 +887,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
 		double f, z, xtmp, ytmp, inc;
-		double *xp = GMT_memory (GMT, NULL, NP, double);
-		double *yp = GMT_memory (GMT, NULL, NP, double);
+		double *xp = gmt_memory (GMT, NULL, NP, double);
+		double *yp = gmt_memory (GMT, NULL, NP, double);
 		inc = (F.wesn[XHI] - F.wesn[XLO]) / (NP - 1);
 		for (type = 0; type < 3; type++) {
 			if (!Ctrl->N.selected[type]) continue;
@@ -916,8 +916,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			}
 			PSL_plotline (PSL, xp, yp, NP, PSL_MOVE + PSL_STROKE);
 		}
-		GMT_free (GMT, xp);
-		GMT_free (GMT, yp);
+		gmt_free (GMT, xp);
+		gmt_free (GMT, yp);
 	}
 
 	if (Ctrl->D.just == 0) GMT_map_clip_off (GMT);
@@ -926,8 +926,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_free (GMT, data);
-	GMT_free (GMT, F.boxh);
+	gmt_free (GMT, data);
+	gmt_free (GMT, F.boxh);
 
 	Return (GMT_OK);
 }

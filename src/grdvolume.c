@@ -259,7 +259,7 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 
 	/* Calculate curvatures */
 
-	c = GMT_memory (GMT, NULL, n, double);
+	c = gmt_memory (GMT, NULL, n, double);
 
 	for (i = 1; i < (n-1); i++) c[i] = y[i+1] - 2.0 * y[i] + y[i-1];
 	c[0] = c[1];
@@ -267,15 +267,15 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 
 	/* Apply 3-point median filter to curvatures to mitigate noisy values */
 
-	f = GMT_memory (GMT, NULL, n, double);
+	f = gmt_memory (GMT, NULL, n, double);
 	for (i = 1; i < (n-1); i++) f[i] = median3 (&c[i-1]);
 
 	/* Find maximum negative filtered curvature */
 
 	for (i = im = 1; i < (n-1); i++) if (f[i] < f[im]) im = i;
 
-	GMT_free (GMT, c);
-	GMT_free (GMT, f);
+	gmt_free (GMT, c);
+	gmt_free (GMT, f);
 
 	return (im);
 }
@@ -283,7 +283,7 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVOLUME_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.value = GMT->session.d_NaN;
@@ -294,7 +294,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_str_free (C->In.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -494,9 +494,9 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	n_contours = (Ctrl->C.active) ? urint ((Ctrl->C.high - Ctrl->C.low) / Ctrl->C.inc) + 1U : 1U;
 
-	height = GMT_memory (GMT, NULL, n_contours, double);
-	vol    = GMT_memory (GMT, NULL, n_contours, double);
-	area   = GMT_memory (GMT, NULL, n_contours, double);
+	height = gmt_memory (GMT, NULL, n_contours, double);
+	vol    = gmt_memory (GMT, NULL, n_contours, double);
+	area   = gmt_memory (GMT, NULL, n_contours, double);
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
@@ -675,9 +675,9 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_free (GMT, area);
-	GMT_free (GMT, vol);
-	GMT_free (GMT, height);
+	gmt_free (GMT, area);
+	gmt_free (GMT, vol);
+	gmt_free (GMT, height);
 
 	Return (EXIT_SUCCESS);
 }

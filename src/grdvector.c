@@ -82,7 +82,7 @@ struct GRDVECTOR_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVECTOR_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct GRDVECTOR_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDVECTOR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
@@ -96,7 +96,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* D
 	gmt_str_free (C->In.file[GMT_IN]);	
 	gmt_str_free (C->In.file[GMT_OUT]);	
 	gmt_str_free (C->C.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

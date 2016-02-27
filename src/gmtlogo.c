@@ -61,15 +61,15 @@ struct GMTLOGO_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTLOGO_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	GMT_free_refpoint (GMT, &C->D.refpoint);
-	GMT_free (GMT, C->F.panel);
-	GMT_free (GMT, C);
+	gmt_free_refpoint (GMT, &C->D.refpoint);
+	gmt_free (GMT, C->F.panel);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

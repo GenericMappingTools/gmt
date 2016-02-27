@@ -142,7 +142,7 @@ struct GMT2KML_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMT2KML_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GMT2KML_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GMT2KML_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -174,9 +174,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Dea
 	if (C->L.active) {
 		unsigned int col;
 		for (col = 0; col < C->L.n_cols; col++) gmt_str_free (C->L.name[col]);
-		GMT_free (GMT, C->L.name);
+		gmt_free (GMT, C->L.name);
 	}
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -386,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
  				Ctrl->L.active = true;
 				pos = Ctrl->L.n_cols = 0;
 				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
-					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = GMT_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
+					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = gmt_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
 					Ctrl->L.name[Ctrl->L.n_cols++] = strdup (p);
 				}
 				break;
@@ -638,12 +638,12 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
-					GMT_free (GMT, Q);
+					gmt_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
-					GMT_free (GMT, Q);
+					gmt_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
 				gmt_quad_add (GMT, Q, x);
@@ -655,7 +655,7 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 	way = gmt_quad_finalize (GMT, Q);
 	wesn[XLO] = Q->min[way];	wesn[XHI] = Q->max[way];
 	wesn[YLO] = y_min;		wesn[YHI] = y_max;
-	GMT_free (GMT, Q);
+	gmt_free (GMT, Q);
 	return (GMT_NOERROR);
 }
 

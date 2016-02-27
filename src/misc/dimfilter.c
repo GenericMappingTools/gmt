@@ -92,7 +92,7 @@ struct DIMFILTER_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct DIMFILTER_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct DIMFILTER_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct DIMFILTER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.filter = C->N.filter = C->D.mode = -1;
@@ -105,7 +105,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* D
 	gmt_str_free (C->In.file);
 	gmt_str_free (C->G.file);
 	gmt_str_free (C->S.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 
@@ -489,8 +489,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 			if ((Sout = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Gout)) == NULL) Return (API->error);
 		}
 #endif
-		i_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
-		if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
+		i_origin = gmt_memory (GMT, NULL, Gout->header->nx, int);
+		if (!fast_way) x_shift = gmt_memory (GMT, NULL, Gout->header->nx, double);
 
 		if (fast_way && Gin->header->registration == one_or_zero) {	/* multiple grid but one is pix, other is grid */
 			F.x_fix = 0.5 * Gin->header->inc[GMT_X];
@@ -525,24 +525,24 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		F.nx = 2 * F.x_half_width + 1;
 		F.ny = 2 * F.y_half_width + 1;
 		F.width = Ctrl->F.width;
-		F.weight = GMT_memory (GMT, NULL, F.nx*F.ny, double);
+		F.weight = gmt_memory (GMT, NULL, F.nx*F.ny, double);
 
 		if (slow) {	/* SCAN: Now require several work_arrays, one for each sector */
-			work_array = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double *);
+			work_array = gmt_memory (GMT, NULL, Ctrl->N.n_sectors, double *);
 #ifdef OBSOLETE
-			if (Ctrl->S.active) work_array2 = GMT_memory (GMT, NULL, 2*F.nx*F.ny, double);
+			if (Ctrl->S.active) work_array2 = gmt_memory (GMT, NULL, 2*F.nx*F.ny, double);
 			if (Ctrl->E.active) {
-				xx = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
-				yy = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
+				xx = gmt_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
+				yy = gmt_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
 			}
 #endif
 			wsize = 2*F.nx*F.ny/Ctrl->N.n_sectors;	/* Should be enough, watch for messages to the contrary */
 			for (i = 0; i < Ctrl->N.n_sectors; i++) {
-				work_array[i] = GMT_memory (GMT, NULL, wsize, double);
+				work_array[i] = gmt_memory (GMT, NULL, wsize, double);
 #ifdef OBSOLETE
 				if (Ctrl->E.active) {
-					xx[i] = GMT_memory (GMT, NULL, wsize, short int);
-					yy[i] = GMT_memory (GMT, NULL, wsize, short int);
+					xx[i] = gmt_memory (GMT, NULL, wsize, short int);
+					yy[i] = gmt_memory (GMT, NULL, wsize, short int);
 				}
 #endif
 			}
@@ -579,8 +579,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		if (Ctrl->C.active) {	/* Use fixed-width diagonal corridors instead of bow-ties */
 			n_sectors_2 = Ctrl->N.n_sectors / 2;
-			c_x = GMT_memory (GMT, NULL, n_sectors_2, double);
-			c_y = GMT_memory (GMT, NULL, n_sectors_2, double);
+			c_x = gmt_memory (GMT, NULL, n_sectors_2, double);
+			c_y = gmt_memory (GMT, NULL, n_sectors_2, double);
 			for (i = 0; i < n_sectors_2; i++) {
 				angle = (i + 0.5) * (M_PI/n_sectors_2);	/* Angle of central diameter of each corridor */
 				sincos (angle, &c_y[i], &c_x[i]);	/* Unit vector of diameter */
@@ -588,8 +588,8 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 		}
 		else {
 		/* SCAN: Precalculate which sector each point belongs to */
-			sector = GMT_memory (GMT, NULL, F.ny, unsigned short int *);
-			for (jj = 0; jj < F.ny; jj++) sector[jj] = GMT_memory (GMT, NULL, F.nx, unsigned short int);
+			sector = gmt_memory (GMT, NULL, F.ny, unsigned short int *);
+			for (jj = 0; jj < F.ny; jj++) sector[jj] = gmt_memory (GMT, NULL, F.nx, unsigned short int);
 			for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {	/* This double loop visits all nodes in the square centered on an output node */
 				j = F.y_half_width + jj;
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {	/* (ii, jj) is local coordinates relative center (0,0) */
@@ -602,9 +602,9 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		n_in_median = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, unsigned int);
-		value = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
-		wt_sum = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
+		n_in_median = gmt_memory (GMT, NULL, Ctrl->N.n_sectors, unsigned int);
+		value = gmt_memory (GMT, NULL, Ctrl->N.n_sectors, double);
+		wt_sum = gmt_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 
 		for (row_out = 0; row_out < Gout->header->ny; row_out++) {
 
@@ -930,33 +930,33 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 #endif
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
-		GMT_free (GMT, F. weight);
-		GMT_free (GMT, i_origin);
-		for (ii = 0; ii < F.ny; ii++) GMT_free (GMT, sector[ii]);
-		GMT_free (GMT, sector);
-		GMT_free (GMT, value);
-		GMT_free (GMT, wt_sum);
-		GMT_free (GMT, n_in_median);
+		gmt_free (GMT, F. weight);
+		gmt_free (GMT, i_origin);
+		for (ii = 0; ii < F.ny; ii++) gmt_free (GMT, sector[ii]);
+		gmt_free (GMT, sector);
+		gmt_free (GMT, value);
+		gmt_free (GMT, wt_sum);
+		gmt_free (GMT, n_in_median);
 		if (slow) {
 			for (j = 0; j < Ctrl->N.n_sectors; j++) {
-				GMT_free (GMT, work_array[j]);
+				gmt_free (GMT, work_array[j]);
 #ifdef OBSOLETE
 				if (Ctrl->E.active) {
-					GMT_free (GMT, xx[j]);
-					GMT_free (GMT, yy[j]);
+					gmt_free (GMT, xx[j]);
+					gmt_free (GMT, yy[j]);
 				}
 #endif
 			}
-			GMT_free (GMT, work_array);
+			gmt_free (GMT, work_array);
 #ifdef OBSOLETE
-			if (Ctrl->S.active) GMT_free (GMT, work_array2);
+			if (Ctrl->S.active) gmt_free (GMT, work_array2);
 			if (Ctrl->E.active) {
-				GMT_free (GMT, xx);
-				GMT_free (GMT, yy);
+				gmt_free (GMT, xx);
+				gmt_free (GMT, yy);
 			}
 #endif
 		}
-		if (!fast_way) GMT_free (GMT, x_shift);
+		if (!fast_way) gmt_free (GMT, x_shift);
 
 	}
 	else {	/* Here -Q is active */

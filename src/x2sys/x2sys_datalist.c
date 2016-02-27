@@ -71,7 +71,7 @@ struct X2SYS_ADJUST {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_DATALIST_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_DATALIST_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_DATALIST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -84,7 +84,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {
 	gmt_str_free (C->I.file);
 	gmt_str_free (C->L.file);
 	gmt_str_free (C->T.TAG);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -190,9 +190,9 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
 	
-	adj = GMT_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
-	adj->d = GMT_memory (GMT, NULL, n_alloc, double);
-	adj->c = GMT_memory (GMT, NULL, n_alloc, double);
+	adj = gmt_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
+	adj->d = gmt_memory (GMT, NULL, n_alloc, double);
+	adj->c = gmt_memory (GMT, NULL, n_alloc, double);
 	for (k = 0; k < 2; k++) uint_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
 	while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		adj->d[n] = in[0];
@@ -200,13 +200,13 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 		n++;
 		if (n == n_alloc) {
 			n_alloc <<= 1;
-			adj->d = GMT_memory (GMT, adj->d, n_alloc, double);
-			adj->c = GMT_memory (GMT, adj->c, n_alloc, double);
+			adj->d = gmt_memory (GMT, adj->d, n_alloc, double);
+			adj->c = gmt_memory (GMT, adj->c, n_alloc, double);
 		}
 	}
 	gmt_fclose (GMT, fp);
-	adj->d = GMT_memory (GMT, adj->d, n, double);
-	adj->c = GMT_memory (GMT, adj->c, n, double);
+	adj->d = gmt_memory (GMT, adj->d, n, double);
+	adj->c = gmt_memory (GMT, adj->c, n, double);
 	adj->n = n;
 	*A = adj;
 	for (k = 0; k < 2; k++) uint_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
@@ -429,11 +429,11 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
-	out = GMT_memory (GMT, NULL, s->n_fields, double);
+	out = gmt_memory (GMT, NULL, s->n_fields, double);
 
 	if (Ctrl->A.active) {	/* Allocate an along-track adjustment table */
-		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
-		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, bool);
+		A = gmt_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
+		adj_col = gmt_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	if (Ctrl->E.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
 	
@@ -523,9 +523,9 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		/* Free memory allocated for the current data set */
 		x2sys_free_data (GMT, data, s->n_out_columns, &p);
 		for (ocol = 0; ocol < s->n_out_columns; ocol++) if (Ctrl->A.active && adj_col[ocol]) {
-			GMT_free (GMT, A[ocol]->d);
-			GMT_free (GMT, A[ocol]->c);
-			GMT_free (GMT, A[ocol]);
+			gmt_free (GMT, A[ocol]->d);
+			gmt_free (GMT, A[ocol]->c);
+			gmt_free (GMT, A[ocol]);
 		}
 	}
 
@@ -538,10 +538,10 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
 
 	x2sys_end (GMT, s);
-	GMT_free (GMT, out);
+	gmt_free (GMT, out);
 	if (Ctrl->A.active) {
-		GMT_free (GMT, A);
-		GMT_free (GMT, adj_col);
+		gmt_free (GMT, A);
+		gmt_free (GMT, adj_col);
 	}
 	x2sys_free_list (GMT, trk_name, n_tracks);
 	if (Ctrl->I.active) x2sys_free_list (GMT, ignore, n_ignore);

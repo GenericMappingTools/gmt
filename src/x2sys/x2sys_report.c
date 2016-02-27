@@ -93,7 +93,7 @@ struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_REPORT_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_REPORT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_REPORT_CTRL);
 
 	return (C);
 }
@@ -106,7 +106,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) {	/
 	gmt_str_free (C->L.file);
 	gmt_str_free (C->S.file);
 	gmt_str_free (C->T.TAG);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -295,8 +295,8 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 		Return (GMT_OK);
 	}
 	
-	R = GMT_memory (GMT, NULL, n_tracks, struct COE_REPORT);
-	trk_name = GMT_memory (GMT, NULL, n_tracks, char *);
+	R = gmt_memory (GMT, NULL, n_tracks, struct COE_REPORT);
+	trk_name = gmt_memory (GMT, NULL, n_tracks, char *);
 	
 	for (p = 0; p < np; p++) {	/* Get track name list */
 		for (k = 0; k < 2; k++) trk_name[P[p].id[k]] = P[p].trk[k];
@@ -342,11 +342,11 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	/* Time to issue output */
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-		GMT_free (GMT, R);
+		gmt_free (GMT, R);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
-		GMT_free (GMT, R);
+		gmt_free (GMT, R);
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -400,7 +400,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 
 		gmt_set_cartesian (GMT, GMT_OUT);	/* Since we will write (dist, COE) pairs */
 		
-		adj = GMT_memory (GMT, NULL, n_tracks, struct COE_ADJLIST);
+		adj = gmt_memory (GMT, NULL, n_tracks, struct COE_ADJLIST);
 		for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 			for (i = n = 0; i < P[p].nx; i++) {	/* For each COE between this pair */
 				for (k = 0; k < 2; k++) {
@@ -413,7 +413,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 					if (R[P[p].id[k]].nx <= Ctrl->N.min) continue;	/* This track will not have enough total COE to be used in the end */
 					if (adj[P[p].id[k]].n >= adj[P[p].id[k]].n_alloc) {	/* So first time both are zero and we allocate first */
 						if (adj[P[p].id[k]].n_alloc) adj[P[p].id[k]].n_alloc <<= 1; else adj[P[p].id[k]].n_alloc = GMT_SMALL_CHUNK;
-						adj[P[p].id[k]].K = GMT_memory (GMT, adj[P[p].id[k]].K, adj[P[p].id[k]].n_alloc, struct COE_ADJUST);
+						adj[P[p].id[k]].K = gmt_memory (GMT, adj[P[p].id[k]].K, adj[P[p].id[k]].n_alloc, struct COE_ADJUST);
 					}
 					adj[P[p].id[k]].K[adj[P[p].id[k]].n].d = P[p].COE[i].data[k][COE_D];	/* Distance along current track at COE */
 					adj[P[p].id[k]].K[adj[P[p].id[k]].n].c = z_ij - z[k];			/* Observed difference at COE to be adjusted */
@@ -433,14 +433,14 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = gmt_fopen (GMT, file, "w")) == NULL) {
-				GMT_free (GMT, adj);
+				gmt_free (GMT, adj);
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create file %s!\n", file);
 				/* Free memory before exiting */
 				for (p = k; p < n_tracks; p++)	/* Free everything then bail */
-					GMT_free (GMT, adj[k].K);
+					gmt_free (GMT, adj[k].K);
 				x2sys_free_coe_dbase (GMT, P, np);
-				GMT_free (GMT, trk_name);
-				GMT_free (GMT, R);
+				gmt_free (GMT, trk_name);
+				gmt_free (GMT, R);
 				if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 				x2sys_end (GMT, s);
 				Return (EXIT_FAILURE);
@@ -459,16 +459,16 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 				}
 			}
 			gmt_fclose (GMT, fp);
-			GMT_free (GMT, adj[k].K);
+			gmt_free (GMT, adj[k].K);
 		}
-		GMT_free (GMT, adj);
+		gmt_free (GMT, adj);
 	}
 	
 	/* Done, free up data base array, etc */
 	
 	x2sys_free_coe_dbase (GMT, P, np);
-	GMT_free (GMT, trk_name);
-	GMT_free (GMT, R);
+	gmt_free (GMT, trk_name);
+	gmt_free (GMT, R);
 
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 	x2sys_end (GMT, s);

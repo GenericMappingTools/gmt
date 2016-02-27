@@ -84,7 +84,7 @@ struct X2SYS_INIT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_INIT_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_INIT_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_INIT_CTRL);
 
 	return (C);
 }
@@ -102,7 +102,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* 
 	gmt_str_free (C->N.string[1]);
 	gmt_str_free (C->W.string[0]);
 	gmt_str_free (C->W.string[1]);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -475,7 +475,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
 
-	GMT_free (GMT, X2SYS_HOME);
+	gmt_free (GMT, X2SYS_HOME);
 
 	Return (GMT_OK);
 }

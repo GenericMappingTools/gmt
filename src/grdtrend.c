@@ -117,7 +117,7 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDTREND_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GRDTREND_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct GRDTREND_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -130,7 +130,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* De
 	gmt_str_free (C->D.file);
 	gmt_str_free (C->T.file);
 	gmt_str_free (C->W.file);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -540,12 +540,12 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		if ((R = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
 	}
-	xval = GMT_memory (GMT, NULL, G->header->nx, double);
-	yval = GMT_memory (GMT, NULL, G->header->ny, double);
-	gtg = GMT_memory (GMT, NULL, Ctrl->N.value*Ctrl->N.value, double);
-	gtd = GMT_memory (GMT, NULL, Ctrl->N.value, double);
-	old = GMT_memory (GMT, NULL, Ctrl->N.value, double);
-	pstuff = GMT_memory (GMT, NULL, Ctrl->N.value, double);
+	xval = gmt_memory (GMT, NULL, G->header->nx, double);
+	yval = gmt_memory (GMT, NULL, G->header->ny, double);
+	gtg = gmt_memory (GMT, NULL, Ctrl->N.value*Ctrl->N.value, double);
+	gtd = gmt_memory (GMT, NULL, Ctrl->N.value, double);
+	old = gmt_memory (GMT, NULL, Ctrl->N.value, double);
+	pstuff = gmt_memory (GMT, NULL, Ctrl->N.value, double);
 	pstuff[0] = 1.0; /* This is P0(x) = 1, which is not altered in this program. */
 
 	/* If a weight array is needed, get one */
@@ -668,12 +668,12 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* That's all, folks!  */
 
 
-	GMT_free (GMT, pstuff);
-	GMT_free (GMT, gtd);
-	GMT_free (GMT, gtg);
-	GMT_free (GMT, old);
-	GMT_free (GMT, yval);
-	GMT_free (GMT, xval);
+	gmt_free (GMT, pstuff);
+	gmt_free (GMT, gtd);
+	gmt_free (GMT, gtg);
+	gmt_free (GMT, old);
+	gmt_free (GMT, yval);
+	gmt_free (GMT, xval);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

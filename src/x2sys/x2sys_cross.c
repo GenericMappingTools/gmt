@@ -84,7 +84,7 @@ struct PAIR {				/* Used with -Kkombinations.lis option */
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_CROSS_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct X2SYS_CROSS_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct X2SYS_CROSS_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -98,7 +98,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/*
 	gmt_str_free (C->A.file);
 	gmt_str_free (C->C.file);
 	gmt_str_free (C->T.TAG);
-	GMT_free (GMT, C);
+	gmt_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -374,7 +374,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Files found: %" PRIu64 "\n", n_tracks);
 
-	duplicate = GMT_memory (GMT, NULL, n_tracks, bool);
+	duplicate = gmt_memory (GMT, NULL, n_tracks, bool);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Checking for duplicates : ");
 	/* Make sure there are no duplicates */
@@ -401,7 +401,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		}
 
 		n_alloc = add_chunk = GMT_CHUNK;
-		pair = GMT_memory (GMT, NULL, n_alloc, struct PAIR);
+		pair = gmt_memory (GMT, NULL, n_alloc, struct PAIR);
 
 		while (fgets (line, GMT_BUFSIZ, fp)) {
 
@@ -419,7 +419,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				size_t old_n_alloc = n_alloc;
 				add_chunk *= 2;
 				n_alloc += add_chunk;
-				pair = GMT_memory (GMT, pair, n_alloc, struct PAIR);
+				pair = gmt_memory (GMT, pair, n_alloc, struct PAIR);
 				GMT_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct PAIR);
 			}
 		}
@@ -427,11 +427,11 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		if (!n_pairs) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
-			GMT_free (GMT, duplicate);
+			gmt_free (GMT, duplicate);
 			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (EXIT_FAILURE);
 		}
-		if (n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
+		if (n_pairs < n_alloc) pair = gmt_memory (GMT, pair, n_pairs, struct PAIR);
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", n_pairs);
 	}
 
@@ -461,10 +461,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		n_output = 2;
 	}
 	else {	/* Set the actual column numbers with data fields */
-		t = GMT_memory (GMT, NULL, window_width, double);
-		y = GMT_memory (GMT, NULL, window_width, double);
-		col_number = GMT_memory (GMT, NULL, n_data_col, uint64_t);
-		ok = GMT_memory (GMT, NULL, n_data_col, unsigned int);
+		t = gmt_memory (GMT, NULL, window_width, double);
+		y = gmt_memory (GMT, NULL, window_width, double);
+		col_number = gmt_memory (GMT, NULL, n_data_col, uint64_t);
+		ok = gmt_memory (GMT, NULL, n_data_col, unsigned int);
 		for (col = k = scol = 0; col < s->n_out_columns; col++, scol++) {
 			if (scol == s->x_col || scol == s->y_col || scol == s->t_col) continue;
 			col_number[k++] = col;
@@ -472,9 +472,9 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		if (s->t_col < 0) GMT_Report (API, GMT_MSG_VERBOSE, "No time column, use dummy times\n");
 	}
 
-	out = GMT_memory (GMT, NULL, n_output, double);
-	xdata[0] = GMT_memory (GMT, NULL, s->n_out_columns, double);
-	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
+	out = gmt_memory (GMT, NULL, n_output, double);
+	xdata[0] = gmt_memory (GMT, NULL, s->n_out_columns, double);
+	xdata[1] = gmt_memory (GMT, NULL, s->n_out_columns, double);
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
@@ -796,7 +796,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						cmd = GMT_Create_Cmd (API, options);
 						sprintf (line, "# Command: %s %s", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
-						GMT_free (GMT, cmd);
+						gmt_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						sprintf (line, "# %s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",
 							s->info[s->out_order[s->x_col]].name, c, s->info[s->out_order[s->y_col]].name, c, t_or_i, c, t_or_i, c, c, c, c, c, c);
@@ -841,9 +841,9 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 			if (!same) {	/* Must free up memory for B */
 				x2sys_free_data (GMT, data[1], s->n_out_columns, &data_set[1]);
-				GMT_free (GMT, dist[1]);
-				if (!got_time) GMT_free (GMT, time[1]);
-				GMT_free (GMT, ylist_B);
+				gmt_free (GMT, dist[1]);
+				if (!got_time) gmt_free (GMT, time[1]);
+				gmt_free (GMT, ylist_B);
 			}
 			if (!Ctrl->C.active)
 				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
@@ -858,9 +858,9 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		/* Must free up memory for A */
 
 		x2sys_free_data (GMT, data[0], s->n_out_columns, &data_set[0]);
-		GMT_free (GMT, dist[0]);
-		if (!got_time) GMT_free (GMT, time[0]);
-		GMT_free (GMT, ylist_A);
+		gmt_free (GMT, dist[0]);
+		if (!got_time) gmt_free (GMT, time[0]);
+		gmt_free (GMT, ylist_A);
 	}
 
 	if (fpC) fclose (fpC);
@@ -871,15 +871,15 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
-	GMT_free (GMT, xdata[0]);
-	GMT_free (GMT, xdata[1]);
-	GMT_free (GMT, out);
-	GMT_free (GMT, duplicate);
+	gmt_free (GMT, xdata[0]);
+	gmt_free (GMT, xdata[1]);
+	gmt_free (GMT, out);
+	gmt_free (GMT, duplicate);
 	if (n_data_col) {
-		GMT_free (GMT, t);
-		GMT_free (GMT, y);
-		GMT_free (GMT, col_number);
-		GMT_free (GMT, ok);
+		gmt_free (GMT, t);
+		gmt_free (GMT, y);
+		gmt_free (GMT, col_number);
+		gmt_free (GMT, ok);
 	}
 	x2sys_free_list (GMT, trk_name, n_tracks);
 

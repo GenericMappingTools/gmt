@@ -138,7 +138,7 @@ struct PSCONTOUR_CHAIN {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCONTOUR_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_contlabel_init (GMT, &C->contour, 1);
@@ -160,7 +160,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	gmt_str_free (C->E.file);	
 	gmt_str_free (C->T.txt[0]);	
 	gmt_str_free (C->T.txt[1]);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, unsigned int n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, unsigned int **v, unsigned int **cindex) {
@@ -192,13 +192,13 @@ GMT_LOCAL int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P,
 	if (nx <= 0) return (0);
 
 	n_alloc = 2 * nx;
-	xout = GMT_memory (GMT, NULL, n_alloc, double);
-	yout = GMT_memory (GMT, NULL, n_alloc, double);
-	ztmp = GMT_memory (GMT, NULL, n_alloc, double);
-	zout = GMT_memory (GMT, NULL, n_alloc, double);
-	vout = GMT_memory (GMT, NULL, n_alloc, unsigned int);
-	ctmp = GMT_memory (GMT, NULL, nx, unsigned int);
-	cind = GMT_memory (GMT, NULL, nx, unsigned int);
+	xout = gmt_memory (GMT, NULL, n_alloc, double);
+	yout = gmt_memory (GMT, NULL, n_alloc, double);
+	ztmp = gmt_memory (GMT, NULL, n_alloc, double);
+	zout = gmt_memory (GMT, NULL, n_alloc, double);
+	vout = gmt_memory (GMT, NULL, n_alloc, unsigned int);
+	ctmp = gmt_memory (GMT, NULL, nx, unsigned int);
+	cind = gmt_memory (GMT, NULL, nx, unsigned int);
 
 	/* Fill out array zout which holds the nx contour levels */
 
@@ -246,14 +246,14 @@ GMT_LOCAL int get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P,
 		*v = vout;
 		*cindex = cind;
 	} else {
-		GMT_free (GMT, xout);
-		GMT_free (GMT, yout);
-		GMT_free (GMT, zout);
-		GMT_free (GMT, vout);
-		GMT_free (GMT, cind);
+		gmt_free (GMT, xout);
+		gmt_free (GMT, yout);
+		gmt_free (GMT, zout);
+		gmt_free (GMT, vout);
+		gmt_free (GMT, cind);
 	}
-	GMT_free (GMT, ztmp);
-	GMT_free (GMT, ctmp);
+	gmt_free (GMT, ztmp);
+	gmt_free (GMT, ctmp);
 	return (nx);
 }
 
@@ -772,9 +772,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	if (GMT->common.J.active && GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	x = GMT_memory (GMT, NULL, n_alloc, double);
-	y = GMT_memory (GMT, NULL, n_alloc, double);
-	z = GMT_memory (GMT, NULL, n_alloc, double);
+	x = gmt_memory (GMT, NULL, n_alloc, double);
+	y = gmt_memory (GMT, NULL, n_alloc, double);
+	z = gmt_memory (GMT, NULL, n_alloc, double);
 
 	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = -DBL_MAX;
 	n = 0;
@@ -817,23 +817,23 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			if (n == n_alloc) {
 				n_alloc <<= 1;
-				x = GMT_memory (GMT, x, n_alloc, double);
-				y = GMT_memory (GMT, y, n_alloc, double);
-				z = GMT_memory (GMT, z, n_alloc, double);
+				x = gmt_memory (GMT, x, n_alloc, double);
+				y = gmt_memory (GMT, y, n_alloc, double);
+				z = gmt_memory (GMT, z, n_alloc, double);
 			}
 			if (n == INT_MAX) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
-				GMT_free (GMT, x);
-				GMT_free (GMT, y);
-				GMT_free (GMT, z);
+				gmt_free (GMT, x);
+				gmt_free (GMT, y);
+				gmt_free (GMT, z);
 				Return (EXIT_FAILURE);
 			}	
 		}
 	} while (true);
 
-	x = GMT_memory (GMT, x, n, double);
-	y = GMT_memory (GMT, y, n, double);
-	z = GMT_memory (GMT, z, n, double);
+	x = gmt_memory (GMT, x, n, double);
+	y = gmt_memory (GMT, y, n, double);
+	z = gmt_memory (GMT, z, n, double);
 
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: No data points given - so no triangulation can take effect\n");
@@ -872,7 +872,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		T = Tin->table[0];	/* Since we only have one table here */
 		np = T->n_records;
-		ind = GMT_memory (GMT, NULL, 3 * np, int);	/* Allocate the integer index array */
+		ind = gmt_memory (GMT, NULL, 3 * np, int);	/* Allocate the integer index array */
 		for (seg = ij = n_skipped = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++) {
 				if (T->segment[seg]->coord[0][row] > d_n || T->segment[seg]->coord[1][row] > d_n || T->segment[seg]->coord[2][row] > d_n)
@@ -919,7 +919,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->C.cpt) {	/* We already read the CPT file */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
-		cont = GMT_memory (GMT, NULL, P->n_colors + 1, struct PSCONTOUR);
+		cont = gmt_memory (GMT, NULL, P->n_colors + 1, struct PSCONTOUR);
 		for (i = c = 0; i < P->n_colors; i++) {
 			if (P->range[i].skip) continue;
 			cont[c].val = P->range[i].z_low;
@@ -974,7 +974,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			/* Data record to process */
 
-			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = gmt_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			GMT_memset (&cont[c], 1, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
@@ -992,7 +992,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	}
 	else if (!GMT_is_dnan (Ctrl->C.single_cont) || !GMT_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only */
 		n_contours = 0;
-		cont = GMT_malloc (GMT, cont, 2, &c_alloc, struct PSCONTOUR);
+		cont = gmt_malloc (GMT, cont, 2, &c_alloc, struct PSCONTOUR);
 		if (!GMT_is_dnan (Ctrl->C.single_cont)) {
 			cont[n_contours].type = 'C';
 			cont[n_contours++].val = Ctrl->C.single_cont;
@@ -1018,7 +1018,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = irint (min/Ctrl->C.interval), c = 0; ic <= irint (max/Ctrl->C.interval); ic++, c++) {
-			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
+			if (c == c_alloc) cont = gmt_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			GMT_memset (&cont[c], 1, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
@@ -1032,7 +1032,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours found\n");
 	}
 	c_alloc = n_contours;
-	cont = GMT_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
+	cont = gmt_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
 		uint64_t dim[4] = {0, 0, 0, 3};
@@ -1072,8 +1072,8 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		dim[GMT_TBL] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
-		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
-		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
+		n_seg_alloc = gmt_memory (GMT, NULL, n_tables, size_t);
+		n_seg = gmt_memory (GMT, NULL, n_tables, uint64_t);
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 	}
 	
@@ -1106,7 +1106,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	if (get_contours) {
 		for (i = 0; i < n_contours; i++) {
 			cont[i].n_alloc = GMT_SMALL_CHUNK;
-			cont[i].L = GMT_memory (GMT, NULL, GMT_SMALL_CHUNK, struct PSCONTOUR_LINE);
+			cont[i].L = gmt_memory (GMT, NULL, GMT_SMALL_CHUNK, struct PSCONTOUR_LINE);
 		}
 	}
 
@@ -1246,18 +1246,18 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				m++;
 				if (m >= cont[c].n_alloc) {
 					cont[c].n_alloc <<= 1;
-					cont[c].L = GMT_memory (GMT, cont[c].L, cont[c].n_alloc, struct PSCONTOUR_LINE);
+					cont[c].L = gmt_memory (GMT, cont[c].L, cont[c].n_alloc, struct PSCONTOUR_LINE);
 				}
 				cont[c].nl = m;
 			}
 		}
 
 		if (nx > 0) {
-			GMT_free (GMT, xc);
-			GMT_free (GMT, yc);
-			GMT_free (GMT, zc);
-			GMT_free (GMT, vert);
-			GMT_free (GMT, cind);
+			gmt_free (GMT, xc);
+			gmt_free (GMT, yc);
+			gmt_free (GMT, zc);
+			gmt_free (GMT, vert);
+			gmt_free (GMT, cind);
 		}
 	}
 	
@@ -1273,7 +1273,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		for (c = 0; c < n_contours; c++) {	/* For all selected contour levels */
 
 			if (cont[c].nl == 0) {	/* No contours at this level */
-				GMT_free (GMT, cont[c].L);
+				gmt_free (GMT, cont[c].L);
 				continue;
 			}
 
@@ -1289,14 +1289,14 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			if (Ctrl->W.color_text)	/* Override label color according to CPT file */
 				GMT_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 			
-			head_c = last_c = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
+			head_c = last_c = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 
 			while (cont[c].nl) {	/* Still more line segments at this contour level */
 				/* Must hook all the segments into continuous contours. Start with first segment L */
-				this_c = last_c->next = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
+				this_c = last_c->next = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 				k = 0;
-				this_c->begin = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
-				this_c->end = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
+				this_c->begin = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
+				this_c->end = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 				this_c->begin->x = cont[c].L[k].x0;
 				this_c->begin->y = cont[c].L[k].y0;
 				this_c->end->x = cont[c].L[k].x1;
@@ -1307,28 +1307,28 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				while (k < cont[c].nl) {	/* As long as there are more */
 					add = 0;
 					if (fabs(cont[c].L[k].x0 - this_c->begin->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y0 - this_c->begin->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
-						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
+						p = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x1;
 						p->y = cont[c].L[k].y1;
 						p->next = this_c->begin;
 						add = -1;
 					}
 					else if (fabs(cont[c].L[k].x1 - this_c->begin->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y1 - this_c->begin->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
-						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
+						p = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x0;
 						p->y = cont[c].L[k].y0;
 						p->next = this_c->begin;
 						add = -1;
 					}
 					else if (fabs(cont[c].L[k].x0 - this_c->end->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y0 - this_c->end->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
-						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
+						p = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x1;
 						p->y = cont[c].L[k].y1;
 						this_c->end->next = p;
 						add = 1;
 					}
 					else if (fabs(cont[c].L[k].x1 - this_c->end->x) < GMT_CONV4_LIMIT && fabs(cont[c].L[k].y1 - this_c->end->y) < GMT_CONV4_LIMIT) {	/* L matches previous */
-						p = GMT_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
+						p = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_PT);
 						p->x = cont[c].L[k].x0;
 						p->y = cont[c].L[k].y0;
 						this_c->end->next = p;
@@ -1348,7 +1348,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				}
 				last_c = this_c;
 			}
-			GMT_free (GMT, cont[c].L);	/* Done with temporary contour segment array for this level */
+			gmt_free (GMT, cont[c].L);	/* Done with temporary contour segment array for this level */
 
 			/* Now, turn this linked list of segment pointers into x,y arrays */
 			
@@ -1360,19 +1360,19 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				use_it = (m >= Ctrl->Q.min);	/* True if we will use this line */
 
 				if (use_it) {	/* Need arrays to hold the coordinates */
-					xp = GMT_memory (GMT, NULL, m, double);
-					yp = GMT_memory (GMT, NULL, m, double);
+					xp = gmt_memory (GMT, NULL, m, double);
+					yp = gmt_memory (GMT, NULL, m, double);
 					m = 0;
 				}
 				p = this_c->begin;	/* Start over and maybe get the points this time */
 				while ((q = p) != NULL) {	/* More points to add */
 					if (use_it) {xp[m] = p->x; yp[m++] = p->y;}
 					p = p->next;
-					GMT_free (GMT, q);	/* Free linked list as we go along */
+					gmt_free (GMT, q);	/* Free linked list as we go along */
 				}
 				last_c = this_c;
 				this_c = this_c->next;
-				GMT_free (GMT, last_c);	/* Free last item */
+				gmt_free (GMT, last_c);	/* Free last item */
 				if (!use_it) continue;	/* No, go to next */
 				
 				is_closed = !GMT_polygon_is_open (GMT, xp, yp, m);
@@ -1400,12 +1400,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					unsigned int closed;
 					if (convert) {	/* Must first apply inverse map transform */
 						double *xtmp = NULL, *ytmp = NULL;
-						xtmp = GMT_memory (GMT, NULL, m, double);
-						ytmp = GMT_memory (GMT, NULL, m, double);
+						xtmp = gmt_memory (GMT, NULL, m, double);
+						ytmp = gmt_memory (GMT, NULL, m, double);
 						for (count = 0; count < m; count++) gmt_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
 						S = GMT_prepare_contour (GMT, xtmp, ytmp, m, cont[c].val);
-						GMT_free (GMT, xtmp);
-						GMT_free (GMT, ytmp);
+						gmt_free (GMT, xtmp);
+						gmt_free (GMT, ytmp);
 					}
 					else
 						S = GMT_prepare_contour (GMT, xp, yp, m, cont[c].val);
@@ -1414,7 +1414,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t n_old_alloc = n_seg_alloc[tbl];
-						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+						D->table[tbl]->segment = gmt_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
 						GMT_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
@@ -1429,10 +1429,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 				if (make_plot) {
 					if (cont[c].do_tick && is_closed) {	/* Must store the entire contour for later processing */
-						if (n_save == n_save_alloc) save = GMT_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
+						if (n_save == n_save_alloc) save = gmt_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 						n_alloc = 0;
 						GMT_memset (&save[n_save], 1, struct SAVE);
-						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, m, &n_alloc, double);
+						gmt_malloc2 (GMT, save[n_save].x, save[n_save].y, m, &n_alloc, double);
 						GMT_memcpy (save[n_save].x, xp, m, double);
 						GMT_memcpy (save[n_save].y, yp, m, double);
 						save[n_save].n = m;
@@ -1444,10 +1444,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					GMT_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, true, &Ctrl->contour);
 				}
 
-				GMT_free (GMT, xp);
-				GMT_free (GMT, yp);
+				gmt_free (GMT, xp);
+				gmt_free (GMT, yp);
 			}
-			GMT_free (GMT, head_c);
+			gmt_free (GMT, head_c);
 		}
 		if (make_plot) label_mode |= 1;		/* Would want to plot ticks and labels if -T is set */
 		if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
@@ -1457,14 +1457,14 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contoursand plot/save L|H labels */
 			size_t kk;
-			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
+			save = gmt_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 			sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.fp);
 			for (kk = 0; kk < n_save; kk++) {
-				GMT_free (GMT, save[kk].x);
-				GMT_free (GMT, save[kk].y);
+				gmt_free (GMT, save[kk].x);
+				gmt_free (GMT, save[kk].y);
 			}
-			GMT_free (GMT, save);
+			gmt_free (GMT, save);
 		}
 		if (make_plot) {
 			GMT_contlabel_plot (GMT, &Ctrl->contour);
@@ -1476,12 +1476,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
-		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
+		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = gmt_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_free (GMT, n_seg_alloc);
-		GMT_free (GMT, n_seg);
+		gmt_free (GMT, n_seg_alloc);
+		gmt_free (GMT, n_seg);
 	}
 
 	if (make_plot) {
@@ -1491,12 +1491,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		GMT_plotend (GMT);
 	}
 
-	GMT_free (GMT, x);
-	GMT_free (GMT, y);
-	GMT_free (GMT, z);
-	GMT_free (GMT, cont);
+	gmt_free (GMT, x);
+	gmt_free (GMT, y);
+	gmt_free (GMT, z);
+	gmt_free (GMT, cont);
 	if (Ctrl->E.active)
-		GMT_free (GMT, ind);	/* Allocated above by GMT_memory */
+		gmt_free (GMT, ind);	/* Allocated above by gmt_memory */
 	else
 		GMT_delaunay_free (GMT, &ind);
 

@@ -80,7 +80,7 @@ struct SAMPLE1D_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SAMPLE1D_CTRL *C = NULL;
 	
-	C = GMT_memory (GMT, NULL, 1, struct SAMPLE1D_CTRL);
+	C = gmt_memory (GMT, NULL, 1, struct SAMPLE1D_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.mode = GMT->current.setting.interpolant;
@@ -92,7 +92,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* De
 	if (!C) return;
 	gmt_str_free (C->Out.file);	
 	gmt_str_free (C->N.file);	
-	GMT_free (GMT, C);	
+	gmt_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -337,13 +337,13 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		T = Cin->table[0];	/* Since we only have one table here */
-		t_supplied_out = GMT_memory (GMT, NULL, Cin->table[0]->n_records, double);
+		t_supplied_out = gmt_memory (GMT, NULL, Cin->table[0]->n_records, double);
 		for (seg = 0; seg < T->n_segments; seg++) {
 			GMT_memcpy (&t_supplied_out[m], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
 			m += T->segment[seg]->n_rows;
 		}
 		m_supplied = m;
-		t_out = GMT_memory (GMT, NULL, m_supplied, double);
+		t_out = gmt_memory (GMT, NULL, m_supplied, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
 		if (GMT_Destroy_Data (API, &Cin) != GMT_OK) {
 			Return (API->error);
@@ -352,10 +352,10 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	dim[GMT_COL] = Din->n_columns;	/* Only known dimension, the rest is 0 */
 	if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
+	Dout->table = gmt_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
-	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, unsigned char);
+	nan_flag = gmt_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, false);
 		Dout->table[tbl] = Tout;
@@ -369,8 +369,8 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = true;
 			if (resample_path) {	/* Need distances for path interpolation */
 				dist_in = gmt_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
-				lon = GMT_memory (GMT, NULL, S->n_rows, double);
-				lat = GMT_memory (GMT, NULL, S->n_rows, double);
+				lon = gmt_memory (GMT, NULL, S->n_rows, double);
+				lat = gmt_memory (GMT, NULL, S->n_rows, double);
 				GMT_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
 				GMT_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
 				m = GMT_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
@@ -403,7 +403,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				last_t = (Ctrl->S.mode) ? Ctrl->S.stop : S->coord[Ctrl->T.col][last_k];
 				/* So here, Ctrl->S.start holds to smallest t value and last_t holds the largest t_value, regardless of inc sign */
 				m = m_alloc = lrint (fabs((last_t - Ctrl->S.start) / abs_inc)) + 1;
-				t_out = GMT_memory (GMT, t_out, m_alloc, double);
+				t_out = gmt_memory (GMT, t_out, m_alloc, double);
 				row = 1;
 				if (Ctrl->I.inc > 0.0) {
 					t_out[0] = Ctrl->S.start;
@@ -441,16 +441,16 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				
 				if (nan_flag[col] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
-					ttime = GMT_memory (GMT, NULL, S->n_rows, double);
-					data = GMT_memory (GMT, NULL, S->n_rows, double);
+					ttime = gmt_memory (GMT, NULL, S->n_rows, double);
+					data = gmt_memory (GMT, NULL, S->n_rows, double);
 					for (row = k = 0; row < S->n_rows; row++) {
 						if (GMT_is_dnan (S->coord[col][row])) continue;
 						ttime[k] = (resample_path) ? dist_in[row] : S->coord[Ctrl->T.col][row];
 						data[k++] = S->coord[col][row];
 					}
 					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], int_mode);
-					GMT_free (GMT, ttime);
-					GMT_free (GMT, data);
+					gmt_free (GMT, ttime);
+					gmt_free (GMT, data);
 				}
 				else {
 					ttime = (resample_path) ? dist_in : S->coord[Ctrl->T.col];
@@ -463,11 +463,11 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				}
 			}
 			if (resample_path) {	/* Free up memory used */
-				GMT_free (GMT, dist_in);	GMT_free (GMT, t_out);
-				GMT_free (GMT, lon);		GMT_free (GMT, lat);
+				gmt_free (GMT, dist_in);	gmt_free (GMT, t_out);
+				gmt_free (GMT, lon);		gmt_free (GMT, lat);
 			}
 			else if (!Ctrl->N.active)
-				GMT_free (GMT, t_out);
+				gmt_free (GMT, t_out);
 		}
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
@@ -475,9 +475,9 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 	//gmt_free_dataset (API->GMT, &Dout);	/* Since not registered */
 
-	if (Ctrl->N.active) GMT_free (GMT, t_out);
-	GMT_free (GMT, nan_flag);
-	if (Ctrl->N.active) GMT_free (GMT, t_supplied_out);
+	if (Ctrl->N.active) gmt_free (GMT, t_out);
+	gmt_free (GMT, nan_flag);
+	if (Ctrl->N.active) gmt_free (GMT, t_supplied_out);
 	
 	Return (GMT_OK);
 }

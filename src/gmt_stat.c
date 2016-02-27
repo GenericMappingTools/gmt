@@ -1929,7 +1929,7 @@ void GMT_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 		*scale = GMT->session.d_NaN;
 		return;
 	}
-	dev = GMT_memory (GMT, NULL, n, double);
+	dev = gmt_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	GMT_sort_array (GMT, dev, n, GMT_DOUBLE);
 	for (i = n; i > 1 && GMT_is_dnan (dev[i-1]); i--);
@@ -1937,7 +1937,7 @@ void GMT_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
 		med = GMT->session.d_NaN;
-	GMT_free (GMT, dev);
+	gmt_free (GMT, dev);
 	*scale = 1.4826 * med;
 }
 
@@ -1950,7 +1950,7 @@ void GMT_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 		*scale = GMT->session.d_NaN;
 		return;
 	}
-	dev = GMT_memory (GMT, NULL, n, double);
+	dev = gmt_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
 	GMT_sort_array (GMT, dev, n, GMT_FLOAT);
 	for (i = n; i > 1 && GMT_is_fnan (dev[i-1]); i--);
@@ -1958,7 +1958,7 @@ void GMT_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
 		med = GMT->session.d_NaN;
-	GMT_free (GMT, dev);
+	gmt_free (GMT, dev);
 	*scale = 1.4826 * med;
 }
 
