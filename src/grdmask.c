@@ -310,7 +310,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
-		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 		if (!Ctrl->S.variable_radius) {
@@ -399,7 +399,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
 							if (col < 0 || col >= nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
-							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
+							distance = gmt_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
 							if (distance > radius) continue;	/* Clearly outside */
 							Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 						}

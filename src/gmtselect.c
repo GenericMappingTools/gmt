@@ -553,7 +553,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				GMT->common.R.wesn[XHI] += 360.0;
 			}
 		}
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
@@ -580,14 +580,14 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	/* Initiate pointer to distance calculation function */
 	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)
-			GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		else if (Ctrl->L.active)
-			GMT_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
 	}
 	else if (do_project)	/* Lon/lat projected via -R -J */
-		GMT_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
+		gmt_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
 	else	/* Cartesian data */
-		GMT_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
+		gmt_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
 	
 	gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 
@@ -608,7 +608,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			if (Cin->n_columns == 2) point->segment[seg]->dist = Ctrl->C.dist;
 			if (do_project) {	/* Convert all the points using the map projection */
 				for (row = 0; row < point->segment[seg]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, point->segment[seg]->coord[GMT_X][row], point->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					gmt_geo_to_xy (GMT, point->segment[seg]->coord[GMT_X][row], point->segment[seg]->coord[GMT_Y][row], &xx, &yy);
 					point->segment[seg]->coord[GMT_X][row] = xx;
 					point->segment[seg]->coord[GMT_Y][row] = yy;
 				}
@@ -657,7 +657,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			if (Ctrl->L.dist > 0.0) line->segment[seg]->dist = Ctrl->L.dist;	/* Only override when nonzero */
 			if (do_project) {	/* Convert all the line points using the map projection */
 				for (row = 0; row < line->segment[seg]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, line->segment[seg]->coord[GMT_X][row], line->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					gmt_geo_to_xy (GMT, line->segment[seg]->coord[GMT_X][row], line->segment[seg]->coord[GMT_Y][row], &xx, &yy);
 					line->segment[seg]->coord[GMT_X][row] = xx;
 					line->segment[seg]->coord[GMT_Y][row] = yy;
 				}
@@ -678,7 +678,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		if (do_project) {	/* Convert all the polygons points using the map projection */
 			for (seg = 0; seg < pol->n_segments; seg++) {
 				for (row = 0; row < pol->segment[seg]->n_rows; row++) {
-					GMT_geo_to_xy (GMT, pol->segment[seg]->coord[GMT_X][row], pol->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					gmt_geo_to_xy (GMT, pol->segment[seg]->coord[GMT_X][row], pol->segment[seg]->coord[GMT_Y][row], &xx, &yy);
 					pol->segment[seg]->coord[GMT_X][row] = xx;
 					pol->segment[seg]->coord[GMT_Y][row] = yy;
 				}
@@ -764,24 +764,24 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 		lon = in[GMT_X];	/* Use copy since we may have to wrap 360 */
 		if (GMT->common.R.active) {	/* Apply region test */
-			inside = !GMT_map_outside (GMT, lon, in[GMT_Y]);
+			inside = !gmt_map_outside (GMT, lon, in[GMT_Y]);
 			if (inside != Ctrl->I.pass[0]) { output_header = need_header; continue;}
 		}
 
 		if (do_project)	/* First project the input point */
-			GMT_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
+			gmt_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
 		else {
 			xx = lon;
 			yy = in[GMT_Y];
 		}
 		
 		if (Ctrl->C.active) {	/* Check for distance to points */
-			inside = GMT_near_a_point (GMT, xx, yy, point, Ctrl->C.dist); 
+			inside = gmt_near_a_point (GMT, xx, yy, point, Ctrl->C.dist); 
 			if (inside != Ctrl->I.pass[1]) { output_header = need_header; continue;}
 		}
 
 		if (Ctrl->L.active) {	/* Check for distance to lines */
-			inside = GMT_near_lines (GMT, xx, yy, line, Ctrl->L.end_mode, NULL, NULL, NULL);
+			inside = gmt_near_lines (GMT, xx, yy, line, Ctrl->L.end_mode, NULL, NULL, NULL);
 			if (inside != Ctrl->I.pass[2]) { output_header = need_header; continue;}
 		}
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
@@ -830,7 +830,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 			else {
 				this_node = 0;
-				GMT_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
+				gmt_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
 				for (id = 0; id < 2; id++) {
 
 					for (k = 0; k < np[id]; k++) {

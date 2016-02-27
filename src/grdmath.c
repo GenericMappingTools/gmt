@@ -2224,9 +2224,9 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 {
 	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN))
-		GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
+		gmt_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	else
-		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
+		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
 	gmt_set_cols (GMT, GMT_IN,  2);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
@@ -2296,7 +2296,7 @@ GMT_LOCAL void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	for (row = 0; row < info->G->header->my; row++) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 		for (col = 0; col < info->G->header->mx; col++) {	/* Visit each node */
-			(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
+			(void) gmt_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
 			node = GMT_IJ(info->G->header,row,col);
 			stack[last]->G->data[node] = (float)d;
 		}
@@ -2317,7 +2317,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) /* Set -fg implicitly since not set already via input grid or -fg */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
-	GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
+	gmt_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 
 	/* We use the global GSHHG data set to construct distances to. Although we know that the
 	 * max distance to a coastline is ~2700 km, we cannot anticipate the usage of any user.
@@ -2326,7 +2326,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	if ((D = GMT_get_gshhg_lines (GMT, wesn, info->gshhg_res, info->A)) == NULL) return;
 
 	bin_size = info->A->bin_size;	/* Current GSHHG bin size in degrees */
-	slop = 2 * GMT_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) */
+	slop = 2 * gmt_distance (GMT, 0.0, 0.0, bin_size, 0.0);	/* Define slop in projected units (km) */
 	if (last == UINT32_MAX) last = 0;	/* Was called the very first time when n_stack - 1 goes crazy since it is unsigned */
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
 		if (col == 0) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
@@ -2338,7 +2338,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 			for (tbl = 0, hor = DBL_MAX; tbl < D->n_tables; tbl++) {
 				x = 0.5 * (D->table[tbl]->min[GMT_X] + D->table[tbl]->max[GMT_X]);
 				y = 0.5 * (D->table[tbl]->min[GMT_Y] + D->table[tbl]->max[GMT_Y]);
-				D->table[tbl]->dist = d = GMT_distance (GMT, lon1, lat, x, y);
+				D->table[tbl]->dist = d = gmt_distance (GMT, lon1, lat, x, y);
 				if (d < hor) hor = d;
 			}
 			/* Add 2 bin sizes to the closest distance to a bin as slop. This should always include the closest points in any bin */
@@ -2352,7 +2352,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 			T = D->table[tbl];
 			if (T->dist >= hor) continue;	/* Skip entire bins that are too far away */
 			for (seg = 0; seg < T->n_segments; seg++) {
-				(void) GMT_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
+				(void) gmt_near_a_line (GMT, lon, lat, seg, T->segment[seg], true, &d, NULL, NULL);
 			}
 		}
 		stack[last]->G->data[node] = (float)d;
@@ -2379,7 +2379,7 @@ GMT_LOCAL void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		if (stack[prev]->G->data[node] == 0.0)
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
-			(void) GMT_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
+			(void) gmt_near_lines (GMT, info->d_grd_x[col], info->d_grd_y[row], T, 1, &d, NULL, NULL);
 			stack[prev]->G->data[node] = (float)d;
 		}
 	}
@@ -2839,7 +2839,7 @@ GMT_LOCAL void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 
 	T = D->table[0];	/* Only one table in a single file */
 
-	GMT_grd_padloop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)GMT_mindist_to_point (GMT, info->d_grd_x[col], info->d_grd_y[row], T, dummy);
+	GMT_grd_padloop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)gmt_mindist_to_point (GMT, info->d_grd_x[col], info->d_grd_y[row], T, dummy);
 
 	ASCII_free (GMT, info, &D, "PDIST");	/* Free memory used for points */
 }
@@ -2861,7 +2861,7 @@ GMT_LOCAL void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		if (stack[prev]->G->data[node] == 0.0)
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else
-			stack[prev]->G->data[node] = (float)GMT_mindist_to_point (GMT, info->d_grd_x[col], info->d_grd_y[row], T, dummy);
+			stack[prev]->G->data[node] = (float)gmt_mindist_to_point (GMT, info->d_grd_x[col], info->d_grd_y[row], T, dummy);
 	}
 
 	ASCII_free (GMT, info, &D, "PDIST2");	/* Free memory used for points */
@@ -3318,7 +3318,7 @@ GMT_LOCAL void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	double a, b;
 
 	if (GMT_is_geographic (GMT, GMT_IN))
-		GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
+		gmt_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "SDIST Error: Grid must be geographic; see CDIST for Cartesian data.\n");
 		return;
@@ -3327,7 +3327,7 @@ GMT_LOCAL void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-		stack[prev]->G->data[node] = (float) GMT_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
+		stack[prev]->G->data[node] = (float) gmt_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
 	}
 }
 
@@ -3339,7 +3339,7 @@ GMT_LOCAL void grd_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	double a, b;
 
 	if (GMT_is_geographic (GMT, GMT_IN))
-		GMT_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
+		gmt_init_distaz (GMT, 'k', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "SDIST2 Error: Grid must be geographic; see CDIST2 for Cartesian data.\n");
 		return;
@@ -3351,7 +3351,7 @@ GMT_LOCAL void grd_SDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		else {
 			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-			stack[prev]->G->data[node] = (float) GMT_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
+			stack[prev]->G->data[node] = (float) gmt_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
 		}
 	}
 }
@@ -3362,13 +3362,13 @@ GMT_LOCAL void grd_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
-	GMT_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);
+	gmt_init_distaz (GMT, 'd', GMT_sph_mode (GMT), GMT_MAP_DIST);
 	if (stack[prev]->constant) x0 = stack[prev]->factor;
 	if (stack[last]->constant) y0 = stack[last]->factor;
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
 		if (!stack[prev]->constant) x0 = stack[prev]->G->data[node];
 		if (!stack[last]->constant) y0 = stack[last]->G->data[node];
-		az = GMT_az_backaz (GMT, info->d_grd_x[col], info->d_grd_y[row], x0, y0, reverse);
+		az = gmt_az_backaz (GMT, info->d_grd_x[col], info->d_grd_y[row], x0, y0, reverse);
 		while (az < -180.0) az += 360.0;
 		while (az > +180.0) az -= 360.0;
 		stack[prev]->G->data[node] = (float)az;

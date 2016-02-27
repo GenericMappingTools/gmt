@@ -310,7 +310,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	GMT_memset (&T, 1, struct STRIPACK);
 
-	GMT_init_distaz (GMT, Ctrl->L.unit, GMT_sph_mode (GMT), GMT_MAP_DIST);
+	gmt_init_distaz (GMT, Ctrl->L.unit, GMT_sph_mode (GMT), GMT_MAP_DIST);
 
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
@@ -561,7 +561,7 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)
-					f_val = (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+					f_val = (float)gmt_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
 				Grid->data[ij] = f_val;
 				n_set++;
 				if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */

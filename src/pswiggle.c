@@ -159,7 +159,7 @@ GMT_LOCAL void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
 	if (!gave_xy) {	/* Project lon,lat to get position of scale */
-		GMT_geo_to_xy (GMT, x0, y0, &xx[0], &yy[0]);
+		gmt_geo_to_xy (GMT, x0, y0, &xx[0], &yy[0]);
 		x0 = xx[0];	y0 = yy[0];
 	}
 
@@ -169,10 +169,10 @@ GMT_LOCAL void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 		sprintf (txt, "%g", length);
 	dy = 0.5 * length * zscale;
 	/* Compute the 4 coordinates on the scale line */
-	GMT_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 - dy, 0.0, &xx[0], &yy[0]);
-	GMT_xyz_to_xy (GMT, x0, y0 - dy, 0.0, &xx[1], &yy[1]);
-	GMT_xyz_to_xy (GMT, x0, y0 + dy, 0.0, &xx[2], &yy[2]);
-	GMT_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 + dy, 0.0, &xx[3], &yy[3]);
+	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 - dy, 0.0, &xx[0], &yy[0]);
+	gmt_xyz_to_xy (GMT, x0, y0 - dy, 0.0, &xx[1], &yy[1]);
+	gmt_xyz_to_xy (GMT, x0, y0 + dy, 0.0, &xx[2], &yy[2]);
+	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 + dy, 0.0, &xx[3], &yy[3]);
 	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE + PSL_STROKE);
 	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
@@ -419,7 +419,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
@@ -482,10 +482,10 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 			
 			if (Ctrl->C.active) for (row = 0; row < T->segment[seg]->n_rows; row++) z[row] -= Ctrl->C.value;	/* Remove center value */
 
-			GMT_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
+			gmt_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
 			zz[0] = z[0];
 			for (row = j = 1; row < T->segment[seg]->n_rows; row++) {	/* Convert to inches/cm and get distance increments */
-				GMT_geo_to_xy (GMT, lon[row], lat[row], &x_2, &y_2);
+				gmt_geo_to_xy (GMT, lon[row], lat[row], &x_2, &y_2);
 
 				if (j > 0 && GMT_is_dnan (z[row])) {	/* Data gap, plot what we have */
 					negative = zz[j-1] < 0.0;

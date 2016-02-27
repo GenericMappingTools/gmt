@@ -361,7 +361,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -S option requires a geographic grid\n");
 			Return (EXIT_FAILURE);
 		}
-		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		/* Set w/e to center and adjust in case of -/+ 360 stuff */
 		wesn_new[XLO] = wesn_new[XHI] = Ctrl->S.lon;
 		while (wesn_new[XLO] < G->header->wesn[XLO]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
@@ -376,10 +376,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		else {	/* Possibly adjust south a bit using chosen distance calculation */
 			row = (int)GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
-			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+			distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row until we are outside */
 				lat -= G->header->inc[GMT_Y];
-				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
 			wesn_new[YLO] = lat + (1.0 - G->header->xy_off) * G->header->inc[GMT_Y];	/* Go one back since last row was outside */
 			if (wesn_new[YLO] <= G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO];
@@ -391,10 +391,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		else {	/* Possibly adjust north a bit using chosen distance calculation */
 			row = (int)GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
-			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+			distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row until we are outside */
 				lat += G->header->inc[GMT_Y];
-				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
 			wesn_new[YHI] = lat - (1.0 - G->header->xy_off) * G->header->inc[GMT_Y];	/* Go one back since last row was outside */
 			if (wesn_new[YHI] >= G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI];
@@ -413,10 +413,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			else {
 				col = (int)GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
-				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+				distance = gmt_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				while (distance <= Ctrl->S.radius) {	/* Extend region by one more col until we are outside */
 					lon -= G->header->inc[GMT_X];
-					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+					distance = gmt_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
 				wesn_new[XLO] = lon + (1.0 - G->header->xy_off) * G->header->inc[GMT_X];	/* Go one back since last col was outside */
 			}
@@ -427,10 +427,10 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			else {
 				col = (int)GMT_grd_x_to_col (GMT, wesn_new[XHI], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
-				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+				distance = gmt_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				while (distance <= Ctrl->S.radius) {	/* Extend region by one more col until we are outside */
 					lon += G->header->inc[GMT_X];
-					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+					distance = gmt_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
 				wesn_new[XHI] = lon - (1.0 - G->header->xy_off) * G->header->inc[GMT_X];	/* Go one back since last col was outside */
 			}
@@ -568,7 +568,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		for (row = 0; row < G->header->ny; row++) {
 			lat = GMT_grd_row_to_y (GMT, row, G->header);
 			for (col = 0; col < G->header->nx; col++) {
-				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, grd_lon[col], lat);
+				distance = gmt_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, grd_lon[col], lat);
 				if (distance > Ctrl->S.radius) {	/* Outside circle */
 					node = GMT_IJP (G->header, row, col);
 					G->data[node] = GMT->session.f_NaN;

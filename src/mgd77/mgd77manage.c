@@ -974,7 +974,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				/* If point is outside grd area, shift it using periodicity or skip if not periodic. */
 
 				if (Ctrl->A.mode == MODE_i)	/* Mercator IMG grid */
-					GMT_geo_to_xy (GMT, xvar[rec], yvar[rec], &x, &y);
+					gmt_geo_to_xy (GMT, xvar[rec], yvar[rec], &x, &y);
 				else {		/* Regular geographic grd */
 					x = xvar[rec];
 					y = yvar[rec];
@@ -1017,7 +1017,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				x = D->values[ix];
 				y = D->values[iy];
-				if ((d = GMT_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode)) == NULL)
+				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode)) == NULL)
 					GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				x = d;
 			}

@@ -672,7 +672,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 
@@ -790,16 +790,16 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
-				GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
+				gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 				if (!Ctrl->N.active) {
 					skip_text_records = true;	/* If this record should be skipped we must skip the whole paragraph */
-					GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
+					gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 					if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 					skip_text_records = false;	/* Since we got here we do not want to skip */
 				}
 				if (Ctrl->A.active) {
 					save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
-					tmp = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
+					tmp = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 					T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
 				}
@@ -930,16 +930,16 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			GMT_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) GMT_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			n_read++;
-			GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
+			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 			xx[0] = plot_x;	yy[0] = plot_y;
 			if (!Ctrl->N.active) {
-				GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
+				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 			}
 
 			if (Ctrl->A.active) {
 				save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
-				tmp = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
+				tmp = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, save_angle);
 				T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 				if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify -= 2 * (T.block_justify%4 - 2);	/* Flip any L/R code */
 			}

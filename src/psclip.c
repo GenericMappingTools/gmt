@@ -236,7 +236,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 
 	/* Here we have -R -J etc to deal with */
 	
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
@@ -280,7 +280,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 					}
 
 					for (row = 0; row < S->n_rows; row++) {	/* Apply map projection */
-						GMT_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
+						gmt_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
 						S->coord[GMT_X][row] = x0; S->coord[GMT_Y][row] = y0;
 					}
 					PSL_beginclipping (PSL, S->coord[GMT_X], S->coord[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);

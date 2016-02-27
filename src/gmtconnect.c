@@ -339,7 +339,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance-computing machinery with proper unit */
+	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance-computing machinery with proper unit */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input assuming lines */
 		Return (API->error);
@@ -397,7 +397,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			np = D[GMT_IN]->table[tbl]->segment[seg]->n_rows;	/* Short-hand to avoid the full expression below */
 			S = D[GMT_IN]->table[tbl]->segment[seg];		/* Short hand to current in segment */
 			/* Get distance between first and last point in this segment */
-			distance = GMT_distance (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][np-1], S->coord[GMT_Y][np-1]);
+			distance = gmt_distance (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][np-1], S->coord[GMT_Y][np-1]);
 			if (np > 2 && distance <= closed_dist) {	/* Already a closed segment, just write out and forget in the rest of the program */
 				T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
 				if (Ctrl->D.active) {	/* Write closed polygons to individual files */
@@ -549,15 +549,15 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			/* nearest_end indicates which end is closest to this end */
 			if (iseg == jseg) {	/* Store offset between the endpoints of a single segment (would be 0 if closed but those polygons have already been dealt with) */
 				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;	/* Flag as single line segment so two ends are not used */
-				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n == 1) ? DBL_MAX : GMT_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
+				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n == 1) ? DBL_MAX : gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
     				nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;	/* Duplicate the nearest ID info since it is a single line segment compared to itself */
     				nearest_end[SEG_J][END_B] = nearest_end[SEG_I][END_B] = END_A;
 			}
 			else {	/* Store the distances between the 4 possible end-to-end configurations */
-				dd[SEG_I][END_A] = GMT_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[jseg].x_end[END_A], segment[jseg].y_end[END_A]);
-				dd[SEG_I][END_B] = GMT_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[jseg].x_end[END_B], segment[jseg].y_end[END_B]);
-				dd[SEG_J][END_A] = GMT_distance (GMT, segment[iseg].x_end[END_B], segment[iseg].y_end[END_B], segment[jseg].x_end[END_A], segment[jseg].y_end[END_A]);
-				dd[SEG_J][END_B] = GMT_distance (GMT, segment[iseg].x_end[END_B], segment[iseg].y_end[END_B], segment[jseg].x_end[END_B], segment[jseg].y_end[END_B]);
+				dd[SEG_I][END_A] = gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[jseg].x_end[END_A], segment[jseg].y_end[END_A]);
+				dd[SEG_I][END_B] = gmt_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[jseg].x_end[END_B], segment[jseg].y_end[END_B]);
+				dd[SEG_J][END_A] = gmt_distance (GMT, segment[iseg].x_end[END_B], segment[iseg].y_end[END_B], segment[jseg].x_end[END_A], segment[jseg].y_end[END_A]);
+				dd[SEG_J][END_B] = gmt_distance (GMT, segment[iseg].x_end[END_B], segment[iseg].y_end[END_B], segment[jseg].x_end[END_B], segment[jseg].y_end[END_B]);
 				/* Determine which end is nearest */
     				for (end = 0; end < 2; end++) nearest_end[SEG_I][end] = (dd[end][END_A] <= dd[end][END_B]) ? END_A : END_B;
     				for (end = 0; end < 2; end++) nearest_end[SEG_J][end] = (dd[END_A][end] <= dd[END_B][end]) ? END_A : END_B;

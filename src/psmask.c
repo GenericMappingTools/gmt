@@ -102,9 +102,9 @@ GMT_LOCAL void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 
 	for (i = 0; i < nn; i++) {
 		x = xx[i];	y = yy[i];
-		GMT_geo_to_xy (GMT, x, y, &xx[i], &yy[i]);
+		gmt_geo_to_xy (GMT, x, y, &xx[i], &yy[i]);
 	}
-	nn = GMT_compact_line (GMT, xx, yy, nn, false, 0);
+	nn = gmt_compact_line (GMT, xx, yy, nn, false, 0);
 
 	if (nn > 0) PSL_comment (PSL, "Start of clip path sub-segment %d\n", id);
 	PSL_beginclipping (PSL, xx, yy, (int)nn, rgb, flag);
@@ -648,7 +648,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 	}
 
-	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		uint64_t dim[4] = {1, 0, 0, 2};
@@ -711,7 +711,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
-			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
 		}
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
@@ -773,7 +773,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					i_start = (col > d_col[jj]) ? col - d_col[jj] : 0;
 					for (ii = i_start; ii <= col + d_col[jj]; ii++) {
 						if (ii >= Grid->header->nx) continue;
-						distance = GMT_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
+						distance = gmt_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
 						ij = GMT_IJP (Grid->header, jj, ii);
 						grd[ij] = 1;
@@ -886,8 +886,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (grd[ij] == 0) continue;
 
-					np = GMT_graticule_path (GMT, &xx, &yy, 1, true, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);
-					plot_n = GMT_clip_to_map (GMT, xx, yy, np, &xp, &yp);
+					np = gmt_graticule_path (GMT, &xx, &yy, 1, true, grd_x0[col] - inc2[GMT_X], grd_x0[col] + inc2[GMT_X], y_bot, y_top);
+					plot_n = gmt_clip_to_map (GMT, xx, yy, np, &xp, &yp);
 					GMT_free (GMT, xx);
 					GMT_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
@@ -897,14 +897,14 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 						/* First truncate against left border */
 
-						GMT->current.plot.n = GMT_map_truncate (GMT, xp, yp, plot_n, start, -1);
-						n_use = GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+						GMT->current.plot.n = gmt_map_truncate (GMT, xp, yp, plot_n, start, -1);
+						n_use = gmt_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
 
 						/* Then truncate against right border */
 
-						GMT->current.plot.n = GMT_map_truncate (GMT, xp, yp, plot_n, start, +1);
-						n_use = GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+						GMT->current.plot.n = gmt_map_truncate (GMT, xp, yp, plot_n, start, +1);
+						n_use = gmt_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
 					}
 					else

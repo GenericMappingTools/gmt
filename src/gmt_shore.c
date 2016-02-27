@@ -1064,7 +1064,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 	p = GMT_memory (GMT, NULL, p_alloc, struct GMT_GSHHS_POL);
 
 	if (completely_inside && use_this_level) {	/* Must include path of this bin's outline as our first polygon, e.g., there may be no segments here but we are in the middle of a continent (or lake) */
-		p[0].n = (int)GMT_graticule_path (GMT, &p[0].lon, &p[0].lat, dir, true, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
+		p[0].n = (int)gmt_graticule_path (GMT, &p[0].lon, &p[0].lat, dir, true, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
 		p[0].level = (c->node_level[0] == 2 && c->flag == GSHHS_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
 		p[0].fid = p[0].level;	/* Override: Assumes no riverlake is that big to contain an entire bin */
 		p[0].interior = false;
@@ -1100,7 +1100,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			if (id < 0) {	/* Found a corner */
 				cid = id + 4;	/* ID of the corner */
 				nid = (dir == 1) ? (cid + 1) % 4 : cid;	/* Next corner [I think] */
-				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp)) != 0) {
+				if ((add = (int)gmt_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp)) != 0) {
 					/* Add the bin-border segment from last point in the growing polygon to the specified corner */
 					n_alloc += add;
 					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
@@ -1114,7 +1114,7 @@ int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 			else {	/* Found a segment to add to our polygon */
 				gmt_shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);	/* Get lon,lat of start of segment */
-				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp)) != 0) {
+				if ((add = (int)gmt_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp)) != 0) {
 					/* Connect the last point in the growing polygon with the starting point of this next segment */
 					n_alloc += add;
 					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
@@ -1377,7 +1377,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 
-		if ((n = (unsigned int)GMT_clip_to_map (GMT, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
+		if ((n = (unsigned int)gmt_clip_to_map (GMT, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
 			p[k].n = 0;	/* Note the memory in lon, lat not freed yet */
 			continue;
 		}
@@ -1388,8 +1388,8 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 
 			/* First truncate against left border */
 
-			GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, -1);
-			n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+			GMT->current.plot.n = gmt_map_truncate (GMT, xtmp, ytmp, n, start, -1);
+			n_use = (unsigned int)gmt_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[k].lon = GMT_memory (GMT, p[k].lon, n_alloc, double);
@@ -1404,8 +1404,8 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 
 			/* Then truncate against right border */
 
-			GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, +1);
-			n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+			GMT->current.plot.n = gmt_map_truncate (GMT, xtmp, ytmp, n, start, +1);
+			n_use = (unsigned int)gmt_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 			p = GMT_memory (GMT, p, np_new + 1, struct GMT_GSHHS_POL);
 			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
@@ -1424,7 +1424,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			np_new++;
 		}
 		else {
-			n_use = (unsigned int)GMT_compact_line (GMT, xtmp, ytmp, n, false, 0);
+			n_use = (unsigned int)gmt_compact_line (GMT, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
 				GMT_free (GMT, xtmp);

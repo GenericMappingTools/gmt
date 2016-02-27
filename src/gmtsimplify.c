@@ -328,10 +328,10 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	geo = GMT_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
 	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 
-	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
+	gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
 	
 	/* Convert tolerance to degrees [or leave as Cartesian] */
-	/* We must do this here since Douglas_Peucker_geog is doing its own thing and cannot use GMT_distance yet */
+	/* We must do this here since Douglas_Peucker_geog is doing its own thing and cannot use gmt_distance yet */
 	
 	tolerance = Ctrl->T.tolerance;
 	switch (Ctrl->T.unit) {

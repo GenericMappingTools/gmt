@@ -296,7 +296,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[XLO] += 360.0;
 			GMT->common.R.wesn[XHI] += 360.0;
 		}
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
@@ -382,7 +382,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	}
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 
-	GMT_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
+	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
 	
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, NULL, aux, auxlist, &CORR);
@@ -462,7 +462,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 		cumulative_dist = 0.0;
 		for (row = 0; row < p.n_rows; row++) {	/* Process all records in this file */
-			if (GMT->common.R.active && GMT_map_outside (GMT, data[xpos][row], data[ypos][row])) continue;	/* Point is outside region */
+			if (GMT->common.R.active && gmt_map_outside (GMT, data[xpos][row], data[ypos][row])) continue;	/* Point is outside region */
 			if (Ctrl->S.active) {	/* Skip record if all data columns are NaN (not considering lon,lat,time) */
 				for (ocol = bad = 0; ocol < s->n_out_columns; ocol++) {
 					this_col = s->out_order[ocol];
@@ -475,12 +475,12 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			}
 			if (auxlist[MGD77_AUX_AZ].requested) {	/* Need azimuths to be computed from track coordinates */
 				if (row == 0)	/* Look forward from first to second point to get an azimuth at the first point */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][1], data[ypos][1], data[xpos][0], data[ypos][0], false);
+					aux_dvalue[MGD77_AUX_AZ] = gmt_az_backaz (GMT, data[xpos][1], data[ypos][1], data[xpos][0], data[ypos][0], false);
 				else		/* else go from previous to current point */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][row], data[ypos][row], data[xpos][row-1], data[ypos][row-1], false);
+					aux_dvalue[MGD77_AUX_AZ] = gmt_az_backaz (GMT, data[xpos][row], data[ypos][row], data[xpos][row-1], data[ypos][row-1], false);
 			}
 			if (auxlist[MGD77_AUX_DS].requested) {	/* Need distances to be computed from track coordinates */
-				ds = (row == 0) ? 0.0 : dist_scale * GMT_distance (GMT, data[xpos][row], data[ypos][row], data[xpos][row-1], data[ypos][row-1]);
+				ds = (row == 0) ? 0.0 : dist_scale * gmt_distance (GMT, data[xpos][row], data[ypos][row], data[xpos][row-1], data[ypos][row-1]);
 				cumulative_dist += ds;
 				aux_dvalue[MGD77_AUX_DS] = cumulative_dist;
 			}

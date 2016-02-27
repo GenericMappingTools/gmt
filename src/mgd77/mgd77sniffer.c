@@ -264,7 +264,7 @@ GMT_LOCAL unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO
 	for (rec = 0; rec < n; rec++) {
 
 		if (info->format == 1)	{/* Mercator IMG grid - get Mercator coordinates x,y */
-			GMT_geo_to_xy (GMT, D[rec].number[MGD77_LONGITUDE], D[rec].number[MGD77_LATITUDE], &x, &y);
+			gmt_geo_to_xy (GMT, D[rec].number[MGD77_LONGITUDE], D[rec].number[MGD77_LATITUDE], &x, &y);
 			if (x > info->G->header->wesn[XHI]) x -= 360.0;
 		}
 		else {		/* Regular geographic grd, just copy lon,lat to x,y */
@@ -1350,7 +1350,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						for (j=curr-1; D[j].keep_nav==false && j >= 0; j--) continue; /* Find previous good record */
 						if (D[j].keep_nav == false) continue; /* No valid previous fix */
 						/* Check for excessive speed */
-						speed = (GMT_great_circle_dist_meter(GMT, D[j].number[MGD77_LONGITUDE],D[j].number[MGD77_LATITUDE],D[curr].number[MGD77_LONGITUDE],D[curr].number[MGD77_LATITUDE]) \
+						speed = (gmt_great_circle_dist_meter(GMT, D[j].number[MGD77_LONGITUDE],D[j].number[MGD77_LATITUDE],D[curr].number[MGD77_LONGITUDE],D[curr].number[MGD77_LATITUDE]) \
 								*distance_factor)/(((D[curr].time-E[curr].utc_offset)-(D[j].time-E[j].utc_offset))*time_factor);
 						if (fabs(speed)>max_speed) {
 							nav_error = true;
@@ -2186,7 +2186,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if (curr > 0) {
 				lastLat = D[curr-1].number[MGD77_LATITUDE];
 				lastLon = D[curr-1].number[MGD77_LONGITUDE];
-				ds = GMT_great_circle_dist_meter (GMT, lastLon, lastLat, thisLon, thisLat) * 0.001;
+				ds = gmt_great_circle_dist_meter (GMT, lastLon, lastLat, thisLon, thisLat) * 0.001;
 				distance[curr] = ds + distance[curr-1];
 			}
 
@@ -2441,7 +2441,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							lastLon = D[curr-j].number[MGD77_LONGITUDE];
 							/* Calculate ds & dt between current and last valid record */
 							/* Note: ds may be different for each field */
-							ds = GMT_great_circle_dist_meter (GMT, lastLon, lastLat, thisLon, thisLat) * 0.001;
+							ds = gmt_great_circle_dist_meter (GMT, lastLon, lastLat, thisLon, thisLat) * 0.001;
 							dt = D[curr].time-E[curr].utc_offset - D[curr-j].time-E[curr-j].utc_offset;
 
 							/* Set to nan if a gap is detected (unless gap skipping is turned off) */
@@ -2550,7 +2550,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							lastLon = D[curr-j].number[MGD77_LONGITUDE];
 							/* Calculate ds & dt between current and last valid record */
 							/* Note: ds may be different for each field */
-							ds = GMT_great_circle_dist_meter (GMT, lastLon, lastLat, thisLon, thisLat) * 0.001;
+							ds = gmt_great_circle_dist_meter (GMT, lastLon, lastLat, thisLon, thisLat) * 0.001;
 							dt = D[curr].time-E[curr].utc_offset - D[curr-j].time-E[curr-j].utc_offset;
 
 							/* Calculate area of this offset */

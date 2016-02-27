@@ -276,7 +276,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'E':
 				Ctrl->E.active = true;
-				if (GMT_set_datum (GMT, opt->arg, &Ctrl->E.datum) == -1) n_errors++;
+				if (gmt_set_datum (GMT, opt->arg, &Ctrl->E.datum) == -1) n_errors++;
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -382,8 +382,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 					strcpy (to, "-");
 					strncpy (from, &opt->arg[k], GMT_LEN256);
 				}
-				n_errors += GMT_check_condition (GMT, GMT_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
-				                                 GMT_set_datum (GMT, from, &Ctrl->T.from) == -1,
+				n_errors += GMT_check_condition (GMT, gmt_set_datum (GMT, to, &Ctrl->T.to) == -1 ||
+				                                 gmt_set_datum (GMT, from, &Ctrl->T.from) == -1,
 				                                 "Syntax error -T: Usage -T[h]<from>[/<to>]\n");
 				break;
 			case 'W':
@@ -415,7 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct 
 	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		if (GMT->current.proj.utm_hemisphere == 0)		/* Default to N hemisphere if nothing is known */
 			GMT->current.proj.utm_hemisphere = 1;
-		if (GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney,
+		if (gmt_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney,
 		                         GMT->current.proj.utm_hemisphere, GMT->common.R.wesn)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
 			n_errors++;
@@ -529,20 +529,20 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active) GMT_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
-	if (Ctrl->T.active) GMT_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
+	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {
 		way = GMT_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
-		proj_type = GMT_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);
+		proj_type = gmt_init_distaz (GMT, (way) ? 'k' : 'X', way, GMT_MAP_DIST);
 	}
 	if (Ctrl->G.active) {
 		way = GMT_is_geographic (GMT, GMT_IN) ? 1 + Ctrl->G.sph: 0;
-		proj_type = GMT_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST);
+		proj_type = gmt_init_distaz (GMT, Ctrl->G.unit, way, GMT_MAP_DIST);
 	}
 	if (Ctrl->L.active) {
 		way = GMT_is_geographic (GMT, GMT_IN) ? 1 + Ctrl->L.sph: 0;
-		proj_type = GMT_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
+		proj_type = gmt_init_distaz (GMT, Ctrl->L.unit, way, GMT_MAP_DIST);
 	}
-	if (Ctrl->E.active) GMT_ECEF_init (GMT, &Ctrl->E.datum);
+	if (Ctrl->E.active) gmt_ECEF_init (GMT, &Ctrl->E.datum);
 	if (Ctrl->F.active) unit = gmt_check_scalingopt (GMT, 'F', Ctrl->F.unit, scale_unit_name);
 
 	geodetic_calc = (Ctrl->G.mode || Ctrl->A.active || Ctrl->L.active);
@@ -591,7 +591,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 		}
 	}
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};
@@ -636,12 +636,12 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->C.active) {
-		map_fwd = &GMT_geo_to_xy_noshift;
-		map_inv = &GMT_xy_to_geo_noshift;
+		map_fwd = &gmt_geo_to_xy_noshift;
+		map_inv = &gmt_xy_to_geo_noshift;
 	}
 	else {
-		map_fwd = &GMT_geo_to_xy;
-		map_inv = &GMT_xy_to_geo;
+		map_fwd = &gmt_geo_to_xy;
+		map_inv = &gmt_xy_to_geo;
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && !(geodetic_calc || Ctrl->T.active)) {
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -717,7 +717,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			/* Will need spherical trig so convert to geocentric latitudes if on an ellipsoid */
 			for (seg = 0; seg < xyline->n_segments; seg++) {
 				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
-					xyline->segment[seg]->coord[GMT_Y][row] = GMT_lat_swap (GMT, xyline->segment[seg]->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+					xyline->segment[seg]->coord[GMT_Y][row] = gmt_lat_swap (GMT, xyline->segment[seg]->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 				}
 			}
 		}
@@ -825,10 +825,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->N.active) {
 				out[GMT_X] = in[GMT_X];
-				out[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], lat_mode);
+				out[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], lat_mode);
 			}
 			else if (Ctrl->E.active) {
-				GMT_ECEF_inverse (GMT, in, out);
+				gmt_ECEF_inverse (GMT, in, out);
 			}
 			else {
 				if (Ctrl->F.active) {	/* Convert from 1:1 scale */
@@ -856,10 +856,10 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			if (double_whammy) {	/* Now apply datum shift */
 				in[GMT_X] = out[GMT_X];
 				in[GMT_Y] = out[GMT_Y];
-				GMT_conv_datum (GMT, in, out);
+				gmt_conv_datum (GMT, in, out);
 			}
 
-			if (Ctrl->S.active && GMT_map_outside (GMT, out[GMT_X], out[GMT_Y])) continue;
+			if (Ctrl->S.active && gmt_map_outside (GMT, out[GMT_X], out[GMT_Y])) continue;
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 				x_in_min = MIN (x_in_min, x_in);
 				x_in_max = MAX (x_in_max, x_in);
@@ -911,19 +911,19 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				continue;
 			}
 
-			if (Ctrl->S.active && GMT_map_outside (GMT, in[GMT_X], in[GMT_Y])) continue;
+			if (Ctrl->S.active && gmt_map_outside (GMT, in[GMT_X], in[GMT_Y])) continue;
 
 			if (Ctrl->N.active) {
 				out[GMT_X] = in[GMT_X];
-				out[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], lat_mode);
+				out[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], lat_mode);
 			}
 			else if (datum_conv_only)
-				GMT_conv_datum (GMT, in, out);
+				gmt_conv_datum (GMT, in, out);
 			else if (Ctrl->E.active)
-				GMT_ECEF_forward (GMT, in, out);
+				gmt_ECEF_forward (GMT, in, out);
 			else {
 				if (double_whammy) {	/* Apply datum shift first */
-					GMT_conv_datum (GMT, in, out);
+					gmt_conv_datum (GMT, in, out);
 					in[GMT_X] = out[GMT_X];
 					in[GMT_Y] = out[GMT_Y];
 				}
@@ -954,7 +954,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				if (GMT->current.proj.three_D) {
 					double xx = out[GMT_X], yy = out[GMT_Y];
-					GMT_xyz_to_xy (GMT, xx, yy, GMT_z_to_zz (GMT, in[GMT_Z]), &out[GMT_X], &out[GMT_Y]);
+					gmt_xyz_to_xy (GMT, xx, yy, gmt_z_to_zz (GMT, in[GMT_Z]), &out[GMT_X], &out[GMT_Y]);
 				}
 			}
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -968,11 +968,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				double s;
 				if (Ctrl->G.mode) {	/* Distances of some sort */
 					if (Ctrl->G.mode == 4)	/* Segment distances from each data record using 2 points */
-						s = GMT_distance (GMT, in[GMT_X], in[GMT_Y], in[2], in[3]);
+						s = gmt_distance (GMT, in[GMT_X], in[GMT_Y], in[2], in[3]);
 					else if (Ctrl->G.mode >= 2 && line_start)	/* Reset cumulative distances */
 						s = d = 0.0;
 					else						/* Incremental distance */
-						s = GMT_distance (GMT, Ctrl->G.lon, Ctrl->G.lat, in[GMT_X], in[GMT_Y]);
+						s = gmt_distance (GMT, Ctrl->G.lon, Ctrl->G.lat, in[GMT_X], in[GMT_Y]);
 					if (Ctrl->G.mode >= 2) {	/* Along-track calculation */
 						line_start = false;
 						d = (Ctrl->G.mode >= 3) ? s : d + s;	/* Increments or cumulative */
@@ -983,15 +983,15 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 						d = s;
 				}
 				else if (Ctrl->L.active) {	/* Compute closest distance to line */
-					y_in = (do_geo_conv) ? GMT_lat_swap (GMT, (*coord)[GMT_Y], GMT_LATSWAP_G2O) : (*coord)[GMT_Y];	/* Convert to geocentric */
-					(void) GMT_near_lines (GMT, (*coord)[GMT_X], y_in, xyline, Ctrl->L.mode, &d, &xnear, &ynear);
-					if (do_geo_conv && Ctrl->L.mode != 3) ynear = GMT_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					y_in = (do_geo_conv) ? gmt_lat_swap (GMT, (*coord)[GMT_Y], GMT_LATSWAP_G2O) : (*coord)[GMT_Y];	/* Convert to geocentric */
+					(void) gmt_near_lines (GMT, (*coord)[GMT_X], y_in, xyline, Ctrl->L.mode, &d, &xnear, &ynear);
+					if (do_geo_conv && Ctrl->L.mode != 3) ynear = gmt_lat_swap (GMT, ynear, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				}
 				else if (Ctrl->A.azims) {	/* Azimuth from previous point */
 					if (n_read_in_seg == 1)	/* First point has undefined azimuth since there is no previous point */
 						d = GMT->session.d_NaN;
 					else {
-						d = GMT_az_backaz (GMT, lon_prev, lat_prev, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
+						d = gmt_az_backaz (GMT, lon_prev, lat_prev, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
 						if (Ctrl->A.orient) {	/* Want orientations in -90/90 instead */
 							d = fmod (2.0 * d, 360.0) * 0.5;	/* Get orientation */
 							if (d > 90.0) d-= 180.0;
@@ -1001,7 +1001,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					lat_prev = in[GMT_Y];
 				}
 				else {	/* Azimuths with respect to a fixed point */
-					d = GMT_az_backaz (GMT, Ctrl->A.lon, Ctrl->A.lat, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
+					d = gmt_az_backaz (GMT, Ctrl->A.lon, Ctrl->A.lat, in[GMT_X], in[GMT_Y], Ctrl->A.reverse);
 				}
 				if (rmode == GMT_READ_MIXED) {
 					/* Special case: ASCII input and at least 3 columns:

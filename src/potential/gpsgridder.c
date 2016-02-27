@@ -377,7 +377,7 @@ GMT_LOCAL double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
 	double r = 0.0;
 	/* Get distance between the two points */
 	/* 2-D Cartesian or spherical surface in meters */
-	r = GMT_distance (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y]);
+	r = gmt_distance (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y]);
 	return (r);
 }
 
@@ -467,11 +467,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Set pointers to 2-D distance functions */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
-		GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 		normalize = GPS_TREND + GPS_NORM;
 	}
 	else {
-		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 		normalize = GPS_TREND + GPS_NORM;
 	}
 

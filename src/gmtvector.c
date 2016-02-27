@@ -282,7 +282,7 @@ GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double co
 		if (GMT_is_geographic (GMT, GMT_IN)) {
 			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
 			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
-			if (geocentric) coord[GMT_Y] = GMT_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
+			if (geocentric) coord[GMT_Y] = gmt_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
 			GMT_geo_to_cart (GMT, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
 			n_out = 3;
 		}
@@ -621,7 +621,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 					if (GMT_is_geographic (GMT, GMT_OUT)) {
 						GMT_normalize3v (GMT, vector_3);	/* Must always normalize before calling cart_to_geo */
 						GMT_cart_to_geo (GMT, &(out[GMT_Y]), &(out[GMT_X]), vector_3, true);	/* Get lon/lat */
-						if (Ctrl->E.active) out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
+						if (Ctrl->E.active) out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
 					}
 					else {
 						if (Ctrl->N.active) GMT_normalize2v (GMT, vector_3);	/* Optional for cart_to_polar */

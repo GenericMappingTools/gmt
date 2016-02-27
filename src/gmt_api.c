@@ -8143,7 +8143,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	API->error = GMT_NOERROR;
 	GMT = API->GMT;
 
-	/* Because GMT_init_distaz and possibly gmt_scanf_arg may decide to change the GMT col_type
+	/* Because gmt_init_distaz and possibly gmt_scanf_arg may decide to change the GMT col_type
 	 * we make a copy here and reset when done */
 	GMT_memcpy (col_type_save[GMT_IN], GMT->current.io.col_type[GMT_IN],   2, unsigned int);
 	GMT_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT], 2, unsigned int);
@@ -8159,7 +8159,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 			value = gmt_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
 		else if (strchr (GMT_LEN_UNITS, p[len])) {	/* Distance units, return as meters [or degrees if arc] */
 			mode = GMT_get_distance (GMT, p, &value, &unit);
-			GMT_init_distaz (GMT, unit, mode, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, unit, mode, GMT_MAP_DIST);
 			value /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert to default unit */
 		}
 		else	/* Perhaps coordinates or floats */

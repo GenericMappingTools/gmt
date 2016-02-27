@@ -830,7 +830,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		if (GMT_IS_ZERO (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -937,13 +937,13 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		xy[1] = n_dep;
 
 		if (!Ctrl->N.active) {
-			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
 
 		if (Ctrl->Z.active) GMT_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 
-		GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
+		gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 
 		if (Ctrl->S.symbol) {
 			if (!Ctrl->Q.active) {

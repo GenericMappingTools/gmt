@@ -433,7 +433,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pspolar main code ----------------------------*/
 
 	GMT_memset (col, GMT_LEN64*4, char);
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
  	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -446,17 +446,17 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = true;
 
-        GMT_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
+        gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
 	if (Ctrl->C.active) {
 		GMT_setpen (GMT, &Ctrl->C.pen);
-		GMT_geo_to_xy (GMT, Ctrl->C.lon, Ctrl->C.lat, &new_plot_x0, &new_plot_y0);
+		gmt_geo_to_xy (GMT, Ctrl->C.lon, Ctrl->C.lat, &new_plot_x0, &new_plot_y0);
 		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->C.size), GMT_SYMBOL_CIRCLE);
 		PSL_plotsegment (PSL, plot_x0, plot_y0, new_plot_x0, new_plot_y0);
 		plot_x0 = new_plot_x0;
 		plot_y0 = new_plot_y0;
 	}
 	if (Ctrl->N.active) {
-		GMT_map_outside (GMT, Ctrl->D.lon, Ctrl->D.lat);
+		gmt_map_outside (GMT, Ctrl->D.lon, Ctrl->D.lat);
 		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Point give by -D is outside map; no plotting occours.");
 			Return (GMT_OK);

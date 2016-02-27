@@ -378,8 +378,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Get geocentric wesn region in radians */
 	GMT_memcpy (wesn, G_rad->header->wesn, 4, double);
-	wesn[YLO] = D2R * GMT_lat_swap (GMT, R2D * wesn[YLO], GMT_LATSWAP_G2O);
-	wesn[YHI] = D2R * GMT_lat_swap (GMT, R2D * wesn[YHI], GMT_LATSWAP_G2O);
+	wesn[YLO] = D2R * gmt_lat_swap (GMT, R2D * wesn[YLO], GMT_LATSWAP_G2O);
+	wesn[YHI] = D2R * gmt_lat_swap (GMT, R2D * wesn[YHI], GMT_LATSWAP_G2O);
 	
 	/* Initialize the CVA grid and structure */
 
@@ -454,7 +454,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 			}
 		}
 
-		y_smt = D2R * GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric, and radians */
+		y_smt = D2R * gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric, and radians */
 		x_smt = in[GMT_X] * D2R;	/* Seamount positions in RADIANS */
 
 		/* STEP 2: Calculate this seamount's flowline */
@@ -498,7 +498,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 			/* OK, this point is within our region, get node index */
 
 			col = (unsigned int)GMT_grd_x_to_col (GMT, c[kx], G_rad->header);
-			yg = GMT_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
+			yg = gmt_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 			row = (unsigned int)GMT_grd_y_to_row (GMT, yg, G->header);
 			node = GMT_IJP (G->header, row, col);
 

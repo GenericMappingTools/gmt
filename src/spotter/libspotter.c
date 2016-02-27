@@ -616,7 +616,7 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 			e[i].fit = (fit == 'Y');
 			e[i].plot = (plot == 'Y');
 		}
-		if (geocentric) e[i].lat = GMT_lat_swap (GMT, e[i].lat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
+		if (geocentric) e[i].lat = gmt_lat_swap (GMT, e[i].lat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
 		GMT_geo_to_cart (GMT, e[i].lat, e[i].lon, P, true);
 		e[i].x = P[0];
 		e[i].y = P[1];

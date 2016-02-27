@@ -538,7 +538,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
 				GMT_free (GMT, picture);
 			else if (known || did_gray)
@@ -555,7 +555,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			if (free_GMT)
 				GMT_free (GMT, picture);
 			else if (known || did_gray)
@@ -579,7 +579,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT->common.R.active = GMT->common.J.active = true;
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
 				GMT_free (GMT, picture);
 			else if (known || did_gray)

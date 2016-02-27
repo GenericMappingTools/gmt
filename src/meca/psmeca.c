@@ -537,7 +537,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -609,7 +609,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		}
 
 		if (!Ctrl->N.active) {
-			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
 
@@ -727,7 +727,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Common to all input types ... */
 
-		GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
+		gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 
 		/* If option -C is used, read the new position */
 
@@ -738,7 +738,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			}
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
 				GMT_setpen (GMT, &Ctrl->C.pen);
-				GMT_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
+				gmt_geo_to_xy (GMT, xynew[GMT_X], xynew[GMT_Y], &plot_xnew, &plot_ynew);
 				GMT_setfill (GMT, &Ctrl->G.fill, true);
 				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, GMT_SYMBOL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);

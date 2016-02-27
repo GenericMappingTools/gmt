@@ -615,7 +615,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
 		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
-		np = (int)GMT_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
+		np = (int)gmt_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
 
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
@@ -702,7 +702,7 @@ GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, s
 	for (seg = 0; seg < G->n_segments; seg++) {
 		C = G->segment[seg];	/* Pointer to current segment */
 		for (k = 0; k < C->n_labels; k++) {
-			GMT_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
+			gmt_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
 			row = (int)GMT_grd_y_to_row (GMT, y_on, Grid->header);
 			if (row < 0 || row >= (int)Grid->header->ny) continue;		/* Somehow, outside y range */
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
@@ -714,7 +714,7 @@ GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, s
 			sincosd (angle + 90, &ny, &nx);	/* Coordinate of normal to label line */
 			x_node = GMT_grd_col_to_x (GMT, col, Grid->header);
 			y_node = GMT_grd_row_to_y (GMT, row, Grid->header);
-			GMT_geo_to_xy (GMT, x_node, y_node, &x_node_p, &y_node_p);	/* Projected coordinates of nearest node point */
+			gmt_geo_to_xy (GMT, x_node, y_node, &x_node_p, &y_node_p);	/* Projected coordinates of nearest node point */
 			dx = x_node_p - C->L[k].x;
 			dy = y_node_p - C->L[k].y;
 			if (GMT_IS_ZERO (hypot (dx, dy))) {
@@ -842,7 +842,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
-	if (need_proj && GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+	if (need_proj && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to actually read the grid file */
 
@@ -1223,7 +1223,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					save[n_save].n = n + extra;
 					n_save++;
 				}
-				if (need_proj && (nn = (unsigned int)GMT_clip_to_map (GMT, x, y, n, &xp, &yp)) != 0) {	/* Lines inside the region */
+				if (need_proj && (nn = (unsigned int)gmt_clip_to_map (GMT, x, y, n, &xp, &yp)) != 0) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
 						if (data_is_time) {

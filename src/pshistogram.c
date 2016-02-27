@@ -296,7 +296,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 				area += F->boxh[ibox];
 
 			for (i = 0; i < 4; i++) {
-				GMT_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
+				gmt_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
 				px[i] = xx;	py[i] = yy;
 			}
 
@@ -869,10 +869,10 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		wesn[XLO] = F.wesn[YLO];	wesn[XHI] = F.wesn[YHI];
 		wesn[YLO] = F.wesn[XLO];	wesn[YHI] = F.wesn[XHI];
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 	else {
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, F.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -911,7 +911,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 					case PSHISTOGRAM_LOG10_FREQ_PCT:	yp[k] = d_log101p (GMT, 100.0 * yp[k] / F.n_counted);	break;
 				}
 
-				GMT_geo_to_xy (GMT, xp[k], yp[k], &xtmp, &ytmp);
+				gmt_geo_to_xy (GMT, xp[k], yp[k], &xtmp, &ytmp);
 				xp[k] = xtmp;	yp[k] = ytmp;
 			}
 			PSL_plotline (PSL, xp, yp, NP, PSL_MOVE + PSL_STROKE);

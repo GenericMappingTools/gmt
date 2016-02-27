@@ -922,7 +922,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
 			if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
-			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
+			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
@@ -1141,7 +1141,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
 			if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
-			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
+			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
@@ -1377,7 +1377,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
@@ -1388,7 +1388,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
@@ -1402,7 +1402,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) {
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (!Ctrl->Z.active) GMT_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}

@@ -585,7 +585,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		gmt_init_scales (GMT, s_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
 	}
-	GMT_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
+	gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
 	V = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	V_sum = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	h_sum = GMT_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
@@ -828,7 +828,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 								col -= nx1;
 							/* "silent" else we are inside w/e */
 							x = GMT_grd_col_to_x (GMT, col, Grid->header);
-							this_r = GMT_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
+							this_r = gmt_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
 							if (this_r > r_km) continue;	/* Beyond the base of the seamount */
 							if (Ctrl->E.active) {	/* For Gaussian we must deal with direction etc */
 								dx = (map) ? (x - in[GMT_X]) * GMT->current.proj.DIST_KM_PR_DEG * c : (x - in[GMT_X]);

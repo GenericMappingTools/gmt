@@ -281,7 +281,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		if (!Ctrl->I.active) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
-			if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+			if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		}
 		else {			/* Do inverse transformation */
 			double x_c, y_c, lon_t, lat_t, ww, ee, ss, nn;
@@ -304,7 +304,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				y_c *= fwd_scale;
 			}
 
-			if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+			if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 			x_c *= GMT->current.proj.scale[GMT_X];
 			y_c *= GMT->current.proj.scale[GMT_Y];
@@ -313,12 +313,12 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				x_c += GMT->current.proj.origin[GMT_X];
 				y_c += GMT->current.proj.origin[GMT_Y];
 			}
-			GMT_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
+			gmt_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
-			if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+			if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 			/* Finally obtain the good limits */
 			if (shift_xy) {
@@ -335,8 +335,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				wesn[YLO] += GMT->current.proj.origin[GMT_Y];	wesn[YHI] += GMT->current.proj.origin[GMT_Y];
 			}
 
-			GMT_xy_to_geo (GMT, &ww, &ss, wesn[XLO], wesn[YLO]);		/* SW corner */
-			GMT_xy_to_geo (GMT, &ee, &nn, wesn[XHI], wesn[YHI]);		/* NE corner */
+			gmt_xy_to_geo (GMT, &ww, &ss, wesn[XLO], wesn[YLO]);		/* SW corner */
+			gmt_xy_to_geo (GMT, &ee, &nn, wesn[XHI], wesn[YHI]);		/* NE corner */
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", ww, ss, ee, nn);
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = false;
@@ -348,7 +348,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->I.active) {			/* Must flip the column types since in is Cartesian and out is geographic */
 		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
@@ -414,7 +414,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_nx = Rect->header->nx;
 			use_ny = Rect->header->ny;
 		}
-		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		GMT_err_fail (GMT, gmt_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
 		gmt_grd_init (GMT, Geo->header, options, true);
@@ -460,7 +460,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		Geo->header->ProjRefPROJ4 = strdup("+proj=longlat +no_defs");	/* HOWEVER, this may be quite incorrect for we are ignoring the DATUM */
 
-		GMT_grd_project (GMT, Rect, Geo, true);
+		gmt_grd_project (GMT, Rect, Geo, true);
 
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Geo)) Return (API->error);
@@ -504,11 +504,11 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		offset = Geo->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
 
-		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
+		GMT_err_fail (GMT, gmt_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		GMT_BC_init (GMT, Rect->header);
-		GMT_grd_project (GMT, Geo, Rect, false);
+		gmt_grd_project (GMT, Geo, Rect, false);
 		gmt_grd_init (GMT, Rect->header, options, true);
 
 		/* Modify output rect header if -F, -C, -M have been set */

@@ -544,7 +544,7 @@ GMT_LOCAL int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, 
 	unsigned int g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
 
-	if (mode == 2) GMT_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
+	if (mode == 2) gmt_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
 
 	for (g = n_in = n_set = 0; g < n_grids; g++) {
 		y = (GC[g].type == 1) ? y0 : y_in;
@@ -598,7 +598,7 @@ GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t 
 	for (col = l_col; col <= r_col; col++) {	/* Search along this row */
 		node = GMT_IJP (h, row, col);
 		if (GMT_is_fnan (S->C->G->data[node])) continue;	/* A NaN node */
-		r = GMT_distance (GMT, S->x0, S->y0, S->x[col], S->y[row]);
+		r = gmt_distance (GMT, S->x0, S->y0, S->x[col], S->y[row]);
 		if (r > S->max_radius) continue;	/* Basically not close enough */
 		if (r < S->radius) {	/* Great, this one is closer */
 			S->radius = r;
@@ -622,7 +622,7 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
 	for (row = t_row; row <= b_row; row++) {	/* Search along this column */
 		node = GMT_IJP (h, row, col);
 		if (GMT_is_fnan (S->C->G->data[node])) continue;	/* A NaN node */
-		r = GMT_distance (GMT, S->x0, S->y0, S->x[col], S->y[row]);
+		r = gmt_distance (GMT, S->x0, S->y0, S->x[col], S->y[row]);
 		if (r > S->max_radius) continue;	/* Basically not close enough */
 		if (r < S->radius) {	/* Great, this one is closer */
 			S->radius = r;
@@ -684,7 +684,7 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 	} while (!done && !found);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must check along the row0 line in case there are closer nodes */
 		int64_t C, d_col, col = (col0 == 0) ? 1 : col0 - 1;	/* Nearest neighbor in the same row */
-		double dx = GMT_distance (GMT, S->x0, S->y0, S->x[col], S->y0);	/* Distance between x-nodes at current row in chosen units */
+		double dx = gmt_distance (GMT, S->x0, S->y0, S->x[col], S->y0);	/* Distance between x-nodes at current row in chosen units */
 		if (found) /* Use smallest radius so far as max distance for searching along this row */
 			d_col = lrint (ceil (S->radius / dx));
 		else if (S->max_radius < DBL_MAX) /* Nothing was found so use radius limit as max distance for searching along this row */
@@ -799,7 +799,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			GMT_free (GMT, GC);
 			Return (EXIT_FAILURE);
 		}
-		GMT_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
+		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
 
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		gmt_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
@@ -845,7 +845,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Ctrl->C.mode = GMT_GREATCIRCLE;
 			}
 			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
-			GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		}
 
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
@@ -1080,7 +1080,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (Ctrl->T.active) {	/* Want to find nearest non-NaN if the node we find is NaN */
 			Ctrl->T.S = GMT_memory (GMT, NULL, 1, struct GMT_ZSEARCH);
 			Ctrl->T.S->C = &GC[0];	/* Since we know there is only one grid */
-			GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.dmode, GMT_MAP_DIST);
 			Ctrl->T.S->x = gmt_grd_coord (GMT, GC[0].G->header, GMT_X);
 			Ctrl->T.S->y = gmt_grd_coord (GMT, GC[0].G->header, GMT_Y);
 			Ctrl->T.S->max_radius = (Ctrl->T.radius == 0.0) ? DBL_MAX : Ctrl->T.radius;

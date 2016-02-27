@@ -515,11 +515,11 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
 			for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 				Sr->coord[GMT_X][rec] = S->coord[GMT_X][rec];
-				Sr->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				Sr->coord[GMT_Y][rec] = gmt_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 				GMT_geo_to_cart (GMT, Sr->coord[GMT_Y][rec], Sr->coord[GMT_X][rec], P_original, true);	/* Convert to a Cartesian x,y,z vector; true since we have degrees */
 				GMT_matrix_vect_mult (GMT, 3U, R, P_original, P_rotated);				/* Rotate the vector */
 				GMT_cart_to_geo (GMT, &Sr->coord[GMT_Y][rec], &Sr->coord[GMT_X][rec], P_rotated, true);	/* Recover lon lat representation; true to get degrees */
-				Sr->coord[GMT_Y][rec] = GMT_lat_swap (GMT, Sr->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				Sr->coord[GMT_Y][rec] = gmt_lat_swap (GMT, Sr->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			gmt_set_seg_polar (GMT, Sr);	/* Determine if it is a polar cap */
 		}
@@ -571,7 +571,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		grd_x = gmt_grd_coord (GMT, G_rot->header, GMT_X);
 		grd_y = gmt_grd_coord (GMT, G_rot->header, GMT_Y);
 		grd_yc = GMT_memory (GMT, NULL, G_rot->header->ny, double);
-		for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
+		for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
@@ -591,7 +591,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 			GMT_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 			GMT_cart_to_geo (GMT, &yy, &xx, P_original, true);		/* Recover degree lon lat representation */
-			yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
+			yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 			xx -= 360.0;
 			while (xx < G->header->wesn[XLO]) xx += 360.0;	/* Make sure we deal with 360 issues */
 			G_rot->data[ij_rot] = (float)gmt_bcr_get_z (GMT, G, xx, yy);
@@ -620,7 +620,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 						GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 						GMT_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 						GMT_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */
-						yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
+						yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 						scol = (int)GMT_grd_x_to_col (GMT, xx, G->header);
 						if (scol < 0) continue;
 						col_o = scol;	if (col_o >= G->header->nx) continue;

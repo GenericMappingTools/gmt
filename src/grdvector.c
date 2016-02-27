@@ -368,7 +368,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid[0]->header->wesn, 4, double);
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 
@@ -494,7 +494,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			if (GMT_is_fnan (Grid[0]->data[ij]) || GMT_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
 			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);	/* Longitude OR x OR theta [or azimuth] */
 			if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
-				GMT_map_outside (GMT, x, y);
+				gmt_map_outside (GMT, x, y);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 			}
 
@@ -529,7 +529,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				n_warn[warn]++;
 			}
 			else {	/* Draw straight Cartesian vectors */
-				GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
+				gmt_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
 				if (Ctrl->T.active)	/* Deal with negative scales in x and/or y which affect the azimuths */
 					GMT_flip_azim_d (GMT, &vec_azim);
 				vec_azim = 90.0 - vec_azim;	/* Transform azimuths to plot angle */

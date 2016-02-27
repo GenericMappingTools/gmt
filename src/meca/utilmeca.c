@@ -38,14 +38,14 @@ void get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11, dou
 	int flip = 0;
 
 	/* how much does x,y change for a 1 degree change in lon,lon ? */
-	GMT_geo_to_xy (GMT, slon,     slat,     &su,    &sv );
+	gmt_geo_to_xy (GMT, slon,     slat,     &su,    &sv );
 	if ((slat+1.0) >= 90.0) {	/* PW: Must do something different at/near NP */
-	        GMT_geo_to_xy (GMT, slon,     slat-1.0, &udlat, &vdlat);
+	        gmt_geo_to_xy (GMT, slon,     slat-1.0, &udlat, &vdlat);
 		flip = 1;
 	}
 	else
-		GMT_geo_to_xy (GMT, slon,     slat+1.0, &udlat, &vdlat);
-	GMT_geo_to_xy (GMT, slon+1.0, slat    , &udlon, &vdlon);
+		gmt_geo_to_xy (GMT, slon,     slat+1.0, &udlat, &vdlat);
+	gmt_geo_to_xy (GMT, slon+1.0, slat    , &udlon, &vdlon);
 
 	/* Compute dudlat, dudlon, dvdlat, dvdlon */
 	dudlat = udlat - su;
@@ -1132,7 +1132,7 @@ void trace_arrow (struct GMT_CTRL *GMT, double slon, double slat, double dxp, do
 	get_trans (GMT, slon, slat, &t11, &t12, &t21, &t22);
 
 	/* map start of arrow from lat, lon to x, y */
-	GMT_geo_to_xy (GMT, slon, slat, &xt, &yt);
+	gmt_geo_to_xy (GMT, slon, slat, &xt, &yt);
 
 	/* perform the transformation */
 	transform_local (xt, yt, dxp, dyp, scale, t11, t12, t21, t22, x2, y2);

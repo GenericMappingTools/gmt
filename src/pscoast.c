@@ -721,7 +721,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	else if (Ctrl->M.active && !GMT->common.J.active)
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
 
@@ -831,8 +831,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
 		anti_lat = -GMT->current.proj.pole;
 		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
-		GMT_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
-		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
+		gmt_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
+		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
 	}
 
@@ -843,7 +843,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
-		n = (int)GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
+		n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 		GMT_setfill (GMT, &Ctrl->S.fill, false);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
@@ -928,7 +928,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			bin_y[0] = bin_y[1] = bin_y[4] = c.lat_sw;
 			bin_y[2] = bin_y[3] = c.lat_sw + c.bsize;
 			/* Determine (x,y) coordinate of projected bin center */
-			GMT_geo_to_xy (GMT, c.lon_sw + 0.5 * c.bsize, c.lat_sw + 0.5 * c.bsize, &x_c, &y_c);
+			gmt_geo_to_xy (GMT, c.lon_sw + 0.5 * c.bsize, c.lat_sw + 0.5 * c.bsize, &x_c, &y_c);
 			dist = hypot (x_c - x_0, y_c - y_0);	/* Distance from projection center to mid-point of current bin */
 			/* State donut_hell if we are close (within 20%) to the horizon or if the bin contains the antipole.
 			 * This is simply done with a Cartesian inside/outside test, which is adequate.
@@ -973,7 +973,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				for (k = 0; k < np_new; k++) {
 					if (p[k].n == 0 || p[k].level < level_to_be_painted[lp]) continue;
 					if (donut_hell && GMT_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
-						n = (int)GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
+						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						GMT_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
@@ -1009,7 +1009,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
 					if (donut_hell) p[i].n = (int)GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
-					GMT->current.plot.n = GMT_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
+					GMT->current.plot.n = gmt_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
 					k = p[i].level - 1;
@@ -1071,7 +1071,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					}
 				}
 				else {
-					GMT->current.plot.n = GMT_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
+					GMT->current.plot.n = gmt_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
 					k = p[i].level;
@@ -1133,7 +1133,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				}
 				else {
 					p[i].n = (int)GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, step, 0);
-					GMT->current.plot.n = GMT_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
+					GMT->current.plot.n = gmt_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
 					k = p[i].level - 1;

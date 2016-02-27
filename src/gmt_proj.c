@@ -343,7 +343,7 @@ void GMT_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon
 
 	double clat;
 	if (GMT->current.proj.GMT_convert_latitudes) {	/* Set Conformal radius and pole latitude */
-		GMT_scale_eqrad (GMT);
+		gmt_scale_eqrad (GMT);
 		clat = GMT_latg_to_latc (GMT, lat0);
 	}
 	else
@@ -2148,7 +2148,7 @@ double GMT_left_winkel (struct GMT_CTRL *GMT, double y) {
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	gmt_iwinkel_sub (GMT, y, &phi);
-	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian - 180.0, phi, &x, &c);
+	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian - 180.0, phi, &x, &c);
 	return (x);
 }
 
@@ -2158,7 +2158,7 @@ double GMT_right_winkel (struct GMT_CTRL *GMT, double y) {
 	y -= GMT->current.proj.origin[GMT_Y];
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	gmt_iwinkel_sub (GMT, y, &phi);
-	GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian + 180.0, phi, &x, &c);
+	gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian + 180.0, phi, &x, &c);
 	return (x);
 }
 

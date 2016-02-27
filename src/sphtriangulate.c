@@ -114,7 +114,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			/* Write segment header with triangle # and the three node numbers */
 			if (get_area) {	/* Compute area */
 				for (i = 0; i < 3; i++) {
-					y = (do_authalic) ? GMT_lat_swap (GMT, lat[D->tri[ij+i]], GMT_LATSWAP_G2A) : lat[D->tri[ij+i]];	/* Convert to authalic latitude */
+					y = (do_authalic) ? gmt_lat_swap (GMT, lat[D->tri[ij+i]], GMT_LATSWAP_G2A) : lat[D->tri[ij+i]];	/* Convert to authalic latitude */
 					GMT_geo_to_cart (GMT, y, lon[D->tri[ij+i]], V[i], true);
 				}
 				area_triangle = stripack_areas (V[0], V[1], V[2]);
@@ -176,7 +176,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			S[0]->coord[GMT_X][0] = lon[arc[i].begin];	S[0]->coord[GMT_Y][0] = lat[arc[i].begin];
 			S[0]->coord[GMT_X][1] = lon[arc[i].end];	S[0]->coord[GMT_Y][1] = lat[arc[i].end];
 			if (get_area) {	/* Compute arc lengths */
-				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
+				dist = gmt_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
 			}
 			else	/* Plain header */
@@ -267,9 +267,9 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 				plon[vertex] = V->lon[vertex_last];
 				plat[vertex] = V->lat[vertex_last];
 				if (get_area) {	/* Convert three corners to Cartesian */
-					y[0] = (do_authalic) ? GMT_lat_swap (GMT, V->lat[node], GMT_LATSWAP_G2A) : V->lat[node];		/* Convert to authalic latitude */
-					y[1] = (do_authalic) ? GMT_lat_swap (GMT, V->lat[vertex_last], GMT_LATSWAP_G2A) : V->lat[vertex_last];	/* Convert to authalic latitude */
-					y[2] = (do_authalic) ? GMT_lat_swap (GMT, V->lat[vertex_new], GMT_LATSWAP_G2A) : V->lat[vertex_new];	/* Convert to authalic latitude */
+					y[0] = (do_authalic) ? gmt_lat_swap (GMT, V->lat[node], GMT_LATSWAP_G2A) : V->lat[node];		/* Convert to authalic latitude */
+					y[1] = (do_authalic) ? gmt_lat_swap (GMT, V->lat[vertex_last], GMT_LATSWAP_G2A) : V->lat[vertex_last];	/* Convert to authalic latitude */
+					y[2] = (do_authalic) ? gmt_lat_swap (GMT, V->lat[vertex_new], GMT_LATSWAP_G2A) : V->lat[vertex_new];	/* Convert to authalic latitude */
 					GMT_geo_to_cart (GMT, y[0], V->lon[node], V1, true);
 					GMT_geo_to_cart (GMT, y[1], V->lon[vertex_last], V2, true);
 					GMT_geo_to_cart (GMT, y[2], V->lon[vertex_new], V3, true);
@@ -337,7 +337,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			S[0]->coord[GMT_X][0] = V->lon[arc[i].end];	S[0]->coord[GMT_Y][0] = V->lat[arc[i].end];
 			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[0]->coord[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) {
-				dist = GMT_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
+				dist = gmt_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
 				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
 			}
 			else
@@ -547,7 +547,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the sphtriangulate main code ----------------------------*/
 
-	GMT_init_distaz (GMT, Ctrl->L.unit, GMT_sph_mode (GMT), GMT_MAP_DIST);
+	gmt_init_distaz (GMT, Ctrl->L.unit, GMT_sph_mode (GMT), GMT_MAP_DIST);
 	do_authalic = (Ctrl->A.active && !Ctrl->T.active && !GMT_IS_ZERO (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening));
 	if (do_authalic) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will convert to authalic latitudes for area calculations\n");

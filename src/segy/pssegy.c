@@ -331,8 +331,8 @@ GMT_LOCAL void segy_wig_bmap (struct GMT_CTRL *GMT, double x0, float data0, floa
 	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
 
-	GMT_geo_to_xy (GMT, x0+ (double)data0, y0, &xp0, &yp0); /* returns 2 ends of line segment in plot coords */
-	GMT_geo_to_xy (GMT, x0+ (double)data1, y1, &xp1, &yp1);
+	gmt_geo_to_xy (GMT, x0+ (double)data0, y0, &xp0, &yp0); /* returns 2 ends of line segment in plot coords */
+	gmt_geo_to_xy (GMT, x0+ (double)data1, y1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
 	px0 = irint (xp0 * dpi);
@@ -392,9 +392,9 @@ GMT_LOCAL void segy_shade_bmap (struct GMT_CTRL *GMT, double x0, float data0, fl
 	}
 
 
-	GMT_geo_to_xy (GMT, x0+(double)data0, y0, &xp0, &yp0); /* returns 2 ends of line segment in plot coords */
-	GMT_geo_to_xy (GMT, x0+(double)data1, y1, &xp1, &yp1);
-	GMT_geo_to_xy (GMT, x0, y0, &xp00, &yp0); /* to get position of zero */
+	gmt_geo_to_xy (GMT, x0+(double)data0, y0, &xp0, &yp0); /* returns 2 ends of line segment in plot coords */
+	gmt_geo_to_xy (GMT, x0+(double)data1, y1, &xp1, &yp1);
+	gmt_geo_to_xy (GMT, x0, y0, &xp00, &yp0); /* to get position of zero */
 
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
@@ -529,7 +529,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	}
 
 	/* set up map projection and PS plotting */
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

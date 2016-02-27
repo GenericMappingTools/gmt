@@ -248,9 +248,9 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		gmt_parse_common_options (GMT, "J", 'J', proj);
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
-		GMT_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
-		GMT_geo_to_xy (GMT, B.wesn[XHI], B.wesn[YHI], &B.wesn[XHI], &B.wesn[YHI]);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		gmt_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
+		gmt_geo_to_xy (GMT, B.wesn[XHI], B.wesn[YHI], &B.wesn[XHI], &B.wesn[YHI]);
 		y_max = B.wesn[YHI];
 	}
 	
@@ -262,7 +262,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	X = GMT_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	
 	if (Ctrl->D.active) {
-		GMT_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST);
+		gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST);
 		dist_bin = GMT_memory (GMT, NULL, B.nm_bin, double);
 	}
 
@@ -291,7 +291,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%s]\n", s->path);
 		
 		if (Ctrl->E.active) {	/* Project coordinates */
-			for (row = 0; row < p.n_rows; row++) GMT_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
+			for (row = 0; row < p.n_rows; row++) gmt_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
 		}
 		
 		/* Reset bin flags */
@@ -300,7 +300,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
 			GMT_memset (dist_bin, B.nm_bin, double);
-			if ((dist_km = GMT_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_index = UINT_MAX;
@@ -413,7 +413,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					y = 0.5 * (X[curr_x_pt].y + X[prev_x_pt].y);
 					if (s->geographic && fabs (y) > y_max) y = copysign (y_max, y);
 					x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, x, y, &ii_notused, &jj_notused, &B, &index), "");
-					dist_bin[index] += GMT_distance (GMT, X[curr_x_pt].x, X[curr_x_pt].y, X[prev_x_pt].x, X[prev_x_pt].y);
+					dist_bin[index] += gmt_distance (GMT, X[curr_x_pt].x, X[curr_x_pt].y, X[prev_x_pt].x, X[prev_x_pt].y);
 					B.binflag[index] |= nav_flag;		/* Only update nav flags we have not been here already */
 				}
 			}

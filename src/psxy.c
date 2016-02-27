@@ -117,7 +117,7 @@ enum Psxy_poltype {
 	PSXY_POL_ASYMM_DEV,
 	PSXY_POL_ASYMM_ENV};
 
-EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *GMT, double y);
+EXTERN_MSC double gmt_half_map_width (struct GMT_CTRL *GMT, double y);
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
@@ -147,8 +147,8 @@ GMT_LOCAL void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
 	tip1 = tip2 = (error_width2 > 0.0);
-	GMT_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
-	GMT_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
+	gmt_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
+	gmt_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
 	if (GMT_is_dnan (x_1)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X error bar exceeded domain near line %d. Set to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
@@ -170,8 +170,8 @@ GMT_LOCAL void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	unsigned int first = 0, second = (kind == EBAR_ASYMMETRICAL) ? 1 : 0;	/* first and second are either both 0 or second is 1 for asymmetrical bars */
 
 	tip1 = tip2 = (error_width2 > 0.0);
-	GMT_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
-	GMT_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
+	gmt_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
+	gmt_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
 	if (GMT_is_dnan (y_1)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y error bar exceeded domain near line %d. Set to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
@@ -193,7 +193,7 @@ GMT_LOCAL void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
-		GMT_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
+		gmt_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
 		if (GMT_is_dnan (xx[i])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X %d %% hinge exceeded domain near line %d\n", q[i], line);
 			xx[i] = (i < 2) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
@@ -236,7 +236,7 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
-		GMT_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
+		gmt_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
 		if (GMT_is_dnan (yy[i])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y %d %% hinge exceeded domain near line %d\n", q[i], line);
 			yy[i] = (i < 2) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
@@ -838,7 +838,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	error += gmt_check_binary_io (GMT, n_needed);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
 		save_u = GMT->current.setting.proj_length_unit;
 		GMT->current.setting.proj_length_unit = S.u;
@@ -1032,7 +1032,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (!Ctrl->N.active && S.symbol != GMT_SYMBOL_BARX && S.symbol != GMT_SYMBOL_BARY) {
 				/* Skip points outside map */
-				GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
+				gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 				may_intrude_inside = false;
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
 					if (S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT)
@@ -1042,7 +1042,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
+			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (GMT_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Data point with x = NaN near line %d\n", n_total_read);
@@ -1106,7 +1106,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			
 			xpos[0] = plot_x;
 			if (periodic) {
-				width = 2.0 * GMT_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
+				width = 2.0 * gmt_half_map_width (GMT, plot_y);	/* Width of map at current latitude (not all projections have straight w/e boundaries */
 				if (plot_x < GMT->current.map.half_width)     /* Might reappear at right edge */
 					xpos[1] = xpos[0] + width;	/* Outside the right edge */
 				else      /* Might reappear at left edge */
@@ -1119,11 +1119,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				case GMT_SYMBOL_BARX:
 					if (!Ctrl->N.active) in[GMT_X] = MAX (GMT->common.R.wesn[XLO], MIN (in[GMT_X], GMT->common.R.wesn[XHI]));
 					if (S.user_unit[GMT_X]) {	/* Width measured in y units */
-						GMT_geo_to_xy (GMT, S.base, in[GMT_Y] - 0.5 * dim[0], &x_1, &y_1);
-						GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y] + 0.5 * dim[0], &x_2, &y_2);
+						gmt_geo_to_xy (GMT, S.base, in[GMT_Y] - 0.5 * dim[0], &x_1, &y_1);
+						gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y] + 0.5 * dim[0], &x_2, &y_2);
 					}
 					else {
-						GMT_geo_to_xy (GMT, S.base, GMT->common.R.wesn[YLO], &x_1, &y_1);	/* Zero x level for horizontal bars */
+						gmt_geo_to_xy (GMT, S.base, GMT->common.R.wesn[YLO], &x_1, &y_1);	/* Zero x level for horizontal bars */
 						x_2 = plot_x;
 						y_1 = plot_y - 0.5 * dim[0]; y_2 = plot_y + 0.5 * dim[0];
 					}
@@ -1132,11 +1132,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				case GMT_SYMBOL_BARY:
 					if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (in[GMT_Y], GMT->common.R.wesn[YHI]));
 					if (S.user_unit[GMT_X]) {	/* Width measured in x units */
-						GMT_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
-						GMT_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
+						gmt_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
+						gmt_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
 					}
 					else {
-						GMT_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &x_1, &y_1);	/* Zero y level for vertical bars */
+						gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], S.base, &x_1, &y_1);	/* Zero y level for vertical bars */
 						x_1 = plot_x - 0.5 * dim[0]; x_2 = plot_x + 0.5 * dim[0];
 						y_2 = plot_y;
 					}
@@ -1256,14 +1256,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
 						direction = 90.0 - d;
 					else	/* Convert geo azimuth to map direction */
-						direction = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
+						direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
 					if (GMT_is_dnan (direction)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector direction = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
-						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
+						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
@@ -1360,15 +1360,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[1] = 90.0 - in[ex2+S.read_size];
 					}
 					else {
-						dim[2] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size]);
-						dim[1] = GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size]);
+						dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size]);
+						dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size]);
 					}
 					dim[0] *= 0.5;
 					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_CUSTOM:
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
-						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size+j]) : in[ex1+S.read_size+j];
+						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size+j]) : in[ex1+S.read_size+j];
 					}
 					if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
 					GMT_draw_custom_symbol (GMT, xpos[item], plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
@@ -1515,9 +1515,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					bool closed, split = false;
 					uint64_t k0;
-					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
-					/* GMT_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
+					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
 					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
 					if (split) {	/* Must write out separate sections via GMT_hold_contour */
 						uint64_t k1, n_section;
@@ -1550,9 +1550,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Decorated lines are dealt with by the contour machinery */
 					bool split = false;
 					uint64_t k0;
-					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
-					/* GMT_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
+					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
 					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
 					if (split) {	/* Must write out separate sections via GMT_hold_contour */
 						uint64_t k1, n_section;
@@ -1650,7 +1650,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end += 3;
 						}
 						/* Project and get ready */
-						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end)) == 0) continue;
+						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], end)) == 0) continue;
 						if (Ctrl->L.outline) GMT_setpen (GMT, &Ctrl->L.pen);	/* Select separate pen for polygon outline */
 						if (Ctrl->G.active)	/* Specify the fill, possibly set outline */
 							GMT_setfill (GMT, &current_fill, Ctrl->L.outline);
@@ -1661,7 +1661,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						if (Ctrl->L.outline) GMT_setpen (GMT, &current_pen);	/* Reset the pen to what -W indicates */
 					}
 					if (draw_line) {
-						if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
+						if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 						GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, current_pen.mode);
 						plot_end_vectors (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &current_pen);	/* Maybe add vector heads */
 					}

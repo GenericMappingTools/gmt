@@ -113,8 +113,7 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdhis" GMT_OPT("HMm")
 
-double GMT_great_circle_dist_degree (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
-int GMT_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
+int gmt_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
 
 #define KM_PR_RAD (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
@@ -432,7 +431,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			hotspot[spot].D = F->table[0]->segment[0];	/* Only one table with one segment for histories */
-			for (row = 0; row < hotspot[spot].D->n_rows; row++) hotspot[spot].D->coord[GMT_Y][row] = GMT_lat_swap (GMT, hotspot[spot].D->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			for (row = 0; row < hotspot[spot].D->n_rows; row++) hotspot[spot].D->coord[GMT_Y][row] = gmt_lat_swap (GMT, hotspot[spot].D->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 		}
 	}
 	
@@ -510,7 +509,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			n_skipped++;
 			continue;
 		}
-		y_smt = D2R * GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric, and radians */
+		y_smt = D2R * gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric, and radians */
 		x_smt = in[GMT_X] * D2R;
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
@@ -538,7 +537,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 					lat = hot[spot].h->lat;
 				}
 				/* Compute distance from track location to (moving or fixed) hotspot */
-				dist = GMT_great_circle_dist_degree (GMT, lon, lat, R2D * c[k], R2D * c[k+1]);
+				dist = gmt_great_circle_dist_degree (GMT, lon, lat, R2D * c[k], R2D * c[k+1]);
 				if (!Ctrl->L.degree) dist *= GMT->current.proj.DIST_KM_PR_DEG;
 				if (dist < hot[spot].np_dist) {
 					hot[spot].np_dist = dist;
@@ -566,7 +565,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			better = false;
 			if (hot[spot].nearest > 0) {	/* There is a point along the flowline before the nearest node */
 				GMT_geo_to_cart (GMT, c[k-2], c[k-3], A, false);	/* 3-D vector of end of this segment */
-				if (GMT_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
+				if (gmt_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
 						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
@@ -581,7 +580,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			}
 			if (hot[spot].nearest < (np-1) ) {	/* There is a point along the flowline after the nearest node */
 				GMT_geo_to_cart (GMT, c[k+4], c[k+3], A, false);	/* 3-D vector of end of this segment */
-				if (GMT_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
+				if (gmt_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
 						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
@@ -635,7 +634,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->L.mode == 3) {	/* Want x, y, time, dist, z output */
 				out[GMT_X] = hot[0].np_lon;
-				out[GMT_Y] = GMT_lat_swap (GMT, hot[0].np_lat, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				out[GMT_Y] = gmt_lat_swap (GMT, hot[0].np_lat, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				out[2] = hot[0].np_time;
 				out[3] = hot[0].np_dist * hot[0].np_sign;
 				out[4] = z_smt;

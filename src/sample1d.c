@@ -308,7 +308,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
-		GMT_init_distaz (GMT, Ctrl->I.unit, Ctrl->I.smode, GMT_MAP_DIST);		
+		gmt_init_distaz (GMT, Ctrl->I.unit, Ctrl->I.smode, GMT_MAP_DIST);		
 		resample_path = true;	/* Resample (x,y) track according to -I and -A */
 	}
 
@@ -368,13 +368,13 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			GMT_memset (nan_flag, Din->n_columns, unsigned char);
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = true;
 			if (resample_path) {	/* Need distances for path interpolation */
-				dist_in = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
+				dist_in = gmt_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
 				lon = GMT_memory (GMT, NULL, S->n_rows, double);
 				lat = GMT_memory (GMT, NULL, S->n_rows, double);
 				GMT_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
 				GMT_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
 				m = GMT_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
-				t_out = GMT_dist_array (GMT, lon, lat, m, true);
+				t_out = gmt_dist_array (GMT, lon, lat, m, true);
 			}
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */
 				uint64_t n_outside = 0;

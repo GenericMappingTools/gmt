@@ -168,26 +168,26 @@ void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_p
 
 	GMT_grd_loop (Topo, row, col, ij) {	/* First loop over all the grid-nodes */
 		if (GMT_is_fnan (Topo->data[ij])) continue;
-		GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (col, Topo->header), GMT_grd_row_to_y (row, Topo->header), (double)Topo->data[ij], &xtmp, &ytmp);
+		gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (col, Topo->header), GMT_grd_row_to_y (row, Topo->header), (double)Topo->data[ij], &xtmp, &ytmp);
 		GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, ytmp);
 		GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, ytmp);
 	}
 	if (draw_plane) {	/* The plane or facade may exceed the current min/max so loop over these as well */
 		for (col = 0; col < Topo->header->nx; col++) {
 			tmp = GMT_grd_col_to_x (col, Topo->header);
-			GMT_geoz_to_xy (GMT, tmp, Topo->header->wesn[YLO], plane_level, &xtmp, &ytmp);
+			gmt_geoz_to_xy (GMT, tmp, Topo->header->wesn[YLO], plane_level, &xtmp, &ytmp);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, ytmp);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, ytmp);
-			GMT_geoz_to_xy (GMT, tmp, Topo->header->wesn[YHI], plane_level, &xtmp, &ytmp);
+			gmt_geoz_to_xy (GMT, tmp, Topo->header->wesn[YHI], plane_level, &xtmp, &ytmp);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, ytmp);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, ytmp);
 		}
 		for (row = 0; row < Topo->header->ny; row++) {
 			tmp = GMT_grd_row_to_y (row, Topo->header);
-			GMT_geoz_to_xy (GMT, Topo->header->wesn[XLO], tmp, plane_level, &xtmp, &ytmp);
+			gmt_geoz_to_xy (GMT, Topo->header->wesn[XLO], tmp, plane_level, &xtmp, &ytmp);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, ytmp);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, ytmp);
-			GMT_geoz_to_xy (GMT, Topo->header->wesn[XHI], tmp, plane_level, &xtmp, &ytmp);
+			gmt_geoz_to_xy (GMT, Topo->header->wesn[XHI], tmp, plane_level, &xtmp, &ytmp);
 			GMT->current.proj.z_project.ymin = MIN (GMT->current.proj.z_project.ymin, ytmp);
 			GMT->current.proj.z_project.ymax = MAX (GMT->current.proj.z_project.ymax, ytmp);
 		}
@@ -726,7 +726,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active && Ctrl->N.level > GMT->common.R.wesn[ZHI]) GMT->common.R.wesn[ZHI] = Ctrl->N.level;
 	}
 
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 
@@ -892,7 +892,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		ij = GMT_IJP (Topo->header, row, 0);
 		for (col = 0; col < Topo->header->nx - 1; col++, ij++) {
 			for (jj = n_out = 0; jj < 2; jj++) {	/* Loop over the 4 nodes making up one tile */
-				for (ii = 0; ii < 2; ii++) if (GMT_map_outside (GMT, xval[col+ii], yval[row+jj])) n_out++;
+				for (ii = 0; ii < 2; ii++) if (gmt_map_outside (GMT, xval[col+ii], yval[row+jj])) n_out++;
 			}
 			if (n_out == 4) Topo->data[ij] = Topo->data[ij+1] = Topo->data[ij+Topo->header->mx] = Topo->data[ij+Topo->header->mx+1] = GMT->session.f_NaN;	/* Entire tile is outside */
 		}
@@ -928,68 +928,68 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_setpen (GMT, &Ctrl->W.pen[2]);
 		if (!GMT->current.proj.z_project.draw[0]) {	/* Southern side */
 			if (GMT->common.R.oblique) {
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[1], GMT->current.proj.z_project.corner_y[1], Ctrl->N.level, &xx[1], &yy[1]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[1], GMT->current.proj.z_project.corner_y[1], Ctrl->N.level, &xx[1], &yy[1]);
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (col = 0; col < Z->header->nx; col++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[col], &yy[col]);
+				for (col = 0; col < Z->header->nx; col++) gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[col], &yy[col]);
 				PSL_plotline (PSL, xx, yy, Z->header->nx, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
 		if (!GMT->current.proj.z_project.draw[2]) {	/* Northern side */
 			if (GMT->common.R.oblique) {
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[3], GMT->current.proj.z_project.corner_y[3], Ctrl->N.level, &xx[0], &yy[0]);
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[2], GMT->current.proj.z_project.corner_y[2], Ctrl->N.level, &xx[1], &yy[1]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[3], GMT->current.proj.z_project.corner_y[3], Ctrl->N.level, &xx[0], &yy[0]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[2], GMT->current.proj.z_project.corner_y[2], Ctrl->N.level, &xx[1], &yy[1]);
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (col = 0; col < Z->header->nx; col++) GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[col], &yy[col]);
+				for (col = 0; col < Z->header->nx; col++) gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[col], &yy[col]);
 				PSL_plotline (PSL, xx, yy, Z->header->nx, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/* Western side */
 			if (GMT->common.R.oblique) {
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[3], GMT->current.proj.z_project.corner_y[3], Ctrl->N.level, &xx[1], &yy[1]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[3], GMT->current.proj.z_project.corner_y[3], Ctrl->N.level, &xx[1], &yy[1]);
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (row = 0; row < Z->header->ny; row++) GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
+				for (row = 0; row < Z->header->ny; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
 				PSL_plotline (PSL, xx, yy, Z->header->ny, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/* Eastern side */
 			if (GMT->common.R.oblique) {
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[1], GMT->current.proj.z_project.corner_y[1], Ctrl->N.level, &xx[0], &yy[0]);
-				GMT_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[2], GMT->current.proj.z_project.corner_y[2], Ctrl->N.level, &xx[1], &yy[1]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[1], GMT->current.proj.z_project.corner_y[1], Ctrl->N.level, &xx[0], &yy[0]);
+				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[2], GMT->current.proj.z_project.corner_y[2], Ctrl->N.level, &xx[1], &yy[1]);
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 			else {
-				for (row = 0; row < Z->header->ny; row++) GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
+				for (row = 0; row < Z->header->ny; row++) gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), Ctrl->N.level, &xx[row], &yy[row]);
 				PSL_plotline (PSL, xx, yy, Z->header->ny, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 			}
 		}
 
 		if (!GMT->common.R.oblique) {
-			GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YLO], Ctrl->N.level, &xx[0], &yy[0]);
-			GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YLO], Ctrl->N.level, &xx[1], &yy[1]);
-			GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YHI], Ctrl->N.level, &xx[2], &yy[2]);
-			GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YHI], Ctrl->N.level, &xx[3], &yy[3]);
+			gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YLO], Ctrl->N.level, &xx[0], &yy[0]);
+			gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YLO], Ctrl->N.level, &xx[1], &yy[1]);
+			gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YHI], Ctrl->N.level, &xx[2], &yy[2]);
+			gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YHI], Ctrl->N.level, &xx[3], &yy[3]);
 			if (!GMT_is_fnan (Topo->data[nw])) {
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YHI], (double)(Topo->data[nw]), &x_left, &y_top);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YHI], (double)(Topo->data[nw]), &x_left, &y_top);
 				PSL_plotsegment (PSL, x_left, y_top, xx[3], yy[3]);
 			}
 			if (!GMT_is_fnan (Topo->data[ne])) {
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YHI], (double)(Topo->data[ne]), &x_right, &y_top);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YHI], (double)(Topo->data[ne]), &x_right, &y_top);
 				PSL_plotsegment (PSL, x_right, y_top, xx[2], yy[2]);
 			}
 			if (!GMT_is_fnan (Topo->data[se])) {
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YLO], (double)(Topo->data[se]), &x_right, &y_bottom);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], Z->header->wesn[YLO], (double)(Topo->data[se]), &x_right, &y_bottom);
 				PSL_plotsegment (PSL, x_right, y_bottom, xx[1], yy[1]);
 			}
 			if (!GMT_is_fnan (Topo->data[sw])) {
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YLO], (double)(Topo->data[sw]), &x_left, &y_bottom);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], Z->header->wesn[YLO], (double)(Topo->data[sw]), &x_left, &y_bottom);
 				PSL_plotsegment (PSL, x_left, y_bottom, xx[0], yy[0]);
 			}
 		}
@@ -1014,7 +1014,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				GMT_illuminate (GMT, Intens->data[ij], fill.rgb);
 			else
 				GMT_illuminate (GMT, Ctrl->I.value, fill.rgb);
-			n = GMT_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
+			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			GMT_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
 			GMT_geo_polygons (GMT, &S);
@@ -1061,7 +1061,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				if (GMT_is_dnan (value))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
-					GMT_geoz_to_xy (GMT, x_drape[col], y_drape[row], value, &xp, &yp);
+					gmt_geoz_to_xy (GMT, x_drape[col], y_drape[row], value, &xp, &yp);
 					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
 					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
@@ -1084,7 +1084,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				if (GMT_is_fnan (Topo->data[ij]))	/* Outside -R or NaNs not used */
 					ix[bin] = iy[bin] = -1;
 				else {
-					GMT_geoz_to_xy (GMT, xval[col], yval[row], (double)Topo->data[ij], &xp, &yp);
+					gmt_geoz_to_xy (GMT, xval[col], yval[row], (double)Topo->data[ij], &xp, &yp);
 					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
 					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
@@ -1276,10 +1276,10 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			for (k = 0, j = j_start-1; j != j_stop; j += j_inc, k++) {
 				ij  = GMT_IJP(Topo->header, j, i);
 				if (GMT_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
-				GMT_geoz_to_xy (GMT, xval[i], yval[j], (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
+				gmt_geoz_to_xy (GMT, xval[i], yval[j], (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
 			}
-			GMT_geoz_to_xy (GMT, xval[i], yval[j_start-1] + (k - 1) * (i_inc * Z->header->inc[GMT_Y]), z_base, &xx[k], &yy[k]);
-			GMT_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
+			gmt_geoz_to_xy (GMT, xval[i], yval[j_start-1] + (k - 1) * (i_inc * Z->header->inc[GMT_Y]), z_base, &xx[k], &yy[k]);
+			gmt_geoz_to_xy (GMT, xval[i], yval[j_start-1], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 		}
 		GMT_free (GMT, xval);
@@ -1297,11 +1297,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			for (k = 0, i = i_start+1; i != i_stop; i += i_inc, k++) {
 				ij  = GMT_IJP(Topo->header, j, i);
 				if (GMT_is_fnan(Topo->data[ij+ij_inc[0]])) continue;
-				GMT_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],		// i_inc = -1
+				gmt_geoz_to_xy (GMT, xval[i_start+1] + k * (i_inc * Z->header->inc[GMT_X]), yval[j],		// i_inc = -1
 				                (double)(Topo->data[ij+ij_inc[1]]), &xx[k], &yy[k]);
 			}
-			GMT_geoz_to_xy (GMT, xval[i_start+1] + (k - 1) * (i_inc * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
-			GMT_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
+			gmt_geoz_to_xy (GMT, xval[i_start+1] + (k - 1) * (i_inc * Z->header->inc[GMT_X]), yval[j], z_base, &xx[k], &yy[k]);
+			gmt_geoz_to_xy (GMT, xval[i_start+1], yval[j], z_base, &xx[k+1], &yy[k+1]);
 			PSL_plotpolygon (PSL, xx, yy, k+2);
 			//PSL_plotline (PSL, xx, yy, k+2, PSL_MOVE + PSL_STROKE);
 		}
@@ -1325,10 +1325,10 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				if (bad) continue;
 				x_left = xval[i];
 				x_right = x_left + abs (i_inc) * Z->header->inc[GMT_X];
-				GMT_geoz_to_xy (GMT, x_left, y_bottom, (double)(Topo->data[ij+ij_inc[0]]), &xx[0], &yy[0]);
-				GMT_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
-				GMT_geoz_to_xy (GMT, x_right, y_top, (double)(Topo->data[ij+ij_inc[2]]), &xx[2], &yy[2]);
-				GMT_geoz_to_xy (GMT, x_left, y_top, (double)(Topo->data[ij+ij_inc[3]]), &xx[3], &yy[3]);
+				gmt_geoz_to_xy (GMT, x_left, y_bottom, (double)(Topo->data[ij+ij_inc[0]]), &xx[0], &yy[0]);
+				gmt_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
+				gmt_geoz_to_xy (GMT, x_right, y_top, (double)(Topo->data[ij+ij_inc[2]]), &xx[2], &yy[2]);
+				gmt_geoz_to_xy (GMT, x_left, y_top, (double)(Topo->data[ij+ij_inc[3]]), &xx[3], &yy[3]);
 				GMT_setfill (GMT, &Ctrl->Q.fill, true);
 				PSL_plotpolygon (PSL, xx, yy, 4);
 				if (Ctrl->W.contour) {
@@ -1338,7 +1338,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 						for (k = 0, this_point = this_cont->first_point; this_point; this_point = this_point->next_point) {
 							z_val = (Ctrl->G.active) ? gmt_bcr_get_z (GMT, Topo, (double)this_point->x, (double)this_point->y) : this_cont->value;
 							if (GMT_is_dnan (z_val)) continue;
-							GMT_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);
+							gmt_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);
 							k++;
 						}
 						if (!pen_set) {
@@ -1406,7 +1406,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 					X_vert[0] = X_vert[3] = x_left;	X_vert[1] = X_vert[2] = x_right;
 					Y_vert[0] = Y_vert[1] = y_bottom;	Y_vert[2] = Y_vert[3] = y_top;
-					for (k = 0; k < 4; k++) GMT_geoz_to_xy (GMT, X_vert[k], Y_vert[k], 0.0, &xmesh[k], &ymesh[k]);
+					for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], 0.0, &xmesh[k], &ymesh[k]);
 					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, GMT->session.d_NaN, false, Ctrl->Q.monochrome, 0.0, Ctrl->Q.outline);
 					continue;
 				}
@@ -1531,7 +1531,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								}
 								/* Compute the xy from the xyz triplets */
 
-								for (k = 0; k < n; k++) GMT_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
+								for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 								z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : this_cont->value;
 
 								/* Now paint the polygon piece */
@@ -1562,7 +1562,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							/* Compute the xy from the xyz triplets */
 
-							for (k = 0; k < n; k++) GMT_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
+							for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 
 							z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : v[0];
 
@@ -1629,7 +1629,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 							/* Compute the xy from the xyz triplets */
 
-							for (k = 0; k < n; k++) GMT_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
+							for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 							z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : this_cont->value;
 
 							/* Now paint the polygon piece */
@@ -1657,7 +1657,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 						/* Compute the xy from the xyz triplets */
 
-						for (k = 0; k < n; k++) GMT_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
+						for (k = 0; k < n; k++) gmt_geoz_to_xy (GMT, x[k], y[k], z[k], &xx[k], &yy[k]);
 
 						z_ave = (P->is_continuous) ? get_z_ave (v, next_up, n) : v[0];
 
@@ -1675,7 +1675,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							z_val = (Ctrl->G.active) ? gmt_bcr_get_z (GMT, Topo, (double)this_point->x, (double)this_point->y) : this_cont->value;
 							if (GMT_is_dnan (z_val)) continue;
 
-							GMT_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);
+							gmt_geoz_to_xy (GMT, (double)this_point->x, (double)this_point->y, z_val, &xx[k], &yy[k]);
 							k++;
 						}
 						if (!pen_set) {
@@ -1686,7 +1686,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 					}
 					if (pen_set) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 					if (Ctrl->Q.outline) {
-						for (k = 0; k < 4; k++) GMT_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
+						for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
 						PSL_setfill (PSL, GMT->session.no_rgb, true);
 						PSL_plotpolygon (PSL, xmesh, ymesh, 4);
 					}
@@ -1698,7 +1698,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 					/* Now paint the polygon piece */
 
-					for (k = 0; k < 4; k++) GMT_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
+					for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
 					paint_it_grdview (GMT, PSL, P, xmesh, ymesh, 4, z_ave+small, Ctrl->I.active, Ctrl->Q.monochrome, this_intensity, Ctrl->Q.outline);
 				}
 			}
@@ -1722,41 +1722,41 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
 			for (col = 0, n = 0, ij = sw; col < Z->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YLO], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
 			for (col = Z->header->nx ; col > 0; col--, n++)
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YLO], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[1]) {	/*	Eastern side */
 			for (row = 0, n = 0, ij = ne; row < Z->header->ny; row++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
 			for (row = Z->header->ny; row > 0; row--, n++)
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XHI], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[2])	{	/* Northern side */
 			for (col = 0, n = 0, ij = nw; col < Z->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Z->header), Z->header->wesn[YHI], (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
 			for (col = Z->header->nx; col > 0; col--, n++)
-				GMT_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, GMT_grd_col_to_x (GMT, col-1, Z->header), Z->header->wesn[YHI], Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 		if (!GMT->current.proj.z_project.draw[3]) {	/*	Western side */
 			for (row = 0, n = 0, ij = nw; row < Z->header->ny; row++, ij += Topo->header->mx) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row, Z->header), (double)(Topo->data[ij]), &xx[n], &yy[n]);
 				n++;
 			}
 			for (row = Z->header->ny; row > 0; row--, n++)
-				GMT_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
+				gmt_geoz_to_xy (GMT, Z->header->wesn[XLO], GMT_grd_row_to_y (GMT, row-1, Z->header), Ctrl->N.level, &xx[n], &yy[n]);
 			PSL_plotpolygon (PSL, xx, yy, (int)n);
 		}
 	}

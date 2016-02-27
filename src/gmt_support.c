@@ -115,7 +115,7 @@ struct CPT_Z_SCALE {
 	double z_unit_to_meter;	/* Scale, given z_unit, to convert z from <unit> to meters */
 };
 
-EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, int id);
+EXTERN_MSC double gmt_distance_type (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE, int id);
 EXTERN_MSC char * gmt_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
 EXTERN_MSC int64_t gmt_parse_range (struct GMT_CTRL *GMT, char *p, int64_t *start, int64_t *stop);
 
@@ -1820,8 +1820,8 @@ int GMT_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	 *   - means less accurate; use Flat Earth approximation (fast).
 	 *   + means more accurate; use geodesic distances (slow).
 	 * Otherwise we use great circle distances (intermediate) [Default].
-	 * The calling program must call GMT_init_distaz with the
-	 * distance_flag and unit to set up the GMT_distance functions.
+	 * The calling program must call gmt_init_distaz with the
+	 * distance_flag and unit to set up the gmt_distance functions.
 	 * Distances computed will be in the unit selected.
 	 */
 	int last, d_flag = 1, start = 1, way;
@@ -3812,7 +3812,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 						G->label_type = GMT_LABEL_IS_MDIST;
 						if (p[2] && strchr ("defkMn", (int)p[2])) {	/* Found a valid unit */
 							c = p[2];
-							GMT_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_LABEL_DIST);
+							gmt_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_LABEL_DIST);
 						}
 						else 	/* Meaning "not set" */
 							c = 0;
@@ -4006,7 +4006,7 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 				k = (int)strlen (txt_a) - 1;
 				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
 				L->label_dist_spacing = atof (&txt_a[1]);
-				GMT_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_CONT_DIST);
+				gmt_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_CONT_DIST);
 			}
 			else
 				L->label_dist_spacing = GMT_to_inch (GMT, &txt_a[1]);
@@ -4213,7 +4213,7 @@ int GMT_decorate_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_DE
 				k = (int)strlen (txt_a) - 1;
 				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
 				L->symbol_dist_spacing = atof (&txt_a[1]);
-				GMT_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_CONT_DIST);
+				gmt_init_distaz (GMT, c, GMT_sph_mode (GMT), GMT_CONT_DIST);
 			}
 			else
 				L->symbol_dist_spacing = GMT_to_inch (GMT, &txt_a[1]);
@@ -4313,7 +4313,7 @@ double gmt_determine_endpoint (struct GMT_CTRL *GMT, double x0, double y0, doubl
 		*x1 = x0 + length * s_az;
 		*y1 = y0 + length * c_az;
 	}
-	return (GMT_distance (GMT, x0, y0, *x1, *y1));
+	return (gmt_distance (GMT, x0, y0, *x1, *y1));
 }
 
 /*! . */
@@ -4340,7 +4340,7 @@ double gmt_determine_endpoints (struct GMT_CTRL *GMT, double x[], double y[], do
 		x[0] = x[0] - length * s_az;
 		y[0] = y[0] - length * c_az;
 	}
-	return (GMT_distance (GMT, x[0], y[0], x[1], y[1]));
+	return (gmt_distance (GMT, x[0], y[0], x[1], y[1]));
 }
 
 /*! . */
@@ -4531,7 +4531,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 		if (resample) S->n_rows = GMT_resample_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
 		if (get_distances) {	/* Compute cumulative distances along line */
 			GMT_free (GMT, S->coord[GMT_Z]);	/* Free so we can alloc a new array */
-			S->coord[GMT_Z] = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
+			S->coord[GMT_Z] = gmt_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
 			if (p_mode & GMT_GOT_ORIENT) {	/* Adjust distances to have 0 at specified origin */
 				L = 0.5 * S->coord[GMT_Z][S->n_rows-1];	/* Half-way distance to remove */
 				for (k = 0; k < S->n_rows; k++) S->coord[GMT_Z][k] -= L;
@@ -4541,7 +4541,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 			uint64_t k;
 			double x, y;
 			for (k = 0; k < S->n_rows; k++) {
-				GMT_geo_to_xy (GMT, S->coord[GMT_X][k], S->coord[GMT_Y][k], &x, &y);
+				gmt_geo_to_xy (GMT, S->coord[GMT_X][k], S->coord[GMT_Y][k], &x, &y);
 				S->coord[GMT_X][k] = x;
 				S->coord[GMT_Y][k] = y;
 			}
@@ -4598,7 +4598,7 @@ int GMT_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		else {	/* Should be OK to use */
 			for (k = 0; k < G->xp->n_segments; k++) {
 				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
-					GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
+					gmt_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
 					G->xp->segment[k]->coord[GMT_X][i] = x;
 					G->xp->segment[k]->coord[GMT_Y][i] = y;
 				}
@@ -4648,10 +4648,10 @@ int GMT_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 			/* Got here if data are OK */
 
 			if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
-			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 
-			GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
+			gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
 			G->f_n++;
 			if (G->f_n == n_alloc) {	/* ALlocate more space for these records */
 				n_alloc <<= 1;
@@ -4740,7 +4740,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		else {	/* Should be OK to use */
 			for (k = 0; k < G->xp->n_segments; k++) {
 				for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
-					GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
+					gmt_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);
 					G->xp->segment[k]->coord[GMT_X][i] = x;
 					G->xp->segment[k]->coord[GMT_Y][i] = y;
 				}
@@ -4791,10 +4791,10 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 			/* Got here if data are OK */
 
 			if (GMT->current.setting.io_lonlat_toggle[GMT_IN]) double_swap (xy[GMT_X], xy[GMT_Y]);				/* Got lat/lon instead of lon/lat */
-			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			gmt_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;	/* Outside map region */
 
-			GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
+			gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &G->f_xy[GMT_X][G->f_n], &G->f_xy[GMT_Y][G->f_n]);		/* Project -> xy inches */
 			if (n_col == 3) {	/* The label part if asked for */
 				G->f_label[G->f_n] = GMT_memory (GMT, NULL, strlen(txt_c)+1, char);
 				strcpy (G->f_label[G->f_n], txt_c);
@@ -5912,7 +5912,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 
 		/* Calculate distance along contour and store in track_dist array */
 
-		if (G->dist_kind == 1) GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
+		if (G->dist_kind == 1) gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
 		map_dist = GMT_memory (GMT, NULL, nn, double);	/* Distances on map in inches */
 		track_dist = GMT_memory (GMT, NULL, nn, double);	/* May be km ,degrees or whatever */
 		value_dist = GMT_memory (GMT, NULL, nn, double);	/* May be km ,degrees or whatever */
@@ -5935,7 +5935,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 		for (i = 1; i < nn; i++) {
 			/* Distance from xy */
 			dx = xx[i] - xx[i-1];
-			if (GMT_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = GMT_half_map_width (GMT, yy[i-1]))) {
+			if (GMT_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = gmt_half_map_width (GMT, yy[i-1]))) {
 				width *= 2.0;
 				dx = copysign (width - fabs (dx), -dx);
 				if (xx[i] < width)
@@ -5948,9 +5948,9 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 			map_dist[i] = map_dist[i-1] + step;
 			if (G->dist_kind == 1 || G->label_type == GMT_LABEL_IS_MDIST) {
 				lon[0] = lon[1];	lat[0] = lat[1];
-				GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
-				if (G->dist_kind == 1) step = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
-				if (G->label_type == GMT_LABEL_IS_MDIST) stept = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_LABEL_DIST);
+				gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
+				if (G->dist_kind == 1) step = gmt_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
+				if (G->label_type == GMT_LABEL_IS_MDIST) stept = gmt_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_LABEL_DIST);
 			}
 			if (radii[i] < G->min_radius) step = stept = 0.0;	/* If curvature is too great we simply don't add up distances */
 			track_dist[i] = track_dist[i-1] + step;
@@ -6204,7 +6204,7 @@ void GMT_hold_contour (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_
 	uint64_t seg, first, n, *split = NULL;
 	double *xs = NULL, *ys = NULL, *xin = NULL, *yin = NULL;
 
-	if ((split = GMT_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
+	if ((split = gmt_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL) {	/* Just one long line */
 		gmt_hold_contour_sub (GMT, xxx, yyy, nn, zval, label, ctype, cangle, closed, contour, G);
 		return;
 	}
@@ -6244,7 +6244,7 @@ void gmt_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, struct
 		L->x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
 		L->y += sign * (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
 	}
-	GMT_xy_to_geo (GMT, &x, &y, L->x, L->y);
+	gmt_xy_to_geo (GMT, &x, &y, L->x, L->y);
 	/* Build record with "lon lat angle symbol" */
 	gmt_add_to_record (GMT, record, x, GMT_X, 2);
 	gmt_add_to_record (GMT, record, y, GMT_Y, 2);
@@ -6276,7 +6276,7 @@ void gmt_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, double *yy, uint6
 
 	/* Calculate distance along line and store in track_dist array */
 
-	if (G->dist_kind == 1) GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
+	if (G->dist_kind == 1) gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[0], yy[0]);
 	map_dist   = GMT_memory (GMT, NULL, nn, double);	/* Distances on map in inches */
 	track_dist = GMT_memory (GMT, NULL, nn, double);	/* May be km, degrees or whatever */
 	value_dist = GMT_memory (GMT, NULL, nn, double);	/* May be km, degrees or whatever */
@@ -6285,7 +6285,7 @@ void gmt_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, double *yy, uint6
 	for (i = 1; i < nn; i++) {
 		/* Distance from xy in plot distances (inch) */
 		dx = xx[i] - xx[i-1];
-		if (GMT_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = GMT_half_map_width (GMT, yy[i-1]))) {
+		if (GMT_is_geographic (GMT, GMT_IN) && GMT->current.map.is_world && fabs (dx) > (width = gmt_half_map_width (GMT, yy[i-1]))) {
 			width *= 2.0;
 			dx = copysign (width - fabs (dx), -dx);
 			if (xx[i] < width)
@@ -6298,8 +6298,8 @@ void gmt_decorated_line_sub (struct GMT_CTRL *GMT, double *xx, double *yy, uint6
 		map_dist[i] = map_dist[i-1] + step;
 		if (G->dist_kind == 1) {	/* Wanted spacing in map distance units */
 			lon[0] = lon[1];	lat[0] = lat[1];
-			GMT_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
-			if (G->dist_kind == 1) step = GMT_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
+			gmt_xy_to_geo (GMT, &lon[1], &lat[1], xx[i], yy[i]);
+			if (G->dist_kind == 1) step = gmt_distance_type (GMT, lon[0], lat[0], lon[1], lat[1], GMT_CONT_DIST);
 		}
 		track_dist[i] = track_dist[i-1] + step;
 		value_dist[i] = value_dist[i-1] + stept;
@@ -6417,7 +6417,7 @@ void GMT_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint6
 
 	uint64_t *split = NULL;
 
-	if ((split = GMT_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL)	/* Just one long line */
+	if ((split = gmt_split_line (GMT, xxx, yyy, &nn, G->line_type)) == NULL)	/* Just one long line */
 		gmt_decorated_line_sub (GMT, *xxx, *yyy, nn, G, D, seg);
 	else {
 		/* Here we had jumps and need to call the _sub function once for each segment */
@@ -8816,7 +8816,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		}
 		else {	/* Just got latitude scale */
 			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, string, GMT_IS_LON, &(ms->origin[GMT_Y])), string);
-			ms->origin[GMT_X] = GMT->session.d_NaN;	/* Must be set after GMT_map_setup is called */
+			ms->origin[GMT_X] = GMT->session.d_NaN;	/* Must be set after gmt_map_setup is called */
 		}
 		if (fabs (ms->origin[GMT_Y]) > 90.0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale latitude is out of range\n", option);
@@ -10393,7 +10393,7 @@ int gmt_polar_adjust (struct GMT_CTRL *GMT, int side, double angle, double x, do
 	int justify, left, right, top, bottom, low;
 	double x0, y0;
 
-	/* GMT_geo_to_xy (GMT->current.proj.central_meridian, GMT->current.proj.pole, &x0, &y0); */
+	/* gmt_geo_to_xy (GMT->current.proj.central_meridian, GMT->current.proj.pole, &x0, &y0); */
 
 	x0 = GMT->current.proj.c_x0;
 	y0 = GMT->current.proj.c_y0;
@@ -10672,17 +10672,17 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
 	double x1, y1, x2, y2, angle, direction;
 
-	GMT_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
-	GMT_geo_to_xy (GMT, lon2, lat2, &x2, &y2);
+	gmt_geo_to_xy (GMT, lon1, lat1, &x1, &y1);
+	gmt_geo_to_xy (GMT, lon2, lat2, &x2, &y2);
 	if (doubleAlmostEqualZero (y1, y2) && doubleAlmostEqualZero (x1, x2)) {	/* Special case that only(?) occurs at N or S pole or r=0 for GMT_POLAR */
 		if (fabs (fmod (lon1 - GMT->common.R.wesn[XLO] + 360.0, 360.0)) > fabs (fmod (lon1 - GMT->common.R.wesn[XHI] + 360.0, 360.0))) {	/* East */
-			GMT_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x1, &y1);
-			GMT_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &x2, &y2);
+			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x1, &y1);
+			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &x2, &y2);
 			GMT->current.map.corner = 1;
 		}
 		else {
-			GMT_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &x1, &y1);
-			GMT_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &x2, &y2);
+			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &x1, &y1);
+			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &x2, &y2);
 			GMT->current.map.corner = 3;
 		}
 		angle = d_atan2d (y2-y1, x2-x1) - 90.0;
@@ -11241,7 +11241,7 @@ unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 	 * elliptical in lon/lat space due to the cos(lat) shrinking of the length of delta_lon.
 	 * Thus, while the +- width of nodes in y is fixed (d_row), the +-width of nodes in x
 	 * is a function of latitude.  This is the array d_col (which is constant for Cartesian data).
-	 * We expect GMT_init_distaz has been called so the GMT_distance function returns distances
+	 * We expect gmt_init_distaz has been called so the gmt_distance function returns distances
 	 * in the same units as the radius.  We also return the widest value in the d_col array via
 	 * the actual_max_d_col value.
 	 */
@@ -11250,21 +11250,21 @@ unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 
 	lon = G->header->wesn[XLO] + G->header->inc[GMT_X];
 
-	dist_y = GMT_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
+	dist_y = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
 		max_d_col = urint (ceil (G->header->nx / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
 		*actual_max_d_col = 0;
 		for (row = 0; row < G->header->ny; row++) {
 			lat = GMT_grd_row_to_y (GMT, row, G->header);
 			/* Determine longitudinal width of one grid ell at this latitude */
-			dist_x = GMT_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
+			dist_x = gmt_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
 			d_col[row] = (fabs (lat) == 90.0) ? max_d_col : urint (ceil (radius / dist_x) + 0.1);
 			if (d_col[row] > max_d_col) d_col[row] = max_d_col;	/* Safety valve */
 			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];
 		}
 	}
 	else {	/* Plain Cartesian data with rectangular box */
-		dist_x = GMT_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
+		dist_x = gmt_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
 		*actual_max_d_col = max_d_col = urint (ceil (radius / dist_x) + 0.1);
 		for (row = 0; row < G->header->ny; row++) d_col[row] = max_d_col;
 	}
@@ -11814,14 +11814,14 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 			Tout->n_records += Tout->segment[seg]->n_rows;	/* Update record count */
 			if (mode == 0) continue;	/* No dist/az needed */
 			for (row = 0, along_dist = 0.0; row < Tout->segment[seg]->n_rows; row++) {	/* Process each point along resampled FZ trace */
-				dist_inc = (row) ? GMT_distance (GMT, Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1]) : 0.0;
+				dist_inc = (row) ? gmt_distance (GMT, Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1]) : 0.0;
 				along_dist += dist_inc;
 				Tout->segment[seg]->coord[SEG_DIST][row] = along_dist;
 				if (mode == 1) continue;	/* No az needed */
 				if (row)
-					azimuth = GMT_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1], Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], false);
+					azimuth = gmt_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1], Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], false);
 				else	/* Special deal for first point */
-					azimuth = GMT_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][0], Tout->segment[seg]->coord[GMT_Y][0], Tout->segment[seg]->coord[GMT_X][1], Tout->segment[seg]->coord[GMT_Y][1], false);
+					azimuth = gmt_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][0], Tout->segment[seg]->coord[GMT_Y][0], Tout->segment[seg]->coord[GMT_X][1], Tout->segment[seg]->coord[GMT_Y][1], false);
 				Tout->segment[seg]->coord[SEG_AZIM][row] = azimuth;
 			}
 			ID[0] = 0;
@@ -11870,14 +11870,14 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 			Tout->n_records += Tout->segment[seg]->n_rows;	/* Update record count */
 			if (mode == 0) continue;	/* No dist/az needed */
 			for (row = 0, along_dist = 0.0; row < Tout->segment[seg]->n_rows; row++) {	/* Process each point along resampled FZ trace */
-				dist_inc = (row) ? GMT_distance (GMT, Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1]) : 0.0;
+				dist_inc = (row) ? gmt_distance (GMT, Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1]) : 0.0;
 				along_dist += dist_inc;
 				Tout->segment[seg]->coord[SEG_DIST][row] = along_dist;
 				if (mode == 1) continue;	/* No az needed */
 				if (row)
-					azimuth = GMT_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1], Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], false);
+					azimuth = gmt_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][row-1], Tout->segment[seg]->coord[GMT_Y][row-1], Tout->segment[seg]->coord[GMT_X][row], Tout->segment[seg]->coord[GMT_Y][row], false);
 				else	/* Special deal for first point */
-					azimuth = GMT_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][0], Tout->segment[seg]->coord[GMT_Y][0], Tout->segment[seg]->coord[GMT_X][1], Tout->segment[seg]->coord[GMT_Y][1], false);
+					azimuth = gmt_az_backaz (GMT, Tout->segment[seg]->coord[GMT_X][0], Tout->segment[seg]->coord[GMT_Y][0], Tout->segment[seg]->coord[GMT_X][1], Tout->segment[seg]->coord[GMT_Y][1], false);
 				Tout->segment[seg]->coord[SEG_AZIM][row] = azimuth;
 			}
 			ID[0] = 0;
@@ -11899,7 +11899,7 @@ struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 	/* Din is a data set with at least two columns (x,y or lon/lat);
 	 * it can contain any number of tables and segments with lines.
 	 * along_ds is the resampling interval along the traces in Din.
-	 * It is in the current distance units (set via GMT_init_distaz).
+	 * It is in the current distance units (set via gmt_init_distaz).
 	 * mode is either 0 (just lon,lat), 1 (lon,lat,dist) or 2 (lon,lat,dist,azim)
 	 * ex_cols makes space for this many extra empty data columns [0].
 	 * smode sets the sampling mode for the track:
@@ -12014,12 +12014,12 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 					gmt_load_rot_matrix (angle_radians, Rot, E);		/* Build the actual rotation matrix for this angle */
 					gmt_matrix_vect_mult (Rot, P, X);				/* Rotate the current FZ point along the normal */
 					GMT_cart_to_geo (GMT, &S->coord[GMT_Y][ii], &S->coord[GMT_X][ii], X, true);	/* Get lon/lat of this point along crossing profile */
-					dist_inc = (ii) ? GMT_distance (GMT, S->coord[GMT_X][ii], S->coord[GMT_Y][ii], S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1]) : 0.0;
+					dist_inc = (ii) ? gmt_distance (GMT, S->coord[GMT_X][ii], S->coord[GMT_Y][ii], S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1]) : 0.0;
 					dist_across_seg += dist_inc;
 					S->coord[SEG_DIST][ii] = dist_across_seg;	/* Store distances across the profile */
-					if (ii) S->coord[SEG_AZIM][ii] = GMT_az_backaz (GMT, S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1], S->coord[GMT_X][ii], S->coord[GMT_Y][ii], false);
+					if (ii) S->coord[SEG_AZIM][ii] = gmt_az_backaz (GMT, S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1], S->coord[GMT_X][ii], S->coord[GMT_Y][ii], false);
 				}
-				S->coord[SEG_AZIM][0] = GMT_az_backaz (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][1], S->coord[GMT_Y][1], false);	/* Special deal for first point */
+				S->coord[SEG_AZIM][0] = gmt_az_backaz (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][1], S->coord[GMT_Y][1], false);	/* Special deal for first point */
 
 				/* Reset distance origin for cross profile */
 
@@ -12141,9 +12141,9 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 					S->coord[GMT_X][ii] = x + dist_across_seg * ca;
 					S->coord[GMT_Y][ii] = y + dist_across_seg * sa;
 					S->coord[SEG_DIST][ii] = dist_across_seg;	/* Store distances across the profile */
-					if (ii) S->coord[SEG_AZIM][ii] = GMT_az_backaz (GMT, S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1], S->coord[GMT_X][ii], S->coord[GMT_Y][ii], false);
+					if (ii) S->coord[SEG_AZIM][ii] = gmt_az_backaz (GMT, S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1], S->coord[GMT_X][ii], S->coord[GMT_Y][ii], false);
 				}
-				S->coord[SEG_AZIM][0] = GMT_az_backaz (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][1], S->coord[GMT_Y][1], false);	/* Special deal for first point */
+				S->coord[SEG_AZIM][0] = gmt_az_backaz (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][1], S->coord[GMT_Y][1], false);	/* Special deal for first point */
 
 				orientation = 0.5 * fmod (2.0 * (Tin->segment[seg]->coord[SEG_AZIM][row]+90.0), 360.0);	/* Orientation of cross-profile at zero distance */
 				if (orientation > 90.0) orientation -= 180.0;
@@ -12214,9 +12214,9 @@ bool GMT_crossing_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 }
 
 /*! . */
-unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout) {
+unsigned int gmt_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout) {
 	/* Create two or more feature segments by splitting them across the Dateline.
-	 * GMT_split_line_at_dateline should ONLY be called when we KNOW we must split. */
+	 * gmt_split_line_at_dateline should ONLY be called when we KNOW we must split. */
 	unsigned int n_split;
 	uint64_t k, col, seg, row, start, length, *pos = GMT_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
@@ -12806,7 +12806,7 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 		*y = box[YHI];
 	if (use_proj) {	/* Actually computed x,y in inches for oblique box, must convert to lon lat */
 		double xx = *x, yy = *y;
-		GMT_xy_to_geo (GMT, x, y, xx, yy);
+		gmt_xy_to_geo (GMT, x, y, xx, yy);
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Converted code %d to i = %d, j = %d and finally x = %g and y = %g\n", justify, i, j, *x, *y);
 }
@@ -12948,13 +12948,13 @@ void GMT_set_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *A) {
 	/* Update settings after -R -J and map setup has taken place */
 	double x, y;
 	if (A->mode == GMT_REFPOINT_MAP) {	/* Convert from map coordinates to plot coordinates */
-		GMT_geo_to_xy (GMT, A->x, A->y, &x, &y);
+		gmt_geo_to_xy (GMT, A->x, A->y, &x, &y);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert map reference point coordinates from %g, %g to %g, %g\n", A->x, A->y, x, y);
 		A->x = x;	A->y = y;
 	}
 	else if (A->mode == GMT_REFPOINT_JUST || A->mode == GMT_REFPOINT_JUST_FLIP) {	/* Convert from justify code to map coordinates, then to plot coordinates */
 		GMT_just_to_lonlat (GMT, A->justify, GMT_is_geographic (GMT, GMT_IN), &A->x, &A->y);
-		GMT_geo_to_xy (GMT, A->x, A->y, &x, &y);
+		gmt_geo_to_xy (GMT, A->x, A->y, &x, &y);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Convert code reference point coordinates from justification %s to %g, %g\n", GMT_just_code[A->justify], A->x, A->y);
 		A->x = x;	A->y = y;
 	}
@@ -13045,13 +13045,13 @@ void GMT_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 		double P[3], M[3];
 		GMT_memset (M, 3, double);
 		for (i = 0; i < n; i++) {
-			y[i] = GMT_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			y[i] = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, y[i], x[i], P, true);
 			for (k = 0; k < 3; k++) M[k] += P[k];
 		}
 		GMT_normalize3v (GMT, M);
 		GMT_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
-		pos[GMT_Y] = GMT_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+		pos[GMT_Y] = gmt_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
 	else {	/* Cartesian mean position */
 		pos[GMT_X] = pos[GMT_Y] = 0.0;
@@ -13101,21 +13101,21 @@ unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 				continue;
 			else if (effect == 1 && (P->end[k].V == NULL || GMT_IS_ZERO (P->end[k].length)))	/* No vector of any size at this end */
 				continue;
-			proj_type = (effect == 0) ? GMT_init_distaz (GMT, P->end[k].unit, P->end[k].type, GMT_MAP_DIST) : GMT_GEO2CART;
+			proj_type = (effect == 0) ? gmt_init_distaz (GMT, P->end[k].unit, P->end[k].type, GMT_MAP_DIST) : GMT_GEO2CART;
 			next = start[k];	last = stop[k];	inc = increment[k];
 			dist = 0.0;
-			if (proj_type == GMT_GEO2CART) GMT_geo_to_xy (GMT, x[next], y[next], &x1, &y1);
+			if (proj_type == GMT_GEO2CART) gmt_geo_to_xy (GMT, x[next], y[next], &x1, &y1);
 			offset = (effect == 0) ? P->end[k].offset : P->end[k].length;
 			while (dist < offset && next != last) {	/* Must trim more */
 				current = next;
 				next += inc;
 				if (proj_type == GMT_GEO2CART) {	/* Project and get distances in inches */
 					x0 = x1;	y0 = y1;
-					GMT_geo_to_xy (GMT, x[next], y[next], &x1, &y1);
+					gmt_geo_to_xy (GMT, x[next], y[next], &x1, &y1);
 					ds = hypot (x0 - x1, y0 - y1);
 				}
 				else	/* User distances */
-					ds = GMT_distance (GMT, x[next], y[next], x[current], y[current]);
+					ds = gmt_distance (GMT, x[next], y[next], x[current], y[current]);
 				dist += ds;
 			}
 			if (next == last)	/* Trimmed away the entire line */

@@ -296,7 +296,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+	gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
@@ -394,7 +394,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 				colu = ii;
 
-				distance = GMT_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
+				distance = gmt_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
 
 				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
 				kk = GMT_IJ0 (Grid->header, rowu, colu);	/* No padding used for gridnode array */

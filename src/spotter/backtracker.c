@@ -437,7 +437,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
-		for (row = 0; row < H->n_rows; row++) H->coord[GMT_Y][row] = GMT_lat_swap (GMT, H->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+		for (row = 0; row < H->n_rows; row++) H->coord[GMT_Y][row] = gmt_lat_swap (GMT, H->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}
 
 	n_points = n_segments = 0;
@@ -494,11 +494,11 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		if (Ctrl->E.rot.single) {	/* Simple reconstruction, then exit */
-			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
 			GMT_matrix_vect_mult (GMT, 3U, R, x, y);			/* Rotate the x-vector */
 			GMT_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, true);	/* Recover lon lat representation; true to get degrees */
-			out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			GMT_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			continue;
@@ -535,7 +535,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 			GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &age, &lat, GMT->current.setting.interpolant);
 		}
 		else {	/* Use input location */
-			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			in[GMT_Y] = gmt_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			lon = in[GMT_X];
 			lat = in[GMT_Y];
 		}
@@ -561,7 +561,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
-					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t;
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 					t += Ctrl->L.d_km;	/* dt, actually */
@@ -576,7 +576,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
-					out[GMT_Y] = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					out[GMT_Z] = t_end;
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
@@ -595,7 +595,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 					out[GMT_Z] = c[i+2];
 					if (Ctrl->A.mode && (out[GMT_Z] < t_low || out[GMT_Z] > t_high)) continue;
 					out[GMT_X] = c[i] * R2D;
-					out[GMT_Y] = GMT_lat_swap (GMT, c[i+1] * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					out[GMT_Y] = gmt_lat_swap (GMT, c[i+1] * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
@@ -618,7 +618,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 				out[GMT_Y] = lat * R2D;
 				for (col = 2; col < n_expected_fields; col++) out[col] = in[col];
 			}
-			out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+			out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 		}
 

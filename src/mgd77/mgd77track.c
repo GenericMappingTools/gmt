@@ -511,9 +511,9 @@ GMT_LOCAL double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double
 	if (i1 < 0) i1 = 0;
 	i2 = i1 + 10;
 	if (i2 > (n_records-1)) i2 = n_records - 1;
-	GMT_geo_to_xy (GMT, lon[rec], lat[rec], &x0, &y0);
+	gmt_geo_to_xy (GMT, lon[rec], lat[rec], &x0, &y0);
 	for (j = i1; j <= i2; j++) {	/* L2 fit for slope over this range of points */
-		GMT_geo_to_xy (GMT, lon[j], lat[j], &x1, &y1);
+		gmt_geo_to_xy (GMT, lon[j], lat[j], &x1, &y1);
 		dx = x1 - x0;
 		dy = y1 - y0;
 		sum_x2 += dx * dx;
@@ -630,7 +630,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 		
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
 	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -675,7 +675,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		track_time = (double*)D->values[0];
 		lon = (double*)D->values[1];
 		lat = (double*)D->values[2];
-		if ((track_dist = GMT_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
+		if ((track_dist = gmt_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
 			GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] <
 		     Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
@@ -726,11 +726,11 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 		first = true;
 		for (rec = first_rec; rec <= last_rec; rec++) {
-			if (bad_coordinates (lon[rec], lat[rec]) || GMT_map_outside (GMT, lon[rec], lat[rec])) {
+			if (bad_coordinates (lon[rec], lat[rec]) || gmt_map_outside (GMT, lon[rec], lat[rec])) {
 				first = true;
 				continue;
 			}
-			GMT_geo_to_xy (GMT, lon[rec], lat[rec], &x, &y);
+			gmt_geo_to_xy (GMT, lon[rec], lat[rec], &x, &y);
 			if (first) {
 				if (Ctrl->A.mode > 0) {
 					c_angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);

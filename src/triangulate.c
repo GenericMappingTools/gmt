@@ -290,7 +290,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	/* Now we are ready to take on some input values */
@@ -366,7 +366,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 		xxp = GMT_memory (GMT, NULL, n, double);
 		yyp = GMT_memory (GMT, NULL, n, double);
-		for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, xx[i], yy[i], &xxp[i], &yyp[i]);
+		for (i = 0; i < n; i++) gmt_geo_to_xy (GMT, xx[i], yy[i], &xxp[i], &yyp[i]);
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on projected coordinates\n");
 

@@ -483,10 +483,10 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		do_project = true;
 		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
-	GMT_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
+	gmt_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
 		
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale, -1);	/* Sets output scale for distances using in velocities */
@@ -551,13 +551,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		if (do_project) {	/* Convert all the coordinates */
 			for (i = 0; i < n_rec[0]; i++) {
-				GMT_geo_to_xy (GMT, data[0][s->x_col][i], data[0][s->y_col][i], &xx, &yy);
+				gmt_geo_to_xy (GMT, data[0][s->x_col][i], data[0][s->y_col][i], &xx, &yy);
 				data[0][s->x_col][i] = xx;
 				data[0][s->y_col][i] = yy;
 			}
 		}
 
-		if ((dist[0] = GMT_dist_array_2 (GMT, data[0][s->x_col], data[0][s->y_col], n_rec[0], dist_scale, s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+		if ((dist[0] = gmt_dist_array_2 (GMT, data[0][s->x_col], data[0][s->y_col], n_rec[0], dist_scale, s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 
 		time[0] = (has_time[0]) ? data[0][s->t_col] : x2sys_dummytimes (GMT, n_rec[0]) ;
 
@@ -605,13 +605,13 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				
 				if (do_project) {	/* Convert all the coordinates */
 					for (i = 0; i < n_rec[0]; i++) {
-						GMT_geo_to_xy (GMT, data[1][s->x_col][i], data[1][s->y_col][i], &xx, &yy);
+						gmt_geo_to_xy (GMT, data[1][s->x_col][i], data[1][s->y_col][i], &xx, &yy);
 						data[1][s->x_col][i] = xx;
 						data[1][s->y_col][i] = yy;
 					}
 				}
 
-				if ((dist[1] = GMT_dist_array_2 (GMT, data[1][s->x_col], data[1][s->y_col], n_rec[1], dist_scale, s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+				if ((dist[1] = gmt_dist_array_2 (GMT, data[1][s->x_col], data[1][s->y_col], n_rec[1], dist_scale, s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 
 				time[1] = (has_time[1]) ? data[1][s->t_col] : x2sys_dummytimes (GMT, n_rec[1]);
 

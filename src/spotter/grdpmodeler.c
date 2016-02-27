@@ -406,14 +406,14 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	/* Precalculate node coordinates in both degrees and radians */
 	for (row = 0; row < G->header->ny; row++) {
 		grd_y[row]  = GMT_grd_row_to_y (GMT, row, G->header);
-		grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
+		grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 	}
 	for (col = 0; col < G->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
 
-	GMT_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
+	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	GMT_grd_loop (GMT, G, row, col, node) {
@@ -447,7 +447,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			switch (Ctrl->S.mode[k]) {
 				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-					value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, false) - 90.0;
+					value = gmt_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, false) - 90.0;
 					gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
 					break;
 				case PM_DIST:	/* Compute great-circle distance between node and point of origin at ridge */
@@ -456,13 +456,13 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 						spotted = true;
 					}
-					value = GMT->current.proj.DIST_KM_PR_DEG * GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
+					value = GMT->current.proj.DIST_KM_PR_DEG * gmt_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
 					break;
 				case PM_STAGE:	/* Compute plate rotation stage */
 					value = stage;
 					break;
 				case PM_VEL:	/* Compute plate motion speed at this point in time/space */
-					d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
+					d = gmt_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
 					value = sind (d) * p[stage].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
 					break;
 				case PM_OMEGA:	/* Compute plate rotation rate omega */
@@ -483,7 +483,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 						spotted = true;
 					}
-					value = grd_y[row] - GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+					value = grd_y[row] - gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 					break;
 				case PM_LON:	/* Compute latitude where this point was formed in the model */
 					if (!spotted) {
@@ -499,7 +499,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 						(void)spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 						spotted = true;
 					}
-					value = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
+					value = gmt_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 					break;
 			}
 			if (Ctrl->G.active)

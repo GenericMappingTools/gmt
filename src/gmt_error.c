@@ -73,6 +73,6 @@ const char *g_error_string[] = {
 	/* GMT_MAP_BAD_LAT_MAX */		"North is outside -90 to +90 degree range",
 	/* GMT_MAP_NO_REGION */			"No map region selected",
 	/* GMT_MAP_NO_PROJECTION */		"No projection selected",
-	/* GMT_MAP_BAD_DIST_FLAG */		"Wrong flag passed to GMT_dist_array",
+	/* GMT_MAP_BAD_DIST_FLAG */		"Wrong flag passed to gmt_dist_array",
 	/* GMT_MAP_BAD_MEASURE_UNIT */		"Bad measurement unit.  Choose among " GMT_DIM_UNITS_DISPLAY,
 };

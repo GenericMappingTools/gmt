@@ -1939,14 +1939,14 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.J.active = true;
 
-		GMT_err_pass (GMT, GMT_map_setup (GMT, wesn_all), file);
+		GMT_err_pass (GMT, gmt_map_setup (GMT, wesn_all), file);
 	}
 
 	if (wesn[XLO] < 0.0 && wesn[XHI] < 0.0) wesn[XLO] += 360.0, wesn[XHI] += 360.0;
 
 	/* Project lon/lat boundaries to Mercator units */
-	GMT_geo_to_xy (GMT, wesn[XLO], wesn[YLO], &Grid->header->wesn[XLO], &Grid->header->wesn[YLO]);
-	GMT_geo_to_xy (GMT, wesn[XHI], wesn[YHI], &Grid->header->wesn[XHI], &Grid->header->wesn[YHI]);
+	gmt_geo_to_xy (GMT, wesn[XLO], wesn[YLO], &Grid->header->wesn[XLO], &Grid->header->wesn[YLO]);
+	gmt_geo_to_xy (GMT, wesn[XHI], wesn[YHI], &Grid->header->wesn[XHI], &Grid->header->wesn[YHI]);
 
 	/* Adjust boundaries to multiples of increments, making sure we are inside bounds */
 	Grid->header->wesn[XLO] = MAX (GMT_IMG_MINLON, floor (Grid->header->wesn[XLO] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X]);

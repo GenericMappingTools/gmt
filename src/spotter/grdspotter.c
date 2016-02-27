@@ -597,8 +597,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	
 	/* Get geocentric wesn region in radians */
 	GMT_memcpy (wesn, G_rad->header->wesn, 4, double);
-	wesn[YLO] = D2R * GMT_lat_swap (GMT, R2D * wesn[YLO], GMT_LATSWAP_G2O);
-	wesn[YHI] = D2R * GMT_lat_swap (GMT, R2D * wesn[YHI], GMT_LATSWAP_G2O);
+	wesn[YLO] = D2R * gmt_lat_swap (GMT, R2D * wesn[YLO], GMT_LATSWAP_G2O);
+	wesn[YHI] = D2R * gmt_lat_swap (GMT, R2D * wesn[YHI], GMT_LATSWAP_G2O);
 
 	/* Allocate T/F array */
 
@@ -626,7 +626,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	x_smt = GMT_memory (GMT, NULL, Z->header->nx, double);
 	for (col = 0; col < Z->header->nx; col++) x_smt[col] = D2R * GMT_grd_col_to_x (GMT, col, Z->header);
 	y_smt = GMT_memory (GMT, NULL, Z->header->ny, double);
-	for (row = 0; row < Z->header->ny; row++) y_smt[row] = D2R * GMT_lat_swap (GMT, GMT_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
+	for (row = 0; row < Z->header->ny; row++) y_smt[row] = D2R * gmt_lat_swap (GMT, GMT_grd_row_to_y (GMT, row, Z->header), GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	lat_area = GMT_memory (GMT, NULL, Z->header->ny, double);
 
 	for (row = 0; row < Z->header->ny; row++) lat_area[row] = area * cos (y_smt[row]);
@@ -682,8 +682,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				ID_info[Ctrl->Q.id].ok = true;
 				if (k == 5) {	/* Got restricted wesn also */
 					ID_info[Qid].check_region = true;
- 					sq = GMT_lat_swap (GMT, sq, GMT_LATSWAP_G2O);	/* Go geocentric */
- 					nq = GMT_lat_swap (GMT, nq, GMT_LATSWAP_G2O);	/* Go geocentric */
+ 					sq = gmt_lat_swap (GMT, sq, GMT_LATSWAP_G2O);	/* Go geocentric */
+ 					nq = gmt_lat_swap (GMT, nq, GMT_LATSWAP_G2O);	/* Go geocentric */
 					ID_info[Qid].wesn[XLO] = wq * D2R;
 					ID_info[Qid].wesn[XHI] = eq * D2R;
 					ID_info[Qid].wesn[YLO] = sq * D2R;
@@ -755,7 +755,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 #endif
 		for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 			i = (int)GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
-			yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
+			yg = gmt_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 			j = (int)GMT_grd_y_to_row (GMT, yg, G->header);
 			if (i < 0 || (col2 = i) >= G->header->nx || j < 0 || (row2 = j) >= G->header->ny)	/* Outside the CVA box, flag as outside */
 				node = UINTMAX_MAX;
@@ -921,7 +921,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 					i = (int)GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 					if (i < 0 || (col = i) >= G->header->nx) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
-					yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
+					yg = gmt_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 					j = (int)GMT_grd_y_to_row (GMT, yg, G->header);
 					if (j < 0 || (row = j) >= G->header->ny) { k++; continue;}	/* Outside the CVA box, flag as outside */
 					if (Ctrl->PA.active) pa_val = c[k++];

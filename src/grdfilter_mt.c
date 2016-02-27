@@ -289,7 +289,7 @@ double SphericalRadius (struct GMT_CTRL *GMT, double x0, double y0, double x1, d
 		y1 = copysign (180.0 - fabs (y1), y1);
 		x1 += 180.0;
 	}
-	return (0.001 * GMT_great_circle_dist_meter (GMT, x0, y0, x1, y1));
+	return (0.001 * gmt_great_circle_dist_meter (GMT, x0, y0, x1, y1));
 }
 
 double UnitWeight (double r, double par[])

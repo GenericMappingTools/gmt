@@ -511,7 +511,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			if (Ctrl->T.radius[n] == 0) continue;		/* This terminator was not requested */
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
-			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
+			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (n_items > 1) {
 				sprintf (record, "%s terminator", terms[n]);
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
@@ -530,7 +530,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
 		
-		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
@@ -539,7 +539,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			if (Ctrl->T.radius[n] == 0) continue;	/* This terminator was not requested */
 			Ctrl->T.which = n;
 			solar_params (Ctrl, Sun);
-			S = GMT_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
+			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
 				if ((n_pts = GMT_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
@@ -548,7 +548,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 					must_free = false;
 				}
 				for (j = 0; j < n_pts; j++) {	/* Apply map projection */
-					GMT_geo_to_xy (GMT, lon[j], lat[j], &x0, &y0);
+					gmt_geo_to_xy (GMT, lon[j], lat[j], &x0, &y0);
 					lon[j] = x0; lat[j] = y0;
 				}
 				PSL_beginclipping (PSL, lon, lat, n_pts, GMT->session.no_rgb, 2 + first);

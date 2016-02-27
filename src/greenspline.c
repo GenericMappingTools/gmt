@@ -55,8 +55,6 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
-double GMT_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE);
-double GMT_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 EXTERN_MSC int GMT_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
 /* Control structure for greenspline */
@@ -1252,7 +1250,7 @@ GMT_LOCAL double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, unsig
 			r = fabs (X0[GMT_X] - X1[GMT_X]);
 			break;
 		case 2:	/* 2-D Cartesian or spherical surface in meters */
-			r = GMT_distance (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y]);
+			r = gmt_distance (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y]);
 			break;
 		case 3:	/* 3-D Cartesian */
 			r = hypot (X0[GMT_X] - X1[GMT_X], X0[GMT_Y] - X1[GMT_Y]);
@@ -1276,7 +1274,7 @@ GMT_LOCAL double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, dou
 			C = 1.0;
 			break;
 		case 2:	/* 2-D */
-			az = GMT_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
+			az = gmt_az_backaz (GMT, X0[GMT_X], X0[GMT_Y], X1[GMT_X], X1[GMT_Y], baz);
 			sincosd (az, &N[GMT_X], &N[GMT_Y]);
 			for (ii = 0; ii < 2; ii++) C += D[ii] * N[ii];	/* Dot product of 2-D unit vectors */
 			break;
@@ -1375,25 +1373,25 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 0:	/* Cartesian 2-D x,y data */
-			GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat earth km */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
-			GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
-			GMT_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
 			normalize = GREENSPLINE_NORM;
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
-			GMT_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
+			gmt_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
 			normalize = GREENSPLINE_NORM;
 			break;
 		case 4:	/* 3-D Cartesian x,y,z data handled separately */

@@ -314,7 +314,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	}
 
 	gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
-	if (GMT_err_pass (GMT, GMT_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = GMT_grd_is_global (GMT, Grid->header);
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
@@ -327,8 +327,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 	/* Fill out gridnode coordinates and apply the implicit linear projection */
 
-	for (col = 0; col <= nx1; col++) GMT_geo_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Grid->header), 0.0, &x[col], &dummy);
-	for (row = 0; row <= ny1; row++) GMT_geo_to_xy (GMT, 0.0, GMT_grd_row_to_y (GMT, row, Grid->header), &dummy, &y[row]);
+	for (col = 0; col <= nx1; col++) gmt_geo_to_xy (GMT, GMT_grd_col_to_x (GMT, col, Grid->header), 0.0, &x[col], &dummy);
+	for (row = 0; row <= ny1; row++) gmt_geo_to_xy (GMT, 0.0, GMT_grd_row_to_y (GMT, row, Grid->header), &dummy, &y[row]);
 	i_dx_inch = 1.0 / fabs (x[1] - x[0]);
 	i_dy_inch = 1.0 / fabs (y[1] - y[0]);
 
@@ -410,10 +410,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			k = INT_MAX;	/* Initialize to outside range of levels (4 is highest) */
 			/* Visit each of the 4 nodes, test if it is inside -R, and if so update lowest level found so far */
 
-			if (!GMT_map_outside (GMT, c.lon_sw, c.lat_sw)) k = MIN (k, c.node_level[0]);				/* SW */
-			if (!GMT_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw)) k = MIN (k, c.node_level[1]);			/* SE */
-			if (!GMT_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[2]);	/* NE */
-			if (!GMT_map_outside (GMT, c.lon_sw, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[3]);			/* NW */
+			if (!gmt_map_outside (GMT, c.lon_sw, c.lat_sw)) k = MIN (k, c.node_level[0]);				/* SW */
+			if (!gmt_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw)) k = MIN (k, c.node_level[1]);			/* SE */
+			if (!gmt_map_outside (GMT, c.lon_sw + c.bsize, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[2]);	/* NE */
+			if (!gmt_map_outside (GMT, c.lon_sw, c.lat_sw - c.bsize)) k = MIN (k, c.node_level[3]);			/* NW */
 
 			/* If k is still INT_MAX we must assume this patch should have the min level of the bin */
 

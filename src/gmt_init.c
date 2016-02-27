@@ -398,7 +398,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	if (GMT->current.proj.projection == GMT_AZ_EQDIST) proj_class = 4;	/* Make -JE use global region */
 	switch (proj_class) {
 		case 1:	/* Cylindrical: pick small equatorial patch centered on central meridian */
-			if (GMT->current.proj.projection == GMT_UTM && GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, wesn))
+			if (GMT->current.proj.projection == GMT_UTM && gmt_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, wesn))
 			{
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: UTM projection insufficiently specified to auto-determine geographic region\n");
 				return (GMT_MAP_NO_PROJECTION);
@@ -1482,49 +1482,49 @@ GMT_LOCAL double gmtinit_abs_col_dist (struct GMT_CTRL *GMT, uint64_t col) {
 /*! Compute reverse col-separation after mapping */
 GMT_LOCAL double gmtinit_neg_col_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	double X[2][2];
-	GMT_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
-	GMT_geo_to_xy (GMT, GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y], &X[GMT_X][1], &X[GMT_Y][1]);
+	gmt_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
+	gmt_geo_to_xy (GMT, GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y], &X[GMT_X][1], &X[GMT_Y][1]);
 	return (X[col][0] - X[col][1]);
 }
 
 /*! Compute forward col-separation after mapping */
 GMT_LOCAL double gmtinit_pos_col_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	double X[2][2];
-	GMT_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
-	GMT_geo_to_xy (GMT, GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y], &X[GMT_X][1], &X[GMT_Y][1]);
+	gmt_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
+	gmt_geo_to_xy (GMT, GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y], &X[GMT_X][1], &X[GMT_Y][1]);
 	return (X[col][1] - X[col][0]);
 }
 
 /*! Compute forward col-separation after mapping */
 GMT_LOCAL double gmtinit_abs_col_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	double X[2][2];
-	GMT_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
-	GMT_geo_to_xy (GMT, GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y], &X[GMT_X][1], &X[GMT_Y][1]);
+	gmt_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
+	gmt_geo_to_xy (GMT, GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y], &X[GMT_X][1], &X[GMT_Y][1]);
 	return (fabs (X[col][1] - X[col][0]));
 }
 
 /*! Compute point-separation after mapping */
 GMT_LOCAL double gmtinit_xy_map_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	GMT_UNUSED(col);
-	return (GMT_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
+	return (gmt_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
 GMT_LOCAL double gmtinit_xy_deg_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	GMT_UNUSED(col);
-	return (GMT_great_circle_dist_degree (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
+	return (gmt_great_circle_dist_degree (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
 GMT_LOCAL double gmtinit_xy_true_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	GMT_UNUSED(col);
-	return (GMT_great_circle_dist_meter (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
+	return (gmt_great_circle_dist_meter (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! . */
 GMT_LOCAL double gmtinit_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col) {
 	GMT_UNUSED(col);
-	return (GMT_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
+	return (gmt_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
 /*! Parse the -n option for 2-D grid resampling parameters -n[b|c|l|n][+a][+t<BC>][+<threshold>] */
@@ -4556,7 +4556,7 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2A;
 	/* PROJ_ELLIPSOID */
 	GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "WGS-84");
-	GMT_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+	gmt_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
 	/* PROJ_DATUM (Not implemented yet) */
 	/* PROJ_GEODESIC */
 	GMT->current.setting.proj_geodesic = GMT_GEODESIC_VINCENTY;
@@ -4905,7 +4905,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 
 	/* MAP settings */
 
-	GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations in m */
+	gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Default spherical distance calculations in m */
 
 	GMT->current.map.n_lon_nodes = 360;
 	GMT->current.map.n_lat_nodes = 180;
@@ -4921,7 +4921,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	/* PROJ settings */
 
 	GMT->current.proj.projection = GMT_NO_PROJ;
-	/* We need some defaults here for the cases where we do not actually set these with GMT_map_setup */
+	/* We need some defaults here for the cases where we do not actually set these with gmt_map_setup */
 	GMT->current.proj.fwd_x = GMT->current.proj.fwd_y = GMT->current.proj.fwd_z = &GMT_translin;
 	GMT->current.proj.inv_x = GMT->current.proj.inv_y = GMT->current.proj.inv_z = &GMT_itranslin;
 	/* z_level will be updated in GMT_init_three_D, but if it doesn't, it does not matter,
@@ -6709,7 +6709,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 #endif
 	}
 	if (i < 4 || i > 6 || ((!GMT->common.R.oblique && gmt_check_region (GMT, p)) || (i == 6 && p[4] >= p[5]))) error++;
-	GMT_memcpy (GMT->common.R.wesn, p, 6, double);	/* This will probably be reset by GMT_map_setup */
+	GMT_memcpy (GMT->common.R.wesn, p, 6, double);	/* This will probably be reset by gmt_map_setup */
 	error += GMT_check_condition (GMT, i == 6 && !GMT->current.proj.JZ_set, "Error: -R with six parameters requires -Jz|Z\n");
 
 	return (error);
@@ -8346,7 +8346,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				GMT->current.setting.proj_aux_latitude = GMT_LATSWAP_G2P;
 			else
 				error = true;
-			GMT_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+			gmt_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
 			break;
 
 		case GMTCASE_ELLIPSOID:
@@ -8360,7 +8360,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				error = true;
 			else
 				GMT->current.setting.proj_ellipsoid = ival;
-			GMT_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+			gmt_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
 			break;
 		case GMTCASE_PROJ_DATUM:	/* Not implemented yet */
 			break;
@@ -8373,7 +8373,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				GMT->current.setting.proj_geodesic = GMT_GEODESIC_RUDOE;
 			else
 				error = true;
-			GMT_init_geodesic (GMT);	/* Set function pointer depending on the geodesic selected */
+			gmt_init_geodesic (GMT);	/* Set function pointer depending on the geodesic selected */
 			break;
 
 		case GMTCASE_MEASURE_UNIT:
@@ -8402,7 +8402,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				GMT->current.setting.proj_mean_radius = GMT_RADIUS_QUADRATIC;
 			else
 				error = true;
-			GMT_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
+			gmt_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid */
 			break;
 
 		case GMTCASE_MAP_SCALE_FACTOR:

@@ -1314,7 +1314,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 		return (GMT_fix_up_path (GMT, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
 	}
 
-	dist_in = GMT_dist_array (GMT, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
+	dist_in = gmt_dist_array (GMT, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
 
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 	/* Determine n_out, the number of output points */
@@ -1342,8 +1342,8 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
 			if (new_pair) {	/* Must perform calculations on the two points */
 				L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
-				ya = GMT_lat_swap (GMT, lat_in[row_in-1], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-				yb = GMT_lat_swap (GMT, lat_in[row_in],   GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				ya = gmt_lat_swap (GMT, lat_in[row_in-1], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				yb = gmt_lat_swap (GMT, lat_in[row_in],   GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			}
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
@@ -1354,7 +1354,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
 				lon_out[row_out] = c[0] * R2D;
 				lat_out[row_out] = atand (sinh (c[1]));
-				lat_out[row_out] = GMT_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				lat_out[row_out] = gmt_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			else {	/* Spherical resampling along segment */
 				if (new_pair) {	/* Must perform calculations on the two points */
@@ -1370,7 +1370,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 				gmt_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
 				gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
 				GMT_cart_to_geo (GMT, &lat_out[row_out], &lon_out[row_out], c, true);
-				lat_out[row_out] = GMT_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				lat_out[row_out] = gmt_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			minlon = MIN (lon_in[row_in-1], lon_in[row_in]);
 			maxlon = MAX (lon_in[row_in-1], lon_in[row_in]);
@@ -1414,7 +1414,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 
 	if (mode < GMT_TRACK_SAMPLE_FIX) return (gmt_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
 
-	dist_in = GMT_dist_array (GMT, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
+	dist_in = gmt_dist_array (GMT, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 
 	/* Determine n_out, the number of output points */
@@ -1462,7 +1462,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode) {
 	/* Takes pointers to a list of <n_in> x/y pairs (in degrees or Cartesian units) and computes
 	 * the distance along that path.  We then determine new coordinates at new distances that are
-	 * multiples of the desired step <step_out> which are in the unit set via GMT_init_distaz (geo)
+	 * multiples of the desired step <step_out> which are in the unit set via gmt_init_distaz (geo)
 	 * or user Cartesian.  The new path will always contain the first input point, but anything
 	 * beyond that start depends on the mode:
 	 * mode = GMT_TRACK_FILL	: Keep input points; add intermediates if any gap exceeds step_out.

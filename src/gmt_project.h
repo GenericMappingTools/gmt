@@ -41,11 +41,12 @@
 #define GMT_WIND_LON(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
 
 /*! Some shorthand notation for GMT specific cases */
+EXTERN_MSC double map_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]);
 
-#define GMT_latg_to_latc(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C])
-#define GMT_latg_to_lata(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2A])
-#define GMT_latc_to_latg(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_C2G])
-#define GMT_lata_to_latg(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_A2G])
+#define GMT_latg_to_latc(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2C])
+#define GMT_latg_to_lata(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2A])
+#define GMT_latc_to_latg(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_C2G])
+#define GMT_lata_to_latg(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_A2G])
 
 /*! Macros returns true if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
 #define GMT_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON)
@@ -251,7 +252,7 @@ struct GMT_PROJ {
 	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
 	bool N_hemi;		/* true if we only allow northern hemisphere oblique Mercator poles */
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
-	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
+	struct GMT_LATSWAP_CONSTS lat_swap_vals;
 
 	enum GMT_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
 	char unit_name[GMT_N_UNITS][GMT_LEN16];	/* Names of the various distance units */

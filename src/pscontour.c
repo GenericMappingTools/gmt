@@ -769,7 +769,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	convert = (make_plot || (GMT->common.R.active && GMT->common.J.active));
 	get_contours = (Ctrl->D.active || Ctrl->W.active);
 
-	if (GMT->common.J.active && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (GMT->common.J.active && GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = GMT_memory (GMT, NULL, n_alloc, double);
@@ -794,7 +794,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		/* Data record to process */
 		
 		if (skip_points) {	/* Must check if points are inside plot region */
-			GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
+			gmt_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 			skip = (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1);
 		}
 
@@ -844,7 +844,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	/* Map transform */
 
-	if (convert) for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
+	if (convert) for (i = 0; i < n; i++) gmt_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->E.active) {	/* Read precalculated triangulation indices */
 		uint64_t seg, row, col;
@@ -905,7 +905,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		for (k = i = n_skipped = 0; i < np; i++) {	/* For all triangles */
 			k2 = (unsigned int)k;
 			for (k3 = n_out = 0; k3 < 3; k3++, k++) {
-				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) {
+				if (gmt_cart_outside (GMT, x[ind[k]], y[ind[k]])) {
 					n_out++;	/* Count how many vertices are outside */
 				}
 			}
@@ -1402,7 +1402,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						double *xtmp = NULL, *ytmp = NULL;
 						xtmp = GMT_memory (GMT, NULL, m, double);
 						ytmp = GMT_memory (GMT, NULL, m, double);
-						for (count = 0; count < m; count++) GMT_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
+						for (count = 0; count < m; count++) gmt_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
 						S = GMT_prepare_contour (GMT, xtmp, ytmp, m, cont[c].val);
 						GMT_free (GMT, xtmp);
 						GMT_free (GMT, ytmp);
