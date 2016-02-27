@@ -158,7 +158,6 @@ GMT_LOCAL int compare_x (const void *point_1, const void *point_2) {
 	return (0);
 }
 
-EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) {
 	unsigned int col, k, n_aspatial = 0;
 	size_t len;

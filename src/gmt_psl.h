@@ -56,7 +56,7 @@
 
 /*! PSL settings affected by GMT options -X -Y -U and clipping */
 struct GMT_PSL {
-	/* A structure pointer is passed to GMT_plotinit which calls ps_plotinit */
+	/* A structure pointer is passed to gmt_plotinit which calls ps_plotinit */
 	int nclip;				/* +1 if clipping will extend beyond current process, -1 if we terminate clipping */
 	int clip_level;		/* Sum total clip level, should be zero at end of command sequence */
 	int layer;		/* Layer number starting at 1 and incremented for each GMT layer added */

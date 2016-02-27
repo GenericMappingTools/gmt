@@ -544,7 +544,7 @@ GMT_LOCAL void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 		just = (angle >= 0.0) ? 9 : 1;
 	else
 		just = (angle >= 0.0) ? 3 : 11;
-	form = GMT_setfont (GMT, &GMT->current.setting.font_label);
+	form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 	GMT_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size,
 	                   GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, &x, &y, 1);
 	PSL_plottext (PSL, x, y, size, text, angle, just, form);
@@ -632,12 +632,12 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	
-	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	GMT_setpen (GMT, &Ctrl->W.pen);
+	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	gmt_setpen (GMT, &Ctrl->W.pen);
 	both = (Ctrl->L.info.annot_int_time && Ctrl->L.info.annot_int_dist);
 	
 	if (Ctrl->N.active) cruise_id = gmt_memory (GMT, NULL, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
@@ -700,7 +700,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 				stop = start;
 				while (stop < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[stop+1] - track_dist[stop]) < Ctrl->G.value[GAP_D]) ||
 				       (Ctrl->G.active[GAP_T] && (track_time[stop+1] - track_time[stop]) < Ctrl->G.value[GAP_T]))) stop++;	/* stop will be last point in segment */
-				GMT_geo_line (GMT, &lon[start], &lat[start], stop-start+1);
+				gmt_geo_line (GMT, &lon[start], &lat[start], stop-start+1);
 				start = stop + 1;
 				while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) ||
 				       (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
@@ -721,7 +721,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 				D->H.n_records = i;
 				last_rec = i;
 			}
-			GMT_geo_line (GMT, lon, lat, D->H.n_records);
+			gmt_geo_line (GMT, lon, lat, D->H.n_records);
 		}
 
 		first = true;
@@ -805,9 +805,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 						mrk = MGD77TRACK_MARK_SAMEDAY;
 						sprintf (label, "+%s", the_clock);
 					}
-					GMT_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+					gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_CIRCLE);
-					form = GMT_setfont (GMT, &Ctrl->T.marker[mrk].font);
+					form = gmt_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
 					GMT_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size,
 					                   &plot_x, &plot_y, 1);
@@ -818,9 +818,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 				if (annot_tick[ANNOT] & 2) {	/* Distance mark */
 					mrk = MGD77TRACK_MARK_DIST;
 					sprintf (label, "%d km  ", (int)((annot_dist[ANNOT] - Ctrl->L.info.annot_int_dist) * factor));
-					GMT_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+					gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_SQUARE);
-					form = GMT_setfont (GMT, &Ctrl->T.marker[mrk].font);
+					form = gmt_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
 					GMT_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 *
 					                   Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
@@ -830,12 +830,12 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 			}
 			if (both && !(annot_tick[ANNOT] & 1) && (draw_tick[ANNOT] & 1)) {
 				mrk = (this_julian != last_julian) ? MGD77TRACK_MARK_NEWDAY : MGD77TRACK_MARK_SAMEDAY;
-				GMT_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+				gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
 				PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_CIRCLE);
 			}
 			if (both && !(annot_tick[ANNOT] & 2) && (draw_tick[ANNOT] & 2)) {
 				mrk = (this_julian != last_julian) ? MGD77TRACK_MARK_NEWDAY : MGD77TRACK_MARK_SAMEDAY;
-				GMT_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
+				gmt_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
 				PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_SQUARE);
 			}
 			if (draw_tick[ANNOT]) {
@@ -859,9 +859,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		n_cruises++;
 	}
 		
-	GMT_map_clip_off (GMT);
+	gmt_map_clip_off (GMT);
 
-	GMT_map_basemap (GMT);
+	gmt_map_basemap (GMT);
 	
 	if (Ctrl->A.mode > 0 && Ctrl->N.active) {	/* Plot leg names after clipping is terminated ( see -N) */
 		unsigned int id;
@@ -873,8 +873,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		gmt_free (GMT, cruise_id);
 	}
 
-	GMT_plane_perspective (GMT, -1, 0.0);
-	GMT_plotend (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_plotend (GMT);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Plotted %d cruises\n", n_cruises);
 

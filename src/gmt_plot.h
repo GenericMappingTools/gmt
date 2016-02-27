@@ -24,7 +24,7 @@
 #ifndef _GMT_PLOT_H
 #define _GMT_PLOT_H
 
-/*! Identifier for GMT_plane_perspective. The others come from GMT_io.h */
+/*! Identifier for gmt_plane_perspective. The others come from GMT_io.h */
 
 #define GMT_ZW	3
 

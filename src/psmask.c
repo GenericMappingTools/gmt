@@ -674,13 +674,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			GMT->current.ps.nclip = -1;	/* Signal that this program terminates clipping that initiated prior to this process */
 		else if (!Ctrl->T.active)
 			GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	}
 
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
-		GMT_map_basemap (GMT);
+		gmt_map_basemap (GMT);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Clipping off!\n");
 	}
 	else {	/* Start new clip_path */
@@ -695,8 +695,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
 		
 		if (make_plot) {
-			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Allocate memory, read and process data file\n");
@@ -829,7 +829,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			n_edges = Grid->header->ny * (urint (ceil (Grid->header->nx / 16.0)));
 			edge = gmt_memory (GMT, NULL, n_edges, unsigned int);
 
-			if (make_plot) GMT_map_basemap (GMT);
+			if (make_plot) gmt_map_basemap (GMT);
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Tracing the clip path\n");
 
@@ -892,7 +892,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_free (GMT, yy);
 					if (plot_n == 0) continue;	/* Outside */
 					
-					GMT_setfill (GMT, &Ctrl->G.fill, false);
+					gmt_setfill (GMT, &Ctrl->G.fill, false);
 					if ((*GMT->current.map.will_it_wrap) (GMT, xp, yp, plot_n, &start)) {	/* Polygon wraps */
 
 						/* First truncate against left border */
@@ -913,10 +913,10 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_free (GMT, yp);
 				}
 			}
-			GMT_map_basemap (GMT);
+			gmt_map_basemap (GMT);
 		}
 
-		if (make_plot) GMT_plane_perspective (GMT, -1, 0.0);
+		if (make_plot) gmt_plane_perspective (GMT, -1, 0.0);
 
 		gmt_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
@@ -929,7 +929,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 	}
 
 	gmt_set_pad (GMT, API->pad);		/* Reset default pad */
-	if (make_plot) GMT_plotend (GMT);
+	if (make_plot) gmt_plotend (GMT);
 
 	Return (GMT_OK);
 }

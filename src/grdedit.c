@@ -280,7 +280,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
 #ifdef HAVE_GDAL
-		G->header->ProjRefPROJ4 = GMT_export2proj4(GMT);
+		G->header->ProjRefPROJ4 = gmt_export2proj4(GMT);
 #else
 		GMT_Report (API, GMT_MSG_NORMAL, "-J option to set a grid's referencing system is only available for builds that link with GDAL\n");
 #endif

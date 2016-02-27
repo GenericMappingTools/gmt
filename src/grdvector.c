@@ -378,12 +378,12 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		GMT_map_basemap (GMT);
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 		Return (GMT_OK);
 	}
 
@@ -444,14 +444,14 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
 		gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	}
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	GMT_setpen (GMT, &Ctrl->W.pen);
-	if (!Ctrl->C.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
+	gmt_setpen (GMT, &Ctrl->W.pen);
+	if (!Ctrl->C.active) gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (Ctrl->I.mode) {	/* Gave multiplier so get actual strides */
 		Ctrl->I.inc[GMT_X] *= Grid[0]->header->inc[GMT_X];
 		Ctrl->I.inc[GMT_Y] *= Grid[0]->header->inc[GMT_Y];
@@ -517,15 +517,15 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
 				GMT_get_fill_from_z (GMT, P, vec_length, &Ctrl->G.fill);
 				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
-				GMT_setpen (GMT, &Ctrl->W.pen);
-				if (Ctrl->Q.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
+				gmt_setpen (GMT, &Ctrl->W.pen);
+				if (Ctrl->Q.active) gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
 			}
 			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
 			
 			if (Geographic) {	/* Draw great-circle geo-vectors */
-				warn = GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
+				warn = gmt_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
 				n_warn[warn]++;
 			}
 			else {	/* Draw straight Cartesian vectors */
@@ -568,13 +568,13 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	PSL_command (GMT->PSL, "U\n");
 	PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
+	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 
-	GMT_map_basemap (GMT);
+	gmt_map_basemap (GMT);
 
-	GMT_plane_perspective (GMT, -1, 0.0);
+	gmt_plane_perspective (GMT, -1, 0.0);
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "%d vectors plotted successfully\n", n_warn[0]);
 	if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -Q\n", n_warn[1]);

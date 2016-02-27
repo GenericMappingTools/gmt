@@ -527,12 +527,12 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		GMT_map_basemap (GMT);
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 		Return (EXIT_SUCCESS);
 	}
 
@@ -549,10 +549,10 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 #endif
 
 	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
 	/* Read data */
@@ -907,7 +907,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 		if (id >= 0) {			/* Valid projection for creating world file info */
 			to_GDALW->P.active = true;
-			to_GDALW->P.ProjectionRefPROJ4 = GMT_export2proj4 (GMT);
+			to_GDALW->P.ProjectionRefPROJ4 = gmt_export2proj4 (GMT);
 			if (to_GDALW->P.ProjectionRefPROJ4[1] == 'x' && to_GDALW->P.ProjectionRefPROJ4[2] == 'y')	/* -JX. Forget conversion */
 				to_GDALW->P.active = false;
 		}
@@ -995,11 +995,11 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->A.active) {
-		if (!Ctrl->N.active) GMT_map_clip_off (GMT);
+		if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 
-		GMT_map_basemap (GMT);
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 	}
 
 	/* Free bitimage arrays. gmt_free will not complain if they have not been used (NULL) */

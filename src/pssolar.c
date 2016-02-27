@@ -531,9 +531,9 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
 		
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */
 			if (Ctrl->T.radius[n] == 0) continue;	/* This terminator was not requested */
@@ -542,7 +542,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
-				if ((n_pts = GMT_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
+				if ((n_pts = gmt_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
 					lon = S->coord[GMT_X]; lat = S->coord[GMT_Y];
 					n_pts = S->n_rows;
 					must_free = false;
@@ -559,17 +559,17 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			}
 			else {
 				if (Ctrl->W.active)
-					GMT_setpen (GMT, &Ctrl->W.pen);
+					gmt_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->G.active)
-					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
-				GMT_geo_polygons (GMT, S);
+					gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
+				gmt_geo_polygons (GMT, S);
 			}
 			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
-		GMT_map_basemap (GMT);
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 	}
 
 	gmt_free (GMT, Sun);

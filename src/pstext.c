@@ -166,14 +166,14 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	PSL_setfont (PSL, T->font.id);
 
 	if (T->boxflag & 32) {	/* Need to draw a vector from (x,y) to the offset text */
-		GMT_setpen (GMT, &(T->vecpen));
+		gmt_setpen (GMT, &(T->vecpen));
 		PSL_plotsegment (PSL, x, y, x + T->x_offset, y + T->y_offset);
 	}
 	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
 		int mode = 0;
-		if (T->boxflag & 1) GMT_setpen (GMT, &(T->boxpen));			/* Change current pen */
-		if (T->boxflag & 2) GMT_setfill (GMT, &(T->boxfill), T->boxflag & 1);	/* Change curent fill */
+		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));			/* Change current pen */
+		if (T->boxflag & 2) gmt_setfill (GMT, &(T->boxfill), T->boxflag & 1);	/* Change curent fill */
 		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;	/* Set the correct box shape */
 		if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
 		if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
@@ -181,11 +181,11 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */
-		GMT_setfont (GMT, &T->font);
+		gmt_setfont (GMT, &T->font);
 		PSL_plotparagraph (PSL, x, y, T->font.size, NULL, T->paragraph_angle, T->block_justify);
 	}
 	else {	/* No box beneath */
-		GMT_setfont (GMT, &T->font);
+		gmt_setfont (GMT, &T->font);
 		PSL_plotparagraph (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify);
 	}
 }
@@ -676,15 +676,15 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	if (Ctrl->G.mode) GMT_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
+	if (Ctrl->G.mode) gmt_map_basemap (GMT);	/* Must lay down basemap before text clipping is activated, otherwise we do it at the end */
 
 	if (!(Ctrl->N.active || Ctrl->Z.active)) {
-		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		clip_set = true;
 	}
 
@@ -955,9 +955,9 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			n_paragraphs++;
 
 			PSL_setfont (PSL, T.font.id);
-			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
+			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
 			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
-				GMT_setpen (GMT, &T.vecpen);
+				gmt_setpen (GMT, &T.vecpen);
 				PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
 			}
 			if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
@@ -969,14 +969,14 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					offset[0] = T.x_space;
 					offset[1] = T.y_space;
 				}
-				GMT_setpen (GMT, &T.boxpen);			/* Box pen */
+				gmt_setpen (GMT, &T.boxpen);			/* Box pen */
 				PSL_setfill (PSL, T.boxfill.rgb, T.boxflag & 1);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, T.font.size, in_txt, T.paragraph_angle, T.block_justify, offset, T.boxflag & 4);
 				curr_txt = NULL;	/* Text has now been encoded in the PS file */
 			}
 			else
 				curr_txt = in_txt;
-			fmode = GMT_setfont (GMT, &T.font);
+			fmode = gmt_setfont (GMT, &T.font);
 			if (Ctrl->G.mode) {
 				if (m <= n_alloc) {
 					gmt_malloc3 (GMT, c_angle, c_x, c_y, m, &n_alloc, double);
@@ -1019,7 +1019,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		form |= PSL_TXT_INIT;	/* To lay down all PSL attributes */
 		if (Ctrl->G.mode == PSTEXT_CLIPPLOT) form |= PSL_TXT_SHOW;	/* To place text */
 		form |= PSL_TXT_CLIP_ON;	/* To set clip path */
-		GMT_textpath_init (GMT, &Ctrl->W.pen, Ctrl->G.fill.rgb);
+		gmt_textpath_init (GMT, &Ctrl->W.pen, Ctrl->G.fill.rgb);
 		if (Ctrl->C.percent) {	/* Meant % of fontsize */
 			offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
 			offset[1] = 0.01 * T.y_space * T.font.size / PSL_POINTS_PER_INCH;
@@ -1052,13 +1052,13 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		gmt_free (GMT, fonts);
 	}
 	else if (clip_set)
-		GMT_map_clip_off (GMT);
+		gmt_map_clip_off (GMT);
 
 	GMT->current.map.is_world = old_is_world;
 
-	if (!Ctrl->G.mode) GMT_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
-	GMT_plane_perspective (GMT, -1, 0.0);
-	GMT_plotend (GMT);
+	if (!Ctrl->G.mode) gmt_map_basemap (GMT);	/* Normally we do basemap at the end, except when clipping (-Gc|C) interferes */
+	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_plotend (GMT);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 

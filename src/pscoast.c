@@ -626,7 +626,7 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 			p[k].n = 0;	/* Mark as used */
 
 			if (k0 == -1 && fill) {	/* At start level: done nesting, time to paint the assembled swiss cheese polygon */
-				GMT_setfill (GMT, &fill[p[k].fid], false);
+				gmt_setfill (GMT, &fill[p[k].fid], false);
 				PSL_command (PSL, "FO\n");
 			}
 		}
@@ -794,25 +794,25 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		else if (clipping)
 			GMT->current.ps.nclip = +1;	/* Signal that this program initiates new clipping that will outlive this process */
 
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);
 
-			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-			GMT_map_basemap (GMT); /* Basemap needed */
-			GMT_plane_perspective (GMT, -1, 0.0);
+			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+			gmt_map_basemap (GMT); /* Basemap needed */
+			gmt_plane_perspective (GMT, -1, 0.0);
 	
-			GMT_plotend (GMT);
+			gmt_plotend (GMT);
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 			Return (GMT_OK);
 		}
 
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	}
 
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
@@ -823,7 +823,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		recursive = false;
 	}
 
-	if (clipping) GMT_map_basemap (GMT);
+	if (clipping) gmt_map_basemap (GMT);
 
 	if (GMT->current.proj.projection == GMT_AZ_EQDIST && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_180_RANGE (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		possibly_donut_hell = true;
@@ -844,7 +844,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
 		n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
-		GMT_setfill (GMT, &Ctrl->S.fill, false);
+		gmt_setfill (GMT, &Ctrl->S.fill, false);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
 			PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
@@ -894,7 +894,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT->current.map.coastline = true;
 	}
 
-	if (!Ctrl->M.active && Ctrl->W.active) GMT_setpen (GMT, &Ctrl->W.pen[0]);
+	if (!Ctrl->M.active && Ctrl->W.active) gmt_setpen (GMT, &Ctrl->W.pen[0]);
 
 	last_pen_level = -1;
 
@@ -964,7 +964,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				for (k = 0; k < np_new; k++) {	/* Do any remaining interior polygons */
 					if (p[k].n == 0) continue;
 					if (p[k].level % 2 == level_to_be_painted[lp] || p[k].level > 2) {
-						GMT_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -974,14 +974,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					if (p[k].n == 0 || p[k].level < level_to_be_painted[lp]) continue;
 					if (donut_hell && GMT_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
-						GMT_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 						gmt_free (GMT, xtmp);
 						gmt_free (GMT, ytmp);
 					}
 					else {
-						GMT_setfill (GMT, &fill[p[k].fid], false);
+						gmt_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
 					}
 				}
@@ -1014,10 +1014,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 					k = p[i].level - 1;
 					if (k != last_pen_level) {
-						GMT_setpen (GMT, &Ctrl->W.pen[k]);
+						gmt_setpen (GMT, &Ctrl->W.pen[k]);
 						last_pen_level = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 
@@ -1076,10 +1076,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 					k = p[i].level;
 					if (k != last_k) {
-						GMT_setpen (GMT, &Ctrl->I.pen[k]);
+						gmt_setpen (GMT, &Ctrl->I.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 
@@ -1138,10 +1138,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 					k = p[i].level - 1;
 					if (k != last_k) {
-						GMT_setpen (GMT, &Ctrl->N.pen[k]);
+						gmt_setpen (GMT, &Ctrl->N.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 
@@ -1157,14 +1157,14 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (!Ctrl->M.active) {
 		if (GMT->current.map.frame.init) {
 			GMT->current.map.is_world = world_map_save;
-			GMT_map_basemap (GMT);
+			gmt_map_basemap (GMT);
 		}
 
-		if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.scale);
-		if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.rose);
+		if (Ctrl->L.active) gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+		if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 	}
 	else if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
 		Return (API->error);	/* Disables further data output */

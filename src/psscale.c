@@ -34,7 +34,7 @@
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcptxy"
 
-void GMT_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
@@ -766,9 +766,9 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			y_center = 0.5 * length + 0.5 * (dim[YHI] - dim[YLO]); x_center = 0.5 * width + 0.5 * (dim[XHI] - dim[XLO]);
 			panel->width = width + dim[XHI] + dim[XLO];	panel->height = length + dim[YHI] + dim[YLO];
 		}
-		GMT_draw_map_panel (GMT, x_center, y_center, 3U, panel);
+		gmt_draw_map_panel (GMT, x_center, y_center, 3U, panel);
 	}
-	GMT_setpen (GMT, &GMT->current.setting.map_frame_pen);
+	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
 	unit[0] = label[0] = 0;
 	/* Defeat the auto-repeat of axis info */
@@ -828,7 +828,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
 				if ((f = P->range[ii].fill) != NULL)	/* Using pattern fills */
-					GMT_setfill (GMT, f, center);
+					gmt_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
 					tmp = gmt_memory (GMT, NULL, ny*nb, unsigned char);
@@ -866,7 +866,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->patch[id].fill) != NULL)
-				GMT_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
@@ -882,7 +882,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->patch[GMT_NAN].fill) != NULL)
-				GMT_setfill (GMT, f, true);
+				gmt_setfill (GMT, f, true);
 			else {
 				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
@@ -898,7 +898,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->patch[id].fill) != NULL)
-				GMT_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
@@ -923,24 +923,24 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_TICK_UPPER].generated)  A->item[GMT_TICK_UPPER].interval  = 0.0;	/* Reset frame so we can redo via automagic */
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
-			GMT_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
+			gmt_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
 			if (A->item[GMT_GRID_UPPER].active) {
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
+				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
 
 			if (!skip_lines) {	/* First draw gridlines, unless skip_lines is true */
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				for (i = 0; i < n_xpos; i++)
 					PSL_plotsegment (PSL, xpos[i], 0.0, xpos[i], width);
 			}
 
 			/* Then draw annotation and frame tickmarks */
 
-			GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+			gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 
 			if (!center) {
 				for (i = 0; i < P->n_colors; i++) {		/* For all z_low coordinates */
@@ -954,7 +954,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			}
 
 			/* Now we place annotations */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
 
@@ -1002,11 +1002,11 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 
 		if (label[0]) {	/* Add label */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 			PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
 		}
 		if (unit[0]) {	/* Add unit label */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left */
 				PSL_plottext (PSL, xleft  - Ctrl->D.elength - GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_MR, form);
 			else
@@ -1023,7 +1023,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				ii = (reverse) ? P->n_colors - i - 1 : i;
 				x1 += z_width[ii];
 				if ((f = P->range[ii].fill) != NULL)	/* Using pattern fills */
-					GMT_setfill (GMT, f, center);
+					gmt_setfill (GMT, f, center);
 				else if (Ctrl->I.active) {
 					nb = (P->is_gray || Ctrl->M.active) ? 1 : 3;
 					tmp = gmt_memory (GMT, NULL, ny*nb, unsigned char);
@@ -1083,7 +1083,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] += xt;
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->patch[id].fill) != NULL)
-				GMT_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
@@ -1099,7 +1099,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			for (i = 0; i < 4; i++) xp[i] -= nan_off;
 			yp[0] = yp[3] = width;	yp[1] = yp[2] = 0.0;
 			if ((f = P->patch[GMT_NAN].fill) != NULL)
-				GMT_setfill (GMT, f, true);
+				gmt_setfill (GMT, f, true);
 			else {
 				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
@@ -1115,7 +1115,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			xp[1] -= xt;
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->patch[id].fill) != NULL)
-				GMT_setfill (GMT, f, false);
+				gmt_setfill (GMT, f, false);
 			else {
 				GMT_rgb_copy (rgb, P->patch[id].rgb);
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
@@ -1133,7 +1133,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			PSL_plotsegment (PSL, xleft, 0.0, xleft, width);
 			PSL_plotsegment (PSL, xright, 0.0, xright, width);
 		}
-		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
+		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use gmt_xy_axis to draw a y-axis based on x parameters. */
 			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
 			char *custum;
 
@@ -1144,8 +1144,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
 				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
-				GMT_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
+				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since gmt_end_module will restore it for us */
@@ -1157,13 +1157,13 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			tmp = GMT->current.proj.fwd_x; GMT->current.proj.fwd_y = GMT->current.proj.fwd_x; GMT->current.proj.fwd_x = tmp;
 			GMT->current.map.frame.axis[GMT_Y].id = GMT_Y;
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
-			GMT_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & 2);
+			gmt_xy_axis (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & 2);
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
 			GMT->current.map.frame.axis[GMT_Y].file_custom = custum;	/* Restore correct pointer */
 		}
 		else {	/* When no -B we annotate every CPT bound which may be non-equidistant, hence this code (i.e., we cannot fake a call to -B) */
 			if (!skip_lines) {	/* First draw gridlines */
-				GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				for (i = 0; i < n_xpos; i++)
 					PSL_plotsegment (PSL, xpos[i], 0.0, xpos[i], width);
 			}
@@ -1171,7 +1171,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			/* Then draw annotation and frame tickmarks */
 
 			if (!center) {
-				GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+				gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 				for (i = 0; i < P->n_colors; i++) {
 					t_len = (all || (P->range[i].annot & 1)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
@@ -1184,7 +1184,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 			/* Finally plot annotations */
 
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			x1 = xleft;
 			if (center) x1 += 0.5 * z_width[0];	/* Can use z_width[0] since -L forces all widths to be equal */
 
@@ -1236,7 +1236,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 		}
 
 		if (label[0]) {	/* Add label */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_label);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 			if (strchr (label, '@') || strchr (label, '(') || !(flip & PSSCALE_FLIP_VERT)) { /* Must set text along-side color bar */
 				PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
 			}
@@ -1254,7 +1254,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			}
 		}
 		if (unit[0]) {	/* Add unit label */
-			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the bottom */
 				PSL_plottext (PSL, xleft  - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - Ctrl->D.elength, 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_TC, form);
 			else
@@ -1381,11 +1381,11 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
@@ -1394,11 +1394,11 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
@@ -1425,9 +1425,9 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	gmt_draw_colorbar (GMT, Ctrl, P, z_width);
 
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_FWD);
-	GMT_plane_perspective (GMT, -1, 0.0);
+	gmt_plane_perspective (GMT, -1, 0.0);
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 

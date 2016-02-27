@@ -2015,27 +2015,27 @@ GMT_LOCAL struct GMT_PS * api_import_ps (struct GMTAPI_CTRL *API, int object_ID,
 
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
-			/* GMT_read_ps will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_read_ps will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading PS from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
-			if ((P_obj = GMT_read_ps (GMT, S_obj->filename, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
+			if ((P_obj = gmt_read_ps (GMT, S_obj->filename, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
 			break;
 		case GMT_IS_STREAM:
- 			/* GMT_read_ps will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+ 			/* gmt_read_ps will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (S_obj->fp == GMT->session.std[GMT_IN]) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading PS from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
-			if ((P_obj = GMT_read_ps (GMT, S_obj->fp, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
+			if ((P_obj = gmt_read_ps (GMT, S_obj->fp, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
 			break;
 		case GMT_IS_FDESC:
-			/* GMT_read_ps will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_read_ps will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (*((int *)S_obj->fp) == GMT_IN) ? 0 : 1;	/* 0 if stdin, 1 otherwise for user pointer */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading PS from %s %s stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
-			if ((P_obj = GMT_read_ps (GMT, S_obj->fp, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
+			if ((P_obj = gmt_read_ps (GMT, S_obj->fp, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
 			break;
 		case GMT_IS_DUPLICATE:	/* Duplicate the input CPT palette */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating PS from GMT_PS memory location\n");
 			if (S_obj->resource == NULL) return_null (API, GMT_PTR_IS_NULL);
 			P_obj = gmt_memory (GMT, NULL, 1, struct GMT_PS);
-			GMT_copy_ps (GMT, P_obj, S_obj->resource);
+			gmt_copy_ps (GMT, P_obj, S_obj->resource);
 			break;
 		case GMT_IS_REFERENCE:	/* Just pass memory location, so nothing is allocated */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing PS from GMT_PS memory location\n");
@@ -2075,27 +2075,27 @@ GMT_LOCAL int api_export_ps (struct GMTAPI_CTRL *API, int object_ID, unsigned in
 	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	switch (S_obj->method) {	/* File, array, stream etc ? */
 		case GMT_IS_FILE:
-			/* GMT_write_ps will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_write_ps will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write PS to %s %s\n", GMT_method[S_obj->method], S_obj->filename);
-			if ((error = GMT_write_ps (GMT, S_obj->filename, S_obj->method, mode, P_obj))) return (api_report_error (API, error));
+			if ((error = gmt_write_ps (GMT, S_obj->filename, S_obj->method, mode, P_obj))) return (api_report_error (API, error));
 			break;
 	 	case GMT_IS_STREAM:
-			/* GMT_write_ps will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_write_ps will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (S_obj->fp == GMT->session.std[GMT_OUT]) ? 0 : 1;	/* 0 if stdout, 1 otherwise for user pointer */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write PS to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
-			if ((error = GMT_write_ps (GMT, S_obj->fp, S_obj->method, mode, P_obj))) return (api_report_error (API, error));
+			if ((error = gmt_write_ps (GMT, S_obj->fp, S_obj->method, mode, P_obj))) return (api_report_error (API, error));
 			break;
 	 	case GMT_IS_FDESC:
-			/* GMT_write_ps will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
+			/* gmt_write_ps will report where it is writing from if level is GMT_MSG_LONG_VERBOSE */
 			kind = (*((int *)S_obj->fp) == GMT_OUT) ? 0 : 1;	/* 0 if stdout, 1 otherwise for user pointer */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Write PS to %s %s output stream\n", GMT_method[S_obj->method], GMT_stream[kind]);
-			if ((error = GMT_write_ps (GMT, S_obj->fp, S_obj->method, mode, P_obj))) return (api_report_error (API, error));
+			if ((error = gmt_write_ps (GMT, S_obj->fp, S_obj->method, mode, P_obj))) return (api_report_error (API, error));
 			break;
 		case GMT_IS_DUPLICATE:		/* Duplicate the input cpt */
 			if (S_obj->resource) return (api_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating PS to GMT_PS memory location\n");
 			P_copy = gmt_memory (GMT, NULL, 1, struct GMT_PS);
-			GMT_copy_ps (GMT, P_copy, P_obj);
+			gmt_copy_ps (GMT, P_copy, P_obj);
 			S_obj->resource = P_copy;	/* Set resource pointer from object to this PS */
 			break;
 		case GMT_IS_REFERENCE:	/* Just pass memory location */
@@ -5315,7 +5315,7 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			geometry = GMT_IS_NONE;
 			break;
 		case GMT_IS_PS:	/* GMT PS, allocate one with space for the original */
-			new_obj = GMT_duplicate_ps (GMT, data, 0);
+			new_obj = gmt_duplicate_ps (GMT, data, 0);
 			geometry = GMT_IS_NONE;
 			break;
 		default:
@@ -6406,7 +6406,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		 	if ((new_obj = GMT_create_palette (API->GMT, this_dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_PS:	/* GMT PS struct, allocate one struct */
-		 	if ((new_obj = GMT_create_ps (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+		 	if ((new_obj = gmt_create_ps (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
 			n_layers = (this_dim[GMTAPI_DIM_COL] == 0 && this_dim[GMTAPI_DIM_ROW] == 0) ? 1U : this_dim[GMT_Z];

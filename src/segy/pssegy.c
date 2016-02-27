@@ -530,9 +530,9 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	/* set up map projection and PS plotting */
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
@@ -686,16 +686,16 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 		ix++;
 	}
 
-	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3); /* set a clip at the map boundary since the image space overlaps a little */
+	gmt_map_clip_on (GMT, GMT->session.no_rgb, 3); /* set a clip at the map boundary since the image space overlaps a little */
 	PSL_plotbitimage (PSL, 0.0, 0.0, xlen, ylen, 1, bitmap, 8*bm_nx, bm_ny, trans, Ctrl->F.rgb);
 	/* have to multiply by 8 since postscriptlight version of ps_imagemask is based on a _pixel_ count, whereas pssegy uses _byte_ count internally */
-	GMT_map_clip_off (GMT);
-	GMT_map_basemap (GMT);
+	gmt_map_clip_off (GMT);
+	gmt_map_basemap (GMT);
 
 	if (fpi != stdin) fclose (fpi);
 
-	GMT_plane_perspective (GMT, -1, 0.0);
-	GMT_plotend (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_plotend (GMT);
 
 	gmt_free (GMT, bitmap);
 	if (Ctrl->T.active) gmt_free (GMT, tracelist);

@@ -288,7 +288,7 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
-		GMT_setfill (GMT, f, outline);
+		gmt_setfill (GMT, f, outline);
 	else {	/* Solid color/gray */
 		if (intens) GMT_illuminate (GMT, intensity, rgb);
 		if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb); /* GMT_YIQ transformation */
@@ -737,13 +737,13 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		GMT_map_basemap (GMT);
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 		Return (GMT_OK);
 	}
 
@@ -902,7 +902,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 		gmt_free (GMT, xval);
 		gmt_free (GMT, yval);
 		Return (GMT_RUNTIME_ERROR);
@@ -915,17 +915,17 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	PSL_setformat (PSL, 3);
 
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-	if (GMT->current.proj.three_D) GMT_map_basemap (GMT); /* Plot basemap first if 3-D */
-	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	GMT_plane_perspective (GMT, -1, 0.0);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	if (GMT->current.proj.three_D) gmt_map_basemap (GMT); /* Plot basemap first if 3-D */
+	if (GMT->current.proj.z_pars[0] == 0.0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	gmt_plane_perspective (GMT, -1, 0.0);
 
 	xx = gmt_memory (GMT, NULL, max_alloc, double);
 	yy = gmt_memory (GMT, NULL, max_alloc, double);
 	if (Ctrl->N.active) {
 		PSL_comment (PSL, "Plot the plane at desired level\n");
-		GMT_setpen (GMT, &Ctrl->W.pen[2]);
+		gmt_setpen (GMT, &Ctrl->W.pen[2]);
 		if (!GMT->current.proj.z_project.draw[0]) {	/* Southern side */
 			if (GMT->common.R.oblique) {
 				gmt_geoz_to_xy (GMT, GMT->current.proj.z_project.corner_x[0], GMT->current.proj.z_project.corner_y[0], Ctrl->N.level, &xx[0], &yy[0]);
@@ -1003,7 +1003,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Tiling without interpolation\n");
 
-		if (Ctrl->T.outline) GMT_setpen (GMT, &Ctrl->T.pen);
+		if (Ctrl->T.outline) gmt_setpen (GMT, &Ctrl->T.pen);
 		GMT_memset (&S, 1, struct GMT_DATASEGMENT);
 		S.coord = gmt_memory (GMT, NULL, 2, double *);
 		GMT_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
@@ -1015,9 +1015,9 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			else
 				GMT_illuminate (GMT, Ctrl->I.value, fill.rgb);
 			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
-			GMT_setfill (GMT, &fill, Ctrl->T.outline);
+			gmt_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
-			GMT_geo_polygons (GMT, &S);
+			gmt_geo_polygons (GMT, &S);
 			gmt_free (GMT, xx);
 			gmt_free (GMT, yy);
 		}
@@ -1268,8 +1268,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_Y) {	/* Plot Y waterfall */
 		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
 		PSL_comment (PSL, "Start of waterfall plot\n");
-		GMT_setpen (GMT, &Ctrl->W.pen[1]);
-		GMT_setfill (GMT, &Ctrl->Q.fill, true);
+		gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		gmt_setfill (GMT, &Ctrl->Q.fill, true);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
 		for (i = i_start+1; i != i_stop; i += i_inc) {
@@ -1289,8 +1289,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.mode == GRDVIEW_WATERFALL_X) {	/* Plot X waterfall */
 		double z_base = Ctrl->N.active ? Ctrl->N.level : Z->header->z_min;
 		PSL_comment (PSL, "Start of waterfall plot\n");
-		GMT_setpen (GMT, &Ctrl->W.pen[1]);
-		GMT_setfill (GMT, &Ctrl->Q.fill, true);
+		gmt_setpen (GMT, &Ctrl->W.pen[1]);
+		gmt_setfill (GMT, &Ctrl->Q.fill, true);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
 		for (j = j_start-1; j != j_stop; j += j_inc) {
@@ -1312,7 +1312,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	else if (Ctrl->Q.mode == GRDVIEW_MESH) {	/* Plot mesh */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do mesh plot with mesh color %s\n", gmt_putcolor (GMT, Ctrl->Q.fill.rgb));
 		PSL_comment (PSL, "Start of mesh plot\n");
-		GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		gmt_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->Q.monochrome)
 			Ctrl->Q.fill.rgb[0] = Ctrl->Q.fill.rgb[1] = Ctrl->Q.fill.rgb[2] = GMT_YIQ (Ctrl->Q.fill.rgb);	/* Do GMT_YIQ transformation */
 		for (j = j_start; j != j_stop; j += j_inc) {
@@ -1329,7 +1329,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 				gmt_geoz_to_xy (GMT, x_right, y_bottom, (double)(Topo->data[ij+ij_inc[1]]), &xx[1], &yy[1]);
 				gmt_geoz_to_xy (GMT, x_right, y_top, (double)(Topo->data[ij+ij_inc[2]]), &xx[2], &yy[2]);
 				gmt_geoz_to_xy (GMT, x_left, y_top, (double)(Topo->data[ij+ij_inc[3]]), &xx[3], &yy[3]);
-				GMT_setfill (GMT, &Ctrl->Q.fill, true);
+				gmt_setfill (GMT, &Ctrl->Q.fill, true);
 				PSL_plotpolygon (PSL, xx, yy, 4);
 				if (Ctrl->W.contour) {
 					pen_set = false;
@@ -1342,12 +1342,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							k++;
 						}
 						if (!pen_set) {
-							GMT_setpen (GMT, &Ctrl->W.pen[0]);
+							gmt_setpen (GMT, &Ctrl->W.pen[0]);
 							pen_set = true;
 						}
 						PSL_plotline (PSL, xx, yy, k, PSL_MOVE + PSL_STROKE);
 					}
-					if (pen_set) GMT_setpen (GMT, &Ctrl->W.pen[1]);
+					if (pen_set) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 				}
 			}
 		}
@@ -1390,7 +1390,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		vcont = gmt_memory (GMT, NULL, max_alloc, double);
 
 		PSL_comment (PSL, "Start of filled surface\n");
-		if (Ctrl->Q.outline) GMT_setpen (GMT, &Ctrl->W.pen[1]);
+		if (Ctrl->Q.outline) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 
 		for (j = j_start; j != j_stop; j += j_inc) {
 			y_bottom = yval[j];
@@ -1679,12 +1679,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							k++;
 						}
 						if (!pen_set) {
-							GMT_setpen (GMT, &Ctrl->W.pen[0]);
+							gmt_setpen (GMT, &Ctrl->W.pen[0]);
 							pen_set = true;
 						}
 						PSL_plotline (PSL, xx, yy, k, PSL_MOVE + PSL_STROKE);
 					}
-					if (pen_set) GMT_setpen (GMT, &Ctrl->W.pen[1]);
+					if (pen_set) gmt_setpen (GMT, &Ctrl->W.pen[1]);
 					if (Ctrl->Q.outline) {
 						for (k = 0; k < 4; k++) gmt_geoz_to_xy (GMT, X_vert[k], Y_vert[k], (double)(Topo->data[ij+ij_inc[k]]), &xmesh[k], &ymesh[k]);
 						PSL_setfill (PSL, GMT->session.no_rgb, true);
@@ -1713,12 +1713,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 
 	PSL_setdash (PSL, NULL, 0);
 
-	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_off (GMT);
+	if (GMT->current.proj.z_pars[0] == 0.0) gmt_map_clip_off (GMT);
 
 	if (Ctrl->N.facade) {	/* Cover the two front sides */
 		PSL_comment (PSL, "Painting the frontal facade\n");
-		GMT_setpen (GMT, &Ctrl->W.pen[2]);
-		GMT_setfill (GMT, &Ctrl->N.fill, true);
+		gmt_setpen (GMT, &Ctrl->W.pen[2]);
+		gmt_setfill (GMT, &Ctrl->N.fill, true);
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
 			for (col = 0, n = 0, ij = sw; col < Z->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
@@ -1762,11 +1762,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->current.proj.three_D)
-		GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
+		gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	else
-		GMT_map_basemap (GMT);	/* Plot basemap last if not 3-D */
+		gmt_map_basemap (GMT);	/* Plot basemap last if not 3-D */
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	/* Free memory */
 

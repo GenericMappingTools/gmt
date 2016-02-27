@@ -535,7 +535,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	/* See if we have a projection info to add */
 	if (GMT->common.J.active)		/* Convert the GMT -J<...> into a proj4 string and save it in the header */
-		Grid->header->ProjRefPROJ4 = GMT_export2proj4(GMT);
+		Grid->header->ProjRefPROJ4 = gmt_export2proj4(GMT);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 

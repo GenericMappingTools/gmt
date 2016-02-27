@@ -403,8 +403,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			new_set = (tbl == 0 || order[tbl] != order[tbl-1]);	/* When item group change it is likely pen/fill changes too */
 			outline = (F->item[order[tbl]]->mode & DCW_DO_OUTLINE);
 			fill = (F->item[order[tbl]]->mode & DCW_DO_FILL);
-			if (outline && new_set) GMT_setpen (GMT, &(F->item[order[tbl]]->pen));
-			if (fill && new_set) GMT_setfill (GMT, &(F->item[order[tbl]]->fill), outline);
+			if (outline && new_set) gmt_setpen (GMT, &(F->item[order[tbl]]->pen));
+			if (fill && new_set) gmt_setfill (GMT, &(F->item[order[tbl]]->fill), outline);
 		}
 
 	        /* Extract the pieces into separate segments */
@@ -450,11 +450,11 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			else {	/* mode & GMT_DCW_PLOT: Plot this piece */
 				if (fill) {	/* Plot filled polygon, w/ or w/o outline */
 					if (!strncmp (TAG, "AQ", 2U)) gmt_set_seg_polar (GMT, P);
-					GMT_geo_polygons (GMT, P);
+					gmt_geo_polygons (GMT, P);
 				}
 				else {	/* Plot outline only */
 					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, P->coord[GMT_X], P->coord[GMT_Y], P->n_rows)) == 0) continue;
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
+					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 				}
 			}
 		}

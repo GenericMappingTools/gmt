@@ -435,12 +435,12 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 	GMT_memset (col, GMT_LEN64*4, char);
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
- 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+ 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	old_is_world = GMT->current.map.is_world;
 
@@ -448,7 +448,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
         gmt_geo_to_xy (GMT, Ctrl->D.lon, Ctrl->D.lat, &plot_x0, &plot_y0);
 	if (Ctrl->C.active) {
-		GMT_setpen (GMT, &Ctrl->C.pen);
+		gmt_setpen (GMT, &Ctrl->C.pen);
 		gmt_geo_to_xy (GMT, Ctrl->C.lon, Ctrl->C.lat, &new_plot_x0, &new_plot_y0);
 		PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->C.size), GMT_SYMBOL_CIRCLE);
 		PSL_plotsegment (PSL, plot_x0, plot_y0, new_plot_x0, new_plot_y0);
@@ -463,8 +463,8 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 		};
 	}
 
-	GMT_setpen (GMT, &Ctrl->F.pen);
-	GMT_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
+	gmt_setpen (GMT, &Ctrl->F.pen);
+	gmt_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
 	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), GMT_SYMBOL_CIRCLE);
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -528,7 +528,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 		if (Ctrl->S.symbol == GMT_SYMBOL_CROSS || Ctrl->S.symbol == GMT_SYMBOL_DOT) PSL_setcolor (PSL, GMT->session.no_rgb, PSL_IS_STROKE);
 
 		if (Ctrl->T.active) {
-			GMT_setpen (GMT, &Ctrl->T.pen);
+			gmt_setpen (GMT, &Ctrl->T.pen);
 			switch (Ctrl->T.justify) {
 				case PSL_TR:
 					PSL_plottext (PSL, plot_x-symbol_size2-0.1, plot_y-symbol_size2-0.1, Ctrl->T.fontsize, stacode, Ctrl->T.angle, PSL_TR, Ctrl->T.form);
@@ -562,21 +562,21 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 		if (Ctrl->S.symbol == GMT_SYMBOL_DOT) symbol_size2 = GMT_DOT_SIZE;
 
 		if (pol == 'u' || pol == 'U' || pol == 'c' || pol == 'C' || pol == '+') {
-			GMT_setpen (GMT, &Ctrl->G.pen);
-			GMT_setfill (GMT, &(Ctrl->G.fill), Ctrl->G.active);
+			gmt_setpen (GMT, &Ctrl->G.pen);
+			gmt_setfill (GMT, &(Ctrl->G.fill), Ctrl->G.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		else if (pol == 'r' || pol == 'R' || pol == 'd' || pol == 'D' || pol == '-') {
-			GMT_setpen (GMT, &Ctrl->E.pen);
-			GMT_setfill (GMT, &(Ctrl->E.fill), Ctrl->E.active);
+			gmt_setpen (GMT, &Ctrl->E.pen);
+			gmt_setfill (GMT, &(Ctrl->E.fill), Ctrl->E.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		else {
-			GMT_setpen (GMT, &Ctrl->W.pen);
+			gmt_setpen (GMT, &Ctrl->W.pen);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &symbol_size2, Ctrl->S.symbol);
 		}
 		if (Ctrl->S2.active && azS >= 0.0) {
-			GMT_setpen (GMT, &Ctrl->W.pen);
+			gmt_setpen (GMT, &Ctrl->W.pen);
 			sincosd (azS, &si, &co);
 			if (Ctrl->S2.vector) {
 				double dim[PSL_MAX_DIMS];
@@ -584,7 +584,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 				dim[0] = plot_x + Ctrl->S2.size*si; dim[1] = plot_y + Ctrl->S2.size*co;
 				dim[2] = Ctrl->S2.width; dim[3] = Ctrl->S2.length; dim[4] = Ctrl->S2.head;
 				dim[5] = GMT->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;
-				GMT_setfill (GMT, &(Ctrl->S2.fill), Ctrl->S2.outline);
+				gmt_setfill (GMT, &(Ctrl->S2.fill), Ctrl->S2.outline);
 				PSL_plotsymbol (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, dim, PSL_VECTOR);
 			}
 			else {
@@ -601,13 +601,13 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	GMT->current.map.is_world = old_is_world;
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
+	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 
 	PSL_setdash (PSL, NULL, 0);
 
-	GMT_map_basemap (GMT);
+	gmt_map_basemap (GMT);
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	Return (GMT_OK);
 }

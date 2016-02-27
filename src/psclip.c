@@ -227,9 +227,9 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
 	if (Ctrl->C.active && !GMT->current.map.frame.init) {
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
-		GMT_plotend (GMT);
+		gmt_plotend (GMT);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 		Return (EXIT_SUCCESS);
 	}
@@ -238,11 +238,11 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 	
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-	GMT_map_basemap (GMT);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		unsigned int tbl, first = (Ctrl->N.active) ? 0 : 1;
@@ -258,7 +258,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 #endif
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
+		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 		if (!Ctrl->T.active) {
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 				Return (API->error);	/* Register data input */
@@ -298,8 +298,8 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		PSL_beginclipping (PSL, NULL, NULL, 0, GMT->session.no_rgb, 2 + first);
 	}
 
-	GMT_plane_perspective (GMT, -1, 0.0);
-	GMT_plotend (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_plotend (GMT);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

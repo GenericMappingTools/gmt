@@ -270,7 +270,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	/* Now we must paint, with colors or patterns */
 
 	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))
-		GMT_setfill (GMT, f, false);
+		gmt_setfill (GMT, f, false);
 	else
 		PSL_setfill (PSL, rgb, -2);
 	/* Contours drawn separately later if desired */
@@ -302,7 +302,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		}
 	}
 
-	form = GMT_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
+	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = true */
 
@@ -344,11 +344,11 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		n_ticks = urint (floor (s / tick_gap));
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
-		GMT_setpen (GMT, &save[pol].pen);
+		gmt_setpen (GMT, &save[pol].pen);
 		way = GMT_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
-			if (mode & 2) GMT_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high], mode & 4);
+			if (mode & 2) gmt_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high], mode & 4);
 		}
 		if (mode & 1) {	/* Tick the innermost contour */
 			add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
@@ -1079,17 +1079,17 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		if (Ctrl->contour.delay) GMT_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
-		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		if (Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap must be done before clipping */
+		if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		Ctrl->contour.line_pen = Ctrl->W.pen[0];
 	}
 
 	if (Ctrl->L.active) {	/* Draw triangular mesh */
 
-		GMT_setpen (GMT, &Ctrl->L.pen);
+		gmt_setpen (GMT, &Ctrl->L.pen);
 
 		for (k = i = 0; i < np; i++) {	/* For all triangles */
 			if (ind[k] < 0) { k += 3; continue; }	/* Skip triangles that are fully outside */
@@ -1453,7 +1453,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
 			label_mode |= 2;
 			if (Ctrl->contour.save_labels == 2) label_mode |= 4;
-			if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) Return (error);
+			if ((error = gmt_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) Return (error);
 		}
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contoursand plot/save L|H labels */
 			size_t kk;
@@ -1467,11 +1467,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			gmt_free (GMT, save);
 		}
 		if (make_plot) {
-			GMT_contlabel_plot (GMT, &Ctrl->contour);
+			gmt_contlabel_plot (GMT, &Ctrl->contour);
 			GMT_contlabel_free (GMT, &Ctrl->contour);
 		}
 		if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
-			if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour)) != 0) Return (error);
+			if ((error = gmt_contlabel_save_end (GMT, &Ctrl->contour)) != 0) Return (error);
 		}
 	}
 
@@ -1485,10 +1485,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	}
 
 	if (make_plot) {
-		if (!(Ctrl->N.active || Ctrl->contour.delay)) GMT_map_clip_off (GMT);
-		if (!Ctrl->contour.delay) GMT_map_basemap (GMT);	/* If delayed clipping the basemap is done before plotting, else here */
-		GMT_plane_perspective (GMT, -1, 0.0);
-		GMT_plotend (GMT);
+		if (!(Ctrl->N.active || Ctrl->contour.delay)) gmt_map_clip_off (GMT);
+		if (!Ctrl->contour.delay) gmt_map_basemap (GMT);	/* If delayed clipping the basemap is done before plotting, else here */
+		gmt_plane_perspective (GMT, -1, 0.0);
+		gmt_plotend (GMT);
 	}
 
 	gmt_free (GMT, x);

@@ -242,7 +242,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 	double plot_x = 0.0, plot_y = 0.0;
 	struct GMT_FILL *f = NULL;
 
-	if (draw_outline) GMT_setpen (GMT, pen);
+	if (draw_outline) gmt_setpen (GMT, pen);
 
 	if (flip_to_y) {
 		px = y;
@@ -254,7 +254,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 	}
 
 	if (D->active) {	/* Place label, so set font */
-		fmode = GMT_setfont (GMT, &D->font);
+		fmode = gmt_setfont (GMT, &D->font);
 		if (D->just) {	/* Want labels beneath the bar, not above */
 			label_justify = (flip_to_y) ? PSL_MR: PSL_TC;
 			if (D->mode) label_justify = (flip_to_y) ? PSL_TC : PSL_MR;
@@ -311,13 +311,13 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 			else if (cpt) {
 				index = GMT_get_rgb_from_z (GMT, P, xval, rgb);
 				if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
-					GMT_setfill (GMT, f, draw_outline);
+					gmt_setfill (GMT, f, draw_outline);
 				else
 					PSL_setfill (PSL, rgb, draw_outline);
 				PSL_plotpolygon (PSL, px, py, 4);
 			}
 			else {
-				GMT_setfill (GMT, fill, draw_outline);
+				gmt_setfill (GMT, fill, draw_outline);
 				PSL_plotpolygon (PSL, px, py, 4);
 			}
 			if (D->active) {	/* Place label */
@@ -875,12 +875,12 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	if (Ctrl->D.just == 0) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	if (Ctrl->D.just == 0) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
 
@@ -893,7 +893,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		for (type = 0; type < 3; type++) {
 			if (!Ctrl->N.selected[type]) continue;
 			/* Draw this estimation of a normal distribution */
-			GMT_setpen (GMT, &Ctrl->N.pen[type]);
+			gmt_setpen (GMT, &Ctrl->N.pen[type]);
 			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
 			f *= area;
 			for (k = 0; k < NP; k++) {
@@ -920,11 +920,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		gmt_free (GMT, yp);
 	}
 
-	if (Ctrl->D.just == 0) GMT_map_clip_off (GMT);
+	if (Ctrl->D.just == 0) gmt_map_clip_off (GMT);
 
-	GMT_map_basemap (GMT);
-	GMT_plane_perspective (GMT, -1, 0.0);
-	GMT_plotend (GMT);
+	gmt_map_basemap (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_plotend (GMT);
 
 	gmt_free (GMT, data);
 	gmt_free (GMT, F.boxh);

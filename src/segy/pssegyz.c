@@ -630,12 +630,12 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 
 	/* set up map projection and PS plotting */
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	/* In this program we DO NOT want to call GMT_plane_perspective since that is already in the SEGV projection
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	/* In this program we DO NOT want to call gmt_plane_perspective since that is already in the SEGV projection
 	 * Per Tim Henstock, Nov, 2015.
-	 * GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	 * gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	 */
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
@@ -815,9 +815,9 @@ use a few of these*/
 
 	if (fpi != stdin) fclose (fpi);
 
-	/* Not needed, see above for why.  GMT_plane_perspective (GMT, -1, 0.0); */
+	/* Not needed, see above for why.  gmt_plane_perspective (GMT, -1, 0.0); */
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	gmt_free (GMT, bitmap);
 

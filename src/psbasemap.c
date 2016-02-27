@@ -277,21 +277,21 @@ int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	/* Regular plot behaviour */
 	
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	GMT_map_basemap (GMT);	/* Plot base map */
+	gmt_map_basemap (GMT);	/* Plot base map */
 
-	if (Ctrl->D.active) GMT_draw_map_insert (GMT, &Ctrl->D.insert);
-	if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.scale);
-	if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.rose);
+	if (Ctrl->D.active) gmt_draw_map_insert (GMT, &Ctrl->D.insert);
+	if (Ctrl->L.active) gmt_draw_map_scale (GMT, &Ctrl->L.scale);
+	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 
-	GMT_plane_perspective (GMT, -1, 0.0);
+	gmt_plane_perspective (GMT, -1, 0.0);
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	Return (GMT_OK);
 }

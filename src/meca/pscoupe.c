@@ -832,13 +832,13 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 
-	GMT_setpen (GMT, &Ctrl->W.pen);
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	gmt_setpen (GMT, &Ctrl->W.pen);
+	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);    iy = 1 - ix;
 
@@ -950,7 +950,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				fprintf (pnew, "%f %f %f %s\n", distance, n_dep, depth, col[3]);
 				fprintf (pext, "%s\n", line);
 			}
-			GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+			gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
 			PSL_plotsymbol (PSL, plot_x, plot_y, &size, Ctrl->S.symbol);
 		}
 		else if (Ctrl->S.readmode == READ_CMT) {
@@ -1097,17 +1097,17 @@ Definition of scalar moment.
 			}
 
 			if (Ctrl->S.plotmode == PLOT_TENSOR) {
-				GMT_setpen (GMT, &Ctrl->L.pen);
+				gmt_setpen (GMT, &Ctrl->L.pen);
 				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace, n_rec);
 			}
 
 			if (Ctrl->S.zerotrace) {
-				GMT_setpen (GMT, &Ctrl->W.pen);
+				gmt_setpen (GMT, &Ctrl->W.pen);
 				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
 			}
 
 			if (Ctrl->T.active) {
-				GMT_setpen (GMT, &Ctrl->T.pen);
+				gmt_setpen (GMT, &Ctrl->T.pen);
 				ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
 				if (not_defined) {
 					not_defined = false;
@@ -1116,24 +1116,24 @@ Definition of scalar moment.
 				}
 			}
 			else if (Ctrl->S.plotmode == PLOT_DC) {
-				GMT_setpen (GMT, &Ctrl->L.pen);
+				gmt_setpen (GMT, &Ctrl->L.pen);
 				ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 			}
 
 			if (Ctrl->A2.active) {
 				if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) dc2axe (meca, &T, &N, &P);
 				axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
-				GMT_setpen (GMT, &Ctrl->P2.pen);
-				GMT_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
+				gmt_setpen (GMT, &Ctrl->P2.pen);
+				gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
 				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
-				GMT_setpen (GMT, &Ctrl->T2.pen);
-				GMT_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
+				gmt_setpen (GMT, &Ctrl->T2.pen);
+				gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
 				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
 			}
 		}
 
 		if (!Ctrl->S.no_label) {
-			GMT_setpen (GMT, &Ctrl->W.pen);
+			gmt_setpen (GMT, &Ctrl->W.pen);
 			i = (Ctrl->S.justify == PSL_BC ? 1 : -1);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
 			if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset + Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset));
@@ -1148,12 +1148,12 @@ Definition of scalar moment.
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
+	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	PSL_setdash (PSL, NULL, 0);
-	GMT_map_basemap (GMT);
-	GMT_plotend (GMT);
+	gmt_map_basemap (GMT);
+	gmt_plotend (GMT);
 
 	Return (GMT_OK);
 }

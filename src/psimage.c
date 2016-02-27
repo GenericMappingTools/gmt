@@ -545,14 +545,14 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				PSL_free (picture);
 			Return (GMT_PROJECTION_ERROR);
 		}
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
 				gmt_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
@@ -564,16 +564,16 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		}
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
-		if ((PSL = GMT_plotinit (GMT, options)) == NULL) {
+		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
 				gmt_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
-		GMT_map_basemap (GMT);	/* Draw basemap if requested */
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);	/* Draw basemap if requested */
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
@@ -590,7 +590,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
  	if (Ctrl->F.active) {	/* Draw frame, fill only */
 		Ctrl->F.panel->width = Ctrl->D.nx * Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
-		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
+		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 1U, Ctrl->F.panel);
  	}
 
 	for (row = 0; row < Ctrl->D.ny; row++) {
@@ -615,10 +615,10 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		}
 	}
  	if (Ctrl->F.active)	/* Draw frame outlines */
-		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 2U, Ctrl->F.panel);
+		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->F.panel->width, Ctrl->D.refpoint->y + 0.5 * Ctrl->F.panel->height, 2U, Ctrl->F.panel);
 
-	GMT_plane_perspective (GMT, -1, 0.0);
-	GMT_plotend (GMT);
+	gmt_plane_perspective (GMT, -1, 0.0);
+	gmt_plotend (GMT);
 
 #ifdef HAVE_GDAL
 	if (I && GMT_Destroy_Data (API, &I) != GMT_OK) {

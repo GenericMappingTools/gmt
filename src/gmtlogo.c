@@ -207,15 +207,15 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
-		PSL = GMT_plotinit (GMT, options);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		PSL = gmt_plotinit (GMT, options);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
-		PSL = GMT_plotinit (GMT, options);
-		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		PSL = gmt_plotinit (GMT, options);
+		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
@@ -230,14 +230,14 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	scale = dim[GMT_X] / 2.0;	/* Scale relative to default size 2 inches */
 	if (Ctrl->F.active) {	/* First place legend frame fill */
 		Ctrl->F.panel->width = dim[GMT_X];	Ctrl->F.panel->height = dim[GMT_Y];
-		GMT_draw_map_panel (GMT, 0.5 * dim[GMT_X], 0.5 * dim[GMT_Y], 3U, Ctrl->F.panel);
+		gmt_draw_map_panel (GMT, 0.5 * dim[GMT_X], 0.5 * dim[GMT_Y], 3U, Ctrl->F.panel);
 	}
 
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 
 	sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
 	GMT_getfont (GMT, cmd, &F);
-	fmode = GMT_setfont (GMT, &F);
+	fmode = gmt_setfont (GMT, &F);
 	PSL_setfont (PSL, F.id);
 	PSL_command (PSL, "V 1 1.5 scale\n");
 	PSL_plottext (PSL, 0.5 * dim[GMT_X], 0.027 * scale, F.size, "@#THE@# G@#ENERIC@# M@#APPING@# T@#OOLS@#", 0.0, PSL_BC, fmode);
@@ -265,10 +265,10 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, cmd);
 
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_INV);
-	GMT_plane_perspective (GMT, -1, 0.0);
+	gmt_plane_perspective (GMT, -1, 0.0);
 	PSL_command (PSL, "U\n");	/* Ending the encapsulation for gmtlogo */
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	Return (GMT_OK);
 }

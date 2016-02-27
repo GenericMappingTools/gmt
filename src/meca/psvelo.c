@@ -344,16 +344,16 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	GMT_memset (col, GMT_LEN64*12, char);
 	GMT_memset (dim, PSL_MAX_DIMS, double);
-	GMT_setpen (GMT, &Ctrl->W.pen);
+	gmt_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 	if (Ctrl->E.active) Ctrl->L.active = true;
 
-	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
@@ -485,19 +485,19 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 					dim[6] = (double)Ctrl->A.S.v.status;
 					dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
 					if (Ctrl->A.S.v.status & GMT_VEC_FILL2)
-						GMT_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
+						gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
 					else if (Ctrl->G.active)
-						GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
-					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->A.S.v.pen);
+						gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->A.S.v.pen);
 					PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
-					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen);
+					if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen);
 
 					justify = plot_vx - plot_x > 0. ? PSL_MR : PSL_ML;
 					if (Ctrl->S.fontsize > 0.0 && strlen(station_name) > 0)	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (6 - justify) / 25.4 , plot_y, Ctrl->S.fontsize, station_name, ANGLE, justify, FORM);
 				}
 				else {
-					GMT_setfill (GMT, &Ctrl->G.fill, 1);
+					gmt_setfill (GMT, &Ctrl->G.fill, 1);
 					ssize = GMT_DOT_SIZE;
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, GMT_SYMBOL_CIRCLE);
 					justify = PSL_TC;
@@ -535,13 +535,13 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active)  GMT_Report (API, GMT_MSG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
 
-	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
+	if (!Ctrl->N.active) gmt_map_clip_off (GMT);
 
 	PSL_setdash (PSL, NULL, 0);
 
-	GMT_map_basemap (GMT);
+	gmt_map_basemap (GMT);
 
-	GMT_plotend (GMT);
+	gmt_plotend (GMT);
 
 	Return (GMT_OK);
 }

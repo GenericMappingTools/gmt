@@ -258,7 +258,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 GMT_LOCAL void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0) {
 	struct GMT_PEN faint_pen;
 	GMT_init_pen (GMT, &faint_pen, 0.0);
-	GMT_setpen (GMT, &faint_pen);
+	gmt_setpen (GMT, &faint_pen);
 	PSL_plotsegment (PSL, x0, y0, x1, y0);
 }
 
@@ -275,7 +275,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to interpret %s as a valid fill, skipped\n", fill[col]);
 			continue;
 		}
-		GMT_setfill (GMT, &F, false);
+		gmt_setfill (GMT, &F, false);
 		dim[0] = xoff[col+1] - xoff[col];
 		PSL_plotsymbol (GMT->PSL, x0 + 0.5 * (xoff[col+1] + xoff[col]), y0, dim, GMT_SYMBOL_RECT);
 	}
@@ -606,8 +606,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		j_ptr = GMT_Find_Option (API, 'J', options);
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
-	if ((PSL = GMT_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
-	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */
 	GMT_memset (GMT->current.setting.map_origin, 2, double);
@@ -628,7 +628,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 	if (Ctrl->F.active) {	/* First place legend frame fill */
 		Ctrl->F.panel->width = Ctrl->D.dim[GMT_X];	Ctrl->F.panel->height = Ctrl->D.dim[GMT_Y];
-		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 1U, Ctrl->F.panel);
+		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 1U, Ctrl->F.panel);
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
@@ -726,7 +726,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							d_line_half_width = 0.0;
 						else {	/* Process the pen specification */
 							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) gmt_pen_syntax (GMT, 'W', " ", 0);
-							GMT_setpen (GMT, &current_pen);
+							gmt_setpen (GMT, &current_pen);
 							d_line_half_width = 0.5 * current_pen.width / PSL_POINTS_PER_INCH;	/* Half the pen width */
 						}
 						if (!(txt_c[0] == '-' || txt_c[0] == '=')) {	/* Fill the gap before the line, if fill is active */
@@ -1289,7 +1289,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 								gmt_pen_syntax (GMT, 'V', " ", 0);
 								Return (GMT_RUNTIME_ERROR);
 							}
-							GMT_setpen (GMT, &current_pen);
+							gmt_setpen (GMT, &current_pen);
 							for (i = 1; i < n_columns; i++) {
 								x_off = Ctrl->D.refpoint->x + x_off_col[i];
 								PSL_plotsegment (PSL, x_off, v_line_y_start-v_line_ver_offset, x_off, v_line_y_stop+v_line_ver_offset);
@@ -1326,7 +1326,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
 	if (Ctrl->F.active)	/* Draw legend frame box */
-		GMT_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 2U, Ctrl->F.panel);
+		gmt_draw_map_panel (GMT, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], Ctrl->D.refpoint->y + 0.5 * Ctrl->D.dim[GMT_Y], 2U, Ctrl->F.panel);
 
 	/* Time to plot any symbols, text, and paragraphs we collected in the loop */
 
@@ -1408,8 +1408,8 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
 	Ctrl->D.refpoint->x = x_orig;	Ctrl->D.refpoint->y = y_orig;
 
-	GMT_map_basemap (GMT);
-	GMT_plotend (GMT);
+	gmt_map_basemap (GMT);
+	gmt_plotend (GMT);
 
 	for (id = 0; id < N_DAT; id++) {
 		if (D[id]) {
