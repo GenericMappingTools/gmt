@@ -198,7 +198,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		size_t n_alloc = 0;
 		char *line = NULL, r_in[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
 		double weight;
-		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
+		gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 		do {	/* Keep returning records until we reach EOF */
 			if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -226,7 +226,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 			L[n].weight = (nr == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
 			n++;
 		} while (true);
-		GMT_reset_meminc (GMT);
+		gmt_reset_meminc (GMT);
 		n_files = n;
 	}
 	
@@ -236,7 +236,7 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 		for (n = 0; n < n_files; n++) {
-			gmt_free (L[n].file);	gmt_free (L[n].region);
+			gmt_str_free (L[n].file);	gmt_str_free (L[n].region);
 		}
 		GMT_free (GMT, L);
 			return (-1);
@@ -392,8 +392,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	}
 
 	for (n = 0; n < n_files; n++) {
-		gmt_free (L[n].file);
-		gmt_free (L[n].region);
+		gmt_str_free (L[n].file);
+		gmt_str_free (L[n].region);
 	}
 	GMT_free (GMT, L);
 	*blend = B;
@@ -455,9 +455,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Deallocate control structure */
 	unsigned int k;
 	if (!C) return;
-	for (k = 0; k < C->In.n; k++) gmt_free (C->In.file[k]);
+	for (k = 0; k < C->In.n; k++) gmt_str_free (C->In.file[k]);
 	GMT_free (GMT, C->In.file);
-	gmt_free (C->G.file);	
+	gmt_str_free (C->G.file);	
 	GMT_free (GMT, C);	
 }
 

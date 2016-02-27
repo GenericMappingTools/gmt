@@ -78,9 +78,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);	
-	gmt_free (C->C.file);	
-	gmt_free (C->G.name);	
+	gmt_str_free (C->In.file);	
+	gmt_str_free (C->C.file);	
+	gmt_str_free (C->G.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -304,7 +304,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				Ctrl->C.active = true;
 				break;
 			case 'G':	/* Output file template */
-				gmt_free (Ctrl->G.name);	
+				gmt_str_free (Ctrl->G.name);	
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */
@@ -443,7 +443,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Out) != GMT_OK) {
 				Return (API->error);
 			}
-			gmt_free (grdfile);
+			gmt_str_free (grdfile);
 		}
 		if (GMT_Destroy_Data (API, &P) != GMT_OK) {
 			Return (API->error);
@@ -536,7 +536,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Grid) != GMT_OK) {
 				Return (API->error);
 			}
-			gmt_free (grdfile);
+			gmt_str_free (grdfile);
 		}
 		if (Ctrl->W.active)
 			GMT_free (GMT, picture);

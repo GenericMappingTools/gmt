@@ -95,9 +95,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->A.file);
-	gmt_free (C->C.file);
-	gmt_free (C->T.TAG);
+	gmt_str_free (C->A.file);
+	gmt_str_free (C->C.file);
+	gmt_str_free (C->T.TAG);
 	GMT_free (GMT, C);
 }
 
@@ -438,7 +438,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	if (Ctrl->C.file) {	/* Open file to store the per pair run time */
 		if ((fpC = fopen (Ctrl->C.file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open save times file %s!\n", Ctrl->C.file);
-			gmt_free (Ctrl->C.file);
+			gmt_str_free (Ctrl->C.file);
 		}
 	}
 

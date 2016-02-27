@@ -313,10 +313,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *C) {	/* Deallocate control structure */
 	unsigned int i;
 	if (!C) return;
-	gmt_free (C->In.file);
-	gmt_free (C->C.file);
-	for (i = 0; i < 3; i++) gmt_free (C->G.file[i]);
-	gmt_free (C->I.file);
+	gmt_str_free (C->In.file);
+	gmt_str_free (C->C.file);
+	for (i = 0; i < 3; i++) gmt_str_free (C->G.file[i]);
+	gmt_str_free (C->I.file);
 	GMT_free (GMT, C);
 }
 
@@ -414,7 +414,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 
 			case 'C':	/* Cpt file */
 				Ctrl->C.active = true;
-				gmt_free (Ctrl->C.file);
+				gmt_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'G':	/* One or Three grid files */

@@ -129,8 +129,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);
-	gmt_free (C->T.file);
+	gmt_str_free (C->In.file);
+	gmt_str_free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -805,8 +805,8 @@ use a few of these*/
 		}
 
 		if (!Ctrl->Z.active || scale) segyz_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, y0, n_samp, Ctrl->F.active, Ctrl->I.active, Ctrl->W.active, toffset, Ctrl->D.value[GMT_X], Ctrl->D.value[GMT_Y], Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
-		gmt_free (data);
-		gmt_free (header);
+		gmt_str_free (data);
+		gmt_str_free (header);
 		ix++;
 	}
 

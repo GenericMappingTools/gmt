@@ -420,7 +420,7 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, c
 			continue;
 		}
 		gmtio_handle_bars (GMT, token, 1);		/* Put back any vertical bars replaced above */
-		gmt_free (S->tvalue[col]);	/* Free previous item */
+		gmt_str_free (S->tvalue[col]);	/* Free previous item */
 		S->tvalue[col] = strdup (token);
 		S->dvalue[col] = gmtio_convert_aspatial_value (GMT, S->type[col], token);
 		col++;
@@ -2480,7 +2480,7 @@ GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_
 		strcat (buffer, "-Ph");
 	}
 	if (S->header) { strcat (buffer, " "); strcat (buffer, S->header); }	/* Append rest of previous header */
-	gmt_free (S->header);
+	gmt_str_free (S->header);
 	S->header = strdup (buffer);
 }
 
@@ -2831,7 +2831,7 @@ GMT_LOCAL void gmtio_free_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	unsigned int k, n;
 	n = (GMT->current.io.OGR) ? GMT->current.io.OGR->n_aspatial : GMT->common.a.n_aspatial;
 	if (n) {
-		for (k = 0; S->ogr->tvalue && k < n; k++) gmt_free (S->ogr->tvalue[k]);
+		for (k = 0; S->ogr->tvalue && k < n; k++) gmt_str_free (S->ogr->tvalue[k]);
 		GMT_free (GMT, S->ogr->tvalue);
 		GMT_free (GMT, S->ogr->dvalue);
 	}
@@ -2846,12 +2846,12 @@ GMT_LOCAL void gmtio_free_textsegment (struct GMT_CTRL *GMT, struct GMT_TEXTSEGM
 	unsigned int k;
 	if (!segment) return;	/* Do not try to free NULL pointer */
 	if (alloc_mode == GMT_ALLOC_INTERNALLY) {    /* Free data GMT allocated */ 
-		for (row = 0; row < segment->n_rows; row++) gmt_free (segment->record[row]);
+		for (row = 0; row < segment->n_rows; row++) gmt_str_free (segment->record[row]);
 	}
 	GMT_free (GMT, segment->record);
-	gmt_free ( segment->label);
-	gmt_free ( segment->header);
-	for (k = 0; k < 2; k++) gmt_free (segment->file[k]);
+	gmt_str_free ( segment->label);
+	gmt_str_free ( segment->header);
+	for (k = 0; k < 2; k++) gmt_str_free (segment->file[k]);
 	GMT_free (GMT, segment);
 }
 
@@ -2861,10 +2861,10 @@ GMT_LOCAL void gmtio_free_texttable (struct GMT_CTRL *GMT, struct GMT_TEXTTABLE 
 	uint64_t seg;
 	if (!table) return;	/* Do not try to free NULL pointer */
 	for (seg = 0; seg < table->n_segments; seg++) gmtio_free_textsegment (GMT, table->segment[seg], alloc_mode);
-	for (k = 0; k < table->n_headers; k++) gmt_free (table->header[k]);
+	for (k = 0; k < table->n_headers; k++) gmt_str_free (table->header[k]);
 	GMT_free (GMT, table->header);
 	GMT_free (GMT, table->segment);
-	for (k = 0; k < 2; k++) gmt_free (table->file[k]);
+	for (k = 0; k < 2; k++) gmt_str_free (table->file[k]);
 	GMT_free (GMT, table);
 }
 
@@ -3541,7 +3541,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 	GMT->current.io.input = gmtio_nc_input;
 	tmp_pointer = (size_t)(-GMT->current.io.ncid);
 
-	GMT_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.ncols);	/* Preallocate arrays for all netcdf vectors */
+	gmt_prep_tmp_arrays (GMT, GMT->current.io.ndim, GMT->current.io.ncols);	/* Preallocate arrays for all netcdf vectors */
 
 	return ((FILE *)tmp_pointer);
 }
@@ -3699,7 +3699,7 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 		GMT->current.io.ncid = GMT->current.io.nvars = 0;
 		GMT->current.io.ndim = GMT->current.io.nrec = 0;
 		GMT->current.io.input = GMT->session.input_ascii;
-		GMT_free_tmp_arrays (GMT);	/* Free up pre-allocated vectors */
+		gmt_free_tmp_arrays (GMT);	/* Free up pre-allocated vectors */
 		return (0);
 	}
 	/* Regular file */
@@ -4963,7 +4963,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 				GMT_Message (GMT->parent, GMT_TIME_NONE, message);
 #endif
 				GMT->current.io.status = GMT_IO_EOF;
-				gmt_free (buffer);
+				gmt_str_free (buffer);
 				return true;
 			}
 			sprintf (message, "%s: error reading stream while skipping.\n", __func__);
@@ -4973,7 +4973,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 		bytes_read += nbytes;
 		/* write buffer */
 		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
-			gmt_free (buffer);
+			gmt_str_free (buffer);
 			return false;
 		}
 	}
@@ -5002,12 +5002,12 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 					GMT_Message (GMT->parent, GMT_TIME_NONE, message);
 				}
 				GMT->current.io.status = GMT_IO_EOF;
-				gmt_free (buffer);
+				gmt_str_free (buffer);
 				return true;
 			}
 			sprintf (message, "%s: error reading stream while swapping.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-			gmt_free (buffer);
+			gmt_str_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
@@ -5047,7 +5047,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 
 		/* write buffer */
 		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
-			gmt_free (buffer);
+			gmt_str_free (buffer);
 			return false;
 		}
 	}
@@ -5071,19 +5071,19 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 			}
 			sprintf (message, "%s: error reading stream while skipping to EOF.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
-			gmt_free (buffer);
+			gmt_str_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
 		/* write buffer */
 		if (fwrite_check (GMT, buffer, sizeof (char), nbytes, outfp)) {
-			gmt_free (buffer);
+			gmt_str_free (buffer);
 			return false;
 		}
 	}
 
 	GMT->current.io.status = GMT_IO_EOF;
-	gmt_free (buffer);
+	gmt_str_free (buffer);
 	return true;
 }
 
@@ -6829,7 +6829,7 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 				return (NULL);
 			}
 
-			GMT_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or reallocate tmp read vectors */
+			gmt_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or reallocate tmp read vectors */
 			for (col = 0; col < T->segment[seg]->n_columns; col++) {
 				GMT->hidden.mem_coord[col][row] = in[col];
 				if (GMT->current.io.col_type[GMT_IN][col] & GMT_IS_LON) {	/* Must handle greenwich/dateline alignments */
@@ -6855,13 +6855,13 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {	/* Must check for polar cap */
 				double dlon = GMT->hidden.mem_coord[GMT_X][0] - GMT->hidden.mem_coord[GMT_X][row-1];
 				if (!((fabs (dlon) == 0.0 || fabs (dlon) == 360.0) && GMT->hidden.mem_coord[GMT_Y][0] == GMT->hidden.mem_coord[GMT_Y][row-1])) {
-					GMT_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Maybe reallocate tmp read vectors */
+					gmt_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Maybe reallocate tmp read vectors */
 					for (col = 0; col < T->segment[seg]->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 					row++;	/* Explicitly close polygon */
 				}
 			}
 			else if (GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) {	/* Cartesian closure */
-				GMT_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or update tmp read vectors */
+				gmt_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or update tmp read vectors */
 				for (col = 0; col < T->segment[seg]->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 				row++;	/* Explicitly close polygon */
 			}
@@ -7051,9 +7051,9 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GM
 	GMT_free (GMT, segment->coord);
 	GMT_free (GMT, segment->min);
 	GMT_free (GMT, segment->max);
-	gmt_free ( segment->label);
-	gmt_free ( segment->header);
-	for (k = 0; k < 2; k++) gmt_free (segment->file[k]);
+	gmt_str_free ( segment->label);
+	gmt_str_free ( segment->header);
+	for (k = 0; k < 2; k++) gmt_str_free (segment->file[k]);
 	if (segment->ogr) gmtio_free_ogr_seg (GMT, segment);	/* OGR metadata */
 	GMT_free (GMT, segment);
 	*S = NULL;
@@ -7063,11 +7063,11 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GM
 void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode) {
 	unsigned int k;
 	if (!table) return;		/* Do not try to free NULL pointer */
-	for (k = 0; k < table->n_headers; k++) gmt_free (table->header[k]);
+	for (k = 0; k < table->n_headers; k++) gmt_str_free (table->header[k]);
 	GMT_free (GMT, table->header);
 	GMT_free (GMT, table->min);
 	GMT_free (GMT, table->max);
-	for (k = 0; k < 2; k++) gmt_free (table->file[k]);
+	for (k = 0; k < 2; k++) gmt_str_free (table->file[k]);
 	gmt_free_ogr (GMT, &(table->ogr), 1);
 	if (table->segment) {	/* Free segments */
 		uint64_t seg;
@@ -7088,7 +7088,7 @@ void gmt_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 	GMT_free (GMT, data->min);
 	GMT_free (GMT, data->max);
 	GMT_free (GMT, data->table);
-	for (k = 0; k < 2; k++) gmt_free (data->file[k]);
+	for (k = 0; k < 2; k++) gmt_str_free (data->file[k]);
 }
 
 /*! . */
@@ -7105,7 +7105,7 @@ void gmt_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data) {
 	unsigned int tbl, k;
 	for (tbl = 0; tbl < data->n_tables; tbl++) gmtio_free_texttable (GMT, data->table[tbl], data->alloc_mode);
 	GMT_free (GMT, data->table);
-	for (k = 0; k < 2; k++) gmt_free (data->file[k]);
+	for (k = 0; k < 2; k++) gmt_str_free (data->file[k]);
 }
 
 /*! . */
@@ -7365,8 +7365,8 @@ void gmt_free_ogr (struct GMT_CTRL *GMT, struct GMT_OGR **G, unsigned int mode) 
 	if (!(*G)) return;	/* Nothing to do */
 	/* mode = 0 only frees the aspatial data value array, while mode = 1 frees the entire struct and contents */
 	for (k = 0; k < (*G)->n_aspatial; k++) {
-		if (mode == 1 && (*G)->name) gmt_free ((*G)->name[k]);
-		if ((*G)->tvalue) gmt_free ((*G)->tvalue[k]);
+		if (mode == 1 && (*G)->name) gmt_str_free ((*G)->name[k]);
+		if ((*G)->tvalue) gmt_str_free ((*G)->tvalue[k]);
 	}
 	GMT_free (GMT, (*G)->tvalue);
 	GMT_free (GMT, (*G)->dvalue);
@@ -7374,8 +7374,8 @@ void gmt_free_ogr (struct GMT_CTRL *GMT, struct GMT_OGR **G, unsigned int mode) 
 	/* Here we free up everything */
 	GMT_free (GMT, (*G)->name);
 	GMT_free (GMT, (*G)->type);
-	gmt_free ((*G)->region);
-	for (k = 0; k < 4; k++) gmt_free ((*G)->proj[k]);
+	gmt_str_free ((*G)->region);
+	for (k = 0; k < 4; k++) gmt_str_free ((*G)->proj[k]);
 	GMT_free (GMT, (*G));
 }
 
@@ -7514,7 +7514,7 @@ void gmt_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	char **list = *addr;
 
 	while (list[k]) {
-		gmt_free (list[k]);
+		gmt_str_free (list[k]);
 		k++;
 	}
 	GMT_free (GMT, list);

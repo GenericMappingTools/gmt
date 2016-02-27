@@ -125,9 +125,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->Out.file);
-	gmt_free (C->C.file);
-	gmt_free (C->S.file);
+	gmt_str_free (C->Out.file);
+	gmt_str_free (C->C.file);
+	gmt_str_free (C->S.file);
 	GMT_free (GMT, C);
 }
 
@@ -334,7 +334,7 @@ GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, cha
 	/* Free what we are pointing to */
 	uint64_t k;
 	for (k = 0; k < n; k++) {
-		gmt_free (grdfile[k]);
+		gmt_str_free (grdfile[k]);
 		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK)
 			return (API->error);
 	}

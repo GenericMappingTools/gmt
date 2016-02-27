@@ -123,8 +123,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->A.file);	
-	gmt_free (C->D.file);	
+	gmt_str_free (C->A.file);	
+	gmt_str_free (C->D.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -811,7 +811,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				In.n_out_columns--;
 				for (col = k; col < In.n_out_columns; col++) {	/* Move remaining columns over */
 					D->values[col] = D->values[col+1];
-					gmt_free (In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
+					gmt_str_free (In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
 					In.desired_column[col] = strdup(In.desired_column[col+1]);
 					In.order[col].set = In.order[col+1].set;
 					In.order[col].item = In.order[col+1].item;

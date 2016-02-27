@@ -139,12 +139,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
 	unsigned int g;
 	if (!C) return;
-	gmt_free (C->In.file);
-	gmt_free (C->D.file);
-	for (g = 0; g < C->G.n_grids; g++) gmt_free (C->G.file[g]);
-	gmt_free (C->Out.file);
-	gmt_free (C->S.file);
-	gmt_free (C->E.lines);
+	gmt_str_free (C->In.file);
+	gmt_str_free (C->D.file);
+	for (g = 0; g < C->G.n_grids; g++) gmt_str_free (C->G.file[g]);
+	gmt_str_free (C->Out.file);
+	gmt_str_free (C->S.file);
+	gmt_str_free (C->E.lines);
 	if (C->T.S) {
 		GMT_free (GMT, C->T.S->x);
 		GMT_free (GMT, C->T.S->y);

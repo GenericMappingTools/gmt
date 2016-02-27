@@ -546,8 +546,8 @@ GMT_LOCAL int fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, 
 GMT_LOCAL void fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z) {
 	if (Z->setup_1d) {	/* Free single-precision FFT data structure and arrays */
 		vDSP_destroy_fftsetup (Z->setup_1d);
-		gmt_free (Z->dsp_split_complex_1d.realp);
-		gmt_free (Z->dsp_split_complex_1d.imagp);
+		gmt_str_free (Z->dsp_split_complex_1d.realp);
+		gmt_str_free (Z->dsp_split_complex_1d.imagp);
 	}
 }
 
@@ -591,8 +591,8 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, in
 GMT_LOCAL void fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z) {
 	if (Z->setup_2d) {	/* Free single-precision 2D FFT data structure and arrays */
 		vDSP_destroy_fftsetup (Z->setup_2d);
-		gmt_free (Z->dsp_split_complex_2d.realp);
-		gmt_free (Z->dsp_split_complex_2d.imagp);
+		gmt_str_free (Z->dsp_split_complex_2d.realp);
+		gmt_str_free (Z->dsp_split_complex_2d.imagp);
 	}
 }
 
@@ -655,7 +655,7 @@ GMT_LOCAL int fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, in
 	config = kiss_fft_alloc(n, direction == GMT_FFT_INV, NULL, NULL);
 	fin = fout = (kiss_fft_cpx *)data;
 	kiss_fft (config, fin, fout); /* do transform */
-	gmt_free (config); /* Free config data structure */
+	gmt_str_free (config); /* Free config data structure */
 
 	return GMT_NOERROR;
 }
@@ -672,7 +672,7 @@ GMT_LOCAL int fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, u
 
 	fin = fout = (kiss_fft_cpx *)data;
 	kiss_fftnd (config, fin, fout); /* do transform */
-	gmt_free (config); /* Free config data structure */
+	gmt_str_free (config); /* Free config data structure */
 
 	return GMT_NOERROR;
 }

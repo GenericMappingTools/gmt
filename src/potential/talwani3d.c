@@ -133,9 +133,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->N.file);	
-	gmt_free (C->G.file);	
-	gmt_free (C->Z.file);	
+	gmt_str_free (C->N.file);	
+	gmt_str_free (C->G.file);	
+	gmt_str_free (C->Z.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -911,7 +911,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				int64_t row;
 				S = D->table[tbl]->segment[seg];	/* Current segment */
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, S->header);
-				GMT_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
+				gmt_prep_tmp_arrays (GMT, S->n_rows, 1);	/* Init or reallocate tmp vector */
 #ifdef _OPENMP
 				/* Spread calculation over selected cores */
 #pragma omp parallel for private(row,z_level) shared(GMT,Ctrl,S,scl,cake,depths,ndepths,flat_earth)

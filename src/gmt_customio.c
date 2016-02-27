@@ -1532,9 +1532,9 @@ static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GMT_GDALREAD_
 	int i;
 	GMT_free (GMT, from_gdalread->ColorMap);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
-		gmt_free (from_gdalread->band_field_names[i].DataType); /* Those were allocated with strdup */
-	gmt_free (from_gdalread->ProjectionRefPROJ4);
-	gmt_free (from_gdalread->ProjectionRefWKT);
+		gmt_str_free (from_gdalread->band_field_names[i].DataType); /* Those were allocated with strdup */
+	gmt_str_free (from_gdalread->ProjectionRefPROJ4);
+	gmt_str_free (from_gdalread->ProjectionRefWKT);
 	GMT_free (GMT, from_gdalread->band_field_names);
 	GMT_free (GMT, from_gdalread);
 }
@@ -1579,8 +1579,8 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	/* Make sure we don't leak due to a previous copy */
-	gmt_free (header->ProjRefPROJ4);
-	gmt_free (header->ProjRefWKT);
+	gmt_str_free (header->ProjRefPROJ4);
+	gmt_str_free (header->ProjRefWKT);
 	if (from_gdalread->ProjectionRefPROJ4)
 		/* Need to strdup because from_gdalread is freed later */
 		header->ProjRefPROJ4 = strdup(from_gdalread->ProjectionRefPROJ4);
@@ -1699,7 +1699,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
-	if (to_gdalread->B.active) gmt_free (header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
+	if (to_gdalread->B.active) gmt_str_free (header->pocket);		/* It was allocated by strdup. Free it for an eventual reuse. */
 
 	if (subset) {	/* We had a Sub-region demand */
 		header->nx = from_gdalread->RasterXsize;
@@ -1842,8 +1842,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
 		gmt_gdalwrite(GMT, header->name, to_GDALW);
-		gmt_free (to_GDALW->driver);
-		gmt_free (to_GDALW->type);
+		gmt_str_free (to_GDALW->driver);
+		gmt_str_free (to_GDALW->type);
 		GMT_free (GMT, to_GDALW);
 		GMT_free (GMT, k);
 		return (GMT_NOERROR);
@@ -1895,8 +1895,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown or unsupported data type code in gmt_customio for writing file with GDAL.\n");
-		GMT_free (GMT, k);			GMT_free (GMT, to_GDALW->data);		gmt_free (to_GDALW->driver);
-		gmt_free (to_GDALW->type);	GMT_free (GMT, to_GDALW);
+		GMT_free (GMT, k);			GMT_free (GMT, to_GDALW->data);		gmt_str_free (to_GDALW->driver);
+		gmt_str_free (to_GDALW->type);	GMT_free (GMT, to_GDALW);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
@@ -1904,8 +1904,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, to_GDALW->data);
-	gmt_free (to_GDALW->driver);
-	gmt_free (to_GDALW->type);
+	gmt_str_free (to_GDALW->driver);
+	gmt_str_free (to_GDALW->type);
 	GMT_free (GMT, to_GDALW);
 	return (GMT_NOERROR);
 }

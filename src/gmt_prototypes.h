@@ -36,7 +36,7 @@ EXTERN_MSC void gmt_grd_dump (struct GMT_GRID_HEADER *header, float *grid, bool 
 
 /* Temporary redef of strdup to allow check of memory leaks due to usage of strdup */
 #ifdef FISH_STRDUP_LEAKS
-EXTERN_MSC char *GMT_strdup (struct GMT_CTRL *GMT, const char *s);
+EXTERN_MSC char *gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 #endif
 
 /* gmt_init.c: */
@@ -302,12 +302,12 @@ EXTERN_MSC void gmt_set_textset_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTSET
 
 /* gmt_memory.c: */
 
-EXTERN_MSC void GMT_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols);
-EXTERN_MSC void GMT_free_tmp_arrays (struct GMT_CTRL *GMT);
-EXTERN_MSC void GMT_set_meminc (struct GMT_CTRL *GMT, size_t increment);
-EXTERN_MSC void GMT_reset_meminc (struct GMT_CTRL *GMT);
-EXTERN_MSC void * GMT_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where);
-EXTERN_MSC void GMT_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where);
+EXTERN_MSC void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols);
+EXTERN_MSC void gmt_free_tmp_arrays (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_set_meminc (struct GMT_CTRL *GMT, size_t increment);
+EXTERN_MSC void gmt_reset_meminc (struct GMT_CTRL *GMT);
+EXTERN_MSC void * gmt_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, size_t size, bool align, const char *where);
+EXTERN_MSC void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where);
 
 /* gmt_support.c: */
 
@@ -363,7 +363,7 @@ EXTERN_MSC void GMT_hold_contour (struct GMT_CTRL *GMT, double **xx, double **yy
 EXTERN_MSC void GMT_x_free (struct GMT_CTRL *GMT, struct GMT_XOVER *X);
 EXTERN_MSC int GMT_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSEGMENT **S);
 EXTERN_MSC uint64_t GMT_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t sa[], struct GMT_XSEGMENT A[], uint64_t na, double xb[], double yb[], uint64_t sb[], struct GMT_XSEGMENT B[], uint64_t nb, bool internal, bool geo, struct GMT_XOVER *X);
-EXTERN_MSC void * GMT_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where);
+EXTERN_MSC void * gmt_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where);
 EXTERN_MSC char * GMT_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt[], double z, bool closed, unsigned int count[]);
 EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *GMT, char *value, int mode);
 EXTERN_MSC char * GMT_putusername (struct GMT_CTRL *GMT);

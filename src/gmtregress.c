@@ -123,7 +123,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->Out.file);	
+	gmt_str_free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 

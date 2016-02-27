@@ -68,7 +68,7 @@ int main (int argc, char *argv[]) {
 	gmt_grd_mux_demux (API->GMT, G_real->header, G_real->data, GMT_GRID_IS_SERIAL);		/* Then demultiplex .. */
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_IMAG, NULL, name[5], G_imag) != GMT_OK) exit (API->error);
 
-	for (k = 0; k < 6; k++) gmt_free (name[k]);
+	for (k = 0; k < 6; k++) gmt_str_free (name[k]);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);

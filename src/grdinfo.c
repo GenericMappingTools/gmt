@@ -722,7 +722,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->C.active && !Ctrl->T.active && projStr) {		/* Print the referencing info */
 		GMT_Put_Record (API, GMT_WRITE_TEXT, projStr);
-		gmt_free (projStr);
+		gmt_str_free (projStr);
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */

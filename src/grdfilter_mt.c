@@ -201,10 +201,10 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);	
-	gmt_free (C->F.file);	
-	gmt_free (C->G.file);	
-	gmt_free (C->A.file);	
+	gmt_str_free (C->In.file);	
+	gmt_str_free (C->F.file);	
+	gmt_str_free (C->G.file);	
+	gmt_str_free (C->A.file);	
 	GMT_free (GMT, C);	
 }
 

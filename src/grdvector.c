@@ -93,9 +93,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file[GMT_IN]);	
-	gmt_free (C->In.file[GMT_OUT]);	
-	gmt_free (C->C.file);	
+	gmt_str_free (C->In.file[GMT_IN]);	
+	gmt_str_free (C->In.file[GMT_OUT]);	
+	gmt_str_free (C->C.file);	
 	GMT_free (GMT, C);	
 }
 
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
-				gmt_free (Ctrl->C.file);
+				gmt_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */

@@ -97,10 +97,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.arg);	
-	gmt_free (C->Out.file);	
-	gmt_free (C->A.arg);	
-	gmt_free (C->S.arg);	
+	gmt_str_free (C->In.arg);	
+	gmt_str_free (C->Out.file);	
+	gmt_str_free (C->A.arg);	
+	gmt_str_free (C->S.arg);	
 	GMT_free (GMT, C);	
 }
 

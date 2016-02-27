@@ -144,9 +144,9 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deal
 	if (!C) return;
 	GMT_free (GMT, C->operation);
 	GMT_free (GMT, C->par);
-	gmt_free (C->In.file[GMT_IN]);
-	gmt_free (C->In.file[GMT_OUT]);
-	gmt_free (C->G.file);
+	gmt_str_free (C->In.file[GMT_IN]);
+	gmt_str_free (C->In.file[GMT_OUT]);
+	gmt_str_free (C->G.file);
 	GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);
 }

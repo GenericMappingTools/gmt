@@ -165,7 +165,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			if (txt_in[k] == ASCII_GS) txt_in[k] = '\t'; else if (txt_in[k] == ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 		args = new_args;
 		n_args = new_n_args;
-		gmt_free (txt_in);
+		gmt_str_free (txt_in);
 	}
 	else {
 		args = (char **)in;	/* Gave an argv[] argument */
@@ -223,14 +223,14 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			strcat(t, "=gd"); 
 			pch[0] = '+';			/* Restore what we have erased 2 lines above */
 			strcat(t, pch);
-			gmt_free (new_opt->arg);	/* free it so that we can extend it */
+			gmt_str_free (new_opt->arg);	/* free it so that we can extend it */
 			new_opt->arg = strdup(t);
 		}
 
 		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
 	if (n_args_in == 0) {	/* Free up temporary arg list */
-		for (arg = 0; arg < n_args; arg++) gmt_free (new_args[arg]);
+		for (arg = 0; arg < n_args; arg++) gmt_str_free (new_args[arg]);
 		GMT_free (G, new_args);
 	}
 
@@ -257,7 +257,7 @@ int GMT_Destroy_Options (void *V_API, struct GMT_OPTION **head) {
 	while (current) {	/* Start at head and loop over the list and delete the options, one by one. */
 		to_delete = current;		/* The one we want to delete */
 		current = current->next;	/* But first grab the pointer to the next item */
-		gmt_free (to_delete->arg);	/* The option had a text argument allocated by strdup, so free it first */
+		gmt_str_free (to_delete->arg);	/* The option had a text argument allocated by strdup, so free it first */
 		GMT_free (API->GMT, to_delete);		/* Then free the structure which was allocated by GMT_memory */
 	}
 	*head = NULL;		/* Reset head to NULL value since it no longer points to any allocated memory */
@@ -433,7 +433,7 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, const char *arg) {
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (opt == NULL) return_error (V_API, GMT_OPTION_IS_NULL);	/* We passed NULL as the option */
 	if (arg == NULL) return_error (V_API, GMT_ARG_IS_NULL);		/* We passed NULL as the argument */
-	gmt_free (opt->arg);
+	gmt_str_free (opt->arg);
 	opt->arg = strdup (arg);
 
 	return (GMT_OK);	/* No error encountered */
@@ -459,7 +459,7 @@ int GMT_Expand_Option (void *V_API, struct GMT_OPTION *opt, char marker, const c
 			buffer[out++] = opt->arg[in];
 		in++;
 	}
-	gmt_free (opt->arg);
+	gmt_str_free (opt->arg);
 	opt->arg = strdup (buffer);
 	return (GMT_NOERROR);
 }
@@ -505,7 +505,7 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current) {
 	/* Remove the current option and bypass via the enx/prev pointers in the linked list */
 	if (current->previous) current->previous->next = current->next;
 	if (current->next) current->next->previous = current->previous;
-	gmt_free (current->arg);	/* Option arguments were created by strdup, so we must use free */
+	gmt_str_free (current->arg);	/* Option arguments were created by strdup, so we must use free */
 	GMT_free (API->GMT, current);		/* Option structure was created by GMT_memory, hence GMT_free */
 
 	return (GMT_OK);	/* No error encountered */
@@ -709,7 +709,7 @@ int gmt_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				str[1] = opt->arg[0];
 				/* Remember this last -J<code> for later use as -J, but do not remember it when -Jz|Z */
 				if (str[1] != 'Z' && str[1] != 'z' && remember) {
-					gmt_free (GMT->init.history[id]);
+					gmt_str_free (GMT->init.history[id]);
 					GMT->init.history[id] = strdup (&str[1]);
 				}
 				if (opt->arg[1]) update = true; /* Gave -J<code><args> so we want to update history and continue */
@@ -729,7 +729,7 @@ int gmt_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				if (!GMT->init.history[B_id]) Return;
 				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
 				B_next = opt->next;             /* Pointer to option following the -B option */
-				gmt_free (opt2->arg);/* Free previous pointer to arg */
+				gmt_str_free (opt2->arg);/* Free previous pointer to arg */
 				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
 				opt2->arg = strdup (p);         /* Update arg */
 				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
@@ -755,20 +755,20 @@ int gmt_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			if (id < 0) Return;                 /* Error: user gave shorthand option but there is no record in the history */
 			if (update) {                       /* Gave -J<code><args>, -R<args>, -V<args> etc. so we update history and continue */
 				if (remember) {
-					gmt_free (GMT->init.history[id]);
+					gmt_str_free (GMT->init.history[id]);
 					GMT->init.history[id] = strdup (opt->arg);
 				}
 			}
 			else {	/* Gave -J<code>, -R, -J etc. so we complete the option and continue */
 				if (!GMT->init.history[id]) Return;
-				gmt_free (opt->arg);   /* Free previous pointer to arg */
+				gmt_str_free (opt->arg);   /* Free previous pointer to arg */
 				opt->arg = strdup (GMT->init.history[id]);
 			}
 		}
 	}
 
 	if (B_string[0] && B_id >= 0) {	/* Got a concatenated string with one or more individual -B args, now separated by the RS character (ASCII 30) */
-		gmt_free (GMT->init.history[B_id]);
+		gmt_str_free (GMT->init.history[B_id]);
 		GMT->init.history[B_id] = strdup (B_string);
 	}
 

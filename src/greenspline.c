@@ -194,12 +194,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->A.file);
-	gmt_free (C->C.file);
-	gmt_free (C->G.file);
-	gmt_free (C->N.file);
-	gmt_free (C->T.file);
-	gmt_free (C->S.arg);
+	gmt_str_free (C->A.file);
+	gmt_str_free (C->C.file);
+	gmt_str_free (C->G.file);
+	gmt_str_free (C->N.file);
+	gmt_str_free (C->T.file);
+	gmt_str_free (C->S.arg);
 	GMT_free (GMT, C);
 }
 
@@ -2023,7 +2023,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
-			if (dimension == 1) GMT_prep_tmp_arrays (GMT, Grid->header->nx, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
+			if (dimension == 1) gmt_prep_tmp_arrays (GMT, Grid->header->nx, 1);	/* Init or reallocate tmp vector since cannot write to stdout under OpenMP */
 
 		} /* Else we are writing a grid */
 		GMT_memset (V, 4, double);

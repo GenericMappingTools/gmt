@@ -1218,7 +1218,7 @@ GMT_LOCAL uint64_t map_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 
 	if (n == 0) return (0);
 
-	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
+	gmt_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
 	(void) gmt_map_outside (GMT, lon[0], lat[0]);
 	gmt_geo_to_xy (GMT, lon[0], lat[0], &GMT->hidden.mem_coord[GMT_X][0], &GMT->hidden.mem_coord[GMT_Y][0]);
 	j += map_move_to_rect (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], 0, 0);
@@ -1226,13 +1226,13 @@ GMT_LOCAL uint64_t map_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 		(void) gmt_map_outside (GMT, lon[i], lat[i]);
 		nx = map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
-			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
+			gmt_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
 			GMT->hidden.mem_coord[GMT_X][j] = xc[k];
 			GMT->hidden.mem_coord[GMT_Y][j++] = yc[k];
 			(*total_nx) ++;
 		}
 		gmt_geo_to_xy (GMT, lon[i], lat[i], &GMT->hidden.mem_coord[GMT_X][j], &GMT->hidden.mem_coord[GMT_Y][j]);
-		GMT_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
+		gmt_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
 		j += map_move_to_rect (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
@@ -1471,7 +1471,7 @@ GMT_LOCAL uint64_t map_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 
 	if (n == 0) return (0);
 
-	GMT_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
+	gmt_prep_tmp_arrays (GMT, 1, 2);	/* Init or reallocate tmp vectors */
 
 	(void) gmt_map_outside (GMT, lon[0], lat[0]);
 	j = map_move_to_wesn (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], lon[0], lat[0], 0.0, 0.0, 0, 0);	/* Add one point */
@@ -1480,12 +1480,12 @@ GMT_LOCAL uint64_t map_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double 
 		(void) gmt_map_outside (GMT, lon[i], lat[i]);
 		nx = map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides);
 		for (k = 0; k < nx; k++) {
-			GMT_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
+			gmt_prep_tmp_arrays (GMT, j, 2);	/* Init or reallocate tmp vectors */
 			GMT->hidden.mem_coord[GMT_X][j]   = xc[k];
 			GMT->hidden.mem_coord[GMT_Y][j++] = yc[k];
 			(*total_nx) ++;
 		}
-		GMT_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
+		gmt_prep_tmp_arrays (GMT, j+2, 2);	/* Init or reallocate tmp vectors */
 		j += map_move_to_wesn (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
@@ -6634,7 +6634,7 @@ uint64_t *gmt_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 	/* First quick scan to see how many jumps there are */
 
 	xin = *xx;	yin = *yy;
-	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
+	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);
 	for (n_seg = 0, i = 1; i < *nn; i++) {
 		if ((l_or_r = map_jump_x (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
@@ -6647,7 +6647,7 @@ uint64_t *gmt_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 			n_seg++;
 		}
 	}
-	GMT_reset_meminc (GMT);
+	gmt_reset_meminc (GMT);
 
 	if (n_seg == 0) return (NULL);	/* No jumps, just return NULL */
 

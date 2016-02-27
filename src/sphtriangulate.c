@@ -395,9 +395,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->Out.file);
-	gmt_free (C->G.file);
-	gmt_free (C->N.file);
+	gmt_str_free (C->Out.file);
+	gmt_str_free (C->G.file);
+	gmt_str_free (C->N.file);
 	GMT_free (GMT, C);
 }
 

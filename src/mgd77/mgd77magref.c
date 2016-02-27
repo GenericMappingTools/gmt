@@ -74,10 +74,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->CM4->CM4_M.path);
-	gmt_free (C->CM4->CM4_D.path);
-	gmt_free (C->CM4->CM4_I.path);
-	gmt_free (C->CM4);
+	gmt_str_free (C->CM4->CM4_M.path);
+	gmt_str_free (C->CM4->CM4_D.path);
+	gmt_str_free (C->CM4->CM4_I.path);
+	gmt_str_free (C->CM4);
 	GMT_free (GMT, C);
 }
 
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
 				Ctrl->C.active = true;
-				gmt_free (Ctrl->CM4->CM4_M.path);
+				gmt_str_free (Ctrl->CM4->CM4_M.path);
 				Ctrl->CM4->CM4_M.path = strdup (opt->arg);
 				break;
 			case 'D':
@@ -224,7 +224,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 					Ctrl->CM4->CM4_D.index = false;
 				}
 				else {
-					gmt_free (Ctrl->CM4->CM4_D.path);
+					gmt_str_free (Ctrl->CM4->CM4_D.path);
 					Ctrl->CM4->CM4_D.path = strdup (opt->arg);
 					Ctrl->CM4->CM4_D.load = true;
 				}
@@ -235,7 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 					Ctrl->CM4->CM4_I.index = false;
 				}
 				else {
-					gmt_free (Ctrl->CM4->CM4_I.path);
+					gmt_str_free (Ctrl->CM4->CM4_I.path);
 					Ctrl->CM4->CM4_I.path = strdup (opt->arg);
 					Ctrl->CM4->CM4_I.load = true;
 				}
@@ -676,7 +676,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_free (Ctrl->CM4->CM4_D.dst);
+	gmt_str_free (Ctrl->CM4->CM4_D.dst);
 	GMT_free (GMT, Ctrl->CM4->CM4_DATA.out_field);
 	if (!(Ctrl->A.years || Ctrl->A.fixed_time)) GMT_free (GMT, time_years);
 	if (Ctrl->joint_IGRF_CM4) GMT_free (GMT, igrf_xyz);

@@ -168,7 +168,7 @@ void *New_filter1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->F.file);
+	gmt_str_free (C->F.file);
 	GMT_free (GMT, C);
 }
 

@@ -319,7 +319,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 				sscanf (&p[1], "%d/%d", &C->W.min_lod, &C->W.max_lod);
 				break;
 			case 'n':	/* Set KML document layer name */
-				gmt_free (C->W.overlayname);	/* Already set, free then reset */
+				gmt_str_free (C->W.overlayname);	/* Already set, free then reset */
 				C->W.overlayname = strdup (&p[1]);
 				break;
 			case 'o':	/* Produce a KML overlay as a folder subset */
@@ -327,11 +327,11 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 				C->W.foldername = strdup (&p[1]);
 				break;
 			case 't':	/* Set KML document title */
-				gmt_free (C->W.doctitle);	/* Already set, free then reset */
+				gmt_str_free (C->W.doctitle);	/* Already set, free then reset */
 				C->W.doctitle = strdup (&p[1]);
 				break;
 			case 'u':	/* Specify a remote address for image */
-				gmt_free (C->W.URL);	/* Already set, free then reset */
+				gmt_str_free (C->W.URL);	/* Already set, free then reset */
 				C->W.URL = strdup (&p[1]);
 				break;
 			default:
@@ -367,14 +367,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->D.dir);
-	gmt_free (C->F.file);
-	gmt_free (C->G.file);
-	gmt_free (C->L.file);
-	gmt_free (C->W.doctitle);
-	gmt_free (C->W.overlayname);
-	gmt_free (C->W.foldername);
-	gmt_free (C->W.URL);
+	gmt_str_free (C->D.dir);
+	gmt_str_free (C->F.file);
+	gmt_str_free (C->G.file);
+	gmt_str_free (C->L.file);
+	gmt_str_free (C->W.doctitle);
+	gmt_str_free (C->W.overlayname);
+	gmt_str_free (C->W.foldername);
+	gmt_str_free (C->W.URL);
 	GMT_free (GMT, C);
 }
 
@@ -534,7 +534,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'D':	/* Change output directory */
 				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
-					gmt_free (Ctrl->D.dir);
+					gmt_str_free (Ctrl->D.dir);
 					Ctrl->D.dir = strdup (opt->arg);
 				}
 				else
@@ -554,7 +554,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Set GS path */
 				if ((Ctrl->G.active = gmt_check_filearg (GMT, 'G', opt->arg, GMT_IN, GMT_IS_TEXTSET)) != 0) {
-					gmt_free (Ctrl->G.file);
+					gmt_str_free (Ctrl->G.file);
 					Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 					sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
 				}
@@ -936,7 +936,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		all_names_in = GMT_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
 			add_to_qlist (all_names_in, ps_names[k]);
-			gmt_free (ps_names[k]);
+			gmt_str_free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s%s -r%d -sOutputFile=%c%s.pdf%c %s",
@@ -990,7 +990,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				fclose (fp);	/* Close original PS file */
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
-				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_free (ps_names[kk]);
+				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_str_free (ps_names[kk]);
 				Return (EXIT_FAILURE);
 			}
 			while (line_reader (GMT, &line, &line_size, fp) != EOF) {
@@ -1649,7 +1649,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
 			}
 
-			gmt_free (wext);
+			gmt_str_free (wext);
 
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
@@ -1671,7 +1671,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				sprintf (cmd, "gdal_translate -mo TIFFTAG_XRESOLUTION=%d -mo TIFFTAG_YRESOLUTION=%d -a_srs %c%s%c "
 				              "-co COMPRESS=LZW -co TILED=YES %s %c%s%c %c%s%c",
 					Ctrl->E.dpi, Ctrl->E.dpi, quote, proj4_cmd, quote, quiet, quote, out_file, quote, quote, world_file, quote);
-				gmt_free (proj4_cmd);
+				gmt_str_free (proj4_cmd);
 				GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
 				GMT_Report (API, GMT_MSG_NORMAL, "The gdal_translate command: \n%s\n", cmd);
@@ -1771,7 +1771,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 	}
 
-	for (k = 0; k < Ctrl->In.n_files; k++) gmt_free (ps_names[k]);
+	for (k = 0; k < Ctrl->In.n_files; k++) gmt_str_free (ps_names[k]);
 	GMT_free (GMT, ps_names);
 	GMT_free (GMT, line);
 	GMT_Report (API, GMT_MSG_DEBUG, "Final input buffer length was % "PRIuS "\n", line_size);

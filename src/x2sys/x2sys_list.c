@@ -101,14 +101,14 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);
-	gmt_free (C->C.col);
-	gmt_free (C->F.flags);
-	gmt_free (C->I.file);
-	gmt_free (C->L.file);
-	gmt_free (C->S.file);
-	gmt_free (C->T.TAG);
-	gmt_free (C->W.file);
+	gmt_str_free (C->In.file);
+	gmt_str_free (C->C.col);
+	gmt_str_free (C->F.flags);
+	gmt_str_free (C->I.file);
+	gmt_str_free (C->L.file);
+	gmt_str_free (C->S.file);
+	gmt_str_free (C->T.TAG);
+	gmt_str_free (C->W.file);
 	GMT_free (GMT, C);
 }
 

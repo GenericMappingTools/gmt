@@ -1156,7 +1156,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	GMT_free (GMT, rowVec);
-	gmt_free (tmp);
+	gmt_str_free (tmp);
 	GMT_free (GMT, whichBands);
 	GMT_free (GMT, colVec);
 

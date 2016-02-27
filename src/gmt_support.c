@@ -2054,7 +2054,7 @@ void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			GMT_free (GMT, P->patch[i].fill);
 	GMT_free (GMT, P->range);
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (i = 0; i < P->n_headers; i++) gmt_free (P->header[i]);
+	for (i = 0; i < P->n_headers; i++) gmt_str_free (P->header[i]);
 	P->n_headers = P->n_colors = 0;
 	GMT_free (GMT, P->header);
 }
@@ -3676,7 +3676,7 @@ void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols) 
 		/* Get Next Move (what about querying random location?) */
 		for (i = 1; i < size && is_set (mark, i, bits); i++);
 	}
-	gmt_free (mark);
+	gmt_str_free (mark);
 }
 
 /*! . */
@@ -6967,7 +6967,7 @@ uint64_t gmt_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in
 
 	*link = Out.trianglelist;	/* List of node numbers to return via link [NOT ALLOCATED BY GMT_memory] */
 
-	gmt_free (Out.pointlist);
+	gmt_str_free (Out.pointlist);
 	GMT_free (GMT, In.pointlist);
 
 	return (Out.numberoftriangles);
@@ -7045,12 +7045,12 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in,
 	*x_out = x_edge;	/* List of x-coordinates for all edges */
 	*y_out = y_edge;	/* List of x-coordinates for all edges */
 
-	gmt_free (Out.pointlist);
-	gmt_free (Out.trianglelist);
-	gmt_free (vorOut.pointattributelist);
-	gmt_free (vorOut.pointlist);
-	gmt_free (vorOut.edgelist);
-	gmt_free (vorOut.normlist);
+	gmt_str_free (Out.pointlist);
+	gmt_str_free (Out.trianglelist);
+	gmt_str_free (vorOut.pointattributelist);
+	gmt_str_free (vorOut.pointlist);
+	gmt_str_free (vorOut.edgelist);
+	gmt_str_free (vorOut.normlist);
 	GMT_free (GMT, In.pointlist);
 
 	return (n_edges);
@@ -7271,7 +7271,7 @@ int64_t GMT_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t 
 /*! . */
 void GMT_delaunay_free (struct GMT_CTRL *GMT, int **link) {
 	/* Since one function uses GMT_memory and the other does not */
-	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) gmt_free (*link);
+	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) gmt_str_free (*link);
 	if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON) GMT_free (GMT, *link);
 }
 /*
@@ -11340,8 +11340,8 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 	if (n_macros == 0 || !(*M)) return;
 
 	for (n = 0; n < n_macros; n++) {
-		gmt_free ((*M)[n].name);
-		for (k = 0; k < (*M)[n].n_arg; k++) gmt_free ((*M)[n].arg[k]);	/* Free arguments */
+		gmt_str_free ((*M)[n].name);
+		for (k = 0; k < (*M)[n].n_arg; k++) gmt_str_free ((*M)[n].arg[k]);	/* Free arguments */
 		GMT_free (GMT, (*M)[n].arg);	/* Free argument list */
 	}
 	GMT_free (GMT, (*M));
@@ -11829,7 +11829,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 			else if (Tout->segment[seg]->header) gmt_parse_segment_item (GMT, Tout->segment[seg]->header, "-L", ID);	/* Look for label in header */
 			if (!ID[0]) sprintf (ID, "%*.*" PRIu64, ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
-			gmt_free (Tout->segment[seg]->header);
+			gmt_str_free (Tout->segment[seg]->header);
 			sprintf (buffer, "Segment label -L%s", ID);
 			Tout->segment[seg]->header = strdup (buffer);
 		}
@@ -11885,7 +11885,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 			else if (Tout->segment[seg]->header) gmt_parse_segment_item (GMT, Tout->segment[seg]->header, "-L", ID);	/* Look for label in header */
 			if (!ID[0]) sprintf (ID, "%*.*" PRIu64, ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
-			gmt_free (Tout->segment[seg]->header);
+			gmt_str_free (Tout->segment[seg]->header);
 			sprintf (buffer, "Segment label -L%s", ID);
 			Tout->segment[seg]->header = strdup (buffer);
 		}
@@ -12574,7 +12574,7 @@ uint64_t gmt_read_list (struct GMT_CTRL *GMT, char *file, char ***list) {
 void gmt_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 	/* Properly free memory allocated by gmt_read_list */
 	uint64_t i;
-	for (i = 0; i < n; i++) gmt_free (list[i]);
+	for (i = 0; i < n; i++) gmt_str_free (list[i]);
 	GMT_free (GMT, list);
 }
 
@@ -12734,7 +12734,7 @@ struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *
 	if (item[k] == '+' && item[k+1] == 'f') {	/* Gave [~]+f<file> with list of patterns, one per record */
 		if ((n_items = gmt_read_list (GMT, &item[k+2], &list)) == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not find/open file: %s\n", &item[k+2]);
-			gmt_free (item);
+			gmt_str_free (item);
 			return (NULL);
 		}
 	}
@@ -12768,7 +12768,7 @@ struct GMT_TEXT_SELECTION * GMT_set_text_selection (struct GMT_CTRL *GMT, char *
 	/* Here we got something to return */
 	select->pattern = list;						/* Pass the text list */
 
-	gmt_free (item);
+	gmt_str_free (item);
 	return (select);
 }
 
@@ -12815,7 +12815,7 @@ void GMT_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 void GMT_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap) {
 	struct GMT_REFPOINT *A = *Ap;
 	if (A == NULL) return;	/* Nothing */
-	gmt_free (A->args);
+	gmt_str_free (A->args);
 	GMT_free (GMT, A);
 	A = NULL;
 }
@@ -13134,7 +13134,7 @@ unsigned int GMT_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	if (new[END] <= new[BEG]) return 1;	/* Trimmed past each end */
 	if (new[BEG] == orig_start[BEG] && new[END] == orig_start[END]) return 0;	/* No change in segment length so no need to reallocate */
 	new_n = new[END] - new[BEG] + 1;	/* New length of line */
-	GMT_prep_tmp_arrays (GMT, new_n, 2);	/* Init or reallocate tmp vectors */
+	gmt_prep_tmp_arrays (GMT, new_n, 2);	/* Init or reallocate tmp vectors */
 	GMT_memcpy (GMT->hidden.mem_coord[GMT_X], &x[new[BEG]], new_n, double);
 	GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], &y[new[BEG]], new_n, double);
 	GMT_free (GMT, x);	GMT_free (GMT, y);

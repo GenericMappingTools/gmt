@@ -487,7 +487,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	if (emode) {
-		gmt_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
+		gmt_str_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
 		GMT->current.io.o_format[i_col] = old_format;		/* Restore previous format */
 	}
 

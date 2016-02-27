@@ -527,7 +527,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->N.name);	
+	gmt_str_free (C->N.name);	
 	GMT_free (GMT, C);	
 }
 
@@ -631,7 +631,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 						}
 					}
 					else {	/* Set name stem */
-						gmt_free (Ctrl->N.name);
+						gmt_str_free (Ctrl->N.name);
 						Ctrl->N.name = strdup (opt->arg);
 					}
 				}

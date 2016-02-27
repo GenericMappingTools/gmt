@@ -80,7 +80,7 @@ GMT_LOCAL void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initia
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);
+	gmt_str_free (C->In.file);
 	GMT_free_refpoint (GMT, &C->D.refpoint);
 	GMT_free (GMT, C->F.panel);
 	GMT_free (GMT, C);

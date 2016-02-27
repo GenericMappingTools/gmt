@@ -110,9 +110,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);
-	gmt_free (C->D.text);
-	gmt_free (C->G.file);
+	gmt_str_free (C->In.file);
+	gmt_str_free (C->D.text);
+	gmt_str_free (C->G.file);
 	GMT_free (GMT, C);
 }
 
@@ -437,8 +437,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 
-			gmt_free (data);
-			gmt_free (header);
+			gmt_str_free (data);
+			gmt_str_free (header);
 			ix++;
 		}
 	}
@@ -517,8 +517,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			gmt_free (data);
-			gmt_free (header);
+			gmt_str_free (data);
+			gmt_str_free (header);
 			ix++;
 		}
 

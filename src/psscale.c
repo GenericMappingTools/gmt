@@ -128,11 +128,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->C.file);
+	gmt_str_free (C->C.file);
 	GMT_free_refpoint (GMT, &C->D.refpoint);
-	gmt_free (C->D.etext);
+	gmt_str_free (C->D.etext);
 	GMT_free (GMT, C->F.panel);
-	gmt_free (C->Z.file);
+	gmt_str_free (C->Z.file);
 	GMT_free (GMT, C);
 }
 
@@ -242,7 +242,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':
 				Ctrl->C.active = true;
-				gmt_free (Ctrl->C.file);
+				gmt_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':

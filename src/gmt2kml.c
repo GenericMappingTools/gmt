@@ -164,16 +164,16 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);
-	gmt_free (C->C.file);
-	gmt_free (C->D.file);
-	gmt_free (C->I.file);
-	gmt_free (C->N.fmt);
-	gmt_free (C->T.title);
-	gmt_free (C->T.folder);
+	gmt_str_free (C->In.file);
+	gmt_str_free (C->C.file);
+	gmt_str_free (C->D.file);
+	gmt_str_free (C->I.file);
+	gmt_str_free (C->N.fmt);
+	gmt_str_free (C->T.title);
+	gmt_str_free (C->T.folder);
 	if (C->L.active) {
 		unsigned int col;
-		for (col = 0; col < C->L.n_cols; col++) gmt_free (C->L.name[col]);
+		for (col = 0; col < C->L.n_cols; col++) gmt_str_free (C->L.name[col]);
 		GMT_free (GMT, C->L.name);
 	}
 	GMT_free (GMT, C);
@@ -311,12 +311,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Color table */
 				Ctrl->C.active = true;
-				gmt_free (Ctrl->C.file);
+				gmt_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
 				Ctrl->D.active = true;
-				gmt_free (Ctrl->D.file);
+				gmt_str_free (Ctrl->D.file);
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Extrude feature down to the ground*/
@@ -375,7 +375,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = true;
-				gmt_free (Ctrl->I.file);
+				gmt_str_free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])

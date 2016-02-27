@@ -79,12 +79,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->In.file);	
-	gmt_free (C->D.file);	
-	gmt_free (C->E.rot.file);	
-	gmt_free (C->F.file);	
-	gmt_free (C->G.file);	
-	gmt_free (C->T.value);	
+	gmt_str_free (C->In.file);	
+	gmt_str_free (C->D.file);	
+	gmt_str_free (C->E.rot.file);	
+	gmt_str_free (C->F.file);	
+	gmt_str_free (C->G.file);	
+	gmt_str_free (C->T.value);	
 	GMT_free (GMT, C);	
 }
 
@@ -537,7 +537,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 				sprintf (txt, "-Z%g", Ctrl->T.value[t]);
 				for (seg = 0; seg < polr->n_segments; seg++) {
 					Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
-					gmt_free (Sr->header);
+					gmt_str_free (Sr->header);
 					Sr->header = strdup (txt);
 				}
 			}

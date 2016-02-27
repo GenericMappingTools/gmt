@@ -745,7 +745,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'F':	/* Cell color: F fill1[,fill2,...,filln]  */
 						/* First free all previous entries in fill array */
-						for (col = 0; col < PSLEGEND_MAX_COLS; col++) gmt_free (fill[col]);
+						for (col = 0; col < PSLEGEND_MAX_COLS; col++) gmt_str_free (fill[col]);
 						pos = n_col = 0;
 						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
 							if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */

@@ -104,8 +104,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->Out.file);	
-	gmt_free (C->D.name);	
+	gmt_str_free (C->Out.file);	
+	gmt_str_free (C->D.name);	
 	if (C->S.active) GMT_free_text_selection (GMT, &C->S.select);	
 	if (C->Q.active) GMT_free_int_selection (GMT, &C->Q.select);	
 	GMT_free (GMT, C);	
@@ -543,7 +543,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	/* Now ready for output */
 
 	if (Ctrl->D.active) {	/* Set composite name and io-mode */
-		gmt_free (Ctrl->Out.file);
+		gmt_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->D.name);
 		D[GMT_OUT]->io_mode = Ctrl->D.mode;
 	}

@@ -106,11 +106,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->Out.file);
-	gmt_free (C->C.file);
-	gmt_free (C->D.format);
-	gmt_free (C->L.file);
-	gmt_free (C->Q.file);
+	gmt_str_free (C->Out.file);
+	gmt_str_free (C->C.file);
+	gmt_str_free (C->D.format);
+	gmt_str_free (C->L.file);
+	gmt_str_free (C->Q.file);
 	GMT_free (GMT, C);
 }
 
@@ -175,22 +175,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 
 			case 'C':	/* Separate closed from open segments  */
 				Ctrl->C.active = true;
-				gmt_free (Ctrl->C.file);
+				gmt_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
 				Ctrl->D.active = true;
-				gmt_free (Ctrl->D.format);
+				gmt_str_free (Ctrl->D.format);
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
 				Ctrl->L.active = true;
-				gmt_free (Ctrl->L.file);
+				gmt_str_free (Ctrl->L.file);
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
 				Ctrl->Q.active = true;
-				gmt_free (Ctrl->Q.file);
+				gmt_str_free (Ctrl->Q.file);
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
@@ -802,7 +802,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "New closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
 			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename output filename with the C type instead of O set above */
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
-				gmt_free (T[OPEN][out_seg]->file[GMT_OUT]);
+				gmt_str_free (T[OPEN][out_seg]->file[GMT_OUT]);
 				T[OPEN][out_seg]->file[GMT_OUT] = strdup (buffer);
 				d_mode = CLOSED;	/* Mode is used with -Q only */
 			}

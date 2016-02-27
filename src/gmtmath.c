@@ -168,10 +168,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->Out.file);
-	gmt_free (C->A.file);
+	gmt_str_free (C->Out.file);
+	gmt_str_free (C->A.file);
 	GMT_free (GMT, C->C.cols);
-	gmt_free (C->T.file);
+	gmt_str_free (C->T.file);
 	GMT_free (GMT, C);
 }
 
@@ -4327,14 +4327,14 @@ void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!GMT_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
-	if (!strcmp (*arg, "CHIDIST"))      {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("CHI2CDF");  }
-	else if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
-	else if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("PCDF");     }
-	else if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("FCDF");     }
-	else if (!strcmp (*arg, "MED"))     {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("MEDIAN");   }
-	else if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("TCDF");     }
-	else if (!strcmp (*arg, "Tn"))      {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("TNORM");    }
-	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_free (*arg); *arg = t = strdup ("ZCDF");     }
+	if (!strcmp (*arg, "CHIDIST"))      {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }
+	else if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
+	else if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("PCDF");     }
+	else if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("FCDF");     }
+	else if (!strcmp (*arg, "MED"))     {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("MEDIAN");   }
+	else if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("TCDF");     }
+	else if (!strcmp (*arg, "Tn"))      {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("TNORM");    }
+	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_str_free (*arg); *arg = t = strdup ("ZCDF");     }
 
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
@@ -4717,7 +4717,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					Return (EXIT_FAILURE);
 				}
 				if (recall[k]->stored.D) gmt_free_dataset (GMT, &recall[k]->stored.D);
-				gmt_free (recall[k]->label);
+				gmt_str_free (recall[k]->label);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;	/* Just go back and process next item */
@@ -4946,7 +4946,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	if (free_time) gmt_free_dataset (GMT, &Time);
 	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */
 		if (recall[kk]->stored.D) gmt_free_dataset (GMT, &recall[kk]->stored.D);
-		gmt_free (recall[kk]->label);
+		gmt_str_free (recall[kk]->label);
 		GMT_free (GMT, recall[kk]);
 	}
 

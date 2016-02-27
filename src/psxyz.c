@@ -128,8 +128,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (C->C.file);
-	gmt_free (C->S.arg);
+	gmt_str_free (C->C.file);
+	gmt_str_free (C->S.arg);
 	GMT_free (GMT, C);
 }
 
@@ -281,7 +281,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 			case 'C':	/* Vary symbol color with z */
 				if (opt->arg[0]) {
-					gmt_free (Ctrl->C.file);
+					gmt_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 					Ctrl->C.active = true;
 				}
@@ -677,7 +677,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		GMT_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
+		gmt_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		if ((S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) && S.n_required <= 1) p_in = in2;
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
@@ -1144,7 +1144,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						(void) GMT_setfont (GMT, &S.font);
 						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
 						PSL_plottext (PSL, xpos[item], data[i].y, data[i].dim[0] * PSL_POINTS_PER_INCH, data[i].string, 0.0, PSL_MC, data[i].outline);
-						gmt_free (data[i].string);
+						gmt_str_free (data[i].string);
 						break;
 					case GMT_SYMBOL_VECTOR:
 						GMT_plane_perspective (GMT, GMT_Z, data[i].z);
@@ -1187,7 +1187,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (n_warn[1]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -S\n", n_warn[1]);
 		if (n_warn[2]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d vector heads had to be scaled more than implied by +n<norm> since they were still too long. Consider changing the +n<norm> modifier to -S\n", n_warn[2]);
 		GMT_free (GMT, data);
-		GMT_reset_meminc (GMT);
+		gmt_reset_meminc (GMT);
 	}
 	else {	/* Line/polygon part */
 		uint64_t seg;
@@ -1280,7 +1280,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
 							uint64_t k, m, col = (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) ? 4 : 3;
 							end = 2 * L->n_rows + 1;
-							GMT_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
+							gmt_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_Z], L->coord[GMT_Z], L->n_rows, double);
@@ -1300,7 +1300,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						else if (Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
 							uint64_t k, m;
 							end = 2 * L->n_rows + 1;
-							GMT_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
+							gmt_prep_tmp_arrays (GMT, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_Z], L->coord[GMT_X], L->n_rows, double);
@@ -1321,7 +1321,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 							uint64_t off = 0U;
 							double value;
 							end = L->n_rows;
-							GMT_prep_tmp_arrays (GMT, end+3, 3);	/* Init or reallocate 3 tmp vectors */
+							gmt_prep_tmp_arrays (GMT, end+3, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First copy the given line segment */
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
 							GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
