@@ -320,8 +320,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);
 				wantx = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LON;
 				wanty = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LAT;
-				n_errors += GMT_verify_expectations (GMT, wantx, GMT_scanf_arg (GMT, txt_a, wantx, &Ctrl->S.lon), txt_a);
-				n_errors += GMT_verify_expectations (GMT, wanty, GMT_scanf_arg (GMT, txt_b, wanty, &Ctrl->S.lat), txt_b);
+				n_errors += GMT_verify_expectations (GMT, wantx, gmt_scanf_arg (GMT, txt_a, wantx, &Ctrl->S.lon), txt_a);
+				n_errors += GMT_verify_expectations (GMT, wanty, gmt_scanf_arg (GMT, txt_b, wanty, &Ctrl->S.lat), txt_b);
 				if ((units = strrchr (opt->arg, '/')) != NULL) {
 					units++;
 					Ctrl->S.label = strdup (units);
@@ -459,7 +459,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_FILEBREAK, NULL, NULL, NULL)) == NULL) {

@@ -251,7 +251,7 @@ GMT_LOCAL bool gmtinit_file_unlock (struct GMT_CTRL *GMT, int fd) {
 GMT_LOCAL int gmtinit_get_uservalue (struct GMT_CTRL *GMT, char *txt, int type, double *value, char *err_msg) {
 	/* Use to get a single data value of given type and exit if error, and return EXIT_FAILURE */
 	int kind;
-	if ((kind = GMT_scanf (GMT, txt, type, value)) == GMT_IS_NAN) {
+	if ((kind = gmt_scanf (GMT, txt, type, value)) == GMT_IS_NAN) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %s: %s\n", err_msg, txt);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
@@ -538,8 +538,8 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	}
 	if (s) s[0] = '+';	/* Restore the geometry part */
 	/* -a implies -fg */
-	GMT_set_geographic (GMT, GMT_IN);
-	GMT_set_geographic (GMT, GMT_OUT);
+	gmt_set_geographic (GMT, GMT_IN);
+	gmt_set_geographic (GMT, GMT_OUT);
 	return (GMT_NOERROR);
 }
 
@@ -552,8 +552,8 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	 * -bif or -bof or any other letter means that type instead of double.
 	 * Note to developers: It is allowed NOT to specify anything (e.g., -bi) or not specify how many columns (e.g., -bif).
 	 * If those are not set then there are two opportunities in the modules to correct this:
-	 *   1) GMT_io_banner is called from GMT_Init_IO and if things are not set we default to the default data type [double].
-	 *   2) GMT_set_cols sets the actual columns needed for in or out and is also use to set un-initialized data read pointers.
+	 *   1) gmt_io_banner is called from GMT_Init_IO and if things are not set we default to the default data type [double].
+	 *   2) gmt_set_cols sets the actual columns needed for in or out and is also use to set un-initialized data read pointers.
 	 */
 
 	unsigned int i, col = 0, id = GMT_IN, swap_flag;
@@ -653,10 +653,10 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 					swap_flag = (swab) ? id + 1 : 0;	/* 0 for no swap, 1 if swap input, 2 if swap output */
 					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
 						GMT->current.io.fmt[id][col].io = GMT_get_io_ptr (GMT, id, swap_flag, c);
-						GMT->current.io.fmt[id][col].type = GMT_get_io_type (GMT, c);
+						GMT->current.io.fmt[id][col].type = gmt_get_io_type (GMT, c);
 						if (!i_or_o) {	/* Must also set output */
 							GMT->current.io.fmt[GMT_OUT][col].io = GMT_get_io_ptr (GMT, GMT_OUT, swap_flag, c);
-							GMT->current.io.fmt[GMT_OUT][col].type = GMT_get_io_type (GMT, c);
+							GMT->current.io.fmt[GMT_OUT][col].type = gmt_get_io_type (GMT, c);
 						}
 					}
 					ncol = 0;	/* Must parse a new number for each item */
@@ -701,10 +701,10 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 		for (col = 0; col < GMT->common.b.ncol[id]; col++) {
 			/* Default binary type is double */
 			GMT->current.io.fmt[id][col].io   = GMT_get_io_ptr (GMT, id, swab, 'd');
-			GMT->current.io.fmt[id][col].type = GMT_get_io_type (GMT, 'd');
+			GMT->current.io.fmt[id][col].type = gmt_get_io_type (GMT, 'd');
 			if (!i_or_o) {	/* Must also set output */
 				GMT->current.io.fmt[GMT_OUT][col].io   = GMT_get_io_ptr (GMT, GMT_OUT, swab, 'd');
-				GMT->current.io.fmt[GMT_OUT][col].type = GMT_get_io_type (GMT, 'd');
+				GMT->current.io.fmt[GMT_OUT][col].type = gmt_get_io_type (GMT, 'd');
 			}
 		}
 	}
@@ -717,7 +717,7 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 		if (GMT->common.b.swab[GMT_IN] == k_swap_in) GMT->common.b.swab[GMT_OUT] = k_swap_out;
 	}
 
-	GMT_set_bin_io (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
+	gmt_set_bin_io (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
 
 	if (p) *p = '+';	/* Restore the + sign we gobbled up earlier */
 	return (error);
@@ -761,8 +761,8 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
 		if (both_i_and_o) {
-			GMT_set_geographic (GMT, GMT_IN);
-			GMT_set_geographic (GMT, GMT_OUT);
+			gmt_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_OUT);
 		}
 		else {
 			col[GMT_X] = GMT_IS_LON;
@@ -1648,9 +1648,9 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in -p: (%s)  Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
 					return 1;
 				}
-				error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.proj.z_project.world_x), txt_a);
-				error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.proj.z_project.world_y), txt_b);
-				if (k == 3) error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf (GMT, txt_c, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_project.world_z), txt_c);
+				error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.proj.z_project.world_x), txt_a);
+				error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.proj.z_project.world_y), txt_b);
+				if (k == 3) error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf (GMT, txt_c, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.proj.z_project.world_z), txt_c);
 				GMT->current.proj.z_project.world_given = true;
 				break;
 			default:	/* If followed by an integer we assume this might be an exponential notation picked up by mistake */
@@ -1873,7 +1873,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 	sprintf (line, "%s/conf/gmt.conf", GMT->session.SHAREDIR);
 	if (access (line, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
-		if (GMT_getuserpath (GMT, "conf/gmt.conf", line) == NULL) {
+		if (gmt_getuserpath (GMT, "conf/gmt.conf", line) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find system defaults file - Aborting.\n");
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
@@ -1963,11 +1963,11 @@ GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 
 	GMT->session.n_shorthands = 0; /* By default there are no shorthands unless gmt.io is found */
 
-	if (!GMT_getuserpath (GMT, "gmt.io", file)) {
-		if (!GMT_getsharepath (GMT, "", "gmt.io", "", file, R_OK)) {	/* try non-hidden file in ~/.gmt */
+	if (!gmt_getuserpath (GMT, "gmt.io", file)) {
+		if (!gmt_getsharepath (GMT, "", "gmt.io", "", file, R_OK)) {	/* try non-hidden file in ~/.gmt */
 			if (GMT_compat_check (GMT, 4)) {	/* Look for obsolete .gmt_io files */
-				if (!GMT_getuserpath (GMT, ".gmt_io", file)) {
-					if (!GMT_getsharepath (GMT, "", "gmt_io", "", file, R_OK))	/* try non-hidden file in ~/.gmt */
+				if (!gmt_getuserpath (GMT, ".gmt_io", file)) {
+					if (!gmt_getsharepath (GMT, "", "gmt_io", "", file, R_OK))	/* try non-hidden file in ~/.gmt */
 						return GMT_OK;
 				}
 			}
@@ -2440,10 +2440,10 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	 */
 	int k, n_errors = 0;
 	char line[GMT_BUFSIZ] = {""}, type[8] = {""};
-	FILE *fp = GMT_fopen (GMT, A->file_custom, "r");
+	FILE *fp = gmt_fopen (GMT, A->file_custom, "r");
 
 	GMT_memset (n_int, 4, int);
-	while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%*s %s", type);
 		k = 0;
@@ -2468,7 +2468,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 			}
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", A->file_custom, A->id);
 	if (n_int[0] && n_int[1]) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
@@ -2628,7 +2628,7 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 	if (flag == 'c') {	/* Custom annotation arrangement */
 		int k, n_int[4];
 		char *list = "aifg";
-		if (!(GMT_access (GMT, &in[1], R_OK))) {
+		if (!(gmt_access (GMT, &in[1], R_OK))) {
 			gmt_free (A->file_custom);
 			A->file_custom = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
@@ -2736,8 +2736,8 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Did not find the expected format +o<plon>/<plat>\n");
 				error++;
 			}
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, A, GMT_IS_LON, &lon), A);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, B, GMT_IS_LAT, &lat), B);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, A, GMT_IS_LON, &lon), A);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, B, GMT_IS_LAT, &lat), B);
 			if (GMT->current.proj.projection != GMT_OBLIQUE_MERC) gmt_set_oblique_pole_and_origin (GMT, lon, lat, 0.0, 0.0);
 			o = i;
 			in[o] = '\0';	/* Chop off +o for now */
@@ -3413,10 +3413,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		/* Check to see if scale is specified in 1:xxxx */
 		for (j = (int)strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
 		GMT->current.proj.units_pr_degree = (k == -1) ? true : false;
-		GMT_set_cartesian (GMT, GMT_OUT);	/* This may be overridden by mapproject -I */
+		gmt_set_cartesian (GMT, GMT_OUT);	/* This may be overridden by mapproject -I */
 		if (project != GMT_LINEAR) {
 			GMT->current.proj.gave_map_width = mod_flag;
-			GMT_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_IN);
 		}
 	}
 
@@ -3424,7 +3424,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	n = 0;	/* Initialize with no fields found */
 	switch (project) {
 		case GMT_LINEAR:	/* Linear x/y scaling */
-			GMT_set_cartesian (GMT, GMT_IN);	/* This will be overridden below if -Jx or -Jp, for instance */
+			gmt_set_cartesian (GMT, GMT_IN);	/* This will be overridden below if -Jx or -Jp, for instance */
 			GMT->current.proj.compute_scale[GMT_X] = GMT->current.proj.compute_scale[GMT_Y] = width_given;
 
 			/* Default is not involving geographical coordinates */
@@ -3627,7 +3627,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				n = sscanf (args, "%s", txt_b);
 			else if (n_slashes == 1) {
 				n = sscanf (args, "%[^/]/%s", txt_a, txt_b);
-				error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+				error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 				GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = 0.0;
 			}
 			error += gmtinit_scale_or_width (GMT, txt_b, &GMT->current.proj.pars[1]);
@@ -3651,11 +3651,11 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			else if (n_slashes == 2)
 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			if (txt_a[0]) {
-				error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+				error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 				GMT->current.proj.lon0 = GMT->current.proj.pars[0];
 			}
 			if (txt_b[0]) {
-				error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+				error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 				GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			}
 			error += gmtinit_scale_or_width (GMT, txt_c, &GMT->current.proj.pars[2]);
@@ -3668,10 +3668,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_ECONIC:	/* Equidistant Conic */
 		case GMT_LAMBERT:	/* Lambert Conformal Conic */
 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_c, GMT_IS_LAT, &GMT->current.proj.pars[2]), txt_c);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_c, GMT_IS_LAT, &GMT->current.proj.pars[2]), txt_c);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
 			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4]);
 			error += !(n_slashes == 4 && n == 5);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
@@ -3721,13 +3721,13 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 						error++;
 					}
 					else
-						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 				}
 			}
 			error += (n != n_slashes + 1);
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_c, GMT_IS_LAT, &GMT->current.proj.pars[2]), txt_c);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_c, GMT_IS_LAT, &GMT->current.proj.pars[2]), txt_c);
 			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] > 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
 			error += (project == GMT_GNOMONIC && GMT->current.proj.pars[2] >= 90.0);
 			error += (project == GMT_ORTHO && GMT->current.proj.pars[2] >= 180.0);
@@ -3747,7 +3747,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 						error++;
 					}
 					else
-						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 					GMT->current.proj.pars[5] = 1.0;	/* flag for true scale case */
 				}
 				else if (n_slashes == 4) {
@@ -3758,7 +3758,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 						error++;
 					}
 					else
-						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 					GMT->current.proj.pars[5] = 1.0;	/* flag for true scale case */
 				}
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
@@ -3783,13 +3783,13 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 						error++;
 					}
 					else
-						error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
+						error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 				}
 			}
 			error += (n != n_slashes + 1);
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
 			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] >= 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
@@ -3860,12 +3860,12 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					error++;
 				}
 				else
-					error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
+					error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
 				if (error) gmt_message (GMT, "error in reading last lat value\n");
 			}
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
 			if (error) gmt_message (GMT, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
 			if (error) gmt_message (GMT, "error reading latitude '%s'\n", &(txt_arr[1][0]));
 
 			/* g_alt    GMT->current.proj.pars[4] = atof(txt_c); */
@@ -3874,7 +3874,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.g_radius = true;
 				txt_arr[2][nlen-1] = 0;
 			}
-			error += GMT_verify_expectations (GMT, GMT_IS_FLOAT, GMT_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
+			error += GMT_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
 			if (error) gmt_message (GMT, "error reading altitude '%s'\n", &(txt_arr[2][0]));
 
 			/* g_az    GMT->current.proj.pars[5] = atof(txt_d); */
@@ -3883,7 +3883,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.g_longlat_set = true;
 				txt_arr[3][nlen-1] = 0;
 			}
-			error += GMT_verify_expectations (GMT, GMT_IS_GEO, GMT_scanf (GMT, &(txt_arr[3][0]), GMT_IS_GEO, &GMT->current.proj.pars[5]), &(txt_arr[3][0]));
+			error += GMT_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[3][0]), GMT_IS_GEO, &GMT->current.proj.pars[5]), &(txt_arr[3][0]));
 			if (error) gmt_message (GMT, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
 
 			/* g_tilt    GMT->current.proj.pars[6] = atof(txt_e); */
@@ -3892,7 +3892,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				GMT->current.proj.g_longlat_set = true;
 				txt_arr[4][nlen-1] = 0;
 			}
-			error += GMT_verify_expectations (GMT, GMT_IS_GEO, GMT_scanf (GMT, &(txt_arr[4][0]), GMT_IS_GEO, &GMT->current.proj.pars[6]), &(txt_arr[4][0]));
+			error += GMT_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[4][0]), GMT_IS_GEO, &GMT->current.proj.pars[6]), &(txt_arr[4][0]));
 			if (error) gmt_message (GMT, "error reading tilt '%s'\n", &(txt_arr[4][0]));
 
 			if (n > 6) {
@@ -3902,17 +3902,17 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					GMT->current.proj.g_auto_twist = true;
 					txt_arr[5][nlen-1] = 0;
 				}
-				error += GMT_verify_expectations (GMT, GMT_IS_GEO, GMT_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
+				error += GMT_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
 				if (error) gmt_message (GMT, "error reading twist '%s'\n", &(txt_arr[5][0]));
 
 				/*g_width   GMT->current.proj.pars[8] = atof(txt_f); */
 				if (n > 7) {
-					error += GMT_verify_expectations (GMT, GMT_IS_GEO, GMT_scanf (GMT, &(txt_arr[6][0]), GMT_IS_GEO, &GMT->current.proj.pars[8]), &(txt_arr[6][0]));
+					error += GMT_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[6][0]), GMT_IS_GEO, &GMT->current.proj.pars[8]), &(txt_arr[6][0]));
 					if (error) gmt_message (GMT, "error reading width '%s'\n", &(txt_arr[6][0]));
 
 					if (n > 8) {
 						/* g_height  GMT->current.proj.pars[9] = atof(txt_g); */
-						error += GMT_verify_expectations (GMT, GMT_IS_GEO, GMT_scanf (GMT, &(txt_arr[7][0]), GMT_IS_GEO, &GMT->current.proj.pars[9]), &(txt_arr[7][0]));
+						error += GMT_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[7][0]), GMT_IS_GEO, &GMT->current.proj.pars[9]), &(txt_arr[7][0]));
 						if (error) gmt_message (GMT, "error height '%s'\n", &(txt_arr[7][0]));
 					}
 				}
@@ -3926,18 +3926,18 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.N_hemi = (strchr ("AB", GMT->common.J.string[1]) == NULL) ? true : false;	/* Upper case -JoA, -JoB allows S pole views */
 			if (n_slashes == 3) {
 				n = sscanf (args, "%[^/]/%[^/]/%lf/%s", txt_a, txt_b, &az, txt_e);
-				error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
-				error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+				error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+				error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
 				c = 10.0;	/* compute point 10 degrees from origin along azimuth */
 				GMT->current.proj.pars[2] = GMT->current.proj.pars[0] + atand (sind (c) * sind (az) / (cosd (GMT->current.proj.pars[1]) * cosd (c) - sind (GMT->current.proj.pars[1]) * sind (c) * cosd (az)));
 				GMT->current.proj.pars[3] = d_asind (sind (GMT->current.proj.pars[1]) * cosd (c) + cosd (GMT->current.proj.pars[1]) * sind (c) * cosd (az));
 			}
 			else if (n_slashes == 4) {
 				n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-				error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
-				error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-				error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
-				error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
+				error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+				error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+				error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
+				error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
 			}
 			error += gmtinit_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4]);
 			GMT->current.proj.pars[6] = 0.0;
@@ -3948,10 +3948,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying orgin and pole */
 			GMT->current.proj.N_hemi = (GMT->common.J.string[1] == 'C') ? true : false;	/* Upper case -JoA, -JoB allows S pole views */
 			n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-			error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
-			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
+			error += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
+			error += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
 			if (GMT->current.proj.pars[3] < 0.0) {	/* Flip from S hemisphere to N */
 				GMT->current.proj.pars[3] = -GMT->current.proj.pars[3];
 				GMT->current.proj.pars[2] += 180.0;
@@ -4637,7 +4637,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 	/* First the standard 35 PostScript fonts from Adobe */
 
 #ifndef HARDWIRE_GMTCONF 
-	GMT_getsharepath (GMT, "postscriptlight", "PSL_standard_fonts", ".txt", fullname, R_OK);
+	gmt_getsharepath (GMT, "postscriptlight", "PSL_standard_fonts", ".txt", fullname, R_OK);
 	if ((in = fopen (fullname, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -4661,7 +4661,7 @@ GMT_LOCAL int gmtinit_init_fonts (struct GMT_CTRL *GMT) {
 
 	/* Then any custom fonts */
 
-	if (GMT_getsharepath (GMT, "postscriptlight", "PSL_custom_fonts", ".txt", fullname, R_OK)) {	/* Decode Custom font file */
+	if (gmt_getsharepath (GMT, "postscriptlight", "PSL_custom_fonts", ".txt", fullname, R_OK)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -4717,7 +4717,7 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 	char line[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, media[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
-	GMT_getsharepath (GMT, "conf", "gmt_custom_media", ".conf", file, R_OK);
+	gmt_getsharepath (GMT, "conf", "gmt_custom_media", ".conf", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) return (0);
 
 	gmtinit_free_user_media (GMT);	/* Free any previously allocated user-specified media formats */
@@ -4764,7 +4764,7 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
 	sprintf (symbol, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
-	GMT_getsharepath (GMT, "postscriptlight", symbol, ".ps", line, R_OK);
+	gmt_getsharepath (GMT, "postscriptlight", symbol, ".ps", line, R_OK);
 	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -4990,11 +4990,11 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 	GMT_memset (months, 12, char *);
 
 	sprintf (line, "gmt_%s", GMT->current.setting.language);
-	GMT_getsharepath (GMT, "localization", line, ".locale", file, R_OK);
+	gmt_getsharepath (GMT, "localization", line, ".locale", file, R_OK);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load language %s - revert to us (English)!\n",
 		            GMT->current.setting.language);
-		GMT_getsharepath (GMT, "localization", "gmt_us", ".locale", file, R_OK);
+		gmt_getsharepath (GMT, "localization", "gmt_us", ".locale", file, R_OK);
 		if ((fp = fopen (file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -6523,7 +6523,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		for (icol = GMT_X; icol <= GMT_Y; icol++) {
 			if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-				got = GMT_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], &orig[icol]);
+				got = gmt_scanf_arg (GMT, X[icol], GMT->current.io.col_type[GMT_IN][icol], &orig[icol]);
 				if (got & GMT_IS_GEO)
 					GMT->current.io.col_type[GMT_IN][icol] = got;
 				else if (got & GMT_IS_RATIME)
@@ -6531,7 +6531,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			}
 			else {	/* Things are set, do or die */
 				expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
-				error += GMT_verify_expectations (GMT, expect_to_read, GMT_scanf (GMT, X[icol], expect_to_read, &orig[icol]), X[icol]);
+				error += GMT_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, X[icol], expect_to_read, &orig[icol]), X[icol]);
 			}
 		}
 		if (error) {
@@ -6562,10 +6562,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		}
 		GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
-		GMT_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_IN);
 		return (GMT_NOERROR);
 	}
-	if (!GMT_access (GMT, item, R_OK)) {	/* Gave a readable file, presumably a grid */
+	if (!gmt_access (GMT, item, R_OK)) {	/* Gave a readable file, presumably a grid */
 		struct GMT_GRID *G = NULL;
 		if ((G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, item, NULL)) == NULL) {	/* Read header */
 			return (GMT->parent->error);
@@ -6602,7 +6602,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 	}
 	else if ((item[0] == 'g' || item[0] == 'd') && n_slash == 3) {	/* Here we have a region appended to -Rd|g */
-		GMT_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_IN);
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
@@ -6633,7 +6633,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	col_type[0] = col_type[1] = 0;
 	if (string[length] == 'r') {
 		GMT->common.R.oblique = true;
-		string[strlen(string)-1] = '\0';	/* Remove the trailing r so GMT_scanf will work */
+		string[strlen(string)-1] = '\0';	/* Remove the trailing r so gmt_scanf will work */
 	}
 	else
 		GMT->common.R.oblique = false;
@@ -6656,7 +6656,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		if (inv_project)	/* input is distance units */
 			p[i] = atof (text);
 		else if (GMT->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
-			got = GMT_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], &p[i]);
+			got = gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][icol], &p[i]);
 			if (got & GMT_IS_GEO)
 				GMT->current.io.col_type[GMT_IN][icol] = got;
 			else if (got & GMT_IS_RATIME)
@@ -6664,7 +6664,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		}
 		else {	/* Things are set, do or die */
 			expect_to_read = (GMT->current.io.col_type[GMT_IN][icol] & GMT_IS_RATIME) ? GMT_IS_ARGTIME : GMT->current.io.col_type[GMT_IN][icol];
-			error += GMT_verify_expectations (GMT, expect_to_read, GMT_scanf (GMT, text, expect_to_read, &p[i]), text);
+			error += GMT_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, text, expect_to_read, &p[i]), text);
 		}
 		if (error) return (error);
 
@@ -7018,7 +7018,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 		return (1);
 	}
 
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* -g gap checking implies -mo if not already set */
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* -g gap checking implies -mo if not already set */
 
 	if (txt[0] == 'a') {	/* For multiple criteria, specify that all criteria be met [default is any] */
 		k++;
@@ -7782,7 +7782,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				double inc[2];
 				i = sscanf (lower_value, "%[^/]/%s", txt_a, txt_b);
 				if (i != 2) error = true;
-				error = GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
+				error = GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
 				if (GMT_getinc (GMT, txt_b, inc)) error = true;
 				GMT->current.setting.map_polar_cap[1] = inc[GMT_X];
 			}
@@ -9804,7 +9804,7 @@ void gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 
 	if (this_file)	/* Defaults file is specified */
 		gmt_loaddefaults (GMT, this_file);
-	else if (GMT_getuserpath (GMT, "gmt.conf", file))
+	else if (gmt_getuserpath (GMT, "gmt.conf", file))
 		gmt_loaddefaults (GMT, file);
 }
 
@@ -10030,7 +10030,7 @@ int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 		/* Try to open as file first in (1) current dir, then in (2) $GMT->session.SHAREDIR */
 
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Assigning PROJ_ELLIPSOID a file name is deprecated, use <a>,<inv_f> instead");
-		GMT_getsharepath (GMT, NULL, name, "", path, R_OK);
+		gmt_getsharepath (GMT, NULL, name, "", path, R_OK);
 
 		if ((fp = fopen (name, "r")) != NULL || (fp = fopen (path, "r")) != NULL) {
 			/* Found file, now get parameters */
@@ -10162,7 +10162,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
-	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
+	gmt_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
@@ -10222,8 +10222,8 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 	}
 
 	/* GMT_IO */
-	Csave->current.io.OGR = GMT_duplicate_ogr (GMT, GMT->current.io.OGR);	/* Duplicate OGR struct, if set */
-	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
+	Csave->current.io.OGR = gmt_duplicate_ogr (GMT, GMT->current.io.OGR);	/* Duplicate OGR struct, if set */
+	gmt_free_ogr (GMT, &(GMT->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
 
 	GMT_memset (Csave->current.io.o_format, GMT_MAX_COLUMNS, char *);
 	for (i = 0; i < GMT_MAX_COLUMNS; i++)
@@ -10304,7 +10304,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 
 	/* GMT_IO */
 
-	GMT_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
+	gmt_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
 	GMT_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmtinit_reset_colformats (GMT);			/* Wipe previous settings */
 
@@ -11860,7 +11860,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
 	PSL_setdefaults (GMT->PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 
-	GMT_io_init (GMT);		/* Init the table i/o structure before parsing GMT defaults */
+	gmt_io_init (GMT);		/* Init the table i/o structure before parsing GMT defaults */
 
 	gmtinit_init_unit_conversion (GMT);	/* Set conversion factors from various units to meters */
 
@@ -11875,7 +11875,7 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	sprintf (path, "%s/conf/gmt.conf", GMT->session.SHAREDIR);
 	if (access (path, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
-		if (GMT_getuserpath (GMT, "conf/gmt.conf", path) == NULL) {
+		if (gmt_getuserpath (GMT, "conf/gmt.conf", path) == NULL) {
 			GMT_Message (API, GMT_TIME_NONE, "Error: Could not find system defaults file %s - Aborting.\n", path);
 			gmtinit_free_GMT_ctrl (GMT);	/* Deallocate control structure */
 			return NULL;
@@ -11890,8 +11890,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 
 	/* There is no longer a -m option in GMT 5 so multi segments are now always true.
 	   However, in GMT_COMPAT mode the -mi and -mo options WILL turn off multi in the other direction. */
-	GMT_set_segmentheader (GMT, GMT_IN, true);
-	GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Will be turned true when either of two situation arises: */
+	gmt_set_segmentheader (GMT, GMT_IN, true);
+	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Will be turned true when either of two situation arises: */
 	/* 1. We read a multisegment header
 	   2. The -g option is set which will create gaps and thus multiple segments
 	 */
@@ -11939,11 +11939,11 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	if (file[0] == '=') k = 1;	/* Gave a list of files with =<filelist> mechanism in x2sys */
 	if (family == GMT_IS_GRID || family == GMT_IS_IMAGE)	/* Only grid and images can be URLs so far */
 		not_url = !gmt_check_url_name (&file[k]);
-	if (GMT_access (GMT, &file[k], F_OK) && not_url) {	/* Cannot find the file anywhere GMT looks */
+	if (gmt_access (GMT, &file[k], F_OK) && not_url) {	/* Cannot find the file anywhere GMT looks */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No such file (%s)\n", message, &file[k]);
 		return false;	/* Could not find this file */
 	}
-	if (GMT_access (GMT, &file[k], R_OK) && not_url) {	/* Cannot read this file (permissions?) */
+	if (gmt_access (GMT, &file[k], R_OK) && not_url) {	/* Cannot read this file (permissions?) */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: Cannot read file (%s) - check permissions\n", message, &file[k]);
 		return false;	/* Could not find this file */
 	}

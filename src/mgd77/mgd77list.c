@@ -448,7 +448,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->D.mode = true;
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
+						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -457,7 +457,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->D.mode = true;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
+						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -1061,7 +1061,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 		if (n_paths > 1) {	/* Write segment header between each cruise */
 			sprintf (GMT->current.io.segment_header, "%s\n", list[argno]);
-			GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
+			gmt_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
 		}
 		aux_dvalue[MGD77_AUX_DS] = cumulative_dist = ds = 0.0;
 		if (auxlist[MGD77_AUX_ID].requested) strncpy (aux_tvalue[MGD77_AUX_ID], M.NGDC_id, GMT_LEN64);
@@ -1441,7 +1441,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 						if (aux[kx].text)
 							fprintf (GMT->session.std[GMT_OUT], "%s", aux_tvalue[aux[kx].type]);
 						else
-							GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], aux_dvalue[aux[kx].type], pos);
+							gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], aux_dvalue[aux[kx].type], pos);
 						if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 						kx++, pos++;
 					}
@@ -1461,11 +1461,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 							date = MGD77_utime2time (GMT, &M, dvalue[t_col][rec]);
 						else
 							date = dvalue[t_col][rec];
-						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], date, pos);
+						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], date, pos);
 					}
 					else {
 						correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[argno][kk].term, dvalue, aux_dvalue, rec) : 0.0;
-						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dvalue[kk][rec] - correction, pos);
+						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dvalue[kk][rec] - correction, pos);
 					}
 					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				}

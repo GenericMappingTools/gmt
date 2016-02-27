@@ -432,7 +432,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 	                                "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition(GMT, Ctrl->H.got_maggrid && !Ctrl->H.magfile,
 	                                "Syntax error -H+m option: Must specify source file\n");
-	n_errors += GMT_check_condition(GMT, Ctrl->F.active && GMT_access(GMT, Ctrl->F.file, R_OK),
+	n_errors += GMT_check_condition(GMT, Ctrl->F.active && gmt_access(GMT, Ctrl->F.file, R_OK),
 	                                "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
 	i += GMT_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 
@@ -969,7 +969,7 @@ L1:
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) 	/* Establishes data output */
 			Return (API->error);
 
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK)
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK)
 			Return (API->error);
 
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) 	/* Enables data output and sets access mode */

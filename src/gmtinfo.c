@@ -87,7 +87,7 @@ GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double 
 
 	int k;
 
-	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
+	gmt_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	for (k = 0; text[k] && text[k] == ' '; k++);
 	return (k);	/* This is the position in text that we should start reporting from */
 }
@@ -341,7 +341,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 	o_mode = (Ctrl->C.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
@@ -385,7 +385,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			
 			do_report = true;
  			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must finalize longitudes first */
-				j = GMT_quad_finalize (GMT, &Q[col]);
+				j = gmt_quad_finalize (GMT, &Q[col]);
 				GMT->current.io.geo.range = Q[col].range[j];		/* Override this setting explicitly */
 				xyzmin[col] = Q[col].min[j];	xyzmax[col] = Q[col].max[j];
 			}
@@ -475,7 +475,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (GMT->common.b.active[GMT_IN]) {	/* Make ASCII record */
 					GMT_memset (chosen, GMT_BUFSIZ, char);
 					for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
-						GMT_add_to_record (GMT, chosen, dchosen[col], col, sep);
+						gmt_add_to_record (GMT, chosen, dchosen[col], col, sep);
 						sep = 1;
 					}
 				}
@@ -520,10 +520,10 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 					else {
 						if (brackets) strcat (record, "<");
-						GMT_ascii_format_col (GMT, buffer, low, GMT_OUT, col);
+						gmt_ascii_format_col (GMT, buffer, low, GMT_OUT, col);
 						strcat (record, buffer);
 						strcat (record, delimeter);
-						GMT_ascii_format_col (GMT, buffer, high, GMT_OUT, col);
+						gmt_ascii_format_col (GMT, buffer, high, GMT_OUT, col);
 						strcat (record, buffer);
 						if (brackets) strcat (record, ">");
 						if (col < (ncol - 1)) strcat (record, "\t");
@@ -542,7 +542,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;
 			}
-			GMT_quad_reset (GMT, Q, ncol);
+			gmt_quad_reset (GMT, Q, ncol);
 			n = 0;
 			file[0] = '\0';
 			fixed_phase[GMT_X] = fixed_phase[GMT_Y] = 1;	/* Get ready for next batch */
@@ -554,7 +554,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		
 		if (first_data_record) {	/* First time we read data, we must allocate arrays based on the number of columns */
 
-			ncol = GMT_get_cols (GMT, GMT_IN);
+			ncol = gmt_get_cols (GMT, GMT_IN);
 			if (Ctrl->E.active) {
 				if (Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
 				if (GMT->common.b.active[GMT_IN]) dchosen = GMT_memory (GMT, NULL, ncol, double);
@@ -577,7 +577,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 
 			/* Now we know number of columns, so allocate memory */
 
-			Q = GMT_quad_init (GMT, ncol);
+			Q = gmt_quad_init (GMT, ncol);
 			xyzmin = GMT_memory (GMT, NULL, ncol, double);
 			xyzmax = GMT_memory (GMT, NULL, ncol, double);
 
@@ -588,7 +588,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			n = 0;
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
-			if (Ctrl->C.active && (error = GMT_set_cols (GMT, GMT_OUT, 2*ncol)) != 0) Return (error);
+			if (Ctrl->C.active && (error = gmt_set_cols (GMT, GMT_OUT, 2*ncol)) != 0) Return (error);
 		}
 
 		/* Process all columns and update the corresponding minmax arrays */
@@ -617,7 +617,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (GMT_is_dnan (in[col])) continue;	/* We always skip NaNs */
 				if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Longitude requires more work */
 					/* We must keep separate min/max for both Dateline and Greenwich conventions */
-					GMT_quad_add (GMT, &Q[col], in[col]);
+					gmt_quad_add (GMT, &Q[col], in[col]);
 				}
 				else if ((col == 0 && Ctrl->S.xbar) || (col == 1 && Ctrl->S.ybar)) {
 					/* Add/subtract value from error bar column */

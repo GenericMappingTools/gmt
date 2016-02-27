@@ -234,18 +234,18 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 
-	if (GMT_access (GMT, Ctrl->In.file, F_OK)) {
+	if (gmt_access (GMT, Ctrl->In.file, F_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
-	if ((fp = GMT_fopen (GMT, Ctrl->In.file, "rb")) == NULL ) {
+	if ((fp = gmt_fopen (GMT, Ctrl->In.file, "rb")) == NULL ) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	GMT_set_geographic (GMT, GMT_IN);
-	GMT_set_geographic (GMT, GMT_OUT);
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	gmt_set_geographic (GMT, GMT_IN);
+	gmt_set_geographic (GMT, GMT_OUT);
 	if (Ctrl->G.active) {
 		marker = GMT->current.setting.io_seg_marker[GMT_OUT];
 		GMT->current.setting.io_seg_marker[GMT_OUT] = '%';
@@ -257,7 +257,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		dim[GMT_ROW] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
-			GMT_fclose (GMT, fp);
+			gmt_fclose (GMT, fp);
 			return (API->error);
 		}
 	}
@@ -265,7 +265,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		dim[GMT_SEG] = n_alloc = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
-			GMT_fclose (GMT, fp);
+			gmt_fclose (GMT, fp);
 			return (API->error);
 		}
 	}
@@ -344,10 +344,10 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 
 		/* Format w/e/s/n for header according to users format choice */
-		GMT_ascii_format_col (GMT, west,  w, GMT_OUT, GMT_X);
-		GMT_ascii_format_col (GMT, east,  e, GMT_OUT, GMT_X);
-		GMT_ascii_format_col (GMT, south, s, GMT_OUT, GMT_Y);
-		GMT_ascii_format_col (GMT, north, n, GMT_OUT, GMT_Y);
+		gmt_ascii_format_col (GMT, west,  w, GMT_OUT, GMT_X);
+		gmt_ascii_format_col (GMT, east,  e, GMT_OUT, GMT_X);
+		gmt_ascii_format_col (GMT, south, s, GMT_OUT, GMT_Y);
+		gmt_ascii_format_col (GMT, north, n, GMT_OUT, GMT_Y);
 		
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
@@ -373,7 +373,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			else
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			/* Allocate h.n number of data records */
-			GMT_alloc_segment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
+			gmt_alloc_segment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct GSHHG_POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
@@ -392,7 +392,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
 		n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);	/* Get the next GSHHG header */
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */

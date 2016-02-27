@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 					if (Ctrl->A.years)
 						Ctrl->A.time = atof (tfixed);
 					else
-						GMT_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, &Ctrl->A.time);
+						gmt_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, &Ctrl->A.time);
 				}
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
@@ -550,7 +550,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args) {
 	}
 	n_out = n_field_components + ((Ctrl->copy_input) ? (unsigned int)Din->n_columns : 0);
 	if (cm4_igrf_T) n_out -= 2;	/* Decrease by 2 because the x,y,z were imposed internaly only. i.e not for output */
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 		Return (error);
 	}
 

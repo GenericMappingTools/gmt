@@ -178,9 +178,9 @@ GMT_LOCAL void reset_coltype (struct GMT_CTRL *GMT, char *Rarg) {
 	if (!Rarg || (last = strlen (Rarg) == 0)) return;	/* Unable to do anything */
 	last--;	/* Index of last character in Rarg */
 	if (strchr (Rarg, ':') || strchr ("WESN", Rarg[last]))
-		GMT_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_IN);
 	else	/* Treat as Cartesian */
-		GMT_set_cartesian (GMT, GMT_IN);
+		gmt_set_cartesian (GMT, GMT_IN);
 }
 
 GMT_LOCAL unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
@@ -232,9 +232,9 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 
 	/* Find and open the file grdraster.info */
 
-	if (!GMT_access (GMT, file, R_OK))	/* Found in current directory */
+	if (!gmt_access (GMT, file, R_OK))	/* Found in current directory */
 		ptr = file;
-	else if (GMT_getdatapath (GMT, file, path, F_OK) || GMT_getsharepath (GMT, "dbase", file, "", path, F_OK))
+	else if (gmt_getdatapath (GMT, file, path, F_OK) || gmt_getsharepath (GMT, "dbase", file, "", path, F_OK))
 		ptr = path;	/* Found it in the data or share path/dbase directory */
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Error: Unable to find file %s.\n", file);
@@ -580,7 +580,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 					expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
 				else
 					expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
-				if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path, F_OK) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path, F_OK)) {
+				if (gmt_getdatapath (GMT, rasinfo[nfound].h.remark, path, F_OK) || gmt_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path, F_OK)) {
 					strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160-1);
 					stat (path, &F);
 				}
@@ -774,8 +774,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	/* Hardwire a -fg setting since this is geographic data */
-	GMT_set_geographic (GMT, GMT_IN);
-	GMT_set_geographic (GMT, GMT_OUT);
+	gmt_set_geographic (GMT, GMT_IN);
+	gmt_set_geographic (GMT, GMT_OUT);
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
@@ -854,12 +854,12 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
 	if (myras.geo) {
-		GMT_set_geographic (GMT, GMT_IN);
-		GMT_set_geographic (GMT, GMT_OUT);
+		gmt_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_OUT);
 	}
 	else {
-		GMT_set_cartesian (GMT, GMT_IN);
-		GMT_set_cartesian (GMT, GMT_OUT);
+		gmt_set_cartesian (GMT, GMT_IN);
+		gmt_set_cartesian (GMT, GMT_OUT);
 	}
 
 	/* Everything looks OK so far.  If (Ctrl->I.active) verify that it will work, else set it.  */
@@ -975,7 +975,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) x[col] = GMT_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
@@ -1000,7 +1000,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* Now open file and do it */
 
-	if ( (fp = GMT_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
+	if ( (fp = gmt_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR opening %s for read.\n", myras.h.remark);
 		Return (EXIT_FAILURE);
 	}
@@ -1015,7 +1015,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		if ( (GMT_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			GMT_free (GMT, ubuffer);
-			GMT_fclose (GMT, fp);
+			gmt_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
 		}
 		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
@@ -1079,13 +1079,13 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				/* This will be slow on SGI because seek is broken there */
 				if (jseek && fseek (fp, (off_t)jseek * (off_t)ksize * (off_t)myras.h.nx, SEEK_CUR) ) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR seeking in %s\n", myras.h.remark);
-					GMT_fclose (GMT, fp);
+					gmt_fclose (GMT, fp);
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
 				if ((GMT_fread (buffer, ksize, n_expected, fp)) != n_expected) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR reading in %s\n", myras.h.remark);
-					GMT_fclose (GMT, fp);
+					gmt_fclose (GMT, fp);
 					GMT_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
@@ -1136,7 +1136,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		GMT_free (GMT, buffer);
 		GMT_free (GMT, floatrasrow);
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Finished reading from %s\n", myras.h.remark);
 	GMT_Report (API, GMT_MSG_VERBOSE, "min max and # NaN found: %g %g %" PRIu64 "\n", Grid->header->z_min, Grid->header->z_max, n_nan);

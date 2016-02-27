@@ -390,7 +390,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 3)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->S.n_items + 3)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -448,7 +448,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			switch (Ctrl->S.mode[k]) {
 				case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
 					value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, false) - 90.0;
-					GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
+					gmt_lon_range_adjust (GMT->current.io.geo.range, &value);
 					break;
 				case PM_DIST:	/* Compute great-circle distance between node and point of origin at ridge */
 					if (!spotted) {

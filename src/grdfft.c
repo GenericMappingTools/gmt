@@ -371,7 +371,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 		}
 	}
 
-	GMT_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
+	gmt_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
 
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
 	powfactor = 4.0 / pow ((double)GridX->header->size, 2.0);	/* Squared normalization of FFT */

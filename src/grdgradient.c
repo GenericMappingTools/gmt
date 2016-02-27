@@ -266,8 +266,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 					/* But since GMT_parse_f_option is private to gmt_init and all it does */
 					/* in this case are 2 lines below we code it here */
 					if (!strcmp (GMT->common.n.BC, "g")) {
-						GMT_set_geographic (GMT, GMT_IN);
-						GMT_set_geographic (GMT, GMT_OUT);
+						gmt_set_geographic (GMT, GMT_IN);
+						gmt_set_geographic (GMT, GMT_OUT);
 					}
 				}
 				else

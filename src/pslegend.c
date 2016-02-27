@@ -420,7 +420,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
 				line = In->table[tbl]->segment[seg]->record[row];
-				if (line[0] == '#' || GMT_is_a_blank_line (line)) continue;	/* Skip all headers or blank lines  */
+				if (line[0] == '#' || gmt_is_a_blank_line (line)) continue;	/* Skip all headers or blank lines  */
 
 				/* Data record to process */
 
@@ -470,7 +470,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'I':	/* Image record [use GMT_psimage] */
 						sscanf (&line[2], "%s %s %s", image, size, key);
-						if (GMT_getdatapath (GMT, image, path, R_OK) == NULL) {
+						if (gmt_getdatapath (GMT, image, path, R_OK) == NULL) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
 							continue;
 						}
@@ -653,7 +653,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
 			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
 				line = In->table[tbl]->segment[seg]->record[row];
-				if (line[0] == '#' || GMT_is_a_blank_line (line)) continue;	/* Skip all headers */
+				if (line[0] == '#' || gmt_is_a_blank_line (line)) continue;	/* Skip all headers */
 
 				/* Data record to process */
 
@@ -794,7 +794,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'I':	/* Image record [use GMT_psimage]: I imagefile width justification */
 						sscanf (&line[2], "%s %s %s", image, size, key);
-						if (GMT_getdatapath (GMT, image, path, R_OK) == NULL) {
+						if (gmt_getdatapath (GMT, image, path, R_OK) == NULL) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", image);
 							Return (EXIT_FAILURE);
 						}

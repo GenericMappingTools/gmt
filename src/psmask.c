@@ -666,7 +666,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != 0) Return (error);
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != 0) Return (error);
 	}
 	
 	if (make_plot) {
@@ -724,7 +724,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
-		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -867,7 +867,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			GMT_free (GMT, x);
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
-				if (n_seg > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Set -mo if > 1 segment */
+				if (n_seg > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Set -mo if > 1 segment */
 				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 					Return (API->error);

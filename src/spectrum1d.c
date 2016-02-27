@@ -304,7 +304,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 		switch (col[j]) {
 		case 'x':		/* write x power [ B&P 2nd Ed. eqn. 9.32 ] */
 			sprintf (fname, "%s.xpower", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -315,12 +315,12 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = eps_pow * C->spec[i].xpow;
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 
 		case 'y':		/* Write y power [ B&P 2nd Ed. eqn. 9.32 ] */
 			sprintf (fname, "%s.ypower", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -331,11 +331,11 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = eps_pow * C->spec[i].ypow;
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 		case 'c':		/* Write Coherent Output power [ B&P 2nd Ed. eqn. 9.71 ] */
 			sprintf (fname, "%s.cpower", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -346,11 +346,11 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = out[GMT_Y] * eps_pow * sqrt ( (2.0 - C->spec[i].coh) / C->spec[i].coh);
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 		case 'n':		/* Write Noise Output power [ B&P 2nd Ed. eqn. 9.73 & Table 9.6 ] */
 			sprintf (fname, "%s.npower", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -361,11 +361,11 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = out[GMT_Y] * eps_pow;
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 		case 'g':		/* Write Gain spectrum [ B&P 2nd Ed. eqn. 9.90 & Table 9.6 ] */
 			sprintf (fname, "%s.gain", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -376,7 +376,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = out[GMT_Y] * eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 		case 'a':		/* Write Real Admittance spectrum
 			We don't know the correct error estimate and it is not
@@ -388,7 +388,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			that for the gain spectrum:
 			*/
 			sprintf (fname, "%s.admit", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, "w")) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, "w")) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -399,11 +399,11 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = fabs (eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) ) * out[GMT_Y]);
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 		case 'p':		/* Write Phase spectrum [ B&P 2nd Ed. eqn. 9.91 & Table 9.6 ] */
 			sprintf (fname, "%s.phase", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
@@ -414,10 +414,10 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = eps_pow * sqrt( (1.0 - C->spec[i].coh) / (2.0 * C->spec[i].coh) );
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 		case 'o':		/* Write Coherency spectrum [ B&P 2nd Ed. eqn. 9.82 ] */
 			sprintf (fname, "%s.coh", namestem);
-			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
+			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				GMT_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
@@ -429,7 +429,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				out[GMT_Z] = out[GMT_Y] * eps_pow * (1.0 - C->spec[i].coh) * sqrt(2.0 / C->spec[i].coh);
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
-			GMT_fclose (GMT, fpout);
+			gmt_fclose (GMT, fpout);
 			break;
 		}
 	}
@@ -720,7 +720,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 		Ctrl->C.active = true;
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -744,8 +744,8 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (!Ctrl->T.active) {
-			GMT_free_table (GMT, Dout->table[tbl], Dout->alloc_mode);	/* Free it, then allocate separately */
-			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, C.n_spec, n_cols_tot, false);
+			gmt_free_table (GMT, Dout->table[tbl], Dout->alloc_mode);	/* Free it, then allocate separately */
+			Dout->table[tbl] = Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, C.n_spec, n_cols_tot, false);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -758,7 +758,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 
 			if (!Ctrl->T.active) {
 				Sout = Tout->segment[seg];	/* Current output segment */
-				GMT_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, false);
+				gmt_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, false);
 				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
 			}
 			if (Ctrl->N.mode == 0) {	/* Write separate tables */

@@ -92,7 +92,7 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 
-	GMT_set_seg_minmax (GMT, P);	/* Set the domain of the segment */
+	gmt_set_seg_minmax (GMT, P);	/* Set the domain of the segment */
 
 	/* Then loop over points to accumulate sums */
 
@@ -332,7 +332,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
 			struct GMT_DATASET *Nin = NULL;
 			struct GMT_DATATABLE *NTable = NULL;
-			if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 				Return (error);
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Read Nodes from %s ...", Ctrl->N.file);
@@ -372,7 +372,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	}
 	else {	/* Must process input point/line data */
 		n_in = (Ctrl->E.mode == SPHD_VALUES) ? 3 : 2;
-		if ((error = GMT_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */

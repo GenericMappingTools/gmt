@@ -354,7 +354,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		if (spotter_GPlates_pair (opt->arg)) {	/* A GPlates plate pair to look up in the rotation table */
 			online_rot = false;
 		}
-		else if (GMT_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
+		else if (gmt_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
@@ -428,7 +428,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	if (a[0].has_cov) n_out += 9;
 	if (Ctrl->G.active) n_out = 6;
 	
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 		GMT_free (GMT, a);
 		Return (error);
 	}

@@ -270,7 +270,7 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 
 	F->n_MGD77_paths = 0;
 
-	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
+	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Path file %s for MGD77 files not found.\n", file);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Will only look in current directory and %s for such files.\n", F->MGD77_HOME);
 		F->MGD77_datadir = GMT_memory (GMT, NULL, 1, char *);
@@ -281,7 +281,7 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 	}
 
 	F->MGD77_datadir = GMT_memory (GMT, NULL, n_alloc, char *);
-	while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;    /* Blank line, \n included in count */
 #ifdef WIN32
@@ -297,7 +297,7 @@ static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *
 			F->MGD77_datadir = GMT_memory (GMT, F->MGD77_datadir, n_alloc, char *);
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	F->MGD77_datadir = GMT_memory (GMT, F->MGD77_datadir, F->n_MGD77_paths, char *);
 }
 
@@ -1478,7 +1478,7 @@ static int MGD77_Write_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTR
 			fprintf (F->fp, "%s", MGD77Record->word[nwords++]);
 		}
 		else
-			GMT_ascii_output_col (GMT, F->fp, MGD77Record->number[k++], GMT_Z);
+			gmt_ascii_output_col (GMT, F->fp, MGD77Record->number[k++], GMT_Z);
 		if (i < (MGD77_N_DATA_FIELDS-1)) fprintf (F->fp, "%s", GMT->current.setting.io_col_separator);
 	}
 	fprintf (F->fp, "\n");
@@ -4082,18 +4082,18 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 
 	if (flist) {	/* Just read and return the list of files in the given file list; skip leading = in filename */
 		FILE *fp = NULL;
-		if ((fp = GMT_fopen (GMT, flist, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, flist, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Unable to open file list %s\n", flist);
 			return (-1);
 		}
-		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 			GMT_chop (line);	/* Get rid of CR/LF issues */
 			if (line[0] == '#' || line[0] == '>' || (length = strlen (line)) == 0) continue;	/* Skip comments and blank lines */
 			if (n == n_alloc) L = GMT_memory (GMT, L, n_alloc += GMT_CHUNK, char *);
 			L[n] = GMT_memory (GMT, NULL, length + 1, char);
 			strcpy (L[n++], line);
 		}
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 	}
 
 	for (opt = options; opt; opt = opt->next) {
@@ -4404,7 +4404,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 
 	/* Read the correction table */
 
-	GMT_getsharepath (GMT, "mgg", "carter", ".d", buffer, R_OK);
+	gmt_getsharepath (GMT, "mgg", "carter", ".d", buffer, R_OK);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
  		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Cannot open r %s\n", buffer);
                 return (-1);
@@ -5457,7 +5457,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	char **list = NULL;
 	FILE *fp = NULL;
 
-	if ((fp = GMT_fopen (GMT, tablefile, "r")) == NULL) {
+	if ((fp = gmt_fopen (GMT, tablefile, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table %s not found!\n", tablefile);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
@@ -5466,7 +5466,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 
 	sorted = (mode & 1);	/* true if we pass a sorted trackname list */
 
-	while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
 		GMT_chop (line);	/* Deal with CR/LF issues */
@@ -5506,7 +5506,7 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 			}
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	if (n_list) {
 		list = GMT_memory (GMT, list, n_list, char *);
 		*item_names = list;
@@ -5579,7 +5579,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 		"ngdcid",
 	};
 
-	if ((fp = GMT_fopen (GMT, tablefile, "r")) == NULL) {
+	if ((fp = gmt_fopen (GMT, tablefile, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table %s not found!\n", tablefile);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
@@ -5593,7 +5593,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 	C_table = GMT_memory (GMT, NULL, n_cruises, struct MGD77_CORRTABLE *);
 	for (pos = 0; pos < n_cruises; pos++) C_table[pos] = GMT_memory (GMT, NULL, MGD77_SET_COLS, struct MGD77_CORRTABLE);
 
-	while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		rec++;
 		if (line[0] == '#' || line[0] == '\0') continue;
 		GMT_chop (line);	/* Deal with CR/LF issues */
@@ -5664,7 +5664,7 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 			previous = &((*previous)->next);	/* Get to end of list */
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	*CORR = C_table;
 	
@@ -5837,11 +5837,11 @@ void MGD77_CM4_init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77
 	MGD77_Set_Home (GMT, F);
 
 	GMT_memset (CM4, 1, struct MGD77_CM4);	/* All is set to 0/false */
-	GMT_getsharepath (GMT, "mgd77", "umdl", ".CM4", file, R_OK);
+	gmt_getsharepath (GMT, "mgd77", "umdl", ".CM4", file, R_OK);
 	CM4->CM4_M.path = strdup (file);
-	GMT_getsharepath (GMT, "mgd77", "Dst_all", ".wdc", file, R_OK);
+	gmt_getsharepath (GMT, "mgd77", "Dst_all", ".wdc", file, R_OK);
 	CM4->CM4_D.path = strdup (file);
-	GMT_getsharepath (GMT, "mgd77", "F107_mon", ".plt", file, R_OK);
+	gmt_getsharepath (GMT, "mgd77", "F107_mon", ".plt", file, R_OK);
 	CM4->CM4_I.path = strdup (file);
 	CM4->CM4_D.index = true;
 	CM4->CM4_D.load = true;

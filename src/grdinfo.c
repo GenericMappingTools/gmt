@@ -277,7 +277,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, o_type, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if (n_cols && (error = GMT_set_cols (GMT, GMT_OUT, n_cols)) != 0) Return (error);	/* Set number of output columns */
+	if (n_cols && (error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != 0) Return (error);	/* Set number of output columns */
 	
 	for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 
@@ -288,7 +288,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		GMT_gdal_librarified(GMT, opt->arg, Ctrl->G.opts);
 #endif
 
-		GMT_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
+		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
 
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
@@ -390,34 +390,34 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 		if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ORIG) {
 			sprintf (record, "-R");
-			GMT_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		} else if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_INCREMENTS) {
 			sprintf (record, "-I");
-			GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-			GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Z);	strcat (record, text);
+			gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Z);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		} else if (Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_BOUNDBOX) {
 			sprintf (record, "> Bounding box for %s", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			/* LL */
-			GMT_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			/* LR */
-			GMT_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+			gmt_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text,   G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			/* UR */
-			GMT_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			gmt_ascii_format_col (GMT, record, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			/* UL */
-			GMT_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			gmt_ascii_format_col (GMT, record, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text,   G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		} else if (Ctrl->C.active && !Ctrl->I.active) {
 			if (API->mode) {	/* External interface, return as data with no leading text */
@@ -444,35 +444,35 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			else {	/* Command-line usage */
 				sprintf (record, "%s%s", G->header->name, sep);
-				GMT_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->z_min, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->z_min, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
+				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, (double)G->header->nx, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
-				GMT_ascii_format_col (GMT, text, (double)G->header->ny, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, (double)G->header->nx, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
+				gmt_ascii_format_col (GMT, text, (double)G->header->ny, GMT_OUT, GMT_Z);	strcat (record, text);
 
 				if (Ctrl->M.active) {
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
 				}
 				if (Ctrl->L.norm & 1) {
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text, median, GMT_OUT, GMT_Z);	strcat (record, text);
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text,  scale, GMT_OUT, GMT_Z);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text, median, GMT_OUT, GMT_Z);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text,  scale, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
 				if (Ctrl->L.norm & 2) {
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text,  mean, GMT_OUT, GMT_Z);	strcat (record, text);
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text, stdev, GMT_OUT, GMT_Z);	strcat (record, text);
-					strcat (record, sep);	GMT_ascii_format_col (GMT, text,   rms, GMT_OUT, GMT_Z);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text,  mean, GMT_OUT, GMT_Z);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text, stdev, GMT_OUT, GMT_Z);	strcat (record, text);
+					strcat (record, sep);	gmt_ascii_format_col (GMT, text,   rms, GMT_OUT, GMT_Z);	strcat (record, text);
 				}
 				if (Ctrl->M.active) { sprintf (text, "%s%" PRIu64, sep, n_nan);	strcat (record, text); }
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
@@ -521,20 +521,20 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			else {
 				sprintf (record, "%s: x_min: ", G->header->name);
-				GMT_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " x_max: ");
-				GMT_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
-				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_X], GMT_OUT, GMT_X);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, " x_inc: ");	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->x_units);
 				sprintf (text, " nx: %d", G->header->nx);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 				sprintf (record, "%s: y_min: ", G->header->name);
-				GMT_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " y_max: ");
-				GMT_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
-				GMT_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
+				gmt_ascii_format_col (GMT, text, G->header->wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, G->header->inc[GMT_Y], GMT_OUT, GMT_Y);
 				if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 				strcat (record, " y_inc: ");	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->y_units);
@@ -546,17 +546,17 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 				if (z_min == DBL_MAX) z_min = GMT->session.d_NaN;
 				if (z_max == -DBL_MAX) z_max = GMT->session.d_NaN;
 				sprintf (record, "%s: z_min: ", G->header->name);
-				GMT_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, z_min, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " at x = ");
-				GMT_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, x_min, GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " y = ");
-				GMT_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, y_min, GMT_OUT, GMT_Y);	strcat (record, text);
 				strcat (record, " z_max: ");
-				GMT_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, z_max, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " at x = ");
-				GMT_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, x_max, GMT_OUT, GMT_X);	strcat (record, text);
 				strcat (record, " y = ");
-				GMT_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, y_max, GMT_OUT, GMT_Y);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 			else if (Ctrl->F.active) {
@@ -566,9 +566,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			else {
 				sprintf (record, "%s: z_min: ", G->header->name);
-				GMT_ascii_format_col (GMT, text, G->header->z_min, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, G->header->z_min, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " z_max: ");
-				GMT_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, G->header->z_max, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " name: ");	strcat (record, G->header->z_units);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
@@ -593,18 +593,18 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->L.norm & 1) {
 				sprintf (record, "%s: median: ", G->header->name);
-				GMT_ascii_format_col (GMT, text, median, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, median, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " scale: ");
-				GMT_ascii_format_col (GMT, text, scale, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, scale, GMT_OUT, GMT_Z);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 			if (Ctrl->L.norm & 2) {
 				sprintf (record, "%s: mean: ", G->header->name);
-				GMT_ascii_format_col (GMT, text, mean, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, mean, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " stdev: ");
-				GMT_ascii_format_col (GMT, text, stdev, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, stdev, GMT_OUT, GMT_Z);	strcat (record, text);
 				strcat (record, " rms: ");
-				GMT_ascii_format_col (GMT, text, rms, GMT_OUT, GMT_Z);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, rms, GMT_OUT, GMT_Z);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 			if (strspn(GMT->session.grdformat[G->header->type], "nc") != 0) {
@@ -666,12 +666,12 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		}
 		else {	/* Command-line usage */
 			sprintf (record, "%d%s", n_grds, sep);
-			GMT_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
-			GMT_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);
+			gmt_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, sep);
+			gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 	}
@@ -687,9 +687,9 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
 		}
 		sprintf (record, "-T");
-		GMT_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-		GMT_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
-		GMT_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_Z);	strcat (record, text);
+		gmt_ascii_format_col (GMT, text, global_zmin, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, global_zmax, GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, Ctrl->T.inc, GMT_OUT, GMT_Z);	strcat (record, text);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
 	else if ((Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED)) {
@@ -713,10 +713,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			}
 		}
 		sprintf (record, "-R");
-		GMT_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-		GMT_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-		GMT_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-		GMT_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);
+		gmt_ascii_format_col (GMT, text, global_xmin, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, global_xmax, GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, global_ymin, GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+		gmt_ascii_format_col (GMT, text, global_ymax, GMT_OUT, GMT_Y);	strcat (record, text);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
 

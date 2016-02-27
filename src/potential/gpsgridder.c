@@ -251,7 +251,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode == 1 && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && GMT_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Must specify a template file name containing %%s\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
 
@@ -465,8 +465,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	geo = GMT_is_geographic (GMT, GMT_IN);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Set pointers to 2-D distance functions */
-		GMT_set_geographic (GMT, GMT_IN);
-		GMT_set_geographic (GMT, GMT_OUT);
+		gmt_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_OUT);
 		GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 		normalize = GPS_TREND + GPS_NORM;
 	}
@@ -785,7 +785,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 			Return (error);
 		}
 		GMT_memset (out, 4, double);

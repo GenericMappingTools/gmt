@@ -511,10 +511,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 			if (Ctrl->E.info.report || (!GMT->common.J.active && !Ctrl->M.active)) {	/* +w OR No plotting or no dumping means just return the -R string */
 				char record[GMT_BUFSIZ] = {"-R"}, text[GMT_LEN64] = {""};
 				size_t i, j;
-				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
-				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
-				GMT_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+				gmt_ascii_format_col (GMT, text, GMT->common.R.wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
 				/* Remove any white space due to selected formatting */
 				for (i = j = 2; i < strlen (record); i++) {
 					if (record[i] == ' ') continue;	/* Skip spaces */
@@ -756,10 +756,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
 		int id = 0;
 		char header[GMT_BUFSIZ] = {""}, *kind[3] = {"Coastlines", "Political boundaries", "Rivers"}, *version = NULL, *title = NULL, *source = NULL;
-		GMT_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
+		gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2;
-		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */

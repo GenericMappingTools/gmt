@@ -129,7 +129,7 @@ int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);		/* Cannot check on pipes */
 	if (stat (header->name, &buf))
 		return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
-	if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);			/* Opening the file failed somehow */
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
 		return (GMT_GRDIO_READ_FAILED);
@@ -172,7 +172,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
@@ -193,7 +193,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	agchead[BUFFHEADSIZE-1] = recdata[RECORDLENGTH-1];
 	agc_save_header (header->remark, agchead);
 	
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -209,14 +209,14 @@ int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb+")) == NULL && (fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
 	if (GMT_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -250,7 +250,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
@@ -305,7 +305,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->nx = width_in;	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	
 	return (GMT_NOERROR);
 }
@@ -340,7 +340,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
@@ -407,7 +407,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	}
 	GMT_free (GMT, k);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }

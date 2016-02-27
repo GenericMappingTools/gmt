@@ -272,7 +272,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 					S = D->table[tbl]->segment[seg];	/* Shortcut to current segment */
 					if (duplicate) {	/* Must duplicate externally allocated segment since it needs to be resampled below */
 						GMT_Report (API, GMT_MSG_DEBUG, "Must duplicate external memory polygon\n");
-						S = GMT_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
+						S = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 					}
 					if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse or stair-case is requested */
 						S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
@@ -286,7 +286,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 					PSL_beginclipping (PSL, S->coord[GMT_X], S->coord[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
 					if (duplicate)	/* Free duplicate segment */
-						GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+						gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				}
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {

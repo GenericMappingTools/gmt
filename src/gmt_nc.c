@@ -107,7 +107,7 @@ int GMT_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_NC_NO_PIPE);
 
 	/* Open the file and look for the required variable */
-	if (GMT_access (GMT, header->name, F_OK))
+	if (gmt_access (GMT, header->name, F_OK))
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	if ((err = nc_open (header->name, NC_NOWRITE, &ncid)))
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -154,9 +154,9 @@ void gmt_nc_get_units (struct GMT_CTRL *GMT, int ncid, int varid, char *name_uni
 	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
 	char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
-	if (GMT_nc_get_att_text (GMT, ncid, varid, "long_name", name, GMT_GRID_UNIT_LEN80))
+	if (gmt_nc_get_att_text (GMT, ncid, varid, "long_name", name, GMT_GRID_UNIT_LEN80))
 		nc_inq_varname (ncid, varid, name);
-	if (!GMT_nc_get_att_text (GMT, ncid, varid, "units", units, GMT_GRID_UNIT_LEN80) && units[0])
+	if (!gmt_nc_get_att_text (GMT, ncid, varid, "units", units, GMT_GRID_UNIT_LEN80) && units[0])
 		sprintf (name_units, "%s [%s]", name, units);
 	else
 		strcpy (name_units, name);
@@ -413,11 +413,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 
 	if (job == 'r') {
 		/* Get global information */
-		if (GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
-			GMT_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
-		if (GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
-			GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
-		GMT_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+		if (gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
+			gmt_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
+		if (gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
+			gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
+		gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
 
 		if (gm_id > 0) {
 			size_t len;

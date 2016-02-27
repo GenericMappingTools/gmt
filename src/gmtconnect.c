@@ -410,7 +410,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				}
 				/* Allocate space for this segment */
 				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;	/* Add one extra row if closure is not exact */
-				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, true);	/* Allocate space for segment arrays */
+				gmt_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, true);	/* Allocate space for segment arrays */
 
 				if (S->header) T[CLOSED][out_seg]->header = strdup (S->header);
 				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input to output */
@@ -422,7 +422,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			else if (Ctrl->C.active) {	/* NOT closed: Copy this open segment to the separate output dataset */
 				/* Allocate space for this segment */
 				T[OPEN][n_open] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate segment structure */
-				GMT_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, true);		/* Allocate space for segment arrays */
+				gmt_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, true);		/* Allocate space for segment arrays */
 				if (S->header) T[OPEN][n_open]->header = strdup (S->header);		/* Duplicate segment header, if any */
 				out_p = Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
@@ -462,7 +462,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting possible */
 	}
 	
-	GMT_set_segmentheader (GMT, GMT_OUT, n_open > 1 || n_closed > 1);	/* Turn on segment headers on output if we have more than one segment */
+	gmt_set_segmentheader (GMT, GMT_OUT, n_open > 1 || n_closed > 1);	/* Turn on segment headers on output if we have more than one segment */
 	if (wrap_up) {	/* Write out results and exit */
 		D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);	/* Finalize allocation */
 		D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
@@ -711,7 +711,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
 		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
-		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);	/* ...with enough rows */
+		gmt_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);	/* ...with enough rows */
 
 		if (n_steps_pass_1 == 1) {
 			sprintf (msg, "Connect %s -> none [1 segment]\n", buffer);
@@ -796,7 +796,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		if (n_steps_pass_2 != n_steps_pass_1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Trouble: Pass 1 found %" PRIu64 " while pass 2 found %" PRIu64 " connections!\n", n_steps_pass_1, n_steps_pass_2);
 		}
-		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, false);	/* Trim memory allocation */
+		if (n_seg_length < n_alloc_pts) gmt_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, false);	/* Trim memory allocation */
 
 		if (doubleAlmostEqualZero (p_first_x, p_last_x) && doubleAlmostEqualZero (p_first_y, p_last_y)) {	/* Definitively closed polygon resulting from connections */
 			GMT_Report (API, GMT_MSG_VERBOSE, "New closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, n_steps_pass_2);
@@ -826,7 +826,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		done = (start_id == ns);	/* No more unused segments */
 	}
 
-	GMT_set_segmentheader (GMT, GMT_OUT, out_seg > 1);	/* Turn on|off segment headers on output */
+	gmt_set_segmentheader (GMT, GMT_OUT, out_seg > 1);	/* Turn on|off segment headers on output */
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);

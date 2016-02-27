@@ -268,7 +268,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT: case GMT_IS_PS:
-					fp = GMT_fopen (GMT, ifile[Ctrl->T.mode], "r");
+					fp = gmt_fopen (GMT, ifile[Ctrl->T.mode], "r");
 					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, fp)) == GMT_NOTSET) {
 						Return (API->error);
 					}
@@ -365,7 +365,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 		case GMT_IS_STREAM:
 			switch (Ctrl->T.mode) {	/* Can only do d, t, c, p */
 				case GMT_IS_DATASET: case GMT_IS_TEXTSET: case GMT_IS_CPT: case GMT_IS_PS:
-					fp = GMT_fopen (GMT, ofile[Ctrl->T.mode], "w");
+					fp = gmt_fopen (GMT, ofile[Ctrl->T.mode], "w");
 					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode, geometry[Ctrl->T.mode], GMT_OUT, NULL, fp)) == GMT_NOTSET) {
 						Return (API->error);
 					}

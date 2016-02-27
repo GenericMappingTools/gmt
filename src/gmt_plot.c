@@ -2807,14 +2807,14 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			double *lon = NULL, *lat = NULL;
 			struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			np = GMT_graticule_path (GMT, &lon, &lat, 1, false, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
-			GMT_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
+			gmt_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
 			S->coord[GMT_X] = lon;	S->coord[GMT_Y] = lat;
 			S->n_rows = np;
 			outline = ((panel->mode & GMT_PANEL_OUTLINE) == GMT_PANEL_OUTLINE);	/* Does the panel have an outline? */
 			if ((panel->mode & 1)) GMT_setfill (GMT, &panel->fill, outline);
 			if ((panel->mode & 2)) GMT_setpen (GMT, &panel->pen1);
 			GMT_geo_polygons (GMT, S);
-			GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 			return;	/* Done here */
 		}
 	}
@@ -3499,7 +3499,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 				case '%':	/* Possibly a special %X, %Y request */
 					if (s->string[in+1] == 'X' || s->string[in+1] == 'Y') {	/* Yes it was */
 						n = (s->string[in+1] == 'X') ? GMT_X : GMT_Y;
-						GMT_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[n], GMT_IN, n);
+						gmt_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[n], GMT_IN, n);
 						strcat (text, tmp);
 						in++;	/* Skip past the X or Y */
 						out += (unsigned int)strlen (tmp);
@@ -3512,8 +3512,8 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 						n = (s->string[in+1] - '0');
 						n_skip = 1;
 						if (s->string[in+2] == '+' && strchr ("TXY", s->string[in+3])) {	/* Specific formatting requested */
-							if (s->string[in+3] == 'X') GMT_ascii_format_col (GMT, tmp, size[n], GMT_IN, GMT_X);
-							else if (s->string[in+3] == 'Y') GMT_ascii_format_col (GMT, tmp, size[n], GMT_IN, GMT_Y);
+							if (s->string[in+3] == 'X') gmt_ascii_format_col (GMT, tmp, size[n], GMT_IN, GMT_X);
+							else if (s->string[in+3] == 'Y') gmt_ascii_format_col (GMT, tmp, size[n], GMT_IN, GMT_Y);
 							else if (s->string[in+3] == 'T') gmt_format_abstime_output (GMT, size[n], tmp);
 							n_skip += 2;
 						}
@@ -3843,14 +3843,14 @@ void GMT_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y,
 	double geo[2];
 	record[0] = 0;	/* Start with blank record */
 	GMT_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);
-	GMT_ascii_format_col (GMT, word, geo[GMT_X], GMT_OUT, GMT_X);
+	gmt_ascii_format_col (GMT, word, geo[GMT_X], GMT_OUT, GMT_X);
 	strcat (record, word);
 	strcat (record, GMT->current.setting.io_col_separator);
-	GMT_ascii_format_col (GMT, word, geo[GMT_Y], GMT_OUT, GMT_Y);
+	gmt_ascii_format_col (GMT, word, geo[GMT_Y], GMT_OUT, GMT_Y);
 	strcat (record, word);
 	strcat (record, GMT->current.setting.io_col_separator);
 	if (save_angle) {	/* Also output the label angle */
-		GMT_ascii_format_col (GMT, word, angle, GMT_OUT, GMT_Z);
+		gmt_ascii_format_col (GMT, word, angle, GMT_OUT, GMT_Z);
 		strcat (record, word);
 		strcat (record, GMT->current.setting.io_col_separator);
 	}
@@ -3876,7 +3876,7 @@ int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 	else				/* Write lon, lat, label record */
 		sprintf (record, "# %s%s%s%slabel", xname[kind], GMT->current.setting.io_col_separator, yname[kind], GMT->current.setting.io_col_separator);
-	if ((G->fp = GMT_fopen (GMT, G->label_file, GMT->current.io.w_mode)) == NULL) {
+	if ((G->fp = gmt_fopen (GMT, G->label_file, GMT->current.io.w_mode)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to create/open file %s\n", G->label_file);
 		return (GMT_ERROR_ON_FOPEN);	/* Establishes data output */
 	}
@@ -3894,7 +3894,7 @@ int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 }
 
 int GMT_contlabel_save_end (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
-	GMT_fclose (GMT, G->fp);
+	gmt_fclose (GMT, G->fp);
 	G->fp = NULL;
 	return (GMT_NOERROR);
 }
@@ -4693,7 +4693,7 @@ uint64_t gmt_geo_polarcap_segment_orig (struct GMT_CTRL *GMT, struct GMT_DATASEG
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "First longitude = %g.  Last longitude = %g\n", S->coord[GMT_X][0], S->coord[GMT_X][n-1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	type = GMT_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
+	type = gmt_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		gmt_reverse_polygon (GMT, S);
 		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
@@ -4780,7 +4780,7 @@ uint64_t GMT_geo_polarcap_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 	/* Global projection need to handle pole path properly */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Try to include %c pole in polar cap path\n", pole[S->pole+1]);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "West longitude = %g.  East longitude = %g\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
-	type = GMT_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
+	type = gmt_determine_pole (GMT, S->coord[GMT_X], S->coord[GMT_Y], n);
 	if (abs(type) == 2) {	/* The algorithm only works for clockwise polygon so anything CCW we simply reverse... */
 		gmt_reverse_polygon (GMT, S);
 		type = (type == -2) ? -1 : +1;	/* Now just going clockwise */
@@ -4958,7 +4958,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	double sin_c, cos_c, center, *px = NULL, *py = NULL;
 	struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
-	GMT_alloc_segment (GMT, S, GMT_ELLIPSE_APPROX+1, 2, true);
+	gmt_alloc_segment (GMT, S, GMT_ELLIPSE_APPROX+1, 2, true);
 	px = S->coord[GMT_X];	py = S->coord[GMT_Y];
 
 	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
@@ -5001,7 +5001,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	px[GMT_ELLIPSE_APPROX] = px[0], py[GMT_ELLIPSE_APPROX] = py[0];
 	GMT_geo_polygons (GMT, S);
 
-	GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 }
 
 float gmt_inch_to_degree_scale (struct GMT_CTRL *GMT) {
@@ -5106,7 +5106,7 @@ void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longw
 	step = GMT->current.map.path_step;		/* Use default map-step if given as 0 */
 	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);			/* Adjust step for exact fit, convert to radians */
-	GMT_alloc_segment (GMT, L, 2*n+1, 2, true);	/* Allocate polygon to draw filled path */
+	gmt_alloc_segment (GMT, L, 2*n+1, 2, true);	/* Allocate polygon to draw filled path */
 	n2 = 2*n-1;
 	gmt_init_rot_matrix (R0, C->P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
@@ -5128,7 +5128,7 @@ void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longw
 	GMT_geo_polygons (GMT, L);	/* "Draw" the line */
 	PSL_command (GMT->PSL, "U\n");
 
-	GMT_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 }
 
 void gmt_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C) {
@@ -6209,7 +6209,7 @@ struct GMT_PS * GMT_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 		struct stat buf;
 		char path[GMT_BUFSIZ] = {""};
 		strncpy (ps_file, source, GMT_BUFSIZ-1);
-		if (!GMT_getdatapath (GMT, ps_file, path, R_OK)) {
+		if (!gmt_getdatapath (GMT, ps_file, path, R_OK)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot find PS file %s\n", ps_file);
 			return (NULL);
 		}

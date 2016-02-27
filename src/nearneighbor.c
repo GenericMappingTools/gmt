@@ -211,8 +211,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 					/* But since GMT_parse_f_option is private to gmt_init and all it does */
 					/* in this case are 2 lines below we code it here */
 					if (!strcmp (GMT->common.n.BC, "g")) {
-						GMT_set_geographic (GMT, GMT_IN);
-						GMT_set_geographic (GMT, GMT_OUT);
+						gmt_set_geographic (GMT, GMT_IN);
+						gmt_set_geographic (GMT, GMT_OUT);
 					}
 				}
 				else
@@ -302,7 +302,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */

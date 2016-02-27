@@ -457,7 +457,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	/* Specify input and output expected columns */
 	n_input = 3 + Ctrl->W.weighted[GMT_IN] + ((Ctrl->E.mode & BLK_DO_SRC_ID) ? 1 : 0);	/* 3 columns on output, plus 1 extra if -W and another if -Es  */
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
 		Return (error);
 	}
 	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;
@@ -469,7 +469,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		n_output++;
 		emode = Ctrl->E.mode & (BLK_DO_INDEX_LO + BLK_DO_INDEX_HI);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -573,7 +573,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
+	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
 		old_format = GMT->current.io.o_format[i_col];		/* Need to restore this at end */

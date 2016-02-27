@@ -636,16 +636,16 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 #endif
 		}
 		else {
-			if ((fp = GMT_fopen (GMT, Ctrl->A.file, GMT->current.io.r_mode)) == NULL) {
+			if ((fp = gmt_fopen (GMT, Ctrl->A.file, GMT->current.io.r_mode)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->A.file);
 				Return (EXIT_FAILURE);
 			}
 		}
 
 		if (GMT->current.setting.io_header[GMT_IN]) {	/* Skip any header records */
-			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Read error for headers\n");
-				if (fp != GMT->session.std[GMT_IN]) GMT_fclose (GMT, fp);
+				if (fp != GMT->session.std[GMT_IN]) gmt_fclose (GMT, fp);
 				MGD77_Path_Free (GMT, n_paths, list);
 				Return (EXIT_FAILURE);
 			}
@@ -663,7 +663,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		if (strings && !two_cols) {	/* Must read strings directly from file since GMT->current.io.input would barf */
 			ok_to_read = false;
 			tmp_string = GMT_memory (GMT, NULL, n_alloc, char *);
-			while (GMT_fgets (GMT, word, GMT_BUFSIZ, fp)) {
+			while (gmt_fgets (GMT, word, GMT_BUFSIZ, fp)) {
 				if (word[0] == '#') continue;
 				width = (int)strlen (word);
 				tmp_string[n] = GMT_memory (GMT, NULL, width + 1, char);
@@ -731,7 +731,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 		}
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		if (two_cols && n_ave) { colvalue[n] = sum_z / n_ave; coldnt[n++] = last_dnt;}
 		if (!strings) colvalue = GMT_memory (GMT, colvalue, n, double);
 		if (two_cols) coldnt = GMT_memory (GMT, coldnt, n, double);
@@ -1100,9 +1100,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 			
 			sprintf (efile, "%s.e77", list[argno]);
-			if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not in current directory, try MGD77_HOME/E77 */
+			if ((fp_e = gmt_fopen (GMT, efile, "r")) == NULL) {	/* Not in current directory, try MGD77_HOME/E77 */
 				sprintf (efile, "%s/E77/%s.e77", In.MGD77_HOME, list[argno]);
-				if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not here either */
+				if ((fp_e = gmt_fopen (GMT, efile, "r")) == NULL) {	/* Not here either */
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
 					MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 					continue;
@@ -1114,7 +1114,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			 */
 			 
 			P = D->H.mgd77[MGD77_ORIG];	/* Because E77 is absolute and not incremental we start from original settings */
-			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
+			if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
@@ -1140,7 +1140,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				e_error++;
 			}
 			verified = false;
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U)) {	/* Read until we get to Header record section */
+			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U)) {	/* Read until we get to Header record section */
 				if (line[0] == '#') continue;	/* Skip comments */
 				GMT_chop (line);		/* Rid the world of CR/LF */
 				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = true;
@@ -1161,7 +1161,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			/* Quickly scan through file to make sure there are no unprocessed recommendations or bad records before making changes */
 			
 			e_error = n_unprocessed = 0;
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
+			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Comments or blank lines are OK */
 				if (line[1] == '-') {		/* Header record */
 					if (!(line[0] == 'Y' || line[0] == 'N') && !Ctrl->A.ignore_verify) {		/* Unprocessed recommendation? */
@@ -1181,13 +1181,13 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			
 			if (e_error) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
-				GMT_fclose (GMT, fp_e);
+				gmt_fclose (GMT, fp_e);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
 			if (n_unprocessed) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
-				GMT_fclose (GMT, fp_e);
+				gmt_fclose (GMT, fp_e);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
@@ -1195,7 +1195,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			/* OK, here we believe the E77 file contains the correct information for this cruise. Rewind and start from top */
 			
 			GMT_rewind (fp_e);
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U));	/* Read until we get to Header record section */
+			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U));	/* Read until we get to Header record section */
 			
 			flags = GMT_memory (GMT, NULL, D->H.n_records, unsigned int);
 			n_E77_flags = n_E77_headers = n_E77_scales = n_E77_offsets = n_E77_recalcs = 0;
@@ -1203,7 +1203,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 			MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
 			old_flags = MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", 14U)) {	/* Read until we get to data record section */
+			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", 14U)) {	/* Read until we get to data record section */
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments */
 				GMT_chop (line);					/* Rid the world of CR/LF */
 				/* Example of expected line 
@@ -1332,7 +1332,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				tvar = D->values[it];
 				for (rec = 0, has_time = false; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = true;
 			}
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
+			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %" SCNu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
@@ -1351,7 +1351,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
 					}
 					else {	/* Must try to interpret the timestamp */
-						if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
+						if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
 							continue;
 						}
@@ -1423,7 +1423,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					}		
 				}
 			}
-			GMT_fclose (GMT, fp_e);
+			gmt_fclose (GMT, fp_e);
 
 			/* Update E77 history */
 

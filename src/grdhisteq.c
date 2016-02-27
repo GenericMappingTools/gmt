@@ -383,7 +383,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->D.file)) == GMT_NOTSET) {
 				Return (EXIT_FAILURE);
 			}
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */

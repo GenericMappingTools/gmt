@@ -333,7 +333,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
-				else if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
+				else if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					gmt_free (Ctrl->C.file);
@@ -992,7 +992,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 					break;
 			}
-			if (GMT_is_a_blank_line (record)) continue;	/* Nothing in this record */
+			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
 
 			/* Data record to process */
 
@@ -1229,7 +1229,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 						if (data_is_time) {
 							double tval = (use_t_offset) ? cval - t_offset : cval;
 							char *c = NULL;
-							GMT_ascii_format_col (GMT, cont_label, tval, GMT_OUT, GMT_Z);
+							gmt_ascii_format_col (GMT, cont_label, tval, GMT_OUT, GMT_Z);
 							if ((c = strchr (cont_label, 'T')) != NULL) c[0] = ' ';	/* Replace ISO T with space for plots */
 						}
 						else {
@@ -1250,8 +1250,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
-		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);

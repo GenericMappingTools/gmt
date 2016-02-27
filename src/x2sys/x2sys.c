@@ -156,7 +156,7 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	char line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
-	GMT_getsharepath (GMT, "mgg", "gmtfile_paths", "", line, R_OK);
+	gmt_getsharepath (GMT, "mgg", "gmtfile_paths", "", line, R_OK);
 
 	n_gmtmgg_paths = 0;
 
@@ -556,7 +556,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 				}
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
-				if (GMT_scanf (GMT, buffer, G->col_type[GMT_IN][j], &data[j]) == GMT_IS_NAN) data[j] = GMT->session.d_NaN;
+				if (gmt_scanf (GMT, buffer, G->col_type[GMT_IN][j], &data[j]) == GMT_IS_NAN) data[j] = GMT->session.d_NaN;
 				break;
 
 			case 'a':	/* ASCII Record, get all columns directly */
@@ -570,7 +570,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 				GMT_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
 				while ((GMT_strtok (line, s->separators, &pos, p)) && k < s->n_fields) {
-					if (GMT_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
 					k++;;
 				}
 				return ((k != s->n_fields) ? -1 : 0);
@@ -624,7 +624,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 		else if (s->info[i].do_scale)
 			data[i] = data[i] * s->info[i].scale + s->info[i].offset;
 		if (GMT_is_dnan (data[i])) s->info[i].has_nans = true;
-		if (is == s->x_col && s->geographic) GMT_lon_range_adjust (s->geodetic, &data[i]);
+		if (is == s->x_col && s->geographic) gmt_lon_range_adjust (s->geodetic, &data[i]);
 	}
 
 	return ((error || n_read != s->n_fields) ? -1 : 0);
@@ -820,7 +820,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	p->year = 0;
 	j = 0;
 	while (!MGD77_Read_Data_Record (GMT, &M, &H, dvals, tvals)) {		/* While able to read a data record */
-		GMT_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
+		gmt_lon_range_adjust (s->geodetic, &dvals[MGD77_LONGITUDE]);
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = dvals[col[i]];
 		if (p->year == 0 && !GMT_is_dnan (dvals[0])) p->year = get_first_year (GMT, dvals[0]);
 		j++;
@@ -923,7 +923,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 
 	gmt_parse_common_options (GMT, "b", 'b', "c");	/* Tell GMT this is a netCDF file */
 
-	if ((fp = GMT_fopen (GMT, path, "r")) == NULL)  {	/* Error in opening file */
+	if ((fp = gmt_fopen (GMT, path, "r")) == NULL)  {	/* Error in opening file */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_ncfile: Error opening file %s\n", fname);
      		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -936,7 +936,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_ncfile: Error reading file %s at record %d\n", fname, j);
 			for (i = 0; i < s->n_out_columns; i++) GMT_free (GMT, z[i]);
 			GMT_free (GMT, z);
-			GMT_fclose (GMT, fp);
+			gmt_fclose (GMT, fp);
 	     		return (GMT_GRDIO_READ_FAILED);
 		}
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = in[i];
@@ -946,7 +946,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	p->ms_rec = NULL;
 	p->n_segments = 0;
 	p->year = 0;
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	*data = z;
 	*n_rec = p->n_rows;
@@ -1731,11 +1731,11 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			else if (!strcmp (start[k], "NaN") || !strcmp (stop[k], "NaN"))	/* No time for this track */
 				P[p].start[k] = P[p].stop[k] = GMT->session.d_NaN;
 			else {
-				if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
+				if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
 					exit (EXIT_FAILURE);
 				}
-				if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
+				if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
 					exit (EXIT_FAILURE);
 				}
@@ -1756,27 +1756,27 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			rec_no++;
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
-			if (GMT_scanf (GMT, x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
+			if (gmt_scanf (GMT, x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 			P[p].COE[k].data[0][COE_X] = d_val;
-			if (GMT_scanf (GMT, y_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
+			if (gmt_scanf (GMT, y_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 			P[p].COE[k].data[0][COE_Y] = d_val;
 
 			for (i = 0; i < 2; i++) {
-				if (GMT_scanf (GMT, d_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
+				if (gmt_scanf (GMT, d_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 				P[p].COE[k].data[i][COE_D] = d_val;
 
-				if (GMT_scanf (GMT, h_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
+				if (gmt_scanf (GMT, h_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 				P[p].COE[k].data[i][COE_H] = d_val;
 
-				if (GMT_scanf (GMT, v_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
+				if (gmt_scanf (GMT, v_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 				P[p].COE[k].data[i][COE_V] = d_val;
 
-				if (GMT_scanf (GMT, z_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
+				if (gmt_scanf (GMT, z_txt[i], GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 				P[p].COE[k].data[i][COE_Z] = d_val;
 
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = GMT->session.d_NaN;
-				else if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
+				else if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
 					exit (EXIT_FAILURE);
 				}

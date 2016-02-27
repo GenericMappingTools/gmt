@@ -190,11 +190,11 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input KML data\n");
-	GMT_set_geographic (GMT, GMT_IN);
-	GMT_set_geographic (GMT, GMT_OUT);
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	gmt_set_geographic (GMT, GMT_IN);
+	gmt_set_geographic (GMT, GMT_OUT);
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	
-	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */

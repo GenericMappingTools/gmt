@@ -351,8 +351,8 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->I.active) {			/* Must flip the column types since in is Cartesian and out is geographic */
-		GMT_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
-		GMT_set_cartesian (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_OUT);	/* Inverse projection expects x,y and gives lon, lat */
+		gmt_set_cartesian (GMT, GMT_IN);
 	}
 
 	xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];

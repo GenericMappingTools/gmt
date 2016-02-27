@@ -193,7 +193,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 		GMT->common.R.oblique = false;
 		GMT->common.J.active = true;
 		GMT->current.setting.map_line_step = 1.0e7;	/* To avoid nlon/nlat being huge */
-		GMT_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_IN);
 		GMT->current.proj.pars[0] = out[GMT_X];
 		GMT->current.proj.pars[1] = out[GMT_Y];
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, wesn), "")) return (0);
@@ -904,8 +904,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active, "Syntax error: -C requires -R\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active, "Syntax error: -L requires -R\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Syntax error: -L requires a positive cutoff in meters\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && GMT_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && GMT_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1057,7 +1057,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 		}
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 7)) != 0) Return (error);
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 7)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_BUFSIZ] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (GMT_is_geographic (GMT, GMT_IN)) ? 1 : 0;
@@ -1066,8 +1066,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			}
 		}
 		else {	/* Just output the NN analysis results */
-			GMT_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
+			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_BUFSIZ];
 				sprintf (header, "#NN_dist[0]\tID[1]\tNN_ID[2]");
@@ -1096,13 +1096,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				int geo = GMT_is_geographic (GMT, GMT_IN) ? 1 : 0;
 				double info[3], d_expect, R_index;
 				struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-				GMT_alloc_segment (GMT, S, 5, 2, true);
+				gmt_alloc_segment (GMT, S, 5, 2, true);
 				S->coord[GMT_X][0] = S->coord[GMT_X][3] = S->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
 				S->coord[GMT_X][1] = S->coord[GMT_X][2] = GMT->common.R.wesn[XHI];
 				S->coord[GMT_Y][0] = S->coord[GMT_Y][1] = S->coord[GMT_Y][4] = GMT->common.R.wesn[YLO];
 				S->coord[GMT_Y][2] = S->coord[GMT_Y][3] = GMT->common.R.wesn[YHI];
 				(void)area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, info, &geo);
-				GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+				gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
 				GMT_Report (API, GMT_MSG_NORMAL, "NNA Found %" PRIu64 " points, D_bar = %g, D_expect = %g, Spatial index = %g\n", n_points, d_bar, d_expect, R_index);
@@ -1193,7 +1193,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		else {
 			qmode = GMT_IS_POINT;
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, qmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
@@ -1245,7 +1245,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		/* Write out results */
 		if (Ctrl->Q.header || Ctrl->E.active) {
-			if (D->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
+			if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
@@ -1290,7 +1290,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		else
 			C = D;	/* Compare with itself */
 			
-		if ((error = GMT_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -1474,7 +1474,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			same_feature = true;
 			from = in;
 			S2 = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-			GMT_alloc_segment (GMT, S2, 0, C->n_columns, true);
+			gmt_alloc_segment (GMT, S2, 0, C->n_columns, true);
 		}
 		Info = GMT_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
 		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = GMT_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
@@ -1541,7 +1541,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		}
 		if (same_feature) {
 			for (col = 0; col < S2->n_columns; col++) S2->coord[col] = NULL;	/* Since they were not allocated */
-			GMT_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 		}
 		for (tbl = 0; tbl < C->n_tables; tbl++) GMT_free (GMT, Info[tbl]);
 		GMT_free (GMT, Info);
@@ -1576,7 +1576,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					S->mode = GMT_WRITE_SKIP;
 					continue;
 				}
-				if (np > S->n_rows) GMT_alloc_segment (GMT, S, np, S->n_columns, false);
+				if (np > S->n_rows) gmt_alloc_segment (GMT, S, np, S->n_columns, false);
 				for (p = 0; p < np; p++) GMT_xy_to_geo (GMT, &cp[GMT_X][p], &cp[GMT_Y][p], cp[GMT_X][p], cp[GMT_Y][p]);
 				for (col = 0; col < 2; col++) {
 					GMT_memcpy (S->coord[col], cp[col], np, double);
@@ -1617,7 +1617,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		if (Ctrl->N.mode == 2) GMT_adjust_dataset (GMT, D, D->n_columns + 1);	/* Add one more output column */
+		if (Ctrl->N.mode == 2) gmt_adjust_dataset (GMT, D, D->n_columns + 1);	/* Add one more output column */
 		
 		T = C->table[0];	/* Only one input file so only one table */
 		count = GMT_memory (GMT, NULL, D->n_segments, unsigned int);
@@ -1627,10 +1627,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
-					ID = irint (GMT_get_aspatial_value (GMT, GMT_IS_Z, S2));
-				else if (GMT_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
+					ID = irint (gmt_get_aspatial_value (GMT, GMT_IS_Z, S2));
+				else if (gmt_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
-				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
+				else if (gmt_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else
 					GMT_Report (API, GMT_MSG_NORMAL, "No polygon ID found; ID set to NaN\n");
@@ -1662,7 +1662,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
-						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
+						if (gmt_parse_segment_item (GMT, S->header, "-Z", NULL))
 							GMT_Report (API, GMT_MSG_NORMAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_LEN64] = {""};
@@ -1729,13 +1729,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (crossing) {
 					n_split_tot++; 
 					for (kseg = 0; kseg < n_split; kseg++) {
-						//GMT_free_segment (GMT, &(T->segment[seg_out]), Dout->alloc_mode);
+						//gmt_free_segment (GMT, &(T->segment[seg_out]), Dout->alloc_mode);
 						T->segment[seg_out++] = L[kseg];	/* Add the remaining segments to the end */
 					}
 					GMT_free (GMT, L);
 				}
 				else {	/* Just duplicate */
-					T->segment[seg_out++] = GMT_duplicate_segment (GMT, S);
+					T->segment[seg_out++] = gmt_duplicate_segment (GMT, S);
 				}
 			}
 			Dout->table[tbl]->n_segments = seg_out;

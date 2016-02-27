@@ -189,7 +189,7 @@ GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) 
 				break;
 			case GMT_DOUBLE:
 			case GMT_FLOAT:
-				GMT_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
+				gmt_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
 				break;
 			case GMT_CHAR:
 			case GMT_UCHAR:
@@ -203,8 +203,8 @@ GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) 
 				gmt_format_abstime_output (GMT, G->dvalue[k], text);
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmt_write_formatted_ogr_value - assumed to be double\n");
-				GMT_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmtio_write_formatted_ogr_value - assumed to be double\n");
+				gmt_ascii_format_col (GMT, text, G->dvalue[k], GMT_OUT, GMT_Z);
 				break;
 		}
 		strcat (out, GMT->current.setting.io_col_separator);
@@ -435,12 +435,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
-					GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+					gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
 				if (j == 1)
 					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
 				else {
 					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
-						GMT_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+						gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 				}
 				n_errors += GMT_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
@@ -464,9 +464,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C: Distance is negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && GMT_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && GMT_access (GMT, Ctrl->F.file, R_OK), "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK), "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L: Unrecognized distance unit\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
@@ -535,7 +535,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	if (!GMT->common.R.active && Ctrl->N.active) {	/* If we use coastline data or used -fg but didnt give -R we implicitly set -Rg */
 		GMT->common.R.active = true;
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
-		GMT_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_IN);
 	}
 	if (GMT->common.R.active) {	/* -R was set directly or indirectly; hence must set -J if not supplied */
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
@@ -665,11 +665,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
-		GMT_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
+		gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
 		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_skip_xy_duplicates (GMT, false);	/* Reset */
+		gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
 			Return (EXIT_FAILURE);
@@ -689,7 +689,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_IN,  0)) != 0) Return (error);
 
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
@@ -708,10 +708,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	just_copy_record = (GMT_is_ascii_record (GMT, options) && !shuffle && !GMT->common.s.active);
+	just_copy_record = (gmt_is_ascii_record (GMT, options) && !shuffle && !GMT->common.s.active);
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
-	GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */
+	gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */
 	
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -733,8 +733,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		if (n_output == 0) {
-			GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
-			n_output = GMT_get_cols (GMT, GMT_OUT);
+			gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
+			n_output = gmt_get_cols (GMT, GMT_OUT);
 		}
 
 		n_read++;
@@ -786,14 +786,14 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
 			if (do_project)	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
-				GMT_set_cartesian (GMT, GMT_IN);
+				gmt_set_cartesian (GMT, GMT_IN);
 			inside = 0;
 			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
 				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 				inside = (GMT_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
 			if (do_project)	/* Reset input type for GMT_inonout to do Cartesian mode */
-				GMT_set_geographic (GMT, GMT_IN);
+				gmt_set_geographic (GMT, GMT_IN);
 			if (inside != Ctrl->I.pass[3]) { output_header = need_header; continue;}
 		}
 

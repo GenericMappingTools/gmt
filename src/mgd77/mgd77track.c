@@ -332,7 +332,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->D.mode = true;
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
+						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -341,7 +341,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->D.mode = true;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
+						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}

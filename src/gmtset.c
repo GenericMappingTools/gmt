@@ -177,7 +177,7 @@ int GMT_gmtset (void *V_API, int mode, void *args) {
 				break;
 		}
 
-		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path, R_OK))
+		if (! gmt_getsharepath (GMT, "conf", "", gmtconf_file, path, R_OK))
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
 		gmt_getdefaults (GMT, path);
 	}

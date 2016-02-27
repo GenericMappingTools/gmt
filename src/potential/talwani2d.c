@@ -593,7 +593,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 
 	/* Specify input expected columns to be at least 2 */
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 		Return (error);
 	}
 	/* Register likely model files unless the caller has already done so */
@@ -697,7 +697,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start calculating %s\n", kind[Ctrl->F.mode]);
 	
-	if (Out->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	
+	if (Out->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
 	for (tbl = 0; tbl < Out->n_tables; tbl++) {
 		for (seg = 0; seg < Out->table[tbl]->n_segments; seg++) {
 			S = Out->table[tbl]->segment[seg];	/* Current segment */

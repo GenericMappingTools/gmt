@@ -286,7 +286,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
 	triplets[GMT_OUT] = (n_output == 3);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != 0) Return (error);
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
 		map_them = true;
@@ -296,7 +296,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	/* Now we are ready to take on some input values */
 
 	n_input = (Ctrl->G.active || Ctrl->Z.active) ? 3 : 2;
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -476,7 +476,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->M.active || Ctrl->Q.active) {	/* Must find unique edges to output only once */
-			GMT_set_segmentheader (GMT, GMT_OUT, true);
+			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			if (Ctrl->Q.active) {	/* Voronoi edges */
 				for (i = j = 0; i < np; i++) {
 					sprintf (record, "Edge %" PRIu64, i);
@@ -520,7 +520,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->S.active)  {	/* Write triangle polygons */
-			GMT_set_segmentheader (GMT, GMT_OUT, true);
+			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			for (i = ij = 0; i < np; i++, ij += 3) {
 				sprintf (record, "Polygon %d-%d-%d", link[ij], link[ij+1], link[ij+2]);
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
@@ -532,7 +532,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->N.active) {	/* Write table of indices */
 			/* Set output format to regular float */
-			GMT_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
+			gmt_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
 			GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 			for (i = ij = 0; i < np; i++, ij += 3) {
 				for (k = 0; k < 3; k++) out[k] = (double)link[ij+k];

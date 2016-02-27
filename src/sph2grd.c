@@ -260,7 +260,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Process input coefficients\n");
 	for (col = 0; col < 4; col++) GMT->current.io.col_type[GMT_IN][col] = GMT_IS_FLOAT;	/* Not reading lon,lat in this program */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 4)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 4)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -269,7 +269,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	GMT_set_geographic (GMT, GMT_IN);	/* But x and y are really lon,lat in the rest of the program */
+	gmt_set_geographic (GMT, GMT_IN);	/* But x and y are really lon,lat in the rest of the program */
 	
 	if (Ctrl->F.active && Ctrl->F.km) {	/* Convert cutoffs to harmonic degrees */
 		double scale = 360.0 * GMT->current.proj.DIST_KM_PR_DEG;
@@ -428,7 +428,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished %3.3d %% of evaluation\n", next_10_percent);
 				next_10_percent = urint (ceil (percent / 10.0)) * 10;
 			}
-			GMT_ascii_format_col (GMT, text, lat, GMT_OUT, GMT_Y);
+			gmt_ascii_format_col (GMT, text, lat, GMT_OUT, GMT_Y);
 			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
 		}
 #ifdef _OPENMP

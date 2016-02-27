@@ -255,9 +255,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				break;
 			case 'I':	/* Use intensity from grid or constant */
 				Ctrl->I.active = true;
-				if (!GMT_access (GMT, opt->arg, R_OK))	/* Got a file */
+				if (!gmt_access (GMT, opt->arg, R_OK))	/* Got a file */
 					Ctrl->I.file = strdup (opt->arg);
-				else if (opt->arg[0] && !GMT_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
+				else if (opt->arg[0] && !gmt_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
 					Ctrl->I.value = atof (opt->arg);
 					Ctrl->I.constant = true;
 				}

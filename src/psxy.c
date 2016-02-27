@@ -279,7 +279,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
 	FILE *fp = NULL;
-	GMT_set_textset_minmax (GMT, D);	/* Determine min/max for each column and add up records */
+	gmt_set_textset_minmax (GMT, D);	/* Determine min/max for each column and add up records */
 	if (D->n_records == 0)
 		return GMT_OK;	/* No symbols to plot */
 	
@@ -318,11 +318,11 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 		sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, tmp_file2);
 		GMT_Set_Comment (GMT->parent, GMT_IS_TEXTSET, GMT_COMMENT_IS_TEXT | GMT_COMMENT_IS_COMMAND, buffer, D);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary data file for decorated lines saved: %s\n", tmp_file2);
-		GMT_set_tableheader (GMT, GMT_OUT, true);	/* We need to ensure we write the header here */
+		gmt_set_tableheader (GMT, GMT_OUT, true);	/* We need to ensure we write the header here */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, tmp_file2, D) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to write file: %s\n", tmp_file2);
 		}
-		GMT_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
+		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else
 		remove (tmp_file);	/* Just remove the symbol def file */
@@ -906,7 +906,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	in = GMT->current.io.curr_rec;
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
 		Return (error);
 	}
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT, GMT_SYMBOL_QUOTED_LINE, GMT_SYMBOL_DECORATED_LINE) */
@@ -953,13 +953,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
-					change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
+					change = gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
 					if (Ctrl->I.active) {
 						GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
 					if (S.read_symbol_cmd) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
-					if (GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
+					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
 						if (!(s_args[0] == 'q'|| s_args[0] == 'f')) { /* Update parameters */
 							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
 						}
@@ -996,7 +996,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 				}
 				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (GMT_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
+				if (gmt_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
 				}
@@ -1425,7 +1425,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
-				GMT_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
+				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
 
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
 
@@ -1439,18 +1439,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
-				change = GMT_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, L->ogr);
+				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, L->ogr);
 
 
 				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 
 				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
-					L = GMT_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
+					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
-					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front, quoted or decorated lines */
+					if (gmt_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front, quoted or decorated lines */
 						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_DECORATED_LINE && s_args[0] == '~') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */
 							GMT_contlabel_plot (GMT, &S.G);
 							GMT_contlabel_free (GMT, &S.G);
@@ -1493,7 +1493,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
-					GMT_extract_label (GMT, L->header, S.G.label, L->ogr);
+					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
 
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
@@ -1672,7 +1672,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.f.f_pen == 0) GMT_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}
 				if (duplicate)	/* Free duplicate segment */
-					GMT_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+					gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {

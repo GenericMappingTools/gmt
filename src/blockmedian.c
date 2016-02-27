@@ -313,10 +313,10 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
 		Return (error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -412,7 +412,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
+	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Weights always reported in last output column */
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
 		old_format = GMT->current.io.o_format[i_col];		/* Need to restore this at end */

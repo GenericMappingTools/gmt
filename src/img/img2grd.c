@@ -345,7 +345,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		imgrange.maxlat = Ctrl->D.max;
 	}
 
-	if (!GMT_getdatapath (GMT, Ctrl->In.file, infile, R_OK)) {
+	if (!gmt_getdatapath (GMT, Ctrl->In.file, infile, R_OK)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "img file %s not found\n", Ctrl->In.file);
 		Return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
@@ -423,8 +423,8 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_set_geographic (GMT, GMT_IN);
-	GMT_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
+	gmt_set_geographic (GMT, GMT_IN);
+	gmt_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
 
 	/* Keep original -R for later */
 

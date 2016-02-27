@@ -536,7 +536,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					gmt_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
-				else if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
+				else if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					gmt_free (Ctrl->C.file);
@@ -573,7 +573,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Skip small closed contours */
-				if (!GMT_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the now old -Q<indexfile> option, set to -E */
+				if (!gmt_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the now old -Q<indexfile> option, set to -E */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Q<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.active = true;
@@ -590,7 +590,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				else if (opt->arg[0] == 't') Ctrl->S.mode = 1;
 				break;
 			case 'T':	/* Embellish innermost closed contours */
-				if (!GMT_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -E */
+				if (!gmt_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -E */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.active = true;
@@ -680,7 +680,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 	                                 "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Syntax error -E option: Must specify an index file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && GMT_access (GMT, Ctrl->E.file, F_OK),
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && gmt_access (GMT, Ctrl->E.file, F_OK),
 	                                 "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
@@ -743,7 +743,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active && !Ctrl->D.file) GMT_Report (API, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -970,7 +970,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 					break;
 			}
-			if (GMT_is_a_blank_line (record)) continue;	/* Nothing in this record */
+			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
 
 			/* Data record to process */
 
@@ -1069,12 +1069,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				two_only = true;
 			}
 		}
-		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		dim[GMT_TBL] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
 		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 	}
 	
 	if (make_plot) {

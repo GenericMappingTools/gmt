@@ -215,10 +215,10 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	/* Specify input and output expected columns */
 	n_input = (Ctrl->S.mode == 3) ? 2 : 3;
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_input + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
 		Return (error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, ((Ctrl->W.weighted[GMT_OUT]) ? 4 : 3) + 3 * Ctrl->E.active)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -332,7 +332,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 		Return (EXIT_SUCCESS);
 	}
 
-	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
+	w_col = gmt_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Calculating block means\n");
@@ -340,7 +340,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		unsigned int k = 3;
 		char header[GMT_BUFSIZ] = {""}, txt[GMT_LEN16] = {""}, *names[4] = {"\tmean_z", "\tsum_z", "\twsum_z", "\tn_z"};
-		GMT_set_xycolnames (GMT, header);
+		gmt_set_xycolnames (GMT, header);
 		strcat (header, names[Ctrl->S.mode]);	strcat (header, "[2]");
 		if (Ctrl->E.active) { strcat (header, "\tstd_z[3]\tlow_z[4]\thigh_z[5]"); k = 6; }
 		if (Ctrl->W.weighted[GMT_OUT]) {

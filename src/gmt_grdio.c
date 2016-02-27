@@ -883,7 +883,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
 			if (header->type != GMT_GRID_IS_GD || !gmt_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
-				if (!GMT_getdatapath (GMT, tmp, header->name, R_OK))
+				if (!gmt_getdatapath (GMT, tmp, header->name, R_OK))
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
@@ -900,7 +900,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 				return (GMT_NOERROR);
 		}
 #endif
-		if (!GMT_getdatapath (GMT, tmp, header->name, R_OK))
+		if (!gmt_getdatapath (GMT, tmp, header->name, R_OK))
 			return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((val = GMT_is_nc_grid (GMT, header)) == GMT_NOERROR)
@@ -1888,7 +1888,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	FILE *fp = NULL;
 	double wesn[4], wesn_all[4];
 
-	if (!GMT_getdatapath (GMT, imgfile, file, R_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	if (!gmt_getdatapath (GMT, imgfile, file, R_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
 
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72, ~80, or ~85 */
@@ -1923,7 +1923,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	else	/* Use specified subset */
 		GMT_memcpy (wesn, in_wesn, 4, double);
 
-	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n", imgfile, scale, mode, lat);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
@@ -1936,7 +1936,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		GMT->current.proj.pars[1] = 0.0;
 		GMT->current.proj.pars[2] = 1.0;
 		GMT->current.proj.projection = GMT_MERCATOR;
-		GMT_set_geographic (GMT, GMT_IN);
+		gmt_set_geographic (GMT, GMT_IN);
 		GMT->common.J.active = true;
 
 		GMT_err_pass (GMT, GMT_map_setup (GMT, wesn_all), file);
@@ -2007,7 +2007,7 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		}
 	}
 	GMT_free (GMT, i2);
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	if (init) {
 		GMT_memcpy (GMT->common.R.wesn, wesn, 4, double);
 		GMT->common.J.active = false;

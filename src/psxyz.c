@@ -644,7 +644,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 
 	old_is_world = GMT->current.map.is_world;
 	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -693,13 +693,13 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					break;
 				else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
-					change = GMT_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
+					change = gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
 					if (Ctrl->I.active) {
 						GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
 					if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
-					if (GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
+					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
 						if (!(s_args[0] == 'q'|| s_args[0] == 'f')) { /* Update parameters */
 							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
 						}
@@ -724,7 +724,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (GMT_conv_intext2dbl (GMT, text_rec, 7U)) {	/* Max 7 columns needs to be parsed */
+				if (gmt_conv_intext2dbl (GMT, text_rec, 7U)) {	/* Max 7 columns needs to be parsed */
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
 				}
@@ -1201,7 +1201,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
-			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
+			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER) gmt_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
@@ -1215,13 +1215,13 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
 				 * but reallocating x below lead to disasters.  */
 
-				change = GMT_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, L->ogr);
+				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, L->ogr);
 
 				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 
 				if (L->header && L->header[0]) {
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
-					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S */
+					if (gmt_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S */
 						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */
 							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later for these symbols */
@@ -1251,7 +1251,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
-					GMT_extract_label (GMT, L->header, S.G.label, L->ogr);
+					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
 
 				xp = GMT_memory (GMT, NULL, n, double);
 				yp = GMT_memory (GMT, NULL, n, double);

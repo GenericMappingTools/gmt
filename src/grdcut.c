@@ -160,8 +160,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
-					n_errors += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
-					n_errors += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
+					n_errors += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
+					n_errors += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
 					Ctrl->S.mode = GMT_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				}
 				break;
@@ -177,8 +177,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%s", za, zb) == 2) {
-					if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.max), zb);
+					if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.max), zb);
 				}
 				break;
 

@@ -476,8 +476,8 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	xdata[0] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
-	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 
 	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
 		do_project = true;
@@ -518,7 +518,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 	wrap = (GMT_is_geographic (GMT, GMT_IN) && GMT->common.R.active && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 	
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -628,7 +628,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				for (i = 0; i < nx; i++) {
 					out[0] = XC.x[i];
 					out[1] = XC.y[i];
-					if (s->geographic) GMT_lon_range_adjust (s->geodetic, &out[0]);
+					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 				GMT_x_free (GMT, &XC);
@@ -817,9 +817,9 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */
 								for (j = 0; j < n_rec[k] && GMT_is_dnan (time[k][j]); j++);	/* Find first non-NaN time */
-								GMT_ascii_format_col (GMT, start[k], time[k][j], GMT_OUT, 2);
+								gmt_ascii_format_col (GMT, start[k], time[k][j], GMT_OUT, 2);
 								for (j = n_rec[k]-1; j > 0 && GMT_is_dnan (time[k][j]); j--);	/* Find last non-NaN time */
-								GMT_ascii_format_col (GMT, stop[k], time[k][j], GMT_OUT, 3);
+								gmt_ascii_format_col (GMT, stop[k], time[k][j], GMT_OUT, 3);
 							}
 							else {
 								strcpy (start[k], "NaN");
@@ -832,7 +832,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 						first_crossover = false;
 					}
 
-					if (s->geographic) GMT_lon_range_adjust (s->geodetic, &out[0]);
+					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 

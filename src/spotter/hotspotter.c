@@ -393,7 +393,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "Seamount ages truncated to %g\n", Ctrl->N.t_upper);
 
 	n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : 5;
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */

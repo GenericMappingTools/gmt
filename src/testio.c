@@ -42,11 +42,11 @@ int main () {
 	/* 1. Initializing new GMT session */
 	if ((API = GMT_Create_Session ("TEST", GMT_PAD_DEFAULT, GMT_SESSION_NORMAL, NULL)) == NULL) exit (EXIT_FAILURE);
 
-	Vi = GMT_create_vector (API->GMT, 3U, GMT_IN);
+	Vi = gmt_create_vector (API->GMT, 3U, GMT_IN);
 	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMT_FLOAT;
 	Vi->n_rows = 4;
 	Vi->data[0].f4 = x;	Vi->data[1].f4 = y;	Vi->data[2].f4 = z;
-	Vo = GMT_create_vector (API->GMT, 3U, GMT_OUT);
+	Vo = gmt_create_vector (API->GMT, 3U, GMT_OUT);
 
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
 
@@ -89,7 +89,7 @@ int main () {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
-	GMT_free_vector (API->GMT, &Vo, true);
+	gmt_free_vector (API->GMT, &Vo, true);
 	
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
 	GMT_grd_loop (API->GMT, G, xrow, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
@@ -100,7 +100,7 @@ int main () {
 
 	/* 6. Create command options for GMT_gmtselect */
 
-	Vo = GMT_create_vector (API->GMT, 3U, GMT_OUT);
+	Vo = gmt_create_vector (API->GMT, 3U, GMT_OUT);
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
@@ -115,13 +115,13 @@ int main () {
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
-	GMT_free_vector (API->GMT, &Vi, false);
+	gmt_free_vector (API->GMT, &Vi, false);
 	for (row = 0; row < Vo->n_rows; row++) {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
-	GMT_free_vector (API->GMT, &Vo, true);
-	GMT_free_vector (API->GMT, &Vi, false);
+	gmt_free_vector (API->GMT, &Vo, true);
+	gmt_free_vector (API->GMT, &Vi, false);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);

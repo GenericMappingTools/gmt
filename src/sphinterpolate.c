@@ -255,7 +255,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */

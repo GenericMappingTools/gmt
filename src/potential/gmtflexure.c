@@ -217,7 +217,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 				break;
 			case 'E':	/* Set elastic thickness or rigidities */
 				Ctrl->E.active = true;
-				if (!GMT_access (GMT, opt->arg, F_OK))	/* file exists */
+				if (!gmt_access (GMT, opt->arg, F_OK))	/* file exists */
 					Ctrl->E.file = strdup (opt->arg);
 				else {	/* Got a value */
 					GMT_Get_Values (API, opt->arg, &Ctrl->E.te, 1);	/* Returns Te in m if k was appended */
@@ -1372,7 +1372,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 
 	restore = (Ctrl->D.rhom - Ctrl->D.rhoi) * NORMAL_GRAVITY;
 	n_columns = (Ctrl->S.active) ? 3 : 2;	/* Duplicate Q but posibly add 1 more column */
-	W = GMT_alloc_dataset (GMT, Q, 0, n_columns, GMT_ALLOC_NORMAL);
+	W = gmt_alloc_dataset (GMT, Q, 0, n_columns, GMT_ALLOC_NORMAL);
 
 	for (tbl = 0; tbl < W->n_tables; tbl++) {
 		for (seg = 0; seg < W->table[tbl]->n_segments; seg++) {
@@ -1455,7 +1455,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_free_dataset (GMT, &W);
+	gmt_free_dataset (GMT, &W);
 
 	Return (EXIT_SUCCESS);
 }

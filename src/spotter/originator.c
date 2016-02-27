@@ -415,14 +415,14 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			uint64_t row;
 			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
 			strncpy (path, file, GMT_BUFSIZ);
-			if (GMT_access (GMT, path, R_OK)) {	/* Not found in current dir or GMT_DATADIR; check if -F gave an explicit directory */
+			if (gmt_access (GMT, path, R_OK)) {	/* Not found in current dir or GMT_DATADIR; check if -F gave an explicit directory */
 				if (strchr (Ctrl->F.file, '/')) {	/* Filename has leading path so we will use that path */
 					strncpy (path, Ctrl->F.file, GMT_BUFSIZ);
 					k = strlen (path);
 					while (k && path[k] != '/') k--;	/* Look for last slash  */
 					k++; path[k] = 0;	/* Truncate anything after last slash */
 					strcat (path, file);	/* Prepend path to drift file name */
-					if (GMT_access (GMT, path, R_OK)) continue;	/* file do not exist there either */
+					if (gmt_access (GMT, path, R_OK)) continue;	/* file do not exist there either */
 				}
 				else	/* No directory given, so nothing to do */
 					continue;
@@ -455,11 +455,11 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	else
 		n_out = n_expected_fields;
 	if (n_out == 3)
-		GMT_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_out)) != GMT_OK) {
+		gmt_set_cartesian (GMT, GMT_OUT);	/* Since output is no longer lon/lat */
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_out)) != GMT_OK) {
 		Return (error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_expected_fields)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_expected_fields)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */

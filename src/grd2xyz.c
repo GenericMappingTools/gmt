@@ -189,7 +189,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 				break;
 			case 'Z':	/* Control format */
 				Ctrl->Z.active = true;
-				n_errors += GMT_parse_z_io (GMT, opt->arg, &Ctrl->Z);
+				n_errors += gmt_parse_z_io (GMT, opt->arg, &Ctrl->Z);
 					break;
 
 			default:	/* Report bad options */
@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	if (Ctrl->Z.active) GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+	if (Ctrl->Z.active) gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
 	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
@@ -264,7 +264,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
 	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : ((Ctrl->C.mode == 2) ? 2 : 3));
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) Return (error);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers stdout, unless already set */
 		Return (API->error);
@@ -294,14 +294,14 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 		n_total += G->header->nm;
 
-		GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, G), opt->arg);
+		GMT_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
 			int (*save) (struct GMT_CTRL *, FILE *, uint64_t, double *);
 			save = GMT->current.io.output;
 			
-			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
+			GMT->current.io.output = gmt_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
 				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
@@ -311,7 +311,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
 				if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (d_value))	/* Grid node is NaN and -d was set, so change to nan-proxy */
 					d_value = GMT->common.d.nan_proxy[GMT_OUT];
-				else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, d_value))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
+				else if (gmt_z_input_is_nan_proxy (GMT, GMT_Z, d_value))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
 					d_value = GMT->session.d_NaN;
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
 				if (write_error != 0) n_suppressed++;	/* Bad value caught by -s[r] */
@@ -398,7 +398,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				}
 				else
 					GMT->current.io.io_nan_col[0] = GMT_Y;	/* Since that is where z will go now */
-				GMT_set_cartesian (GMT, GMT_OUT);
+				gmt_set_cartesian (GMT, GMT_OUT);
 			}
 
 			if (GMT->current.setting.io_header[GMT_OUT] && first) {
@@ -427,14 +427,14 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					out[GMT_Y] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Y] = GMT->common.d.nan_proxy[GMT_OUT];
-					else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Y]))
+					else if (gmt_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Y]))
 						out[GMT_Y] = GMT->session.d_NaN;
 				}
 				else {
 					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan_func (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Z] = GMT->common.d.nan_proxy[GMT_OUT];
-					else if (GMT_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Z]))
+					else if (gmt_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Z]))
 						out[GMT_Z] = GMT->session.d_NaN;
 				}
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */

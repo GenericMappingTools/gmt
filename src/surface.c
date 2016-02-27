@@ -573,7 +573,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -1331,13 +1331,13 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
 			if (m%2) n += G->header->inc[GMT_Y];
-			GMT_ascii_format_col (GMT, buffer, w, GMT_OUT, GMT_X);
+			gmt_ascii_format_col (GMT, buffer, w, GMT_OUT, GMT_X);
 			sprintf (region, "-R%s/", buffer);
-			GMT_ascii_format_col (GMT, buffer, e, GMT_OUT, GMT_X);
+			gmt_ascii_format_col (GMT, buffer, e, GMT_OUT, GMT_X);
 			strcat (region, buffer);	strcat (region, "/");
-			GMT_ascii_format_col (GMT, buffer, s, GMT_OUT, GMT_Y);
+			gmt_ascii_format_col (GMT, buffer, s, GMT_OUT, GMT_Y);
 			strcat (region, buffer);	strcat (region, "/");
-			GMT_ascii_format_col (GMT, buffer, n, GMT_OUT, GMT_Y);
+			gmt_ascii_format_col (GMT, buffer, n, GMT_OUT, GMT_Y);
 			strcat (region, buffer);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing %s [nx = %d, ny = %d] might cut run time by a factor of %.8g\n",
 				region, sug[i].nx, sug[i].ny, sug[i].factor);
@@ -1608,7 +1608,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					case 'l':	/* Lower limit  */
 						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Ll option: No argument given\n");
 						Ctrl->L.low = strdup (&opt->arg[1]);
-						if (!GMT_access (GMT, Ctrl->L.low, F_OK))	/* file exists */
+						if (!gmt_access (GMT, Ctrl->L.low, F_OK))	/* file exists */
 							Ctrl->L.lmode = 3;
 						else if (Ctrl->L.low[0] == 'd')		/* Use data minimum */
 							Ctrl->L.lmode = 1;
@@ -1620,7 +1620,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					case 'u':	/* Upper limit  */
 						n_errors += GMT_check_condition (GMT, opt->arg[1] == 0, "Syntax error -Lu option: No argument given\n");
 						Ctrl->L.high = strdup (&opt->arg[1]);
-						if (!GMT_access (GMT, Ctrl->L.high, F_OK))	/* file exists */
+						if (!gmt_access (GMT, Ctrl->L.high, F_OK))	/* file exists */
 							Ctrl->L.hmode = 3;
 						else if (Ctrl->L.high[0] == 'd')	/* Use data maximum */
 							Ctrl->L.hmode = 1;

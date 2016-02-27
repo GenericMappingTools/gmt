@@ -195,7 +195,7 @@ int GMT_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	struct rasterfile h;
 	if (!strcmp (header->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 	GMT_memset (&h, 1, struct rasterfile);
 	if (customio_read_rasheader (fp, &h))
@@ -220,7 +220,7 @@ int GMT_ras_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_memset (&h, 1, struct rasterfile);
@@ -231,7 +231,7 @@ int GMT_ras_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	for (i = 0; i < h.maplength; i++) {
 		if (GMT_fread (&u, sizeof (unsigned char), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED);	/* Skip colormap by reading since fp could be stdin */
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	/* Since we have no info on boundary values, just use integer size and steps = 1 */
 
@@ -255,7 +255,7 @@ int GMT_ras_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb+")) == NULL && (fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	h.magic = RAS_MAGIC;
@@ -268,7 +268,7 @@ int GMT_ras_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (customio_write_rasheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -299,7 +299,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
 		if (customio_read_rasheader (fp, &h)) return (GMT_GRDIO_READ_FAILED);
 		if (h.maplength && fseek (fp, (off_t) h.maplength, SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
@@ -353,7 +353,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_free (GMT, actual_row);
 	GMT_free (GMT, tmp);
@@ -387,7 +387,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	h.magic = RAS_MAGIC;
@@ -431,7 +431,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		}
 		if (GMT_fwrite (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_WRITE_FAILED);
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_free (GMT, actual_col);
 	GMT_free (GMT, tmp);
@@ -487,11 +487,11 @@ int GMT_native_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	status = customio_native_read_grd_header (fp, header);
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	return status;
 }
 
@@ -612,7 +612,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
 		GMT_err_trap (customio_native_skip_grd_header (fp, header));
 	}
 	else
@@ -668,7 +668,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_free (GMT, actual_col);
 	GMT_free (GMT, tmp);
@@ -699,7 +699,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	check = !isnan (header->nan_value);
@@ -754,7 +754,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		if (GMT_fwrite (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_free (GMT, actual_col);
 	GMT_free (GMT, tmp);
@@ -808,12 +808,12 @@ int GMT_native_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *hea
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb+")) == NULL && (fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	GMT_err_trap (customio_native_write_grd_header (fp, header));
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -850,7 +850,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) != NULL)	{	/* Skip header */
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) != NULL)	{	/* Skip header */
 		GMT_err_trap (customio_native_skip_grd_header (fp, header));
 	}
 	else
@@ -910,7 +910,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, tmp);
@@ -950,7 +950,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	type = GMT->session.grdformat[header->type][1];
@@ -1008,7 +1008,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	GMT_free (GMT, k);
 	GMT_free (GMT, tmp);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -1139,11 +1139,11 @@ int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	char id[5];
 	if (!strcmp (header->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 	if (GMT_fread (id, sizeof (char), 4U, fp) < 4U)
 		return (GMT_GRDIO_READ_FAILED);
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	if (!strncmp (id, "DSBB", 4U))
 		header->type = GMT_GRID_IS_SF;
 	else if (!strncmp (id, "DSRB", 4U))
@@ -1214,7 +1214,7 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 #endif
 		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	if (GMT_fread (id, sizeof (char), 4U, fp) < 4U) return (GMT_GRDIO_READ_FAILED);
@@ -1233,7 +1233,7 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 		header->type = GMT_GRID_IS_SD;
 	}
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	header->registration = GMT_GRID_NODE_REG;	/* Grid node registration */
 	if (header->type == GMT_GRID_IS_SF) {
@@ -1270,7 +1270,7 @@ int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb+")) == NULL && (fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	strncpy (h.id, "DSBB", 4U);
@@ -1285,7 +1285,7 @@ int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (customio_write_srfheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -1323,7 +1323,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
+	else if ((fp = gmt_fopen (GMT, header->name, "rb")) != NULL) {	/* Skip header */
 		if (header->type == GMT_GRID_IS_SF) {	/* Surfer Version 6 */
 			if (fseek (fp, (off_t) sizeof (struct srf_header6), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 		}
@@ -1396,7 +1396,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	GMT_free (GMT, k);
 	GMT_free (GMT, tmp);
@@ -1446,7 +1446,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 #endif
 		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	type = GMT->session.grdformat[header->type][1];
@@ -1507,7 +1507,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	GMT_free (GMT, k);
 	GMT_free (GMT, tmp);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }

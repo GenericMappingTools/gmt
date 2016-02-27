@@ -1337,8 +1337,8 @@ uint64_t gmt_rect_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		j += gmt_move_to_rect (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
-	*x = GMT_assign_vector (GMT, j, GMT_X);
-	*y = GMT_assign_vector (GMT, j, GMT_Y);
+	*x = gmt_assign_vector (GMT, j, GMT_X);
+	*y = gmt_assign_vector (GMT, j, GMT_Y);
 
 	return (j);
 }
@@ -1522,13 +1522,13 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
 	L = GMT_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
 
-	for (row = 0; row < S->n_rows; row++) GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
+	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		if (S->n_rows == 0) continue;	/* Nothing! */
 		L[side] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
-		GMT_alloc_segment (GMT, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
+		gmt_alloc_segment (GMT, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
 		m = 0;		/* Start with nuthin' */
 
 		/* Must ensure we copy the very first point if it is left of the Dateline */
@@ -1536,22 +1536,22 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		for (row = 1; row < S->n_rows; row++) {	/* For each line segment */
 			np = gmt_clip_we (S->coord[GMT_X][row-1], S->coord[GMT_Y][row-1], S->coord[GMT_X][row], S->coord[GMT_Y][row], xx, yy, 180.0, inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) GMT_alloc_segment (GMT, L[side], n_alloc << 2, S->n_columns, false);
+				if (m == n_alloc) gmt_alloc_segment (GMT, L[side], n_alloc << 2, S->n_columns, false);
 				L[side]->coord[GMT_X][m] = xx[j]; L[side]->coord[GMT_Y][m] = yy[j]; m++;
 			}
 		}
 		if (GMT_polygon_is_open (GMT, L[side]->coord[GMT_X], L[side]->coord[GMT_Y], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) GMT_alloc_segment (GMT, L[side], n_alloc << 2, S->n_columns, false);
+			if (m == n_alloc) gmt_alloc_segment (GMT, L[side], n_alloc << 2, S->n_columns, false);
 			L[side]->coord[GMT_X][m] = L[side]->coord[GMT_X][0];	L[side]->coord[GMT_Y][m] = L[side]->coord[GMT_Y][0];	m++;	/* Yes. */
 		}
-		if (m != n_alloc) GMT_alloc_segment (GMT, L[side], m, S->n_columns, false);
+		if (m != n_alloc) gmt_alloc_segment (GMT, L[side], m, S->n_columns, false);
 		L[side]->n_rows = m;
 		if (S->label) {
 			sprintf (label, "%s part %c", S->label, part[side]);
 			L[side]->label = strdup (label);
 		}
 		if (S->header) L[side]->header = strdup (S->header);
-		if (S->ogr) GMT_duplicate_ogr_seg (GMT, L[side], S);
+		if (S->ogr) gmt_duplicate_ogr_seg (GMT, L[side], S);
 	}
 	L[0]->range = GMT_IS_0_TO_P360;	L[1]->range = GMT_IS_M360_TO_0_RANGE;
 	*Lout = L;
@@ -1644,8 +1644,8 @@ uint64_t gmt_wesn_clip_old (struct GMT_CTRL *GMT, double *lon, double *lat, uint
 		j += gmt_move_to_wesn (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], lon[i], lat[i], lon[i-1], lat[i-1], j, nx);	/* May add 2 points, which explains the j+2 stuff */
 	}
 
-	*x = GMT_assign_vector (GMT, j, GMT_X);
-	*y = GMT_assign_vector (GMT, j, GMT_Y);
+	*x = gmt_assign_vector (GMT, j, GMT_X);
+	*y = gmt_assign_vector (GMT, j, GMT_Y);
 
 #ifdef CRAP
 {
@@ -1719,7 +1719,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	}
 	if (!GMT->current.map.coastline) {	/* Not do if pscoast since it has its own oddness */
 		double xmin, xmax;
-		GMT_get_lon_minmax (GMT, lon, n, &xmin, &xmax);
+		gmt_get_lon_minmax (GMT, lon, n, &xmin, &xmax);
 		xmin -= 360.0;	xmax -= 360.0;
 		while (xmax < border[GMT_LEFT]) {xmin += 360.0;	xmax += 360.0;}
 		if (xmin > border[GMT_RIGHT]) return 0;	/* Outside */
@@ -5255,7 +5255,7 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 		GMT_xy_to_geo (GMT, &lon[k++], &lat, xmax, y);
 		if (lat < s) s = lat;	if (lat > n) n = lat;
 	}
-	GMT_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
+	gmt_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
 	GMT_free (GMT, lon);
 
 	/* Then check if one or both poles are inside map; then the above wont be correct */
@@ -8689,7 +8689,7 @@ struct GMT_DATASEGMENT * GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	if (m < 2) return NULL;
 	
 	S = GMT_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
-	if (GMT_alloc_segment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
+	if (gmt_alloc_segment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
 
 	plat = GMT_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */
 	GMT_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
@@ -8724,6 +8724,6 @@ struct GMT_DATASEGMENT * GMT_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	S->coord[GMT_X][n - 1] = S->coord[GMT_X][0];		/* Make really sure the polygon is closed */
 	S->coord[GMT_Y][n - 1] = S->coord[GMT_Y][0];
 	S->n_rows = n;
-	GMT_set_seg_polar (GMT, S);				/* Prepare if a polar cap */
+	gmt_set_seg_polar (GMT, S);				/* Prepare if a polar cap */
 	return (S);	/* Pass out the results */
 }

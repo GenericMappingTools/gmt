@@ -233,8 +233,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 						}
 						else if (n == 3) {	/* 3-D spherical rotation */
 							Ctrl->T.mode = DO_ROT3D;
-							n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.par[0]), txt_a);
-							n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.par[1]), txt_b);
+							n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.par[0]), txt_a);
+							n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.par[1]), txt_b);
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
@@ -262,7 +262,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 	n_in = (Ctrl->C.active[GMT_IN] && GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_in);
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
 	
@@ -280,8 +280,8 @@ GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double co
 	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
 		if (GMT_is_geographic (GMT, GMT_IN)) {
-			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
-			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
 			if (geocentric) coord[GMT_Y] = GMT_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
 			GMT_geo_to_cart (GMT, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
 			n_out = 3;
@@ -537,7 +537,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		if (Din->n_columns == 3) Ctrl->T.mode = DO_ROTVAR3D;	/* OK, it is 3D */
 	}
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
-		GMT_set_cartesian (GMT, GMT_OUT);
+		gmt_set_cartesian (GMT, GMT_OUT);
 
 	Din->dim[GMT_COL] = n_out + add_cols;	/* State we want a different set of columns on output */
 	Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);

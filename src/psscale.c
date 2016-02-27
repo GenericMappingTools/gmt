@@ -465,7 +465,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Syntax error -L option: Cannot be used if -B option sets increments.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && GMT_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

@@ -603,7 +603,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Immediately skip locations outside of the map area */
 
-		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
+		if ((gmt_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (gmt_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
@@ -732,7 +732,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		/* If option -C is used, read the new position */
 
 		if (Ctrl->C.active) {
-			if ((GMT_scanf (GMT, col[last-1+new_fmt], GMT->current.io.col_type[GMT_IN][GMT_X], &xynew[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[last+new_fmt], GMT->current.io.col_type[GMT_IN][GMT_Y], &xynew[iy]) == GMT_IS_NAN)) {
+			if ((gmt_scanf (GMT, col[last-1+new_fmt], GMT->current.io.col_type[GMT_IN][GMT_X], &xynew[ix]) == GMT_IS_NAN) || (gmt_scanf (GMT, col[last+new_fmt], GMT->current.io.col_type[GMT_IN][GMT_Y], &xynew[iy]) == GMT_IS_NAN)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad newX and/or newY coordinates, must exit)\n", n_rec);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}

@@ -555,10 +555,10 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	np = Ctrl->N.value;	/* Row dimension for matrices gtg and v  */
 	allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
 		Return (error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, Ctrl->n_outputs)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->n_outputs)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */

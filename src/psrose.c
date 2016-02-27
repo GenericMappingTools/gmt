@@ -314,7 +314,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && GMT_access (GMT, Ctrl->C.file, R_OK),
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && gmt_access (GMT, Ctrl->C.file, R_OK),
 	                                 "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, GMT_IS_ZERO (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
@@ -418,7 +418,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	n = 0;
 	n_in = (GMT->common.i.active && GMT->common.i.n_cols == 1) ? 1 : 2;
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */

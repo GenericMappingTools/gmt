@@ -272,7 +272,7 @@ GMT_LOCAL unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO
 			y = D[rec].number[MGD77_LATITUDE];
 			/* Adjust cruise longitude if necessary; We know cruise is between +/-180 */
 			if (info->G->header->wesn[XLO] >= 0.0 && D[rec].number[MGD77_LONGITUDE] < 0.0)
-				GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &x);	/* Adjust to 0-360 range */
+				gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &x);	/* Adjust to 0-360 range */
 		}
 		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
 		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */
@@ -931,12 +931,12 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* READ AND APPLY CUSTOM LIMITS FILE */
 	mgd77snifferdefs[MGD77_YEAR].maxValue = (double) systemTime->tm_year + 1900;
 	if (custom_limit_file) {
-		if ((custom_fp = GMT_fopen (GMT, custom_limit_file, "r")) == NULL) {
+		if ((custom_fp = gmt_fopen (GMT, custom_limit_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Could not open custom limit file %s\n", custom_limit_file);
 			bailout (EXIT_FAILURE);
 	 	}
 		else {
-			while (GMT_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
+			while (gmt_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
 				GMT_chop (custom_limit_line);					/* Rid the world of CR/LF */
 				if (sscanf (custom_limit_line,"%s %s %s %s %s", field_abbrev, tmp_min, tmp_max, tmp_maxSlope, tmp_area) == 5) {
 					i = 0;
@@ -954,10 +954,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		GMT_fclose (GMT, custom_fp);
+		gmt_fclose (GMT, custom_fp);
 	}
 
-	GMT_set_geographic (GMT, GMT_IN);
+	gmt_set_geographic (GMT, GMT_IN);
 
 	/* Use GMT time formatting */
 	GMT->current.io.col_type[GMT_OUT][MGD77_TIME] = GMT_IS_ABSTIME;
@@ -997,13 +997,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if ((1 << i) & (MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS)) {
 				sprintf (buffer, "%s%s",mgd77defs[i].abbrev,GMT->current.setting.io_col_separator);
 				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].minValue, GMT_X);
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].minValue, GMT_X);
 				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxValue, GMT_Y);
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxValue, GMT_Y);
 				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], maxSlope[i], GMT_Z);
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], maxSlope[i], GMT_Z);
 				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxArea, 3);
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxArea, 3);
 				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
@@ -1273,7 +1273,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							E[curr].utc_offset = utc_offset;
 							E[curr].flags[E77_NAV] |= NAV_TZ_ERROR;
 							if (warn[TIME_WARN]) {
-								GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
+								gmt_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d - Time zone adjustment error (Westbound)",list[argno],timeStr,curr+1);
 								if (D[curr].time-D[j].time < ((D[curr].time-3600.0*D[curr].number[MGD77_TZ])-(D[j].time-3600.0*D[j].number[MGD77_TZ])))
 									sprintf (placeStr,"%s %s %d - Time zone adjustment error (Eastbound)",list[argno],timeStr,curr+1);
@@ -1321,7 +1321,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							nav_error = true;
 							n_bad++;
 							if (warn[TIME_WARN]) {
-								GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
+								gmt_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, D[curr].time-D[j].time);
 								sprintf (buffer, "%s - Time not monotonically increasing (%s sec.)\n",placeStr, text);
@@ -1355,7 +1355,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						if (fabs(speed)>max_speed) {
 							nav_error = true;
 							if (warn[SPEED_WARN]) {
-								GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
+								gmt_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, speed);
 								sprintf (buffer, "%s - Excessive speed %s %s\n",placeStr, text, speed_units);
@@ -2204,9 +2204,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 			/* Create the current time string formatted according to gmtdefaults */
 			if (gotTime)
-				GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
+				gmt_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 			else
-				GMT_ascii_format_col (GMT, timeStr, distance[curr], GMT_OUT, GMT_Z);
+				gmt_ascii_format_col (GMT, timeStr, distance[curr], GMT_OUT, GMT_Z);
 
 			/* Create the location portion of the verbose data warning string (not for E77) */
 			sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
@@ -2659,7 +2659,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out[curr]);
 						else {
 							for (i = 0; i < n_out_columns; i++) {
-								GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[curr][i], i);
+								gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[curr][i], i);
 								if ((i+1) < n_out_columns) GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 							}
 							GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
@@ -2707,7 +2707,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							GMT->current.io.output (GMT->session.std[GMT_OUT], n_out_columns, out);
 						else {
 							for (i = 0; i < (n_out_columns); i++) {
-								GMT_ascii_output_col (GMT->session.std[GMT_OUT], out[rec][i], i);
+								gmt_ascii_output_col (GMT->session.std[GMT_OUT], out[rec][i], i);
 								if ((i+1) < n_out_columns) GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 							}
 							GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
@@ -2836,9 +2836,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 				if (!strcmp(errorStr,"0-0-0")) continue;
 				if (gotTime)
-					GMT_ascii_format_col (GMT, timeStr, D[rec].time, GMT_OUT, MGD77_TIME);
+					gmt_ascii_format_col (GMT, timeStr, D[rec].time, GMT_OUT, MGD77_TIME);
 				else
-					GMT_ascii_format_col (GMT, timeStr, distance[rec], GMT_OUT, GMT_Z);
+					gmt_ascii_format_col (GMT, timeStr, distance[rec], GMT_OUT, GMT_Z);
 				/* Version 1 data corrections apply crucial nav errors and not value and gradient errors */
 				sprintf (placeStr, "%s%s%s%s%d%s",list[argno],GMT->current.setting.io_col_separator,timeStr,GMT->current.setting.io_col_separator,rec+1,\
 				GMT->current.setting.io_col_separator);

@@ -227,13 +227,13 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the x2sys_put main code ----------------------------*/
 
-	if (Ctrl->In.active && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
+	if (Ctrl->In.active && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 	if (fp == NULL) fp = GMT->session.std[GMT_IN];	/* No file given; read stdin instead */
 
-	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Got the first record from the track binindex file */
+	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Got the first record from the track binindex file */
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track binindex file\n");
 		Return (EXIT_FAILURE);
 	}
@@ -262,7 +262,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	/* Ok, now we can start reading new info */
 
-	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 2nd line of track binindex file\n");
 		Return (EXIT_FAILURE);
 	}
@@ -298,11 +298,11 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 			skip = false;
 
 		if (skip) {	/* Just wind past this segment */
-			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+			if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Read error in a segment line of track binindex file\n");
 				Return (EXIT_FAILURE);
 			}
-			while (line[0] != '>' && (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));	/* Keep reading until EOF of next segment header */
+			while (line[0] != '>' && (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));	/* Keep reading until EOF of next segment header */
 		}
 		else {	/* Read the tbf information for this track */
 
@@ -321,7 +321,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 				this_info = this_info->next_info;
 
 			total_flag = 0;
-			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
+			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp) && line[0] != '>') {
 				i = sscanf (line, "%*s %*s %d %d", &index, &flag);
 				if (i != 2) {	/* Could not decode the index and the flag entries */
 					GMT_Report (API, GMT_MSG_NORMAL, "Error processing record for track %s [%s]\n", track, line);
@@ -343,7 +343,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 			this_info->flag = total_flag;	/* Store the track flags here */
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	/* Done, now we must rewrite the <ID>_index.b and <ID>_tracks.d files */
 

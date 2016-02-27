@@ -642,7 +642,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	/* Print out final estimates */
 
-	if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -652,7 +652,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_set_cartesian (GMT, GMT_OUT);	/* Since no coordinates are written */
+	gmt_set_cartesian (GMT, GMT_OUT);	/* Since no coordinates are written */
 
 	if (Ctrl->T.active) {	/* Determine the best contour value and return the corresponding information for that contour only */
 		c = ors_find_kink (GMT, height, n_contours, Ctrl->T.mode);

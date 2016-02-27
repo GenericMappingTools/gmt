@@ -313,7 +313,7 @@ GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char **
 		sscanf (line, "%s %s", name, date);
 		p[n] = strdup (name);
 		if (date[strlen(date)-1] != 'T') strcat (date, "T");
-		if (GMT_scanf (GMT, date, GMT_IS_ABSTIME, &T[n]) == GMT_IS_NAN) T[n] = GMT->session.d_NaN;
+		if (gmt_scanf (GMT, date, GMT_IS_ABSTIME, &T[n]) == GMT_IS_NAN) T[n] = GMT->session.d_NaN;
 
 		n++;
 		if (n == n_alloc) {
@@ -463,7 +463,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	/* Read the crossover info */
 
 	fp = GMT->session.std[GMT_IN];
-	if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
+	if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
@@ -563,7 +563,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	}
 	else {	/* ASCII input with track names */
 		char file_TAG[GMT_LEN64] = {""}, file_column[GMT_LEN64] = {""}, unused1[GMT_LEN64] = {""}, unused2[GMT_LEN64] = {""};
-		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
+		if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
 			GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");
 			Return (EXIT_FAILURE);
 		}
@@ -572,50 +572,50 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
-		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
+		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
 			if (line[0] == '#') continue;	/* Skip other comments */
 			switch (Ctrl->E.mode) {	/* Handle input differently depending on what is expected */
 				case F_IS_CONSTANT:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], z_txt, w_txt, unused1, unused2);
 					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ec expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
 					break;
 				case F_IS_DRIFT_T:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
 					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Et expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
-					if (GMT_scanf (GMT, t_txt[0], GMT_IS_ABSTIME, &data[COL_T1][n_COE]) == GMT_IS_NAN) data[COL_T1][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, t_txt[1], GMT_IS_ABSTIME, &data[COL_T2][n_COE]) == GMT_IS_NAN) data[COL_T2][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]    = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[0], GMT_IS_ABSTIME, &data[COL_T1][n_COE]) == GMT_IS_NAN) data[COL_T1][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[1], GMT_IS_ABSTIME, &data[COL_T2][n_COE]) == GMT_IS_NAN) data[COL_T2][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]    = GMT->session.d_NaN;
 					break;
 				case F_IS_DRIFT_D:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
 					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Ed expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
-					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_D1][n_COE]) == GMT_IS_NAN) data[COL_D1][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_D2][n_COE]) == GMT_IS_NAN) data[COL_D2][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_D1][n_COE]) == GMT_IS_NAN) data[COL_D1][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_D2][n_COE]) == GMT_IS_NAN) data[COL_D2][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
 					break;
 				case F_IS_GRAV1930:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], z_txt, w_txt, unused1);
 					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eg expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
-					if (GMT_scanf (GMT, t_txt[0], GMT_IS_LAT, &data[COL_YY][n_COE]) == GMT_IS_NAN) data[COL_YY][n_COE]  = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[0], GMT_IS_LAT, &data[COL_YY][n_COE]) == GMT_IS_NAN) data[COL_YY][n_COE]  = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE] = GMT->session.d_NaN;
 					break;
 				case F_IS_HEADING:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], z_txt, w_txt);
 					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Eh expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
-					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_H1][n_COE]) == GMT_IS_NAN) data[COL_H1][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_H2][n_COE]) == GMT_IS_NAN) data[COL_H2][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_H1][n_COE]) == GMT_IS_NAN) data[COL_H1][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_H2][n_COE]) == GMT_IS_NAN) data[COL_H2][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, z_txt, GMT_IS_FLOAT, &data[COL_COE][n_COE]) == GMT_IS_NAN) data[COL_COE][n_COE]  = GMT->session.d_NaN;
 					break;
 				case F_IS_SCALE:
 					ks = sscanf (line, "%s %s %s %s %s %s", trk[0], trk[1], t_txt[0], t_txt[1], w_txt, unused1);
 					if (ks < expect) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -Es expected %d columns but found %d for crossover %" PRIu64 "\n", expect, ks, n_COE);
-					if (GMT_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_Z1][n_COE]) == GMT_IS_NAN) data[COL_Z1][n_COE] = GMT->session.d_NaN;
-					if (GMT_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_Z2][n_COE]) == GMT_IS_NAN) data[COL_Z2][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[0], GMT_IS_FLOAT, &data[COL_Z1][n_COE]) == GMT_IS_NAN) data[COL_Z1][n_COE] = GMT->session.d_NaN;
+					if (gmt_scanf (GMT, t_txt[1], GMT_IS_FLOAT, &data[COL_Z2][n_COE]) == GMT_IS_NAN) data[COL_Z2][n_COE] = GMT->session.d_NaN;
 					break;
 			}
 			if (Ctrl->W.active) {
-				if (GMT_scanf (GMT, w_txt, GMT_IS_FLOAT, &data[COL_WW][n_COE]) == GMT_IS_NAN) data[COL_WW][n_COE] = GMT->session.d_NaN;
+				if (gmt_scanf (GMT, w_txt, GMT_IS_FLOAT, &data[COL_WW][n_COE]) == GMT_IS_NAN) data[COL_WW][n_COE] = GMT->session.d_NaN;
 			}
 			else
 				data[COL_WW][n_COE] = 1.0;
@@ -653,7 +653,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %d COE records\n", n_COE);
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_COE, double);
 	data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_COE, double);

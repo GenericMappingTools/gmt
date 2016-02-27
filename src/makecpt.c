@@ -233,7 +233,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 				break;
 			case 'T':	/* Sets up color z values */
 				Ctrl->T.active = true;
-				if (!GMT_access (GMT, opt->arg, R_OK))
+				if (!gmt_access (GMT, opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
 				else {
 					Ctrl->T.inc = 0.0;
@@ -267,7 +267,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT
 	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] > 0 && !Ctrl->E.active, "Syntax error: No input files expected unless -E is used\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file && (Ctrl->T.low >= Ctrl->T.high || Ctrl->T.inc < 0.0), "Syntax error -T option: Give start < stop and inc > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.file && GMT_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T option: Cannot access file %s\n", Ctrl->T.file);
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->T.active, "Syntax error -E: Cannot be combined with -T\n");

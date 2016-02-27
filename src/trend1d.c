@@ -650,7 +650,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	np = Ctrl->N.M.n_terms;	/* Row dimension for matrices gtg and v  */
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2 + Ctrl->W.active)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2 + Ctrl->W.active)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -808,7 +808,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 	untransform_x_1d (data, n_data, &(Ctrl->N.M), xmin, xmax);
 
 	i = (Ctrl->model_parameters) ? n_model : Ctrl->n_outputs;
-	if ((error = GMT_set_cols (GMT, GMT_OUT, i)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, i)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */

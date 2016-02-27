@@ -166,7 +166,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
-		if (GMT_getdatapath (GMT, opt->arg, path, fmode)) {	/* Found the file */
+		if (gmt_getdatapath (GMT, opt->arg, path, fmode)) {	/* Found the file */
 			if (Ctrl->D.active) {
 				p = strstr (path, opt->arg);	/* Start of filename */
 				if (!strcmp (p, path)) /* Current directory */

@@ -650,7 +650,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
 	if (GMT->common.R.active) GMT_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -765,7 +765,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
 				Return (API->error);
 			}
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 				Return (error);
 			}
 			S = D->table[0]->segment[0];	/* Only one table with one segment here, with 2 cols and F.n_boxes rows */
@@ -802,7 +802,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, unsigned int);	/* Save first 4 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 4U)) != GMT_OK) {
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 4U)) != GMT_OK) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */

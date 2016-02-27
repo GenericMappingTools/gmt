@@ -424,7 +424,7 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 
 		if (fabs (Ctrl->L.d_km) > GMT_CONV4_LIMIT) {		/* User wants to interpolate tracks rather than project individual points */
 			make_path = true;
-			GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+			gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			(Ctrl->L.mode) ? sprintf (type, "Flowline") : sprintf (type, "Hotspot track");
 			(Ctrl->D.mode) ? sprintf (dir, "from") : sprintf (dir, "to");
 		}
@@ -450,10 +450,10 @@ int GMT_backtracker (void *V_API, int mode, void *args) {
 	if (Ctrl->W.active) n_out = 5 + !(Ctrl->W.mode == 0);
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
 		Return (error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 		Return (error);
 	}
 

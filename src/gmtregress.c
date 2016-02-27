@@ -1036,7 +1036,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 		n_try = lrint ((Ctrl->A.max - Ctrl->A.min) / Ctrl->A.inc) + 1;	/* Number of angles to explore */
 		n_columns = GMTREGRESS_NPAR_MAIN;	/* Hardwired to return angle, misfit, slope, intercept */
 		Sa = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Will hold the result of the experiment */
-		GMT_alloc_segment (GMT, Sa, n_try, n_columns, true);	/* Reallocate fixed temp space for this experiment */
+		gmt_alloc_segment (GMT, Sa, n_try, n_columns, true);	/* Reallocate fixed temp space for this experiment */
 	}
 	else {	/* Work up best regression solution per input segment */
 		if (Ctrl->F.param)
@@ -1069,7 +1069,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2 + Ctrl->W.n_weights)) != 0) Return (error);
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -1084,9 +1084,9 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_columns)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_columns)) != 0) Return (error);
 
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* To write segment headers regardless of input */
 	
 	/* Process all tables and their segments */
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
@@ -1234,7 +1234,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->A.active) {	/* Free special arrays and segment used for -A experiment */
-		GMT_free_segment (GMT, &Sa, GMT_ALLOC_INTERNALLY);
+		gmt_free_segment (GMT, &Sa, GMT_ALLOC_INTERNALLY);
 		GMT_free (GMT, U);
 		GMT_free (GMT, V);
 		GMT_free (GMT, W);

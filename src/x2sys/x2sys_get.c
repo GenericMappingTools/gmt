@@ -235,11 +235,11 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 		
 	if (s->geographic) {	/* Meaning longitude, latitude */
-		GMT_set_geographic (GMT, GMT_OUT);
+		gmt_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.geo.range = s->geodetic;
 	}
 	else	/* Cartesian data */
-		GMT_set_cartesian (GMT, GMT_OUT);
+		gmt_set_cartesian (GMT, GMT_OUT);
 		
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 
@@ -324,9 +324,9 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 					if (y_ok && !n_ok && Ctrl->C.active && first) {
 						x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.inc[GMT_X];
 						y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.inc[GMT_Y];
-						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
+						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 						fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
+						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
 						fprintf (GMT->session.std[GMT_OUT], "\n");
 						first = false;
 					}
@@ -356,7 +356,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
+	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {
 		for (id1 = 0, n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {

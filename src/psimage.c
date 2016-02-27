@@ -303,16 +303,16 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if
 	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */
 	if (j && file[j+1] == 'b') file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
 
-	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
+	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
 	if (GMT_fread (c, 1U, 4U, fp) != 4U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not read 4 bytes from file %s\n", file);
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		return (-1);
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	if (j) file[j] = '+';			/* Reset the band request string */
 	/* Note: cannot use GMT_same_rgb here, because that requires doubles */
 	if (c[0] == magic_ps[0] && c[1] == magic_ps[1] && c[2] == magic_ps[2] && c[3] == magic_ps[3]) return(1);
@@ -418,7 +418,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	memset (&header, 0, sizeof(struct imageinfo)); /* initialize struct */
 	if (known) {	/* Read an EPS or Sun raster file */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
-		if (GMT_getdatapath (GMT, Ctrl->In.file, path, R_OK) == NULL) {
+		if (gmt_getdatapath (GMT, Ctrl->In.file, path, R_OK) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s.\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}

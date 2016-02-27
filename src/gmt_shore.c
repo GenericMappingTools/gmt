@@ -286,7 +286,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 
 	/* 2. First check for coastline.conf */
 
-	if (GMT_getsharepath (GMT, "conf", "coastline", ".conf", path, F_OK) || GMT_getsharepath (GMT, "coast", "coastline", ".conf", path, F_OK)) {
+	if (gmt_getsharepath (GMT, "conf", "coastline", ".conf", path, F_OK) || gmt_getsharepath (GMT, "coast", "coastline", ".conf", path, F_OK)) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
@@ -328,7 +328,7 @@ L1:
 	/* 3. Then check for the named file itself */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Trying via sharepath\n");
-	if (GMT_getsharepath (GMT, "coast", stem, ".nc", path, F_OK)) {
+	if (gmt_getsharepath (GMT, "coast", stem, ".nc", path, F_OK)) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "3. GSHHG: Trying %s\n", path);
 		if ( access (path, R_OK) == 0) {	/* File can be read */
 			if ( gshhg_require_min_version (path, version) ) {
@@ -1235,7 +1235,7 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 	west_border = floor (wesn[XLO] / c.bsize) * c.bsize;
 	east_border =  ceil (wesn[XHI] / c.bsize) * c.bsize;
 
-	D = GMT_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
+	D = gmt_create_dataset (GMT, 0U, 0U, 0U, 2U, GMT_IS_LINE, true);	/* 2 cols but no tables yet */
 	D->table = GMT_memory (GMT, NULL, c.nb, struct GMT_DATATABLE *);
 
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
@@ -1251,14 +1251,14 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			for (k = 0; k < np; k++) if (p[k].n) n_seg++;	/* Count number of segments needed */
 		}
 		if (n_seg) {	/* We have a known number of line segments in this bin; this constitutes this table */
-			if ((D->table[tbl] = GMT_create_table (GMT, 0U, 0U, 2U, false)) == NULL) return (NULL);
+			if ((D->table[tbl] = gmt_create_table (GMT, 0U, 0U, 2U, false)) == NULL) return (NULL);
 			D->table[tbl]->segment = GMT_memory (GMT, NULL, n_seg, struct GMT_DATASEGMENT *);
 			D->table[tbl]->n_segments = n_seg;
 			for (seg = k = 0; k < np; k++) {	/* For each line segment from GSHHS */
 				if (p[k].n == 0) continue;	/* One of the ones to skip anyway */
 				/* Allocate segment to hold this line segment and memcpy over the coordinates */
 				S = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT);
-				GMT_alloc_segment (GMT, S, p[k].n, 2U, true);
+				gmt_alloc_segment (GMT, S, p[k].n, 2U, true);
 				GMT_memcpy (S->coord[GMT_X], p[k].lon, S->n_rows, double);
 				GMT_memcpy (S->coord[GMT_Y], p[k].lat, S->n_rows, double);
 				D->table[tbl]->segment[seg++] = S;	/* Hook onto dataset structure */
@@ -1269,7 +1269,7 @@ struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			D->n_segments += D->table[tbl]->n_segments;	/* Sum up total number of segments across the data set */
 			D->n_records  += D->table[tbl]->n_records;	/* Sum up total number of records across the data set */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Avoid longitude adjustments: longitudes are guaranteed to be correct; rounding errors only messes things up */
-			GMT_set_tbl_minmax (GMT, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
+			gmt_set_tbl_minmax (GMT, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	/* Reset X column to be longitudes */
 		}
 		GMT_free_shore (GMT, &c);	/* Done with this GSHHS bin */

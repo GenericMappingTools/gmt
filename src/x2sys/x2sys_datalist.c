@@ -188,7 +188,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	struct X2SYS_ADJUST *adj = NULL;
 	
 	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
-	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
+	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
 	
 	adj = GMT_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
 	adj->d = GMT_memory (GMT, NULL, n_alloc, double);
@@ -204,7 +204,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 			adj->c = GMT_memory (GMT, adj->c, n_alloc, double);
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	adj->d = GMT_memory (GMT, adj->d, n, double);
 	adj->c = GMT_memory (GMT, adj->c, n, double);
 	adj->n = n;
@@ -422,7 +422,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
-	GMT_set_cols (GMT, GMT_OUT, s->n_out_columns);
+	gmt_set_cols (GMT, GMT_OUT, s->n_out_columns);
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		x2sys_end (GMT, s);
 		x2sys_free_list (GMT, trk_name, n_tracks);
@@ -435,7 +435,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
 		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, bool);
 	}
-	if (Ctrl->E.active) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
+	if (Ctrl->E.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {	/* Process each track */
 
@@ -503,7 +503,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				char fmt_record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
 				for (ocol = 0; ocol < s->n_out_columns; ocol++) {
 					if (s->info[s->out_order[ocol]].format[0] == '-')
-						GMT_ascii_format_col (GMT, text, out[ocol], GMT_OUT, ocol);
+						gmt_ascii_format_col (GMT, text, out[ocol], GMT_OUT, ocol);
 					else {
 						if (GMT_is_dnan (out[ocol]))
 							sprintf (text, "NaN");

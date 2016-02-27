@@ -235,7 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 				}
 				else {
 					Ctrl->D.active = true;
-					if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a grid with density contrast */
+					if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a grid with density contrast */
 						Ctrl->D.file = strdup (opt->arg);
 						Ctrl->D.variable = true;
 						Ctrl->misc.rho = 1.0;
@@ -528,7 +528,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		delta_pt /= (2.0 * M_PI);			/* Write out frequency, not wavenumber  */
 		if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_pt *= 1000.0;	/* Wanted wavelength in km */
 
-		GMT_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
+		gmt_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
 
 		dim[GMT_COL] = 2;
 		dim[GMT_ROW] = Ctrl->C.n_pt;
@@ -1013,7 +1013,7 @@ GMT_LOCAL int do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struc
 	if (Ctrl->misc.from_top) 		/* compute theoretical "load from top" admittance */
 		load_from_top_admitt(GMT, Ctrl, K, z_from_top);
 
-	GMT_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
+	gmt_set_cartesian (GMT, GMT_OUT);	/* To counter-act any -fg setting */
 
 	n_col_out = (Ctrl->misc.from_below || Ctrl->misc.from_top) ? 4 : 3;
 	dim[GMT_COL] = n_col_out;

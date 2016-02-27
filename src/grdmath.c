@@ -1986,14 +1986,14 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	GMT_set_cols (GMT, GMT_IN, 2);
-	GMT_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
+	gmt_set_cols (GMT, GMT_IN, 2);
+	gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE reading file %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
 	}
-	GMT_skip_xy_duplicates (GMT, false);	/* Reset */
+	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 	T = D->table[0];	/* Only one table in a single file */
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
 		for (seg = inside = 0; !inside && seg < T->n_segments; seg++) {
@@ -2228,7 +2228,7 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 	else
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
-	GMT_set_cols (GMT, GMT_IN,  2);
+	gmt_set_cols (GMT, GMT_IN,  2);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s reading file %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
@@ -2358,7 +2358,7 @@ GMT_LOCAL void grd_LDISTG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		stack[last]->G->data[node] = (float)d;
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Max LDISTG horizon distance used: %g\n", max_hor);
-	GMT_free_dataset (GMT, &D);
+	gmt_free_dataset (GMT, &D);
 }
 
 GMT_LOCAL void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -4138,15 +4138,15 @@ GMT_LOCAL int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt,
 
 	/* Preliminary test-conversion to a number */
 
-	if (!GMT_not_numeric (GMT, opt->arg)) {	/* Only check if we are not sure this is NOT a number */
+	if (!gmt_not_numeric (GMT, opt->arg)) {	/* Only check if we are not sure this is NOT a number */
 		expect = (strchr (opt->arg, 'T')) ? GMT_IS_ABSTIME : GMT_IS_UNKNOWN;	/* Watch out for dateTclock-strings */
-		check = GMT_scanf (GMT, opt->arg, expect, &tmp);
+		check = gmt_scanf (GMT, opt->arg, expect, &tmp);
 		possible_number = true;
 	}
 
 	/* Determine if argument is file. But first strip off suffix */
 
-	if (!GMT_access (GMT, opt->arg, F_OK)) {	/* Yes it is */
+	if (!gmt_access (GMT, opt->arg, F_OK)) {	/* Yes it is */
 		if (check != GMT_IS_NAN && possible_number) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Your argument %s is both a file and a number.  File is selected\n", opt->arg);
 		return GRDMATH_ARG_IS_FILE;
 	}
@@ -4448,7 +4448,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 			continue;
 		}
 
-		if (op != GRDMATH_ARG_IS_FILE && !GMT_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!\n", opt->arg, opt->arg);
+		if (op != GRDMATH_ARG_IS_FILE && !gmt_access (GMT, opt->arg, R_OK)) GMT_Message (API, GMT_TIME_NONE, "Warning: The number or operator %s may be confused with an existing file %s!\n", opt->arg, opt->arg);
 
 		if (op < GRDMATH_ARG_IS_OPERATOR) {	/* File name or factor */
 

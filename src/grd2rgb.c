@@ -94,7 +94,7 @@ GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *heade
 
 	FILE *fp = NULL;
 
-	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
+	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open rasterfile %s!\n", file);
 		return (EXIT_FAILURE);
 	}
@@ -113,7 +113,7 @@ GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *heade
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 32-bit rasterfile!\n");
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		GMT_free (GMT, buffer);
 		return (EXIT_FAILURE);
 	}
@@ -124,7 +124,7 @@ GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *heade
 		}
 	}
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	*P = buffer;
 	return (0);
 }
@@ -138,7 +138,7 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 	int rgb[3];
 	FILE *fp = NULL;
 
-	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
+	if ((fp = gmt_fopen (GMT, file, "rb")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open rasterfile %s!\n", file);
 		return (EXIT_FAILURE);
 	}
@@ -166,7 +166,7 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 		GMT_free (GMT, img_pow);
 		return (EXIT_FAILURE);
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	inc = (byte_per_pixel == 3) ? 3: 4;
 	for (j = 0; j < img_size; j += inc) {
@@ -451,13 +451,13 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 	}
 	else {
 		int nx, ny;
-		if (GMT_access (GMT, Ctrl->In.file, R_OK)) {
+		if (gmt_access (GMT, Ctrl->In.file, R_OK)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 
 		if (!Ctrl->W.active) {
-			if (GMT_getdatapath (GMT, Ctrl->In.file, buffer, R_OK) == NULL) {
+			if (gmt_getdatapath (GMT, Ctrl->In.file, buffer, R_OK) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open file %s\n", Ctrl->In.file);
 				Return (EXIT_FAILURE);
 			}

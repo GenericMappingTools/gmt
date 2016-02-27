@@ -219,11 +219,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/')) {	/* Got start/stop */
 					Ctrl->S.mode = 1;
 					sscanf (opt->arg, "%[^/]/%s", A, B);
-					GMT_scanf_arg (GMT, A, GMT_IS_UNKNOWN, &Ctrl->S.start);
-					GMT_scanf_arg (GMT, B, GMT_IS_UNKNOWN, &Ctrl->S.stop);
+					gmt_scanf_arg (GMT, A, GMT_IS_UNKNOWN, &Ctrl->S.start);
+					gmt_scanf_arg (GMT, B, GMT_IS_UNKNOWN, &Ctrl->S.stop);
 				}
 				else
-					GMT_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, &Ctrl->S.start);
+					gmt_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, &Ctrl->S.start);
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == 1 && Ctrl->S.stop <= Ctrl->S.start, "Syntax error -S option: <stop> must exceed <start>\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->I.active, "Syntax error: Specify only one of -N and -S\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && GMT_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->T.col >= 2) ? Ctrl->T.col + 1 : 2);
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
@@ -322,14 +322,14 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	/* First read input data to be sampled */
 	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_IN, 0)) != 0) Return (error);
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
-		GMT_init_io_columns (GMT, GMT_IN);	/* Reset any effects of -i */
+		gmt_init_io_columns (GMT, GMT_IN);	/* Reset any effects of -i */
 		
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
@@ -357,7 +357,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 
 	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, false);
+		Tout = gmt_create_table (GMT, Din->table[tbl]->n_segments, 0, Din->n_columns, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -424,7 +424,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				m = row;
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
-			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
+			gmt_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
 			if (resample_path) {	/* Use resampled path coordinates */
 				GMT_memcpy (Sout->coord[GMT_X], lon, m, double);
 				GMT_memcpy (Sout->coord[GMT_Y], lat, m, double);
@@ -473,7 +473,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
-	//GMT_free_dataset (API->GMT, &Dout);	/* Since not registered */
+	//gmt_free_dataset (API->GMT, &Dout);	/* Since not registered */
 
 	if (Ctrl->N.active) GMT_free (GMT, t_out);
 	GMT_free (GMT, nan_flag);

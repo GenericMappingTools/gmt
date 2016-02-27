@@ -281,7 +281,7 @@ GMT_LOCAL void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int 
 	if (first) record[0] = 0;
 	for (i = 0; i < n; i++) {
 		if (!first) strcat (record, GMT->current.setting.io_col_separator);
-		GMT_ascii_format_col (GMT, text, val[i], GMT_OUT, col);
+		gmt_ascii_format_col (GMT, text, val[i], GMT_OUT, col);
 		strcat (record, text);
 		first = false;
 	}
@@ -509,12 +509,12 @@ int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, o_mode, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
-	GMT_set_cols (GMT, GMT_OUT, n_output);
+	gmt_set_cols (GMT, GMT_OUT, n_output);
 	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	GMT_set_tableheader (GMT, GMT_OUT, true);
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	gmt_set_tableheader (GMT, GMT_OUT, true);
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
 		sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);

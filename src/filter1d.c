@@ -270,7 +270,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 						case 'F':
 						case 'f':
 							Ctrl->F.width = DBL_MAX;	/* To avoid range test errors before reading coefficients */
-							if (opt->arg[1] && !GMT_access (GMT, &opt->arg[1], R_OK))
+							if (opt->arg[1] && !gmt_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
 								GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
@@ -327,8 +327,8 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 					++n_errors;
 				}
 				else {
-					GMT_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
-					GMT_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, &Ctrl->T.max);
+					gmt_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
+					gmt_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, &Ctrl->T.max);
 					if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
 						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
 					}
@@ -890,7 +890,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 			break;
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
-			if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in GMT_set_cols");
+			if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error, "Error in gmt_set_cols");
 			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;	/* Always read the weights as floats */
 			gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -F files */

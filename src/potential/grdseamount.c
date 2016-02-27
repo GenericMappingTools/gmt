@@ -447,11 +447,11 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 		return 1;
 	}
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-	if (GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &in[ix]) == GMT_IS_NAN) {
+	if (gmt_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &in[ix]) == GMT_IS_NAN) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec);
 		return 1;
 	}
-	if (GMT_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &in[iy]) == GMT_IS_NAN) {
+	if (gmt_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &in[iy]) == GMT_IS_NAN) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec);
 		return 1;
 	}
@@ -544,7 +544,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	/* Specify inputexpected columns */
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
 		Return (error);
 	}
 
@@ -597,7 +597,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = n_expected_fields + 3;
-		if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */

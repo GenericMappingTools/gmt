@@ -327,7 +327,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 	read_file = (Ctrl->E.active || (Ctrl->M.mode == RAW_HEADER));
 	
 	saved_range = GMT->current.io.geo.range;	/* We may have to reset thisso keep a copy */
-	GMT_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
+	gmt_set_geographic (GMT, GMT_OUT);	/* Output lon/lat */
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = M.time_format;	
 	if (Ctrl->E.active) fprintf (GMT->session.std[GMT_OUT], "#Cruise %sID      %sWest    %sEast    %sSouth   %sNorth   %sStartTime%s%sEndTime%s%s%sDist%snRec",
 		GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator,
@@ -534,13 +534,13 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		}			
 		if (Ctrl->E.active) {
 			fprintf (GMT->session.std[GMT_OUT],"%8s%s%8s%s", M.NGDC_id, GMT->current.setting.io_col_separator, D->H.mgd77[use]->Survey_Identifier, GMT->current.setting.io_col_separator);
-			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmin, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmax, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymin, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymax, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmin, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmax, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymin, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymax, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			if (!GMT_is_dnan(tmin) && !GMT_is_dnan(tmax)) {
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmin, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmax, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);						
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmin, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmax, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);						
 			} else {
 				fprintf (GMT->session.std[GMT_OUT], "%4s-%2s-%2s%s%4s-%2s-%2s%s",
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,

@@ -333,9 +333,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GMT_OUTSIDE];
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_cols)) != GMT_OK) Return (error);
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_cols)) != GMT_OK) Return (error);
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
-	GMT_skip_xy_duplicates (GMT, true);	/* Skip repeating x/y points in polygons */
+	gmt_skip_xy_duplicates (GMT, true);	/* Skip repeating x/y points in polygons */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default input sources, unless already set */
 		error = API->error;
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
@@ -346,7 +346,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		GMT_free (GMT, grd_y0);
 		Return (error);
 	}
-	GMT_skip_xy_duplicates (GMT, false);	/* Reset */
+	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
 
 	D = Din;	/* The default is to work with the input data as is */
 	if (!Ctrl->S.active && GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample all polygons to desired resolution, once and for all */
@@ -410,10 +410,10 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for z-values in the data headers */
 					if (S->ogr)	/* OGR data */
-						z_value = GMT_get_aspatial_value (GMT, GMT_IS_Z, S);
-					else if (GMT_parse_segment_item (GMT, S->header, "-Z", text_item))	/* Look for zvalue option */
+						z_value = gmt_get_aspatial_value (GMT, GMT_IS_Z, S);
+					else if (gmt_parse_segment_item (GMT, S->header, "-Z", text_item))	/* Look for zvalue option */
 						z_value = atof (text_item);
-					else if (GMT_parse_segment_item (GMT, S->header, "-L", text_item))	/* Look for segment header ID */
+					else if (gmt_parse_segment_item (GMT, S->header, "-L", text_item))	/* Look for segment header ID */
 						z_value = atof (text_item);
 					else
 						GMT_Report (API, GMT_MSG_NORMAL, "No z-value found; z-value set to NaN\n");

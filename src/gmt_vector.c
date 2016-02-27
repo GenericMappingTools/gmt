@@ -1066,8 +1066,8 @@ uint64_t gmt_fix_up_path_cartonly (struct GMT_CTRL *GMT, double **a_x, double **
 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, x);	GMT_free (GMT, y);
-	*a_x = GMT_assign_vector (GMT, n_new, GMT_X);
-	*a_y = GMT_assign_vector (GMT, n_new, GMT_Y);
+	*a_x = gmt_assign_vector (GMT, n_new, GMT_X);
+	*a_y = gmt_assign_vector (GMT, n_new, GMT_Y);
 
 	return (n_new);
 }
@@ -1199,9 +1199,9 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, lon);
 	GMT_free (GMT, lat);
-	GMT_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);	/* Ensure longitudes are in the same quadrants */
-	*a_lon = GMT_assign_vector (GMT, n_new, GMT_X);
-	*a_lat = GMT_assign_vector (GMT, n_new, GMT_Y);
+	gmt_eliminate_lon_jumps (GMT, GMT->hidden.mem_coord[GMT_X], n_new);	/* Ensure longitudes are in the same quadrants */
+	*a_lon = gmt_assign_vector (GMT, n_new, GMT_X);
+	*a_lat = gmt_assign_vector (GMT, n_new, GMT_Y);
 
 	return (n_new);
 }
@@ -1281,8 +1281,8 @@ uint64_t gmt_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double *
 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (GMT, x);	GMT_free (GMT, y);
-	*a_x = GMT_assign_vector (GMT, n_new, GMT_X);
-	*a_y = GMT_assign_vector (GMT, n_new, GMT_Y);
+	*a_x = gmt_assign_vector (GMT, n_new, GMT_X);
+	*a_y = gmt_assign_vector (GMT, n_new, GMT_Y);
 
 	return (n_new);
 }

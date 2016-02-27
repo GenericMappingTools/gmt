@@ -206,7 +206,7 @@ unsigned int gmt_modeltime_array (struct GMT_CTRL *GMT, char *arg, bool *log, st
 		*log = true;
 		p[0] = '\0';	/* Chop off the +l modifier */
 	}
-	if (!GMT_access (GMT, arg, F_OK)) {	/* A file with this name exists */
+	if (!gmt_access (GMT, arg, F_OK)) {	/* A file with this name exists */
 		struct GMT_TEXTSET *Tin = NULL;
 		uint64_t seg, row;
 		if ((Tin = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, arg, NULL)) == NULL) {

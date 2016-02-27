@@ -74,7 +74,7 @@ GMT_LOCAL bool dcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, cha
 
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.DCWDIR, if set
-	 * 2. Look via GMT_getsharepath.
+	 * 2. Look via gmt_getsharepath.
 	 */
 
 	if (GMT->session.DCWDIR) {	/* 1. Check in GMT->session.DCWDIR */
@@ -88,7 +88,7 @@ GMT_LOCAL bool dcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, cha
 			GMT->session.DCWDIR = NULL;
 		}
 	}
-	if (!found && GMT_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) found = true;	/* Found it in share or user somewhere */
+	if (!found && gmt_getsharepath (GMT, "dcw", name, suffix, path, R_OK)) found = true;	/* Found it in share or user somewhere */
 	if (!found) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find or open the Digital Chart of the World for GMT\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
@@ -117,7 +117,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	}
 	Country = GMT_memory (GMT, NULL, n_alloc, struct GMT_DCW_COUNTRY);
 	k = 0;
-	while ( GMT_fgets (GMT, line, BUFSIZ, fp)) {
+	while ( gmt_fgets (GMT, line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
 		sscanf (line, "%s %s %[^\n]", Country[k].continent, Country[k].code,  Country[k].name);
 		k++;
@@ -138,7 +138,7 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	}
 	State = GMT_memory (GMT, NULL, n_alloc, struct GMT_DCW_STATE);
 	k = 0;	n = 1;
-	while ( GMT_fgets (GMT, line, BUFSIZ, fp)) {
+	while ( gmt_fgets (GMT, line, BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments */
 		sscanf (line, "%s %s %[^\n]", State[k].country, State[k].code,  State[k].name);
 		if (k && strcmp (State[k].country, State[k-1].country)) n++;	/* New country with states */
@@ -288,7 +288,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
 		P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-		GMT_alloc_segment (GMT, P, 0, 2, true);
+		gmt_alloc_segment (GMT, P, 0, 2, true);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract polygons from DCW - The Digital Chart of the World\n");
 	}
 
@@ -317,7 +317,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Version: %s\n", version);
 	}
 	if ((mode & GMT_DCW_DUMP) || (mode & GMT_DCW_REGION)) {	/* Dump the coordinates to stdout or return -R means setting col types */
-		GMT_set_geographic (GMT, GMT_OUT);
+		gmt_set_geographic (GMT, GMT_OUT);
 	}
 	pos = 0;
 	while (GMT_strtok (list, ",", &pos, code)) {	/* Loop over countries */
@@ -397,7 +397,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			lat[k] = (dy[k] == 65535U) ? 0.0 : dy[k] * yscl + south;
 		}
 		if (mode & GMT_DCW_EXTRACT) {	/* Allocate a table with the right number of segments */
-			D->table[tbl] = GMT_create_table (GMT, n_segments, 0, 2, false);
+			D->table[tbl] = gmt_create_table (GMT, n_segments, 0, 2, false);
 		}
 		if (mode & GMT_DCW_PLOT) {	/* Time to consider fill/pen change */
 			new_set = (tbl == 0 || order[tbl] != order[tbl-1]);	/* When item group change it is likely pen/fill changes too */
@@ -449,7 +449,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			}
 			else {	/* mode & GMT_DCW_PLOT: Plot this piece */
 				if (fill) {	/* Plot filled polygon, w/ or w/o outline */
-					if (!strncmp (TAG, "AQ", 2U)) GMT_set_seg_polar (GMT, P);
+					if (!strncmp (TAG, "AQ", 2U)) gmt_set_seg_polar (GMT, P);
 					GMT_geo_polygons (GMT, P);
 				}
 				else {	/* Plot outline only */
@@ -495,7 +495,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_free (GMT, lon);
 		GMT_free (GMT, lat);
 		P->coord[GMT_X] = P->coord[GMT_Y] = NULL;
-		GMT_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
+		gmt_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
 	}
 	return (D);
 }

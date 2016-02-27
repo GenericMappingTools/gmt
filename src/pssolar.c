@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) {
-							GMT_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
 							gmt_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
 						}
 					}
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						parse_date_tz(pch, &date, &TZ);
 						Ctrl->T.TZ = TZ;
 						if (date) {
-							GMT_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
+							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
 							gmt_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 						}
 					}
@@ -457,7 +457,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
+			if ((error = gmt_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)
 				Return (API->error);
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) Return (API->error);
@@ -497,10 +497,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
 
-		GMT_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
-		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
-		GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
+		gmt_set_geographic (GMT, GMT_OUT);			/* Output lon/lat */
+		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
+		gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Establishes data output */
 			Return (API->error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK)	/* Enables data output and sets access mode */
@@ -520,7 +520,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				out[GMT_X] = S->coord[GMT_X][j];	out[GMT_Y] = S->coord[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
-			GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
@@ -564,7 +564,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 					GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				GMT_geo_polygons (GMT, S);
 			}
-			GMT_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
 		GMT_map_basemap (GMT);

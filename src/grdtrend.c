@@ -551,7 +551,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* If a weight array is needed, get one */
 
 	if (weighted) {
-		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
+		if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
 				Return (API->error);
 			}

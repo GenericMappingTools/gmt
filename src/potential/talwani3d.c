@@ -200,7 +200,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				if (!GMT_access (GMT, opt->arg, F_OK)) {	/* file exists */
+				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file exists */
 					Ctrl->Z.file = strdup (opt->arg);
 					Ctrl->Z.mode = 1;
 				}
@@ -733,7 +733,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	
 	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Specify input expected columns to be at least 2 */
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 		Return (error);
 	}
 	/* Register likely model files unless the caller has already done so */
@@ -896,7 +896,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {	/* Single loop over specified output locations */
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? METERS_IN_A_MILE : 1.0;	/* Perhaps convert to km */
 		double out[4];
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -905,7 +905,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if (D->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	
+		if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				int64_t row;

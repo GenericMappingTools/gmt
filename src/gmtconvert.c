@@ -37,8 +37,8 @@
 
 #define GMT_PROG_OPTIONS "-:>Vabdfghios" GMT_OPT("HMm")
 
-int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
-int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
+EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
+EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 
 #define INV_ROWS	1
 #define INV_SEGS	2
@@ -388,7 +388,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
+	if (Ctrl->T.active) gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
 
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "The -a option requires a single table only.\n");
@@ -404,7 +404,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_OK) {	/* Be gone with the original */
 			Return (API->error);
 		}
-		if (D[GMT_OUT]->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+		if (D[GMT_OUT]->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D[GMT_OUT]->geometry, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 			Return (API->error);
@@ -434,7 +434,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_OK) {
 		Return (error);
 	}
 	
@@ -500,7 +500,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 			D[GMT_OUT]->table[tbl_ver]->segment[seg]->n_rows = n_rows;	/* Possibly shorter than originally allocated if -E is used */
 			D[GMT_OUT]->table[tbl_ver]->n_records += n_rows;
 			D[GMT_OUT]->n_records = D[GMT_OUT]->table[tbl_ver]->n_records;
-			if (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr) GMT_duplicate_ogr_seg (GMT, D[GMT_OUT]->table[tbl_ver]->segment[seg], D[GMT_IN]->table[tbl_ver]->segment[seg]);
+			if (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr) gmt_duplicate_ogr_seg (GMT, D[GMT_OUT]->table[tbl_ver]->segment[seg], D[GMT_IN]->table[tbl_ver]->segment[seg]);
 		}
 		D[GMT_OUT]->table[tbl_ver]->id = tbl_ver;
 	}

@@ -224,11 +224,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 
 	if (s->geographic) {
-		GMT_set_geographic (GMT, GMT_OUT);
+		gmt_set_geographic (GMT, GMT_OUT);
 		GMT->current.io.geo.range = s->geodetic;
 	}
 	else
-		GMT_set_cartesian (GMT, GMT_OUT);
+		gmt_set_cartesian (GMT, GMT_OUT);
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_FLOAT;
 	
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
@@ -278,8 +278,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
-	GMT_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
-	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on -ho explicitly */
+	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	sprintf (record, " %s", Ctrl->T.TAG);	/* Preserve the leading space for backwards compatibility */
 	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 
@@ -431,15 +431,15 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			if (B.binflag[index] == 0) continue;
 			x = B.wesn[XLO] + ((index % B.nx_bin) + 0.5) * B.inc[GMT_X];
 			y = B.wesn[YLO] + ((index / B.nx_bin) + 0.5) * B.inc[GMT_Y];
-			GMT_ascii_format_col (GMT, record, x, GMT_OUT, GMT_X);
+			gmt_ascii_format_col (GMT, record, x, GMT_OUT, GMT_X);
 			strcat (record, GMT->current.setting.io_col_separator);
-			GMT_ascii_format_col (GMT, text, y, GMT_OUT, GMT_Y);
+			gmt_ascii_format_col (GMT, text, y, GMT_OUT, GMT_Y);
 			strcat (record, text);
 			sprintf (text, "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, index, GMT->current.setting.io_col_separator, B.binflag[index]);
 			strcat (record, text);
 			if (Ctrl->D.active) {
 				strcat (record, GMT->current.setting.io_col_separator);
-				GMT_ascii_format_col (GMT, text, dist_bin[index], GMT_OUT, GMT_Z);
+				gmt_ascii_format_col (GMT, text, dist_bin[index], GMT_OUT, GMT_Z);
 				strcat (record, text);
 			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);

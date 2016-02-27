@@ -965,11 +965,11 @@ int GMT_dimfilter (void *V_API, int mode, void *args) {
 
 		FILE *ip = NULL;
 
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))!= GMT_OK) Return (error);
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 3))!= GMT_OK) Return (error);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		GMT_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
+		gmt_set_cartesian (GMT, GMT_OUT);	/* No coordinates here */
 
 		/* Check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {

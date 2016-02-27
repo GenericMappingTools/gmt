@@ -303,7 +303,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			}
 			S[0]->header = strdup (segment_header);
 
-			GMT_alloc_segment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
+			gmt_alloc_segment (GMT, S[0], vertex, 2, false);	/* Realloc this output polygon to actual size */
 			GMT_memcpy (S[0]->coord[GMT_X], plon, vertex, double);
 			GMT_memcpy (S[0]->coord[GMT_Y], plat, vertex, double);
 			Dout[0]->table[0]->n_records += vertex;
@@ -556,7 +556,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	/* Now we are ready to take on some input values */
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
@@ -658,13 +658,13 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	Dout[0]->table[0]->n_headers = 1;
 	Dout[0]->table[0]->header[0] = strdup (header);
 
-	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Must produce multisegment output files */
+	if (Ctrl->T.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Must produce multisegment output files */
 
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout[0]->io_mode, NULL, Ctrl->Out.file, Dout[0]) != GMT_OK) {
 		Return (API->error);
 	}
 	if (Ctrl->N.active) {
-		GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since we only have one segment */
+		gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since we only have one segment */
 		if (Ctrl->A.active) sprintf (header, "# sphtriangulate nodes (lon, lat, area)");
 		else sprintf (header, "# sphtriangulate nodes (lon, lat)");
 		Dout[1]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);

@@ -346,7 +346,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -397,7 +397,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		n_outputs++;
 	}
 	if (GMT_is_geographic (GMT, GMT_IN))
-		GMT_set_geographic (GMT, GMT_OUT);
+		gmt_set_geographic (GMT, GMT_OUT);
 
 	if (n_outputs == 0) {	/* Generate default -Q setting (all) */
 		n_outputs = 5 - no_z_column;
@@ -417,9 +417,9 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 	}
 	else
-		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
-	if ((error = GMT_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_OK) {
 		Return (error);
 	}
 	/* Registers default output destination, unless already set */
@@ -530,7 +530,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 							n_out = end - begin;
 							if ((n_total + n_out) >= n_alloc) {
 								n_alloc = (first) ? D[GMT_IN]->n_records : n_alloc * 2;
-								GMT_alloc_segment (GMT, S_out, n_alloc, n_outputs, first);
+								gmt_alloc_segment (GMT, S_out, n_alloc, n_outputs, first);
 								first = false;
 							}
 
@@ -564,7 +564,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	
 	/* Get here when all profiles have been found and written.  */
 
-	if (nprofiles > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	if (nprofiles > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
 	dim[GMT_SEG] = seg2;	dim[GMT_COL] = n_outputs;
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -599,7 +599,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	/* Must set coord pointers to NULL since they were not allocated */
 	for (seg = 0; seg < seg2; seg++)
 		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
-	GMT_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 	if (Ctrl->F.active) GMT_free (GMT, fwork);
 	GMT_free (GMT, rec);
 

@@ -190,7 +190,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				break;
 			case 'T':	/* New: -Tage, -Tmin/max/inc, -Tmin/max/n+, -Tfile; compat mode: -Tlon/lat/angle Finite rotation parameters */
 				Ctrl->T.active = true;
-				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a file with times in first column */
+				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a file with times in first column */
 					uint64_t seg, row;
 					struct GMT_DATASET *T = NULL;
 					struct GMT_DATASEGMENT *S = NULL;
@@ -219,8 +219,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						Ctrl->T.active = false;
 						Ctrl->E.rot.w = atof (txt_c);
 						Ctrl->E.rot.age = GMT->session.d_NaN;
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.rot.lon), txt_a);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.rot.lat), txt_b);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.rot.lon), txt_a);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.rot.lat), txt_b);
 					}
 					else {	/* Must be Ttstart/tstop/tinc */
 						double min, max, inc;
@@ -465,7 +465,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	else {	/* Got a rotation file with multiple rotations in total reconstruction format */
 		double t_max = 0.0;
 		n_stages = spotter_init (GMT, Ctrl->E.rot.file, &p, false, true, Ctrl->E.rot.invert, &t_max);
-		GMT_set_segmentheader (GMT, GMT_OUT, true);
+		gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
 
 	if (!Ctrl->T.active && !Ctrl->E.rot.single) {	/* Gave no time to go with the rotations, use rotation times */
@@ -521,9 +521,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 				GMT_cart_to_geo (GMT, &Sr->coord[GMT_Y][rec], &Sr->coord[GMT_X][rec], P_rotated, true);	/* Recover lon lat representation; true to get degrees */
 				Sr->coord[GMT_Y][rec] = GMT_lat_swap (GMT, Sr->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
-			GMT_set_seg_polar (GMT, Sr);	/* Determine if it is a polar cap */
+			gmt_set_seg_polar (GMT, Sr);	/* Determine if it is a polar cap */
 		}
-		GMT_set_tbl_minmax (GMT, polr);	/* Update table domain */
+		gmt_set_tbl_minmax (GMT, polr);	/* Update table domain */
 		if (!Ctrl->N.active && not_global) {
 			char dfile[GMT_BUFSIZ] = {""}, *file = NULL;
 			if (Ctrl->T.n_times > 1) {
@@ -558,8 +558,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[YLO] = floor (polr->min[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
 			GMT->common.R.wesn[YHI] = ceil  (polr->max[GMT_Y] * G->header->r_inc[GMT_Y]) * G->header->inc[GMT_Y];
 			/* Adjust longitude range, as indicated by FORMAT_GEO_OUT */
-			GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
-			GMT_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
+			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XLO]);
+			gmt_lon_range_adjust (GMT->current.io.geo.range, &GMT->common.R.wesn[XHI]);
 			if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 		}
 		GMT->common.R.active = true;
@@ -670,7 +670,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		else if (not_global)
-			GMT_free_dataset (GMT, &D);
+			gmt_free_dataset (GMT, &D);
 	}
 	GMT_free (GMT, Ctrl->T.value);
 	if (D && GMT_Destroy_Data (API, &D) != GMT_OK)

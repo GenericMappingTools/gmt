@@ -169,7 +169,7 @@ int GMT_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 	if (!strcmp (header->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.r_mode)) == NULL)
+	if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.r_mode)) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
@@ -193,7 +193,7 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (!strcmp (header->name, "="))
 		fp = GMT->session.std[GMT_IN];
-	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.r_mode)) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.r_mode)) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
@@ -212,11 +212,11 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	if (mggHeader.length != sizeof (MGG_GRID_HEADER_2)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Invalid grid header size, expected %d, found %d\n",
 		            (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_GRD98_BADLENGTH);
 	}
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	gmt_MGG2toGMT (&mggHeader, header);
 
@@ -230,20 +230,20 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 
 	if (!strcmp (header->name, "="))
 		fp = GMT->session.std[GMT_OUT];
-	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	if ((err = gmt_GMTtoMGG2 (header, &mggHeader)) != 0) {
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		return (err);
 	}
 
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_WRITE_FAILED);
 	}
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -269,9 +269,9 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		fp = GMT->session.std[GMT_IN];
 		piping = true;
 	}
-	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.r_mode)) != NULL) {
+	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.r_mode)) != NULL) {
 		if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
-			GMT_fclose (GMT, fp);
+			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 		swap_all = gmt_swap_mgg_header (&mggHeader);
@@ -351,7 +351,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		for (j = last_row + 1; j < ny; j++) {
 			if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) {
 				GMT_free (GMT, tLong);		GMT_free (GMT, actual_col);
-				GMT_fclose (GMT, fp);
+				gmt_fclose (GMT, fp);
 				return (GMT_GRDIO_READ_FAILED);
 			}
 		}
@@ -364,7 +364,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
@@ -386,7 +386,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	if (!strcmp (header->name, "="))
 		fp = GMT->session.std[GMT_OUT];
-	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
+	else if ((fp = gmt_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
 	check = !isnan (header->nan_value);
@@ -421,7 +421,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	if ((err = gmt_GMTtoMGG2(header, &mggHeader)) != 0) return (err);;
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
 		GMT_free (GMT, actual_col);
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_WRITE_FAILED);
 	}
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
@@ -463,7 +463,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	GMT_free (GMT, tLong);
 	GMT_free (GMT, actual_col);
 
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }

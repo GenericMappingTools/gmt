@@ -255,7 +255,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the GMT letters as shadows, then full size, using GMT_psxy */
 
-	GMT_getsharepath (GMT, "conf", "gmtlogo_letters", ".txt", file, R_OK);
+	gmt_getsharepath (GMT, "conf", "gmtlogo_letters", ".txt", file, R_OK);
 
 	sprintf (cmd, "-<%s -R167/527/-90/90 -JI-13/%gi -O -K -G%s@40",
 		file, scale * 1.55, c_gmt_shadow);

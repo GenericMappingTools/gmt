@@ -440,7 +440,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		if (Ctrl->F.mode & 16) n_cols += 3;	/* Requested small circle pole location and colatitude */
 		if (Ctrl->L.norm == 3) n_cols *= 2;	/* Selected all this for both norms, so double output size */
 		if (Ctrl->F.mode & 1) n_cols += 2;	/* Requested flat earth mean as well */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, n_cols)) != GMT_OK) {
 			Return (error);
 		}
 	}

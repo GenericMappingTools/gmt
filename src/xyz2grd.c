@@ -260,7 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 	if (Ctrl->Z.active) {
 		if (Ctrl->S.active) Ctrl->Z.not_grid = true;	/* The row/col organization does not apply */
-		n_errors += GMT_parse_z_io (GMT, ptr_to_arg, &Ctrl->Z);
+		n_errors += gmt_parse_z_io (GMT, ptr_to_arg, &Ctrl->Z);
 	}
 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error -S option: Must also specify -Z\n");
@@ -277,7 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 	}
 
 	if (Ctrl->Z.active) {
-		GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
+		gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
 		if (b_only) {
 			GMT->common.b.active[GMT_IN] = false;
@@ -364,11 +364,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		save_o = GMT->current.io.output;
 		previous_bin_i = GMT->common.b.active[GMT_IN];
 		previous_bin_o = GMT->common.b.active[GMT_OUT];
-		GMT->current.io.input = GMT_z_input;		/* Override input reader with chosen binary reader for selected type */
-		GMT->current.io.output = GMT_z_output;		/* Override output writer with chosen binary writer for selected type */
+		GMT->current.io.input = gmt_z_input;		/* Override input reader with chosen binary reader for selected type */
+		GMT->current.io.output = gmt_z_output;		/* Override output writer with chosen binary writer for selected type */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set input binary as well */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
-		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != 0) Return (error);
+		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != 0) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
@@ -386,10 +386,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, w_mode, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
+		if ((error = gmt_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
+		if ((error = gmt_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
 			Return (API->error);
 		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
@@ -437,7 +437,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		char line[GMT_BUFSIZ];
 		FILE *fp = GMT->session.std[GMT_IN];
 		
-		if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
+		if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
@@ -445,29 +445,29 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if ((Grid = gmt_create_grid (GMT)) == NULL) Return (API->error);
 		gmt_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = GMT_GRID_NODE_REG;
-		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
-		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->ny) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
-		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[XLO]) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding xll record\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
-		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding yll record\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
-		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
+		gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error decoding cellsize record\n");
 			Return (EXIT_FAILURE);
@@ -514,7 +514,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			if (++col == Grid->header->nx) col = 0, row++;
 			n_left--;
 		}
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		if (n_left) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Expected %" PRIu64 " points, found only %" PRIu64 "\n", Grid->header->nm, Grid->header->nm - n_left);
 			Return (EXIT_FAILURE);
@@ -548,7 +548,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
-	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
+	GMT_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && GMT_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
@@ -557,10 +557,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		zcol = GMT_X;
 		save_i = GMT->current.io.input;
 		previous_bin_i = GMT->common.b.active[GMT_IN];
-		GMT->current.io.input = GMT_z_input;		/* Override and use chosen input mode */
+		GMT->current.io.input = gmt_z_input;		/* Override and use chosen input mode */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set binary as well */
 		in = GMT->current.io.curr_rec;
-		GMT->current.io.fmt[GMT_IN][zcol].type = GMT_get_io_type (GMT, Ctrl->Z.type);
+		GMT->current.io.fmt[GMT_IN][zcol].type = gmt_get_io_type (GMT, Ctrl->Z.type);
 	}
 	else {
 		zcol = GMT_Z;
@@ -569,7 +569,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, n_req)) != GMT_OK) {
+	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_OK) {
 		GMT_free (GMT, flag);
 		Return (error);
 	}
@@ -610,7 +610,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
-			Grid->data[gmt_ij] = (GMT_z_input_is_nan_proxy (GMT, GMT_Z, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
+			Grid->data[gmt_ij] = (gmt_z_input_is_nan_proxy (GMT, GMT_Z, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
 			ij++;
 		}
 		else {	/* Get x, y, z */
@@ -680,7 +680,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
 			Return (EXIT_FAILURE);
 		}
-		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
+		gmt_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
 	}
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */

@@ -314,7 +314,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					Ctrl->R3.dimension = 2;
 					break;
 				}
-				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
+				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
 					struct GMT_GRID *G = NULL;
 					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
 						return (API->error);
@@ -336,17 +336,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
 					n_errors++;
 				}
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt[0], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[0]), txt[0]);
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt[1], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[1]), txt[1]);
+				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[0], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[0]), txt[0]);
+				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[1], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[1]), txt[1]);
 				if (n_items > 2) {
 					Ctrl->R3.dimension = 2;
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt[2], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[2]), txt[2]);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt[3], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[3]), txt[3]);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[2], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[2]), txt[2]);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[3], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[3]), txt[3]);
 				}
 				if (n_items == 6) {
 					Ctrl->R3.dimension = 3;
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, txt[4], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[4]), txt[4]);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, txt[5], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[5]), txt[5]);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[4], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[4]), txt[4]);
+					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[5], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[5]), txt[5]);
 				}
 				break;
 
@@ -556,7 +556,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && GMT_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->A.active && gmt_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
 	n_errors += GMT_check_condition (GMT, !(GMT->common.R.active || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "Syntax error: The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 #ifdef DEBUG
@@ -575,7 +575,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && dimension != 2, "Syntax error -T option: Only applies to 2-D gridding\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && GMT_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
+	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
 	n_errors += GMT_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active) == 1 && dimension == 2, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1379,20 +1379,20 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 1:	/* 2-D lon, lat data, but scale to Cartesian flat earth km */
-			GMT_set_geographic (GMT, GMT_IN);
-			GMT_set_geographic (GMT, GMT_OUT);
+			gmt_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 			normalize = GREENSPLINE_TREND + GREENSPLINE_NORM;
 			break;
 		case 2:	/* 2-D lon, lat data, use spherical distances in km (geodesic if PROJ_ELLIPSOID is nor sphere) */
-			GMT_set_geographic (GMT, GMT_IN);
-			GMT_set_geographic (GMT, GMT_OUT);
+			gmt_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'k', way, GMT_MAP_DIST);
 			normalize = GREENSPLINE_NORM;
 			break;
 		case 3:	/* 2-D lon, lat data, and Green's function needs cosine of spherical or geodesic distance */
-			GMT_set_geographic (GMT, GMT_IN);
-			GMT_set_geographic (GMT, GMT_OUT);
+			gmt_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_OUT);
 			GMT_init_distaz (GMT, 'S', way, GMT_MAP_DIST);
 			normalize = GREENSPLINE_NORM;
 			break;
@@ -1972,7 +1972,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, dimension + 1)) != GMT_OK) {
+		if ((error = gmt_set_cols (GMT, GMT_OUT, dimension + 1)) != GMT_OK) {
 			Return (error);
 		}
 		GMT_memset (out, 4, double);
@@ -2001,7 +2001,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 	}
 	else {	/* Output on equidistance lattice */
 		uint64_t nz_off, nxy;

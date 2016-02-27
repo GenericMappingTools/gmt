@@ -350,7 +350,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		R->file = strdup (arg);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received GPlates pair: %s\n", arg);
 	}
-	else if (!GMT_access (GMT, &arg[k], F_OK) && gmt_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
+	else if (!gmt_access (GMT, &arg[k], F_OK) && gmt_check_filearg (GMT, option, &arg[k], GMT_IN, GMT_IS_DATASET)) {	/* Was given a file (with possible leading + flag) */
 		R->file = strdup (&arg[k]);
 		if (k == 1) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
@@ -362,8 +362,8 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		if (ns == 2 || ns == 3) {	/* Looks like we got lon/lat/omega[/age] */
 			R->single  = true;
 			sscanf (arg, "%[^/]/%[^/]/%[^/]/%lg", txt_a, txt_b, txt_c, &(R->age));
-			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &(R->lon)), txt_a);
-			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &(R->lat)), txt_b);
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &(R->lon)), txt_a);
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &(R->lat)), txt_b);
 			R->w = atof (txt_c);
 			if (ns == 2)	/* No age given */
 				R->age = GMT->session.d_NaN;
@@ -413,7 +413,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		if ((this_c = getenv ("GPLATES_PLATES")))
 			strncpy (Plates, this_c, GMT_BUFSIZ);
 		else {
-			if (!GMT_getsharepath (GMT, "spotter", GPLATES_PLATES, ".txt", Plates, R_OK)) {	/* Decode GPlates ID file */
+			if (!gmt_getsharepath (GMT, "spotter", GPLATES_PLATES, ".txt", Plates, R_OK)) {	/* Decode GPlates ID file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_PLATES file : %s\n", Plates);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
@@ -421,19 +421,19 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 #ifdef WIN32
 		DOS_path_fix (Plates);
 #endif
-		if ((fp = GMT_fopen (GMT, Plates, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, Plates, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using GPlates plate id file %s\n", Plates);
 		A_id = B_id = 0;
-		while ((A_id == 0 || B_id == 0) && GMT_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
+		while ((A_id == 0 || B_id == 0) && gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 			if (buffer[0] == '#' || buffer[0] == '\n') continue;
 			if ((nf = sscanf (buffer, "%d\t%s\t%[^\n]", &id, txt, comment)) < 3) continue;
 			if (A_id == 0 && !strcmp (txt, A)) A_id = id;
 			if (B_id == 0 && !strcmp (txt, B)) B_id = id;
 		}
-		GMT_fclose (GMT, fp);
+		gmt_fclose (GMT, fp);
 		if (A_id == 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
@@ -446,7 +446,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		if ((this_c = getenv ("GPLATES_ROTATIONS")))
 			strncpy (Rotations, this_c, GMT_BUFSIZ-1);
 		else {
-			if (!GMT_getsharepath (GMT, "spotter", GPLATES_ROTATIONS, ".rot", Rotations, R_OK)) {	/* Decode GPlates rotations file */
+			if (!gmt_getsharepath (GMT, "spotter", GPLATES_ROTATIONS, ".rot", Rotations, R_OK)) {	/* Decode GPlates rotations file */
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find GPLATES_ROTATIONS file : %s\n", Rotations);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
@@ -454,14 +454,14 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 #ifdef WIN32
 		DOS_path_fix (Rotations);
 #endif
-		if ((fp = GMT_fopen (GMT, Rotations, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, Rotations, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
 		GPlates = total_in = true;
 	}
-	else if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
+	else if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open stage pole file: %s\n", file);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
@@ -469,7 +469,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	e = GMT_memory (GMT, NULL, n_alloc, struct EULER);
 	if (flowline) total_out = true;	/* Override so we get finite poles for conversion to forward stage poles at the end */
 
-	while (GMT_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
+	while (gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 
 		if (GPlates) {
@@ -532,7 +532,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			e = GMT_memory (GMT, e, n_alloc, struct EULER);
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 
 	if (GPlates && i == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find rotations for the plate pair %s - %s\n", A, B);
@@ -595,14 +595,14 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 	char buffer[GMT_BUFSIZ] = {""}, create, fit, plot;
 	double P[3];
 
-	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) {
+	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s - aborts\n", file);
 		return -1;
 	}
 
 	e = GMT_memory (GMT, NULL, n_alloc, struct HOTSPOT);
 
-	while (GMT_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) {
+	while (gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &ival, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) ival = i + 1;	/* Minimal lon, lat, abbrev */
@@ -627,7 +627,7 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 			e = GMT_memory (GMT, e, n_alloc, struct HOTSPOT);
 		}
 	}
-	GMT_fclose (GMT, fp);
+	gmt_fclose (GMT, fp);
 	if (i < n_alloc) e = GMT_memory (GMT, e, i, struct HOTSPOT);
 	*p = e;
 

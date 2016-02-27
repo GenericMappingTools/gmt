@@ -541,9 +541,9 @@ GMT_LOCAL void print_altmode (struct GMTAPI_CTRL *API, int extrude, int fmode, i
 
 GMT_LOCAL void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int ntabs) {
 	char X[GMT_LEN256] = {""}, Y[GMT_LEN256] = {""}, Z[GMT_LEN256] = {""};
-	GMT_ascii_format_col (API->GMT, X, out[GMT_X], GMT_OUT, GMT_X);
-	GMT_ascii_format_col (API->GMT, Y, out[GMT_Y], GMT_OUT, GMT_Y);
-	GMT_ascii_format_col (API->GMT, Z, out[GMT_Z], GMT_OUT, GMT_Z);
+	gmt_ascii_format_col (API->GMT, X, out[GMT_X], GMT_OUT, GMT_X);
+	gmt_ascii_format_col (API->GMT, Y, out[GMT_Y], GMT_OUT, GMT_Y);
+	gmt_ascii_format_col (API->GMT, Z, out[GMT_Z], GMT_OUT, GMT_Z);
 	kml_print (API, ntabs, "%s,%s,%s\n", X, Y, Z);
 }
 
@@ -552,13 +552,13 @@ GMT_LOCAL void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double 
 	if (GMT_360_RANGE (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
 	kml_print (API, N++, "<Region>\n");
 	kml_print (API, N++, "<LatLonAltBox>\n");
-	GMT_ascii_format_col (API->GMT, text, wesn[YHI], GMT_OUT, GMT_Y);
+	gmt_ascii_format_col (API->GMT, text, wesn[YHI], GMT_OUT, GMT_Y);
 	kml_print (API, N, "<north>%s</north>\n", text);
-	GMT_ascii_format_col (API->GMT, text, wesn[YLO], GMT_OUT, GMT_Y);
+	gmt_ascii_format_col (API->GMT, text, wesn[YLO], GMT_OUT, GMT_Y);
 	kml_print (API, N, "<south>%s</south>\n", text);
-	GMT_ascii_format_col (API->GMT, text, wesn[XHI], GMT_OUT, GMT_X);
+	gmt_ascii_format_col (API->GMT, text, wesn[XHI], GMT_OUT, GMT_X);
 	kml_print (API, N, "<east>%s</east>\n", text);
-	GMT_ascii_format_col (API->GMT, text, wesn[XLO], GMT_OUT, GMT_X);
+	gmt_ascii_format_col (API->GMT, text, wesn[XLO], GMT_OUT, GMT_X);
 	kml_print (API, N, "<west>%s</west>\n", text);
 	if (max[ALT] > min[ALT]) {
 		kml_print (API, N, "<minAltitude>%g</minAltitude>\n", min[ALT]);
@@ -629,30 +629,30 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 	uint64_t row, seg;
 	char T[2][GMT_LEN64];
 	double x, y, y_min = 90.0, y_max = -90.0;
-	struct GMT_QUAD *Q = GMT_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
+	struct GMT_QUAD *Q = gmt_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
 				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
+				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
 					GMT_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
+				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
 					GMT_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
-				GMT_quad_add (GMT, Q, x);
+				gmt_quad_add (GMT, Q, x);
 				if (y < y_min) y_min = y;
 				if (y > y_max) y_max = y;
 			}
 		}
 	}
-	way = GMT_quad_finalize (GMT, Q);
+	way = gmt_quad_finalize (GMT, Q);
 	wesn[XLO] = Q->min[way];	wesn[XHI] = Q->max[way];
 	wesn[YLO] = y_min;		wesn[YHI] = y_max;
 	GMT_free (GMT, Q);
@@ -714,11 +714,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	no_text = (GMT_input_is_bin (GMT, Ctrl->In.file) || GMT->common.i.active);	/* Must read as data table so no text columns are expected or considered */
+	no_text = (gmt_input_is_bin (GMT, Ctrl->In.file) || GMT->common.i.active);	/* Must read as data table so no text columns are expected or considered */
 
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
-	GMT_set_geographic (GMT, GMT_IN);
-	GMT_set_geographic (GMT, GMT_OUT);
+	gmt_set_geographic (GMT, GMT_IN);
+	gmt_set_geographic (GMT, GMT_OUT);
 	extra[0] = '\0';
 	GMT_memset (out, 5, double);	/* Set to zero */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
@@ -826,14 +826,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active) {	/* Add in a description HTML snipped */
 		char line[GMT_BUFSIZ];
 		FILE *fp = NULL;
-		if ((fp = GMT_fopen (GMT, Ctrl->D.file, "r")) == NULL) {
+		if ((fp = gmt_fopen (GMT, Ctrl->D.file, "r")) == NULL) {
 			GMT_Message (API, GMT_TIME_NONE, "Could not open description file %s\n", Ctrl->D.file);
 			Return (EXIT_FAILURE);
 		}
 		kml_print (API, N++, "<description>\n");
 		kml_print (API, N++, "<![CDATA[\n");
-		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) kml_print (API, N, "%s", line);
-		GMT_fclose (GMT, fp);
+		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) kml_print (API, N, "%s", line);
+		gmt_fclose (GMT, fp);
 		kml_print (API, --N, "]]>\n");
 		kml_print (API, --N, "</description>\n");
 	}
@@ -914,14 +914,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 				else
 					kml_print (API, N, "<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
 				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
-					act = (GMT_parse_segment_item (GMT, header, "-D", buffer) || GMT_parse_segment_item (GMT, header, "-T", buffer));
+					act = (gmt_parse_segment_item (GMT, header, "-D", buffer) || gmt_parse_segment_item (GMT, header, "-T", buffer));
 				else
-					act = (GMT_parse_segment_item (GMT, header, "-T", buffer));
+					act = (gmt_parse_segment_item (GMT, header, "-T", buffer));
 				if (act)
 					kml_print (API, N, "<description>%s</description>\n", description);
 			}
 			else {	/* Line or polygon means we lay down the placemark first*/
-				if (Ctrl->C.active && GMT_parse_segment_item (GMT, header, "-Z", description)) {
+				if (Ctrl->C.active && gmt_parse_segment_item (GMT, header, "-Z", description)) {
 					double z_val = atof (description);
 					index = GMT_get_index (GMT, P, z_val);
 				}
@@ -938,14 +938,14 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					kml_print (API, N, "<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
 				description[0] = 0;
 				do_description = false;
-				if (GMT_parse_segment_item (GMT, header, "-I", buffer)) {
+				if (gmt_parse_segment_item (GMT, header, "-I", buffer)) {
 					do_description = true;
 					strcat (description, buffer);
 				}
 				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
-					act = (GMT_parse_segment_item (GMT, header, "-D", buffer) || GMT_parse_segment_item (GMT, header, "-T", buffer));
+					act = (gmt_parse_segment_item (GMT, header, "-D", buffer) || gmt_parse_segment_item (GMT, header, "-T", buffer));
 				else
-					act = (GMT_parse_segment_item (GMT, header, "-T", buffer));
+					act = (gmt_parse_segment_item (GMT, header, "-T", buffer));
 				if (act) {
 					if (do_description) strcat (description, " ");
 					strcat (description, buffer);
@@ -989,17 +989,17 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
 							break;
 					}
-					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
+					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
 						GMT_Message (API, GMT_TIME_NONE, "Error: Could not decode longitude from %s\n", C[GMT_X]);
 						Return (EXIT_FAILURE);
 					}
-					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
+					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 						Return (EXIT_FAILURE);
 					}
 					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					if (get_z) {
-						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
+						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
 							Return (EXIT_FAILURE);
 						}
@@ -1007,7 +1007,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
 					if (Ctrl->F.mode == EVENT) {
-						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
 							Return (EXIT_FAILURE);
 						}
@@ -1015,13 +1015,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					else if (Ctrl->F.mode == SPAN) {
 						if (!(strcmp (C[t1_col], "NaN")))
 							out[t1_col] = GMT->session.d_NaN;
-						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
 							Return (EXIT_FAILURE);
 						}
 						if (!(strcmp (C[t2_col], "NaN")))
 							out[t2_col] = GMT->session.d_NaN;
-						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
+						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], gmt_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
 							Return (EXIT_FAILURE);
 						}
@@ -1071,18 +1071,18 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					if (Ctrl->F.mode == SPAN) {
 						kml_print (API, N++, "<TimeSpan>\n");
 						if (!GMT_is_dnan (out[t1_col])) {
-							GMT_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
+							gmt_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
 							kml_print (API, N, "<begin>%s</begin>\n", text);
 						}
 						if (!GMT_is_dnan (out[t2_col])) {
-							GMT_ascii_format_col (GMT, text, out[t2_col], GMT_OUT, t2_col);
+							gmt_ascii_format_col (GMT, text, out[t2_col], GMT_OUT, t2_col);
 							kml_print (API, N, "<end>%s</end>\n", text);
 						}
 						kml_print (API, --N, "</TimeSpan>\n");
 					}
 					else if (Ctrl->F.mode == EVENT) {
 						kml_print (API, N++, "<TimeStamp>\n");
-						GMT_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
+						gmt_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
 						kml_print (API, N, "<when>%s</when>\n", text);
 						kml_print (API, --N, "</TimeStamp>\n");
 					}

@@ -923,7 +923,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
  		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ',')) != NULL) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
-		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
+		if ((gmt_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (gmt_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
 			continue;
 		}
