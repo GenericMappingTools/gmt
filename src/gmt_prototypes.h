@@ -523,6 +523,7 @@ EXTERN_MSC int64_t GMT_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in
 /* gmt_vector.c: */
 
 EXTERN_MSC void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees);
+EXTERN_MSC void gmt_n_cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat);
 EXTERN_MSC void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, bool degrees);
 EXTERN_MSC void GMT_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c);
 EXTERN_MSC void GMT_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c);

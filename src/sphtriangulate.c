@@ -75,6 +75,16 @@ struct SPHTRIANGULATE_CTRL {
 	} T;
 };
 
+/* Must be int due to qsort requirement */
+GMT_LOCAL int sph_compare_arc (const void *p1, const void *p2) {
+	const struct STRPACK_ARC *a = p1, *b = p2;
+	if (a->begin < b->begin) return (-1);
+	if (a->begin > b->begin) return (1);
+	if (a->end < b->end) return (-1);
+	if (a->end > b->end) return (1);
+	return (0);
+}
+
 GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[]) {
 	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	uint64_t i, ij;
@@ -117,7 +127,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 					y = (do_authalic) ? gmt_lat_swap (GMT, lat[D->tri[ij+i]], GMT_LATSWAP_G2A) : lat[D->tri[ij+i]];	/* Convert to authalic latitude */
 					GMT_geo_to_cart (GMT, y, lon[D->tri[ij+i]], V[i], true);
 				}
-				area_triangle = stripack_areas (V[0], V[1], V[2]);
+				area_triangle = gmt_stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
 				sprintf (segment_header, "Triangle: %" PRIu64 " %" PRIu64 "-%" PRIu64 "-%" PRIu64 " Area: %g",
 				         k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
@@ -156,7 +166,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 				uint64_swap (arc[kk].begin, arc[kk].end);
 
 		/* Sort and eliminate duplicate arcs */
-		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
+		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sph_compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -273,7 +283,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 					GMT_geo_to_cart (GMT, y[0], V->lon[node], V1, true);
 					GMT_geo_to_cart (GMT, y[1], V->lon[vertex_last], V2, true);
 					GMT_geo_to_cart (GMT, y[2], V->lon[vertex_new], V3, true);
-					area_triangle = stripack_areas (V1, V2, V3);
+					area_triangle = gmt_stripack_areas (V1, V2, V3);
 					area_polygon += area_triangle;
 				}
 				vertex++;
@@ -317,7 +327,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			uint64_swap (arc[k].begin, arc[k].end);
 
 		/* Sort and exclude duplicates */
-		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), compare_arc);
+		qsort (arc, n_arcs, sizeof (struct STRPACK_ARC), sph_compare_arc);
 		for (i = 1, j = 0; i < n_arcs; i++) {
 			if (arc[i].begin != arc[j].begin || arc[i].end != arc[j].end) j++;
 			arc[j] = arc[i];
@@ -629,9 +639,9 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	GMT_memset (&T, 1, struct STRIPACK);
 	T.mode = Ctrl->Q.mode;
-	stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
+	gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
 	if (Ctrl->C.active) {	/* Must recover lon,lat and set pointers */
-		cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
+		gmt_n_cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
 		lon = xx;
 		lat = yy;
 	}

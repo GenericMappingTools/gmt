@@ -58,8 +58,7 @@ struct STRPACK_ARC {
 	uint64_t begin, end;
 };
 
-EXTERN_MSC int stripack_lists (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, struct STRIPACK *T);
-EXTERN_MSC double stripack_areas (double *V1, double *V2, double *V3);
-EXTERN_MSC void cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat);
-EXTERN_MSC int compare_arc (const void *p1, const void *p2);
-EXTERN_MSC int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f);
+/* Export these functions */
+EXTERN_MSC int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, struct STRIPACK *T);
+EXTERN_MSC double gmt_stripack_areas (double *V1, double *V2, double *V3);
+EXTERN_MSC int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f);

@@ -619,7 +619,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 				}
 				else {	/* Want to turn Cartesian output into something else */
 					if (GMT_is_geographic (GMT, GMT_OUT)) {
-						GMT_normalize3v (GMT, vector_3);	/* Must always normalize before calling cart_to_geo */
+						GMT_normalize3v (GMT, vector_3);	/* Must always normalize before calling GMT_cart_to_geo */
 						GMT_cart_to_geo (GMT, &(out[GMT_Y]), &(out[GMT_X]), vector_3, true);	/* Get lon/lat */
 						if (Ctrl->E.active) out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */
 					}

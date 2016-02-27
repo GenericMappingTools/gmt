@@ -996,6 +996,16 @@ void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a,
 	}
 }
 
+void gmt_n_cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat) {
+	/* Convert Cartesian vectors back to lon, lat vectors */
+	uint64_t k;
+	double V[3];
+	for (k = 0; k < n; k++) {
+		V[0] = x[k];	V[1] = y[k];	V[2] = z[k];
+		GMT_cart_to_geo (GMT, &lat[k], &lon[k], V, true);
+	}
+}
+
 void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a, bool degrees) {
 	/* Convert polar (cylindrical) coordinates r, theta
 	   to a 2-vector of unit length (a). If degrees = true,

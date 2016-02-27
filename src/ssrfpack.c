@@ -1,15 +1,9 @@
 /* $Id$
  * ssrfpack.c: Translated via f2c then massaged so that f2c include and lib
  * are not required to compile and link the sph supplement.
+ *
+ * All these functions are local (static) and included into gmt_sph.c where they are used.
  */
-
-/* Need three functions from stripack.c: */
-extern doublereal store_(doublereal *);
-extern integer lstptr_(integer *, integer *, integer *, integer *);
-extern integer trfind_(integer *, doublereal *, integer *, 
-	    doublereal *, doublereal *, doublereal *, integer *, integer *, 
-	    integer *, doublereal *, doublereal *, doublereal *, integer *, 
-	    integer *, integer *);
 
 double d_sign (doublereal *a, doublereal *b) {
 	double x;
@@ -21,9 +15,7 @@ double d_sign (doublereal *a, doublereal *b) {
 
 static doublereal c_b23 = 1.0;
 
-integer aplyr_(doublereal *x, doublereal *y, doublereal *z__, 
-	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, 
-	doublereal *xp, doublereal *yp, doublereal *zp) {
+GMT_LOCAL integer aplyr_(doublereal *x, doublereal *y, doublereal *z__, doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, doublereal *xp, doublereal *yp, doublereal *zp) {
     /* Builtin functions */
     double sqrt(doublereal);
 
@@ -102,9 +94,7 @@ L1:
     return 0;
 } /* aplyr_ */
 
-/* Subroutine */ integer aplyrt_(doublereal *g1p, doublereal *g2p, doublereal *cx,
-	 doublereal *sx, doublereal *cy, doublereal *sy, doublereal *g)
-{
+GMT_LOCAL integer aplyrt_(doublereal *g1p, doublereal *g2p, doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy, doublereal *g) {
     static doublereal t;
 
 
@@ -159,7 +149,7 @@ L1:
     return 0;
 } /* aplyrt_ */
 
-doublereal arclen_(doublereal *p, doublereal *q) {
+GMT_LOCAL doublereal arclen_(doublereal *p, doublereal *q) {
     /* System generated locals */
     doublereal ret_val, d__1;
 
@@ -236,9 +226,7 @@ doublereal arclen_(doublereal *p, doublereal *q) {
     return ret_val;
 } /* arclen_ */
 
-/* Subroutine */ integer snhcsh_(doublereal *x, doublereal *sinhm, doublereal *
-	coshm, doublereal *coshmm)
-{
+GMT_LOCAL integer snhcsh_(doublereal *x, doublereal *sinhm, doublereal *coshm, doublereal *coshmm) {
     /* Initialized data */
 
     static doublereal c1 = .1666666666659;
@@ -321,10 +309,7 @@ doublereal arclen_(doublereal *p, doublereal *q) {
     return 0;
 } /* snhcsh_ */
 
-/* Subroutine */ integer arcint_(doublereal *p, doublereal *p1, doublereal *p2, 
-	doublereal *f1, doublereal *f2, doublereal *g1, doublereal *g2, 
-	doublereal *sigma, doublereal *f, doublereal *g, doublereal *gn)
-{
+GMT_LOCAL integer arcint_(doublereal *p, doublereal *p1, doublereal *p2, doublereal *f1, doublereal *f2, doublereal *g1, doublereal *g2, doublereal *sigma, doublereal *f, doublereal *g, doublereal *gn) {
 
     /* Builtin functions */
     double sqrt(doublereal), exp(doublereal);
@@ -558,8 +543,7 @@ L2:
     return 0;
 } /* arcint_ */
 
-integer constr_(doublereal *xk, doublereal *yk, doublereal *zk, 
-	doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy) {
+GMT_LOCAL integer constr_(doublereal *xk, doublereal *yk, doublereal *zk, doublereal *cx, doublereal *sx, doublereal *cy, doublereal *sy) {
     /* Builtin functions */
     double sqrt(doublereal);
 
@@ -615,9 +599,7 @@ integer constr_(doublereal *xk, doublereal *yk, doublereal *zk,
     return 0;
 } /* constr_ */
 
-doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
-	hp1, doublereal *hp2, doublereal *sigma)
-{
+GMT_LOCAL doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *hp1, doublereal *hp2, doublereal *sigma) {
     /* System generated locals */
     doublereal ret_val;
 
@@ -727,11 +709,7 @@ doublereal hval_(doublereal *b, doublereal *h1, doublereal *h2, doublereal *
     return ret_val;
 } /* hval_ */
 
-doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
-	v1, doublereal *v2, doublereal *v3, doublereal *f1, doublereal *f2, 
-	doublereal *f3, doublereal *g1, doublereal *g2, doublereal *g3, 
-	doublereal *sig1, doublereal *sig2, doublereal *sig3)
-{
+GMT_LOCAL doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *v1, doublereal *v2, doublereal *v3, doublereal *f1, doublereal *f2, doublereal *f3, doublereal *g1, doublereal *g2, doublereal *g3, doublereal *sig1, doublereal *sig2, doublereal *sig3) {
     /* System generated locals */
     doublereal ret_val;
 
@@ -964,10 +942,7 @@ doublereal fval_(doublereal *b1, doublereal *b2, doublereal *b3, doublereal *
     return ret_val;
 } /* fval_ */
 
-integer getsig_(integer *n, doublereal *x, doublereal *y, 
-	doublereal *z__, doublereal *h__, integer *list, integer *lptr, 
-	integer *lend, doublereal *grad, doublereal *tol, doublereal *sigma, 
-	doublereal *dsmax, integer *ier) {
+GMT_LOCAL integer getsig_(integer *n, doublereal *x, doublereal *y, doublereal *z__, doublereal *h__, integer *list, integer *lptr, integer *lend, doublereal *grad, doublereal *tol, doublereal *sigma, doublereal *dsmax, integer *ier) {
 
     static doublereal sbig = 85.;
 
@@ -1519,9 +1494,7 @@ L12:
     return 0;
 } /* getsig_ */
 
-/* Subroutine */ integer givens_(doublereal *a, doublereal *b, doublereal *c__, 
-	doublereal *s)
-{
+GMT_LOCAL integer givens_(doublereal *a, doublereal *b, doublereal *c__, doublereal *s) {
     /* Builtin functions */
     double sqrt(doublereal);
 
@@ -1630,8 +1603,7 @@ L12:
     return 0;
 } /* givens_ */
 
-/* Subroutine */ integer grcoef_(doublereal *sigma, doublereal *d__, doublereal *sd)
-{
+GMT_LOCAL integer grcoef_(doublereal *sigma, doublereal *d__, doublereal *sd) {
     /* Builtin functions */
     double exp(doublereal);
 
@@ -1709,11 +1681,7 @@ L12:
     return 0;
 } /* grcoef_ */
 
-/* Subroutine */ integer gradg_(integer *n, doublereal *x, doublereal *y, 
-	doublereal *z__, doublereal *f, integer *list, integer *lptr, integer 
-	*lend, integer *iflgs, doublereal *sigma, integer *nit, doublereal *
-	dgmax, doublereal *grad, integer *ier)
-{
+GMT_LOCAL integer gradg_(integer *n, doublereal *x, doublereal *y, doublereal *z__, doublereal *f, integer *list, integer *lptr, integer *lend, integer *iflgs, doublereal *sigma, integer *nit, doublereal *dgmax, doublereal *grad, integer *ier) {
     /* System generated locals */
     integer i__1, i__2;
     doublereal d__1, d__2;
@@ -2096,10 +2064,7 @@ L13:
     return 0;
 } /* gradg_ */
 
-/* Subroutine */ integer getnp_(doublereal *x, doublereal *y, doublereal *z__, 
-	integer *list, integer *lptr, integer *lend, integer *l, integer *
-	npts, doublereal *df, integer *ier)
-{
+GMT_LOCAL integer getnp_(doublereal *x, doublereal *y, doublereal *z__, integer *list, integer *lptr, integer *lend, integer *l, integer *npts, doublereal *df, integer *ier) {
     /* System generated locals */
     integer i__1, i__2;
 
@@ -2274,10 +2239,7 @@ L6:
     return 0;
 } /* getnp_ */
 
-/* Subroutine */ integer setup_(doublereal *xi, doublereal *yi, doublereal *wi, 
-	doublereal *wk, doublereal *s1, doublereal *s2, doublereal *wt, 
-	doublereal *row)
-{
+GMT_LOCAL integer setup_(doublereal *xi, doublereal *yi, doublereal *wi, doublereal *wk, doublereal *s1, doublereal *s2, doublereal *wt, doublereal *row) {
     static doublereal w1, w2;
 
 
@@ -2344,7 +2306,7 @@ L6:
     return 0;
 } /* setup_ */
 
-integer rotate_(integer *n, doublereal *c__, doublereal *s, doublereal *x, doublereal *y) {
+GMT_LOCAL integer rotate_(integer *n, doublereal *c__, doublereal *s, doublereal *x, doublereal *y) {
     /* System generated locals */
     integer i__1;
 
@@ -2410,9 +2372,7 @@ integer rotate_(integer *n, doublereal *c__, doublereal *s, doublereal *x, doubl
     return 0;
 } /* rotate_ */
 
-integer gradl_(integer *n, integer *k, doublereal *x, doublereal 
-	*y, doublereal *z__, doublereal *w, integer *list, integer *lptr, 
-	integer *lend, doublereal *g, integer *ier) {
+GMT_LOCAL integer gradl_(integer *n, integer *k, doublereal *x, doublereal *y, doublereal *z__, doublereal *w, integer *list, integer *lptr, integer *lend, doublereal *g, integer *ier) {
     /* Initialized data */
 
     static doublereal rtol = 1e-6;
@@ -2806,11 +2766,7 @@ L14:
     return 0;
 } /* gradl_ */
 
-/* Subroutine */ integer intrc0_(integer *n, doublereal *plat, doublereal *plon, 
-	doublereal *x, doublereal *y, doublereal *z__, doublereal *w, integer 
-	*list, integer *lptr, integer *lend, integer *ist, doublereal *pw, 
-	integer *ier)
-{
+GMT_LOCAL integer intrc0_(integer *n, doublereal *plat, doublereal *plon, doublereal *x, doublereal *y, doublereal *z__, doublereal *w, integer *list, integer *lptr, integer *lend, integer *ist, doublereal *pw, integer *ier) {
     /* Builtin functions */
     double cos(doublereal), sin(doublereal);
 
@@ -3066,12 +3022,7 @@ L13:
     return 0;
 } /* intrc0_ */
 
-/* Subroutine */ integer intrc1_(integer *n, doublereal *plat, doublereal *plon, 
-	doublereal *x, doublereal *y, doublereal *z__, doublereal *f, integer 
-	*list, integer *lptr, integer *lend, integer *iflgs, doublereal *
-	sigma, integer *iflgg, doublereal *grad, integer *ist, doublereal *fp,
-	 integer *ier)
-{
+GMT_LOCAL integer intrc1_(integer *n, doublereal *plat, doublereal *plon, doublereal *x, doublereal *y, doublereal *z__, doublereal *f, integer *list, integer *lptr, integer *lend, integer *iflgs, doublereal *sigma, integer *iflgg, doublereal *grad, integer *ist, doublereal *fp,integer *ier) {
     /* Builtin functions */
     double cos(doublereal), sin(doublereal), sqrt(doublereal);
 
@@ -3538,1389 +3489,7 @@ L13:
     return 0;
 } /* intrc1_ */
 
-doublereal sig0_(integer *n1, integer *n2, integer *n, doublereal *x, 
-	doublereal *y, doublereal *z__, doublereal *h__, integer *list, 
-	integer *lptr, integer *lend, doublereal *grad, integer *iflgb, 
-	doublereal *hbnd, doublereal *tol, integer *iflgs, doublereal *sigma, 
-	integer *ier)
-{
-    /* Initialized data */
-
-    static doublereal sbig = 85.;
-
-    /* System generated locals */
-    integer i__1;
-    doublereal ret_val, d__1, d__2, d__3, d__4, d__5, d__6;
-
-    /* Builtin functions */
-    double sqrt(doublereal), d_sign(doublereal *, doublereal *), exp(
-	    doublereal), log(doublereal);
-
-    /* Local variables */
-    static doublereal a, b, c__, d__, e, f, r__, s, t, a0, b0, c1, c2, d0, d2,
-	     f0, h1, h2, p1[3], p2[3], s1, s2, t0, t1, t2, aa, al, rf, tm, un[
-	    3];
-    static integer lp1, lp2;
-    static doublereal bnd, scm, sig, ems;
-    static integer lpl, nit;
-    static doublereal ssm, d1pd2, fneg, dsig, dmax__, fmax, ftol, rsig, 
-	    rtol, stol, coshm, sinhm, ssinh;
-    static doublereal unorm;
-    static doublereal coshmm;
-#ifdef SPH_DEBUG
-    static sneg;
-#endif
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   11/21/96 */
-
-/*   Given a triangulation of a set of nodes on the unit */
-/* sphere, along with data values H and gradients GRAD at the */
-/* nodes, this function determines the smallest tension fac- */
-/* tor SIG0 such that the Hermite interpolatory tension */
-/* spline H(A), defined by SIG0 and the endpoint values and */
-/* directional derivatives associated with an arc N1-N2, is */
-/* bounded (either above or below) by HBND for all A in */
-/* (A1,A2), where (A1,A2) denotes an interval corresponding */
-/* to the arc and A is the arc-length. */
-
-/* On input: */
-
-/*       N1,N2 = Nodal indexes of the endpoints of an arc for */
-/*               which the tension factor is to be computed. */
-/*               The indexes must be distinct and lie in the */
-/*               range 1 to N, and if IFLGS .GE. 1, they must */
-/*               correspond to adjacent nodes in the triangu- */
-/*               lation. */
-
-/*       N = Number of nodes in the triangulation.  N .GE. 3. */
-
-/*       X,Y,Z = Arrays of length N containing coordinates of */
-/*               the nodes.  X(I)**2 + Y(I)**2 + Z(I)**2 = 1. */
-
-/*       H = Array of length N containing data values at the */
-/*           nodes.  H(I) is associated with (X(I),Y(I),Z(I)) */
-/*           for I = 1 to N. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to STRIPACK */
-/*                        Subroutine TRMESH. */
-
-/*       GRAD = Array dimensioned 3 by N whose columns con- */
-/*              tain gradients at the nodes.  GRAD( ,J) must */
-/*              be orthogonal to node J:  GRAD(1,J)*X(J) + */
-/*              GRAD(2,J)*Y(J) + GRAD(3,J)*Z(J) = 0.  Refer */
-/*              to Subroutines GRADG, GRADL, and SMSURF. */
-
-/*       IFLGB = Bound option indicator: */
-/*               IFLGB = -1 if HBND is a lower bound on H. */
-/*               IFLGB = 1 if HBND is an upper bound on H. */
-
-/*       HBND = Bound on H.  HBND .LE. min(H1,H2) if IFLGB = */
-/*              -1 and HBND .GE. max(H1,H2) if IFLGB = 1, */
-/*              where H1 and H2 are the data values at the */
-/*              endpoints of the arc N1-N2. */
-
-/*       TOL = Tolerance whose magnitude determines how close */
-/*             SIG0 is to its optimal value when nonzero */
-/*             finite tension is necessary and sufficient to */
-/*             satisfy the constraint.  For a lower bound, */
-/*             SIG0 is chosen so that HBND .LE. HMIN .LE. */
-/*             HBND + abs(TOL), where HMIN is the minimum */
-/*             value of H on the arc, and for an upper bound, */
-/*             the maximum of H satisfies HBND - abs(TOL) */
-/*             .LE. HMAX .LE. HBND.  Thus, the constraint is */
-/*             satisfied but possibly with more tension than */
-/*             necessary. */
-
-/*       IFLGS = Tension array option indicator: */
-/*               IFLGS .LE. 0 if SIGMA is not to be used. */
-/*               IFLGS .GE. 1 if SIGMA is to be updated by */
-/*                            storing SIG0 in the appropriate */
-/*                            locations. */
-
-/* The above parameters are not altered by this function. */
-
-/*       SIGMA = Dummy parameter (IFLGS .LE. 0) or array con- */
-/*               taining tension factors associated with arcs */
-/*               in one-to-one correspondence with LIST */
-/*               entries (IFLGS .GE. 1).  Refer to Subroutine */
-/*               GETSIG. */
-
-/* On output: */
-
-/*       SIGMA = Tension factor array updated with the new */
-/*               value if and only if IFLGS .GE. 1 and IER */
-/*               .GE. 0. */
-
-/*       IER = Error indicator: */
-/*             IER = 0 if no errors were encountered and the */
-/*                     constraint can be satisfied with fin- */
-/*                     ite tension. */
-/*             IER = 1 if no errors were encountered but in- */
-/*                     finite tension is required to satisfy */
-/*                     the constraint (e.g., IFLGB = -1, HBND */
-/*                     = H(A1), and the directional deriva- */
-/*                     tive of H at A1 is negative). */
-/*             IER = -1 if N1, N2, N, or IFLGB is outside its */
-/*                      valid range. */
-/*             IER = -2 if nodes N1 and N2 coincide or IFLGS */
-/*                      .GE. 1 and the nodes are not adja- */
-/*                      cent. */
-/*             IER = -3 if HBND is outside its valid range. */
-
-/*       SIG0 = Minimum tension factor defined above unless */
-/*              IER < 0, in which case SIG0 = -1.  If IER */
-/*              = 1, SIG0 is set to 85, resulting in an */
-/*              approximation to the linear interpolant of */
-/*              the endpoint values. */
-
-/* STRIPACK module required by SIG0:  STORE */
-
-/* SSRFPACK modules required by SIG0:  ARCLEN, SNHCSH */
-
-/* Intrinsic functions called by SIG0:  ABS, EXP, LOG, MAX, */
-/*                                        MIN, REAL, SIGN, */
-/*                                        SQRT */
-
-/* *********************************************************** */
-
-
-    /* Parameter adjustments */
-    grad -= 4;
-    --lend;
-    --h__;
-    --z__;
-    --y;
-    --x;
-    --list;
-    --lptr;
-    --sigma;
-
-    /* Function Body */
-    rf = (doublereal) (*iflgb);
-    bnd = *hbnd;
-
-/* Print a heading. */
-
-/*      IF (LUN .GE. 0  .AND.  RF .LT. 0.) WRITE (LUN,100) N1, */
-/*     .                                   N2, BND */
-/*      IF (LUN .GE. 0  .AND.  RF .GT. 0.) WRITE (LUN,110) N1, */
-/*     .                                   N2, BND */
-/*  100 FORMAT (//1X,'SIG0 -- N1 =',I4,', N2 =',I4, */
-/*     .        ', LOWER BOUND = ',E15.8) */
-/*  110 FORMAT (//1X,'SIG0 -- N1 =',I4,', N2 =',I4, */
-/*     .        ', UPPER BOUND = ',E15.8) */
-#ifdef SPH_DEBUG
-    if (rf < 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
-    if (rf > 0.0) fprintf (stderr, "SIG0 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
-#endif
-
-/* Test for errors and store local parameters. */
-
-    *ier = -1;
-/* Computing MAX */
-    i__1 = max(*n1,*n2);
-    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n || fabs(rf) != 1.) {
-	goto L11;
-    }
-    *ier = -2;
-    if (*iflgs > 0) {
-
-/*   Set LP1 and LP2 to the pointers to N2 as a neighbor of */
-/*     N1 and N1 as a neighbor of N2, respectively. */
-
-	lpl = lend[*n1];
-	lp1 = lptr[lpl];
-L1:
-	if (list[lp1] == *n2) {
-	    goto L2;
-	}
-	lp1 = lptr[lp1];
-	if (lp1 != lpl) {
-	    goto L1;
-	}
-	if ((i__1 = list[lp1], int64_abs(i__1)) != *n2) {
-	    goto L11;
-	}
-
-L2:
-	lpl = lend[*n2];
-	lp2 = lptr[lpl];
-L3:
-	if (list[lp2] == *n1) {
-	    goto L4;
-	}
-	lp2 = lptr[lp2];
-	if (lp2 != lpl) {
-	    goto L3;
-	}
-	if ((i__1 = list[lp2], int64_abs(i__1)) != *n1) {
-	    goto L11;
-	}
-    }
-
-/* Store nodal coordinates P1 and P2, compute arc-length AL */
-/*   and unit normal UN = (P1 X P2)/UNORM, and test for */
-/*   coincident nodes. */
-
-L4:
-    p1[0] = x[*n1];
-    p1[1] = y[*n1];
-    p1[2] = z__[*n1];
-    p2[0] = x[*n2];
-    p2[1] = y[*n2];
-    p2[2] = z__[*n2];
-    al = arclen_(p1, p2);
-    un[0] = p1[1] * p2[2] - p1[2] * p2[1];
-    un[1] = p1[2] * p2[0] - p1[0] * p2[2];
-    un[2] = p1[0] * p2[1] - p1[1] * p2[0];
-    unorm = sqrt(un[0] * un[0] + un[1] * un[1] + un[2] * un[2]);
-    if (unorm == 0. || al == 0.) {
-	goto L11;
-    }
-
-/* Store endpoint data values and test for valid constraint. */
-
-    h1 = h__[*n1];
-    h2 = h__[*n2];
-    *ier = -3;
-    if ((rf < 0. && min(h1,h2) < bnd) || (rf > 0. && bnd < max(h1,h2))) {
-	goto L11;
-    }
-
-/* Compute scaled directional derivatives S1,S2 at the end- */
-/*   points (for the direction N1->N2) and test for infinite */
-/*   tension required. */
-
-    s1 = al * (grad[*n1 * 3 + 1] * p2[0] + grad[*n1 * 3 + 2] * p2[1] + grad[*
-	    n1 * 3 + 3] * p2[2]) / unorm;
-    s2 = -al * (grad[*n2 * 3 + 1] * p1[0] + grad[*n2 * 3 + 2] * p1[1] + grad[*
-	    n2 * 3 + 3] * p1[2]) / unorm;
-    *ier = 1;
-    sig = sbig;
-    if ((h1 == bnd && rf * s1 > 0.) || (h2 == bnd && rf * s2 < 0.)) {
-	goto L10;
-    }
-
-/* Test for SIG = 0 sufficient. */
-
-    *ier = 0;
-    sig = 0.;
-    if (rf * s1 <= 0. && rf * s2 >= 0.) {
-	goto L10;
-    }
-
-/*   Compute first difference S and coefficients A0 and B0 */
-/*     of the Hermite cubic interpolant H0(A) = H2 - (S2*R + */
-/*     B0*R**2 + (A0/3)*R**3), where R(A) = (A2-A)/AL. */
-
-    s = h2 - h1;
-    t0 = s * 3. - s1 - s2;
-    a0 = (s - t0) * 3.;
-    b0 = t0 - s2;
-    d0 = t0 * t0 - s1 * s2;
-
-/*   H0 has local extrema in (A1,A2) iff S1*S2 < 0 or */
-/*     (T0*(S1+S2) < 0 and D0 .GE. 0). */
-
-    if (s1 * s2 >= 0. && (t0 * (s1 + s2) >= 0. || d0 < 0.)) {
-	goto L10;
-    }
-    if (a0 == 0.) {
-
-/*   H0 is quadratic and has an extremum at R = -S2/(2*B0). */
-/*     H0(R) = H2 + S2**2/(4*B0).  Note that A0 = 0 implies */
-/*     2*B0 = S1-S2, and S1*S2 < 0 implies B0 .NE. 0. */
-/*     Also, the extremum is a min iff HBND is a lower bound. */
-
-	f0 = (bnd - h2 - s2 * s2 / (b0 * 4.)) * rf;
-    } else {
-
-/*   A0 .NE. 0 and H0 has extrema at R = (-B0 +/- SQRT(D0))/ */
-/*     A0 = S2/(-B0 -/+ SQRT(D0)), where the negative root */
-/*     corresponds to a min.  The expression for R is chosen */
-/*     to avoid cancellation error.  H0(R) = H2 + (S2*B0 + */
-/*     2*D0*R)/(3*A0). */
-
-	d__1 = sqrt(d0);
-	t = -b0 - d_sign(&d__1, &b0);
-	r__ = t / a0;
-	if (rf * b0 > 0.) {
-	    r__ = s2 / t;
-	}
-	f0 = (bnd - h2 - (s2 * b0 + d0 * 2. * r__) / (a0 * 3.)) * rf;
-    }
-
-/*   F0 .GE. 0 iff SIG = 0 is sufficient to satisfy the */
-/*     constraint. */
-
-    if (f0 >= 0.) {
-	goto L10;
-    }
-
-/* Find a zero of F(SIG) = (BND-H(R))*RF where the derivative */
-/*   of H, HP, vanishes at R.  F is a nondecreasing function, */
-/*   F(0) < 0, and F = FMAX for SIG sufficiently large. */
-
-/* Initialize parameters for the secant method.  The method */
-/*   uses three points:  (SG0,F0), (SIG,F), and (SNEG,FNEG), */
-/*   where SG0 and SNEG are defined implicitly by DSIG = SIG */
-/*   - SG0 and DMAX = SIG - SNEG.  SG0 is initially zero and */
-/*   SNEG is initialized to a sufficiently large value that */
-/*   FNEG > 0.  This value is used only if the initial value */
-/*   of F is negative. */
-
-/* Computing MAX */
-/* Computing MIN */
-    d__5 = (d__1 = h1 - bnd, fabs(d__1)), d__6 = (d__2 = h2 - bnd, fabs(d__2));
-    d__3 = .001, d__4 = min(d__5,d__6);
-    fmax = max(d__3,d__4);
-/* Computing MAX */
-    d__3 = (d__1 = h1 - bnd, fabs(d__1)), d__4 = (d__2 = h2 - bnd, fabs(d__2));
-    t = max(d__3,d__4);
-/* Computing MAX */
-    d__1 = fabs(s1), d__2 = fabs(s2);
-    sig = max(d__1,d__2) / t;
-    dmax__ = sig * (1. - t / fmax);
-/*      IF (LUN .GE. 0) WRITE (LUN,120) SIG, SNEG, F0, FMAX */
-/*  120 FORMAT (1X,8X,'SIG = ',E15.8,', SNEG = ',E15.8/ */
-/*     .        1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/) */
-#ifdef SPH_DEBUG
-    sneg = sig - dmax__;
-    fprintf (stderr, "SIG = %g  SNEG = %g F0 = %g FMAX = %g\n", sig, sneg, f0, fmax);
-#endif
-    dsig = sig;
-    fneg = fmax;
-    d2 = s2 - s;
-    d1pd2 = s2 - s1;
-    nit = 0;
-
-/* Compute an absolute tolerance FTOL = abs(TOL) and a */
-/*   relative tolerance RTOL = 100*Macheps. */
-
-    ftol = fabs(*tol);
-    rtol = 1.;
-L5:
-    rtol /= 2.;
-    d__1 = rtol + 1.;
-    if (store_(&d__1) > 1.) {
-	goto L5;
-    }
-    rtol *= 200.;
-
-/* Top of loop:  compute F. */
-
-L6:
-    ems = exp(-sig);
-    if (sig <= .5) {
-
-/*   Use approximations designed to avoid cancellation error */
-/*     (associated with small SIG) in the modified hyperbolic */
-/*     functions. */
-
-	snhcsh_(&sig, &sinhm, &coshm, &coshmm);
-	c1 = sig * coshm * d2 - sinhm * d1pd2;
-	c2 = sig * (sinhm + sig) * d2 - coshm * d1pd2;
-	a = c2 - c1;
-	aa = a / ems;
-	e = sig * sinhm - coshmm - coshmm;
-    } else {
-
-/*   Scale SINHM and COSHM by 2*exp(-SIG) in order to avoid */
-/*     overflow. */
-
-	tm = 1. - ems;
-	ssinh = tm * (ems + 1.);
-	ssm = ssinh - sig * 2. * ems;
-	scm = tm * tm;
-	c1 = sig * scm * d2 - ssm * d1pd2;
-	c2 = sig * ssinh * d2 - scm * d1pd2;
-	aa = (sig * tm * d2 + (tm - sig) * d1pd2) * 2.;
-	a = ems * aa;
-	e = sig * ssinh - scm - scm;
-    }
-
-/*   HP(R) = (S2 - (C1*sinh(SIG*R) - C2*coshm(SIG*R))/E)/DT */
-/*     = 0 for ESR = (-B +/- sqrt(D))/A = C/(-B -/+ sqrt(D)) */
-/*     where ESR = exp(SIG*R), A = C2-C1, D = B**2 - A*C, and */
-/*     B and C are defined below. */
-
-    b = e * s2 - c2;
-    c__ = c2 + c1;
-    d__ = b * b - a * c__;
-    f = 0.;
-    if (aa * c__ == 0. && b == 0.) {
-	goto L7;
-    }
-    f = fmax;
-    if (d__ < 0.) {
-	goto L7;
-    }
-    t1 = sqrt(d__);
-    t = -b - d_sign(&t1, &b);
-    rsig = 0.;
-    if (rf * b < 0. && aa != 0.) {
-	if (t / aa > 0.) {
-	    rsig = sig + log(t / aa);
-	}
-    }
-    if ((rf * b > 0. || aa == 0.) && c__ / t > 0.) {
-	rsig = log(c__ / t);
-    }
-    if ((rsig <= 0. || rsig >= sig) && b != 0.) {
-	goto L7;
-    }
-
-/*   H(R) = H2 - (B*SIG*R + C1 + RF*sqrt(D))/(SIG*E). */
-
-    f = (bnd - h2 + (b * rsig + c1 + rf * t1) / (sig * e)) * rf;
-
-/*   Update the number of iterations NIT. */
-
-L7:
-    ++nit;
-/*      IF (LUN .GE. 0) WRITE (LUN,130) NIT, SIG, F */
-/*  130 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
-/*     .        E15.8) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
-#endif
-    if (f0 * f < 0.) {
-
-/*   F0*F < 0.  Update (SNEG,FNEG) to (SG0,F0) so that F and */
-/*     FNEG always have opposite signs.  If SIG is closer to */
-/*     SNEG than SG0, then swap (SNEG,FNEG) with (SG0,F0). */
-
-	t1 = dmax__;
-	t2 = fneg;
-	dmax__ = dsig;
-	fneg = f0;
-	if (fabs(dsig) > fabs(t1)) {
-
-	    dsig = t1;
-	    f0 = t2;
-	}
-    }
-
-/*   Test for convergence. */
-
-    stol = rtol * sig;
-if (fabs(dmax__) <= stol || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
-	goto L10;
-    }
-
-/*   Test for F0 = F = FMAX or F < 0 on the first iteration. */
-
-    if (f0 != f && (nit > 1 || f > 0.)) {
-	goto L9;
-    }
-
-/*   F*F0 > 0 and either the new estimate would be outside */
-/*     of the bracketing interval of length abs(DMAX) or */
-/*     F < 0 on the first iteration.  Reset (SG0,F0) to */
-/*     (SNEG,FNEG). */
-
-L8:
-    dsig = dmax__;
-    f0 = fneg;
-
-/*   Compute the change in SIG by linear interpolation */
-/*     between (SG0,F0) and (SIG,F). */
-
-L9:
-    dsig = -f * dsig / (f - f0);
-/*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
-/*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "DSIG = %g\n", dsig);
-#endif
-    if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
-	goto L8;
-    }
-
-/*   Restrict the step-size such that abs(DSIG) .GE. STOL/2. */
-/*     Note that DSIG and DMAX have opposite signs. */
-
-    if (fabs(dsig) < stol / 2.) {
-	d__1 = stol / 2.;
-	dsig = -d_sign(&d__1, &dmax__);
-    }
-
-/*   Bottom of loop:  Update SIG, DMAX, and F0. */
-
-    sig += dsig;
-    dmax__ += dsig;
-    f0 = f;
-    goto L6;
-
-/* No errors encountered. */
-
-L10:
-    ret_val = sig;
-    if (*iflgs <= 0) {
-	return ret_val;
-    }
-    sigma[lp1] = sig;
-    sigma[lp2] = sig;
-    return ret_val;
-
-/* Error termination. */
-
-L11:
-    ret_val = -1.;
-    return ret_val;
-} /* sig0_ */
-
-doublereal sig1_(integer *n1, integer *n2, integer *n, doublereal *x, 
-	doublereal *y, doublereal *z__, doublereal *h__, integer *list, 
-	integer *lptr, integer *lend, doublereal *grad, integer *iflgb, 
-	doublereal *hpbnd, doublereal *tol, integer *iflgs, doublereal *sigma,
-	 integer *ier)
-{
-    /* Initialized data */
-
-    static doublereal sbig = 85.;
-
-    /* System generated locals */
-    integer i__1;
-    doublereal ret_val, d__1, d__2;
-
-    /* Builtin functions */
-    double sqrt(doublereal), exp(doublereal), d_sign(doublereal *, doublereal 
-	    *);
-
-    /* Local variables */
-    static doublereal a, e, f, s, a0, b0, c0, c1, c2, d0, d1, d2, f0, p1[3], 
-	    p2[3], s1, s2, t0, t1, t2, al, rf, tm, un[3];
-    static integer lp1, lp2;
-    static doublereal bnd, sig, ems;
-    static integer lpl, nit;
-    static doublereal ems2, d1pd2, fneg, dsig, dmax__, fmax, sinh__, ftol, 
-	    rtol, stol, coshm, sinhm;
-    static doublereal unorm;
-    static doublereal coshmm;
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   11/21/96 */
-
-/*   Given a triangulation of a set of nodes on the unit */
-/* sphere, along with data values H and gradients GRAD at the */
-/* nodes, this function determines the smallest tension fac- */
-/* tor SIG1 such that the first derivative HP(A) of the */
-/* Hermite interpolatory tension spline H(A), defined by SIG1 */
-/* and the endpoint values and directional derivatives asso- */
-/* ciated with an arc N1-N2, is bounded (either above or */
-/* below) by HPBND for all A in (A1,A2), where (A1,A2) de- */
-/* notes an interval corresponding to the arc and A denotes */
-/* arc-length. */
-
-/* On input: */
-
-/*       N1,N2 = Nodal indexes of the endpoints of an arc for */
-/*               which the tension factor is to be computed. */
-/*               The indexes must be distinct and lie in the */
-/*               range 1 to N, and if IFLGS .GE. 1, they must */
-/*               correspond to adjacent nodes in the triangu- */
-/*               lation. */
-
-/*       N = Number of nodes in the triangulation.  N .GE. 3. */
-
-/*       X,Y,Z = Arrays of length N containing coordinates of */
-/*               the nodes.  X(I)**2 + Y(I)**2 + Z(I)**2 = 1. */
-
-/*       H = Array of length N containing data values at the */
-/*           nodes.  H(I) is associated with (X(I),Y(I),Z(I)) */
-/*           for I = 1 to N. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to STRIPACK */
-/*                        Subroutine TRMESH. */
-
-/*       GRAD = Array dimensioned 3 by N whose columns con- */
-/*              gradients at the nodes.  GRAD( ,J) must be */
-/*              orthogonal to node J:  GRAD(1,J)*X(J) + */
-/*              GRAD(2,J)*Y(J) + GRAD(3,J)*Z(J) = 0.  Refer */
-/*              to Subroutines GRADG, GRADL, and SMSURF. */
-
-/*       IFLGB = Bound option indicator: */
-/*               IFLGB = -1 if HPBND is a lower bound on HP. */
-/*               IFLGB = 1 if HPBND is an upper bound on HP. */
-
-/*       HPBND = Bound on HP.  HPBND .LE. min(HP1,HP2,S) if */
-/*               IFLGB = -1 and HPBND .GE. max(HP1,HP2,S) if */
-/*               IFLGB = 1, where HP1 and HP2 are the direc- */
-/*               tional derivatives at the endpoints of the */
-/*               arc N1-N2, and S is the slope of the linear */
-/*               interpolant of the endpoint data values. */
-
-/*       TOL = Tolerance whose magnitude determines how close */
-/*             SIG1 is to its optimal value when nonzero */
-/*             finite tension is necessary and sufficient to */
-/*             satisfy the constraint.  For a lower bound, */
-/*             SIG1 is chosen so that HPBND .LE. HPMIN .LE. */
-/*             HPBND + abs(TOL), where HPMIN is the minimum */
-/*             value of HP on the arc.  For an upper bound, */
-/*             the maximum of HP satisfies HPBND - abs(TOL) */
-/*             .LE. HPMAX .LE. HPBND.  Thus, the constraint */
-/*             is satisfied but possibly with more tension */
-/*             than necessary. */
-
-/*       IFLGS = Tension array option indicator: */
-/*               IFLGS .LE. 0 if SIGMA is not to be used. */
-/*               IFLGS .GE. 1 if SIGMA is to be updated by */
-/*                            storing SIG1 in the appropriate */
-/*                            locations. */
-
-/* The above parameters are not altered by this function. */
-
-/*       SIGMA = Dummy parameter (IFLGS .LE. 0) or array */
-/*               containing tension factors associated with */
-/*               arcs in one-to-one correspondence with LIST */
-/*               entries (IFLGS .GE. 1).  Refer to Subroutine */
-/*               GETSIG. */
-
-/* On output: */
-
-/*       SIGMA = Tension factor array updated with the new */
-/*               value if and only if IFLGS .GE. 1 and IER */
-/*               .GE. 0. */
-
-/*       IER = Error indicator: */
-/*             IER = 0 if no errors were encountered and the */
-/*                     constraint can be satisfied with fin- */
-/*                     ite tension. */
-/*             IER = 1 if no errors were encountered but in- */
-/*                     finite tension is required to satisfy */
-/*                     the constraint (e.g., IFLGB = -1, */
-/*                     HPBND = S, and HP1 > S). */
-/*             IER = -1 if N1, N2, N, or IFLGB is outside its */
-/*                      valid range. */
-/*             IER = -2 if nodes N1 and N2 coincide or IFLGS */
-/*                      .GE. 1 and the nodes are not adja- */
-/*                      cent. */
-/*             IER = -3 if HPBND is outside its valid range. */
-
-/*       SIG1 = Minimum tension factor defined above unless */
-/*              IER < 0, in which case SIG1 = -1.  If IER */
-/*              = 1, SIG1 is set to 85, resulting in an */
-/*              approximation to the linear interpolant of */
-/*              the endpoint values. */
-
-/* STRIPACK module required by SIG1:  STORE */
-
-/* SSRFPACK modules required by SIG1:  ARCLEN, SNHCSH */
-
-/* Intrinsic functions called by SIG1:   ABS, EXP, MAX, MIN, */
-/*                                         REAL, SIGN, SQRT */
-
-/* *********************************************************** */
-
-
-    /* Parameter adjustments */
-    grad -= 4;
-    --lend;
-    --h__;
-    --z__;
-    --y;
-    --x;
-    --list;
-    --lptr;
-    --sigma;
-
-    /* Function Body */
-    rf = (doublereal) (*iflgb);
-    bnd = *hpbnd;
-
-/* Print a heading. */
-
-/*      IF (LUN .GE. 0  .AND.  RF .LT. 0.) WRITE (LUN,100) N1, */
-/*     .                                   N2, BND */
-/*      IF (LUN .GE. 0  .AND.  RF .GT. 0.) WRITE (LUN,110) N1, */
-/*     .                                   N2, BND */
-/*  100 FORMAT (//1X,'SIG1 -- N1 =',I4,', N2 =',I4, */
-/*     .        ', LOWER BOUND = ',E15.8) */
-/*  110 FORMAT (//1X,'SIG1 -- N1 =',I4,', N2 =',I4, */
-/*     .        ', UPPER BOUND = ',E15.8) */
-#ifdef SPH_DEBUG
-    if (rf < 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  LOWER BOUND = %g\n", *n1, *n2, bnd);
-    if (rf > 0.0) fprintf (stderr, "SIG1 -- N1 = %d  N2 = %d  UPPER BOUND = %g\n", *n1, *n2, bnd);
-#endif
-
-/* Test for errors and store local parameters. */
-
-    *ier = -1;
-/* Computing MAX */
-    i__1 = max(*n1,*n2);
-    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n || fabs(rf) != 1.) {
-	goto L11;
-    }
-    *ier = -2;
-    if (*iflgs > 0) {
-
-/*   Set LP1 and LP2 to the pointers to N2 as a neighbor of */
-/*     N1 and N1 as a neighbor of N2, respectively. */
-
-	lpl = lend[*n1];
-	lp1 = lptr[lpl];
-L1:
-	if (list[lp1] == *n2) {
-	    goto L2;
-	}
-	lp1 = lptr[lp1];
-	if (lp1 != lpl) {
-	    goto L1;
-	}
-	if ((i__1 = list[lp1], int64_abs(i__1)) != *n2) {
-	    goto L11;
-	}
-
-L2:
-	lpl = lend[*n2];
-	lp2 = lptr[lpl];
-L3:
-	if (list[lp2] == *n1) {
-	    goto L4;
-	}
-	lp2 = lptr[lp2];
-	if (lp2 != lpl) {
-	    goto L3;
-	}
-	if ((i__1 = list[lp2], int64_abs(i__1)) != *n1) {
-	    goto L11;
-	}
-    }
-
-/* Store nodal coordinates P1 and P2, compute arc-length AL */
-/*   and unit normal UN = (P1 X P2)/UNORM, and test for */
-/*   coincident nodes. */
-
-L4:
-    p1[0] = x[*n1];
-    p1[1] = y[*n1];
-    p1[2] = z__[*n1];
-    p2[0] = x[*n2];
-    p2[1] = y[*n2];
-    p2[2] = z__[*n2];
-    al = arclen_(p1, p2);
-    un[0] = p1[1] * p2[2] - p1[2] * p2[1];
-    un[1] = p1[2] * p2[0] - p1[0] * p2[2];
-    un[2] = p1[0] * p2[1] - p1[1] * p2[0];
-    unorm = sqrt(un[0] * un[0] + un[1] * un[1] + un[2] * un[2]);
-    if (unorm == 0. || al == 0.) {
-	goto L11;
-    }
-
-/* Compute first difference S and scaled directional deriva- */
-/*   tives S1,S2 at the endpoints (for the direction N1->N2). */
-
-    s = h__[*n2] - h__[*n1];
-    s1 = al * (grad[*n1 * 3 + 1] * p2[0] + grad[*n1 * 3 + 2] * p2[1] + grad[*
-	    n1 * 3 + 3] * p2[2]) / unorm;
-    s2 = -al * (grad[*n2 * 3 + 1] * p1[0] + grad[*n2 * 3 + 2] * p1[1] + grad[*
-	    n2 * 3 + 3] * p1[2]) / unorm;
-
-/* Test for a valid constraint. */
-
-    *ier = -3;
-/* Computing MIN */
-    d__1 = min(s1,s2);
-/* Computing MAX */
-    d__2 = max(s1,s2);
-if ((rf < 0. && min(d__1,s) < bnd) || (rf > 0. && bnd < max(d__2,s))) {
-	goto L11;
-    }
-
-/* Test for infinite tension required. */
-
-    *ier = 1;
-    sig = sbig;
-    if (s == bnd && (s1 != s || s2 != s)) {
-	goto L10;
-    }
-
-/* Test for SIG = 0 sufficient.  The Hermite cubic interpo- */
-/*   lant H0 has derivative HP0(T) = (S2 + 2*B0*R + A0*R**2)/ */
-/*   AL, where R = (T2-T)/AL. */
-
-    *ier = 0;
-    sig = 0.;
-    t0 = s * 3. - s1 - s2;
-    b0 = t0 - s2;
-    c0 = t0 - s1;
-    a0 = -b0 - c0;
-
-/*   HP0(R) has an extremum (at R = -B0/A0) in (0,1) iff */
-/*     B0*C0 > 0 and the third derivative of H0 has the */
-/*     sign of A0. */
-
-    if (b0 * c0 <= 0. || a0 * rf > 0.) {
-	goto L10;
-    }
-
-/*   A0*RF < 0 and HP0(R) = -D0/(DT*A0) at R = -B0/A0. */
-
-    d0 = t0 * t0 - s1 * s2;
-    f0 = (bnd + d0 / (a0 * al)) * rf;
-    if (f0 >= 0.) {
-	goto L10;
-    }
-
-/* Find a zero of F(SIG) = (BND-HP(R))*RF, where HP has an */
-/*   extremum at R.  F has a unique zero, F(0) = F0 < 0, and */
-/*   F = (BND-S)*RF > 0 for SIG sufficiently large. */
-
-/* Initialize parameters for the secant method.  The method */
-/*   uses three points:  (SG0,F0), (SIG,F), and (SNEG,FNEG), */
-/*   where SG0 and SNEG are defined implicitly by DSIG = SIG */
-/*   - SG0 and DMAX = SIG - SNEG.  SG0 is initially zero and */
-/*   SIG is initialized to the zero of (BND - (SIG*S-S1-S2)/ */
-/*   (AL*(SIG-2.)))*RF -- a value for which F(SIG) .GE. 0 and */
-/*   F(SIG) = 0 for SIG sufficiently large that 2*SIG is in- */
-/*   significant relative to exp(SIG). */
-
-    fmax = (bnd - s / al) * rf;
-    sig = 2. - a0 / ((al * bnd - s) * 3.);
-/*      IF (LUN .GE. 0) WRITE (LUN,120) F0, FMAX, SIG */
-/*  120 FORMAT (1X,9X,'F0 = ',E15.8,', FMAX = ',E15.8/ */
-/*     .        1X,8X,'SIG = ',E15.8/) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "F0 = %g FMAX = %g SIG = %g\n", f0, fmax, sig);
-#endif
-    d__1 = sig * exp(-sig) + .5;
-    if (store_(&d__1) == .5) {
-	goto L10;
-    }
-    dsig = sig;
-    dmax__ = sig * -2.;
-    fneg = fmax;
-    d1 = s - s1;
-    d2 = s2 - s;
-    d1pd2 = d1 + d2;
-    nit = 0;
-
-/* Compute an absolute tolerance FTOL = abs(TOL), and a */
-/*   relative tolerance RTOL = 100*Macheps. */
-
-    ftol = fabs(*tol);
-    rtol = 1.;
-L5:
-    rtol /= 2.;
-    d__1 = rtol + 1.;
-    if (store_(&d__1) > 1.) {
-	goto L5;
-    }
-    rtol *= 200.;
-
-/* Top of loop:  compute F. */
-
-L6:
-    if (sig <= .5) {
-
-/*   Use approximations designed to avoid cancellation */
-/*     error (associated with small SIG) in the modified */
-/*     hyperbolic functions. */
-
-	snhcsh_(&sig, &sinhm, &coshm, &coshmm);
-	c1 = sig * coshm * d2 - sinhm * d1pd2;
-	c2 = sig * (sinhm + sig) * d2 - coshm * d1pd2;
-	a = c2 - c1;
-	e = sig * sinhm - coshmm - coshmm;
-    } else {
-
-/*   Scale SINHM and COSHM by 2*exp(-SIG) in order to avoid */
-/*     overflow. */
-
-	ems = exp(-sig);
-	ems2 = ems + ems;
-	tm = 1. - ems;
-	sinh__ = tm * (ems + 1.);
-	sinhm = sinh__ - sig * ems2;
-	coshm = tm * tm;
-	c1 = sig * coshm * d2 - sinhm * d1pd2;
-	c2 = sig * sinh__ * d2 - coshm * d1pd2;
-	a = ems2 * (sig * tm * d2 + (tm - sig) * d1pd2);
-	e = sig * sinh__ - coshm - coshm;
-    }
-
-/*   The second derivative HPP of H(R) has a zero at exp(SIG* */
-/*     R) = SQRT((C2+C1)/A) and R is in (0,1) and well- */
-/*     defined iff HPP(T1)*HPP(T2) < 0. */
-
-    f = fmax;
-    t1 = a * (c2 + c1);
-    if (t1 >= 0.) {
-	if (c1 * (sig * coshm * d1 - sinhm * d1pd2) < 0.) {
-
-/*   HP(R) = (B+SIGN(A)*SQRT(A*C))/(AL*E) at the critical */
-/*     value of R, where A = C2-C1, B = E*S2-C2, and C = C2 + */
-/*     C1.  Note that RF*A < 0. */
-
-	    f = (bnd - (e * s2 - c2 - rf * sqrt(t1)) / (al * e)) * rf;
-	}
-    }
-
-/*   Update the number of iterations NIT. */
-
-    ++nit;
-/*      IF (LUN .GE. 0) WRITE (LUN,130) NIT, SIG, F */
-/*  130 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
-/*     .        E15.8) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "%d -- SIG = %g  F = %g\n", nit, sig, f);
-#endif
-    if (f0 * f < 0.) {
-
-/*   F0*F < 0.  Update (SNEG,FNEG) to (SG0,F0) so that F */
-/*     and FNEG always have opposite signs.  If SIG is closer */
-/*     to SNEG than SG0 and abs(F) < abs(FNEG), then swap */
-/*     (SNEG,FNEG) with (SG0,F0). */
-
-	t1 = dmax__;
-	t2 = fneg;
-	dmax__ = dsig;
-	fneg = f0;
-	if (fabs(dsig) > fabs(t1) && fabs(f) < fabs(t2)) {
-
-	    dsig = t1;
-	    f0 = t2;
-	}
-    }
-
-/*   Test for convergence. */
-
-    stol = rtol * sig;
-if (fabs(dmax__) <= stol || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
-	goto L10;
-    }
-    if (f0 * f < 0. || fabs(f) < fabs(f0)) {
-	goto L8;
-    }
-
-/*   F*F0 > 0 and the new estimate would be outside of the */
-/*     bracketing interval of length abs(DMAX).  Reset */
-/*     (SG0,F0) to (SNEG,FNEG). */
-
-L7:
-    dsig = dmax__;
-    f0 = fneg;
-
-/*   Compute the change in SIG by linear interpolation */
-/*     between (SG0,F0) and (SIG,F). */
-
-L8:
-    dsig = -f * dsig / (f - f0);
-/*      IF (LUN .GE. 0) WRITE (LUN,140) DSIG */
-/*  140 FORMAT (1X,8X,'DSIG = ',E15.8) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "DSIG = %g\n", dsig);
-#endif
-    if (fabs(dsig) > fabs(dmax__) || dsig * dmax__ > 0.) {
-	goto L7;
-    }
-
-/*   Restrict the step-size such that abs(DSIG) .GE. STOL/2. */
-/*     Note that DSIG and DMAX have opposite signs. */
-
-    if (fabs(dsig) < stol / 2.) {
-	d__1 = stol / 2.;
-	dsig = -d_sign(&d__1, &dmax__);
-    }
-
-/*   Bottom of loop:  update SIG, DMAX, and F0. */
-
-    sig += dsig;
-    dmax__ += dsig;
-    f0 = f;
-    goto L6;
-
-/* No errors encountered. */
-
-L10:
-    ret_val = sig;
-    if (*iflgs <= 0) {
-	return ret_val;
-    }
-    sigma[lp1] = sig;
-    sigma[lp2] = sig;
-    return ret_val;
-
-/* Error termination. */
-
-L11:
-    ret_val = -1.;
-    return ret_val;
-} /* sig1_ */
-
-doublereal sig2_(integer *n1, integer *n2, integer *n, doublereal *x, 
-	doublereal *y, doublereal *z__, doublereal *h__, integer *list, 
-	integer *lptr, integer *lend, doublereal *grad, doublereal *tol, 
-	integer *iflgs, doublereal *sigma, integer *ier)
-{
-    /* Initialized data */
-
-    static doublereal sbig = 85.;
-
-    /* System generated locals */
-    integer i__1;
-    doublereal ret_val, d__1, d__2;
-
-    /* Builtin functions */
-    double sqrt(doublereal), exp(doublereal);
-
-    /* Local variables */
-    static doublereal f, s, t, d1, d2, p1[3], p2[3], t1, al, fp, un[3];
-    static integer lp1, lp2;
-    static doublereal tp1, d1d2, sig, ems;
-    static integer lpl, nit;
-    static doublereal ssm, dsig, ftol, rtol, coshm, sinhm, dummy;
-    static doublereal unorm;
-
-
-/* *********************************************************** */
-
-/*                                              From SSRFPACK */
-/*                                            Robert J. Renka */
-/*                                  Dept. of Computer Science */
-/*                                       Univ. of North Texas */
-/*                                           renka@cs.unt.edu */
-/*                                                   07/25/96 */
-
-/*   Given a triangulation of a set of nodes on the unit */
-/* sphere, along with data values H and gradients GRAD at the */
-/* nodes, this function determines the smallest tension fac- */
-/* tor SIG2 such that the Hermite interpolatory tension */
-/* spline H(A), defined by SIG2 and the endpoint values and */
-/* directional derivatives associated with an arc N1-N2, */
-/* preserves convexity (or concavity) of the data: */
-
-/*   HP1 .LE. S .LE. HP2 implies HPP(A) .GE. 0, and */
-/*   HP1 .GE. S .GE. HP2 implies HPP(A) .LE. 0 */
-
-/* for all A in the open interval (A1,A2) corresponding to */
-/* the arc, where HP1 and HP2 are the derivative values of H */
-/* at the endpoints, S is the slope of the linear interpolant */
-/* of the endpoint data values, HPP denotes the second deriv- */
-/* ative of H, and A is arc-length.  Note, however, that */
-/* infinite tension is required if HP1 = S or HP2 = S (unless */
-/* HP1 = HP2 = S). */
-
-/* On input: */
-
-/*       N1,N2 = Nodal indexes of the endpoints of an arc for */
-/*               which the tension factor is to be computed. */
-/*               The indexes must be distinct and lie in the */
-/*               range 1 to N, and if IFLGS .GE. 1, they must */
-/*               correspond to adjacent nodes in the triangu- */
-/*               lation. */
-
-/*       N = Number of nodes in the triangulation.  N .GE. 3. */
-
-/*       X,Y,Z = Arrays of length N containing coordinates of */
-/*               the nodes.  X(I)**2 + Y(I)**2 + Z(I)**2 = 1. */
-
-/*       H = Array of length N containing data values at the */
-/*           nodes.  H(I) is associated with (X(I),Y(I),Z(I)) */
-/*           for I = 1 to N. */
-
-/*       LIST,LPTR,LEND = Data structure defining the trian- */
-/*                        gulation.  Refer to STRIPACK */
-/*                        Subroutine TRMESH. */
-
-/*       GRAD = Array dimensioned 3 by N whose columns con- */
-/*              gradients at the nodes.  GRAD( ,J) must be */
-/*              orthogonal to node J:  GRAD(1,J)*X(J) + */
-/*              GRAD(2,J)*Y(J) + GRAD(3,J)*Z(J) = 0.  Refer */
-/*              to Subroutines GRADG, GRADL, and SMSURF. */
-
-/*       TOL = Tolerance whose magnitude determines how close */
-/*             SIG2 is to its optimal value when nonzero */
-/*             finite tension is necessary and sufficient to */
-/*             satisfy convexity or concavity.  In the case */
-/*             convexity, SIG2 is chosen so that 0 .LE. */
-/*             HPPMIN .LE. abs(TOL), where HPPMIN is the */
-/*             minimum value of HPP on the arc.  In the case */
-/*             of concavity, the maximum value of HPP satis- */
-/*             fies -abs(TOL) .LE. HPPMAX .LE. 0.  Thus, the */
-/*             constraint is satisfied but possibly with more */
-/*             tension than necessary. */
-
-/*       IFLGS = Tension array option indicator: */
-/*               IFLGS .LE. 0 if SIGMA is not to be used. */
-/*               IFLGS .GE. 1 if SIGMA is to be updated by */
-/*                            storing SIG2 in the appropriate */
-/*                            locations. */
-
-/* The above parameters are not altered by this function. */
-
-/*       SIGMA = Dummy parameter (IFLGS .LE. 0) or array */
-/*               containing tension factors associated with */
-/*               arcs in one-to-one correspondence with LIST */
-/*               entries (IFLGS .GE. 1).  Refer to Subroutine */
-/*               GETSIG. */
-
-/* On output: */
-
-/*       SIGMA = Tension factor array updated with the new */
-/*               value if and only if IFLGS .GE. 1 and IER */
-/*               .GE. 0. */
-
-/*       IER = Error indicator: */
-/*             IER = 0 if no errors were encountered and fin- */
-/*                     ite tension is sufficient to satisfy */
-/*                     convexity (or concavity). */
-/*             IER = 1 if no errors were encountered but in- */
-/*                     finite tension is required to satisfy */
-/*                     convexity. */
-/*             IER = 2 if the data does not satisfy convexity */
-/*                     or concavity. */
-/*             IER = -1 if N1, N2, or N is outside its valid */
-/*                      range. */
-/*             IER = -2 if nodes N1 and N2 coincide or IFLGS */
-/*                      .GE. 1 and the nodes are not adja- */
-/*                      cent. */
-
-/*       SIG2 = Minimum tension factor defined above unless */
-/*              IER < 0, in which case SIG2 = -1.  If IER */
-/*              = 1, SIG2 is set to 85, resulting in an */
-/*              approximation to the linear interpolant of */
-/*              the endpoint values.  If IER = 2, SIG2 = 0, */
-/*              resulting in the Hermite cubic interpolant. */
-
-/* STRIPACK module required by SIG2:  STORE */
-
-/* SSRFPACK modules required by SIG2:  ARCLEN, SNHCSH */
-
-/* Intrinsic functions called by SIG2:  ABS, EXP, MAX, MIN, */
-/*                                        SQRT */
-
-/* *********************************************************** */
-
-
-    /* Parameter adjustments */
-    grad -= 4;
-    --lend;
-    --h__;
-    --z__;
-    --y;
-    --x;
-    --list;
-    --lptr;
-    --sigma;
-
-    /* Function Body */
-
-/* Print a heading. */
-
-/*      IF (LUN .GE. 0) WRITE (LUN,100) N1, N2 */
-/*  100 FORMAT (//1X,'SIG2 -- N1 =',I4,', N2 =',I4) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "SIG2 -- N1 = %d  N2 = %d\n", *n1, *n2);
-#endif
-
-/* Test for errors and set local parameters. */
-
-    *ier = -1;
-/* Computing MAX */
-    i__1 = max(*n1,*n2);
-    if (min(*n1,*n2) < 1 || *n1 == *n2 || max(i__1,3) > *n) {
-	goto L11;
-    }
-    *ier = -2;
-    if (*iflgs > 0) {
-
-/*   Set LP1 and LP2 to the pointers to N2 as a neighbor of */
-/*     N1 and N1 as a neighbor of N2, respectively. */
-
-	lpl = lend[*n1];
-	lp1 = lptr[lpl];
-L1:
-	if (list[lp1] == *n2) {
-	    goto L2;
-	}
-	lp1 = lptr[lp1];
-	if (lp1 != lpl) {
-	    goto L1;
-	}
-	if ((i__1 = list[lp1], int64_abs(i__1)) != *n2) {
-	    goto L11;
-	}
-
-L2:
-	lpl = lend[*n2];
-	lp2 = lptr[lpl];
-L3:
-	if (list[lp2] == *n1) {
-	    goto L4;
-	}
-	lp2 = lptr[lp2];
-	if (lp2 != lpl) {
-	    goto L3;
-	}
-	if ((i__1 = list[lp2], int64_abs(i__1)) != *n1) {
-	    goto L11;
-	}
-    }
-
-/* Store nodal coordinates P1 and P2, compute arc-length AL */
-/*   and unit normal UN = (P1 X P2)/UNORM, and test for */
-/*   coincident nodes. */
-
-L4:
-    p1[0] = x[*n1];
-    p1[1] = y[*n1];
-    p1[2] = z__[*n1];
-    p2[0] = x[*n2];
-    p2[1] = y[*n2];
-    p2[2] = z__[*n2];
-    al = arclen_(p1, p2);
-    un[0] = p1[1] * p2[2] - p1[2] * p2[1];
-    un[1] = p1[2] * p2[0] - p1[0] * p2[2];
-    un[2] = p1[0] * p2[1] - p1[1] * p2[0];
-    unorm = sqrt(un[0] * un[0] + un[1] * un[1] + un[2] * un[2]);
-    if (unorm == 0. || al == 0.) {
-	goto L11;
-    }
-
-/* Compute first and second differences and test for infinite */
-/*   tension required. */
-
-    s = h__[*n2] - h__[*n1];
-    d1 = s - al * (grad[*n1 * 3 + 1] * p2[0] + grad[*n1 * 3 + 2] * p2[1] + 
-	    grad[*n1 * 3 + 3] * p2[2]) / unorm;
-    d2 = -al * (grad[*n2 * 3 + 1] * p1[0] + grad[*n2 * 3 + 2] * p1[1] + grad[*
-	    n2 * 3 + 3] * p1[2]) / unorm - s;
-    d1d2 = d1 * d2;
-    *ier = 1;
-    sig = sbig;
-    if (d1d2 == 0. && d1 != d2) {
-	goto L10;
-    }
-
-/* Test for a valid constraint. */
-
-    *ier = 2;
-    sig = 0.;
-    if (d1d2 < 0.) {
-	goto L10;
-    }
-
-/* Test for SIG = 0 sufficient. */
-
-    *ier = 0;
-    if (d1d2 == 0.) {
-	goto L10;
-    }
-/* Computing MAX */
-    d__1 = d1 / d2, d__2 = d2 / d1;
-    t = max(d__1,d__2);
-    if (t <= 2.) {
-	goto L10;
-    }
-
-/* Find a zero of F(SIG) = SIG*COSHM(SIG)/SINHM(SIG) - (T+1). */
-/*   Since the derivative of F vanishes at the origin, a */
-/*   quadratic approximation is used to obtain an initial */
-/*   estimate for the Newton method. */
-
-    tp1 = t + 1.;
-    sig = sqrt(t * 10. - 20.);
-    nit = 0;
-
-/*   Compute an absolute tolerance FTOL = abs(TOL) and a */
-/*     relative tolerance RTOL = 100*Macheps. */
-
-    ftol = fabs(*tol);
-    rtol = 1.;
-L5:
-    rtol /= 2.;
-    d__1 = rtol + 1.;
-    if (store_(&d__1) > 1.) {
-	goto L5;
-    }
-    rtol *= 200.;
-
-/* Top of loop:  evaluate F and its derivative FP. */
-
-L6:
-    if (sig <= .5) {
-
-/*   Use approximations designed to avoid cancellation error */
-/*     in the hyperbolic functions. */
-
-	snhcsh_(&sig, &sinhm, &coshm, &dummy);
-	t1 = coshm / sinhm;
-	fp = t1 + sig * (sig / sinhm - t1 * t1 + 1.);
-    } else {
-
-/*   Scale SINHM and COSHM by 2*exp(-SIG) in order to avoid */
-/*     overflow. */
-
-	ems = exp(-sig);
-	ssm = 1. - ems * (ems + sig + sig);
-	t1 = (1. - ems) * (1. - ems) / ssm;
-	fp = t1 + sig * (sig * 2. * ems / ssm - t1 * t1 + 1.);
-    }
-
-    f = sig * t1 - tp1;
-
-/*   Update the number of iterations NIT. */
-
-    ++nit;
-/*      IF (LUN .GE. 0) WRITE (LUN,110) NIT, SIG, F, FP */
-/*  110 FORMAT (1X,3X,I2,' -- SIG = ',E15.8,', F = ', */
-/*     .        E15.8/1X,31X,'FP = ',E15.8) */
-#ifdef SPH_DEBUG
-    fprintf (stderr, "%d -- SIG = %g  F = %g  FP = %g\n", nit, sig, f, fp);
-#endif
-
-/*   Test for convergence. */
-
-    if (fp <= 0.) {
-	goto L10;
-    }
-    dsig = -f / fp;
-if (fabs(dsig) <= rtol * sig || (f >= 0. && f <= ftol) || fabs(f) <= rtol) {
-	goto L10;
-    }
-
-/*   Bottom of loop:  update SIG. */
-
-    sig += dsig;
-    goto L6;
-
-/* No errors encountered. */
-
-L10:
-    ret_val = sig;
-    if (*iflgs <= 0) {
-	return ret_val;
-    }
-    sigma[lp1] = sig;
-    sigma[lp2] = sig;
-    return ret_val;
-
-/* Error termination. */
-
-L11:
-    ret_val = -1.;
-    return ret_val;
-} /* sig2_ */
-
-integer smsgs_(integer *n, doublereal *x, doublereal *y, 
+GMT_LOCAL integer smsgs_(integer *n, doublereal *x, doublereal *y, 
 	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer 
 	*lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *
 	p, integer *nit, doublereal *dfmax, doublereal *f, doublereal *grad, integer *ier) {
@@ -5237,12 +3806,7 @@ L7:
     return 0;
 } /* smsgs_ */
 
-/* Subroutine */ integer smsurf_(integer *n, doublereal *x, doublereal *y, 
-	doublereal *z__, doublereal *u, integer *list, integer *lptr, integer 
-	*lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *
-	sm, doublereal *smtol, doublereal *gstol, integer *lprnt, doublereal *
-	f, doublereal *grad, integer *ier)
-{
+GMT_LOCAL integer smsurf_(integer *n, doublereal *x, doublereal *y, doublereal *z__, doublereal *u, integer *list, integer *lptr, integer *lend, integer *iflgs, doublereal *sigma, doublereal *w, doublereal *sm, doublereal *smtol, doublereal *gstol, integer *lprnt, doublereal *f, doublereal *grad, integer *ier) {
     /* Initialized data */
 
     static integer itmax = 50;
@@ -5625,12 +4189,7 @@ L5:
     goto L3;
 } /* smsurf_ */
 
-/* Subroutine */ integer unif_(integer *n, doublereal *x, doublereal *y, 
-	doublereal *z__, doublereal *f, integer *list, integer *lptr, integer 
-	*lend, integer *iflgs, doublereal *sigma, integer *nrow, integer *ni, 
-	integer *nj, doublereal *plat, doublereal *plon, integer *iflgg, 
-	doublereal *grad, doublereal *ff, integer *ier)
-{
+GMT_LOCAL integer unif_(integer *n, doublereal *x, doublereal *y, doublereal *z__, doublereal *f, integer *list, integer *lptr, integer *lend, integer *iflgs, doublereal *sigma, integer *nrow, integer *ni, integer *nj, doublereal *plat, doublereal *plon, integer *iflgg, doublereal *grad, doublereal *ff, integer *ier) {
     /* Initialized data */
 
     static integer nst = 1;

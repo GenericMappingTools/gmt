@@ -52,10 +52,11 @@ typedef uint32_t logical;
 
 /* define SPH_DEBUG to get more original verbose output from s*pack.c */
 
+/* This makes all the static functions in the next to files local here */
 #include "stripack.c"
 #include "ssrfpack.c"
 
-int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T) {
+int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T) {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
 	 *
@@ -146,7 +147,7 @@ int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, d
 		n_alloc = 2 * (n - 2);
 		T->V.lon = gmt_memory (GMT, NULL, n_alloc, double);
 		T->V.lat = gmt_memory (GMT, NULL, n_alloc, double);
-		cart_to_geo (GMT, n_alloc, xc, yc, zc, T->V.lon, T->V.lat);
+		gmt_n_cart_to_geo (GMT, n_alloc, xc, yc, zc, T->V.lon, T->V.lat);
 		gmt_free (GMT, xc);
 		gmt_free (GMT, yc);
 		gmt_free (GMT, zc);
@@ -174,34 +175,14 @@ int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, d
 	return (GMT_OK);
 }
 
-double stripack_areas (double *V1, double *V2, double *V3) {
+double gmt_stripack_areas (double *V1, double *V2, double *V3) {
 	/* Wrapper for STRIPACK areas_ */
 	return (areas_ (V1, V2, V3));
 }
 
-void cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat) {
-	/* Convert Cartesian vectors back to lon, lat vectors */
-	uint64_t k;
-	double V[3];
-	for (k = 0; k < n; k++) {
-		V[0] = x[k];	V[1] = y[k];	V[2] = z[k];
-		GMT_cart_to_geo (GMT, &lat[k], &lon[k], V, true);
-	}
-}
-
-/* Must be int due to qsort requirement */
-int compare_arc (const void *p1, const void *p2) {
-	const struct STRPACK_ARC *a = p1, *b = p2;
-	if (a->begin < b->begin) return (-1);
-	if (a->begin > b->begin) return (1);
-	if (a->end < b->end) return (-1);
-	if (a->end > b->end) return (1);
-	return (0);
-}
-
 /* Functions for spherical surface interpolation */
 
-int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f) {
+int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f) {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
 	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
 	unsigned int row, col;
@@ -214,7 +195,7 @@ int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double
 
 	GMT_memset (&P, 1, struct STRIPACK);
 	P.mode = INTERPOLATE;
-	stripack_lists (GMT, n, x, y, z, &P);
+	gmt_stripack_lists (GMT, n, x, y, z, &P);
 	
 	/* Set out output nodes */
 	

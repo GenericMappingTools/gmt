@@ -321,7 +321,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 	
 	/* Do the interpolation */
 	
-	ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd);
+	gmt_ssrfpack_grid (GMT, xx, yy, zz, ww, n, Ctrl->Q.mode, Ctrl->Q.value, Ctrl->T.active, Grid->header, surfd);
 
 	gmt_free (GMT, xx);	gmt_free (GMT, yy);
 	gmt_free (GMT, zz);	gmt_free (GMT, ww);

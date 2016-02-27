@@ -405,7 +405,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				}
 			}
 
-			/* Data record to process - avoid duplicate points as stripack_lists cannot handle that */
+			/* Data record to process - avoid duplicate points as gmt_stripack_lists cannot handle that */
 
 			if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
 				first_x = prev_x = in[GMT_X];	first_y = prev_y = in[GMT_Y];
@@ -447,10 +447,10 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
-		stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
+		gmt_stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
 		gmt_free (GMT, T.D.tri);	/* Don't need the triangulation */
 		if (Ctrl->C.active) {	/* Recompute lon,lat and set pointers */
-			cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
+			gmt_n_cart_to_geo (GMT, n, xx, yy, zz, xx, yy);	/* Revert to lon, lat */
 			lon = xx;
 			lat = yy;
 		}
