@@ -294,7 +294,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 			case 'A':
 				Ctrl->A.active = true;
-				GMT_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Lake colors */
 				Ctrl->C.active = true;
@@ -723,7 +723,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
-	base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
+	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
 	if (!GMT_is_geographic (GMT, GMT_IN)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
@@ -732,18 +732,18 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	
 	world_map_save = GMT->current.map.is_world;
 
-	if (need_coast_base && (err = GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
+	if (need_coast_base && (err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) != 0)  {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		need_coast_base = false;
 	}
 
-	if (Ctrl->N.active && (err = GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) != 0) {
+	if (Ctrl->N.active && (err = gmt_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution political boundaries]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
 	if (need_coast_base) GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
-	if (Ctrl->I.active && (err = GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) != 0) {
+	if (Ctrl->I.active && (err = gmt_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution rivers]\n", GMT_strerror(err), shore_resolution[base]);
 		Ctrl->I.active = false;
 	}
@@ -906,7 +906,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 #ifdef DEBUG
 		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
 #endif
-		if ((err = GMT_get_shore_bin (GMT, ind, &c)) != 0) {
+		if ((err = gmt_get_shore_bin (GMT, ind, &c)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
@@ -941,11 +941,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			lp = (direction == -1) ? 0 : 1;
 			/* Assemble one or more segments into polygons */
 
-			if ((np = GMT_assemble_shore (GMT, &c, direction, true, west_border, east_border, &p)) == 0) continue;
+			if ((np = gmt_assemble_shore (GMT, &c, direction, true, west_border, east_border, &p)) == 0) continue;
 
 			/* Get clipped polygons in x,y inches that can be plotted */
 
-			np_new = GMT_prep_shore_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
+			np_new = gmt_prep_shore_polygons (GMT, &p, np, donut_hell, 0.0, bin_trouble);
 
 			if (clipping) {
 				for (k = level_to_be_painted[lp]; k < GSHHS_MAX_LEVEL - 1; k++) recursive_path (GMT, PSL, -1, np_new, p, k, NULL);
@@ -992,7 +992,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->W.active && c.ns) {	/* Draw or dump shorelines, no need to assemble polygons */
-			if ((np = GMT_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {
+			if ((np = gmt_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {
 				gmt_free_shore (GMT, &c);
 				continue;
 			}
@@ -1030,7 +1030,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 	if (need_coast_base) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
-		GMT_shore_cleanup (GMT, &c);
+		gmt_shore_cleanup (GMT, &c);
 	}
 
 	(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
@@ -1046,7 +1046,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		for (ind = 0; ind < r.nb; ind++) {	/* Loop over necessary bins only */
 
 			bin = r.bins[ind];
-			GMT_get_br_bin (GMT, ind, &r, Ctrl->I.list, Ctrl->I.n_rlevels);
+			gmt_get_br_bin (GMT, ind, &r, Ctrl->I.list, Ctrl->I.n_rlevels);
 
 			if (r.ns == 0) continue;
 
@@ -1055,7 +1055,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				shift = ((left - edge) <= 180.0 && (right - edge) > 180.0);
 			}
 
-			if ((np = GMT_assemble_br (GMT, &r, shift, edge, &p)) == 0) {
+			if ((np = gmt_assemble_br (GMT, &r, shift, edge, &p)) == 0) {
 				gmt_free_br (GMT, &r);
 				continue;
 			}
@@ -1089,7 +1089,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			gmt_free_shore_polygons (GMT, p, np);
 			gmt_free (GMT, p);
 		}
-		GMT_br_cleanup (GMT, &r);
+		gmt_br_cleanup (GMT, &r);
 	}
 
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
@@ -1107,7 +1107,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		for (ind = 0; ind < b.nb; ind++) {	/* Loop over necessary bins only */
 
 			bin = b.bins[ind];
-			GMT_get_br_bin (GMT, ind, &b, Ctrl->N.list, Ctrl->N.n_blevels);
+			gmt_get_br_bin (GMT, ind, &b, Ctrl->N.list, Ctrl->N.n_blevels);
 
 			if (b.ns == 0) continue;
 
@@ -1116,7 +1116,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				shift = ((left - edge) <= 180.0 && (right - edge) > 180.0);
 			}
 
-			if ((np = GMT_assemble_br (GMT, &b, shift, edge, &p)) == 0) {
+			if ((np = gmt_assemble_br (GMT, &b, shift, edge, &p)) == 0) {
 				gmt_free_br (GMT, &b);
 				continue;
 			}
@@ -1151,7 +1151,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			gmt_free_shore_polygons (GMT, p, np);
 			gmt_free (GMT, p);
 		}
-		GMT_br_cleanup (GMT, &b);
+		gmt_br_cleanup (GMT, &b);
 	}
 
 	if (!Ctrl->M.active) {

@@ -437,22 +437,22 @@ EXTERN_MSC double gmt_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon
 
 /* gmt_shore.c: */
 
-EXTERN_MSC int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I);
-EXTERN_MSC int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c);
-EXTERN_MSC int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsigned int *level, unsigned int n_levels);
+EXTERN_MSC int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I);
+EXTERN_MSC int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c);
+EXTERN_MSC int gmt_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsigned int *level, unsigned int n_levels);
 EXTERN_MSC void gmt_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, unsigned int n);
 EXTERN_MSC void gmt_free_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c);
 EXTERN_MSC void gmt_free_br (struct GMT_CTRL *GMT, struct GMT_BR *c);
-EXTERN_MSC void GMT_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c);
-EXTERN_MSC void GMT_br_cleanup (struct GMT_CTRL *GMT, struct GMT_BR *c);
-EXTERN_MSC int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *I);
-EXTERN_MSC int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, double wesn[]);
-EXTERN_MSC int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool assemble, double west, double east, struct GMT_GSHHS_POL **pol);
-EXTERN_MSC int GMT_assemble_br (struct GMT_CTRL *GMT, struct GMT_BR *c, bool shift, double edge, struct GMT_GSHHS_POL **pol);
-EXTERN_MSC int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p, unsigned int np, bool sample, double step, int anti_bin);
-EXTERN_MSC int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt);
+EXTERN_MSC void gmt_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c);
+EXTERN_MSC void gmt_br_cleanup (struct GMT_CTRL *GMT, struct GMT_BR *c);
+EXTERN_MSC int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *I);
+EXTERN_MSC int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, double wesn[]);
+EXTERN_MSC int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool assemble, double west, double east, struct GMT_GSHHS_POL **pol);
+EXTERN_MSC int gmt_assemble_br (struct GMT_CTRL *GMT, struct GMT_BR *c, bool shift, double edge, struct GMT_GSHHS_POL **pol);
+EXTERN_MSC int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p, unsigned int np, bool sample, double step, int anti_bin);
+EXTERN_MSC int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt);
 EXTERN_MSC char GMT_shore_adjust_res (struct GMT_CTRL *GMT, char res);
-EXTERN_MSC struct GMT_DATASET * GMT_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], char res, struct GMT_SHORE_SELECT *A);
+EXTERN_MSC struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], char res, struct GMT_SHORE_SELECT *A);
 
 /* gmt_vector.c: */
 

@@ -156,7 +156,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 
 			case 'A':	/* Restrict GSHHS features */
 				Ctrl->A.active = true;
-				GMT_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -278,14 +278,14 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
-	base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
+	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 	
 	if (Ctrl->N.mode) {
 		Ctrl->N.mask[3] = Ctrl->N.mask[1];
 		Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
 	}
 
-	if ((err = GMT_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info))) {
+	if ((err = gmt_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info))) {
 		GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 		Return (EXIT_FAILURE);
 	}
@@ -342,7 +342,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 #endif
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on block # %5ld\r", bin);
 
-		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
+		if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
@@ -355,11 +355,11 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 
 			/* Assemble one or more segments into polygons */
 
-			np = GMT_assemble_shore (GMT, &c, direction, true, west_border, east_border, &p);
+			np = gmt_assemble_shore (GMT, &c, direction, true, west_border, east_border, &p);
 
 			/* Get clipped polygons in x,y inches that can be processed */
 
-			np_new = GMT_prep_shore_polygons (GMT, &p, np, false, 0.0, -1);
+			np_new = gmt_prep_shore_polygons (GMT, &p, np, false, 0.0, -1);
 
 			for (k = 0; k < np_new; k++) {
 
@@ -455,7 +455,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		gmt_free_shore (GMT, &c);
 	}
 
-	GMT_shore_cleanup (GMT, &c);
+	gmt_shore_cleanup (GMT, &c);
 	gmt_free (GMT, x);
 	gmt_free (GMT, y);
 

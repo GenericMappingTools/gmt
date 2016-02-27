@@ -299,7 +299,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 
 			case 'A':	/* Limit GSHHS features */
 				Ctrl->A.active = true;
-				GMT_set_levels (GMT, opt->arg, &Ctrl->A.info);
+				gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Near a point test */
 				Ctrl->C.active = true;
@@ -560,12 +560,12 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
 		if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
-		if (Ctrl->D.active) base = GMT_set_resolution (GMT, &Ctrl->D.set, 'D');
+		if (Ctrl->D.active) base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 		if (Ctrl->N.mode) {	/* Post-process -N choice */
 			Ctrl->N.mask[3] = Ctrl->N.mask[1];
 			Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
 		}
-		if ((err = GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))) {
+		if ((err = gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "%s [GSHHG %s resolution shorelines]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
@@ -810,7 +810,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				if (ind == c.nb) continue;			/* Bin not among the chosen ones */
 				last_bin = bin;
 				gmt_free_shore (GMT, &c);	/* Free previously allocated arrays */
-				if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
+				if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 					Return (EXIT_FAILURE);
 				}
@@ -819,8 +819,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				for (id = 0; id < 2; id++) {
 					gmt_free_shore_polygons (GMT, p[id], np[id]);
 					if (np[id]) gmt_free (GMT, p[id]);
-					np[id] = GMT_assemble_shore (GMT, &c, wd[id], true, west_border, east_border, &p[id]);
-					np[id] = GMT_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
+					np[id] = gmt_assemble_shore (GMT, &c, wd[id], true, west_border, east_border, &p[id]);
+					np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
 				}
 			}
 
@@ -895,7 +895,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {
 		gmt_free_shore (GMT, &c);
-		GMT_shore_cleanup (GMT, &c);
+		gmt_shore_cleanup (GMT, &c);
 		for (id = 0; id < 2; id++) {
 			gmt_free_shore_polygons (GMT, p[id], np[id]);
 			if (np[id]) gmt_free (GMT, p[id]);
