@@ -48,8 +48,11 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
-EXTERN_MSC void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
+/* gmt_regexp.c */
 
+EXTERN_MSC int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pattern, bool caseless);
+
+EXTERN_MSC void GMT_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode);
 EXTERN_MSC unsigned int gmt_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit);
 EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do_minutes, bool do_seconds, bool do_hemi, unsigned int lonlat, bool worldmap);

@@ -520,10 +520,6 @@ EXTERN_MSC void GMT_delaunay_free (struct GMT_CTRL *GMT, int **link);
 EXTERN_MSC unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned int *f);
 EXTERN_MSC int64_t GMT_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out);
 
-/* gmt_regexp.c */
-
-EXTERN_MSC int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pattern, bool caseless);
-
 /* gmt_vector.c: */
 
 EXTERN_MSC void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees);
