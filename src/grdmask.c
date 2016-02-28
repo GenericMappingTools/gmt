@@ -327,7 +327,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	
 	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
-	GMT_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 
 	/* Initialize all nodes (including pad) to the 'outside' value */
 
@@ -355,7 +355,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Current segment */
-				S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+				S->n_rows = gmt_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
 			}
 		}
 	}

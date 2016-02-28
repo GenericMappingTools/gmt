@@ -835,7 +835,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Get LS solution */
 
-	if ((error = GMT_gaussjordan (GMT, N, (unsigned int)m, b)) != 0) {
+	if ((error = gmt_gaussjordan (GMT, N, (unsigned int)m, b)) != 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Singular matrix - unable to solve!\n");
 		Return (EXIT_FAILURE);
 	}

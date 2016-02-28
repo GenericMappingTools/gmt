@@ -283,7 +283,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args) {
 
 		/* Data record to process */
 
-		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
+		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];

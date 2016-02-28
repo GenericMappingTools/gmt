@@ -327,20 +327,20 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 #endif
 	d = gmt_memory (GMT, NULL, n, double);
 	x = gmt_memory (GMT, NULL, n, double);
-	if (svd || ((ier = GMT_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0)) {	/* Cholesky decomposition failed, use SVD method, or use SVD if specified */
+	if (svd || ((ier = gmt_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0)) {	/* Cholesky decomposition failed, use SVD method, or use SVD if specified */
 		unsigned int nrots;
 		double *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 		if (!svd) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cholesky decomposition failed, try SVD decomposition instead and exclude eigenvalues < %g.\n", eigen_min);
-			GMT_chol_recover (GMT, N, d, n, n, ier, true);	/* Restore to former matrix N */
+			gmt_chol_recover (GMT, N, d, n, n, ier, true);	/* Restore to former matrix N */
 		}
-		/* Solve instead using the SVD of a square matrix via GMT_jacobi */
+		/* Solve instead using the SVD of a square matrix via gmt_jacobi */
 		lambda = gmt_memory (GMT, NULL, n, double);
 		b = gmt_memory (GMT, NULL, n, double);
 		z = gmt_memory (GMT, NULL, n, double);
 		v = gmt_memory (GMT, NULL, n*n, double);
 
-		if (GMT_jacobi (GMT, N, n, n, lambda, v, b, z, &nrots)) {
+		if (gmt_jacobi (GMT, N, n, n, lambda, v, b, z, &nrots)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The solution might be inaccurate.\n");
 		}
@@ -368,7 +368,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		gmt_free (GMT, lambda);
 	}
 	else {	/* Decomposition worked, now solve system */
-		GMT_chol_solv (GMT, N, x, r, n, n);
+		gmt_chol_solv (GMT, N, x, r, n, n);
 	}
 
 	if (info->fit_mode == GMTMATH_COEFFICIENTS) {	/* Return coefficients only as a single vector */

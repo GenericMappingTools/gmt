@@ -118,7 +118,7 @@ EXTERN_MSC bool gmt_init_complex (struct GMT_GRID_HEADER *h, unsigned int comple
 EXTERN_MSC struct GMT_MATRIX * gmt_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, bool duplicate_data);
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmt_load_rot_matrix (double w, double R[3][3], double E[]);
-EXTERN_MSC void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
+//EXTERN_MSC void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
 EXTERN_MSC int gmt_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 EXTERN_MSC double gmt_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 

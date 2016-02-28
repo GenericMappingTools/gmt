@@ -222,20 +222,20 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_
 		the circle_dist correctly */
 
 	if (norm == 1) {
-		for (i = 0; i < ndata; i++) work[i] = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
+		for (i = 0; i < ndata; i++) work[i] = d_acos (gmt_dot3v (GMT, &data[i].x[0], pole));
 		GMT_sort_array (GMT, work, ndata, GMT_DOUBLE);
 		*circle_distance = (ndata%2) ?  work[ndata/2] : 0.5 * (work[(ndata/2)-1] + work[ndata/2]);
 	}
 	else {
 		*circle_distance = 0.0;
-		for (i = 0; i < ndata; i++) *circle_distance += d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
+		for (i = 0; i < ndata; i++) *circle_distance += d_acos (gmt_dot3v (GMT, &data[i].x[0], pole));
 		*circle_distance /= ndata;
 	}
 
 	/* Now do each data point */
 
 	for (i = 0; i < ndata; i++) {
-		distance = d_acos (GMT_dot3v (GMT, &data[i].x[0], pole));
+		distance = d_acos (gmt_dot3v (GMT, &data[i].x[0], pole));
 		delta_distance = fabs (*circle_distance - distance);
 		misfit += ((norm == 1) ? delta_distance : delta_distance * delta_distance);
 	}
@@ -254,12 +254,12 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 
 	/* First find out if solution is between center and gcpole, or center and -gcpole */
 
-	GMT_add3v (GMT, center, gcpole, temppole);
-	GMT_normalize3v (GMT, temppole);
+	gmt_add3v (GMT, center, gcpole, temppole);
+	gmt_normalize3v (GMT, temppole);
 	trypos = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 
-	GMT_sub3v (GMT, center, gcpole, temppole);
-	GMT_normalize3v (GMT, temppole);
+	gmt_sub3v (GMT, center, gcpole, temppole);
+	gmt_normalize3v (GMT, temppole);
 	tryneg = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 
 	if (tryneg < trypos) {
@@ -276,7 +276,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 	if (mode) {	/* Want a specified latitude */
 		sincosd (slat, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) scpole[i] = (afactor * a[i] + bfactor * b[i]);
-		GMT_normalize3v (GMT, scpole);
+		gmt_normalize3v (GMT, scpole);
 		fit = circle_misfit (GMT, data, ndata, scpole, norm, work, &circle_distance);
 		return (90.0-slat);
 	}
@@ -290,7 +290,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 		angle = (double)j;
 		sincosd (angle, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) temppole[i] = (afactor * a[i] + bfactor * b[i]);
-		GMT_normalize3v (GMT, temppole);
+		gmt_normalize3v (GMT, temppole);
 		fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 		j++;
 	} while (j < 90 && fit > bfit && fit > afit);
@@ -306,13 +306,13 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 	oldfit = fit;
 
 	/* Now, while not converged, take golden section of wider interval.  */
-	length_ab   = d_acos (GMT_dot3v (GMT, a, b));
-	length_aold = d_acos (GMT_dot3v (GMT, a, oldpole));
-	length_bold = d_acos (GMT_dot3v (GMT, b, oldpole));
+	length_ab   = d_acos (gmt_dot3v (GMT, a, b));
+	length_aold = d_acos (gmt_dot3v (GMT, a, oldpole));
+	length_bold = d_acos (gmt_dot3v (GMT, b, oldpole));
 	do {
 		if (length_aold > length_bold) {	/* Section a_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*a[i] + 0.61803*oldpole[i]);
-			GMT_normalize3v (GMT, temppole);
+			gmt_normalize3v (GMT, temppole);
 			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 			if (fit < oldfit) {	/* Improvement.  b = oldpole, oldpole = temppole  */
 				GMT_cpy3v (b, oldpole);
@@ -324,7 +324,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 		}
 		else {	/* Section b_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*b[i] + 0.61803*oldpole[i]);
-			GMT_normalize3v (GMT, temppole);
+			gmt_normalize3v (GMT, temppole);
 			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 			if (fit < oldfit) {	/* Improvement.  a = oldpole, oldpole = temppole  */
 				GMT_cpy3v (a, oldpole);
@@ -334,9 +334,9 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 			else	/* Not improved.  b = temppole  */
 				GMT_cpy3v (b, temppole);
 		}
-		length_ab   = d_acos (GMT_dot3v (GMT, a, b));
-		length_aold = d_acos (GMT_dot3v (GMT, a, oldpole));
-		length_bold = d_acos (GMT_dot3v (GMT, b, oldpole));
+		length_ab   = d_acos (gmt_dot3v (GMT, a, b));
+		length_aold = d_acos (gmt_dot3v (GMT, a, oldpole));
+		length_bold = d_acos (gmt_dot3v (GMT, b, oldpole));
 	} while (length_ab > 0.0001);	/* 0.1 milliradian ~ 0.006 degree  */
 
 	GMT_cpy3v (scpole, oldpole);
@@ -413,7 +413,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		/* Data record to process */
 
 		lonsum += in[GMT_X];	latsum += in[GMT_Y];
-		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], data[n_data].x, true);
+		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], data[n_data].x, true);
 
 		if (++n_data == n_alloc) data = gmt_memory (GMT, data, n_alloc <<= 1, struct FITCIRCLE_DATA);
 	} while (true);
@@ -468,11 +468,11 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	GMT_memset (meanv, 3, double);
 	for (i = 0; i < n_data; i++) for (j = 0; j < 3; j++) meanv[j] += data[i].x[j];
-	GMT_normalize3v (GMT, meanv);
+	gmt_normalize3v (GMT, meanv);
 	if (lonsum > 180.0) greenwich = true;
 
 	if (Ctrl->L.norm%2) {	/* Want L1 solution */
-		GMT_cart_to_geo (GMT, &latsum, &lonsum, meanv, true);
+		gmt_cart_to_geo (GMT, &latsum, &lonsum, meanv, true);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		if (Ctrl->F.active) {	/* Return data coordinates */
 			if (Ctrl->F.mode & 2) {out[col++] = lonsum; out[col++] = latsum; }
@@ -484,16 +484,16 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		}
 		GMT_memset (cross_sum, 3, double);
 		for (i = 0; i < n_data; i++) {
-			GMT_cross3v (GMT, &data[i].x[0], meanv, cross);
+			gmt_cross3v (GMT, &data[i].x[0], meanv, cross);
 			if (cross[2] < 0.0)
-				GMT_sub3v (GMT, cross_sum, cross, cross_sum);
+				gmt_sub3v (GMT, cross_sum, cross, cross_sum);
 			else
-				GMT_add3v (GMT, cross_sum, cross, cross_sum);
+				gmt_add3v (GMT, cross_sum, cross, cross_sum);
 		}
-		GMT_normalize3v (GMT, cross_sum);
+		gmt_normalize3v (GMT, cross_sum);
 		if (Ctrl->S.active) GMT_cpy3v (gcpole, cross_sum);
 
-		GMT_cart_to_geo (GMT, &latsum, &lonsum, cross_sum, true);
+		gmt_cart_to_geo (GMT, &latsum, &lonsum, cross_sum, true);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		if (Ctrl->F.active) {	/* Return data coordinates */
 			if (Ctrl->F.mode & 4) {out[col++] = lonsum; out[col++] = latsum; }
@@ -517,7 +517,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		if (Ctrl->S.active) {	/* Determine small circle pole */
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 1, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
-				GMT_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
+				gmt_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
 				if (greenwich && lonsum < 0.0) lonsum += 360.0;
 				if (Ctrl->F.active) {	/* Return data coordinates */
 					if (Ctrl->F.mode & 16) {out[col++] = lonsum; out[col++] = latsum; out[col++] = rad; }
@@ -550,17 +550,17 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		for (i = 0; i < n_data; i++) for (j = 0; j < n; j++) for (k = 0; k < n; k++)
 			a[j + k*np] += (data[i].x[j]*data[i].x[k]);
 
-		if (GMT_jacobi (GMT, a, n, np, lambda, v, b, z, &nrots)) {
+		if (gmt_jacobi (GMT, a, n, np, lambda, v, b, z, &nrots)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
 		}
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
 		imax = 0;	imin = 2;
-		if (d_acos (GMT_dot3v (GMT, v, meanv)) > M_PI_2)
+		if (d_acos (gmt_dot3v (GMT, v, meanv)) > M_PI_2)
 			for (i = 0; i < 3; i++) meanv[i] = -v[imax*np+i];
 		else
 			for (i = 0; i < 3; i++) meanv[i] = v[imax*np+i];
-		GMT_cart_to_geo (GMT, &latsum, &lonsum, meanv, true);
+		gmt_cart_to_geo (GMT, &latsum, &lonsum, meanv, true);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		if (Ctrl->F.active) {	/* Return data coordinates */
 			if (Ctrl->F.mode & 2) {out[col++] = lonsum; out[col++] = latsum; }
@@ -576,7 +576,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 		else
 			for (i = 0; i < 3; i++) gcpole[i] = v[imin*np+i];
 
-		GMT_cart_to_geo (GMT, &latsum, &lonsum, gcpole, true);
+		gmt_cart_to_geo (GMT, &latsum, &lonsum, gcpole, true);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;
 		if (Ctrl->F.active) {	/* Return data coordinates */
 			if (Ctrl->F.mode & 4) {out[col++] = lonsum; out[col++] = latsum; }
@@ -607,7 +607,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 2, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				/* True when small circle fits better than great circle */
-				GMT_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
+				gmt_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
 				if (greenwich && lonsum < 0.0) lonsum += 360.0;
 				if (Ctrl->F.active) {	/* Return data coordinates */
 					if (Ctrl->F.mode & 16) {out[col++] = lonsum; out[col++] = latsum; out[col++] = rad; }

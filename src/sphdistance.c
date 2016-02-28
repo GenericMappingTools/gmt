@@ -423,7 +423,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 			}
 
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
-			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
+			gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
 
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
 			if (!Ctrl->C.active) {
@@ -533,7 +533,7 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 
 		/* Here we have the polygon in P */
 
-		P->n_rows = GMT_fix_up_path (GMT, &P->coord[GMT_X], &P->coord[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
+		P->n_rows = gmt_fix_up_path (GMT, &P->coord[GMT_X], &P->coord[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);

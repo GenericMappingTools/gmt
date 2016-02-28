@@ -1008,7 +1008,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
-					if (donut_hell) p[i].n = (int)GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
+					if (donut_hell) p[i].n = (int)gmt_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
 					GMT->current.plot.n = gmt_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
@@ -1132,7 +1132,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 					}
 				}
 				else {
-					p[i].n = (int)GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, step, 0);
+					p[i].n = (int)gmt_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, step, 0);
 					GMT->current.plot.n = gmt_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 

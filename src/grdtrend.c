@@ -55,7 +55,7 @@
  * 		equations furnished by Wm. Menke's
  * 		C routine "gauss".  We gratefully
  * 		acknowledge this contribution, now
- * 		as GMT_gauss in gmt_vector.c
+ * 		as gmt_gauss in gmt_vector.c
  *
  * Remarks:
  *
@@ -590,7 +590,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	else {	/* Problem is not trivial  !!  */
 		int ierror;
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
+		ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 		if (ierror) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 			return (EXIT_FAILURE);
@@ -607,7 +607,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				GMT_memcpy (old, gtd, Ctrl->N.value, double);
 				scale = compute_robust_weight (GMT, R, W);
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
+				ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 				if (ierror) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 					return (EXIT_FAILURE);

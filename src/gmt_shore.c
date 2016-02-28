@@ -1368,7 +1368,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 
 	for (k = 0; k < np; k++) {
 
-		if (sample) p[k].n = (int)GMT_fix_up_path (GMT, &p[k].lon, &p[k].lat, p[k].n, step, 0);
+		if (sample) p[k].n = (int)gmt_fix_up_path (GMT, &p[k].lon, &p[k].lat, p[k].n, step, 0);
 
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 

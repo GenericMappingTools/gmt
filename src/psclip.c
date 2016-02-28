@@ -251,7 +251,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
-		GMT_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+		gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 #ifdef DEBUG
 		/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 		if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
@@ -275,7 +275,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 						S = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 					}
 					if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH) {	/* Resample if spacing is too coarse or stair-case is requested */
-						S->n_rows = GMT_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						S->n_rows = gmt_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, Ctrl->A.step, Ctrl->A.mode);
 						GMT_Report (API, GMT_MSG_DEBUG, "Resample polygon, now has %d points\n", S->n_rows);
 					}
 

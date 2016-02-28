@@ -694,7 +694,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 #endif
 		V = gmt_memory (GMT, NULL, n2 * n2, double);
 		s = gmt_memory (GMT, NULL, n2, double);
-		if ((error = GMT_svdcmp (GMT, A, (unsigned int)n2, (unsigned int)n2, s, V)) != 0) Return (error);
+		if ((error = gmt_svdcmp (GMT, A, (unsigned int)n2, (unsigned int)n2, s, V)) != 0) Return (error);
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_memory (GMT, NULL, n2, double);
@@ -738,7 +738,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		b = gmt_memory (GMT, NULL, n2, double);
 		GMT_memcpy (b, obs, n2, double);
 		limit = Ctrl->C.value;
-		n_use = GMT_solve_svd (GMT, A, (unsigned int)n2, (unsigned int)n2, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
+		n_use = gmt_solve_svd (GMT, A, (unsigned int)n2, (unsigned int)n2, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.2f %% of data variance]\n", n_use, n2, limit);
 
@@ -754,7 +754,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by Gauss-Jordan elimination\n");
-		if ((error = GMT_gaussjordan (GMT, A, (unsigned int)n2, obs)) != 0) {
+		if ((error = gmt_gaussjordan (GMT, A, (unsigned int)n2, obs)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "You probably have nearly duplicate data constraints\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "Preprocess your data with one of the blockm* modules\n");
 			Return (error);

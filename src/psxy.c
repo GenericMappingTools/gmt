@@ -863,7 +863,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
 	}
 	
-	GMT_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
+	gmt_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
 #ifdef DEBUG
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
@@ -1506,7 +1506,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 
 				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH)	/* Resample if spacing is too coarse */
-					L->n_rows = GMT_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+					L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
 					gmt_setfill (GMT, &current_fill, outline_active);

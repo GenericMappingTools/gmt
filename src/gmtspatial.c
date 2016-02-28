@@ -1034,13 +1034,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					/* Compute weighted average z */
 					NN_dist[a].coord[GMT_Z] = iw * (NN_dist[a].coord[GMT_Z] * NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_Z] * NN_dist[b].coord[GMT_W]);
 					if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must do vector averaging */
-						GMT_geo_to_cart (GMT, NN_dist[a].coord[GMT_Y], NN_dist[a].coord[GMT_X], A, true);
-						GMT_geo_to_cart (GMT, NN_dist[b].coord[GMT_Y], NN_dist[b].coord[GMT_X], B, true);
+						gmt_geo_to_cart (GMT, NN_dist[a].coord[GMT_Y], NN_dist[a].coord[GMT_X], A, true);
+						gmt_geo_to_cart (GMT, NN_dist[b].coord[GMT_Y], NN_dist[b].coord[GMT_X], B, true);
 						for (col = 0; col < 3; col++) {	/* Get weighted average vector */
 							A[col] = iw * (A[col] * NN_dist[a].coord[GMT_W] + B[col] * NN_dist[b].coord[GMT_W]);
 						}
-						GMT_normalize3v (GMT, A);	/* Get unit vector */
-						GMT_cart_to_geo (GMT, &NN_dist[a].coord[GMT_Y], &NN_dist[a].coord[GMT_X], A, true);	/* Get lon, lat of the average point */
+						gmt_normalize3v (GMT, A);	/* Get unit vector */
+						gmt_cart_to_geo (GMT, &NN_dist[a].coord[GMT_Y], &NN_dist[a].coord[GMT_X], A, true);	/* Get lon, lat of the average point */
 					}
 					else {	/* Cartesian weighted averaging */
 						NN_dist[a].coord[GMT_X] = iw * (NN_dist[a].coord[GMT_X] * NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_X] * NN_dist[b].coord[GMT_W]);

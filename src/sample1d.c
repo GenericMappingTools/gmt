@@ -373,7 +373,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				lat = gmt_memory (GMT, NULL, S->n_rows, double);
 				GMT_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
 				GMT_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
-				m = GMT_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
+				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
 				t_out = gmt_dist_array (GMT, lon, lat, m, true);
 			}
 			else if (Ctrl->N.active) {	/* Get relevant t_out segment */

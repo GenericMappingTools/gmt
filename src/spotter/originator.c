@@ -556,22 +556,22 @@ int GMT_originator (void *V_API, int mode, void *args) {
 				lon = hot[spot].h->lon;
 				lat = hot[spot].h->lat;
 			}
-			GMT_geo_to_cart (GMT, lat, lon, H, true);	/* 3-D Cartesian vector of this hotspot */
+			gmt_geo_to_cart (GMT, lat, lon, H, true);	/* 3-D Cartesian vector of this hotspot */
 
 			/* Fine-tune the nearest point by considering intermediate points along greatcircle between knot points */
 
 			k = 3 * hot[spot].nearest + 1;			/* Corresponding index for x into the (x,y,t) array c */
-			GMT_geo_to_cart (GMT, c[k+1], c[k], N, false);	/* 3-D vector of nearest node to this hotspot */
+			gmt_geo_to_cart (GMT, c[k+1], c[k], N, false);	/* 3-D vector of nearest node to this hotspot */
 			better = false;
 			if (hot[spot].nearest > 0) {	/* There is a point along the flowline before the nearest node */
-				GMT_geo_to_cart (GMT, c[k-2], c[k-3], A, false);	/* 3-D vector of end of this segment */
+				gmt_geo_to_cart (GMT, c[k-2], c[k-3], A, false);	/* 3-D vector of end of this segment */
 				if (gmt_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
-						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
+						gmt_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
 						hot[spot].np_dist = hx_dist_km;
-						dist_NA = d_acos (fabs (GMT_dot3v (GMT, A, N))) * KM_PR_RAD;
-						dist_NX = d_acos (fabs (GMT_dot3v (GMT, X, N))) * KM_PR_RAD;
+						dist_NA = d_acos (fabs (gmt_dot3v (GMT, A, N))) * KM_PR_RAD;
+						dist_NX = d_acos (fabs (gmt_dot3v (GMT, X, N))) * KM_PR_RAD;
 						del_dist = dist_NA - dist_NX;
 						dt = (del_dist > 0.0) ? (c[k+2] - c[k-1]) * dist_NX / del_dist : 0.0;
 						better = true;
@@ -579,14 +579,14 @@ int GMT_originator (void *V_API, int mode, void *args) {
 				}
 			}
 			if (hot[spot].nearest < (np-1) ) {	/* There is a point along the flowline after the nearest node */
-				GMT_geo_to_cart (GMT, c[k+4], c[k+3], A, false);	/* 3-D vector of end of this segment */
+				gmt_geo_to_cart (GMT, c[k+4], c[k+3], A, false);	/* 3-D vector of end of this segment */
 				if (gmt_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
-						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
+						gmt_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
 						hot[spot].np_dist = hx_dist_km;
-						dist_NA = d_acos (fabs (GMT_dot3v (GMT, A, N))) * KM_PR_RAD;
-						dist_NX = d_acos (fabs (GMT_dot3v (GMT, X, N))) * KM_PR_RAD;
+						dist_NA = d_acos (fabs (gmt_dot3v (GMT, A, N))) * KM_PR_RAD;
+						dist_NX = d_acos (fabs (gmt_dot3v (GMT, X, N))) * KM_PR_RAD;
 						del_dist = dist_NA - dist_NX;
 						dt = (del_dist > 0.0) ? (c[k+5] - c[k+2]) * dist_NX / del_dist : 0.0;
 						better = true;

@@ -129,7 +129,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	unsigned int parallel_straight;		/* 1 if parallels plot as straight lines, 2 for special case */
 	unsigned int n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	unsigned int n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
-	unsigned int path_mode;		/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
+	unsigned int path_mode;		/* 0 if we should call gmt_fix_up_path to resample across gaps > path_step, 1 to leave alone */
 	double width;				/* Full width in inches of this world map */
 	double height;				/* Full height in inches of this world map */
 	double half_width;			/* Half width in inches of this world map */

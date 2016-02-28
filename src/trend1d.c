@@ -409,7 +409,7 @@ GMT_LOCAL void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, 
 		*ir = 1;
 	}
 	else {
-		if (GMT_jacobi (GMT, gtg, n_model, mp, lambda, v, b, z, &nrots)) {
+		if (gmt_jacobi (GMT, gtg, n_model, mp, lambda, v, b, z, &nrots)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;

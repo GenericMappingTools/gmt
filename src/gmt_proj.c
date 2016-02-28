@@ -1043,27 +1043,27 @@ void gmt_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double
 	/* Convert a longitude/latitude point to Oblique lon/lat (all in rads) */
 	double p_cross_x[3], X[3];
 
-	GMT_geo_to_cart (GMT, lat, lon, X, false);
+	gmt_geo_to_cart (GMT, lat, lon, X, false);
 
-	*olat = d_asin (GMT_dot3v (GMT, X, GMT->current.proj.o_FP));
+	*olat = d_asin (gmt_dot3v (GMT, X, GMT->current.proj.o_FP));
 
-	GMT_cross3v (GMT, GMT->current.proj.o_FP, X, p_cross_x);
-	GMT_normalize3v (GMT, p_cross_x);
+	gmt_cross3v (GMT, GMT->current.proj.o_FP, X, p_cross_x);
+	gmt_normalize3v (GMT, p_cross_x);
 
-	*olon = copysign (d_acos (GMT_dot3v (GMT, p_cross_x, GMT->current.proj.o_FC)), GMT_dot3v (GMT, X, GMT->current.proj.o_FC));
+	*olon = copysign (d_acos (gmt_dot3v (GMT, p_cross_x, GMT->current.proj.o_FC)), gmt_dot3v (GMT, X, GMT->current.proj.o_FC));
 }
 
 void gmt_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat) {
 	/* Convert a longitude/latitude point from Oblique lon/lat  (all in rads) */
 	double p_cross_x[3], X[3];
 
-	GMT_geo_to_cart (GMT, olat, olon, X, false);
-	*lat = d_asin (GMT_dot3v (GMT, X, GMT->current.proj.o_IP));
+	gmt_geo_to_cart (GMT, olat, olon, X, false);
+	*lat = d_asin (gmt_dot3v (GMT, X, GMT->current.proj.o_IP));
 
-	GMT_cross3v (GMT, GMT->current.proj.o_IP, X, p_cross_x);
-	GMT_normalize3v (GMT, p_cross_x);
+	gmt_cross3v (GMT, GMT->current.proj.o_IP, X, p_cross_x);
+	gmt_normalize3v (GMT, p_cross_x);
 
-	*lon = copysign (d_acos (GMT_dot3v (GMT, p_cross_x, GMT->current.proj.o_IC)), GMT_dot3v (GMT, X, GMT->current.proj.o_IC));
+	*lon = copysign (d_acos (gmt_dot3v (GMT, p_cross_x, GMT->current.proj.o_IC)), gmt_dot3v (GMT, X, GMT->current.proj.o_IC));
 
 	while ((*lon) < 0.0) (*lon) += TWO_PI;
 	while ((*lon) >= TWO_PI) (*lon) -= TWO_PI;

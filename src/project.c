@@ -135,16 +135,16 @@ GMT_LOCAL double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, 
 
 	s[0] = s[1] = 0.0;	s[2] = -1.0;
 
-	GMT_geo_to_cart (GMT, plat, plon, p, true);
+	gmt_geo_to_cart (GMT, plat, plon, p, true);
 
-	if (c_given) GMT_geo_to_cart (GMT, *clat, *clon, s, true);	/* s points to user's clat, clon  */
-	GMT_cross3v (GMT, p, s, x);
-	GMT_normalize3v (GMT, x);
-	GMT_cross3v (GMT, x, p, c);
-	GMT_normalize3v (GMT, c);
+	if (c_given) gmt_geo_to_cart (GMT, *clat, *clon, s, true);	/* s points to user's clat, clon  */
+	gmt_cross3v (GMT, p, s, x);
+	gmt_normalize3v (GMT, x);
+	gmt_cross3v (GMT, x, p, c);
+	gmt_normalize3v (GMT, c);
 	if (!generate) GMT_memcpy (c, x, 3, double);
-	if (!c_given) GMT_cart_to_geo (GMT, clat, clon, c, true);	/* return the adjusted center  */
-	cp = GMT_dot3v (GMT, p, c);
+	if (!c_given) gmt_cart_to_geo (GMT, clat, clon, c, true);	/* return the adjusted center  */
+	cp = gmt_dot3v (GMT, p, c);
 	sin_lat_to_pole = d_sqrt (1.0 - cp * cp);
 	return (sin_lat_to_pole);
 }
@@ -160,16 +160,16 @@ GMT_LOCAL void oblique_transform (struct GMT_CTRL *GMT, double xlat, double xlon
 
 	double x[3], p_cross_x[3], temp1, temp2;
 
-	GMT_geo_to_cart (GMT, xlat, xlon, x, true);
+	gmt_geo_to_cart (GMT, xlat, xlon, x, true);
 
-	temp1 = GMT_dot3v (GMT, x,p);
+	temp1 = gmt_dot3v (GMT, x,p);
 	*x_t_lat = d_asind(temp1);
 
-	GMT_cross3v (GMT, p,x,p_cross_x);
-	GMT_normalize3v (GMT, p_cross_x);
+	gmt_cross3v (GMT, p,x,p_cross_x);
+	gmt_normalize3v (GMT, p_cross_x);
 
-	temp1 = GMT_dot3v (GMT, p_cross_x, c);
-	temp2 = GMT_dot3v (GMT, x, c);
+	temp1 = gmt_dot3v (GMT, p_cross_x, c);
+	temp2 = gmt_dot3v (GMT, x, c);
 	*x_t_lon = copysign(d_acosd(temp1), temp2);
 }
 
@@ -256,25 +256,25 @@ GMT_LOCAL void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double a
 	/* First find p vector  */
 
 	if (two_pts) {
-		GMT_geo_to_cart (GMT, alat, alon, a, true);
-		GMT_geo_to_cart (GMT, blat, blon, b, true);
-		GMT_cross3v (GMT, a, b, p);
-		GMT_normalize3v (GMT, p);
+		gmt_geo_to_cart (GMT, alat, alon, a, true);
+		gmt_geo_to_cart (GMT, blat, blon, b, true);
+		gmt_cross3v (GMT, a, b, p);
+		gmt_normalize3v (GMT, p);
 	}
 	else {
-		GMT_geo_to_cart (GMT, alat, alon, a, true);
+		gmt_geo_to_cart (GMT, alat, alon, a, true);
 		b[0] = b[1] = 0.0;	/* set b to north pole  */
 		b[2] = 1.0;
-		GMT_cross3v (GMT, a, b, c);	/* use c for p_temp  */
-		GMT_normalize3v (GMT, c);
+		gmt_cross3v (GMT, a, b, c);	/* use c for p_temp  */
+		gmt_normalize3v (GMT, c);
 		make_euler_matrix(a, e, -azim);
 		matrix_3v(e, c, p);	/* c (p_temp) rotates to p  */
 	}
 
 	/* Now set c vector  */
 
-	GMT_cross3v (GMT, p, a, c);
-	GMT_normalize3v (GMT, c);
+	gmt_cross3v (GMT, p, a, c);
+	gmt_normalize3v (GMT, c);
 }
 
 GMT_LOCAL void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
@@ -561,11 +561,11 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 			}
 		}
 		else {
-			GMT_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, true);
+			gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, true);
 			for (rec = 0; rec < P->n_used; rec++) {
 				make_euler_matrix (P->pole, e, p_data[rec].a[2]);
 				matrix_3v (e,x,xt);
-				GMT_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
+				gmt_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
 			}
 		}
 	}
@@ -753,25 +753,25 @@ int GMT_project (void *V_API, int mode, void *args) {
 	else {
 		if (Ctrl->T.active) {
 			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active, Ctrl->G.active);
-			GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
+			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 		}
 		else {	/* Using -C -E or -A */
 			double s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
 			int done, n_iter = 0;
 			
 			sphere_project_setup (GMT, Ctrl->C.y, Ctrl->C.x, a, Ctrl->E.y, Ctrl->E.x, b, Ctrl->A.azimuth, P.pole, center, Ctrl->E.active);
-			GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
-			radius = 0.5 * d_acosd (GMT_dot3v (GMT, a, b)); 
+			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
+			radius = 0.5 * d_acosd (gmt_dot3v (GMT, a, b)); 
 			if (radius > fabs (Ctrl->G.colat)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
 				Ctrl->G.mode = 0;
 			}
 			else if (doubleAlmostEqual (Ctrl->G.colat, 90.0)) {	/* Great circle pole needed */
-				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
+				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (gmt_dot3v (GMT, a, b));
 			}
 			else {	/* Find small circle pole so C and E are |lat| degrees from it. */
 				for (col = 0; col < 3; col++) m[col] = a[col] + b[col];	/* Mid point along A-B */
-				GMT_normalize3v (GMT, m);
+				gmt_normalize3v (GMT, m);
 				sign = copysign (1.0, Ctrl->G.colat);
 				s_hi = 90.0;	s_lo = 0.0;
 				done = false;
@@ -780,8 +780,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 					s_mid = 0.5 * (s_lo + s_hi);
 					sincosd (sign * s_mid, &s, &c);
 					for (col = 0; col < 3; col++) x[col] = P.pole[col] * s + m[col] * c;
-					GMT_normalize3v (GMT, x);
-					radius = d_acosd (GMT_dot3v (GMT, a, x)); 
+					gmt_normalize3v (GMT, x);
+					radius = d_acosd (gmt_dot3v (GMT, a, x)); 
 					if (fabs (radius - fabs (Ctrl->G.colat)) < GMT_CONV8_LIMIT)
 						done = true;
 					else if (radius > fabs (Ctrl->G.colat))
@@ -790,19 +790,19 @@ int GMT_project (void *V_API, int mode, void *args) {
 						s_lo = s_mid;
 					if (n_iter > 500) done = true;	/* Safety valve */
 				} while (!done);
-				GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the new pole */
+				gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the new pole */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
 				GMT_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
 				sin_lat_to_pole = s;
-				GMT_cross3v (GMT, P.pole, a, x);
-				GMT_normalize3v (GMT, x);
-				GMT_cross3v (GMT, x, P.pole, ap);
-				GMT_normalize3v (GMT, ap);
-				GMT_cross3v (GMT, P.pole, b, x);
-				GMT_normalize3v (GMT, x);
-				GMT_cross3v (GMT, x, P.pole, bp);
-				GMT_normalize3v (GMT, bp);
-				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, ap, bp));
+				gmt_cross3v (GMT, P.pole, a, x);
+				gmt_normalize3v (GMT, x);
+				gmt_cross3v (GMT, x, P.pole, ap);
+				gmt_normalize3v (GMT, ap);
+				gmt_cross3v (GMT, P.pole, b, x);
+				gmt_normalize3v (GMT, x);
+				gmt_cross3v (GMT, x, P.pole, bp);
+				gmt_normalize3v (GMT, bp);
+				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (gmt_dot3v (GMT, ap, bp));
 			}
 		}
 		if (Ctrl->L.constrain) {
@@ -864,15 +864,15 @@ int GMT_project (void *V_API, int mode, void *args) {
 			/* Must set generating vector to point along zero-meridian so it is the desired number of degrees [90]
 			 * from the pole. */
 			double C[3], N[3];
-			GMT_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, C, true);	/* User origin C */
-			GMT_cross3v (GMT, P.pole, C, N);		/* This is vector normal to meridian plan */
-			GMT_normalize3v (GMT, N);			/* Make it a unit vector */
+			gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, C, true);	/* User origin C */
+			gmt_cross3v (GMT, P.pole, C, N);		/* This is vector normal to meridian plan */
+			gmt_normalize3v (GMT, N);			/* Make it a unit vector */
 			make_euler_matrix (N, e, Ctrl->G.colat);	/* Rotation matrix about N */
 			matrix_3v (e, P.pole, x);			/* This is the generating vector for our circle */
 			for (rec = 0; rec < P.n_used; rec++) {
 				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2]);
 				matrix_3v (e,x,xt);
-				GMT_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
+				gmt_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
 			}
 		}
 

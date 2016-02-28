@@ -1266,11 +1266,11 @@ GMT_LOCAL uint64_t support_determine_circle (struct GMT_CTRL *GMT, double x0, do
 		lat = 90.0 - colat;	/* Get small circle latitude about NP */
 		/* Set up small circle in local coordinates, convert to Cartesian, rotate, and covert to geo */
 		/* Rotation pole is 90 away from x0, at equator, and rotates by 90-y0 degrees */
-		GMT_make_rot_matrix (GMT, x0 + 90.0, 0.0, 90.0 - y0, R);
+		gmt_make_rot_matrix (GMT, x0 + 90.0, 0.0, 90.0 - y0, R);
 		for (k = 0; k < n; k++) {
-			GMT_geo_to_cart (GMT, lat, d_angle * k, v, true);
-			GMT_matrix_vect_mult (GMT, 3U, R, v, v_prime);
-			GMT_cart_to_geo (GMT, &y[k], &x[k], v_prime, true);
+			gmt_geo_to_cart (GMT, lat, d_angle * k, v, true);
+			gmt_matrix_vect_mult (GMT, 3U, R, v, v_prime);
+			gmt_cart_to_geo (GMT, &y[k], &x[k], v_prime, true);
 		}
 	}
 	else {	/* Cartesian solution */
@@ -4160,7 +4160,7 @@ GMT_LOCAL struct GMT_DATASET * support_resample_data_spherical (struct GMT_CTRL 
 			GMT_memcpy (Tout->segment[seg]->coord[GMT_Y], Tin->segment[seg]->coord[GMT_Y], Tin->segment[seg]->n_rows, double);	/* Duplicate latitudes */
 			/* Resample lines as per smode */
 			if (resample) {	/* Resample lon/lat path and also reallocate more space for all other columns */
-				Tout->segment[seg]->n_rows = GMT_resample_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
+				Tout->segment[seg]->n_rows = gmt_resample_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
 				for (col = 2; col < n_cols; col++)	/* Also realloc the other columns */
 					Tout->segment[seg]->coord[col] = gmt_memory (GMT, Tout->segment[seg]->coord[col], Tout->segment[seg]->n_rows, double);
 			}
@@ -4216,7 +4216,7 @@ GMT_LOCAL struct GMT_DATASET * support_resample_data_cartesian (struct GMT_CTRL 
 			GMT_memcpy (Tout->segment[seg]->coord[GMT_Y], Tin->segment[seg]->coord[GMT_Y], Tin->segment[seg]->n_rows, double);	/* Duplicate y */
 			/* Resample lines as per smode */
 			if (resample) {	/* Resample x/y path and also reallocate more space for all other columns */
-				Tout->segment[seg]->n_rows = GMT_resample_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
+				Tout->segment[seg]->n_rows = gmt_resample_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
 				for (col = 2; col < n_cols; col++)	/* Also realloc the other columns */
 					Tout->segment[seg]->coord[col] = gmt_memory (GMT, Tout->segment[seg]->coord[col], Tout->segment[seg]->n_rows, double);
 			}
@@ -4316,17 +4316,17 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on cross profile %" PRIu64 " [local line orientation = %06.1f]\n", row, orientation);
 
 				x = Tin->segment[seg]->coord[GMT_X][row];	y = Tin->segment[seg]->coord[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
-				GMT_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
+				gmt_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
 				left = (row) ? row - 1 : row;			/* Left point (if there is one) */
 				x = Tin->segment[seg]->coord[GMT_X][left];	y = Tin->segment[seg]->coord[GMT_Y][left];
-				GMT_geo_to_cart (GMT, y, x, L, true);		/* 3-D vector of left point L */
+				gmt_geo_to_cart (GMT, y, x, L, true);		/* 3-D vector of left point L */
 				right = (row < (Tin->segment[seg]->n_rows-1)) ? row + 1 : row;	/* Right point (if there is one) */
 				x = Tin->segment[seg]->coord[GMT_X][right];	y = Tin->segment[seg]->coord[GMT_Y][right];
-				GMT_geo_to_cart (GMT, y, x, R, true);		/* 3-D vector of right point R */
-				GMT_cross3v (GMT, L, R, T);			/* Get pole T of plane trough L and R (and center of Earth) */
-				GMT_normalize3v (GMT, T);			/* Make sure T has unit length */
-				GMT_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
-				GMT_normalize3v (GMT, E);			/* Make sure E has unit length */
+				gmt_geo_to_cart (GMT, y, x, R, true);		/* 3-D vector of right point R */
+				gmt_cross3v (GMT, L, R, T);			/* Get pole T of plane trough L and R (and center of Earth) */
+				gmt_normalize3v (GMT, T);			/* Make sure T has unit length */
+				gmt_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
+				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
 				gmt_init_rot_matrix (Rot0, E);			/* Get partial rotation matrix since no actual angle is applied yet */
 				az_cross = fmod (Tin->segment[seg]->coord[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
 				if (alternate)
@@ -4340,8 +4340,9 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					GMT_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 					gmt_load_rot_matrix (angle_radians, Rot, E);		/* Build the actual rotation matrix for this angle */
-					gmt_matrix_vect_mult (Rot, P, X);				/* Rotate the current FZ point along the normal */
-					GMT_cart_to_geo (GMT, &S->coord[GMT_Y][ii], &S->coord[GMT_X][ii], X, true);	/* Get lon/lat of this point along crossing profile */
+					//gmt_matrix_vect_mult (Rot, P, X);				/* Rotate the current FZ point along the normal */
+					gmt_matrix_vect_mult (GMT, 3U, Rot, P, X);				/* Rotate the current FZ point along the normal */
+					gmt_cart_to_geo (GMT, &S->coord[GMT_Y][ii], &S->coord[GMT_X][ii], X, true);	/* Get lon/lat of this point along crossing profile */
 					dist_inc = (ii) ? gmt_distance (GMT, S->coord[GMT_X][ii], S->coord[GMT_Y][ii], S->coord[GMT_X][ii-1], S->coord[GMT_Y][ii-1]) : 0.0;
 					dist_across_seg += dist_inc;
 					S->coord[SEG_DIST][ii] = dist_across_seg;	/* Store distances across the profile */
@@ -7909,7 +7910,7 @@ struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char 
 			S->n_rows = support_determine_circle (GMT, x0, y0, r, S->coord[GMT_X], S->coord[GMT_Y], np);
 			resample = false;	/* Since we already got our profile */
 		}
-		if (resample) S->n_rows = GMT_resample_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
+		if (resample) S->n_rows = gmt_resample_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
 		if (get_distances) {	/* Compute cumulative distances along line */
 			gmt_free (GMT, S->coord[GMT_Z]);	/* Free so we can alloc a new array */
 			S->coord[GMT_Z] = gmt_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
@@ -12034,6 +12035,7 @@ void gmt_load_rot_matrix (double w, double R[3][3], double E[]) {
 	R[2][2] = R[2][2] * c + cos_w;
 }
 
+#if 0
 /*! . */
 void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]) {
 	/* c = A * b */
@@ -12041,6 +12043,7 @@ void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]) {
 
 	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
 }
+#endif
 
 /*! . */
 struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, struct GMT_SEGMENTIZE *S) {
@@ -13003,11 +13006,11 @@ void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, dou
 		GMT_memset (M, 3, double);
 		for (i = 0; i < n; i++) {
 			y[i] = gmt_lat_swap (GMT, y[i], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-			GMT_geo_to_cart (GMT, y[i], x[i], P, true);
+			gmt_geo_to_cart (GMT, y[i], x[i], P, true);
 			for (k = 0; k < 3; k++) M[k] += P[k];
 		}
-		GMT_normalize3v (GMT, M);
-		GMT_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
+		gmt_normalize3v (GMT, M);
+		gmt_cart_to_geo (GMT, &pos[GMT_Y], &pos[GMT_X], M, true);
 		pos[GMT_Y] = gmt_lat_swap (GMT, pos[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 	}
 	else {	/* Cartesian mean position */

@@ -2978,11 +2978,11 @@ GMT_LOCAL void map_get_rotate_pole (struct GMT_CTRL *GMT, double lon1, double la
 	double A[3], B[3], P[3];
 	/* Given A = (lon1, lat1) and B = (lon2, lat2), get P = A x B */
 	
-	GMT_geo_to_cart (GMT, lat1, lon1, A, true);	/* Cartesian vector for origin */
-	GMT_geo_to_cart (GMT, lat2, lon2, B, true);	/* Cartesian vector for 2nd point along oblique Equator */
-	GMT_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and center of Earth O) */
-	GMT_normalize3v (GMT, P);			/* Make sure P has unit length */
-	GMT_cart_to_geo (GMT, &plat, &plon, P, true);	/* Recover lon,lat of pole */
+	gmt_geo_to_cart (GMT, lat1, lon1, A, true);	/* Cartesian vector for origin */
+	gmt_geo_to_cart (GMT, lat2, lon2, B, true);	/* Cartesian vector for 2nd point along oblique Equator */
+	gmt_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and center of Earth O) */
+	gmt_normalize3v (GMT, P);			/* Make sure P has unit length */
+	gmt_cart_to_geo (GMT, &plat, &plon, P, true);	/* Recover lon,lat of pole */
 	if (GMT->current.proj.N_hemi && plat < 0.0) {	/* Insist on a Northen hemisphere pole */
 		plat = -plat;
 		plon += 180.0;
@@ -5400,7 +5400,7 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 		perpendicular_only = true;
 		return_mindist -= 10;
 	}
-	GMT_geo_to_cart (P, lat, lon, GMT, true);	/* Our point to test is now GMT */
+	gmt_geo_to_cart (P, lat, lon, GMT, true);	/* Our point to test is now GMT */
 
 	if (S->n_rows <= 0) return (false);	/* Empty ; skip */
 
@@ -5429,14 +5429,14 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 		cos_dist = cosd (S->dist / P->current.map.dist[GMT_MAP_DIST].scale);
 	else	/* Used distance units (e.g., meter, km). Conv to meters, then to degrees */
 		cos_dist = cosd ((S->dist / P->current.map.dist[GMT_MAP_DIST].scale) / P->current.proj.DIST_M_PR_DEG);
-	GMT_geo_to_cart (P, S->coord[GMT_Y][0], S->coord[GMT_X][0], B, true);		/* 3-D vector of end of last segment */
+	gmt_geo_to_cart (P, S->coord[GMT_Y][0], S->coord[GMT_X][0], B, true);		/* 3-D vector of end of last segment */
 
 	for (row = 1, within = false; row < S->n_rows; row++) {				/* loop over great circle segments on current line */
 		GMT_memcpy (A, B, 3, double);	/* End of last segment is start of new segment */
-		GMT_geo_to_cart (P, S->coord[GMT_Y][row], S->coord[GMT_X][row], B, true);	/* 3-D vector of end of this segment */
+		gmt_geo_to_cart (P, S->coord[GMT_Y][row], S->coord[GMT_X][row], B, true);	/* 3-D vector of end of this segment */
 		if (gmt_great_circle_intersection (P, A, B, GMT, X, &cx_dist)) continue;	/* X not between A and B */
 		if (return_mindist) {		/* Get lon, lat of X, calculate distance, and update min_dist if needed */
-			GMT_cart_to_geo (P, &xlat, &xlon, X, true);
+			gmt_cart_to_geo (P, &xlat, &xlon, X, true);
 			d = gmt_distance (P, xlon, xlat, lon, lat);	/* Distance between our point and closest perpendicular point on seg'th line */
 			if (d < (*dist_min)) {	/* Update minimum distance */
 				*dist_min = d;
@@ -5850,18 +5850,18 @@ void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double 
 	/* The set quantities are used in gmt_obl and gmt_iobl */
 	/* Get forward pole and origin vectors FP, FC */
 	double P[3];
-	GMT_geo_to_cart (GMT, plat, plon, GMT->current.proj.o_FP, true);	/* Set forward Cartesian pole o_FP */
-	GMT_geo_to_cart (GMT, olat, olon, P, true);			/* P points to the origin  */
-	GMT_cross3v (GMT, GMT->current.proj.o_FP, P, GMT->current.proj.o_FC);	/* Set forward Cartesian center o_FC */
-	GMT_normalize3v (GMT, GMT->current.proj.o_FC);
+	gmt_geo_to_cart (GMT, plat, plon, GMT->current.proj.o_FP, true);	/* Set forward Cartesian pole o_FP */
+	gmt_geo_to_cart (GMT, olat, olon, P, true);			/* P points to the origin  */
+	gmt_cross3v (GMT, GMT->current.proj.o_FP, P, GMT->current.proj.o_FC);	/* Set forward Cartesian center o_FC */
+	gmt_normalize3v (GMT, GMT->current.proj.o_FC);
 
 	/* Get inverse pole and origin vectors FP, FC */
 	gmt_obl (GMT, 0.0, M_PI_2, &plon, &plat);
-	GMT_geo_to_cart (GMT, plat, plon, GMT->current.proj.o_IP, false);	/* Set inverse Cartesian pole o_IP */
+	gmt_geo_to_cart (GMT, plat, plon, GMT->current.proj.o_IP, false);	/* Set inverse Cartesian pole o_IP */
 	gmt_obl (GMT, 0.0, 0.0, &olon, &olat);
-	GMT_geo_to_cart (GMT, olat, olon, P, false);			/* P points to origin  */
-	GMT_cross3v (GMT, GMT->current.proj.o_IP, P, GMT->current.proj.o_IC);	/* Set inverse Cartesian center o_FC */
-	GMT_normalize3v (GMT, GMT->current.proj.o_IC);
+	gmt_geo_to_cart (GMT, olat, olon, P, false);			/* P points to origin  */
+	gmt_cross3v (GMT, GMT->current.proj.o_IP, P, GMT->current.proj.o_IC);	/* Set inverse Cartesian center o_FC */
+	gmt_normalize3v (GMT, GMT->current.proj.o_IC);
 }
 
 /*! . */
@@ -6584,32 +6584,32 @@ int gmt_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[],
 	unsigned int i;
 	double P[3], E[3], M[3], Xneg[3], cos_AB, cos_MX1, cos_MX2, cos_test;
 
-	GMT_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and origin O) */
-	GMT_normalize3v (GMT, P);			/* Make sure P has unit length */
-	GMT_cross3v (GMT, C, P, E);			/* Get pole E to plane through C (and origin) but normal to A,B (hence going through P) */
-	GMT_normalize3v (GMT, E);			/* Make sure E has unit length */
-	GMT_cross3v (GMT, P, E, X);			/* Intersection between the two planes is oriented line*/
-	GMT_normalize3v (GMT, X);			/* Make sure X has unit length */
+	gmt_cross3v (GMT, A, B, P);			/* Get pole position of plane through A and B (and origin O) */
+	gmt_normalize3v (GMT, P);			/* Make sure P has unit length */
+	gmt_cross3v (GMT, C, P, E);			/* Get pole E to plane through C (and origin) but normal to A,B (hence going through P) */
+	gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
+	gmt_cross3v (GMT, P, E, X);			/* Intersection between the two planes is oriented line*/
+	gmt_normalize3v (GMT, X);			/* Make sure X has unit length */
 	/* The X we want could be +x or -X; must determine which might be closest to A-B midpoint M */
 	for (i = 0; i < 3; i++) {
 		M[i] = A[i] + B[i];
 		Xneg[i] = -X[i];
 	}
-	GMT_normalize3v (GMT, M);			/* Make sure M has unit length */
+	gmt_normalize3v (GMT, M);			/* Make sure M has unit length */
 	/* Must first check if X is along the (A,B) segment and not on its extension */
 
-	cos_MX1 = GMT_dot3v (GMT, M, X);		/* Cos of spherical distance between M and +X */
-	cos_MX2 = GMT_dot3v (GMT, M, Xneg);	/* Cos of spherical distance between M and -X */
+	cos_MX1 = gmt_dot3v (GMT, M, X);		/* Cos of spherical distance between M and +X */
+	cos_MX2 = gmt_dot3v (GMT, M, Xneg);	/* Cos of spherical distance between M and -X */
 	if (cos_MX2 > cos_MX1) GMT_memcpy (X, Xneg, 3, double);		/* -X is closest to A-B midpoint */
-	cos_AB = fabs (GMT_dot3v (GMT, A, B));	/* Cos of spherical distance between A,B */
-	cos_test = fabs (GMT_dot3v (GMT, A, X));	/* Cos of spherical distance between A and X */
+	cos_AB = fabs (gmt_dot3v (GMT, A, B));	/* Cos of spherical distance between A,B */
+	cos_test = fabs (gmt_dot3v (GMT, A, X));	/* Cos of spherical distance between A and X */
 	if (cos_test < cos_AB) return 1;	/* X must be on the A-B extension if its distance to A exceeds the A-B length */
-	cos_test = fabs (GMT_dot3v (GMT, B, X));	/* Cos of spherical distance between B and X */
+	cos_test = fabs (gmt_dot3v (GMT, B, X));	/* Cos of spherical distance between B and X */
 	if (cos_test < cos_AB) return 1;	/* X must be on the A-B extension if its distance to B exceeds the A-B length */
 
 	/* X is between A and B.  Now calculate distance between C and X */
 
-	*CX_dist = GMT_dot3v (GMT, C, X);		/* Cos of spherical distance between C and X */
+	*CX_dist = gmt_dot3v (GMT, C, X);		/* Cos of spherical distance between C and X */
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
@@ -8625,15 +8625,15 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	if (gmt_alloc_segment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
 
 	plat = gmt_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */
-	GMT_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
+	gmt_geo_to_cart (GMT, plat, plon, P, true);		/* Get pole vector P */
 	xlat = (plat > 0.0) ? plat - colat : plat + colat;	/* Starting point along meridian through P but colat degrees away */
 	xlat = gmt_lat_swap (GMT, xlat, GMT_LATSWAP_G2O);	/* Convert to geocentric */
-	GMT_geo_to_cart (GMT, xlat, plon, X, true);		/* Generating vector X we will rotate about P */
+	gmt_geo_to_cart (GMT, xlat, plon, X, true);		/* Generating vector X we will rotate about P */
 	dlon = 360.0 / (m - 1);					/* Point spacing along the small circle in oblique longitude degrees */
 	for (k = n = 0; k < m; k++, n++) {	/* Given how dlon was set we end up closing the polygon exactly */
-		GMT_make_rot_matrix2 (GMT, P, k * dlon, R);	/* Rotation matrix about P for this increment in oblique longitude */
-		GMT_matrix_vect_mult (GMT, 3U, R, X, N);	/* Rotate the X-vector to N */
-		GMT_cart_to_geo (GMT, &y, &x, N, true);		/* Recover lon,lat of rotated point */
+		gmt_make_rot_matrix2 (GMT, P, k * dlon, R);	/* Rotation matrix about P for this increment in oblique longitude */
+		gmt_matrix_vect_mult (GMT, 3U, R, X, N);	/* Rotate the X-vector to N */
+		gmt_cart_to_geo (GMT, &y, &x, N, true);		/* Recover lon,lat of rotated point */
 		y = gmt_lat_swap (GMT, y, GMT_LATSWAP_O2G);	/* Convert back to geodetic coordinates */
 		if (k) {
 			dx = x - last_x;

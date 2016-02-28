@@ -125,7 +125,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			if (get_area) {	/* Compute area */
 				for (i = 0; i < 3; i++) {
 					y = (do_authalic) ? gmt_lat_swap (GMT, lat[D->tri[ij+i]], GMT_LATSWAP_G2A) : lat[D->tri[ij+i]];	/* Convert to authalic latitude */
-					GMT_geo_to_cart (GMT, y, lon[D->tri[ij+i]], V[i], true);
+					gmt_geo_to_cart (GMT, y, lon[D->tri[ij+i]], V[i], true);
 				}
 				area_triangle = gmt_stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
@@ -280,9 +280,9 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 					y[0] = (do_authalic) ? gmt_lat_swap (GMT, V->lat[node], GMT_LATSWAP_G2A) : V->lat[node];		/* Convert to authalic latitude */
 					y[1] = (do_authalic) ? gmt_lat_swap (GMT, V->lat[vertex_last], GMT_LATSWAP_G2A) : V->lat[vertex_last];	/* Convert to authalic latitude */
 					y[2] = (do_authalic) ? gmt_lat_swap (GMT, V->lat[vertex_new], GMT_LATSWAP_G2A) : V->lat[vertex_new];	/* Convert to authalic latitude */
-					GMT_geo_to_cart (GMT, y[0], V->lon[node], V1, true);
-					GMT_geo_to_cart (GMT, y[1], V->lon[vertex_last], V2, true);
-					GMT_geo_to_cart (GMT, y[2], V->lon[vertex_new], V3, true);
+					gmt_geo_to_cart (GMT, y[0], V->lon[node], V1, true);
+					gmt_geo_to_cart (GMT, y[1], V->lon[vertex_last], V2, true);
+					gmt_geo_to_cart (GMT, y[2], V->lon[vertex_new], V3, true);
 					area_triangle = gmt_stripack_areas (V1, V2, V3);
 					area_polygon += area_triangle;
 				}
@@ -610,7 +610,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 			}
 		}
 		/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
-		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
+		gmt_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
 		if (!Ctrl->C.active) {	/* Keep copy of lon/lat */
 			lon[n] = in[GMT_X];

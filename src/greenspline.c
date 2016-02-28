@@ -407,7 +407,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
 						n_errors++;
 					}
-					GMT_normalize3v (GMT, Ctrl->Q.dir);	/* Normalize to unit vector */
+					gmt_normalize3v (GMT, Ctrl->Q.dir);	/* Normalize to unit vector */
 				}
 				else if (opt->arg[0])	/* 2-D azimuth */
 					Ctrl->Q.az = atof(opt->arg);
@@ -1280,8 +1280,8 @@ GMT_LOCAL double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, dou
 			break;
 		case 3:	/* 3-D */
 			for (ii = 0; ii < 3; ii++) N[ii] = X1[ii] - X0[ii];	/* Difference vector */
-			GMT_normalize3v (GMT, N);	/* Normalize to unit vector */
-			C = GMT_dot3v (GMT, D, N);	/* Dot product of 3-D unit vectors */
+			gmt_normalize3v (GMT, N);	/* Normalize to unit vector */
+			C = gmt_dot3v (GMT, D, N);	/* Dot product of 3-D unit vectors */
 			if (baz) C = -C;		/* The opposite direction for X0-X1 */
 			break;
 	}
@@ -1559,8 +1559,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 						switch (Ctrl->A.mode) {
 							case 4:	/* (x, y, z, gx, gy, gz) */
 								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the gradient vector */
-								obs[p] = GMT_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
-								GMT_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
+								obs[p] = gmt_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
+								gmt_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
 								break;
 							case 5: /* (x, y, z, nx, ny, nz, gradient) */
 								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the unit vector */
@@ -1852,7 +1852,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				else {
 					/* Get D, the directional cosine between the two points */
-					/* Then get C = GMT_dot3v (GMT, D, dataD); */
+					/* Then get C = gmt_dot3v (GMT, D, dataD); */
 					/* A[ji] = dGdr (r, par, Lg) * C; */
 					C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
 					grad = dGdr (GMT, r, par, Lg);
@@ -1882,7 +1882,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 #endif
 		v = gmt_memory (GMT, NULL, nm * nm, double);
 		s = gmt_memory (GMT, NULL, nm, double);
-		if ((error = GMT_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
+		if ((error = gmt_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_memory (GMT, NULL, nm, double);
@@ -1924,7 +1924,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		b = gmt_memory (GMT, NULL, nm, double);
 		GMT_memcpy (b, obs, nm, double);
 		limit = Ctrl->C.value;
-		n_use = GMT_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
+		n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
 
@@ -1940,7 +1940,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by Gauss-Jordan elimination\n");
-		if ((error = GMT_gaussjordan (GMT, A, (unsigned int)nm, obs)) != 0) {
+		if ((error = gmt_gaussjordan (GMT, A, (unsigned int)nm, obs)) != 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "You probably have nearly duplicate data constraints\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "Preprocess your data with one of the blockm* modules\n");
 			Return (error);
