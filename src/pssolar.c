@@ -115,30 +115,6 @@ GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
 	free(p);
 }
 
-void strtok_m(char *in, char **token, char **remain, char *sep) {
-	/* A Matlab style strtok. Note that 'token' and 'remain' must be virgin pointers,
-	   otherwise the memory tey point to will be leaked because they are allocated here
-	   with strdup. For that reason the caller is responsable to free them after being consumed.
-	 */
-	unsigned int pos = 0;
-	char *p, *s;
-
-	if (sep == NULL)
-		s = " \t";
-	else
-		s = sep;
-
-	token[0] = NULL;		remain[0] = NULL;
-
-	p = malloc(strlen(in)+1);
-	if (gmt_strtok (in, s, &pos, p)) {
-		token[0] = strdup(p);
-		if (gmt_strtok (in, sep, &pos, p))
-			remain[0] = strdup(p);
-	}
-	free(p);
-}
-
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pssolar synopsis and optionally full usage information */
 

@@ -154,7 +154,7 @@ size_t gmt_strlcmp (char *str1, char *str2) {
 unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *pos, char *token) {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator
-	 * characters (in sep).  Set *pos to 0 before first call.  Unlike
+	 * characters (in sep).  Set *pos to 0 before first call. Unlike
 	 * strtok, always pass the original string as first argument.
 	 * Returns 1 if it finds a token and 0 if no more tokens left.
 	 * pos is updated and token is returned.  char *token must point
@@ -183,6 +183,30 @@ unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *pos,
 	*pos = (unsigned int)i;
 
 	return 1;
+}
+
+void gmt_strtok_m (char *in, char **token, char **remain, char *sep) {
+	/* A Matlab style strtok. Note that 'token' and 'remain' must be virgin pointers,
+	   otherwise the memory they point to will be leaked because they are allocated here
+	   with strdup. For that reason the caller is responsable to free them after being consumed.
+	 */
+	unsigned int pos = 0;
+	char *p, *s;
+
+	if (sep == NULL)
+		s = " \t";
+	else
+		s = sep;
+
+	token[0] = NULL;		remain[0] = NULL;
+
+	p = malloc(strlen(in)+1);
+	if (gmt_strtok (in, s, &pos, p)) {
+		token[0] = strdup(p);
+		if (gmt_strtok (in, sep, &pos, p))
+			remain[0] = strdup(p);
+	}
+	free(p);
 }
 
 unsigned int gmt_get_modifier (const char *string, char modifier, char *token) {
