@@ -965,7 +965,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
 		if (GMT_File_Is_Memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
-			sprintf (ps_file, "%s/psconvert_stream_%d.ps", GMT->session.TMPDIR, (int)getpid());
+			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
 			if (GMT_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s.  Skipping.\n", ps_file, ps_names[k]);
 				continue;
