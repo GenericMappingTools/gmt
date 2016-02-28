@@ -81,7 +81,7 @@ int main (int argc, char *argv[]) {
 	progname = strdup (basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example
 	 * by the MSYS shell when executing gmt via symlinks */
-	GMT_chop_ext (progname);
+	gmt_chop_ext (progname);
 
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
@@ -225,7 +225,7 @@ int main (int argc, char *argv[]) {
 		status = EXIT_FAILURE;
 	} /* status == GMT_NOT_A_VALID_OPTION */
 
-	gmt_str_free (progname); /* Was already dereferenced in GMT_chop_ext, so no NULL check needed */
+	gmt_str_free (progname); /* Was already dereferenced in gmt_chop_ext, so no NULL check needed */
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;

@@ -113,7 +113,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 				Ctrl->D.active = true;
 				Ctrl->D.width = atof (opt->arg);
 				if ((c = strchr (opt->arg, '+')) != NULL) {	/* Found modifiers */
-					while ((GMT_strtok (c, "+", &pos, p))) {
+					while ((gmt_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
 							case 'a': Ctrl->D.mode = BLOCKMODE_AVE; break;	/* Pick average mode */

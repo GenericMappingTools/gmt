@@ -3065,7 +3065,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 		}
 	}
 	PSL->internal.SHAREDIR = strdup (this_c);
-	DOS_path_fix (PSL->internal.SHAREDIR);
+	gmt_dos_path_fix (PSL->internal.SHAREDIR);
 	if (PSL->internal.SHAREDIR == NULL || access(PSL->internal.SHAREDIR, R_OK)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
 		PSL_exit (EXIT_FAILURE);
@@ -3076,7 +3076,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	if ((this_c = userdir) == NULL && search) this_c = getenv ("PSL_USERDIR");
 	if (this_c) {	/* Did find a user dir */
 		PSL->internal.USERDIR = strdup (this_c);
-		DOS_path_fix (PSL->internal.USERDIR);
+		gmt_dos_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
 			PSL_free (PSL->internal.USERDIR);

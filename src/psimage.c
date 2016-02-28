@@ -165,25 +165,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<nx>[/<ny>]][+r<dpi>] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
 					/* Required modifier +w OR +r */
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 						if (Ctrl->D.dim[GMT_X] < 0.0) {	/* Negative width means PS interpolation */
 							Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 							Ctrl->D.interpolate = true;
 						}
 					}
-					else if (GMT_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+					else if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string))
 						Ctrl->D.dpi = atof (string);
 					/* Optional modifiers +j, +n, +o */
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 						n = sscanf (string, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
 						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}

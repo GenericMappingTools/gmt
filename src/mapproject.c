@@ -875,19 +875,19 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				/* Special case: ASCII i/o and at least 3 input columns:
 				   Columns beyond first two could be text strings */
 
-				/* We will use GMT_strtok to step past the first 2 [or 3] columns.  The remainder
+				/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
 				 * will then be the user text that we want to preserve.  Since strtok places
 				 * 0 to indicate start of next token we count our way to the start of the text. */
 
 				strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
-				GMT_chop (line);	/* Chop of line feed */
+				gmt_chop (line);	/* Chop of line feed */
 				pos = record[0] = 0;	/* Start with blank record */
-				GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
-				GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
+				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
+				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
 				gmt_add_to_record (GMT, record, out[x], GMT_X, 2);	/* Format our output x value */
 				gmt_add_to_record (GMT, record, out[y], GMT_Y, 2);	/* Format our output y value */
 				if (Ctrl->E.active) {
-					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
+					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
 					gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
@@ -1007,15 +1007,15 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					/* Special case: ASCII input and at least 3 columns:
 					   Columns beyond first two could be text strings */
 
-					/* We will use GMT_strtok to step past the first 2 [or 3] columns.  The remainder
+					/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
 					 * will then be the user text that we want to preserve.  Since strtok places
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
 					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
-					GMT_chop (line);
+					gmt_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
-					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
-					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
+					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
+					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
 					gmt_add_to_record (GMT, record, in[x], GMT_X, 2);	/* Format our output x value */
 					gmt_add_to_record (GMT, record, in[y], GMT_Y, 2);	/* Format our output y value */
 					if (line[pos]) {	/* Append user text */
@@ -1054,19 +1054,19 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					/* Special case: ASCII input and at least 3 columns:
 					   Columns beyond first two could be text strings */
 
-					/* We will use GMT_strtok to step past the first 2 [or 3] columns.  The remainder
+					/* We will use gmt_strtok to step past the first 2 [or 3] columns.  The remainder
 					 * will then be the user text that we want to preserve.  Since strtok places
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
 					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
-					GMT_chop (line);
+					gmt_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
-					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */
-					GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring and update pos */
+					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */
+					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring and update pos */
 					gmt_add_to_record (GMT, record, out[x], o_type[GMT_X], 2);	/* Format our output x value */
 					gmt_add_to_record (GMT, record, out[y], o_type[GMT_Y], 2);	/* Format our output y value */
 					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
-						GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignored) and update pos */
+						gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignored) and update pos */
 						gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);

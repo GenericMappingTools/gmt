@@ -271,7 +271,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 				Return (EXIT_FAILURE);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
-				GMT_chop (line);	/* Get rid of [CR]LF */
+				gmt_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
 				if ((p = strchr (line, '.')) != NULL) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */

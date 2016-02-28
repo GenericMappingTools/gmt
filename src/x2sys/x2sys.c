@@ -213,7 +213,7 @@ void x2sys_set_home (struct GMT_CTRL *GMT) {
 		exit (EXIT_FAILURE);
 	}
 #ifdef WIN32
-		DOS_path_fix (X2SYS_HOME);
+		gmt_dos_path_fix (X2SYS_HOME);
 #endif
 }
 
@@ -342,7 +342,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 			}
 			continue;
 		}
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 
 		sscanf (line, "%s %c %c %lf %lf %lf %s %s", X->info[i].name, &X->info[i].intype, &yes_no, &X->info[i].nan_proxy, &X->info[i].scale, &X->info[i].offset, X->info[i].format, cardcol);
 		if (X->info[i].intype == 'A') {	/* ASCII Card format */
@@ -473,7 +473,7 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 	strncpy (line, string, GMT_BUFSIZ-1);	/* Make copy for later use */
 	GMT_memset (s->use_column, s->n_fields, bool);
 
-	while ((GMT_strtok (line, ",", &pos, p))) {
+	while ((gmt_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
 		if (j < s->n_fields) {
@@ -552,7 +552,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 						if (!fgets (line, GMT_BUFSIZ, fp)) return (-1);
 						if (s->multi_segment) s->ms_next = true;
 					}
-					GMT_chop (line);	/* Remove trailing CR or LF */
+					gmt_chop (line);	/* Remove trailing CR or LF */
 				}
 				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
@@ -567,9 +567,9 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 					if (!fgets (line, GMT_BUFSIZ, fp)) return (-1);
 					if (s->multi_segment) s->ms_next = true;
 				}
-				GMT_chop (line);	/* Remove trailing CR or LF */
+				gmt_chop (line);	/* Remove trailing CR or LF */
 				pos = 0;
-				while ((GMT_strtok (line, s->separators, &pos, p)) && k < s->n_fields) {
+				while ((gmt_strtok (line, s->separators, &pos, p)) && k < s->n_fields) {
 					if (gmt_scanf (GMT, p, G->col_type[GMT_IN][k], &data[k]) == GMT_IS_NAN) data[k] = GMT->session.d_NaN;
 					k++;;
 				}
@@ -969,7 +969,7 @@ int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned in
 	p = gmt_memory (GMT, NULL, n_alloc, char *);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s", name);
 		p[n] = strdup (name);
 		n++;
@@ -1002,7 +1002,7 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 	W = gmt_memory (GMT, NULL, n_alloc, double);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_weights : Error parsing file %s near line %d\n", file, n);
 			fclose (fp);
@@ -1065,9 +1065,9 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 	}
 
 	while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#');	/* Skip comment records */
-	GMT_chop (line);	/* Remove trailing CR or LF */
+	gmt_chop (line);	/* Remove trailing CR or LF */
 
-	while ((GMT_strtok (line, " \t", &pos, p))) {	/* Process the -C -D -G -I -N -m -R -W arguments from the header */
+	while ((gmt_strtok (line, " \t", &pos, p))) {	/* Process the -C -D -G -I -N -m -R -W arguments from the header */
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
@@ -1307,13 +1307,13 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error in header record\n");
 		exit (EXIT_FAILURE);
 	}
-	GMT_chop (line);	/* Remove trailing CR or LF */
+	gmt_chop (line);	/* Remove trailing CR or LF */
 	if (strcmp (&line[2], S->TAG)) {	/* Mismatch between database tag and present tag */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "track data file %s lists tag as %s but active tag is %s\n",  track_path, &line[2], S->TAG);
 		exit (EXIT_FAILURE);
 	}
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %d %d", name, &id, &flag);
 		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
@@ -1442,9 +1442,9 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 	while (fgets (line, GMT_BUFSIZ, fp) && n_x2sys_paths < MAX_DATA_PATHS) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 #ifdef WIN32
-		DOS_path_fix (line);
+		gmt_dos_path_fix (line);
 #endif
 		x2sys_datadir[n_x2sys_paths] = gmt_memory (GMT, NULL, strlen (line)+1, char);
 		strcpy (x2sys_datadir[n_x2sys_paths], line);
@@ -1604,7 +1604,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 
 	while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#') {	/* Process header recs */
 		rec_no++;
-		GMT_chop (line);	/* Get rid of [CR]LF */
+		gmt_chop (line);	/* Get rid of [CR]LF */
 		/* Looking to process these two [three] key lines:
 		 * # Tag: MGD77
 		   # Command: x2sys_cross ... [in later versions only]
@@ -1627,7 +1627,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 				unsigned int pos = 0, item = 0;
 				no_time = !strcmp (kind, "i_1");	/* No time in this database */
 				if (txt[strlen(txt)-1] == '1') two_values = true;	/* Option -2 was used */
-				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
+				while (our_item == -1 && (gmt_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
 					item++;
 					i = (int)strlen (ptr) - 1;
 					while (i >= 0 && ptr[i] != '_') i--;	/* Start at end and find last underscore */
@@ -1666,7 +1666,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 	more = true;
 	n_pairs = *nx = 0;
 	while (more) {	/* Read dbase until EOF */
-		GMT_chop (line);	/* Get rid of [CR]LF */
+		gmt_chop (line);	/* Get rid of [CR]LF */
 		if (line[0] == '#') {	/* Skip a comment lines */
 			while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#') rec_no++;	/* Skip header recs */
 			continue;	/* Return to top of while loop */
@@ -1754,7 +1754,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		k = 0;
 		while ((t = fgets (line, GMT_BUFSIZ, fp)) != NULL && !(line[0] == '>' || line[0] == '#')) {	/* As long as we are reading data records */
 			rec_no++;
-			GMT_chop (line);	/* Get rid of [CR]LF */
+			gmt_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
 			if (gmt_scanf (GMT, x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = GMT->session.d_NaN;
 			P[p].COE[k].data[0][COE_X] = d_val;

@@ -980,7 +980,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				text_rec = (char *)record;
 
 				/* First establish the symbol type given at the end of the record */
-				GMT_chop (text_rec);	/* Get rid of \n \r */
+				gmt_chop (text_rec);	/* Get rid of \n \r */
 				i = (unsigned int)strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				if (S.read_symbol_cmd == 1) gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 0, false);

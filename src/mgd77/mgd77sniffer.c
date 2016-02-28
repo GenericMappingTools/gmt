@@ -850,7 +850,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			case 'W':	/* Choose which warning types to go to stdout (default - all) */
 				do_regression = false;
 				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = false;
-				while (GMT_strtok (opt->arg, ",", &pos, &c)) {
+				while (gmt_strtok (opt->arg, ",", &pos, &c)) {
 					if (c == 'v')
 						warn[VALUE_WARN] = true;
 					else if (c == 'g')
@@ -937,7 +937,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	 	}
 		else {
 			while (gmt_fgets (GMT, custom_limit_line, GMT_BUFSIZ, custom_fp)) {
-				GMT_chop (custom_limit_line);					/* Rid the world of CR/LF */
+				gmt_chop (custom_limit_line);					/* Rid the world of CR/LF */
 				if (sscanf (custom_limit_line,"%s %s %s %s %s", field_abbrev, tmp_min, tmp_max, tmp_maxSlope, tmp_area) == 5) {
 					i = 0;
 					while (strcmp (mgd77snifferdefs[i].abbrev, field_abbrev) && i <= MGD77_N_NUMBER_FIELDS) i++;

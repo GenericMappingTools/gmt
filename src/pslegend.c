@@ -141,17 +141,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				if (strstr (opt->arg, "+w")) {	/* New syntax: 	*/
 					/* Args are +w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
 						Ctrl->D.spacing = atof (string);
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 					}
 				}
@@ -504,11 +504,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						just = 't';
 						gave_label = true;
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
-						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && GMT_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
+						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 							just = string[0];
-						else if (GMT_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
+						else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
 							just = string[0];
-						if (GMT_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
+						if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
 							gave_label = false;	/* Not sure why I do this, will find out */
 						if (gave_label && (just == 't' || just == 'b')) height += d_off;
 						height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
@@ -517,7 +517,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'N':	/* n_columns or column width record */
 						pos = n_columns = 0;
-						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							n_columns++;
 							if (n_columns == PSLEGEND_MAX_COLS) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);
@@ -747,7 +747,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						/* First free all previous entries in fill array */
 						for (col = 0; col < PSLEGEND_MAX_COLS; col++) gmt_str_free (fill[col]);
 						pos = n_col = 0;
-						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
 							if (n_col > n_columns) {
@@ -890,11 +890,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						gave_label = true;
 						row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
-						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && GMT_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
+						if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 							just = string[0];
-						else if (GMT_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
+						else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate aligment */
 							just = string[0];
-						if (GMT_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
+						if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate aligment */
 							gave_label = false;	/* Not sure why I do this, will find out */
 						h = row_height;
 						if (gave_label && (just == 't' || just == 'b')) h += d_off;
@@ -930,7 +930,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 					case 'N':	/* n_columns record: N ncolumns OR rw1 rw2 ... rwn (for relative widths) */
 						n_col = n_columns;	/* Previous setting */
 						pos = n_columns = 0;
-						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
+						while ((gmt_strtok (&line[2], " \t", &pos, p))) {
 							col_width[n_columns++] = atof (p);
 							if (n_columns == PSLEGEND_MAX_COLS) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding maximum columns (%d) in N operator\n", PSLEGEND_MAX_COLS);

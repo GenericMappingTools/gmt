@@ -309,7 +309,7 @@ GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char **
 	T = gmt_memory (GMT, NULL, n_alloc, double);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %s", name, date);
 		p[n] = strdup (name);
 		if (date[strlen(date)-1] != 'T') strcat (date, "T");

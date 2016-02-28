@@ -263,7 +263,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	order = gmt_memory (GMT, NULL, n_alloc, unsigned int);
 	for (j = 0; j < F->n_items; j++) {
 		pos = 0;
-		while (GMT_strtok (F->item[j]->codes, ",", &pos, code)) {	/* Loop over items */
+		while (gmt_strtok (F->item[j]->codes, ",", &pos, code)) {	/* Loop over items */
 			if (code[0] == '=') {	/* Must expand a continent into all member countries */
 				for (k = 0; k < GMT_DCW_COUNTRIES; k++) {
 					if (strncmp (GMT_DCW_country[k].continent, &code[1], 2)) continue;	/* Not this one */
@@ -320,7 +320,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_set_geographic (GMT, GMT_OUT);
 	}
 	pos = 0;
-	while (GMT_strtok (list, ",", &pos, code)) {	/* Loop over countries */
+	while (gmt_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
 		if (code[2] == '.') {	/* Requesting a state */
 			GMT_memset (state, GMT_LEN16, char);
@@ -566,7 +566,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 	if (a) a[0] = '+';	/* Reset modifiers */
 
 	if (a && (c = strchr (a, '+'))) {	/* Handle modifiers */
-		while ((GMT_strtok (c, "+", &pos, p))) {
+		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				/* Listings*/
 				case 'R':	/* Get region from polygon(s) BB */

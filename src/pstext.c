@@ -574,9 +574,9 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 	buffer[0] = '\0';	/* Initialize buffer to NULL */
 
 	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
-		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
-		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
-		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_z)) nscan++;	/* Returns zcol and update pos */
 		strcpy (buffer, &record[pos]);
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		if ((gmt_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
@@ -591,8 +591,8 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
 	else {
-		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
-		if (GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_x)) nscan++;	/* Returns xcol and update pos */
+		if (gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, txt_y)) nscan++;	/* Returns ycol and update pos */
 		sscanf (&record[pos], "%[^\n]\n", buffer);	nscan++;	/* Since sscanf could return -1 if nothing we increment nscan always */
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
@@ -759,7 +759,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
 					for (k = 0; k < Ctrl->F.nread; k++) {
-						nscan += GMT_strtok (buffer, token_separator, &pos, text);
+						nscan += gmt_strtok (buffer, token_separator, &pos, text);
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
@@ -814,7 +814,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				strncpy (cp_line, line, GMT_BUFSIZ);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
 				line = cp_line;
 
-				GMT_chop (line);	/* Chop of line feed */
+				gmt_chop (line);	/* Chop of line feed */
 				gmt_enforce_rgb_triplets (GMT, line, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
 				if (line[0] == 0) {	/* Blank line marked by single NULL character, replace by \r */
@@ -868,7 +868,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				in_txt = buffer;
 			else {	/* Must pick up 1-3 attributes from data file */
 				for (k = 0; k < Ctrl->F.nread; k++) {
-					nscan += GMT_strtok (buffer, token_separator, &pos, text);
+					nscan += gmt_strtok (buffer, token_separator, &pos, text);
 					switch (Ctrl->F.read[k]) {
 						case 'a':
 							T.paragraph_angle = atof (text);

@@ -781,7 +781,7 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 		/* Must convert given units to points */
 
 		pos = 0;
-		while ((GMT_strtok (P->style, " ", &pos, ptr))) {
+		while ((gmt_strtok (P->style, " ", &pos, ptr))) {
 			sprintf (tmp, "%g ", (atof (ptr) * GMT->session.u2u[unit][GMT_PT]));
 			strcat (string, tmp);
 			n_dash++;
@@ -3110,7 +3110,7 @@ GMT_LOCAL int support_ensure_new_mapinsert_syntax (struct GMT_CTRL *GMT, char op
 				if (strchr ("cgp", in_text[i+1])) start = i;	/* Found start of the modifiers */
 			}
 		}
-		while ((GMT_strtok (&in_text[start], "+", &pos, p))) {
+		while ((gmt_strtok (&in_text[start], "+", &pos, p))) {
 			switch (p[0]) {
 				case 'c':	/* Got insert center */
 					center = true;
@@ -3263,7 +3263,7 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ], oldshit[GMT_LEN128] = {""};
 		unsigned int pos = 0, bad = 0;
-		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
+		while ((gmt_strtok (txt_cpy, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'f':	/* Fill specification */
 					if (ms->old_style && GMT_compat_check (GMT, 4)) {	/*  Warn about old GMT 4 syntax */
@@ -3393,7 +3393,7 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 		strncpy (tmpstring, &text[colon], (size_t)(k-colon));
 		tmpstring[k-colon] = '\0';
 		k = pos = 0;
-		while (k < 4 && (GMT_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
+		while (k < 4 && (gmt_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
 			if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
 			k++;
 		}
@@ -3728,7 +3728,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			continue;
 		}
 #endif
-		GMT_chop (buffer);	/* Get rid of \n \r */
+		gmt_chop (buffer);	/* Get rid of \n \r */
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
@@ -3932,7 +3932,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				if (col[last][k]) {	/* Gave modifiers */
 					unsigned int pos = 0;
 					char p[GMT_BUFSIZ];
-					while ((GMT_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+					while ((gmt_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 						switch (p[0]) {
 							case 'f':	/* Change font [Note: font size is ignore as the size argument take precedent] */
 								if (gmt_getfont (GMT, &p[1], &s->font))
@@ -4664,7 +4664,7 @@ GMT_LOCAL uint64_t support_read_list (struct GMT_CTRL *GMT, char *file, char ***
 	p = gmt_memory (GMT, NULL, n_alloc, char *);
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_chop (line);	/* Remove trailing CR or LF */
+		gmt_chop (line);	/* Remove trailing CR or LF */
 		p[n++] = strdup (line);
 		if (n == n_alloc) p = gmt_memory (GMT, p, n_alloc <<= 1, char *);
 	}
@@ -4931,7 +4931,7 @@ bool gmt_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	/* Note, <rgb> can be r/g/b, gray, or - for masks.  optionally, append @<transparency> [0] */
 
 	gmt_init_fill (GMT, fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
-	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
+	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (false);	/* No argument given: we are out of here */
 
 	if ((line[0] == 'p' || line[0] == 'P') && isdigit((int)line[1])) {	/* Image specified */
@@ -5179,7 +5179,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	}
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
-	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
+	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	/* Processes font settings given as [size][,name][,fill][=pen] */
 
@@ -5289,7 +5289,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	strncpy (line, buffer, GMT_BUFSIZ-1);	/* Work on a copy of the arguments */
-	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
+	gmt_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
 	/* First chop off and processes any line modifiers :
@@ -5324,7 +5324,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		strcpy (mods, &c[1]);	/* Get our copy of the modifiers */
 		c[0] = '\0';		/* Chop off modifiers */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pen modifier found: %s\n", mods);
-		while ((GMT_strtok (mods, "+", &pos, p))) {
+		while ((gmt_strtok (mods, "+", &pos, p))) {
 			switch (p[0]) {
 				case 's':
 					if (processed_vector) break;	/* This is the +s within +v vector specifications */
@@ -5541,7 +5541,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 
 	i = pos = GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;
 
-	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
+	while (i < n && (gmt_strtok (line, "/", &pos, p))) {
 		last = (unsigned int)strlen (p) - 1;
 		if (p[last] == '=') {	/* Let -I override -R */
 			p[last] = 0;
@@ -6003,7 +6003,7 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	}
 
 	while (!error && fgets (line, GMT_BUFSIZ, fp)) {
-		GMT_strstrip (line, true);
+		gmt_strstrip (line, true);
 		c = line[0];
 
 		if (strstr (line, "COLOR_MODEL")) {	/* CPT file overrides default color model */
@@ -6044,7 +6044,7 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 		if (c == '\0' || c == '\n') continue;	/* Comment or blank */
 		check_headers = false;	/* First non-comment record signals the end of headers */
 
-		GMT_chop (line);	/* Chop '\r\n' */
+		gmt_chop (line);	/* Chop '\r\n' */
 
 		T1[0] = T2[0] = T3[0] = T4[0] = T5[0] = T6[0] = T7[0] = T8[0] = T9[0] = 0;
 		switch (c) {
@@ -6118,7 +6118,7 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 			/* OK, find the label and chop it off */
 			X->range[n].label = gmt_memory (GMT, NULL, strlen (line) - k, char);
 			strcpy (X->range[n].label, &line[k+1]);
-			GMT_chop (X->range[n].label);	/* Strip off trailing return */
+			gmt_chop (X->range[n].label);	/* Strip off trailing return */
 			line[k] = '\0';				/* Chop label off from line */
 		}
 
@@ -7249,7 +7249,7 @@ int gmt_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 
 	G->nudge_flag = 0;
 	specs = &txt[k+1];
-	while ((GMT_strtok (specs, "+", &pos, p))) {
+	while ((gmt_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
 				if (p[1] == 'p' || p[1] == 'P')	{	/* Line-parallel label */
@@ -7590,7 +7590,7 @@ int gmt_decorate_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_DECORATE *G)
 	G->nudge_flag = 0;
 	G->fill[0] = G->pen[0] = '\0';	/* Reset each time in case we are parsing args from a segment header */
 	specs = &txt[k+1];
-	while ((GMT_strtok (specs, "+", &pos, p))) {
+	while ((gmt_strtok (specs, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Angle specification */
 				if (p[1] == 'p' || p[1] == 'P')	/* Line-parallel label */
@@ -7785,7 +7785,7 @@ struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char 
 	n_cols = (get_distances) ? 3 :2;
 	T->n_columns = n_cols;
 
-	while (GMT_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
+	while (gmt_strtok (args, ",", &pos, p)) {	/* Split on each line since separated by commas */
 		S = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		gmt_alloc_segment (GMT, S, 2, n_cols, true);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
@@ -7796,7 +7796,7 @@ struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char 
 		if (s) {
 			strcpy (modifiers, &p[s]);
 			pos2 = 0;
-			while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
+			while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 				switch (p2[0]) {	/* fabs is used for lengths since -<length> might have been given to indicate Flat Earth Distances */
 					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
 					case 'd':	/* Already processed up front to set n_cols*/		break;
@@ -10022,7 +10022,7 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 
 		/* Reference point args are +w<width>[u][/<height>[u]][+j<justify>][+o<dx>[/<dy>]][+s<file>]. */
 		/* Required modifier +w */
-		if (GMT_get_modifier (B->refpoint->args, 'w', string)) {
+		if (gmt_get_modifier (B->refpoint->args, 'w', string)) {
 			n = sscanf (string, "%[^/]/%s", txt_a, txt_b);
 			/* First deal with insert dimensions and horizontal vs vertical */
 			/* Handle either <unit><width>/<height> or <width>[<unit>]/<height>[<unit>] */
@@ -10039,14 +10039,14 @@ int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *in_text, struct GMT_
 			if (last == GMT_X) B->dim[GMT_Y] = B->dim[GMT_X];
 		}
 		/* Optional modifiers +j, +o, +s */
-		if (GMT_get_modifier (B->refpoint->args, 'j', string))
+		if (gmt_get_modifier (B->refpoint->args, 'j', string))
 			B->justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 		else	/* With -Dj or -DJ, set default to reference justify point, else BL */
 			B->justify = GMT_just_default (GMT, B->refpoint, PSL_BL);
-		if (GMT_get_modifier (B->refpoint->args, 'o', string)) {
+		if (gmt_get_modifier (B->refpoint->args, 'o', string)) {
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, B->off)) < 0) error++;
 		}
-		if (GMT_get_modifier (B->refpoint->args, 's', string)) {
+		if (gmt_get_modifier (B->refpoint->args, 's', string)) {
 			B->file = strdup (string);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Map insert attributes: justify = %d, dx = %g dy = %g\n", B->justify, B->off[GMT_X], B->off[GMT_Y]);
@@ -10131,7 +10131,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "acfjlouw")) return (1);
 
 	/* Required modifiers +c, +w */
-	if (GMT_get_modifier (ms->refpoint->args, 'c', string)) {
+	if (gmt_get_modifier (ms->refpoint->args, 'c', string)) {
 		if (strchr (string, '/')) {	/* Got both lon and lat for scale */
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_COORD, ms->origin)) < 2) error++;
 			if (fabs (ms->origin[GMT_X]) > 360.0) {
@@ -10152,7 +10152,7 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale origin modifier +c[<lon>/]/<lat> is required\n", option);
 		error++;
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
+	if (gmt_get_modifier (ms->refpoint->args, 'w', string)) {	/* Get bar length */
 		n = (int)strlen (string) - 1;
 		if (isalpha ((int)string[n])) {	/* Letter at end of distance value */
 			ms->measure = string[n];
@@ -10178,27 +10178,27 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		error++;
 	}
 	/* Optional modifiers +a, +f, +j, +l, +o, +u */
-	if (GMT_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
+	if (gmt_get_modifier (ms->refpoint->args, 'a', string)) {	/* Set alignment */
 		ms->alignment = string[0];
 		if (!(ms->alignment == 'l' || ms->alignment == 'r' || ms->alignment == 't' || ms->alignment == 'b')) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid label alignments (+a) are l|r|t|b\n", option);
 			error++;
 		}
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
+	if (gmt_get_modifier (ms->refpoint->args, 'f', NULL))	/* Do fancy label */
 		ms->fancy = true;
-	if (GMT_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
+	if (gmt_get_modifier (ms->refpoint->args, 'j', string))		/* Got justification of item w.r.t. reference point */
 		ms->justify = gmt_just_decode (GMT, string, PSL_MC);
 	else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = GMT_just_default (GMT, ms->refpoint, PSL_MC);
-	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
+	if (gmt_get_modifier (ms->refpoint->args, 'l', string)) {	/* Add label */
 		if (string[0]) strncpy (ms->label, string, GMT_LEN64-1);
 		ms->do_label = true;
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
+	if (gmt_get_modifier (ms->refpoint->args, 'o', string)) {	/* Got offsets from reference point */
 		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
+	if (gmt_get_modifier (ms->refpoint->args, 'u', NULL))	/* Add units to annotations */
 		ms->unit = true;
 	if (error)
 		gmt_mapscale_syntax (GMT, 'L', "Draw a map scale centered on specified reference point.");
@@ -10247,14 +10247,14 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 	if (gmt_validate_modifiers (GMT, ms->refpoint->args, option, "dfijloptw")) return (1);
 
 	/* Get required +w modifier */
-	if (GMT_get_modifier (ms->refpoint->args, 'w', string))	/* Get rose dimensions */
+	if (gmt_get_modifier (ms->refpoint->args, 'w', string))	/* Get rose dimensions */
 		ms->size = GMT_to_inch (GMT, string);
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Rose dimension modifier +w<length>[unit] is required\n", option);
 		error++;
 	}
 	/* Get optional +d, +f, +i, +j, +l, +o, +p, +t, +w modifier */
-	if (GMT_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */
+	if (gmt_get_modifier (ms->refpoint->args, 'd', string)) {	/* Want magnetic directions */
 		if (ms->type != GMT_ROSE_MAG) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Cannot specify +d<info> when -Td is selected\n", option);
 			return (-1);
@@ -10270,7 +10270,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		else
 			ms->kind = 1;	/* Flag that we did not get declination parameters */
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'f', string)) {	/* Want fancy rose, optionally set what kind */
+	if (gmt_get_modifier (ms->refpoint->args, 'f', string)) {	/* Want fancy rose, optionally set what kind */
 		if (ms->type == GMT_ROSE_MAG) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Cannot give both +f and +m\n", option);
 			error++;
@@ -10282,15 +10282,15 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			error++;
 		}
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'i', string)) {
+	if (gmt_get_modifier (ms->refpoint->args, 'i', string)) {
 		if (string[0] && gmt_getpen (GMT, string, &ms->pen[GMT_ROSE_PRIMARY])) error++;
 		ms->draw_circle[GMT_ROSE_PRIMARY] = true;
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'j', string))
+	if (gmt_get_modifier (ms->refpoint->args, 'j', string))
 		ms->justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 	else	/* With -Dj or -DJ, set default to reference (mirriored) justify point, else MC */
 		ms->justify = GMT_just_default (GMT, ms->refpoint, PSL_MC);
-	if (GMT_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
+	if (gmt_get_modifier (ms->refpoint->args, 'l', string)) {	/* Set labels +lw,e,s,n*/
 		ms->do_label = true;
 		if (string[0] == 0) {	/* Want default labels */
 			strcpy (ms->label[0], GMT->current.language.cardinal_name[2][2]);
@@ -10300,7 +10300,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		}
 		else {	/* Decode w,e,s,n strings */
 			k = pos = 0;
-			while (k < 4 && (GMT_strtok (string, ",", &pos, p))) {	/* Get the four labels */
+			while (k < 4 && (gmt_strtok (string, ",", &pos, p))) {	/* Get the four labels */
 				if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_LEN64-1);
 				k++;
 			}
@@ -10310,13 +10310,13 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 			}
 		}
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 'o', string))
+	if (gmt_get_modifier (ms->refpoint->args, 'o', string))
 		if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, ms->off)) < 0) error++;
-	if (GMT_get_modifier (ms->refpoint->args, 'p', string)) {
+	if (gmt_get_modifier (ms->refpoint->args, 'p', string)) {
 		if (string[0] && gmt_getpen (GMT, string, &ms->pen[GMT_ROSE_SECONDARY])) error++;
 		ms->draw_circle[GMT_ROSE_SECONDARY] = true;
 	}
-	if (GMT_get_modifier (ms->refpoint->args, 't', string)) {	/* Set intervals */
+	if (gmt_get_modifier (ms->refpoint->args, 't', string)) {	/* Set intervals */
 		n = sscanf (string, "%lf/%lf/%lf/%lf/%lf/%lf",
 			&ms->a_int[GMT_ROSE_SECONDARY], &ms->f_int[GMT_ROSE_SECONDARY], &ms->g_int[GMT_ROSE_SECONDARY],
 			&ms->a_int[GMT_ROSE_PRIMARY], &ms->f_int[GMT_ROSE_PRIMARY], &ms->g_int[GMT_ROSE_PRIMARY]);
@@ -11907,18 +11907,18 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M) {
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;
-		GMT_chop (line);
+		gmt_chop (line);
 		if ((c = strstr (line, ": ")))	/* This macro has comments */
 			c[0] = '\0';		/* Chop off the comments */
-		GMT_strstrip (line, true);	/* Remove leading and trailing whitespace */
+		gmt_strstrip (line, true);	/* Remove leading and trailing whitespace */
 		sscanf (line, "%s = %[^\n]", name, args);	/* Get name and everything else */
 		if (n == n_alloc) macro = gmt_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct MATH_MACRO);
 		macro[n].name = strdup (name);
 		pos = 0;
-		while (GMT_strtok (args, " \t", &pos, item)) macro[n].n_arg++;		/* Count the arguments */
+		while (gmt_strtok (args, " \t", &pos, item)) macro[n].n_arg++;		/* Count the arguments */
 		macro[n].arg = gmt_memory (GMT, macro[n].arg, macro[n].n_arg, char *);	/* Allocate pointers for args */
 		pos = k = 0;
-		while (GMT_strtok (args, " \t", &pos, item)) macro[n].arg[k++] = strdup (item);	/* Assign arguments */
+		while (gmt_strtok (args, " \t", &pos, item)) macro[n].arg[k++] = strdup (item);	/* Assign arguments */
 		n++;
 	}
 	fclose (fp);
@@ -11978,7 +11978,7 @@ struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTI
 				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) return (NULL);
 				if (ptr->arg[0] == '-' && (isalpha (ptr->arg[1]) || ptr->arg[1] == '-')) {
 					ptr->option = ptr->arg[1];	/* Change from "file" to an option */
-					GMT_strlshift (ptr->arg, 2U);	/* Remove the leading -? part */
+					gmt_strlshift (ptr->arg, 2U);	/* Remove the leading -? part */
 				}
 			}
 			continue;
@@ -12600,8 +12600,8 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	}
 	/* Determine the largest item given or implied; use that for initial array allocation */
 	for (n = 0; n < n_items; n++) {
-		pos = 0;	/* Reset since GMT_strtok changed it */
-		while ((GMT_strtok (list[n], ",-:", &pos, p))) {	/* While it is not empty, process it */
+		pos = 0;	/* Reset since gmt_strtok changed it */
+		while ((gmt_strtok (list[n], ",-:", &pos, p))) {	/* While it is not empty, process it */
 			value = atol (p);
 			if (value > max_value) max_value = value;
 		}
@@ -12612,8 +12612,8 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	if (k) select->invert = true;		/* Save that we want the inverse selection */
 	/* Here we have user-supplied selection information */
 	for (k = n = 0; k < n_items; k++) {
-		pos = 0;	/* Reset since GMT_strtok changed it */
-		while (!error && (GMT_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
+		pos = 0;	/* Reset since gmt_strtok changed it */
+		while (!error && (gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
 			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (NULL);
 
 			/* Now set the item numbers for this sub-range */
@@ -12727,12 +12727,12 @@ struct GMT_TEXT_SELECTION * gmt_set_text_selection (struct GMT_CTRL *GMT, char *
 		if (list[n][k] == '/' && list[n][arg_length-2]  == '/'  && list[n][arg_length-1]  == 'i' ) {	/* Case-less regexp string */
 			select->regexp[n] = select->caseless[n] = true;
 			list[n][arg_length-2] = '\0';	/* remove trailing '/i' from pattern string */
-			GMT_strlshift (list[n], 1U);	/* Shift string left to loose the starting '/' */
+			gmt_strlshift (list[n], 1U);	/* Shift string left to loose the starting '/' */
 		}
 		else if (list[n][0] == '/' && list[n][arg_length-1]  == '/' ) {	/* Case-honoring regexp string */
 			select->regexp[n] = true;
 			list[n][arg_length-1] = '\0';	/* remove trailing '/' */
-			GMT_strlshift (list[n], 1U);	/* Shift string left to loose the starting '/' */
+			gmt_strlshift (list[n], 1U);	/* Shift string left to loose the starting '/' */
 		}
 		/* else we have a fixed pattern string with nothing special to process */
 	}

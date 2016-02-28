@@ -2593,7 +2593,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
 		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt> was used or if this is psxyz, no? */
 		want_col = start + n;
-		for (col = pos = 0; col <= want_col; col++) GMT_strtok (GMT->current.io.current_record, GMT_TOKEN_SEPARATORS, &pos, text);
+		for (col = pos = 0; col <= want_col; col++) gmt_strtok (GMT->current.io.current_record, GMT_TOKEN_SEPARATORS, &pos, text);
 	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;

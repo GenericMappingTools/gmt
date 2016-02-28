@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 						break;
 					default:	/* Standard out/on/in constant values */
 						j = pos = 0;
-						while (j < GRDMASK_N_CLASSES && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
+						while (j < GRDMASK_N_CLASSES && (gmt_strtok (opt->arg, "/", &pos, ptr))) {
 							Ctrl->N.mask[j] = grdmask_assign (GMT, ptr);
 							j++;
 						}

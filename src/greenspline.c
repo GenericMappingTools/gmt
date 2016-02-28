@@ -467,7 +467,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 						if (Ctrl->S.value[0] == 0.0)	/* Switch to Parker_1994 since tension is zero */
 							Ctrl->S.mode = PARKER_1994;
 						if ((c = strchr (opt->arg, '+')) != NULL) {
-							while (GMT_strtok (c, "+", &pos, p)) {
+							while (gmt_strtok (c, "+", &pos, p)) {
 								switch (p[0]) {
 									case 'e':	Ctrl->S.value[2] = atof (&p[1]);	break;	/* Change the truncation error limit */
 									case 'n':	Ctrl->S.value[3] = atof (&p[1]);	break;	/* Change the number of nodes for the spline lookup */

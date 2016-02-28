@@ -275,7 +275,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 				switch (opt->arg[0]) {
 					case 'd':	/* Surface computed by triangulate */
 						j = 0;
-						while (GMT_strtok (&opt->arg[1], "/", &pos, ptr)) {
+						while (gmt_strtok (&opt->arg[1], "/", &pos, ptr)) {
 							switch (j) {
 								case 0:
 									Ctrl->T.xyz_file = strdup(ptr);

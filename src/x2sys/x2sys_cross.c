@@ -406,7 +406,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 		while (fgets (line, GMT_BUFSIZ, fp)) {
 
 			if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blanks */
-			GMT_chop (line);	/* Get rid of CR, LF stuff */
+			gmt_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);

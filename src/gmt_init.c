@@ -312,7 +312,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 	}
 
 	if ((c = strchr (item, '+'))) {	/* Found modifiers */
-		while ((GMT_strtok (c, "+", &pos, p))) {
+		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'd':	/* Delete existing headers */
 					GMT->common.h.mode = GMT_COMMENT_IS_RESET;
@@ -500,7 +500,7 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 		            GMT->current.setting.io_seg_marker[GMT_IN]);
 		GMT->current.setting.io_seg_marker[GMT_IN] = '>';
 	}
-	while ((GMT_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
+	while ((gmt_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
 		if ((c = strchr (p, ':'))) {	/* Also got :<type> */
 			GMT->common.a.type[GMT->common.a.n_aspatial] = gmt_ogr_get_type (c+1);
 			c[0] = '\0';	/* Truncate off the type */
@@ -783,7 +783,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->current.proj.inv_coord_unit = unit;
 	}
 
-	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 		len = strlen (p);	/* Length of the string p */
 		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, x, y, or f. */
@@ -893,7 +893,7 @@ GMT_LOCAL int gmtinit_trend_modifiers (struct GMT_CTRL *GMT, char option, char *
 
 	/* Gave one or more modifiers */
 
-	while ((GMT_strtok (c, "+", &pos, p))) {
+	while ((gmt_strtok (c, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'o':	/* Origin of axes */
 				if ((k = GMT_Get_Values (GMT->parent, &p[1], M->origin, 2)) < 1) {
@@ -997,7 +997,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 		if (gmtinit_trend_modifiers (GMT, option, c, 1U, M)) return -1;
 		c[0] = '\0';	/* Chop off modifiers in arg before processing the model settings */
 	}
-	while ((GMT_strtok (arg, ",", &pos, p))) {	/* For each item in the series... */
+	while ((gmt_strtok (arg, ",", &pos, p))) {	/* For each item in the series... */
 		/* Here, p will hold one instance of [P|p|F|f|C|c|S|s|x]<list-of-terms> */
 		if (!strchr ("CFSPcfspx", p[0])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function type (%c)\n", option, p[0]);
@@ -1205,7 +1205,7 @@ GMT_LOCAL int gmtinit_parse_model2d (struct GMT_CTRL *GMT, char option, char *in
 		if (gmtinit_trend_modifiers (GMT, option, c, 2U, M)) return -1;
 		c[0] = '\0';	/* Chop off modifiers in arg before processing settings */
 	}
-	while ((GMT_strtok (arg, ",", &pos, p))) {
+	while ((gmt_strtok (arg, ",", &pos, p))) {
 		/* Here, p will be one instance of [P|p|F|f|C|c|S|s][x|y]<list-of-terms> */
 		if (!strchr ("CFSPcfsp", p[0])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function type (%c)\n", option, p[0]);
@@ -1551,7 +1551,7 @@ GMT_LOCAL int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 
 	/* Now look for +modifiers */
 
-	while ((GMT_strtok (&item[k], "+", &pos, p))) {
+	while ((gmt_strtok (&item[k], "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Turn off antialias */
 				GMT->common.n.antialias = false;
@@ -1632,7 +1632,7 @@ GMT_LOCAL int gmtinit_parse_p_option (struct GMT_CTRL *GMT, char *item) {
 	GMT->current.proj.z_project.fixed = true;
 	k++;
 	if (!item[k]) return 0;	/* No specific settings given, we will apply default values in 3D init */
-	while ((GMT_strtok (&item[k], "+", &pos, p))) {
+	while ((gmt_strtok (&item[k], "+", &pos, p))) {
 		switch (p[0]) {
 			case 'v':	/* Specify fixed view point in 2-D projected coordinates */
 				if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
@@ -1679,7 +1679,7 @@ GMT_LOCAL bool gmtinit_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 	if (n == 0) return (false);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
-	while (!error && (GMT_strtok (item, ",", &pos, p))) {	/* While it is not empty, process it */
+	while (!error && (gmt_strtok (item, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (true);
 
 		/* Now set the code for these columns */
@@ -1817,7 +1817,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 		/* Look for multiple comma-separated format statements of type [<cols>:]<format>.
 		 * Last format also becomes the default for unspecified columns */
 		gmtinit_reset_colformats (GMT);	/* Wipe previous settings */
-		while ((GMT_strtok (value, ",", &pos, fmt))) {
+		while ((gmt_strtok (value, ",", &pos, fmt))) {
 			if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
 				if (strchr (fmt, '-'))	/* Range of columns given. e.g., 7-9 */
 					sscanf (fmt, "%d-%d", &start, &stop);
@@ -1839,7 +1839,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 		 * Last format also becomes the default for unspecified columns. */
 		gmtinit_reset_colformats (GMT);	/* Wipe previous settings */
 		k = 0;
-		while ((GMT_strtok (value, " ", &pos, fmt)))
+		while ((gmt_strtok (value, " ", &pos, fmt)))
 			GMT->current.io.o_format[k++] = strdup (fmt);
 		strncpy (GMT->current.setting.format_float_out, GMT->current.io.o_format[k-1], GMT_LEN64-1);
 	}
@@ -1882,7 +1882,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 
 	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
-		GMT_chop (line);	/* Get rid of [\r]\n */
+		gmt_chop (line);	/* Get rid of [\r]\n */
 		if (rec == 2) {	/* Copy version from gmt.conf */
 			sscanf (line, "# GMT %s", string);
 			fprintf (fpo, "# GMT %s Defaults file\n", string);
@@ -2069,7 +2069,7 @@ GMT_LOCAL int gmtinit_get_history (struct GMT_CTRL *GMT) {
 
 	while (!done && fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Skip comments lines */
-		GMT_chop (line);		/* Remove linefeed,CR */
+		gmt_chop (line);		/* Remove linefeed,CR */
 		if (line[0] == '\0') continue;	/* Skip blank lines */
 		if (!strncmp (line, "BEGIN GMT " GMT_PACKAGE_VERSION, len))
 			process = true;	/* OK to parse gmt.history file compatible with this GMT version */
@@ -2208,7 +2208,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
-	DOS_path_fix (GMT->session.SHAREDIR);
+	gmt_dos_path_fix (GMT->session.SHAREDIR);
 
 	/* Determine HOMEDIR (user home directory) */
 
@@ -2225,7 +2225,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		fprintf (stderr, "Warning: HOME environment not set. Using root directory instead.\n");
 #endif
 	}
-	DOS_path_fix (GMT->session.HOMEDIR);
+	gmt_dos_path_fix (GMT->session.HOMEDIR);
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
@@ -2241,7 +2241,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		sprintf (path, "%s/%s", GMT->session.HOMEDIR, ".gmt");
 		GMT->session.USERDIR = strdup (path);
 	}
-	DOS_path_fix (GMT->session.USERDIR);
+	gmt_dos_path_fix (GMT->session.USERDIR);
 	if (GMT->session.USERDIR != NULL && access (GMT->session.USERDIR, R_OK)) {
 		/* If we cannot access this dir then we won't use it */
 		gmt_str_free (GMT->session.USERDIR);
@@ -2263,12 +2263,12 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		if (strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
 			/* A list of directories or a single directory that is accessible */
 			GMT->session.DATADIR = strdup (this_c);
-			DOS_path_fix (GMT->session.DATADIR);
+			gmt_dos_path_fix (GMT->session.DATADIR);
 		}
 #ifdef WIN32
 		else if (strchr(this_c, ':')) {		/* May happen to have ':' as a path separator when running a MSYS bash shell*/
 			GMT->session.DATADIR = strdup(this_c);
-			DOS_path_fix(GMT->session.DATADIR);
+			gmt_dos_path_fix(GMT->session.DATADIR);
 		}
 #endif
 	}
@@ -2283,7 +2283,7 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 		}
 		else
 			GMT->session.TMPDIR = strdup (this_c);
-		DOS_path_fix (GMT->session.TMPDIR);
+		gmt_dos_path_fix (GMT->session.TMPDIR);
 	}
 	return GMT_OK;
 }
@@ -2869,7 +2869,7 @@ GMT_LOCAL void gmtinit_handle5_plussign (struct GMT_CTRL *GMT, char *in, char *m
 		}
 	}
 	else /* way != 0: Replace single ASCII 1 with + */
-		GMT_strrepc (in, 1, '+');
+		gmt_strrepc (in, 1, '+');
 }
 
 /*! Scans the WESNZ[1234]wesnz[1234] flags and sets the side/drawbox parameters
@@ -2959,7 +2959,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 	GMT->current.map.frame.header[0] = '\0';
 
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
-		while ((GMT_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
+		while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
 				case 'b':	/* Activate 3-D box and x-z, y-z gridlines (if selected) */
 					GMT->current.map.frame.draw_box = true;
@@ -3114,7 +3114,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (mod) {	/* Process the given axis modifiers */
 			unsigned int pos = 0;
 			char p[GMT_BUFSIZ];
-			while ((GMT_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
+			while ((gmt_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 				switch (p[0]) {
 					case 'L':	/* Force horizontal axis label */
 						GMT->current.map.frame.axis[no].label_mode = 1;
@@ -3248,45 +3248,45 @@ GMT_LOCAL int gmtinit_project_type (char *args, int *pos, bool *width_given) {
 	   projection names (followed by a slash) or the 1- or 2-letter abbreviation
 	   used prior to GMT 4.2.2. Case is ignored */
 
-	if ((*pos = (int)GMT_strlcmp ("aea/"      , args))) return (GMT_ALBERS);
-	if ((*pos = (int)GMT_strlcmp ("aeqd/"     , args))) return (GMT_AZ_EQDIST);
-	if ((*pos = (int)GMT_strlcmp ("cyl_stere/", args))) return (GMT_CYL_STEREO);
-	if ((*pos = (int)GMT_strlcmp ("cass/"     , args))) return (GMT_CASSINI);
-	if ((*pos = (int)GMT_strlcmp ("cea/"      , args))) return (GMT_CYL_EQ);
-	if ((*pos = (int)GMT_strlcmp ("eck4/"     , args))) return (GMT_ECKERT4);
-	if ((*pos = (int)GMT_strlcmp ("eck6/"     , args))) return (GMT_ECKERT6);
-	if ((*pos = (int)GMT_strlcmp ("eqc/"      , args))) return (GMT_CYL_EQDIST);
-	if ((*pos = (int)GMT_strlcmp ("eqdc/"     , args))) return (GMT_ECONIC);
-	if ((*pos = (int)GMT_strlcmp ("gnom/"     , args))) return (GMT_GNOMONIC);
-	if ((*pos = (int)GMT_strlcmp ("hammer/"   , args))) return (GMT_HAMMER);
-	if ((*pos = (int)GMT_strlcmp ("laea/"     , args))) return (GMT_LAMB_AZ_EQ);
-	if ((*pos = (int)GMT_strlcmp ("lcc/"      , args))) return (GMT_LAMBERT);
-	if ((*pos = (int)GMT_strlcmp ("merc/"     , args))) return (GMT_MERCATOR);
-	if ((*pos = (int)GMT_strlcmp ("mill/"     , args))) return (GMT_MILLER);
-	if ((*pos = (int)GMT_strlcmp ("moll/"     , args))) return (GMT_MOLLWEIDE);
-	if ((*pos = (int)GMT_strlcmp ("nsper/"    , args))) return (GMT_GENPER);
-	if ((*pos = (int)GMT_strlcmp ("omerc/"    , args))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = (int)GMT_strlcmp ("omercp/"   , args))) return (GMT_OBLIQUE_MERC_POLE);
-	if ((*pos = (int)GMT_strlcmp ("ortho/"    , args))) return (GMT_ORTHO);
-	if ((*pos = (int)GMT_strlcmp ("polar/"    , args))) return (GMT_POLAR);
-	if ((*pos = (int)GMT_strlcmp ("poly/"     , args))) return (GMT_POLYCONIC);
-	if ((*pos = (int)GMT_strlcmp ("robin/"    , args))) return (GMT_ROBINSON);
-	if ((*pos = (int)GMT_strlcmp ("sinu/"     , args))) return (GMT_SINUSOIDAL);
-	if ((*pos = (int)GMT_strlcmp ("stere/"    , args))) return (GMT_STEREO);
-	if ((*pos = (int)GMT_strlcmp ("tmerc/"    , args))) return (GMT_TM);
-	if ((*pos = (int)GMT_strlcmp ("utm/"      , args))) return (GMT_UTM);
-	if ((*pos = (int)GMT_strlcmp ("vandg/"    , args))) return (GMT_VANGRINTEN);
-	if ((*pos = (int)GMT_strlcmp ("wintri/"   , args))) return (GMT_WINKEL);
-	if ((*pos = (int)GMT_strlcmp ("xy/"       , args))) return (GMT_LINEAR);
-	if ((*pos = (int)GMT_strlcmp ("z/"        , args))) return (GMT_ZAXIS);
+	if ((*pos = (int)gmt_strlcmp ("aea/"      , args))) return (GMT_ALBERS);
+	if ((*pos = (int)gmt_strlcmp ("aeqd/"     , args))) return (GMT_AZ_EQDIST);
+	if ((*pos = (int)gmt_strlcmp ("cyl_stere/", args))) return (GMT_CYL_STEREO);
+	if ((*pos = (int)gmt_strlcmp ("cass/"     , args))) return (GMT_CASSINI);
+	if ((*pos = (int)gmt_strlcmp ("cea/"      , args))) return (GMT_CYL_EQ);
+	if ((*pos = (int)gmt_strlcmp ("eck4/"     , args))) return (GMT_ECKERT4);
+	if ((*pos = (int)gmt_strlcmp ("eck6/"     , args))) return (GMT_ECKERT6);
+	if ((*pos = (int)gmt_strlcmp ("eqc/"      , args))) return (GMT_CYL_EQDIST);
+	if ((*pos = (int)gmt_strlcmp ("eqdc/"     , args))) return (GMT_ECONIC);
+	if ((*pos = (int)gmt_strlcmp ("gnom/"     , args))) return (GMT_GNOMONIC);
+	if ((*pos = (int)gmt_strlcmp ("hammer/"   , args))) return (GMT_HAMMER);
+	if ((*pos = (int)gmt_strlcmp ("laea/"     , args))) return (GMT_LAMB_AZ_EQ);
+	if ((*pos = (int)gmt_strlcmp ("lcc/"      , args))) return (GMT_LAMBERT);
+	if ((*pos = (int)gmt_strlcmp ("merc/"     , args))) return (GMT_MERCATOR);
+	if ((*pos = (int)gmt_strlcmp ("mill/"     , args))) return (GMT_MILLER);
+	if ((*pos = (int)gmt_strlcmp ("moll/"     , args))) return (GMT_MOLLWEIDE);
+	if ((*pos = (int)gmt_strlcmp ("nsper/"    , args))) return (GMT_GENPER);
+	if ((*pos = (int)gmt_strlcmp ("omerc/"    , args))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = (int)gmt_strlcmp ("omercp/"   , args))) return (GMT_OBLIQUE_MERC_POLE);
+	if ((*pos = (int)gmt_strlcmp ("ortho/"    , args))) return (GMT_ORTHO);
+	if ((*pos = (int)gmt_strlcmp ("polar/"    , args))) return (GMT_POLAR);
+	if ((*pos = (int)gmt_strlcmp ("poly/"     , args))) return (GMT_POLYCONIC);
+	if ((*pos = (int)gmt_strlcmp ("robin/"    , args))) return (GMT_ROBINSON);
+	if ((*pos = (int)gmt_strlcmp ("sinu/"     , args))) return (GMT_SINUSOIDAL);
+	if ((*pos = (int)gmt_strlcmp ("stere/"    , args))) return (GMT_STEREO);
+	if ((*pos = (int)gmt_strlcmp ("tmerc/"    , args))) return (GMT_TM);
+	if ((*pos = (int)gmt_strlcmp ("utm/"      , args))) return (GMT_UTM);
+	if ((*pos = (int)gmt_strlcmp ("vandg/"    , args))) return (GMT_VANGRINTEN);
+	if ((*pos = (int)gmt_strlcmp ("wintri/"   , args))) return (GMT_WINKEL);
+	if ((*pos = (int)gmt_strlcmp ("xy/"       , args))) return (GMT_LINEAR);
+	if ((*pos = (int)gmt_strlcmp ("z/"        , args))) return (GMT_ZAXIS);
 
 	/* These older codes (up to GMT 4.2.1) took 2 characters */
 
-	if ((*pos = (int)GMT_strlcmp ("kf", args))) return (GMT_ECKERT4);
-	if ((*pos = (int)GMT_strlcmp ("ks", args))) return (GMT_ECKERT6);
-	if ((*pos = (int)GMT_strlcmp ("oa", args))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = (int)GMT_strlcmp ("ob", args))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = (int)GMT_strlcmp ("oc", args))) return (GMT_OBLIQUE_MERC_POLE);
+	if ((*pos = (int)gmt_strlcmp ("kf", args))) return (GMT_ECKERT4);
+	if ((*pos = (int)gmt_strlcmp ("ks", args))) return (GMT_ECKERT6);
+	if ((*pos = (int)gmt_strlcmp ("oa", args))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = (int)gmt_strlcmp ("ob", args))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = (int)gmt_strlcmp ("oc", args))) return (GMT_OBLIQUE_MERC_POLE);
 
 	/* Finally, check only the first letter (used until GMT 4.2.1) */
 
@@ -4073,7 +4073,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 	S->f.f_angle = 30.0;				/* Default slip arrow angle */
 	S->f.f_sense = GMT_FRONT_CENTERED;	/* Default is centered symbols unless +l or +r is found */
 	S->f.f_pen = 0;				/* Draw outline with pen set via -W, i.e., same as frontline */
-	while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+	while ((gmt_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
 			case 'b':	S->f.f_symbol = GMT_FRONT_BOX;		break;	/* [half-]square front */
 			case 'c':	S->f.f_symbol = GMT_FRONT_CIRCLE;	break;	/* [half-]circle front */
@@ -4144,7 +4144,7 @@ GMT_LOCAL int gmtinit_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_S
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string information given\n");
 			return (1);
 		}
-		while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+		while ((gmt_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
 				case 'f':	/* Change font */
 					if (gmt_getfont (GMT, &p[1], &S->font))
@@ -4773,7 +4773,7 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	while (fgets (line, GMT_LEN256, in))
 	{
 		pos = 0;
-		while ((GMT_strtok (line, " /\t\n", &pos, symbol)))
+		while ((gmt_strtok (line, " /\t\n", &pos, symbol)))
 		{
 			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */
 			{
@@ -6639,7 +6639,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		GMT->common.R.oblique = false;
 	i = pos = 0;
 	GMT_memset (p, 6, double);
-	while ((GMT_strtok (string, "/", &pos, text))) {
+	while ((gmt_strtok (string, "/", &pos, text))) {
 		if (i > 5) {
 			error++;
 			return (error);		/* Have to break out here to avoid segv on p[6]  */
@@ -6796,7 +6796,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 	if ((c = strstr (copy, "+n"))) c[0] = '\0';	/* Chop off modifier since processed earlier */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
-	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		convert = 0, scale = 1.0, offset = 0.0;
 
 		if ((c = strchr (p, 'o'))) {	/* Look for offset */
@@ -6854,7 +6854,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 	strncpy (copy, arg, GMT_BUFSIZ-1);
 	if ((c = strstr (copy, "+n"))) c[0] = '\0';	/* Chop off modifier */
 
-	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
+	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		if ((inc = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 
 		/* Now set the code for these columns */
@@ -7192,7 +7192,7 @@ int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reading GMT Default parameters from file: %s\n", file);
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
-		GMT_chop (line); /* Get rid of [\r]\n */
+		gmt_chop (line); /* Get rid of [\r]\n */
 		if (rec == 1 && (line[0] == 'S' || line[0] == 'U'))	{	/* An old GMT4 gmt.conf got in the way */
 			fclose (fp);
 			return (GMT_NOERROR);
@@ -8116,9 +8116,9 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				}
 				else
 					pos = 0;
-				GMT_strtok (lower_value, "x", &pos, txt_a);	/* Returns width and update pos */
+				gmt_strtok (lower_value, "x", &pos, txt_a);	/* Returns width and update pos */
 				GMT->current.setting.ps_page_size[0] = gmt_convert_units (GMT, txt_a, GMT_PT, GMT_PT);
-				GMT_strtok (lower_value, "x", &pos, txt_b);	/* Returns height and update pos */
+				gmt_strtok (lower_value, "x", &pos, txt_b);	/* Returns height and update pos */
 				GMT->current.setting.ps_page_size[1] = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				if (GMT->current.setting.ps_page_size[0] <= 0.0) error++;
 				if (GMT->current.setting.ps_page_size[1] <= 0.0) error++;
@@ -10375,7 +10375,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 
-	while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+	while ((gmt_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
 			case 'a': S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
 			case 'b':	/* Vector head at beginning point */

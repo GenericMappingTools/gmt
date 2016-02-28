@@ -395,7 +395,7 @@ GMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) 
 		}
 	}
 	else /* way != 0: Replace single ASCII 1 with + */
-		GMT_strrepc (in, 1, '|');
+		gmt_strrepc (in, 1, '|');
 }
 
 /*! . */
@@ -449,7 +449,7 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, ch
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmtio_copy_and_truncate (buffer, record);
-	while ((GMT_strtok (buffer, "|", &pos, p))) {
+	while ((gmt_strtok (buffer, "|", &pos, p))) {
 		if (col >= S->n_aspatial) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @T record has more items than declared by @N\n");
 			continue;
@@ -469,7 +469,7 @@ GMT_LOCAL unsigned int gmtio_ogr_decode_aspatial_names (struct GMT_CTRL *GMT, ch
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmtio_copy_and_truncate (buffer, record);
-	while ((GMT_strtok (buffer, "|", &pos, p))) {
+	while ((gmt_strtok (buffer, "|", &pos, p))) {
 		if (col == n_alloc) S->name = gmt_memory (GMT, S->name, n_alloc += GMT_TINY_CHUNK, char *);
 		S->name[col++] = strdup (p);
 	}
@@ -503,7 +503,7 @@ GMT_LOCAL bool gmtio_ogr_data_parser (struct GMT_CTRL *GMT, char *record) {
 
 	/* Here we are reasonably sure that @? strings are OGR/GMT feature specifications */
 
-	GMT_chop (record);	/* Get rid of linefeed etc */
+	gmt_chop (record);	/* Get rid of linefeed etc */
 
 	S = GMT->current.io.OGR;	/* Set S shorthand */
 	quote = false;
@@ -600,7 +600,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 
 	/* Here we are reasonably sure that @? strings are OGR/GMT header specifications */
 
-	GMT_chop (record);	/* Get rid of linefeed etc */
+	gmt_chop (record);	/* Get rid of linefeed etc */
 
 	/* Allocate S the first time we get here */
 
@@ -733,7 +733,7 @@ GMT_LOCAL bool gmtio_is_a_NaN_line (char *line) {
 	unsigned int pos = 0;
 	char p[GMT_LEN256] = {""};
 
-	while ((GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p))) {
+	while ((gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p))) {
 		gmt_str_tolower (p);
 		if (strncmp (p, "nan", 3U)) return (false);
 	}
@@ -2674,7 +2674,7 @@ GMT_LOCAL void gmtio_write_multilines (struct GMT_CTRL *GMT, FILE *fp, char *tex
 	char p[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
 	unsigned int pos = 0, k = 0;
 
-	while (GMT_strtok (text, "\\", &pos, p)) {
+	while (gmt_strtok (text, "\\", &pos, p)) {
 		sprintf (line, "# %7s : %s", prefix, &p[k]);
 		gmt_write_tableheader (GMT, fp, line);
 		k = 1;	/* Need k to skip the n in \n */
@@ -3077,7 +3077,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 		}
 		
 		/* First chop off trailing whitespace and commas */
-		GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
+		gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 		
 		if (gmtio_ogr_parser (GMT, line)) continue;	/* If we parsed a GMT/OGR record we must go up to top of loop and get the next record */
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
@@ -4266,7 +4266,7 @@ char *gmt_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path, int m
 		if (!udir[d]) continue;	/* This directory was not set */
 		found = false;
 		pos = 0;
-		while (!found && (GMT_strtok (udir[d], path_separator, &pos, dir))) {
+		while (!found && (gmt_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 #ifdef HAVE_DIRENT_H_
 			if (dir[L-1] == '/' || (GMT_compat_check (GMT, 4) && dir[L-1] == '*')) {	/* Must search recursively from this dir */
@@ -4372,7 +4372,7 @@ char *gmt_trim_segheader (struct GMT_CTRL *GMT, char *line) {
 	/* Trim trailing junk and return pointer to first non-space/tab/> part of segment header
 	 * Do not try to free the returned pointer!
 	 */
-	GMT_strstrip (line, false); /* Strip trailing whitespace */
+	gmt_strstrip (line, false); /* Strip trailing whitespace */
 	/* Skip over leading whitespace and segment marker */
 	while (*line && (isspace(*line) || *line == GMT->current.setting.io_seg_marker[GMT_IN]))
 		++line;
@@ -4449,7 +4449,7 @@ void * gmtio_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *
 
 	/* First chop off trailing whitespace and commas */
 
-	GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space */
+	gmt_strstrip (line, false); /* Eliminate DOS endings and trailing white space */
 
 	strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ-1);
 
@@ -6498,9 +6498,9 @@ struct GMT_TEXTSET * gmt_alloc_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET
 			for (len = tbl = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
 			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ-1);
-			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
+			if (Din->n_tables > 1) gmt_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
-				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);
+				if (tbl < (Din->n_tables - 1)) gmt_chop (Din->table[tbl]->header[hdr]);
 				strcat (D->table[0]->header[hdr], "\t");
 				strcat (D->table[0]->header[hdr], Din->table[tbl]->header[hdr]);
 			}
@@ -6978,9 +6978,9 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
 			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], len);
-			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
+			if (Din->n_tables > 1) gmt_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
-				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);
+				if (tbl < (Din->n_tables - 1)) gmt_chop (Din->table[tbl]->header[hdr]);
 				strcat (D->table[0]->header[hdr], "\t");
 				strcat (D->table[0]->header[hdr], Din->table[tbl]->header[hdr]);
 			}
@@ -7323,7 +7323,7 @@ int gmt_conv_intext2dbl (struct GMT_CTRL *GMT, char *record, unsigned int ncols)
 	unsigned int k = 0, pos = 0;
 	char p[GMT_BUFSIZ];
 
-	while (k < ncols && GMT_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
+	while (k < ncols && gmt_strtok (record, GMT_TOKEN_SEPARATORS, &pos, p)) {	/* Get each field in turn and bail when done */
 		if (!(p[0] == '+' || p[0] == '-' || p[0] == '.' || isdigit ((int)p[0]))) continue;	/* Numbers must be [+|-][.][<digits>] */
 		if (strchr (p, '/')) continue;	/* Somehow got to a color triplet? */
 		gmt_scanf (GMT, p, GMT->current.io.col_type[GMT_IN][k], &GMT->current.io.curr_rec[k]);	/* Be tolerant of errors */

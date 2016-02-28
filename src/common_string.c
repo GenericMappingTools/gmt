@@ -24,22 +24,22 @@
  *
  * Modules in this file:
  *
- *  GMT_chop                Chops off any CR or LF at end of string
- *  GMT_chop_ext            Chops off the trailing .xxx (file extension)
- *  GMT_strstrip            Strip leading and trailing whitespace from string
+ *  gmt_chop                Chops off any CR or LF at end of string
+ *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
+ *  gmt_strstrip            Strip leading and trailing whitespace from string
  *  GMT_cr2lf               Replace CR with LF and terminate string
- *  GMT_strlshift           Left shift a string by n characters
- *  GMT_strrepc             Replaces all occurrences of a char in the string
- *  GMT_strlcmp             Compares strings (ignoring case) until first reaches null character
- *  GMT_strtok              Reiterant replacement of strtok
- *  DOS_path_fix            Turn /c/dir/... paths into c:/dir/...
+ *  gmt_strlshift           Left shift a string by n characters
+ *  gmt_strrepc             Replaces all occurrences of a char in the string
+ *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
+ *  gmt_strtok              Reiterant replacement of strtok
+ *  gmt_dos_path_fix            Turn /c/dir/... paths into c:/dir/...
  *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *  strsep                  Reentrant string tokenizer that handles empty fields
  *  strsepz                 Like strsep but ignores empty fields
  *  stresep                 Like strsep but takes an additional argument esc in order
  *                          to ignore escaped chars (from NetBSD)
- *  match_string_in_file    Return true if a string is found in file
+ *  gmt_match_string_in_file    Return true if a string is found in file
  *  basename                Extract the base portion of a pathname
  */
 
@@ -59,7 +59,7 @@
 
 #define BUF_SIZE 4096
 
-char *GMT_chop_ext (char *string) {
+char *gmt_chop_ext (char *string) {
 	/* Chops off the filename extension (e.g., .ps) in the string by replacing the last
 	 * '.' with '\0' and returns a pointer to the extension or NULL if not found. */
 	char *p;
@@ -71,7 +71,7 @@ char *GMT_chop_ext (char *string) {
 	return (NULL);
 }
 
-void GMT_chop (char *string) {
+void gmt_chop (char *string) {
 	/* Chops off any CR or LF and terminates string */
 	char *p;
 	assert (string != NULL); /* NULL pointer */
@@ -81,7 +81,7 @@ void GMT_chop (char *string) {
 		*p = '\0';
 }
 
-void GMT_strstrip(char *string, bool strip_leading) {
+void gmt_strstrip(char *string, bool strip_leading) {
 	/* Strip leading and trailing whitespace from string */
 	char *start = string;
 	char *end;
@@ -115,16 +115,7 @@ void GMT_strstrip(char *string, bool strip_leading) {
 		memmove(string, start, end-start+2);
 }
 
-void GMT_cr2lf (char *string) {
-	/* Replace CR with LF and terminate string */
-	char *p;
-	assert (string != NULL); /* NULL pointer */
-	if ((p = strchr (string, '\r')))
-		/* Overwrite 1st CR with LF + \0 */
-		strcpy(p, "\n");
-}
-
-void GMT_strlshift (char *string, size_t n) {
+void gmt_strlshift (char *string, size_t n) {
 	/* Left shift a string by n characters */
 	size_t len;
 	assert (string != NULL); /* NULL pointer */
@@ -139,7 +130,7 @@ void GMT_strlshift (char *string, size_t n) {
 	memmove(string, string + n, len + 1);
 }
 
-void GMT_strrepc (char *string, int c, int r) {
+void gmt_strrepc (char *string, int c, int r) {
 	/* Replaces all occurrences of c in the string with r */
 	assert (string != NULL); /* NULL pointer */
 	do {
@@ -148,7 +139,7 @@ void GMT_strrepc (char *string, int c, int r) {
 	} while (*(++string)); /* repeat until \0 reached */
 }
 
-size_t GMT_strlcmp (char *str1, char *str2) {
+size_t gmt_strlcmp (char *str1, char *str2) {
 	/* Compares str1 with str2 but only until str1 reaches the
 	 * null-terminator character while case is ignored.
 	 * When the strings match until that point, the routine returns the
@@ -160,7 +151,7 @@ size_t GMT_strlcmp (char *str1, char *str2) {
 	return i;
 }
 
-unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos, char *token) {
+unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *pos, char *token) {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator
 	 * characters (in sep).  Set *pos to 0 before first call.  Unlike
@@ -168,7 +159,7 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 	 * Returns 1 if it finds a token and 0 if no more tokens left.
 	 * pos is updated and token is returned.  char *token must point
 	 * to memory of length >= strlen (string).
-	 * string is not changed by GMT_strtok.
+	 * string is not changed by gmt_strtok.
 	 */
 
 	size_t i, j, string_len;
@@ -194,7 +185,7 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 	return 1;
 }
 
-unsigned int GMT_get_modifier (const char *string, char modifier, char *token) {
+unsigned int gmt_get_modifier (const char *string, char modifier, char *token) {
 	/* Looks for modifier string in the form +<modifier>[arg] and if found
 	   returns 1 and places arg in token, else return 0.  Must ignore any
 	   +<modifier> found inside quotes as part of text. If token is NULL
@@ -231,7 +222,7 @@ unsigned int GMT_get_modifier (const char *string, char modifier, char *token) {
 #ifdef WIN32
 /* Turn '/c/dir/...' paths into 'c:/dir/...'
  * Must do it in a loop since dir may be several ';'-separated dirs */
-void DOS_path_fix (char *dir) {
+void gmt_dos_path_fix (char *dir) {
 	size_t n, k;
 
 	if (!dir || (n = strlen (dir)) < 2U)
@@ -240,10 +231,10 @@ void DOS_path_fix (char *dir) {
 
 	if (!strncmp (dir, "/cygdrive/", 10U))
 		/* May happen for example when Cygwin sets GMT_SHAREDIR */
-		GMT_strlshift (dir, 9); /* Chop '/cygdrive' */
+		gmt_strlshift (dir, 9); /* Chop '/cygdrive' */
 
 	/* Replace dumb backslashes with slashes */
-	GMT_strrepc (dir, '\\', '/');
+	gmt_strrepc (dir, '\\', '/');
 
 	/* If dir begins with '/' and is 2 long, as in '/c', replace with 'c:' */
 	if (n == 2U && dir[0] == '/') {
@@ -584,7 +575,7 @@ char *stresep(char **stringp, const char *delim, int esc) {
 }
 
 /* Return true if a string is found in file */
-int match_string_in_file (const char *filename, const char *string) {
+int gmt_match_string_in_file (const char *filename, const char *string) {
 	FILE *fp;
 	char line[BUF_SIZE] = {""};
 

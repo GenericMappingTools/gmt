@@ -106,7 +106,7 @@ GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
 	char *p;
 
 	p = malloc(strlen(date_tz)+1);
-	while ((GMT_strtok (date_tz, "+", &pos, p))) {
+	while ((gmt_strtok (date_tz, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'd': date[0] = strdup(&p[1]);	break;
 			case 'z': *TZ     = atoi(&p[1]);	break;
@@ -131,9 +131,9 @@ void strtok_m(char *in, char **token, char **remain, char *sep) {
 	token[0] = NULL;		remain[0] = NULL;
 
 	p = malloc(strlen(in)+1);
-	if (GMT_strtok (in, s, &pos, p)) {
+	if (gmt_strtok (in, s, &pos, p)) {
 		token[0] = strdup(p);
-		if (GMT_strtok (in, sep, &pos, p))
+		if (gmt_strtok (in, sep, &pos, p))
 			remain[0] = strdup(p);
 	}
 	free(p);

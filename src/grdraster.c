@@ -256,7 +256,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 				if (record[0] == '#') continue;	/* Skip all headers */
 
 				/* Strip off trailing "\r\n" */
-				GMT_chop (record);
+				gmt_chop (record);
 				length = strlen(record);
 				if (length == 0) continue;	/* Skip blank lines */
 

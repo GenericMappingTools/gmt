@@ -53,20 +53,19 @@ extern "C" {
 #	define PATH_MAX 1024
 #endif
 
-EXTERN_MSC unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *start, char *token);
-EXTERN_MSC unsigned int GMT_get_modifier (const char *string, char modifier, char *token);
-EXTERN_MSC void GMT_chop (char *string);
-EXTERN_MSC char *GMT_chop_ext (char *string);
-EXTERN_MSC void GMT_strstrip(char *string, bool strip_leading);
-EXTERN_MSC void GMT_cr2lf (char *string);
-EXTERN_MSC void GMT_strlshift (char *string, size_t n);
-EXTERN_MSC void GMT_strrepc (char *string, int c, int r);
-EXTERN_MSC size_t GMT_strlcmp (char *str1, char *str2);
+EXTERN_MSC unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *start, char *token);
+EXTERN_MSC unsigned int gmt_get_modifier (const char *string, char modifier, char *token);
+EXTERN_MSC void gmt_chop (char *string);
+EXTERN_MSC char *gmt_chop_ext (char *string);
+EXTERN_MSC void gmt_strstrip(char *string, bool strip_leading);
+EXTERN_MSC void gmt_strlshift (char *string, size_t n);
+EXTERN_MSC void gmt_strrepc (char *string, int c, int r);
+EXTERN_MSC size_t gmt_strlcmp (char *str1, char *str2);
 
 #ifdef WIN32
-EXTERN_MSC void DOS_path_fix (char *dir);
+EXTERN_MSC void gmt_dos_path_fix (char *dir);
 #else
-# define DOS_path_fix(e) ((void)0) /* dummy function */
+# define gmt_dos_path_fix(e) ((void)0) /* dummy function */
 #endif
 
 #if !defined(HAVE_STRTOK_R) && !defined(HAVE_STRTOK_S)
@@ -79,7 +78,7 @@ EXTERN_MSC char *strsep (char **stringp, const char *delim);
 EXTERN_MSC char *strsepz (char **stringp, const char *delim);
 EXTERN_MSC char *stresep (char **stringp, const char *delim, int esc);
 
-EXTERN_MSC int match_string_in_file (const char *filename, const char *string);
+EXTERN_MSC int gmt_match_string_in_file (const char *filename, const char *string);
 
 EXTERN_MSC char *basename(char *path);
 

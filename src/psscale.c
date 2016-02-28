@@ -252,7 +252,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					/* Args are +w<length>/<width>[+e[b|f][<length>]][+h][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnow")) n_errors++;
 					/* Required modifier +w */
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
 							string[j] = '\0';
 							Ctrl->D.horizontal = true;
@@ -260,7 +260,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
 					}
 					/* Optional modifiers +e, +h, +j, +m, +n, +o */
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
 						Ctrl->D.extend = true;
 						if (strchr (string, 'b')) Ctrl->D.emode |= 1;
 						if (strchr (string, 'f')) Ctrl->D.emode |= 2;
@@ -268,13 +268,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
 						if (string[j]) Ctrl->D.elength = GMT_to_inch (GMT, &string[j]);
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'h', string))
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'h', string))
 						Ctrl->D.horizontal = true;
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
 						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
 						for (j = 0; string[j]; j++) {
@@ -286,11 +286,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 							}
 						}
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 						Ctrl->D.etext = (string[0]) ? strdup (string) : strdup ("NaN");
 						Ctrl->D.emode |= 4;
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}
@@ -410,7 +410,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					char extra[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T option is deprecated; use -F instead\n");
 					/* We will build a -F compatible string and parse it */
-					while (GMT_strtok (opt->arg, "+", &pos, p)) {
+					while (gmt_strtok (opt->arg, "+", &pos, p)) {
 						switch (p[0]) {
 							case 'l': off[XLO] = GMT_to_inch (GMT, &p[1]); ns++; break; /* Left nudge */
 							case 'r': off[XHI] = GMT_to_inch (GMT, &p[1]); ns++; break; /* Right nudge */

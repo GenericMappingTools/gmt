@@ -208,7 +208,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 	}
 	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
 	strncpy (txt, arg, GMT_LEN128-1);
-	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
+	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'p':	/* Draw outline */
 				Ctrl->A.outline = true;
@@ -278,7 +278,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 
 	C->W.active = true;
 	strncpy (txt, arg, GMT_BUFSIZ-1);
-	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
+	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
 				switch (p[1]) {	/* Check which altitude mode we selected */
@@ -547,7 +547,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
 					Ctrl->F.file = strdup (opt->arg);
-					if (!GMT_File_Is_Memory (Ctrl->F.file)) GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+					if (!GMT_File_Is_Memory (Ctrl->F.file)) gmt_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				}
 				else
 					n_errors++;
@@ -1221,7 +1221,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					found_proj = true;
 					if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
 						proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
-						GMT_chop (proj4_cmd);		/* Remove the new line char */
+						gmt_chop (proj4_cmd);		/* Remove the new line char */
 					}
 					if (!strcmp (proj4_name,"latlong") || !strcmp (proj4_name,"xy")) {		/* Linear case, use original coords */
 						west  = atof(xx1);		east  = atof(xx2);

@@ -72,7 +72,7 @@ char **breakMe(struct GMT_CTRL *GMT, char *in) {
 		else if (quoted && txt_in[k] == '\t') txt_in[k] = ASCII_GS;
 		else if (quoted && txt_in[k] == ' ')  txt_in[k] = ASCII_US;
 	}
-	while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
+	while ((gmt_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
 		int i, o;
 		for (k = 0; p[k]; k++)
 			if (p[k] == ASCII_GS) p[k] = '\t'; else if (p[k] == ASCII_US) p[k] = ' ';	/* Replace spaces and tabs masked above */

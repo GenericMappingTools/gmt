@@ -295,9 +295,9 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
 				B_next = opt->next;             /* Pointer to option following the -B option */
 				gmt_str_free (opt2->arg);/* Free previous pointer to arg */
-				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
+				gmt_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
 				opt2->arg = strdup (p);         /* Update arg */
-				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
+				while (gmt_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
 					opt2->next = GMT_Make_Option (GMT->parent, 'B', p);	/* Create new struct */
 					opt2->next->previous = opt2;
 					opt2 = opt2->next;
@@ -422,7 +422,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 			else if (quoted && txt_in[k] == '\t') txt_in[k] = ASCII_GS;
 			else if (quoted && txt_in[k] == ' ')  txt_in[k] = ASCII_US;
 		}
-		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
+		while ((gmt_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words, and strip off double quotes */
 			unsigned int i, o;
 			for (k = 0; p[k]; k++) if (p[k] == ASCII_GS) p[k] = '\t'; else if (p[k] == ASCII_US) p[k] = ' ';	/* Replace spaces and tabs masked above */
 			for (i = o = 0; p[i]; i++) if (p[i] != '\"') p[o++] = p[i];	/* Ignore double quotes */
@@ -681,7 +681,7 @@ struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, const char *arg) {
 						/* segfaults later on since few functions check for NULL pointers  */
 	else {					/* If arg is set to something (may be an empty string): */
 		new_opt->arg = strdup (arg);	/* Allocate space for the argument and duplicate it in the option structure */
-		GMT_chop (new_opt->arg);	/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
+		gmt_chop (new_opt->arg);	/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
 	}
 
 	return (new_opt);			/* Pass back the pointer to the allocated option structure */

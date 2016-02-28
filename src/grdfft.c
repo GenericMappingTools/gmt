@@ -491,7 +491,7 @@ GMT_LOCAL bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char
 	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
 
 	n_tokens = pos = 0;
-	while ((GMT_strtok (&line[i], "/", &pos, p))) {
+	while ((gmt_strtok (&line[i], "/", &pos, p))) {
 		if (n_tokens > 3) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Too many slashes in -F.\n");
 			return (true);

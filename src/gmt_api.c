@@ -588,7 +588,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		}
 		else {	/* Just a list with one or more comma-separated library paths */
 			unsigned int pos = 0;
-			while (GMT_strtok (GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
+			while (gmt_strtok (GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
 				libname = strdup (basename (text));		/* Last component from the pathname */
 				if (access (text, R_OK)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", text);
@@ -3953,13 +3953,13 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 		return (GMT_NOTSET);
 	}
 
-	GMT_strtok (*str, ",", &pos, last);	/* Get first color entry */
+	gmt_strtok (*str, ",", &pos, last);	/* Get first color entry */
 	strncpy (first, last, GMT_LEN64-1);	/* Make this the first color */
 	if (gmt_getrgb (API->GMT, first, rgb)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
 		return (GMT_NOTSET);
 	}
-	while (GMT_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
+	while (gmt_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
 		if (gmt_getrgb (API->GMT, last, rgb)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", last);
 			return (GMT_NOTSET);
@@ -6682,7 +6682,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, const char *ar
 	info->trend_mode = GMT_FFT_REMOVE_NOT_SET;		/* Not set yet */
 
 	if ((c = strchr (args, '+'))) {	/* Handle modifiers */
-		while ((GMT_strtok (c, "+", &pos, p))) {
+		while ((gmt_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				/* Detrending modifiers */
 				case 'a':  info->trend_mode = GMT_FFT_REMOVE_MEAN;  break;
@@ -7982,7 +7982,7 @@ int GMT_Option (void *V_API, const char *options) {
 	API = api_get_api_ptr (V_API);
 
 	/* The following does the translation between the rules for the option string and the convoluted items gmt_explain_options expects. */
-	while (GMT_strtok (options, ",", &pos, p) && k < GMT_LEN64) {
+	while (gmt_strtok (options, ",", &pos, p) && k < GMT_LEN64) {
 		switch (p[0]) {
 			case 'B':	/* Let B be B and B- be b */
 				arg[k++] = (p[1] == '-') ? 'b' : 'B';
@@ -8148,7 +8148,7 @@ int GMT_Get_Values (void *V_API, const char *arg, double par[], int maxpar) {
 	GMT_memcpy (col_type_save[GMT_IN], GMT->current.io.col_type[GMT_IN],   2, unsigned int);
 	GMT_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT], 2, unsigned int);
 
-	while (GMT_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
+	while (gmt_strtok (arg, separators, &pos, p)) {	/* Loop over input aruments */
 		if ((len = strlen (p)) == 0) continue;
 		if (npar >= maxpar) {	/* Bail out when already maxpar values are stored */
 			api_report_error (API, GMT_DIM_TOO_LARGE);

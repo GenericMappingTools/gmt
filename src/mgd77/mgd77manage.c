@@ -227,7 +227,7 @@ GMT_LOCAL int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, 
 	unsigned int i = 0, k, error, pos = 0;
 	char p[GMT_BUFSIZ] = {""};
 	
-	while (i < 7 && GMT_strtok (line, "/", &pos, p)) {	/* Process the 7 items */
+	while (i < 7 && gmt_strtok (line, "/", &pos, p)) {	/* Process the 7 items */
 		switch (i) {
 			case 0:
 				strcpy (abbrev, p);
@@ -791,7 +791,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			(void) time (&now);
 			sprintf (history, "%s [%s] removed columns", ctime(&now), In.user);
 			for (i = 0; history[i]; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
-			while ((GMT_strtok (Ctrl->D.file, ",", &pos, p))) {	/* For each named column */
+			while ((gmt_strtok (Ctrl->D.file, ",", &pos, p))) {	/* For each named column */
 				k = MGD77_Get_Column (GMT, p, &In);
 				if (k == MGD77_NOT_SET) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No column named %s in %s - cannot delete it. \n", p, list[argno]);
@@ -1140,7 +1140,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			verified = false;
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U)) {	/* Read until we get to Header record section */
 				if (line[0] == '#') continue;	/* Skip comments */
-				GMT_chop (line);		/* Rid the world of CR/LF */
+				gmt_chop (line);		/* Rid the world of CR/LF */
 				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = true;
 			}
 			if (!verified && !Ctrl->A.ignore_verify) {
@@ -1203,7 +1203,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			old_flags = MGD77_Remove_E77 (GMT, &In);				/* Remove any previously revised header parameters */
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Data", 14U)) {	/* Read until we get to data record section */
 				if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments */
-				GMT_chop (line);					/* Rid the world of CR/LF */
+				gmt_chop (line);					/* Rid the world of CR/LF */
 				/* Example of expected line 
 				   Y-E-06050010-H15-01: Invalid Gravity Departure Base Station Value: (0000000) [1000009]
 				*/
@@ -1362,7 +1362,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				}
 				pos = 0;
 				item = -1;	/* So we increment to 0 inside the loop */
-				while (GMT_strtok (code, "-", &pos, p)) {
+				while (gmt_strtok (code, "-", &pos, p)) {
 					item++;
 					if (Ctrl->A.e77_skip_mode[item+2]) continue;	/* Ignore this sort of code */
 					if (p[0] == '0') continue;

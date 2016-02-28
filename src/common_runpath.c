@@ -124,7 +124,7 @@ char *GMT_runtime_bindir_win32 (char *result) {
 #endif
 
 	/* Replace backslashes */
-	GMT_strrepc (result, '\\', '/');
+	gmt_strrepc (result, '\\', '/');
 
 	/* Truncate full path to dirname */
 	if (((c = strrchr (result, '/')) != NULL) && c != result)
@@ -269,7 +269,7 @@ char *GMT_runtime_libdir (char *result) {
 #endif
 
 	/* Replace backslashes */
-	GMT_strrepc (result, '\\', '/');
+	gmt_strrepc (result, '\\', '/');
 
 	/* Truncate full path to dirname */
 	if (((p = strrchr (result, '/')) != NULL) && p != result)
@@ -392,7 +392,7 @@ int GMT_verify_sharedir_version (const char *dir) {
 	if (access (dir, R_OK | X_OK) == 0) {
 		snprintf (version_file, PATH_MAX+1, "%s/VERSION", dir);
 		/* Check correct ver  sion */
-		if (match_string_in_file (version_file, required_version)) {
+		if (gmt_match_string_in_file (version_file, required_version)) {
 #ifdef DEBUG_RUNPATH
 			fprintf (stderr, "GMT_verify_sharedir_version: found '%s' (%s).\n",
 				version_file, required_version);

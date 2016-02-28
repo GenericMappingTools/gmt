@@ -195,7 +195,7 @@ GMT_LOCAL bool decode_columns (char *txt, bool *skip, uint64_t n_col, uint64_t t
 	else {	/* Set the selected columns */
 		for (i = 0; i < n_col; i++) skip[i] = true;
 		pos = 0;
-		while ((GMT_strtok (txt, ",", &pos, p))) {
+		while ((gmt_strtok (txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
 				sscanf (p, "%" PRIu64 "-%" PRIu64, &start, &stop);
 			else {
@@ -580,7 +580,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT
 					c[0] = '\0';	/* Temporarily chop off modifiers */
 					Ctrl->A.file = strdup (&opt->arg[k]);
 					c[0] = '+';	/* Restore the modifier */
-					while (GMT_strtok (c, "+", &pos, p)) {
+					while (gmt_strtok (c, "+", &pos, p)) {
 						switch (p[0]) {
 							case 'e': Ctrl->A.e_mode = GMTMATH_EVALUATE; break;	/* Evaluate solution */
 							case 's': Ctrl->A.w_mode = GMTMATH_SIGMAS;   break;	/* Got t,y,s */

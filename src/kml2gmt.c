@@ -250,7 +250,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
 			strncpy (name, &line[start], GMT_BUFSIZ-1);
-			GMT_chop (name);
+			gmt_chop (name);
 			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
@@ -263,7 +263,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
 			strncpy (description, &line[start], GMT_BUFSIZ-1);
-			GMT_chop (description);
+			gmt_chop (description);
 			if (first && !skip) {
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
@@ -299,7 +299,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args) {
 		else if (single) {	/* Process multiple points from current single record */
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			pos = i + 1;
-			while (GMT_strtok (line, " \t", &pos, word)) {	/* Look for clusters of x,y,z separated by whitespace */
+			while (gmt_strtok (line, " \t", &pos, word)) {	/* Look for clusters of x,y,z separated by whitespace */
 				n_scan = sscanf (word, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 				if (n_scan == 2 || n_scan == 3)
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */

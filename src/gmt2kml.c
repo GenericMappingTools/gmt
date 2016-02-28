@@ -385,7 +385,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 			case 'L':	/* Extended data */
  				Ctrl->L.active = true;
 				pos = Ctrl->L.n_cols = 0;
-				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
+				while ((gmt_strtok (opt->arg, ",", &pos, p))) {
 					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = gmt_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
 					Ctrl->L.name[Ctrl->L.n_cols++] = strdup (p);
 				}
@@ -450,7 +450,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 			case 'Z':	/* Visibility control */
 				Ctrl->Z.active = true;
 				pos = 0;
-				while ((GMT_strtok (&opt->arg[1], "+", &pos, p))) {
+				while ((gmt_strtok (&opt->arg[1], "+", &pos, p))) {
 					switch (p[0]) {
 						case 'a':	/* Altitude range */
 							if (sscanf (&p[1], "%[^/]/%s", T[0], T[1]) != 2) {
@@ -1034,7 +1034,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					kml_print (API, N++, "<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
 					else if (Ctrl->N.mode == GET_COL_LABEL) {
-						GMT_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
+						gmt_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
 						kml_print (API, N, "<name>%s</name>\n", item);
 					}
 					else if (Ctrl->N.mode == GET_LABEL)
@@ -1055,7 +1055,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						for (col = 0; col < Ctrl->L.n_cols; col++) {
 							kml_print (API, N, "<Data name = \"%s\">\n", Ctrl->L.name[col]);
 							kml_print (API, N++, "<value>");
-							GMT_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
+							gmt_strtok (extra, GMT_TOKEN_SEPARATORS, &pos, item);
 							L = strlen (item);
 							if (L && item[0] == '\"' && item[L-1] == '\"') {	/* Quoted string on input, remove quotes on output */
 								item[L-1] = '\0';

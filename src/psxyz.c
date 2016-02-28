@@ -717,7 +717,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (read_symbol) {	/* Must do special processing */
 				text_rec = (char *)record;
 				/* First establish the symbol type given at the end of the record */
-				GMT_chop (text_rec);	/* Get rid of \n \r */
+				gmt_chop (text_rec);	/* Get rid of \n \r */
 				i = strlen (text_rec) - 1;
 				while (text_rec[i] && !strchr (" \t", (int)text_rec[i])) i--;
 				gmt_parse_symbol_option (GMT, &text_rec[i+1], &S, 1, false);

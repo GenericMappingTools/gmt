@@ -37,7 +37,7 @@ GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBa
 	char p[GMT_BUFSIZ];
 	GMT_UNUSED(GMT);
 
-	while ((GMT_strtok (txt, ",", &pos, p))) {
+	while ((gmt_strtok (txt, ",", &pos, p))) {
 		if (strchr (p, '-'))
 			sscanf (p, "%d-%d", &start, &stop);
 		else {

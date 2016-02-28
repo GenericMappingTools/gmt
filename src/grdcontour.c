@@ -395,9 +395,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					else
 						j = 0;
 					if (strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
-						if (GMT_get_modifier (opt->arg, 'd', string))
+						if (gmt_get_modifier (opt->arg, 'd', string))
 							if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->T.dim)) < 1) n_errors++;
-						if (GMT_get_modifier (opt->arg, 'l', string)) {	/* Want to label innermost contours */
+						if (gmt_get_modifier (opt->arg, 'l', string)) {	/* Want to label innermost contours */
 							Ctrl->T.label = true;
 							if (string[0] == 0)
 								;	/* Use default labels */

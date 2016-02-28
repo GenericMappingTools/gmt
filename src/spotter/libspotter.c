@@ -419,7 +419,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			}
 		}
 #ifdef WIN32
-		DOS_path_fix (Plates);
+		gmt_dos_path_fix (Plates);
 #endif
 		if ((fp = gmt_fopen (GMT, Plates, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
@@ -452,7 +452,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			}
 		}
 #ifdef WIN32
-		DOS_path_fix (Rotations);
+		gmt_dos_path_fix (Rotations);
 #endif
 		if ((fp = gmt_fopen (GMT, Rotations, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);

@@ -322,7 +322,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				Ctrl->W.active = true;
 				guess = true;
 				entry = pos = 0;
-				while ((GMT_strtok (opt->arg, "/", &pos, ptr))) {
+				while ((gmt_strtok (opt->arg, "/", &pos, ptr))) {
 					if (ptr[0] != '=') {
 						switch (entry) {
 							case 0:

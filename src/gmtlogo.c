@@ -118,14 +118,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				Ctrl->D.active = true;
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
 				else {	/* args are [+j<justify>][+o<dx>[/<dy>]] */
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
-					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
+					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
 						Ctrl->D.width = GMT_to_inch (GMT, string);
 				}
 				break;

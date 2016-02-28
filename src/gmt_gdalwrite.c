@@ -274,7 +274,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	gmt_free(GMT, outByte);
 	if (papszOptions != NULL) CSLDestroy (papszOptions);
 
-	if (GMT_strlcmp(pszFormat,"netCDF")) {
+	if (gmt_strlcmp(pszFormat,"netCDF")) {
 		/* Change some attributes written by GDAL (not finished) */
 		int ncid;
 		int err;

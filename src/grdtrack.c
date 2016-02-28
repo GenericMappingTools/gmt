@@ -411,7 +411,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 						break;
 				}
 				pos = 0;
-				while (GMT_strtok (&opt->arg[1], "+", &pos, p)) {
+				while (gmt_strtok (&opt->arg[1], "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a': Ctrl->S.selected[STACK_ADD_VAL] = true; break;	/* Gave +a to add stacked value to all output profiles */
 						case 'd': Ctrl->S.selected[STACK_ADD_DEV] = true; break;	/* Gave +d to add stacked deviations to all output profiles */
@@ -473,7 +473,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 
 	*mode = (GMT_is_geographic (GMT, GMT_IN)) ? GMT_GREATCIRCLE : 0;	/* Great circle or Cartesian */
 	*unit = 0;	/* Initially not set */
-	while (!error && (GMT_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
+	while (!error && (gmt_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
 		k = s = 0;	len = (unsigned int)strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char> that may take a unit, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("ilr", p[k+1]))) s = k;
@@ -485,8 +485,8 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 		GMT_memset (l_mode, 3, unsigned int);	/* Clean register */
 		strcpy (modifiers, &p[s]);
 		pos2 = 0;
-		if (modifiers[2] == '+') modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by GMT_strtok on +] */
-		while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
+		if (modifiers[2] == '+') modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by gmt_strtok on +] */
+		while ((gmt_strtok (modifiers, "+", &pos2, p2))) {
 			switch (p2[0]) {
 				case 'i':	id = 0;	break;	/* Increment along line */
 				case 'l':	id = 1;	break;	/* Length of line */

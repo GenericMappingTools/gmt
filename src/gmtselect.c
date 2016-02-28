@@ -400,7 +400,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					buffer[strlen(buffer)-1] = 0;
 				}
 				j = pos = 0;
-				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (buffer, "/", &pos, ptr))) {
+				while (j < GMTSELECT_N_CLASSES && (gmt_strtok (buffer, "/", &pos, ptr))) {
 					switch (ptr[0]) {
 						case 's':	/* Skip points in this level */
 							Ctrl->N.mask[j] = false;

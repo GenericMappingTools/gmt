@@ -182,7 +182,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct
 			case 'A':
 				Ctrl->A.active = true;
 				pos = 0;
-				while ((GMT_strtok (opt->arg, "+", &pos, p))) {
+				while ((gmt_strtok (opt->arg, "+", &pos, p))) {
 					switch (p[0]) {
 						case 'a':
 							Ctrl->A.fixed_alt = true;

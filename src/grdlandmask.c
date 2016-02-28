@@ -190,7 +190,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					line[strlen(line)-1] = 0;
 				}
 				j = pos = 0;
-				while (j < 5 && (GMT_strtok (line, "/", &pos, ptr))) {
+				while (j < 5 && (gmt_strtok (line, "/", &pos, ptr))) {
 					Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
 					j++;
 				}

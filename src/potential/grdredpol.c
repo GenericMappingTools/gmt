@@ -1082,7 +1082,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 				break;
 			case 'E':
 				j = 0;
-				while (GMT_strtok (opt->arg, "/", &pos, p)) {
+				while (gmt_strtok (opt->arg, "/", &pos, p)) {
 					switch (j) {
 						case 0:
 							Ctrl->E.dipfile = strdup (p);
