@@ -357,7 +357,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc(GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc(GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -599,7 +599,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
-		GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
+		gmt_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
 	}
 
 	Ctrl->box.lon_0 = (GridA->header->wesn[XLO] + GridA->header->wesn[XHI]) / 2;

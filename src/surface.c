@@ -604,7 +604,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	
 		if (GMT_is_dnan (in[GMT_Z])) continue;
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
-		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
+		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
 		if (C->periodic && (h->wesn[XHI]-in[GMT_X] < half_dx)) {	/* Push all values to the western nodes */
 			in[GMT_X] -= 360.0;	/* Make this point constraining the western node value and then duplicate later */
 			i = 0;
@@ -1305,7 +1305,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 }
 
 GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny) {
-	/* Calls GMT_optimal_dim_for_surface to determine if there are
+	/* Calls gmt_optimal_dim_for_surface to determine if there are
 	 * better choices for nx, ny that might speed up calculations
 	 * by having many more common factors.
 	 *
@@ -1315,7 +1315,7 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 	unsigned int n_sug = 0;	/* N of suggestions found  */
 	struct GMT_SURFACE_SUGGESTION *sug = NULL;
 
-	n_sug = GMT_optimal_dim_for_surface (GMT, factors, nx, ny, &sug);
+	n_sug = gmt_optimal_dim_for_surface (GMT, factors, nx, ny, &sug);
 
 	if (n_sug) {
 		char region[GMT_LEN128] = {""}, buffer[GMT_LEN128] = {""};
@@ -1597,7 +1597,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -1777,7 +1777,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	GMT_Surface_Global.y_min = C.Grid->header->wesn[YLO];
 
 	/* New stuff here for v4.3: Check out the grid dimensions */
-	C.grid = GMT_gcd_euclid (C.nx-1, C.ny-1);
+	C.grid = gmt_gcd_euclid (C.nx-1, C.ny-1);
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s nx: %%d ny: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -1821,8 +1821,8 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	/* Set up factors and reset grid to first value  */
 
-	C.grid = GMT_gcd_euclid (C.nx-1, C.ny-1);
-	C.n_fact = GMT_get_prime_factors (GMT, C.grid, C.factors);
+	C.grid = gmt_gcd_euclid (C.nx-1, C.ny-1);
+	C.n_fact = gmt_get_prime_factors (GMT, C.grid, C.factors);
 	set_grid_parameters (&C);
 	while (C.block_nx < 4 || C.block_ny < 4) {
 		smart_divide (&C);

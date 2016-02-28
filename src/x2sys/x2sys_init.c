@@ -203,7 +203,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (opt->arg[0]) GMT_getinc (GMT, opt->arg, Ctrl->I.inc);
+				if (opt->arg[0]) gmt_getinc (GMT, opt->arg, Ctrl->I.inc);
 				Ctrl->I.string = strdup (opt->arg);
 				break;
 			case 'm':
@@ -414,7 +414,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
         right_now = time ((time_t *)0);
 	fprintf (fp, "# TAG file for system: %s\n", Ctrl->In.TAG);
 	fprintf (fp, "#\n# Initialized on: %s", ctime (&right_now));
-	fprintf (fp, "# Initialized by: %s\n#\n", GMT_putusername(GMT));
+	fprintf (fp, "# Initialized by: %s\n#\n", gmt_putusername(GMT));
 	fprintf (fp, "-D%s", &Ctrl->D.file[d_start]);	/* Now a local *.def file in the TAG directory */
 	if (Ctrl->C.active) fprintf (fp, " -C%s", Ctrl->C.string);
 	if (Ctrl->E.active) fprintf (fp, " -E%s", Ctrl->E.string);

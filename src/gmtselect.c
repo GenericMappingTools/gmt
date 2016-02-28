@@ -318,7 +318,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				if (opt->arg[j]) {	/* Found a file name */
 					Ctrl->C.file = strdup (&opt->arg[j+1]);
 					opt->arg[j] = '\0';	/* Chop off the /filename part */
-					Ctrl->C.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->C.dist), &(Ctrl->C.unit));
+					Ctrl->C.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->C.dist), &(Ctrl->C.unit));
 					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				else {
@@ -386,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					else
 						n_errors++;
 					opt->arg[j] = '\0';	/* Chop off the /filename part */
-					Ctrl->L.mode = GMT_get_distance (GMT, &opt->arg[k], &(Ctrl->L.dist), &(Ctrl->L.unit));
+					Ctrl->L.mode = gmt_get_distance (GMT, &opt->arg[k], &(Ctrl->L.dist), &(Ctrl->L.unit));
 					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				break;
@@ -433,12 +433,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = gmt_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
-				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
+				if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
 					gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
 				if (j == 1)
 					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
 				else {
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
 						gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 				}
 				n_errors += GMT_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
@@ -784,14 +784,14 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			if (inside != Ctrl->I.pass[2]) { output_header = need_header; continue;}
 		}
 		if (Ctrl->F.active) {	/* Check if we are in/out-side polygons */
-			if (do_project)	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
+			if (do_project)	/* Projected lon/lat; temporary reset input type for gmt_inonout to do Cartesian mode */
 				gmt_set_cartesian (GMT, GMT_IN);
 			inside = 0;
 			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
-				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
-				inside = (GMT_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
+				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+				inside = (gmt_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
-			if (do_project)	/* Reset input type for GMT_inonout to do Cartesian mode */
+			if (do_project)	/* Reset input type for gmt_inonout to do Cartesian mode */
 				gmt_set_geographic (GMT, GMT_IN);
 			if (inside != Ctrl->I.pass[3]) { output_header = need_header; continue;}
 		}
@@ -853,7 +853,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 						/* Must compare with polygon; holes are handled explicitly via the levels */
 
-						if ((side = GMT_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < Ctrl->E.inside[N_ITEM]) continue;	/* Outside polygon */
+						if ((side = gmt_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < Ctrl->E.inside[N_ITEM]) continue;	/* Outside polygon */
 
 						/* Here, point is inside, we must assign value */
 

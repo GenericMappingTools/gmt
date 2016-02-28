@@ -206,7 +206,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.clip = true;
-				else if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				else if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " "); n_errors++;
 				}
 				break;
@@ -264,7 +264,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				j = 0;
 				if (opt->arg[j] == '-') {Ctrl->W.mode = 1; j++;}
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
-				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
+				if (opt->arg[j] && gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");

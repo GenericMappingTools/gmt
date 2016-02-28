@@ -120,7 +120,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->W.pen = GMT->current.setting.map_default_pen;
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
+	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->A.step = GMT->current.setting.map_line_step;
 	C->N.mode = PSXYZ_CLIP_REPEAT;
 	return (C);
@@ -222,7 +222,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use upper case 'K' if your custom symbol refers a variable symbol, ?.\n");
-	GMT_list_custom_symbols (API->GMT);
+	gmt_list_custom_symbols (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Mathangle: start/stop directions of math angle must be in columns 4-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
@@ -304,7 +304,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'G':		/* Set color for symbol or polygon */
 				Ctrl->G.active = true;
-				if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -340,7 +340,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
-					if (c[2] && GMT_getpen (GMT, &c[2], &Ctrl->L.pen)) {
+					if (c[2] && gmt_getpen (GMT, &c[2], &Ctrl->L.pen)) {
 						gmt_pen_syntax (GMT, 'W', "sets pen attributes [no outline]", 0);
 						n_errors++;
 					}
@@ -372,7 +372,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 				j = 0;
 				if (opt->arg[j] == '-') {Ctrl->W.mode = 1; j++;}
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
-				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
+				if (opt->arg[j] && gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 0);
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
@@ -510,7 +510,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	/* Initialize GMT_SYMBOL structure */
 
 	GMT_memset (&S, 1, struct GMT_SYMBOL);
-	GMT_contlabel_init (GMT, &S.G, 0);
+	gmt_contlabel_init (GMT, &S.G, 0);
 
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
@@ -530,14 +530,14 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	get_rgb = (not_line && Ctrl->C.active);
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
-	GMT_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
+	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
 
 	default_pen = current_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == GMT_SYMBOL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active) {
-		GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-		GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
 	if (Ctrl->T.active) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Warning: Option -T ignores all input files\n");
 
@@ -562,7 +562,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
-		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
+		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);
 		penset_OK = false;	/* Since it is set in PSL */
 	}
 
@@ -584,7 +584,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			GMT_rgb_copy (rgb[k], current_fill.rgb);
 			if (S.shade3D) {
 				GMT_Report (API, GMT_MSG_DEBUG, "3-D shading illusion: lux[k] = %g\n", k, lux[k]);
-				GMT_illuminate (GMT, lux[k], rgb[k]);
+				gmt_illuminate (GMT, lux[k], rgb[k]);
 			}
 		}
 	}
@@ -695,8 +695,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
 					change = gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
 					if (Ctrl->I.active) {
-						GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+						gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
 					if (read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
 					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
@@ -758,8 +758,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 
 			if (get_rgb) {	/* Lookup t to get rgb */
-				GMT_get_fill_from_z (GMT, P, in[3], &current_fill);
-				if (Ctrl->I.active) GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+				gmt_get_fill_from_z (GMT, P, in[3], &current_fill);
+				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 				if (P->skip) continue;	/* Chosen CPT file indicates skip for this t */
 			}
 
@@ -848,13 +848,13 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[0] = p_in[ex1];	/* direction */
 						data[n].dim[1] = p_in[ex2];
 						data[n].dim[2] = p_in[ex3];
-						GMT_flip_angle_d (GMT, &data[n].dim[0]);
+						gmt_flip_angle_d (GMT, &data[n].dim[0]);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
-						GMT_flip_angle_d (GMT, &data[n].dim[0]);
+						gmt_flip_angle_d (GMT, &data[n].dim[0]);
 					}
 					else {				/* Got axis in km */
 						data[n].dim[0] = p_in[ex1];	/* Azimuth will be forwarded to gmt_geo_rectangle/ellipse */
@@ -911,7 +911,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[1] = hypot (data[n].x - x_2, data[n].y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {
-						GMT_flip_angle_d (GMT, &data[n].dim[0]);
+						gmt_flip_angle_d (GMT, &data[n].dim[0]);
 						sincosd (data[n].dim[0], &s, &c);
 						x_2 = data[n].x + data[n].dim[1] * c;
 						y_2 = data[n].y + data[n].dim[1] * s;
@@ -1030,7 +1030,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 			if (data[i].symbol == GMT_SYMBOL_COLUMN || data[i].symbol == GMT_SYMBOL_CUBE) {
 				for (j = 0; j < 3; j++) {
 					GMT_rgb_copy (rgb[j], data[i].f.rgb);
-					if (S.shade3D) GMT_illuminate (GMT, lux[j], rgb[j]);
+					if (S.shade3D) gmt_illuminate (GMT, lux[j], rgb[j]);
 				}
 			}
 
@@ -1241,8 +1241,8 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 				}
 
 				if (Ctrl->I.active) {
-					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+					gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+					gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
 				if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
 				if (change & 1) polygon = true;
@@ -1268,9 +1268,9 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 					gmt_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 					if ((GMT->current.plot.n = gmt_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					S.G.line_pen = current_pen;
-					closed = !(GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
-					GMT_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
-					GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since GMT_hold_contour reallocates to fit the array */
+					closed = !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
+					gmt_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
+					GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since gmt_hold_contour reallocates to fit the array */
 				}
 				else {	/* Plot line */
 					uint64_t end;
@@ -1412,7 +1412,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	gmt_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 
-	GMT_symbol_free (GMT, &S);
+	gmt_symbol_free (GMT, &S);
 
 	gmt_plotend (GMT);
 

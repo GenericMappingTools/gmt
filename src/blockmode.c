@@ -141,7 +141,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 				break;
 			case 'I':	/* Get block dimensions */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -453,7 +453,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 
-	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
+	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 
 	/* Specify input and output expected columns */
 	n_input = 3 + Ctrl->W.weighted[GMT_IN] + ((Ctrl->E.mode & BLK_DO_SRC_ID) ? 1 : 0);	/* 3 columns on output, plus 1 extra if -W and another if -Es  */
@@ -512,11 +512,11 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 		n_read++;						/* Number of records read */
 
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
-		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range (or longitude) */
+		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
+		if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 		if (duplicate_col && (wesn[XHI]-in[GMT_X] < half_dx)) {	/* Only compute modal values for the west column and not the repeating east column with lon += 360 */
 			in[GMT_X] -= 360.0;	/* Make this point be considered for the western block mean value */
 			col = 0;

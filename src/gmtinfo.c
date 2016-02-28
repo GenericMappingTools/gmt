@@ -34,7 +34,7 @@
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("HMm")
 
 int gmt_geo_C_format (struct GMT_CTRL *GMT);
-unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+unsigned int gmt_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1
@@ -192,7 +192,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 			case 'D':	/* Region adjustment Granularity */
 				Ctrl->D.active = true;
 				if (opt->arg[0]) {
-					Ctrl->D.ncol = GMT_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
+					Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS);
 					Ctrl->D.mode = 1;
 					gmt_check_lattice (GMT, Ctrl->D.inc, NULL, &Ctrl->D.active);
 				}
@@ -227,7 +227,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 					case '-': Ctrl->I.mode = ACTUAL_BOUNDS; break;
 					default: j = 0;	break;
 				}
-				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS) ? 2 : GMT_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
+				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS) ? 2 : gmt_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
 			case 'S':	/* Error bar output */
 				Ctrl->S.active = true;
@@ -442,7 +442,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					in_dim[GMT_X] = GMT_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.r.active);
 					in_dim[GMT_Y] = GMT_get_n (GMT, south, north, Ctrl->I.inc[GMT_Y], GMT->common.r.active);
 					ww = west;	ee = east; ss = south;	nn = north;
-					GMT_best_dim_choice (GMT, Ctrl->I.mode, in_dim, out_dim);
+					gmt_best_dim_choice (GMT, Ctrl->I.mode, in_dim, out_dim);
 					sub = (out_dim[GMT_X] - in_dim[GMT_X]) / 2;	add = out_dim[GMT_X] - in_dim[GMT_X] - sub;
 					west  -= sub * Ctrl->I.inc[GMT_X];		east  += add * Ctrl->I.inc[GMT_X];
 					sub = (out_dim[GMT_Y] - in_dim[GMT_Y]) / 2;	add = out_dim[GMT_Y] - in_dim[GMT_Y] - sub;

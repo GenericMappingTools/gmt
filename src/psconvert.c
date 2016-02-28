@@ -41,7 +41,7 @@
 
 #define GMT_PROG_OPTIONS "-V"
 
-void GMT_str_toupper (char *string);
+void gmt_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
@@ -214,7 +214,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				Ctrl->A.outline = true;
 				if (!p[1])
 					Ctrl->A.pen = GMT->current.setting.map_default_pen;
-				else if (GMT_getpen (GMT, &p[1], &Ctrl->A.pen)) {
+				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
 					gmt_pen_syntax (GMT, 'A', "sets background outline pen attributes", 0);
 					error++;
 				}
@@ -225,7 +225,7 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 					GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A+g: Append the background fill\n");
 					error++;
 				}
-				else if (GMT_getfill (GMT, &p[1], &Ctrl->A.fill)) {
+				else if (gmt_getfill (GMT, &p[1], &Ctrl->A.fill)) {
 					gmt_pen_syntax (GMT, 'A', "sets background fill attributes", 0);
 					error++;
 				}
@@ -404,7 +404,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +g<paint> to paint the BoundingBox [no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +p[<pen>] to outline the BoundingBox [%s].\n",
-	             GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	             gmt_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n",
 	             GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
@@ -734,8 +734,8 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 		fprintf (fp, "gsave clippath %s F N U\n", ptr);
 	}
 	if (A->outline) {	/* Draw the outline of the page */
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
-		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", GMT_putpen (GMT, A->pen));
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Outline background BoundingBox using pen %s\n", gmt_putpen (GMT, A->pen));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", gmt_putpen (GMT, A->pen));
 		/* Double pen thickness since half will be clipped by BoundingBox */
 		ptr = PSL_makepen (GMT->PSL, 2.0*A->pen.width, A->pen.rgb, A->pen.style, A->pen.offset);
 		fprintf (fp, "gsave %s clippath S U\n", ptr);
@@ -1478,7 +1478,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
-			GMT_str_toupper (tag);
+			gmt_str_toupper (tag);
 
 			if (transparency) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "PS file with transparency must be converted to PDF before creating %s\n", tag);

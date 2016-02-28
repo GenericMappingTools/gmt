@@ -180,7 +180,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -373,10 +373,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {
 			double we[2];
 			we[0] = GMT->current.proj.rect[XLO];	we[1] = GMT->current.proj.rect[XHI];
-			np = GMT_voronoi (GMT, xxp, yyp, n, we, &xe, &ye);
+			np = gmt_voronoi (GMT, xxp, yyp, n, we, &xe, &ye);
 		}
 		else
-			np = GMT_delaunay (GMT, xxp, yyp, n, &link);
+			np = gmt_delaunay (GMT, xxp, yyp, n, &link);
 
 		gmt_free (GMT, xxp);
 		gmt_free (GMT, yyp);
@@ -387,10 +387,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.active) {
 			double we[2];
 			we[0] = GMT->common.R.wesn[XLO];	we[1] = GMT->common.R.wesn[XHI];
-			np = GMT_voronoi (GMT, xx, yy, n, we, &xe, &ye);
+			np = gmt_voronoi (GMT, xx, yy, n, we, &xe, &ye);
 		}
 		else
-			np = GMT_delaunay (GMT, xx, yy, n, &link);
+			np = gmt_delaunay (GMT, xx, yy, n, &link);
 	}
 
 	if (Ctrl->Q.active)
@@ -448,7 +448,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 				for (col = col_min; col <= col_max; col++, p++) {
 					xp = GMT_grd_col_to_x (GMT, col, Grid->header);
 
-					if (!GMT_non_zero_winding (GMT, xp, yp, vx, vy, 4)) continue;	/* Outside */
+					if (!gmt_non_zero_winding (GMT, xp, yp, vx, vy, 4)) continue;	/* Outside */
 
 					if (Ctrl->D.dir == GMT_X)
 						Grid->data[p] = (float)a;
@@ -468,11 +468,11 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active) {	/* Requires output to stdout */
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-			if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-			if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
 			Return (API->error);
 		}
 		if (Ctrl->M.active || Ctrl->Q.active) {	/* Must find unique edges to output only once */
@@ -547,7 +547,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	gmt_free (GMT, xx);
 	gmt_free (GMT, yy);
 	if (triplets[GMT_IN]) gmt_free (GMT, zz);
-	if (!Ctrl->Q.active) GMT_delaunay_free (GMT, &link);
+	if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);

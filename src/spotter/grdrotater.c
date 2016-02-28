@@ -219,8 +219,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						Ctrl->T.active = false;
 						Ctrl->E.rot.w = atof (txt_c);
 						Ctrl->E.rot.age = GMT->session.d_NaN;
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.rot.lon), txt_a);
-						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.rot.lat), txt_b);
+						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.rot.lon), txt_a);
+						n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.rot.lat), txt_b);
 					}
 					else {	/* Must be Ttstart/tstop/tinc */
 						double min, max, inc;
@@ -352,8 +352,8 @@ GMT_LOCAL bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, d
 	uint64_t seg;
 	unsigned int inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
-		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
-		inside = (GMT_inonout (GMT, lon, lat, P->segment[seg]) > 0);
+		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+		inside = (gmt_inonout (GMT, lon, lat, P->segment[seg]) > 0);
 	}
 	return ((inside) ? false : true);	/* true if outside */
 }

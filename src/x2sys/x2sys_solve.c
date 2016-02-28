@@ -392,7 +392,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	}
 #endif
 
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 
 	/* Initialize system via the tag */
 

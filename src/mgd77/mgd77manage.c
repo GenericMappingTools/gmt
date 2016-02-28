@@ -59,8 +59,6 @@
 #define MODE_n		7
 #define MODE_t		8
 
-#define set_bit(k) (1 << (k))
-
 EXTERN_MSC int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
@@ -1027,9 +1025,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->A.interpolate) {	/* Using given table to interpolate the values at all mgd77 records */
 				y = gmt_memory (GMT, NULL, D->H.n_records, double);
-				result = GMT_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
+				result = gmt_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
 				if (result != 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error from GMT_intpol near row %d!\n", result+1);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				GMT_memcpy (colvalue, y, D->H.n_records, double);
@@ -1315,7 +1313,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 									GMT_Report (API, GMT_MSG_NORMAL, "Error: Record range %s is invalid.  Correction skipped\n", answer);
 									break;
 								}
-								pattern = set_bit (id);
+								pattern = mgd77_set_bit (id);
  								for (rec = from-1; rec < to; rec++, n_E77_flags++) flags[rec] |= pattern;	/* -1 to get C indices */
 								break;
 							default:
@@ -1351,7 +1349,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
 					}
 					else {	/* Must try to interpret the timestamp */
-						if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
+						if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
 							continue;
 						}
@@ -1373,7 +1371,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						if (item == 0) {	/* NAV */
 							switch (p[k]) {
 								case 'A':	/* Time out of range */
-									flags[rec] |= set_bit(NCPOS_TIME);
+									flags[rec] |= mgd77_set_bit(NCPOS_TIME);
 									n_E77_flags++;
 									break;
 								case 'B':
@@ -1381,20 +1379,20 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 									            list[argno], timestamp);
 									break;
 								case 'C':	/* Excessive speed - flag time, lon, lat */
-									flags[rec] |= set_bit(NCPOS_TIME);
-									flags[rec] |= set_bit(NCPOS_LON);
-									flags[rec] |= set_bit(NCPOS_LAT);
+									flags[rec] |= mgd77_set_bit(NCPOS_TIME);
+									flags[rec] |= mgd77_set_bit(NCPOS_LON);
+									flags[rec] |= mgd77_set_bit(NCPOS_LAT);
 									n_E77_flags++;
 									break;
 								case 'D':	/* On land */ 
-									flags[rec] |= set_bit(NCPOS_LON);
-									flags[rec] |= set_bit(NCPOS_LAT);
+									flags[rec] |= mgd77_set_bit(NCPOS_LON);
+									flags[rec] |= mgd77_set_bit(NCPOS_LAT);
 									n_E77_flags++;
 									break;
 								case 'E':	/* Undefined nav - flag time, lon, lat */
-									flags[rec] |= set_bit(NCPOS_TIME);
-									flags[rec] |= set_bit(NCPOS_LON);
-									flags[rec] |= set_bit(NCPOS_LAT);
+									flags[rec] |= mgd77_set_bit(NCPOS_TIME);
+									flags[rec] |= mgd77_set_bit(NCPOS_LON);
+									flags[rec] |= mgd77_set_bit(NCPOS_LAT);
 									n_E77_flags++;
 									break;
 								default:
@@ -1413,7 +1411,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 									key = p[k] - 'A' + 1;	/* A (rectype) = 1, B (TZ) = 2 */
 								else
   									key = 0;	/* C-G (yyyy,mm,dd,hh,mi) all map to time 0 */
-								flags[rec] |= set_bit(key);
+								flags[rec] |= mgd77_set_bit(key);
 								n_E77_flags++;
 							}
 							else {

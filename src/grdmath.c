@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -1174,8 +1174,8 @@ GMT_LOCAL void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
-	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
+	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
 
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -1286,8 +1286,8 @@ GMT_LOCAL void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
-	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
+	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
 
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -1639,8 +1639,8 @@ GMT_LOCAL void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	 * If -fg we assume geographic grid and use geographic BCs, else we use natural BCs. If the grid
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
-	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
+	gmt_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
 
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -1999,7 +1999,7 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 		for (seg = inside = 0; !inside && seg < T->n_segments; seg++) {
 			S = T->segment[seg];
 			if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within gmt_inonout */
-			inside = GMT_inonout (GMT, info->d_grd_x[col], info->d_grd_y[row], S);
+			inside = gmt_inonout (GMT, info->d_grd_x[col], info->d_grd_y[row], S);
 		}
 		stack[last]->G->data[node] = (inside) ? 1.0f : 0.0f;
 	}
@@ -2957,7 +2957,7 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	/* Read a table and compute mean location */
 	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "POINT")) == NULL) return;
 	T = D->table[0];	/* Only one table in a single file */
-	if (T->n_segments > 1) {	/* Must build a single table for GMT_centroid */
+	if (T->n_segments > 1) {	/* Must build a single table for gmt_centroid */
 		uint64_t seg;
 		size_t n_alloc = 0;
 		gmt_malloc2 (GMT, x, y, T->n_records, &n_alloc, double);		/* Allocate one long array for each */
@@ -2972,7 +2972,7 @@ GMT_LOCAL void grd_POINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		y = T->segment[0]->coord[GMT_Y];
 		n = T->segment[0]->n_rows;
 	}
-	GMT_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
+	gmt_centroid (GMT, x, y, n, pos, geo);	/* Get mean location */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "[Centroid computed as %g %g]\n", pos[GMT_X], pos[GMT_Y]);
 	/* Place mean x and y on the stack */
 	stack[last]->constant = true;
@@ -4257,7 +4257,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on grids\n");
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);

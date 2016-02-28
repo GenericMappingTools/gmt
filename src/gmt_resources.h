@@ -606,7 +606,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int n_headers;		/* Number of CPT file header records (0 if no header) */
 	unsigned int n_colors;		/* Number of colors in CPT lookup table */
 	unsigned int cpt_flags;		/* Flags controling use of BFN colors */
-	struct GMT_LUT *range;		/* CPT lookup table read by GMT_read_cpt */
+	struct GMT_LUT *range;		/* CPT lookup table read by gmt_read_cpt */
 	struct GMT_BFN_COLOR patch[3];	/* Structures with back/fore/nan colors */
 	char **header;			/* Array with all CPT file header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */

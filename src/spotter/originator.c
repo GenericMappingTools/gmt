@@ -529,8 +529,8 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			for (spot = 0; spot < n_hotspots; spot++) {	/* For all hotspots */
 				if (hot[spot].D) {	/* Must interpolate drifting hotspot location at current time c[k+2] */
 					t = c[k+2];	/* Current time */
-					GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
-					GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
+					gmt_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 				}
 				else {	/* Use the fixed hotspot location */
 					lon = hot[spot].h->lon;
@@ -549,8 +549,8 @@ int GMT_originator (void *V_API, int mode, void *args) {
 
 			if (hot[spot].D) {	/* Must interpolate drifting hotspot location at current time c[k+2] */
 				t = c[3*hot[spot].nearest+3];	/* Time of closest approach */
-				GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
-				GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
+				gmt_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 			}
 			else {	/* Use the fixed hotspot location */
 				lon = hot[spot].h->lon;

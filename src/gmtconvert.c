@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			case 'C':	/* record-count selection mode */
 				Ctrl->C.active = true;
 				pos = 0;
-				while (GMT_getmodopt (GMT, opt->arg, "ilu", &pos, p)) {	/* Looking for +i, +l, +u */
+				while (gmt_getmodopt (GMT, opt->arg, "ilu", &pos, p)) {	/* Looking for +i, +l, +u */
 					switch (p[0]) {
 						case 'i':	/* Invert selection */
 							Ctrl->C.invert = true;	break;
@@ -273,11 +273,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 				break;
 			case 'Q':	/* Only report for specified segment numbers */
 				Ctrl->Q.active = true;
-				Ctrl->Q.select = GMT_set_int_selection (GMT, opt->arg);
+				Ctrl->Q.select = gmt_set_int_selection (GMT, opt->arg);
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = true;
-				Ctrl->S.select = GMT_set_text_selection (GMT, opt->arg);
+				Ctrl->S.select = gmt_set_text_selection (GMT, opt->arg);
 				break;
 			case 'T':	/* Do not write segment headers */
 				Ctrl->T.active = true;
@@ -400,7 +400,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->F.active) {	/* Segmentizing happens here and then we are done */
-		D[GMT_OUT] = GMT_segmentize_data (GMT, D[GMT_IN], &(Ctrl->F.S));	/* Segmentize the data */
+		D[GMT_OUT] = gmt_segmentize_data (GMT, D[GMT_IN], &(Ctrl->F.S));	/* Segmentize the data */
 		if (GMT_Destroy_Data (API, &D[GMT_IN]) != GMT_OK) {	/* Be gone with the original */
 			Return (API->error);
 		}
@@ -462,10 +462,10 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < D[GMT_IN]->table[tbl_ver]->n_segments; seg++) {	/* For each segment in the tables */
 			if (Ctrl->L.active) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				match = GMT_get_text_selection (GMT, Ctrl->S.select, D[GMT_IN]->table[tbl_ver]->segment[seg], match);
+				match = gmt_get_text_selection (GMT, Ctrl->S.select, D[GMT_IN]->table[tbl_ver]->segment[seg], match);
 				if (Ctrl->S.select->invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
-			if (Ctrl->Q.active && !GMT_get_int_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
+			if (Ctrl->Q.active && !gmt_get_int_selection (GMT, Ctrl->Q.select, seg)) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			if (Ctrl->C.active) {	/* See if the number of records in this segment passes our test for output */
 				match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows >= Ctrl->C.min && D[GMT_IN]->table[tbl_ver]->segment[seg]->n_rows <= Ctrl->C.max);
 				if (Ctrl->C.invert == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */

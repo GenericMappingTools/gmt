@@ -541,7 +541,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 			case 'I':	/* New grid spacings */
 				Ctrl->I.active = true;
 				strncpy (Ctrl->I.string, opt->arg, GMT_LEN256);	/* Verbatim copy */
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}

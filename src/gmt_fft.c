@@ -144,15 +144,15 @@ void fft_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, un
 	double err_scale;
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
-	n_factors = GMT_get_prime_factors (GMT, nx, f);
+	n_factors = gmt_get_prime_factors (GMT, nx, f);
 	nonsymx = fft_get_non_symmetric_f (f, n_factors);
-	n_factors = GMT_get_prime_factors (GMT, ny, f);
+	n_factors = gmt_get_prime_factors (GMT, ny, f);
 	nonsymy = fft_get_non_symmetric_f (f, n_factors);
 	nonsym = MAX (nonsymx, nonsymy);
 
 	/* Now get factors of ntotal  */
 	ntotal = GMT_get_nm (GMT, nx, ny);
-	n_factors = GMT_get_prime_factors (GMT, ntotal, f);
+	n_factors = gmt_get_prime_factors (GMT, ntotal, f);
 	storage = MAX (nonsym, f[n_factors-1]);
 	*s = (storage == 2) ? 0 : storage;
 
@@ -1548,15 +1548,15 @@ GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, un
         size_t storage, ntotal;
 	
         /* Find workspace needed.  First find non_symmetric factors in nx, ny  */
-        n_factors = GMT_get_prime_factors (GMT, nx, f);
+        n_factors = gmt_get_prime_factors (GMT, nx, f);
         nonsymx = fft_get_non_symmetric_f (f, n_factors);
-        n_factors = GMT_get_prime_factors (GMT, ny, f);
+        n_factors = gmt_get_prime_factors (GMT, ny, f);
         nonsymy = fft_get_non_symmetric_f (f, n_factors);
         nonsym = MAX (nonsymx, nonsymy);
 	
         /* Now get factors of ntotal  */
         ntotal = GMT_get_nm (GMT, nx, ny);
-        n_factors = GMT_get_prime_factors (GMT, ntotal, f);
+        n_factors = gmt_get_prime_factors (GMT, ntotal, f);
         storage = MAX (nonsym, f[n_factors-1]);
         if (storage != 2) storage *= 2;
         if (storage < nx) storage = nx;

@@ -99,7 +99,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_memory (GMT, NULL, 1, struct PSROSE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->S.scale = 3.0;
 	C->Z.scale = 1.0;
@@ -219,7 +219,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':	/* Set Gray shade */
 				Ctrl->G.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				Ctrl->M.active = true;
 				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-					if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
+					if (n != 4 || gmt_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
@@ -287,7 +287,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'W':	/* Get pen width for outline */
 				n = (opt->arg[0] == 'v') ? 1 : 0;
 				Ctrl->W.active[n] = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen[n])) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen[n])) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
@@ -608,7 +608,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		double dim[3];
 		struct GMT_FILL no_fill;
 
-		GMT_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
+		gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 		dim[0] = (half_only) ? 0.5 * diameter : diameter;
 		dim[1] = 0.0;
 		dim[2] = (half_only) ? 180.0 : 360.0;
@@ -704,8 +704,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			Ctrl->M.S.v.v_width  = (float)(VECTOR_LINE_WIDTH * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* 9p */
 			Ctrl->M.S.v.v_angle  = 30.0f;
 			Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_OUTLINE2 + GMT_VEC_FILL + GMT_VEC_FILL2 + GMT_VEC_END);
-			GMT_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
-			GMT_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
+			gmt_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
+			gmt_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
 		}
 		gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
 		Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
@@ -765,7 +765,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		form = gmt_setfont (GMT, &GMT->current.setting.font_title);
 		PSL_plottext (PSL, 0.0, off + y, GMT->current.setting.font_title.size, GMT->current.map.frame.header, 0.0, 2, form);
 
-		GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
+		gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 
 		if (half_only) {
 			char text[GMT_LEN64] = {""};

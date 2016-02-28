@@ -347,8 +347,8 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		/* Data record to process */
 		if (Ctrl->F.active) {	/* Use the bounding polygon */
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
-				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
-				inside = (GMT_inonout (GMT, in[GMT_X], in[GMT_Y], pol->segment[seg]) > 0);
+				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+				inside = (gmt_inonout (GMT, in[GMT_X], in[GMT_Y], pol->segment[seg]) > 0);
 			}
 			if (!inside) {
 				n_outside++;	/* Outside the polygon(s), continue */

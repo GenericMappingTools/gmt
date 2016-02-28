@@ -362,8 +362,8 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 		if (ns == 2 || ns == 3) {	/* Looks like we got lon/lat/omega[/age] */
 			R->single  = true;
 			sscanf (arg, "%[^/]/%[^/]/%[^/]/%lg", txt_a, txt_b, txt_c, &(R->age));
-			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &(R->lon)), txt_a);
-			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &(R->lat)), txt_b);
+			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &(R->lon)), txt_a);
+			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &(R->lat)), txt_b);
 			R->w = atof (txt_c);
 			if (ns == 2)	/* No age given */
 				R->age = GMT->session.d_NaN;
@@ -1624,7 +1624,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 		}
 	}
 	if (dump) fclose (fp);
-	if (GMT_polygon_is_open (GMT, lon, lat, n)) {	/* Must close the polygon */
+	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* Must close the polygon */
 		lon[n] = lon[0];
 		lat[n] = lat[1];
 		n++;

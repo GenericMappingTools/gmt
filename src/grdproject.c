@@ -151,7 +151,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 				break;
 			case 'D':	/* Grid spacings */
 				Ctrl->D.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->D.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->D.inc)) {
 					gmt_inc_syntax (GMT, 'D', 1);
 					n_errors++;
 				}
@@ -196,7 +196,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 					sscanf (opt->arg, "%d/%d", &ii, &jj);
 					if (jj == 0) jj = ii;
 					sprintf (format, "%d+/%d+", ii, jj);
-					if (GMT_getinc (GMT, format, Ctrl->D.inc)) {
+					if (gmt_getinc (GMT, format, Ctrl->D.inc)) {
 						gmt_inc_syntax (GMT, 'D', 1);
 						n_errors++;
 					}
@@ -418,7 +418,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_set_grddim (GMT, Geo->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
 		gmt_grd_init (GMT, Geo->header, options, true);
-		GMT_BC_init (GMT, Geo->header);
+		gmt_BC_init (GMT, Geo->header);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
@@ -507,7 +507,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		GMT_err_fail (GMT, gmt_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		gmt_set_grddim (GMT, Rect->header);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
-		GMT_BC_init (GMT, Rect->header);
+		gmt_BC_init (GMT, Rect->header);
 		gmt_grd_project (GMT, Geo, Rect, false);
 		gmt_grd_init (GMT, Rect->header, options, true);
 

@@ -212,7 +212,7 @@ GMT_LOCAL unsigned int parse_check_extended_R (struct GMT_CTRL *GMT, struct GMT_
 	/* Now look for -Idx[/dy] option */
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option == 'I' && opt->arg[0]) {
-			if (!GMT_getinc (GMT, opt->arg, GMT->common.API_I.inc)) {	/* Successful parsing */
+			if (!gmt_getinc (GMT, opt->arg, GMT->common.API_I.inc)) {	/* Successful parsing */
 				GMT->common.API_I.active = true;
 			}
 		}

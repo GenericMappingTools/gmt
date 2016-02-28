@@ -132,13 +132,13 @@ static inline char* __source_line_func (const char* src_line, const char* func) 
 }
 #define __SOURCE_LINE_FUNC __source_line_func (__FILE__ ":" TOSTRING(__LINE__), __func__)
 
-/* Convenience functions to GMT_err_func */
+/* Convenience functions to support_err_func */
 #ifdef DEBUG
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__SOURCE_LINE_FUNC)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__SOURCE_LINE_FUNC)
+#	define GMT_err_pass(C,err,file) support_err_func(C,err,false,file,__SOURCE_LINE_FUNC)
+#	define GMT_err_fail(C,err,file) support_err_func(C,err,true,file,__SOURCE_LINE_FUNC)
 #else
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__func__)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__func__)
+#	define GMT_err_pass(C,err,file) support_err_func(C,err,false,file,__func__)
+#	define GMT_err_fail(C,err,file) support_err_func(C,err,true,file,__func__)
 #endif
 
 #endif /* GMT_ERROR_H */

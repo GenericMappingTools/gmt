@@ -106,8 +106,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
 	C->D.scale = 1.0;
-	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
-	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
+	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
+	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.wedge_amp = 1.e7;
 	C->S.conrad = 1.0;
 	C->S.fontsize = DEFAULT_FONTSIZE;
@@ -154,7 +154,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    (w) Rotational wedges: in X,Y,Spin,Spinsig.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,di,h,i,:,.");
 
 	return (EXIT_FAILURE);
@@ -214,7 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				sscanf (opt->arg, "%lf",&Ctrl->D.scale);
 				break;
 			case 'E':	/* Set color for error ellipse  */
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', " ");
 					n_errors++;
 				}
@@ -222,7 +222,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':	/* Set Gray shade for polygon */
 				Ctrl->G.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -279,7 +279,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}

@@ -35,7 +35,7 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcptxy"
 
 void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+double gmt_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
@@ -247,17 +247,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
 				if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
 					/* Args are +w<length>/<width>[+e[b|f][<length>]][+h][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
-					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnow")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnow")) n_errors++;
 					/* Required modifier +w */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 						if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
 							string[j] = '\0';
 							Ctrl->D.horizontal = true;
 						}
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_EXACT, Ctrl->D.dim)) < 2) n_errors++;
 					}
 					/* Optional modifiers +e, +h, +j, +m, +n, +o */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'h', string))
 						Ctrl->D.horizontal = true;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
@@ -291,7 +291,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						Ctrl->D.emode |= 4;
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}
 				else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
@@ -305,14 +305,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					Ctrl->D.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
 					Ctrl->D.dim[GMT_Y]  = GMT_to_inch (GMT, txt_b);
 					if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
-						Ctrl->D.justify = GMT_flip_justify (GMT, Ctrl->D.refpoint->justify);
+						Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
 					else
 						Ctrl->D.justify = (Ctrl->D.horizontal) ? PSL_TC : PSL_ML;	/* Old default justifications for non-Dj settings */
 					/* Now deal with optional arguments, if any */
 					switch (n) {
-						case 3: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
+						case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
 						case 4: Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_d); break;	/* Just got offsets */
-						case 5: Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_e); break;	/* Got both */
+						case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_e); break;	/* Got both */
 					}
 				}
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
@@ -351,7 +351,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
+				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectanglar panel behind the scale", 3);
 					n_errors++;
 				}
@@ -426,7 +426,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						strcat (extra, p);
 					}
 					Ctrl->F.active = true;
-					if (GMT_getpanel (GMT, opt->option, extra, &(Ctrl->F.panel))) {
+					if (gmt_getpanel (GMT, opt->option, extra, &(Ctrl->F.panel))) {
 						gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
 						n_errors++;
 					}
@@ -564,7 +564,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			start_val = pow (10.0, P->range[0].z_low);
 			stop_val  = pow (10.0, P->range[P->n_colors-1].z_high);
 		}
-		ndec = GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
+		ndec = gmt_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 	}
 	else {	/* Do annotations explicitly, one by one.  Try automatic guessing of decimals if equidistant cpt */
 		bool const_interval = true, exp_notation = false;
@@ -572,14 +572,14 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (P->range[i].label) n_use_labels++;
 			if (P->range[i].annot & 1) {
 				z = P->range[i].z_low;
-				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
+				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
 				}
 			}
 			if (P->range[i].annot & 2) {
 				z = P->range[i].z_high;
-				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
+				if ((dec = gmt_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strncpy (format, text, GMT_LEN256-1);
 					ndec = dec;
 				}
@@ -662,12 +662,12 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 
 		for (i = 0; i < nx; i++) {
 			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->range[i].z_low;
-			GMT_get_rgb_from_z (GMT, P, z, rrggbb);
+			gmt_get_rgb_from_z (GMT, P, z, rrggbb);
 			ii = (reverse) ? nx - i - 1 : i;
 			for (j = 0; j < ny; j++) {
 				GMT_rgb_copy (rgb, rrggbb);
 				k = j * nx + ii;
-				if (Ctrl->I.active) GMT_illuminate (GMT, max_intens[1] - j * inc_j, rgb);
+				if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1] - j * inc_j, rgb);
 				if (P->is_gray)	/* All gray, pick red */
 					bar[k] = GMT_u255 (rgb[0]);
 				else if (Ctrl->M.active)	/* Convert to gray using the GMT_YIQ transformation */
@@ -843,7 +843,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				}
 				else {
 					GMT_rgb_copy (rgb, P->range[ii].rgb_low);
-					if (Ctrl->I.active) GMT_illuminate (GMT, max_intens[1], rgb);
+					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
 					PSL_setfill (PSL, rgb, center);
 				}
@@ -925,7 +925,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			gmt_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
 			if (A->item[GMT_GRID_UPPER].active) {
-				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmt_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
@@ -977,7 +977,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 							do_annot = false;
 					}
 					else
-						GMT_sprintf_float (text, format, P->range[i].z_low);
+						gmt_sprintf_float (text, format, P->range[i].z_low);
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 				x1 += z_width[i];
@@ -995,7 +995,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 							do_annot = false;
 					}
 					else
-						GMT_sprintf_float (text, format, P->range[i].z_high);
+						gmt_sprintf_float (text, format, P->range[i].z_high);
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
 				}
 			}
@@ -1038,7 +1038,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 				}
 				else {
 					GMT_rgb_copy (rgb, P->range[ii].rgb_low);
-					if (Ctrl->I.active) GMT_illuminate (GMT, max_intens[1], rgb);
+					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
 					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
 					PSL_setfill (PSL, rgb, center);
 				}
@@ -1143,7 +1143,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
-				dx = GMT_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmt_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
@@ -1228,7 +1228,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 						this_just = l_justify;
 					}
 					else
-						GMT_sprintf_float (text, format, P->range[i].z_high);
+						gmt_sprintf_float (text, format, P->range[i].z_high);
 					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
 				}
@@ -1314,7 +1314,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->G.active) P = GMT_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+	if (Ctrl->G.active) P = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
@@ -1392,7 +1392,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
 			Return (GMT_PROJECTION_ERROR);
 		}
-		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (!Ctrl->Z.active) gmt_free (GMT, z_width);
@@ -1418,7 +1418,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		double_swap (GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin);
 		double_swap (GMT->current.proj.z_project.xmax, GMT->current.proj.z_project.ymax);
 	}
-	GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
+	gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar referece x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 

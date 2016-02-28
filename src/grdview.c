@@ -210,7 +210,7 @@ GMT_LOCAL unsigned int pixel_inside (struct GMT_CTRL *GMT, int ip, int jp, int *
 		y[i] = (double)iy[bin+bin_inc[i]];
 	}
 	x[4] = x[0];	y[4] = y[0];
-	what = GMT_non_zero_winding (GMT, (double)ip, (double)jp, x, y, 5);
+	what = gmt_non_zero_winding (GMT, (double)ip, (double)jp, x, y, 5);
 	return (what);
 }
 
@@ -282,7 +282,7 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 
 	if (n < 3) return;	/* Need at least 3 points to make a polygon */
 
-	index = GMT_get_rgb_from_z (GMT, P, z, rgb);
+	index = gmt_get_rgb_from_z (GMT, P, z, rgb);
 	if (P && P->skip) return;	/* Skip this z-slice */
 
 	/* Now we must paint, with colors or patterns */
@@ -290,7 +290,7 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
 		gmt_setfill (GMT, f, outline);
 	else {	/* Solid color/gray */
-		if (intens) GMT_illuminate (GMT, intensity, rgb);
+		if (intens) gmt_illuminate (GMT, intensity, rgb);
 		if (monochrome) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb); /* GMT_YIQ transformation */
 		PSL_setfill (PSL, rgb, outline);
 	}
@@ -301,12 +301,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	struct GRDVIEW_CTRL *C = gmt_memory (GMT, NULL, 1, struct GRDVIEW_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	GMT_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
+	gmt_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
 	C->W.pen[0].width *= 3.0;	/* Contour pen */
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
 	C->Q.dpi = 100;
-	GMT_init_fill (GMT, &C->Q.fill, GMT->current.setting.ps_page_rgb[0], GMT->current.setting.ps_page_rgb[1], GMT->current.setting.ps_page_rgb[2]);
+	gmt_init_fill (GMT, &C->Q.fill, GMT->current.setting.ps_page_rgb[0], GMT->current.setting.ps_page_rgb[1], GMT->current.setting.ps_page_rgb[2]);
 	return (C);
 }
 
@@ -372,12 +372,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = API->GMT->current.setting.map_default_pen;
-	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", GMT_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", gmt_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -Qm or -Qsm to take effect.\n");
 	P.width *= 3.0;
 	GMT_Message (API, GMT_TIME_NONE, "\t   c draw contours on top of surface or mesh [Default is no contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (API->GMT, P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", gmt_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", gmt_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");
 	GMT_Option (API, "X,c,f,n,p,t,.");
 
@@ -478,7 +478,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						c[0] = '\0';	/* Truncate string temporarily */
 						Ctrl->N.level = atof (opt->arg);
 						c[0] = '+';	/* Restore the + */
-						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &c[2], &Ctrl->N.fill),
+						n_errors += GMT_check_condition (GMT, gmt_getfill (GMT, &c[2], &Ctrl->N.fill),
 						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
@@ -487,7 +487,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						            "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */
 						n = sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
-						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, colors, &Ctrl->N.fill),
+						n_errors += GMT_check_condition (GMT, gmt_getfill (GMT, colors, &Ctrl->N.fill),
 						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 						c[0] = '/';	/* Restore the slash */
@@ -537,7 +537,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 
 						if (opt->arg[n+1]) {	/* Appended /<color> or just <color> */
 							k = ((opt->arg[n+1] == '/') ? 2 : 1) + n;
-							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
+							n_errors += GMT_check_condition (GMT, gmt_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill),
 							                                 "Syntax error -Qm option: To give mesh color, use -Qm[x|y]<color>\n");
 						}
 						break;
@@ -570,7 +570,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 				if (opt->arg[k] == 'o') {	/* Want tile outline also */
 					Ctrl->T.outline = true;
 					k++;
-					if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
+					if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
 						gmt_pen_syntax (GMT, 'T', " ", 0);
 						n_errors++;
 					}
@@ -585,12 +585,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 					n = j+1;
 					while (opt->arg[n] && opt->arg[n] != ',' && opt->arg[n] != '/') n++;	/* Wind until end or , or / */
 					strncpy (txt_a, opt->arg, n);	txt_a[n] = '\0';
-					if (GMT_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 */
+					if (gmt_colorname2index (GMT, txt_a) >= 0)	/* Found a colorname: reset j to 0 */
 						j = id = 0;
 					else
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
-				if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
+				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
@@ -692,7 +692,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	if (Ctrl->C.active) {
-		if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max)) == NULL) {
+		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, Topo->header->z_min, Topo->header->z_max)) == NULL) {
 			Return (API->error);
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;
@@ -825,7 +825,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 			}
 
 			begin = true;
-			while ((n = GMT_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
+			while ((n = gmt_contours (GMT, Z, Ctrl->S.value, GMT->current.setting.interpolant, 0, edge, &begin, &x, &y)) > 0) {
 
 				i_bin_old = j_bin_old = -1;
 				for (pt = 1; pt < n; pt++) {
@@ -999,7 +999,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
 		struct GMT_DATASEGMENT S;
-		GMT_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
+		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Tiling without interpolation\n");
 
@@ -1009,11 +1009,11 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
 			if (use_intensity_grid && Ctrl->T.skip && GMT_is_fnan (Intens->data[ij])) continue;
-			GMT_get_rgb_from_z (GMT, P, Topo->data[ij], fill.rgb);
+			gmt_get_rgb_from_z (GMT, P, Topo->data[ij], fill.rgb);
 			if (use_intensity_grid)
-				GMT_illuminate (GMT, Intens->data[ij], fill.rgb);
+				gmt_illuminate (GMT, Intens->data[ij], fill.rgb);
 			else
-				GMT_illuminate (GMT, Ctrl->I.value, fill.rgb);
+				gmt_illuminate (GMT, Ctrl->I.value, fill.rgb);
 			n = gmt_graticule_path (GMT, &xx, &yy, 1, true, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			gmt_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
@@ -1174,7 +1174,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 								if (Ctrl->C.active && GMT_same_rgb (rgb, P->patch[GMT_NAN].rgb)) continue;	/* Skip NaN colors */
 							}
 							else {		/* Use lookup to get color */
-								GMT_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
+								gmt_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
 								if (GMT_is_fnan (Z->data[d_node])) continue;	/* Skip NaNs in the z-data*/
 							}
 							if (use_intensity_grid && GMT_is_fnan (Intens->data[d_node])) continue;	/* Skip NaNs in the intensity data*/
@@ -1202,8 +1202,8 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 							rgb[2] = sum_b * sum_w;
 							if (Ctrl->I.active) intval = (use_intensity_grid) ? sum_i * sum_w : Ctrl->I.value;
 						}
-						if (Ctrl->Q.special) GMT_get_rgb_from_z (GMT, P, Z->data[ij], rgb);
-						if (Ctrl->I.active && good) GMT_illuminate (GMT, intval, rgb);
+						if (Ctrl->Q.special) gmt_get_rgb_from_z (GMT, P, Z->data[ij], rgb);
+						if (Ctrl->I.active && good) gmt_illuminate (GMT, intval, rgb);
 						kk = layers * ((ny_i-jp-1) * nx_i + ip) + PS_colormask_off;
 						if (Ctrl->Q.monochrome) /* GMT_YIQ transformation */
 							bitimage_8[kk] = (unsigned char) GMT_YIQ (rgb);

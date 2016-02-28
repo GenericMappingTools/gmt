@@ -495,7 +495,7 @@ GMT_LOCAL double get_one_output2D (struct GMT_CTRL *GMT, double x_obs, double z_
 	double area, v_sum = 0.0, v;
 
 	for (k = 0; k < n_bodies; k++) {	/* Loop over slices */
-		area = GMT_pol_area (body[k].x, body[k].z, body[k].n);
+		area = gmt_pol_area (body[k].x, body[k].z, body[k].n);
 		v = 0.0;
 		if (mode == TALWANI2D_FAA) /* FAA */
 			v += get_grav2d (GMT, body[k].x, body[k].z, body[k].n, x_obs, z_obs, body[k].rho);
@@ -554,12 +554,12 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the talwani2d main code ----------------------------*/
 	
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	scl = (Ctrl->M.active[TALWANI2D_HOR]) ? METERS_IN_A_KM : 1.0;	/* Perhaps convert to m */
 	
 	if (Ctrl->T.active) {
 		/* Make sure the min/man/inc values harmonize */
-		switch (GMT_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
+		switch (gmt_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: (max - min) is not a whole multiple of inc\n");
 				Return (EXIT_FAILURE);

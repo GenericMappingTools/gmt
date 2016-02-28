@@ -114,10 +114,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
         C->E.pen = C->F.pen = C->G.pen  = GMT->current.setting.map_default_pen;
 
 	C->C.size = GMT_DOT_SIZE;
-	GMT_init_fill (GMT, &C->E.fill, 250.0 / 255.0, 250.0 / 255.0, 250.0 / 255.0);
-	GMT_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);
-	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
-	GMT_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0);
+	gmt_init_fill (GMT, &C->E.fill, 250.0 / 255.0, 250.0 / 255.0, 250.0 / 255.0);
+	gmt_init_fill (GMT, &C->F.fill, -1.0, -1.0, -1.0);
+	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
+	gmt_init_fill (GMT, &C->S2.fill, -1.0, -1.0, -1.0);
 	C->T.justify = 5;
 	C->T.fontsize = 12.0;
 	return (C);
@@ -188,7 +188,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     <angle/form/justify/fontsize in points>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is 0.0/0/5/12].\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,di,h,i,.");
 
 	return (EXIT_FAILURE);
@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 			case 'C':	/* New coordinates */
 				Ctrl->C.active = true;
 				sscanf(opt->arg, "%lf/%lf", &Ctrl->C.lon, &Ctrl->C.lat);
-				if (strchr (opt->arg, 'W'))  GMT_getpen (GMT, strchr (opt->arg+1, 'W')+1, &Ctrl->C.pen);
+				if (strchr (opt->arg, 'W'))  gmt_getpen (GMT, strchr (opt->arg+1, 'W')+1, &Ctrl->C.pen);
 				if (strchr (opt->arg, 'P')) sscanf(strchr (opt->arg+1, 'P')+1, "%lf", &Ctrl->C.size);
 				break;
 			case 'D':	/* Coordinates */
@@ -229,21 +229,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				break;
 			case 'E':	/* Set color for station in extensive part */
 				Ctrl->E.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', " ");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Set background color of beach ball */
 				Ctrl->F.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					gmt_fill_syntax (GMT, 'F', " ");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Set color for station in compressive part */
 				Ctrl->C.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -253,15 +253,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'e':	/* Outline station symbol in extensive part */
 						Ctrl->E.active = true;
-						if (strlen (&opt->arg[1])) GMT_getpen (GMT, &opt->arg[1], &Ctrl->E.pen);
+						if (strlen (&opt->arg[1])) gmt_getpen (GMT, &opt->arg[1], &Ctrl->E.pen);
 						break;
 					case 'f':	/* Outline beach ball */
 						Ctrl->F.active = true;
-						if (strlen (&opt->arg[1]))  GMT_getpen (GMT, &opt->arg[1], &Ctrl->F.pen);
+						if (strlen (&opt->arg[1]))  gmt_getpen (GMT, &opt->arg[1], &Ctrl->F.pen);
 						break;
 					case 'g':	/* Outline station symbol in compressive part */
 						Ctrl->G.active = true;
-						if (strlen (&opt->arg[1])) GMT_getpen (GMT, &opt->arg[1], &Ctrl->G.pen);
+						if (strlen (&opt->arg[1])) gmt_getpen (GMT, &opt->arg[1], &Ctrl->G.pen);
 						break;
 					case 'h':	/* Use HYPO71 format */
 						Ctrl->H2.active = true;
@@ -311,7 +311,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 							}
 						}
 						if (strchr (opt->arg, 'G')) {
-							if (GMT_getfill (GMT, strchr (opt->arg+2,'G')+1, &Ctrl->S2.fill)) {
+							if (gmt_getfill (GMT, strchr (opt->arg+2,'G')+1, &Ctrl->S2.fill)) {
 								gmt_fill_syntax (GMT, 's', " ");
 								n_errors++;
 							}
@@ -320,7 +320,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						if (strchr (&opt->arg[1], 'L')) Ctrl->S2.outline = true;
 						break;
 					case 't':	/* Set color for station label */
-						if (GMT_getpen (GMT, &opt->arg[1], &Ctrl->T.pen)) n_errors++;
+						if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T.pen)) n_errors++;
 						break;
 				}
 				break;
@@ -377,7 +377,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}

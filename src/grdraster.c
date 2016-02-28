@@ -40,7 +40,7 @@
 
 #define GMT_PROG_OPTIONS "-JRVbdh"
 
-void GMT_str_toupper (char *string);
+void gmt_str_toupper (char *string);
 
 struct GRDRASTER_CTRL {
 	struct In {
@@ -368,7 +368,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 				i += 2;
 				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
 				buf[j-i]='\0';
-				if (GMT_getinc (GMT, buf, rasinfo[nfound].h.inc) ) {
+				if (gmt_getinc (GMT, buf, rasinfo[nfound].h.inc) ) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
 					continue;
 				}
@@ -698,7 +698,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -798,7 +798,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Check if given argument is an integer ID.  If so, assign iselect, else set it to UINT_MAX */
 
 	tselect = strdup (Ctrl->In.file);
-	GMT_str_toupper (tselect);	/* Make it upper case - which wont affect integers */
+	gmt_str_toupper (tselect);	/* Make it upper case - which wont affect integers */
 	for (j = i = 0; tselect[j] && i == 0; j++) if (!isdigit ((int)tselect[j])) i = 1;
 	if (i == 0)
 		iselect = atoi (tselect);
@@ -817,7 +817,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		}
 		else {	/* We gave a text snippet to match in command */
 			strncpy (match, rasinfo[i].h.command, GMT_GRID_REMARK_LEN160-1);
-			GMT_str_toupper (match);	/* Make it upper case  */
+			gmt_str_toupper (match);	/* Make it upper case  */
 			if (strstr (match, tselect)) {	/* Found a matching text string */
 				if (j == UINT_MAX)
 					j = i;

@@ -174,7 +174,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct
 					n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -392,7 +392,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 					assert (row >= 0);	/* Just in case we have a logic bug somewhere */
 					for (col = col_min; col <= col_max; col++) {
 
-						if ((side = GMT_non_zero_winding (GMT, x[col], y[row], p[k].lon, p[k].lat, p[k].n)) < Ctrl->E.inside) continue;	/* Outside */
+						if ((side = gmt_non_zero_winding (GMT, x[col], y[row], p[k].lon, p[k].lat, p[k].n)) < Ctrl->E.inside) continue;	/* Outside */
 
 						/* Here, point is inside, we must assign value */
 

@@ -308,7 +308,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -437,7 +437,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			grdfile = strdup (buffer);
 			sprintf (Out->header->remark, "Grid of %s components in the 0-255 range", comp[channel]);
 			GMT_grd_loop (GMT, Grid, row, col, ij) {
-				(void)GMT_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
+				(void)gmt_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
 				Out->data[ij] = (float)GMT_s255 (f_rgb[channel]);
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Out) != GMT_OK) {

@@ -895,7 +895,7 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 				strncpy (text, GMT->current.language.week_name[kind], GMT_LEN16);
 			else
 				strncpy (text, GMT->current.language.month_name[kind][ival[D->item_pos[1]]-1], GMT_LEN16);
-			if (upper) GMT_str_toupper (text);
+			if (upper) gmt_str_toupper (text);
 			if (D->item_pos[1] == 0)		/* Month/week first */
 				sprintf (date, D->format, text, ival[1], ival[2]);
 			else if (D->item_pos[1] == 1)	/* Month/week second */
@@ -966,7 +966,7 @@ void gmt_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 			(P->date.compact) ? sprintf (string, "%d", calendar.iso_w) : sprintf (string, "%02d", calendar.iso_w);
 			break;
 		case 'K':	/*  ISO Weekday name */
-			if (T->upper_case) GMT_str_toupper (GMT->current.language.day_name[T->flavor][calendar.iso_d%7]);
+			if (T->upper_case) gmt_str_toupper (GMT->current.language.day_name[T->flavor][calendar.iso_d%7]);
 			sprintf (string, "%s", GMT->current.language.day_name[T->flavor][calendar.iso_d%7]);
 			break;
 		case 'k':	/* Day of the week 1-7 */

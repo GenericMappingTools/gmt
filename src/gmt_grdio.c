@@ -161,7 +161,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 
 	if (GMT_is_geographic (GMT, direction)) return;	/* Does not apply to geographic data */
 	name = (file) ? file : h->name;
-	if ((c = GMT_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
+	if ((c = gmt_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmt_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
@@ -398,7 +398,7 @@ GMT_LOCAL void grdio_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 		}
 
 		/* Change name of variable and unit to lower case for comparison */
-		GMT_str_tolower (string[i]);
+		gmt_str_tolower (string[i]);
 
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
 			/* Input data type is longitude */
@@ -1197,7 +1197,7 @@ int gmt_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *head
 	gmt_set_grddim (GMT, header);		/* Update all dimensions */
 	if (expand) gmt_grd_zminmax (GMT, header, grid);	/* Reset min/max since current extrema includes the padded region */
 	grdio_pack_grid (GMT, header, grid, k_grd_unpack); /* revert scale and offset */
-	GMT_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
 
 	return (GMT_NOERROR);
 }
@@ -1304,7 +1304,7 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 
 	if (!strcmp (GMT->init.module_name, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
-	switch (GMT_minmaxinc_verify (GMT, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], GMT_CONV4_LIMIT)) {
+	switch (gmt_minmaxinc_verify (GMT, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], GMT_CONV4_LIMIT)) {
 		case 3:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: grid x increment <= 0.0\n");
 			error++;
@@ -1322,7 +1322,7 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			break;
 	}
 
-	switch (GMT_minmaxinc_verify (GMT, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], GMT_CONV4_LIMIT)) {
+	switch (gmt_minmaxinc_verify (GMT, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], GMT_CONV4_LIMIT)) {
 		case 3:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: grid y increment <= 0.0\n");
 			error++;
@@ -1764,7 +1764,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	double val, dx, small;
 	char format[GMT_LEN64] = {""};
 
-	switch (GMT_minmaxinc_verify (GMT, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with x_inc */
+	switch (gmt_minmaxinc_verify (GMT, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with x_inc */
 		case 3:
 			return (GMT_GRDIO_BAD_XINC);
 			break;
@@ -1775,7 +1775,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 			/* Everything is seemingly OK */
 			break;
 	}
-	switch (GMT_minmaxinc_verify (GMT, wesn[YLO], wesn[YHI], header->inc[GMT_Y], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with y_inc */
+	switch (gmt_minmaxinc_verify (GMT, wesn[YLO], wesn[YHI], header->inc[GMT_Y], GMT_CONV4_LIMIT)) {	/* Check if range is compatible with y_inc */
 		case 3:
 			return (GMT_GRDIO_BAD_YINC);
 			break;
@@ -2013,8 +2013,8 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		GMT_memcpy (GMT->common.R.wesn, wesn, 4, double);
 		GMT->common.J.active = false;
 	}
-	GMT_BC_init (GMT, Grid->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, Grid, GMT_IN);	/* Set boundary conditions */
+	gmt_BC_init (GMT, Grid->header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_grd_BC_set (GMT, Grid, GMT_IN);	/* Set boundary conditions */
 	Grid->header->has_NaNs = GMT_GRID_NO_NANS;	/* No nans in img grids */
 	return (GMT_NOERROR);
 }
@@ -2225,12 +2225,12 @@ int grdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	header->registration = (registration & 1);
 	header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);
 	header->grdtype = gmt_get_grdtype (GMT, header);
-	GMT_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
+	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	GMT_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 	grdio_grd_get_units (GMT, header);
-	GMT_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
+	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
 	header->grdtype = gmt_get_grdtype (GMT, header);	/* Set grid type (i.e. periodicity for global grids) */
 	return (GMT_NOERROR);
 }
@@ -2634,7 +2634,7 @@ int gmt_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 		gmt_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	gmt_free (GMT, from_gdalread->band_field_names);
 	gmt_free (GMT, from_gdalread);
-	GMT_BC_init (GMT, I->header);	/* Initialize image interpolation and boundary condition parameters */
+	gmt_BC_init (GMT, I->header);	/* Initialize image interpolation and boundary condition parameters */
 
 	return (GMT_NOERROR);
 }

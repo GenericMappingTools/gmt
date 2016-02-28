@@ -177,7 +177,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 	wesn[XLO] = wesn[YLO] = DBL_MAX;
 	wesn[XHI] = wesn[YHI] = -DBL_MAX;
 	
-	GMT_centroid (GMT, x, y, n, out, *geo);	/* Get mean location */
+	gmt_centroid (GMT, x, y, n, out, *geo);	/* Get mean location */
 	
 	for (i = 0; i < n; i++) {
 		wesn[XLO] = MIN (wesn[XLO], x[i]);
@@ -214,7 +214,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 		}
 	}
 	
-	size = GMT_pol_area (xp, yp, n);
+	size = gmt_pol_area (xp, yp, n);
 	gmt_free (GMT, xp);
 	gmt_free (GMT, yp);
 	if (geo) size *= (GMT->current.map.dist[GMT_MAP_DIST].scale * GMT->current.map.dist[GMT_MAP_DIST].scale);
@@ -720,7 +720,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'a' || opt->arg[0] == 'A') {	/* Spatially average points until minimum NN distance is less than given distance */
 					Ctrl->A.mode = (opt->arg[0] == 'A') ? 2 : 1;	/* Slow mode is an undocumented test mode */
-					Ctrl->A.smode = GMT_get_distance (GMT, &opt->arg[1], &(Ctrl->A.min_dist), &(Ctrl->A.unit));
+					Ctrl->A.smode = gmt_get_distance (GMT, &opt->arg[1], &(Ctrl->A.min_dist), &(Ctrl->A.unit));
 				}
 				else if (((opt->arg[0] == '-' || opt->arg[0] == '+') && strchr (GMT_LEN_UNITS, opt->arg[1])) || (opt->arg[0] && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
 					/* Just compute NN distances and return the unique ones */
@@ -754,7 +754,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 							Ctrl->D.I.a_threshold = atof (&p[1]);
 							break;
 						case 'd':	/* Gave a new +d<dmax> value */
-							Ctrl->D.mode = GMT_get_distance (GMT, &p[1], &(Ctrl->D.I.d_threshold), &(Ctrl->D.unit));
+							Ctrl->D.mode = gmt_get_distance (GMT, &p[1], &(Ctrl->D.I.d_threshold), &(Ctrl->D.unit));
 							break;
 						case 'C':	/* Gave a new +C<cmax> value */
 							Ctrl->D.I.mode = 1;	/* Median instead of mean */
@@ -1210,7 +1210,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					case GMT_IS_LINE:	poly = false;	break;
 					case GMT_IS_POLY:	poly = true;	break;
 					default:
-						poly = !GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);	/* Line or polygon */
+						poly = !gmt_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);	/* Line or polygon */
 						break;
 				}
 				if (poly)	/* Polygon */
@@ -1309,7 +1309,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			for (seg1 = 0; seg1 < C->table[tbl1]->n_segments; seg1++) {
 				S1 = C->table[tbl1]->segment[seg1];
 				if (S1->n_rows == 0) continue;
-				GMT_init_track (GMT, S1->coord[GMT_Y], S1->n_rows, &ylist1);
+				gmt_init_track (GMT, S1->coord[GMT_Y], S1->n_rows, &ylist1);
 				for (tbl2 = 0; tbl2 < D->n_tables; tbl2++) {
 					for (seg2 = 0; seg2 < D->table[tbl2]->n_segments; seg2++) {
 						S2 = D->table[tbl2]->segment[seg2];
@@ -1319,8 +1319,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							if (!internal && same_feature) continue;	/* Do not do internal crossings */
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
-						GMT_init_track (GMT, S2->coord[GMT_Y], S2->n_rows, &ylist2);
-						nx = GMT_crossover (GMT, S1->coord[GMT_X], S1->coord[GMT_Y], NULL, ylist1, S1->n_rows, S2->coord[GMT_X], S2->coord[GMT_Y], NULL, ylist2, S2->n_rows, false, wrap, &XC);
+						gmt_init_track (GMT, S2->coord[GMT_Y], S2->n_rows, &ylist2);
+						nx = gmt_crossover (GMT, S1->coord[GMT_X], S1->coord[GMT_Y], NULL, ylist1, S1->n_rows, S2->coord[GMT_X], S2->coord[GMT_Y], NULL, ylist2, S2->n_rows, false, wrap, &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							uint64_t px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
@@ -1341,7 +1341,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 									kk[px] = XC.xnode[1][pair[px].pos];
 								}
 								gmt_free (GMT, pair);
-								in = GMT_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows);
+								in = gmt_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows);
 								go = first = true;
 								row0 = px = 0;
 								while (go) {
@@ -1406,10 +1406,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 								}
 								for (px = 0; px < nx; px++) printf (fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
 							}
-							GMT_x_free (GMT, &XC);
+							gmt_x_free (GMT, &XC);
 						}
 						else if (Ctrl->S.mode == POL_CLIP) {	/* No crossings; see if it is inside or outside C */
-							if ((in = GMT_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows)) != 0) {
+							if ((in = gmt_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows)) != 0) {
 								/* Inside, copy out the entire polygon */
 								if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 									if (S2->header)
@@ -1504,7 +1504,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				}
 				else
 					S2 = S1;
-				poly_S2 = (GMT_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) ? 1 : 0;
+				poly_S2 = (gmt_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) ? 1 : 0;
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) GMT_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
 				n_dup = is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
 				if (same_feature) {
@@ -1514,7 +1514,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (n_dup == 0) {	/* No duplicate found for this segment */
 					if (!same_feature) {
 						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
-						poly_D = (GMT_polygon_is_open (GMT, D->table[tbl]->segment[seg]->coord[GMT_X], D->table[tbl]->segment[seg]->coord[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
+						poly_D = (gmt_polygon_is_open (GMT, D->table[tbl]->segment[seg]->coord[GMT_X], D->table[tbl]->segment[seg]->coord[GMT_Y], D->table[tbl]->segment[seg]->n_rows)) ? 1 : 0;
 						sprintf (record, "N : Input %s %s not present in %s", feature[poly_D], src, from);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
@@ -1525,7 +1525,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						I = &(Info[tbl2][seg2]);
 						if (I->mode == 0) continue;
 						/* Report on all the close/exact matches */
-						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X],
+						poly_D = (gmt_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X],
 						          C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
 						(D->n_tables == 1) ? sprintf (src, "[ segment %" PRIu64 " ]", seg)  : sprintf (src, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl, seg);
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %" PRIu64 " segment %" PRIu64 " ]", tbl2, seg2);
@@ -1644,7 +1644,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					if (S->n_rows == 0) continue;
 					if (Ctrl->N.all) { first = 0; last = S->n_rows - 1; np = S->n_rows; } else { first = last = S->n_rows / 2; np = 1; }
 					for (row = first, n = 0; row <= last; row++) {	/* Check one or all points if they are inside */
-						n += (GMT_inonout (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], S2) == GMT_INSIDE);
+						n += (gmt_inonout (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], S2) == GMT_INSIDE);
 					}
 					if (n < np) continue;	/* Not inside this polygon */
 					if (count[p]) {
@@ -1716,7 +1716,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			for (seg = seg_out = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];	/* Current input segment */
 				if (S->n_rows == 0) continue;	/* Just skip empty segments */
-				crossing = GMT_crossing_dateline (GMT, S);
+				crossing = gmt_crossing_dateline (GMT, S);
 				n_split = (crossing) ? gmt_split_poly_at_dateline (GMT, S, &L) : 1;
 				Dout->table[tbl]->n_segments += n_split;
 				if (Dout->table[tbl]->n_segments > n_segs) {	/* Must allocate more segment space */

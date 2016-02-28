@@ -58,7 +58,7 @@ GMT_LOCAL double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 
 	sorted = gmt_memory (GMT, NULL, n, double);
 	GMT_memcpy (sorted, x, n, double);
-	qsort ( sorted, n, sizeof(double), gmt_comp_double_asc);
+	GMT_sort_array (GMT, sorted, n, GMT_DOUBLE);
 	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
 	gmt_free (GMT, sorted);
 	return med;

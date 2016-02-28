@@ -149,8 +149,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->L.pen.width = C->T.pen.width = C->P2.pen.width = C->T2.pen.width = -1.0;
 	C->L.active = true;
-	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
-	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
+	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
+	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	C->S.fontsize = DEFAULT_FONTSIZE;
 	C->S.offset = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->S.justify = PSL_BC;
@@ -502,7 +502,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = 0 both nodal planes are plotted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", gmt_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use CPT file to assign colors based on depth-value in 3rd column.\n");
 
 	GMT_Option (API, "X,c,di,h,i,:,.");
@@ -567,7 +567,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 
 			case 'E':	/* Set color for extensive parts  */
 				Ctrl->E.active = true;
-				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
+				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -595,28 +595,28 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						break;
 					case 'e':	/* Set color for T axis symbol */
 						Ctrl->E2.active = true;
-						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
+						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
 							gmt_fill_syntax (GMT, 'e', " ");
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Set color for P axis symbol */
 						Ctrl->G2.active = true;
-						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
+						if (gmt_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
 							gmt_fill_syntax (GMT, 'g', " ");
 							n_errors++;
 						}
 						break;
 					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
 						Ctrl->P2.active = true;
-						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
+						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
 							gmt_pen_syntax (GMT, 'p', " ", 0);
 							n_errors++;
 						}
 						break;
 					case 'r':	/* draw box around text */
 						Ctrl->R2.active = true;
-						if (opt->arg[1] && GMT_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
+						if (opt->arg[1] && gmt_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
 							gmt_fill_syntax (GMT, 'r', " ");
 							n_errors++;
 						}
@@ -634,7 +634,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						break;
 					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
 						Ctrl->T2.active = true;
-						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
+						if (opt->arg[1] && gmt_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
 							gmt_pen_syntax (GMT, 't', " ", 0);
 							n_errors++;
 						}
@@ -644,7 +644,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				break;
 			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = true;
-				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
+				if (!opt->arg[0] || (opt->arg[0] && gmt_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -652,7 +652,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
 				Ctrl->L.active = true;
-				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
+				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					gmt_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
@@ -725,14 +725,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 			case 'T':
 				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
-				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
+				if (strlen (opt->arg) > 2 && gmt_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					gmt_pen_syntax (GMT, 'T', " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
-				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
@@ -941,7 +941,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
 
-		if (Ctrl->Z.active) GMT_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
+		if (Ctrl->Z.active) gmt_get_fill_from_z (GMT, CPT, depth, &Ctrl->G.fill);
 
 		gmt_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 

@@ -116,14 +116,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 
 			case 'D':
 				Ctrl->D.active = true;
-				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
 				else {	/* args are [+j<justify>][+o<dx>[/<dy>]] */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
 						Ctrl->D.width = GMT_to_inch (GMT, string);
@@ -131,7 +131,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
+				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the logo", 0);
 					n_errors++;
 				}
@@ -147,7 +147,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 		}
 	}
 	if (!Ctrl->D.active) {
-		Ctrl->D.refpoint = GMT_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
+		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
@@ -204,7 +204,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
-		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
+		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 		PSL = gmt_plotinit (GMT, options);
@@ -212,8 +212,8 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
+		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
 		PSL = gmt_plotinit (GMT, options);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
@@ -236,7 +236,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 	/* Plot the title beneath the map with 1.5 vertical stretching */
 
 	sprintf (cmd, "%g,AvantGarde-Demi,%s", scale * 9.5, c_font);	/* Create required font */
-	GMT_getfont (GMT, cmd, &F);
+	gmt_getfont (GMT, cmd, &F);
 	fmode = gmt_setfont (GMT, &F);
 	PSL_setfont (PSL, F.id);
 	PSL_command (PSL, "V 1 1.5 scale\n");

@@ -129,7 +129,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.offset = 6.0 / 72.0;	/* 6 points */
 	C->D.font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Default font */
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
+	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
 	C->L.pen = GMT->current.setting.map_default_pen;
 	for (k = 0; k < 3; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;
 
@@ -309,7 +309,7 @@ GMT_LOCAL double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct 
 				PSL_plotpoint (PSL, px[2], py[2], PSL_DRAW);
 			}
 			else if (cpt) {
-				index = GMT_get_rgb_from_z (GMT, P, xval, rgb);
+				index = gmt_get_rgb_from_z (GMT, P, xval, rgb);
 				if ((index >= 0 && (f = P->range[index].fill) != NULL) || (index < 0 && (f = P->patch[index+3].fill) != NULL))	/* Pattern */
 					gmt_setfill (GMT, f, draw_outline);
 				else
@@ -475,7 +475,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				while (GMT_getmodopt (GMT, opt->arg, "bfor", &pos, p)) {	/* Looking for +b, +f, +o, +r */
+				while (gmt_getmodopt (GMT, opt->arg, "bfor", &pos, p)) {	/* Looking for +b, +f, +o, +r */
 					switch (p[0]) {
 						case 'b':	/* beneath */
 							Ctrl->D.just = 1;
@@ -484,7 +484,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 							Ctrl->D.offset = GMT_to_inch (GMT, &p[1]);
 							break;
 						case 'f':	/* offset */
-							n_errors += GMT_getfont (GMT, &p[1], &(Ctrl->D.font));
+							n_errors += gmt_getfont (GMT, &p[1], &(Ctrl->D.font));
 							break;
 						case 'r':	/* rotate */
 							Ctrl->D.mode = 1;
@@ -501,7 +501,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 			case 'G':
 				Ctrl->G.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -513,7 +513,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				break;
 			case 'L':		/* Set line attributes */
 				Ctrl->L.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					gmt_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
@@ -530,7 +530,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct
 				}
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {
-					if (GMT_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
+					if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
 						gmt_pen_syntax (GMT, 'L', " ", 0);
 						n_errors++;
 					}

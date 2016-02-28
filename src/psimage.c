@@ -161,12 +161,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 			case 'D':
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
-				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p)) == NULL) n_errors++;	/* Failed basic parsing */
 				else {	/* args are now [+j<justify>][+o<off[GMT_X]>[/<dy>]][+n<nx>[/<ny>]][+r<dpi>] */
-					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jnorw")) n_errors++;
 					/* Required modifier +w OR +r */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 						if (Ctrl->D.dim[GMT_X] < 0.0) {	/* Negative width means PS interpolation */
 							Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 							Ctrl->D.interpolate = true;
@@ -176,7 +176,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						Ctrl->D.dpi = atof (string);
 					/* Optional modifiers +j, +n, +o */
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
@@ -184,7 +184,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 				}
 				break;
@@ -200,20 +200,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					sprintf (string, "+c0+p%s", opt->arg);
 				else
 					strcpy (string, opt->arg);
-				if (GMT_getpanel (GMT, opt->option, string, &(Ctrl->F.panel))) {
+				if (gmt_getpanel (GMT, opt->option, string, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the image", 1);
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Background/foreground color for 1-bit images */
 				Ctrl->G.active = true;
-				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case f|b|t switching below */
+				letter = (gmt_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case f|b|t switching below */
 				switch (letter) {
 					case 'f':
 						/* Set color for foreground pixels */
 						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
 							Ctrl->G.f_rgb[0] = -1;
-						else if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
+						else if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
@@ -222,14 +222,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 						/* Set color for background pixels */
 						if (opt->arg[1] == '-' && opt->arg[2] == '\0')
 							Ctrl->G.b_rgb[0] = -1;
-						else if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
+						else if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
 						break;
 					case 't':
 						/* Set transparent color */
-						if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.t_rgb)) {
+						if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.t_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
@@ -237,7 +237,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					default:	/* Gave either -G<r/g/b>, -G-, or -G<colorname>; all treated as -Gf */
 						if (opt->arg[0] == '-' && opt->arg[1] == '\0')
 							Ctrl->G.f_rgb[0] = -1;
-						else if (GMT_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
+						else if (gmt_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
@@ -258,7 +258,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Image width */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -W option is deprecated; use -D modifier +w instead.\n");
-				if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+				if ((n = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 				if (Ctrl->D.dim[GMT_X] < 0.0) {
 					Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 					Ctrl->D.interpolate = true;
@@ -277,7 +277,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	if (Ctrl->G.b_rgb[0] == -2) { Ctrl->G.b_rgb[0] = Ctrl->G.b_rgb[1] = Ctrl->G.b_rgb[2] = 1.0; }
 
 	if (!Ctrl->D.active) {	/* Old syntax without reference point implies -Dx0/0 */
-		Ctrl->D.refpoint = GMT_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
+		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}
 	/* Check that the options selected are mutually consistent */
@@ -535,7 +535,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
-		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
+		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
@@ -562,8 +562,8 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 				PSL_free (picture);
 			Return (GMT_PROJECTION_ERROR);
 		}
-		GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
-		GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
+		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
 				gmt_free (GMT, picture);

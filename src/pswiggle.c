@@ -91,7 +91,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 	}
 
 	if (paint_wiggle || outline) {
-		if (!GMT->current.plot.n_alloc) GMT_get_plot_array (GMT);
+		if (!GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		GMT->current.plot.x[0] = x[0];
 		GMT->current.plot.y[0] = y[0];
 		n = 1;
@@ -115,7 +115,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 			GMT->current.plot.x[n] = x[i] + x_inc;
 			GMT->current.plot.y[n] = y[i] + y_inc;
 			n++;
-			if (n == GMT->current.plot.n_alloc) GMT_get_plot_array (GMT);
+			if (n == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
 		GMT->current.plot.x[n] = x[np-1];
 		GMT->current.plot.y[n] = y[np-1];
@@ -123,7 +123,7 @@ GMT_LOCAL void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *
 
 		if (paint_wiggle) {
 			for (i = np - 2; i >= 0; i--, n++) {	/* Go back to 1st point along track */
-				if (n == GMT->current.plot.n_alloc) GMT_get_plot_array (GMT);
+				if (n == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 				GMT->current.plot.x[n] = x[i];
 				GMT->current.plot.y[n] = y[i];
 			}
@@ -186,7 +186,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->T.pen = C->W.pen = GMT->current.setting.map_default_pen;
-	GMT_init_fill (GMT, &C->G.fill[0], GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
+	gmt_init_fill (GMT, &C->G.fill[0], GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
 	C->G.fill[1] = C->G.fill[0];
 
 	return (C);
@@ -295,7 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					default : j = 0, k = 0; break;
 				}
 				Ctrl->G.active[k] = true;
-				if (GMT_getfill (GMT, &opt->arg[j], &Ctrl->G.fill[k])) {
+				if (gmt_getfill (GMT, &opt->arg[j], &Ctrl->G.fill[k])) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -320,8 +320,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);
 				wantx = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LON;
 				wanty = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LAT;
-				n_errors += GMT_verify_expectations (GMT, wantx, gmt_scanf_arg (GMT, txt_a, wantx, &Ctrl->S.lon), txt_a);
-				n_errors += GMT_verify_expectations (GMT, wanty, gmt_scanf_arg (GMT, txt_b, wanty, &Ctrl->S.lat), txt_b);
+				n_errors += gmt_verify_expectations (GMT, wantx, gmt_scanf_arg (GMT, txt_a, wantx, &Ctrl->S.lon), txt_a);
+				n_errors += gmt_verify_expectations (GMT, wanty, gmt_scanf_arg (GMT, txt_b, wanty, &Ctrl->S.lat), txt_b);
 				if ((units = strrchr (opt->arg, '/')) != NULL) {
 					units++;
 					Ctrl->S.label = strdup (units);
@@ -330,14 +330,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
 					gmt_pen_syntax (GMT, 'T', " ", 0);
 					n_errors++;
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}

@@ -37,7 +37,7 @@
 #define GMT_PROG_OPTIONS "-:>KOVabdfghi" GMT_OPT("HMm")
 
 int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
-void GMT_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
+void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
 
 #define POINT			0
 #define EVENT			1
@@ -150,8 +150,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.scale = 1.0;
 	C->F.mode = POINT;
 	C->F.geometry = GMT_IS_POINT;
-	GMT_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
-	GMT_init_fill (GMT, &C->G.fill[N_ID], 1.0, 1.0, 1.0);				/* Default text color */
+	gmt_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
+	gmt_init_fill (GMT, &C->G.fill[N_ID], 1.0, 1.0, 1.0);				/* Default text color */
 	C->G.fill[N_ID].rgb[3] = 0.25;	/* Default text transparency */
 	C->I.file = strdup ("http://maps.google.com/mapfiles/kml/pal4/icon57.png");	/* Default icon */
 	C->t_transp = 1.0;
@@ -353,7 +353,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 					case 'f':	/* Symbol/polygon color fill */
 						if (opt->arg[1] == '-')
 				 			Ctrl->G.active[F_ID] = true;
-						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
+						else if (!opt->arg[1] || gmt_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
 							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
@@ -362,7 +362,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 		 				Ctrl->G.active[N_ID] = true;
 						if (opt->arg[1] == '-')
 							Ctrl->t_transp = 0.0;
-						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
+						else if (!opt->arg[1] || gmt_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
 							gmt_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
@@ -440,7 +440,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				k = 0;
 				if (opt->arg[k] == '-') {Ctrl->W.mode = 1; k++;}
 				if (opt->arg[k] == '+') {Ctrl->W.mode = 2; k++;}
-				if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->W.pen)) {
+				if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 0);
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
@@ -607,7 +607,7 @@ GMT_LOCAL void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline,
 }
 
 GMT_LOCAL void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb) {
-	/* Special version of GMT_get_rgb_lookup since no interpolation can take place */
+	/* Special version of gmt_get_rgb_lookup since no interpolation can take place */
 
 	if (index < 0) {	/* NaN, Foreground, Background */
 		GMT_rgb_copy (rgb, P->patch[index+3].rgb);
@@ -636,12 +636,12 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
 				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
+				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
 					gmt_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
+				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
 					gmt_free (GMT, Q);
 					return (EXIT_FAILURE);
@@ -923,7 +923,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			else {	/* Line or polygon means we lay down the placemark first*/
 				if (Ctrl->C.active && gmt_parse_segment_item (GMT, header, "-Z", description)) {
 					double z_val = atof (description);
-					index = GMT_get_index (GMT, P, z_val);
+					index = gmt_get_index (GMT, P, z_val);
 				}
 				kml_print (API, N++, "<Placemark>\n");
 				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
@@ -970,7 +970,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					pos = 0;
 					if (get_z) {
-						if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
+						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
 				}
@@ -989,25 +989,25 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 							sscanf (Dt->table[tbl]->segment[seg]->record[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
 							break;
 					}
-					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
+					if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
 						GMT_Message (API, GMT_TIME_NONE, "Error: Could not decode longitude from %s\n", C[GMT_X]);
 						Return (EXIT_FAILURE);
 					}
-					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
+					if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 						Return (EXIT_FAILURE);
 					}
 					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					if (get_z) {
-						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
+						if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
 							Return (EXIT_FAILURE);
 						}
-						if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
+						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
 					if (Ctrl->F.mode == EVENT) {
-						if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+						if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
 							Return (EXIT_FAILURE);
 						}
@@ -1015,13 +1015,13 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					else if (Ctrl->F.mode == SPAN) {
 						if (!(strcmp (C[t1_col], "NaN")))
 							out[t1_col] = GMT->session.d_NaN;
-						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+						else if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], gmt_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
 							Return (EXIT_FAILURE);
 						}
 						if (!(strcmp (C[t2_col], "NaN")))
 							out[t2_col] = GMT->session.d_NaN;
-						else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], gmt_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
+						else if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], gmt_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
 							Return (EXIT_FAILURE);
 						}

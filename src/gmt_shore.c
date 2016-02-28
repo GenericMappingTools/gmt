@@ -1385,7 +1385,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 
 			GMT->current.plot.n = gmt_map_truncate (GMT, xtmp, ytmp, n, start, -1);
 			n_use = (unsigned int)gmt_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
-			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
+			close = gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[k].lon = gmt_memory (GMT, p[k].lon, n_alloc, double);
 			p[k].lat = gmt_memory (GMT, p[k].lat, n_alloc, double);
@@ -1402,7 +1402,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			GMT->current.plot.n = gmt_map_truncate (GMT, xtmp, ytmp, n, start, +1);
 			n_use = (unsigned int)gmt_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
 			p = gmt_memory (GMT, p, np_new + 1, struct GMT_GSHHS_POL);
-			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
+			close = gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[np_new].lon = gmt_memory (GMT, NULL, n_alloc, double);
 			p[np_new].lat = gmt_memory (GMT, NULL, n_alloc, double);
@@ -1427,7 +1427,7 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 				continue;
 			}
 			else {
-				close = GMT_polygon_is_open (GMT, xtmp, ytmp, n_use);
+				close = gmt_polygon_is_open (GMT, xtmp, ytmp, n_use);
 				n_alloc = (close) ? n_use + 1 : n_use;
 				p[k].lon = gmt_memory (GMT, p[k].lon, n_alloc, double);
 				p[k].lat = gmt_memory (GMT, p[k].lat, n_alloc, double);

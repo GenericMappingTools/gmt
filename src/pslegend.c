@@ -130,29 +130,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 
 			case 'C':	/* Sets the clearance between frame and internal items */
 				Ctrl->C.active = true;
-				if ((n = GMT_get_pair (GMT, opt->arg, GMT_PAIR_DIM_DUP, Ctrl->C.off)) < 0) n_errors++;
+				if ((n = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_DUP, Ctrl->C.off)) < 0) n_errors++;
 				break;
 			case 'D':	/* Sets position and size of legend */
 				Ctrl->D.active = true;
-				if ((Ctrl->D.refpoint = GMT_get_refpoint (GMT, opt->arg)) == NULL) {
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) {
 					n_errors++;	/* Failed basic parsing */
 					break;
 				}
 				if (strstr (opt->arg, "+w")) {	/* New syntax: 	*/
 					/* Args are +w<width>[/<height>][+j<justify>][+l<spacing>][+o<dx>[/<dy>]] */
-					if (GMT_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
+					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "jlow")) n_errors++;
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'j', string))
-						Ctrl->D.justify = GMT_just_decode (GMT, string, PSL_NO_DEF);
+						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
 						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'l', string)) {
 						Ctrl->D.spacing = atof (string);
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 					if (GMT_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
-						if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
+						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 					}
 				}
 				else {	/* Backwards handling of old syntax. Args are args are <width>[/<height>][/<justify>][/<dx>/<dy>] */
@@ -167,14 +167,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 							break;
 						case 2:	/* Gave width and (height or justify) */
 							if (strlen (txt_b) == 2 && strchr ("LMRBCT", txt_b[GMT_X]) && strchr ("LMRBCT", txt_b[GMT_Y]))	/* Gave a 2-char justification code */
-								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, PSL_NO_DEF);
+								Ctrl->D.justify = gmt_just_decode (GMT, txt_b, PSL_NO_DEF);
 							else /* Got height */
 								Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
 							break;
 						case 3:	/* Gave width and (height and justify) or (dx/dy) */
 							if (strlen (txt_c) == 2 && strchr ("LMRBCT", txt_c[GMT_X]) && strchr ("LMRBCT", txt_c[GMT_Y])) {	/* Gave a 2-char justification code */
 								Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
-								Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_NO_DEF);
+								Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_NO_DEF);
 							}
 							else {	/* Just got offsets */
 								Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_b);
@@ -183,7 +183,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 							break;
 						case 4:	/* Gave width and (height or justify) and dx/dy */
 							if (strlen (txt_b) == 2 && strchr ("LMRBCT", txt_b[GMT_X]) && strchr ("LMRBCT", txt_b[GMT_Y]))	/* Gave a 2-char justification code */
-								Ctrl->D.justify = GMT_just_decode (GMT, txt_b, PSL_NO_DEF);
+								Ctrl->D.justify = gmt_just_decode (GMT, txt_b, PSL_NO_DEF);
 							else
 								Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
 							Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_c);
@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 							break;
 						case 5:	/* Got them all */
 							Ctrl->D.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
-							Ctrl->D.justify = GMT_just_decode (GMT, txt_c, PSL_NO_DEF);
+							Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_NO_DEF);
 							Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_d);
 							Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_e);
 							break;
@@ -200,7 +200,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
+				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 					n_errors++;
 				}
@@ -214,7 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
 					sprintf (tmparg, "+g%s", opt->arg);
-					if (GMT_getpanel (GMT, opt->option, tmparg, &(Ctrl->F.panel))) {
+					if (gmt_getpanel (GMT, opt->option, tmparg, &(Ctrl->F.panel))) {
 						gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 						n_errors++;
 					}
@@ -257,7 +257,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GM
 /* Used to draw the current y-line for debug purposes only. */
 GMT_LOCAL void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0) {
 	struct GMT_PEN faint_pen;
-	GMT_init_pen (GMT, &faint_pen, 0.0);
+	gmt_init_pen (GMT, &faint_pen, 0.0);
 	gmt_setpen (GMT, &faint_pen);
 	PSL_plotsegment (PSL, x0, y0, x1, y0);
 }
@@ -271,7 +271,7 @@ GMT_LOCAL void fillcell (struct GMT_CTRL *GMT, double x0, double y0, double y1, 
 	y0 = 0.5 * (y0 + y1 + *d_gap);	/* Recycle y0 to mean mid level */
 	for (col = 0; col < n_cols; col++) {
 		if (!fill[col]) continue;	/* No fill for this cell */
-		if (GMT_getfill (GMT, fill[col], &F)) {
+		if (gmt_getfill (GMT, fill[col], &F)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to interpret %s as a valid fill, skipped\n", fill[col]);
 			continue;
 		}
@@ -461,9 +461,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%s %s %[^\n]", size, font, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);	/* Put size, font and color together for parsing by GMT_getfont */
+						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);	/* Put size, font and color together for parsing by gmt_getfont */
 						ifont = GMT->current.setting.font_title;	/* Set default font */
-						GMT_getfont (GMT, tmp, &ifont);
+						gmt_getfont (GMT, tmp, &ifont);
 						height += Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
 						column_number = 0;
 						break;
@@ -487,9 +487,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by GMT_getfont */
+						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
 						ifont = GMT->current.setting.font_label;	/* Set default font */
-						GMT_getfont (GMT, tmp, &ifont);
+						gmt_getfont (GMT, tmp, &ifont);
 						if (column_number%n_columns == 0) {
 							height += Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
 							column_number = 0;
@@ -612,11 +612,11 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */
 	GMT_memset (GMT->current.setting.map_origin, 2, double);
 
-	GMT_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
+	gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 	/* Allow for justification and offset so that the reference point is the plot location of the bottom left corner of box */
 
-	GMT_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);
+	gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);
 
 	/* Set new origin */
 
@@ -696,7 +696,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 
 					case 'C':	/* Font color change: C textcolor */
 						sscanf (&line[2], "%[^\n]", txtcolor);
-						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txtcolor)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+						if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, txtcolor)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						break;
 
 					case 'D':	/* Delimiter record: D [offset] <pen>|- [-|=|+] */
@@ -725,7 +725,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (txt_b[0] == '-')	/* Gave - as pen, meaning just note at what y-value we are but draw no line */
 							d_line_half_width = 0.0;
 						else {	/* Process the pen specification */
-							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) gmt_pen_syntax (GMT, 'W', " ", 0);
+							if (txt_b[0] && gmt_getpen (GMT, txt_b, &current_pen)) gmt_pen_syntax (GMT, 'W', " ", 0);
 							gmt_setpen (GMT, &current_pen);
 							d_line_half_width = 0.5 * current_pen.width / PSL_POINTS_PER_INCH;	/* Half the pen width */
 						}
@@ -748,7 +748,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						for (col = 0; col < PSLEGEND_MAX_COLS; col++) gmt_str_free (fill[col]);
 						pos = n_col = 0;
 						while ((GMT_strtok (&line[2], " \t", &pos, p))) {
-							if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+							if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, p)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 							if (strcmp (p, "-")) fill[n_col++] = strdup (p);
 							if (n_col > n_columns) {
 								GMT_Report (API, GMT_MSG_NORMAL, "Error: Exceeding specified N columns (%d) in F operator (%d)\n", n_columns, n_col);
@@ -775,14 +775,14 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%s %s %[^\n]", size, font, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by GMT_getfont */
+						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
 						ifont = GMT->current.setting.font_title;	/* Set default font */
-						GMT_getfont (GMT, tmp, &ifont);
+						gmt_getfont (GMT, tmp, &ifont);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 						row_height = Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						row_base_y -= row_height;
-						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y + d_off, GMT_putfont (GMT, ifont), text);
+						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y + d_off, gmt_putfont (GMT, ifont), text);
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
@@ -803,7 +803,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							continue;
 						}
 						PSL_free (dummy);
-						justify = GMT_just_decode (GMT, key, PSL_NO_DEF);
+						justify = gmt_just_decode (GMT, key, PSL_NO_DEF);
 						row_height = GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						x_off = Ctrl->D.refpoint->x;
@@ -826,9 +826,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
-						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by GMT_getfont */
+						sprintf (tmp, "%s,%s,%s", size, font, txtcolor);		/* Put size, font and color together for parsing by gmt_getfont */
 						ifont = GMT->current.setting.font_label;	/* Set default font */
-						GMT_getfont (GMT, tmp, &ifont);
+						gmt_getfont (GMT, tmp, &ifont);
 						d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT (ifont.id)) * ifont.size / PSL_POINTS_PER_INCH;	/* To center the text */
 						if (column_number%n_columns == 0) {	/* Label in first column, also fill row if requested */
 							row_height = Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
@@ -843,10 +843,10 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							drawn = true;
 							break;
 						}
-						justify = GMT_just_decode (GMT, key, 0);
+						justify = gmt_just_decode (GMT, key, 0);
 						x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
-						sprintf (buffer, "%g %g %s B%s %s", x_off, row_base_y + d_off, GMT_putfont (GMT, ifont), key, text);
+						sprintf (buffer, "%g %g %s B%s %s", x_off, row_base_y + d_off, gmt_putfont (GMT, ifont), key, text);
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
@@ -1021,9 +1021,9 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 							drawn = true;
 							break;
 						}
-						if ((API->error = GMT_get_rgbtxt_from_z (GMT, P, txt_c)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
+						if ((API->error = gmt_get_rgbtxt_from_z (GMT, P, txt_c)) != 0) Return (EXIT_FAILURE);	/* If given z=value then we look up colors */
 						if (strchr ("LCR", txt_a[0])) {	/* Gave L, C, or R justification relative to current cell */
-							justify = GMT_just_decode (GMT, txt_a, 0);
+							justify = gmt_just_decode (GMT, txt_a, 0);
 							off_ss = (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 							x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 						}
@@ -1285,7 +1285,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						if (v_line_draw_now) {	/* Second time, now draw line */
 							double v_line_y_stop = d_line_last_y0;
 							v_line_ver_offset = GMT_to_inch (GMT, txt_a);
-							if (txt_b[0] && GMT_getpen (GMT, txt_b, &current_pen)) {
+							if (txt_b[0] && gmt_getpen (GMT, txt_b, &current_pen)) {
 								gmt_pen_syntax (GMT, 'V', " ", 0);
 								Return (GMT_RUNTIME_ERROR);
 							}

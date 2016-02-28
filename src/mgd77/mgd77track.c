@@ -126,7 +126,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.size = MGD77TRACK_ANSIZE;
 	C->D.stop = C->S.stop = DBL_MAX;
 	C->W.pen = GMT->current.setting.map_default_pen;
-	GMT_init_fill (GMT, &C->T.marker[MGD77TRACK_MARK_SAMEDAY].s, 1.0, 1.0, 1.0);	/* White color for other time markers in same day */
+	gmt_init_fill (GMT, &C->T.marker[MGD77TRACK_MARK_SAMEDAY].s, 1.0, 1.0, 1.0);	/* White color for other time markers in same day */
 	if (GMT->current.setting.proj_length_unit == GMT_CM) {
 		C->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size = C->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size = 0.1 / 2.54;	/* 1 mm */
 		C->T.marker[MGD77TRACK_MARK_DIST].marker_size = 0.15 / 2.54;	/* 1.5 mm */
@@ -137,9 +137,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	}
 	C->T.marker[MGD77TRACK_MARK_NEWDAY].font = C->T.marker[MGD77TRACK_MARK_SAMEDAY].font = C->T.marker[MGD77TRACK_MARK_DIST].font =
 	                                           GMT->current.setting.font_annot[GMT_PRIMARY];
-	GMT_getfont (GMT, "Times-BoldItalic", &C->T.marker[MGD77TRACK_MARK_NEWDAY].font);
-	GMT_getfont (GMT, "Times-Italic", &C->T.marker[MGD77TRACK_MARK_SAMEDAY].font);
-	GMT_getfont (GMT, "Times-Roman", &C->T.marker[MGD77TRACK_MARK_DIST].font);
+	gmt_getfont (GMT, "Times-BoldItalic", &C->T.marker[MGD77TRACK_MARK_NEWDAY].font);
+	gmt_getfont (GMT, "Times-Italic", &C->T.marker[MGD77TRACK_MARK_SAMEDAY].font);
+	gmt_getfont (GMT, "Times-Roman", &C->T.marker[MGD77TRACK_MARK_DIST].font);
 
 	return (C);
 }
@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL 
 	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size,
 	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", GMT_putpen (API->GMT, Ctrl->W.pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, Ctrl->W.pen));
 	GMT_Option (API, "X,c,p,t,.");
 	
 	return (EXIT_FAILURE);
@@ -332,7 +332,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->D.mode = true;
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
+						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -341,7 +341,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 						Ctrl->D.mode = true;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
+						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -458,14 +458,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
-				if (GMT_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
+				if (gmt_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
-				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by GMT_getpen */
-				GMT_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
-				if (GMT_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
+				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by gmt_getpen */
+				gmt_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
+				if (gmt_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					gmt_fill_syntax (GMT, 'T', " ");
 					n_errors++;
@@ -474,7 +474,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 
 			case 'W':
 				Ctrl->W.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
@@ -545,7 +545,7 @@ GMT_LOCAL void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 	else
 		just = (angle >= 0.0) ? 3 : 11;
 	form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-	GMT_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size,
+	gmt_smart_justify (GMT, just, angle, GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size,
 	                   GMT->session.u2u[GMT_PT][GMT_INCH] * 0.15 * size, &x, &y, 1);
 	PSL_plottext (PSL, x, y, size, text, angle, just, form);
 }
@@ -809,7 +809,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_CIRCLE);
 					form = gmt_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
-					GMT_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size,
+					gmt_smart_justify (GMT, 5, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 * Ctrl->T.marker[mrk].font_size,
 					                   &plot_x, &plot_y, 1);
 					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] * Ctrl->T.marker[mrk].font_size, label,
 					              angle, 5, form);
@@ -822,7 +822,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_SQUARE);
 					form = gmt_setfont (GMT, &Ctrl->T.marker[mrk].font);
 					plot_x = x;	plot_y = y;
-					GMT_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 *
+					gmt_smart_justify (GMT, 7, angle, 0.5 * Ctrl->T.marker[mrk].font_size, 0.5 *
 					                   Ctrl->T.marker[mrk].font_size, &plot_x, &plot_y, 1);
 					PSL_plottext (PSL, plot_x, plot_y, GMT->session.u2u[GMT_INCH][GMT_PT] *
 					                   Ctrl->T.marker[mrk].font_size, label, angle, 7, form);

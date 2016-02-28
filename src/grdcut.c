@@ -160,9 +160,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
-					n_errors += GMT_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
-					n_errors += GMT_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
-					Ctrl->S.mode = GMT_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
+					Ctrl->S.mode = gmt_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				}
 				break;
 			case 'Z':	/* Detect region via z-range */
@@ -177,8 +177,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_
 					k = 1;
 				}
 				if (sscanf (&opt->arg[k], "%[^/]/%s", za, zb) == 2) {
-					if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
-					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.max), zb);
+					if (!(za[0] == '-' && za[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.max), zb);
 				}
 				break;
 
@@ -488,19 +488,19 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 
-	if (GMT_minmaxinc_verify (GMT, G->header->wesn[XLO], wesn_new[XLO], G->header->inc[GMT_X], GMT_CONV4_LIMIT) == 1) {
+	if (gmt_minmaxinc_verify (GMT, G->header->wesn[XLO], wesn_new[XLO], G->header->inc[GMT_X], GMT_CONV4_LIMIT) == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Old and new x_min do not differ by N * dx\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (GMT_minmaxinc_verify (GMT, wesn_new[XHI], G->header->wesn[XHI], G->header->inc[GMT_X], GMT_CONV4_LIMIT) == 1) {
+	if (gmt_minmaxinc_verify (GMT, wesn_new[XHI], G->header->wesn[XHI], G->header->inc[GMT_X], GMT_CONV4_LIMIT) == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Old and new x_max do not differ by N * dx\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (GMT_minmaxinc_verify (GMT, G->header->wesn[YLO], wesn_new[YLO], G->header->inc[GMT_Y], GMT_CONV4_LIMIT) == 1) {
+	if (gmt_minmaxinc_verify (GMT, G->header->wesn[YLO], wesn_new[YLO], G->header->inc[GMT_Y], GMT_CONV4_LIMIT) == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Old and new y_min do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
-	if (GMT_minmaxinc_verify (GMT, wesn_new[YHI], G->header->wesn[YHI], G->header->inc[GMT_Y], GMT_CONV4_LIMIT) == 1) {
+	if (gmt_minmaxinc_verify (GMT, wesn_new[YHI], G->header->wesn[YHI], G->header->inc[GMT_Y], GMT_CONV4_LIMIT) == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Old and new y_max do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}

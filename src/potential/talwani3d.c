@@ -175,7 +175,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -731,7 +731,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the talwani3d main code ----------------------------*/
 	
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	/* Specify input expected columns to be at least 2 */
 	if ((error = gmt_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 		Return (error);

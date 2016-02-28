@@ -164,7 +164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 					Ctrl->I.status = GRDINFO_GIVE_BOUNDBOX;
 				else {	/* Report -R to nearest given multiple increment */
 					Ctrl->I.status = GRDINFO_GIVE_REG_ROUNDED;
-					if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+					if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 						gmt_inc_syntax (GMT, 'I', 1);
 						n_errors++;
 					}

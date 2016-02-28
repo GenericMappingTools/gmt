@@ -301,12 +301,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					*c = 0;	/* Truncate option at start of modifiers */
 				}
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
-				Ctrl->C.mode = GMT_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
-				mode = GMT_get_distance (GMT, tb, &(Ctrl->C.ds), &X);
+				Ctrl->C.mode = gmt_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
+				mode = gmt_get_distance (GMT, tb, &(Ctrl->C.ds), &X);
 				if (X != 'X' && X != Ctrl->C.unit) n_units++;
 				if (mode != 0 && mode != Ctrl->C.mode) n_modes++;
 				if (j == 3) {
-					mode = GMT_get_distance (GMT, tc, &(Ctrl->C.spacing), &X);
+					mode = gmt_get_distance (GMT, tc, &(Ctrl->C.spacing), &X);
 					if (X != 'X' && X != Ctrl->C.unit) n_units++;
 					if (mode != 0 && mode != Ctrl->C.mode) n_modes++;
 				}
@@ -438,7 +438,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 					Ctrl->T.mode = 2;	/* Report coordinates of non-NaN node and radius as extra columns */
 					*c = 0;			/* Truncate option at start of modifiers */
 				}
-				if (opt->arg[0]) Ctrl->T.dmode = GMT_get_distance (GMT, opt->arg, &(Ctrl->T.radius), &(Ctrl->T.unit));
+				if (opt->arg[0]) Ctrl->T.dmode = gmt_get_distance (GMT, opt->arg, &(Ctrl->T.radius), &(Ctrl->T.unit));
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
@@ -812,10 +812,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->G.n_grids == 1) {	/* May use min/max for a single grid */
 			gmt_grd_minmax (GMT, GC[0].G, xyz);
-			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
+			Din->table[0] = gmt_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, xyz);
 		}
 		else
-			Din->table[0] = GMT_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
+			Din->table[0] = gmt_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
 		if (Din->table == NULL)
 			Return (EXIT_FAILURE);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
@@ -849,7 +849,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
-		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
+		if ((Dtmp = gmt_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
 		if (GMT_Destroy_Data (API, &Din) != GMT_OK) {
 			Return (API->error);
 		}
@@ -877,7 +877,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_DEV]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked deviations(s) in each profile */
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
-		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.alternate)) == NULL) Return (API->error);
+		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.alternate)) == NULL) Return (API->error);
 #if 0
 		if (Ctrl->D.active) {
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {

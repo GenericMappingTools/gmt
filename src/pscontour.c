@@ -141,7 +141,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
-	GMT_contlabel_init (GMT, &C->contour, 1);
+	gmt_contlabel_init (GMT, &C->contour, 1);
 	C->A.single_cont = GMT->session.d_NaN;
 	C->C.single_cont = GMT->session.d_NaN;
 	C->L.pen = GMT->current.setting.map_default_pen;
@@ -264,7 +264,7 @@ GMT_LOCAL void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 
 	if (n < 3) return;	/* Need at least 3 points to make a polygon */
 
-	index = GMT_get_rgb_from_z (GMT, P, z, rgb);
+	index = gmt_get_rgb_from_z (GMT, P, z, rgb);
 	if (P->skip) return;	/* Skip this z-slice */
 
 	/* Now we must paint, with colors or patterns */
@@ -297,7 +297,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	for (pol = 0; pol < n; pol++) {	/* Mark polygons that have other polygons inside them */
 		np = save[pol].n;
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
-			inside = GMT_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
+			inside = gmt_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
 			if (inside == 2) save[pol].do_it = false;
 		}
 	}
@@ -327,7 +327,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 			if (GMT_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
 			if (GMT_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use GMT_y_is_outside since projected x-coordinates)*/
 			
-			inside = GMT_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
+			inside = gmt_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
 		}
 		if (k < 0) continue;	/* Unable to determine */
@@ -345,7 +345,7 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
 		gmt_setpen (GMT, &save[pol].pen);
-		way = GMT_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
+		way = gmt_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label) {	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 			if (mode & 1) PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[GMT_PRIMARY].size, lbl[save[pol].high], 0.0, 6, form);
 			if (mode & 2) gmt_write_label_record (GMT, fp, x_mean, y_mean, 0.0, lbl[save[pol].high], mode & 4);
@@ -439,9 +439,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The default settings are\n");
 	P = API->GMT->current.setting.map_default_pen;
-	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", GMT_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", gmt_putpen (API->GMT, P));
 	P.width *= 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", GMT_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, P));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT file.\n");
 	GMT_Option (API, "X,bi3,bo,c,d,h,i,p,s,t,:,.");
@@ -513,7 +513,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 
 			case 'A':	/* Annotation control */
 				Ctrl->A.active = true;
-				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
+				if (gmt_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
@@ -557,14 +557,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* contour annotation settings */
 				Ctrl->G.active = true;
-				n_errors += GMT_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
+				n_errors += gmt_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
 				break;
 			case 'I':	/* Image triangles */
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Draw triangular mesh lines */
 				Ctrl->L.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					gmt_pen_syntax (GMT, 'L', " ", 0);
 					n_errors++;
 				}
@@ -606,7 +606,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 						j = 0;
 					if (strstr (opt->arg, "+d") || strstr (opt->arg, "+l")) {	/* New parser */
 						if (GMT_get_modifier (opt->arg, 'd', string))
-							if ((n = GMT_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->T.dim)) < 1) n_errors++;
+							if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->T.dim)) < 1) n_errors++;
 						if (GMT_get_modifier (opt->arg, 'l', string)) {	/* Want to label innermost contours */
 							Ctrl->T.label = true;
 							if (string[0] == 0)
@@ -638,7 +638,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				if (opt->arg[k] == '-') Ctrl->W.color_cont = Ctrl->W.color_text = true, k++;
 				j = (opt->arg[k] == 'a' || opt->arg[k] == 'c') ? k+1 : k;
 				if (j == k) {	/* Set both */
-					if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
+					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[0])) {
 						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
@@ -649,9 +649,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					n = k+1;
 					while (!(opt->arg[n] == ',' || opt->arg[n] == '/' || opt->arg[n] == '\0')) n++;
 					strncpy (txt_a, &opt->arg[k], (size_t)(n-k));	txt_a[n-k] = '\0';
-					if (GMT_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
+					if (gmt_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
 					id = (opt->arg[k] == 'a') ? 1 : 0;
-					if (GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
+					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
 						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
@@ -840,7 +840,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	if (make_plot && GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
+	if (make_plot && gmt_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
 
 	/* Map transform */
 
@@ -890,7 +890,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Found %d indices triplets exceeding range of known vertices - skipped.\n", n_skipped);
 	}
 	else {	/* Do our own Delaunay triangulation */
-		np = GMT_delaunay (GMT, x, y, n, &ind);
+		np = gmt_delaunay (GMT, x, y, n, &ind);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Obtained %d indices triplets via Delauney triangulation [%s].\n",
 		            np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
@@ -1283,7 +1283,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 			if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
-				GMT_get_rgb_from_z (GMT, P, cont[c].val, rgb);
+				gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
 				GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 			}
 			if (Ctrl->W.color_text)	/* Override label color according to CPT file */
@@ -1375,12 +1375,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				gmt_free (GMT, last_c);	/* Free last item */
 				if (!use_it) continue;	/* No, go to next */
 				
-				is_closed = !GMT_polygon_is_open (GMT, xp, yp, m);
+				is_closed = !gmt_polygon_is_open (GMT, xp, yp, m);
 
 				if (current_contour != cont[c].val) {
 					if (make_plot) {
 						if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
-							GMT_get_rgb_from_z (GMT, P, cont[c].val, rgb);
+							gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
 							PSL_setcolor (PSL, rgb, PSL_IS_STROKE);
 							GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 						}
@@ -1392,7 +1392,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 				}
 
 				if (make_plot && (cont[c].type == 'A' || cont[c].type == 'a')) {	/* Annotated contours */
-					GMT_get_format (GMT, cont[c].val, Ctrl->contour.unit, NULL, format);
+					gmt_get_format (GMT, cont[c].val, Ctrl->contour.unit, NULL, format);
 					sprintf (cont_label, format, cont[c].val);
 				}
 				if (Ctrl->D.active) {
@@ -1403,12 +1403,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						xtmp = gmt_memory (GMT, NULL, m, double);
 						ytmp = gmt_memory (GMT, NULL, m, double);
 						for (count = 0; count < m; count++) gmt_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
-						S = GMT_prepare_contour (GMT, xtmp, ytmp, m, cont[c].val);
+						S = gmt_prepare_contour (GMT, xtmp, ytmp, m, cont[c].val);
 						gmt_free (GMT, xtmp);
 						gmt_free (GMT, ytmp);
 					}
 					else
-						S = GMT_prepare_contour (GMT, xp, yp, m, cont[c].val);
+						S = gmt_prepare_contour (GMT, xp, yp, m, cont[c].val);
 					/* Select which table this segment should be added to */
 					closed = (is_closed) ? 1 : 0;
 					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? closed : tbl_scl * c) : 0;
@@ -1422,9 +1422,9 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					D->table[tbl]->n_records += m;	D->n_records += m;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLE && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
+						D->table[tbl]->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENT)
-						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
+						S->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
 				}
 
 				if (make_plot) {
@@ -1441,7 +1441,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						save[n_save].cval = cont[c].val;
 						n_save++;
 					}
-					GMT_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, true, &Ctrl->contour);
+					gmt_hold_contour (GMT, &xp, &yp, m, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, true, &Ctrl->contour);
 				}
 
 				gmt_free (GMT, xp);
@@ -1468,7 +1468,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		if (make_plot) {
 			gmt_contlabel_plot (GMT, &Ctrl->contour);
-			GMT_contlabel_free (GMT, &Ctrl->contour);
+			gmt_contlabel_free (GMT, &Ctrl->contour);
 		}
 		if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
 			if ((error = gmt_contlabel_save_end (GMT, &Ctrl->contour)) != 0) Return (error);
@@ -1498,7 +1498,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 	if (Ctrl->E.active)
 		gmt_free (GMT, ind);	/* Allocated above by gmt_memory */
 	else
-		GMT_delaunay_free (GMT, &ind);
+		gmt_delaunay_free (GMT, &ind);
 
 	Return (GMT_OK);
 }

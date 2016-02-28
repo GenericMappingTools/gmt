@@ -4501,7 +4501,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 
 	if (set_equidistant_t && !Ctrl->Q.active) {
 		/* Make sure the min/man/inc values harmonize */
-		switch (GMT_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
+		switch (gmt_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_CONV4_LIMIT)) {
 			case 1:
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T options: (max - min) is not a whole multiple of inc\n");
 				Return (EXIT_FAILURE);

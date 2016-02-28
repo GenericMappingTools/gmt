@@ -152,9 +152,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	if (GMT->current.map.frame.paint)	/* Default Ocean color = Frame background color */
 		C->S.fill = GMT->current.map.frame.fill;
 	else
-		GMT_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color = white */
+		gmt_init_fill (GMT, &C->S.fill, 1.0, 1.0, 1.0);		/* Default Ocean color = white */
 	C->C.fill[LAKE] = C->C.fill[RIVER] = C->S.fill;		/* Default Lake/Riverlake color = Ocean color */
-	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);		/* Default Land color = black */
+	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);		/* Default Land color = black */
 	for (k = 0; k < GSHHS_N_RLEVELS; k++) C->I.pen[k] = GMT->current.setting.map_default_pen;		/* Default river pens */
 	for (k = 0; k < GSHHS_N_BLEVELS; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;		/* Default border pens */
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) C->W.pen[k] = GMT->current.setting.map_default_pen;	/* Default coastline pens */
@@ -300,13 +300,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				Ctrl->C.active = true;
 				if ((opt->arg[0] == 'l' || opt->arg[0] == 'r') && opt->arg[1] == '/') {	/* Specific lake or river-lake fill */
 					k = (opt->arg[0] == 'l') ? LAKE : RIVER;
-					if (opt->arg[2] && GMT_getfill (GMT, &opt->arg[2], &Ctrl->C.fill[k])) {
+					if (opt->arg[2] && gmt_getfill (GMT, &opt->arg[2], &Ctrl->C.fill[k])) {
 						gmt_fill_syntax (GMT, 'C', " ");
 						n_errors++;
 					}
 				}
 				else if (opt->arg[0]) {
-					if (GMT_getfill (GMT, opt->arg, &Ctrl->C.fill[LAKE])) {
+					if (gmt_getfill (GMT, opt->arg, &Ctrl->C.fill[LAKE])) {
 						gmt_fill_syntax (GMT, 'C', " ");
 						n_errors++;
 					}
@@ -338,11 +338,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 					case 't': get_panel[1] = true; break;
 					default : get_panel[0] = get_panel[1] = true; k = 0; break;
 				}
-				if (get_panel[0] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
+				if (get_panel[0] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
-				if (get_panel[1] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
+				if (get_panel[1] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}
@@ -351,7 +351,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
 					Ctrl->G.clip = true;
-				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				else if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -365,7 +365,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				}
 				pen = GMT->current.setting.map_default_pen;	/* Set default pen */
 				if ((string = strchr (opt->arg, '/')) != NULL) {	/* Get specified pen */
-					if (GMT_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
+					if (gmt_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
 						gmt_pen_syntax (GMT, 'I', " ", 0);
 						n_errors++;
 					}
@@ -402,7 +402,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
 				break;
 			case 'm':
 				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
@@ -423,7 +423,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				}
 				pen = GMT->current.setting.map_default_pen;	/* Set default pen */
 				if ((string = strchr (opt->arg, '/')) != NULL) {	/* Get specified pen */
-					if (GMT_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
+					if (gmt_getpen (GMT, ++string, &pen)) {	/* Error decoding pen */
 						gmt_pen_syntax (GMT, 'N', " ", 0);
 						n_errors++;
 					}
@@ -450,20 +450,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				Ctrl->S.active = true;
 				if (opt->arg[0] == 'c' && opt->arg[1] == '\0')
 					Ctrl->S.clip = true;
-				else if (GMT_getfill (GMT, opt->arg, &Ctrl->S.fill)) {
+				else if (gmt_getfill (GMT, opt->arg, &Ctrl->S.fill)) {
 					gmt_fill_syntax (GMT, 'S', " ");
 					n_errors++;
 				}
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
+				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
 			case 'W':
 				Ctrl->W.active = true;	/* Want to draw shorelines */
 				if ((opt->arg[0] >= '1' && opt->arg[0] <= '4') && opt->arg[1] == '/') {	/* Specific pen for this feature */
 					k = (int)(opt->arg[0] - '1');
-					if (opt->arg[2] && GMT_getpen (GMT, &opt->arg[2], &Ctrl->W.pen[k])) {
+					if (opt->arg[2] && gmt_getpen (GMT, &opt->arg[2], &Ctrl->W.pen[k])) {
 						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
@@ -471,7 +471,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				}
 				else if (opt->arg[0]) {	/* Same pen for all features */
 					Ctrl->W.use[0] = true;
-					if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen[0])) {
+					if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen[0])) {
 						gmt_pen_syntax (GMT, 'W', " ", 0);
 						n_errors++;
 					}
@@ -598,10 +598,10 @@ GMT_LOCAL bool add_this_polygon_to_path (struct GMT_CTRL *GMT, int k0, struct GM
 	if (p[k].level != level) return (false);	/* Sorry, this polygon does not have the correct level */
 	if (k0 == -1) return (true);			/* The start level is always used */
 	/* Must make sure the polygon is inside the mother polygon.  Because numerical noise can trick us we try up to two points */
-	if (GMT_non_zero_winding (GMT, p[k].lon[0], p[k].lat[0], p[k0].lon, p[k0].lat, p[k0].n)) return (true);	/* OK, we're in! */
+	if (gmt_non_zero_winding (GMT, p[k].lon[0], p[k].lat[0], p[k0].lon, p[k0].lat, p[k0].n)) return (true);	/* OK, we're in! */
 	/* First point was not inside.  Test another point to see if the first failure was just an accident */
 	j = p[k].n / 2;	/* We pick the second point from the other half of the polygon */
-	if (GMT_non_zero_winding (GMT, p[k].lon[j], p[k].lat[j], p[k0].lon, p[k0].lat, p[k0].n)) return (true);	/* One of those rare occasions when we almost missed a polygon */
+	if (gmt_non_zero_winding (GMT, p[k].lon[j], p[k].lat[j], p[k0].lon, p[k0].lat, p[k0].n)) return (true);	/* One of those rare occasions when we almost missed a polygon */
 	return (false);	/* No, we do not want to use this polygon */
 }
 
@@ -934,7 +934,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			 * This is simply done with a Cartesian inside/outside test, which is adequate.
 			 * the 0.8 factor is arbitrary of course [PW] */
 			
-			donut_hell = (dist > 0.8 * GMT->current.proj.r || GMT_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5));
+			donut_hell = (dist > 0.8 * GMT->current.proj.r || gmt_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5));
 		}
 
 		for (direction = start_direction; paint_polygons && direction <= stop_direction; direction += 2) {
@@ -972,7 +972,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			else {	/* Simply paints all polygons as is */
 				for (k = 0; k < np_new; k++) {
 					if (p[k].n == 0 || p[k].level < level_to_be_painted[lp]) continue;
-					if (donut_hell && GMT_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
+					if (donut_hell && gmt_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
 						n = (int)gmt_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						gmt_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);

@@ -34,7 +34,7 @@
 
 #define GMT_PROG_OPTIONS "-:JRVbdfhirs" GMT_OPT("FH")
 
-void GMT_str_tolower (char *string);
+void gmt_str_tolower (char *string);
 
 struct XYZ2GRD_CTRL {
 	struct In {
@@ -220,7 +220,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -489,7 +489,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read nodata-flag or first data record from ESRI file\n");
 			Return (EXIT_FAILURE);
 		}
-		GMT_str_tolower (line);
+		gmt_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
 			if (fscanf (fp, "%lf", &value) != 1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to parse nodata-flag from ESRI file\n");
@@ -550,7 +550,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	GMT_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
-	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
+	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && GMT_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
@@ -615,7 +615,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 		else {	/* Get x, y, z */
 			if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
-			if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
+			if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 			/* Ok, we are inside the region - process data */
 

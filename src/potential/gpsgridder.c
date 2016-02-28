@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -458,7 +458,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gpsgridder IS NOT A WORKING MODULE YET!\n");
 
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (norm, GSP_LENGTH, double);
 	GMT_memset (&info, 1, struct GMT_GRID_INFO);

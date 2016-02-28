@@ -181,7 +181,7 @@ enum GMT_enum_wesnIDs {
 	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
 */
 /* The GMT_y_is_outside macro returns true if y is outside the given domain.
- * For GMT_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.
+ * For gmt_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.
  */
 
 /*! GMT_is_subset is true if wesn is set and wesn cuts through the grid region */

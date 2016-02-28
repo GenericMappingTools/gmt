@@ -102,7 +102,7 @@ unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
 int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
 bool gmt_is_gleap (int gyear);
-void GMT_str_toupper (char *string);
+void gmt_str_toupper (char *string);
 
 int MGD77_nc_status (struct GMT_CTRL *GMT, int status) {
 	/* This function checks the return status of a netcdf function and takes
@@ -1936,8 +1936,6 @@ static int MGD77_Write_File_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	return (MGD77_NO_ERROR);
 }
 
-#define set_bit(k) (1 << (k))
-
 static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S) {
 	/* Reads the entire data file and applies bitflags and corrections unless they are turned off by calling programs */
 	int nc_id;
@@ -2148,7 +2146,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	if (apply_bits[MGD77_M77_SET] || apply_bits[MGD77_CDF_SET]) {
 		unsigned int bad_nav_bits;
 		unsigned int n_bad = 0;
-		bad_nav_bits = (set_bit(NCPOS_LON) | set_bit(NCPOS_LAT));	/* If flags has these bits turned on we must remove the record (no nav) */
+		bad_nav_bits = (mgd77_set_bit(NCPOS_LON) | mgd77_set_bit(NCPOS_LAT));	/* If flags has these bits turned on we must remove the record (no nav) */
 		for (rec = 0; rec < S->H.n_records; rec++) {	/* Apply bit flags and count how many bad records (i.e., no lon, lat) we found */
 			MGD77_Apply_Bitflags (GMT, F, S, rec, apply_bits);
 			if (S->flags[MGD77_M77_SET][rec] & bad_nav_bits) n_bad++;	/* true if either lon or lat is NaN */
@@ -3156,7 +3154,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		H->errors[ERR]++;
 	}
 	strncpy (copy, P->Format_Description, 151U);
-	GMT_str_toupper (copy);
+	gmt_str_toupper (copy);
 	if (strcmp (copy, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)") OR_TRUE) {
 		if (F->verbose_level & 2) fprintf (fp_err, "Y-E-%s-H10-02: Invalid Format Description: (%s) [(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)]\n", F->NGDC_id, P->Format_Description);
 		H->errors[ERR]++;
@@ -3789,7 +3787,7 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	GMT_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
 	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
-	strncpy (F->user, GMT_putusername(GMT), MGD77_COL_ABBREV_LEN);
+	strncpy (F->user, gmt_putusername(GMT), MGD77_COL_ABBREV_LEN);
 	F->desired_column = gmt_memory (GMT, NULL, MGD77_MAX_COLS, char *);	/* Allocate array pointer for column names */
 	F->verbose_level = 0;
 	F->verbose_dest = 2;

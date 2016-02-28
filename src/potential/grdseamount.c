@@ -270,7 +270,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 				break;
 			case 'I':	/* Grid spacing */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -678,7 +678,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 		
-	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
+	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	nx1 = Grid->header->nx + Grid->header->registration - 1;
 	if (map && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
@@ -709,7 +709,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
 					if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
-					if (GMT_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
+					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 					GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate seamount # %6d\n", n_smts);
 					/* Ok, we are inside the region - process data */
@@ -810,7 +810,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
 					gmt_free (GMT, d_col);
-					d_col = GMT_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
+					d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
 		
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;

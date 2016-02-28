@@ -55,7 +55,7 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
-EXTERN_MSC int GMT_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
+EXTERN_MSC int gmt_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
 /* Control structure for greenspline */
 
@@ -334,17 +334,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
 					n_errors++;
 				}
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[0], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[0]), txt[0]);
-				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[1], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[1]), txt[1]);
+				n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[0], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[0]), txt[0]);
+				n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, txt[1], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[1]), txt[1]);
 				if (n_items > 2) {
 					Ctrl->R3.dimension = 2;
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[2], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[2]), txt[2]);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[3], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[3]), txt[3]);
+					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[2], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[2]), txt[2]);
+					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, txt[3], GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->R3.range[3]), txt[3]);
 				}
 				if (n_items == 6) {
 					Ctrl->R3.dimension = 3;
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[4], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[4]), txt[4]);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[5], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[5]), txt[5]);
+					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[4], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[4]), txt[4]);
+					n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], gmt_scanf_arg (GMT, txt[5], GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->R3.range[5]), txt[5]);
 				}
 				break;
 
@@ -382,7 +382,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct
 				break;
 			case 'I':	/* Table or grid spacings */
 				Ctrl->I.active = true;
-				k = GMT_getincn (GMT, opt->arg, Ctrl->I.inc, 3);
+				k = gmt_getincn (GMT, opt->arg, Ctrl->I.inc, 3);
 				if (k < 1) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -956,7 +956,7 @@ GMT_LOCAL double gradspline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, doubl
  */
 
 GMT_LOCAL double csplint (double *y, double *c, double b, double h2, uint64_t klo) {
-	/* Special version of GMT_csplint where x is equidistant with spacing squared h2
+	/* Special version of support_csplint where x is equidistant with spacing squared h2
  	 * and b is the fractional distance relative to x[klo], so x itself is not needed here. */
 	uint64_t khi;
 	double a, yp;
@@ -996,7 +996,7 @@ GMT_LOCAL void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double p
 	GMT_UNUSED(GMT);
 	GMT_UNUSED(par);
 	L->c = gmt_memory (GMT, NULL, 3*L->n, double);
-	GMT_cspline (GMT, x, L->y, L->n, L->c);
+	gmt_cspline (GMT, x, L->y, L->n, L->c);
 }
 
 GMT_LOCAL void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {
@@ -1354,7 +1354,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	GMT_memset (par,   N_PARAMS, double);
@@ -1689,7 +1689,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (dimension == 3) {
 				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
 				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
-				GMT_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
+				gmt_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
 				GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 				gmt_set_grddim (GMT, Grid->header);
 				/* Also set nz */

@@ -140,7 +140,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				break;
 			case 'D':	/* Draw map insert */
 				Ctrl->D.active = true;
-				n_errors += GMT_getinsert (GMT, 'D', opt->arg, &Ctrl->D.insert);
+				n_errors += gmt_getinsert (GMT, 'D', opt->arg, &Ctrl->D.insert);
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -150,15 +150,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 					case 't': get_panel[2] = true; break;
 					default : get_panel[0] = get_panel[1] = get_panel[2] = true; k = 0; break;
 				}
-				if (get_panel[0] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.insert.panel))) {
+				if (get_panel[0] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->D.insert.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
-				if (get_panel[1] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
+				if (get_panel[1] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->L.scale.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[0], 3);
 					n_errors++;
 				}
-				if (get_panel[2] && GMT_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
+				if (get_panel[2] && gmt_getpanel (GMT, opt->option, &opt->arg[k], &(Ctrl->T.rose.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', kind[1], 3);
 					n_errors++;
 				}
@@ -167,7 +167,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				if (GMT_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 					GMT->current.map.frame.paint = true;
-					if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
+					if (gmt_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
 						gmt_fill_syntax (GMT, 'G', " ");
 						n_errors++;
 					}
@@ -177,11 +177,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct G
 				break;
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
-				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
 				break;
 			case 'T':	/* Draw map rose */
 				Ctrl->T.active = true;
-				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
+				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;
 #if DEBUG
 			case '+':	/* Draw a single gridline only [for debugging]  -+x|y<value>*/

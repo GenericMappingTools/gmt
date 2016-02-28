@@ -197,7 +197,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct 
 				Ctrl->T.active[0] = true;
 				if (opt->arg[0]) {
 					n = sscanf (opt->arg, "%[^/]/%s", A, B);
-					Ctrl->T.mode = GMT_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
+					Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 					if (n == 2) {
 						Ctrl->T.dist[1] = atof (B);
 						Ctrl->T.active[1] = true;

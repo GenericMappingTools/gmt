@@ -198,7 +198,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -227,7 +227,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				break;
 			case 'S':	/* Search radius */
 				Ctrl->S.active = true;
-				Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'W':	/* Use weights */
 				Ctrl->W.active = true;
@@ -318,7 +318,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
 	y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
-	d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
+	d_col = gmt_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 
 	factor = Ctrl->N.sectors / (2.0 * M_PI);
 
@@ -361,7 +361,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		
 		if (GMT_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
 		if (GMT_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
-		if (GMT_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
+		if (gmt_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
 
 		/* Data record to process */
 
@@ -383,13 +383,13 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		for (row = row_0 - d_row; row <= row_end; row++) {
 
 			jj = row;
-			if (GMT_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
+			if (gmt_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
 			rowu = jj;
 			col_end = col_0 + d_col[jj];
 			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
-				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
+				if (gmt_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
 
 				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
 				colu = ii;

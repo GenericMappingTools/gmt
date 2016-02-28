@@ -85,7 +85,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_memory (GMT, NULL, 1, struct GRDVECTOR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 	C->W.pen = GMT->current.setting.map_default_pen;
 	C->S.factor = 1.0;
 	return (C);
@@ -137,7 +137,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes.", 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", GMT_putpen(API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", gmt_putpen(API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z The theta grid provided has azimuths rather than directions (requires -A).\n");
 	GMT_Option (API, "c,f,p,t,.");
@@ -194,7 +194,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				break;
 			case 'G':	/* Set fill for vectors */
 				Ctrl->G.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
@@ -202,7 +202,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 			case 'I':	/* Only use gridnodes Ctrl->I.inc[GMT_X],Ctrl->I.inc[GMT_Y] apart */
 				Ctrl->I.active = true;
 				if (opt->arg[0] == 'x') Ctrl->I.mode = 1;
-				if (GMT_getinc (GMT, &opt->arg[Ctrl->I.mode], Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, &opt->arg[Ctrl->I.mode], Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -271,7 +271,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				break;
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
@@ -407,7 +407,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				if (vec_length > v_max) v_max = vec_length;
 			}
 		}
-		if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max)) == NULL) {
+		if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, v_min, v_max)) == NULL) {
 			Return (API->error);
 		}
 	}
@@ -515,7 +515,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			}
 			
 			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
-				GMT_get_fill_from_z (GMT, P, vec_length, &Ctrl->G.fill);
+				gmt_get_fill_from_z (GMT, P, vec_length, &Ctrl->G.fill);
 				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				gmt_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
@@ -531,7 +531,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			else {	/* Draw straight Cartesian vectors */
 				gmt_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
 				if (Ctrl->T.active)	/* Deal with negative scales in x and/or y which affect the azimuths */
-					GMT_flip_azim_d (GMT, &vec_azim);
+					gmt_flip_azim_d (GMT, &vec_azim);
 				vec_azim = 90.0 - vec_azim;	/* Transform azimuths to plot angle */
 				if (GMT->current.proj.projection == GMT_POLAR) {	/* Must rotate azimuth since circular projection */
 					double x_orient;

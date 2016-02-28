@@ -129,7 +129,7 @@ GMT_LOCAL void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 
 	i = pos = 0;
 	while (!error && (GMT_strtok (string, "/", &pos, text))) {
-		error += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][i/2], gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][i/2], &wesn[i]), text);
+		error += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][i/2], gmt_scanf_arg (GMT, text, GMT->current.io.col_type[GMT_IN][i/2], &wesn[i]), text);
 		i++;
 	}
 	if (error || (i != 4) || gmt_check_region (GMT, wesn)) {
@@ -550,7 +550,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GM
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}

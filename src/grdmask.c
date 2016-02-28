@@ -163,7 +163,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Grid spacings */
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -202,12 +202,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT
 				Ctrl->S.active = true;
 				if ((c = strchr (opt->arg, 'z'))) {	/* Gave -S[-|=|+]z[d|e|f|k|m|M|n] which means read radii from file */
 					c[0] = '0';	/* Replace the z with 0 temporarily */
-					Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+					Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 					Ctrl->S.variable_radius = true;
 					c[0] = 'z';	/* Restore v */
 				}
 				else	/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n] which means radius is fixed or 0 */ 
-					Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+					Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 
 			default:	/* Report bad options */
@@ -273,7 +273,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
-	GMT_enable_threads (GMT);	/* Set number of active threads, if supported */
+	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -316,7 +316,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		if (!Ctrl->S.variable_radius) {
 			radius = Ctrl->S.radius;
 			n_cols = 3;	/* Get x, y, radius */
-			d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
+			d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		}
 	}
 	else {
@@ -367,7 +367,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				for (k = 0; k < S->n_rows; k++) {
 					if (GMT_y_is_outside (GMT, S->coord[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 					xtmp = S->coord[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
-					if (GMT_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
+					if (gmt_x_is_outside (GMT, &xtmp, Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 					/* OK, this point is within bounds, but may be exactly on the border */
 
@@ -387,7 +387,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					/* Here we also include all the nodes within the search radius */
 					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
 						gmt_free (GMT, d_col);
-						d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
+						d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
 						last_radius = radius;
 					}
 					
@@ -407,7 +407,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 				}
 			}
 			else if (S->n_rows > 2) {	/* Assign 'inside' to nodes if they are inside any of the given polygons */
-				if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
+				if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within gmt_inonout */
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for z-values in the data headers */
 					if (S->ogr)	/* OGR data */
 						z_value = gmt_get_aspatial_value (GMT, GMT_IS_Z, S);
@@ -453,7 +453,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
 						side = 0;
-						if (do_test && (side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
+						if (do_test && (side = gmt_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
 
 						ij = GMT_IJP (Grid->header, row, col);

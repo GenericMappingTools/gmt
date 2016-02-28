@@ -203,8 +203,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if ((c = strchr (opt->arg, 'c')) != NULL) Ctrl->I.mode = INT_2D_CART, *c = 0;	/* Chop off unit c as not understood by GMT_get_distance */
-				Ctrl->I.smode = GMT_get_distance (GMT, opt->arg, &(Ctrl->I.inc), &(Ctrl->I.unit));
+				if ((c = strchr (opt->arg, 'c')) != NULL) Ctrl->I.mode = INT_2D_CART, *c = 0;	/* Chop off unit c as not understood by gmt_get_distance */
+				Ctrl->I.smode = gmt_get_distance (GMT, opt->arg, &(Ctrl->I.inc), &(Ctrl->I.unit));
 				if (strchr (GMT_LEN_UNITS, Ctrl->I.unit)) Ctrl->I.mode = INT_2D_GEO;
 				if (Ctrl->I.mode == INT_2D_CART) *c = 'c';	/* Restore the c */
 				break;
@@ -448,17 +448,17 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 						ttime[k] = (resample_path) ? dist_in[row] : S->coord[Ctrl->T.col][row];
 						data[k++] = S->coord[col][row];
 					}
-					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], int_mode);
+					result = gmt_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], int_mode);
 					gmt_free (GMT, ttime);
 					gmt_free (GMT, data);
 				}
 				else {
 					ttime = (resample_path) ? dist_in : S->coord[Ctrl->T.col];
-					result = GMT_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], int_mode);
+					result = gmt_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], int_mode);
 				}
 
 				if (result != GMT_OK) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error from GMT_intpol near row %d!\n", result+1);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
 					return (result);
 				}
 			}

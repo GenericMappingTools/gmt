@@ -127,7 +127,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->E.pen = C->W.pen = GMT->current.setting.map_default_pen;
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
+	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	C->E.size = EBAR_CAP_WIDTH  * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 7p */
 	C->N.mode = PSXY_CLIP_REPEAT;
 	return (C);
@@ -462,7 +462,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use upper case 'K' if your custom symbol refers a variable symbol, ?.\n");
-	GMT_list_custom_symbols (API->GMT);
+	gmt_list_custom_symbols (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Mathangle: radius, start, and stop directions of math angle must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
@@ -591,7 +591,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 					j++;
 					if (opt->arg[j] == '-') {Ctrl->E.mode = 1; j++;}
 					if (opt->arg[j] == '+') {Ctrl->E.mode = 2; j++;}
-					if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->E.pen)) {
+					if (opt->arg[j] && gmt_getpen (GMT, &opt->arg[j], &Ctrl->E.pen)) {
 						gmt_pen_syntax (GMT, 'E', "sets error bar pen attributes", 0);
 						n_errors++;
 					}
@@ -604,7 +604,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
 				Ctrl->G.active = true;
-				if (!opt->arg[0] || GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (!opt->arg[0] || gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " "); n_errors++;
 				}
 				break;
@@ -639,7 +639,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
-					if (c[2] && GMT_getpen (GMT, &c[2], &Ctrl->L.pen)) {
+					if (c[2] && gmt_getpen (GMT, &c[2], &Ctrl->L.pen)) {
 						gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 						n_errors++;
 					}
@@ -668,7 +668,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				j = 0;
 				if (opt->arg[j] == '-') {Ctrl->W.mode = 1; j++;}
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
-				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
+				if (opt->arg[j] && gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:", 3);
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
@@ -749,9 +749,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Initialize GMT_SYMBOL structure */
 
 	GMT_memset (&S, 1, struct GMT_SYMBOL);
-	GMT_contlabel_init (GMT, &S.G, 0);
+	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
-	GMT_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
+	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
 
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
@@ -789,8 +789,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	current_fill = default_fill = (S.symbol == GMT_SYMBOL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active) {
-		GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-		GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+		gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+		gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 	}
 
 	Ctrl->E.size *= 0.5;	/* Since we draw half-way in either direction */
@@ -855,12 +855,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
-		if (GMT_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
+		if (gmt_contlabel_prep (GMT, &S.G, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
 		penset_OK = false;	/* The pen for quoted lines are set within the PSL code itself so we dont do it here in psxy */
 		if (S.G.delay) gmt_map_basemap (GMT);	/* Must do it here due to clipping */
 	}
 	else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
-		if (GMT_decorate_prep (GMT, &S.D, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
+		if (gmt_decorate_prep (GMT, &S.D, NULL)) Return (EXIT_FAILURE);	/* Needed after map_setup */
 	}
 	
 	GMT_set_line_resampling (GMT, Ctrl->A.active, Ctrl->A.mode);	/* Possibly change line resampling mode */
@@ -955,8 +955,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
 					change = gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
 					if (Ctrl->I.active) {
-						GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-						GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+						gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+						gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 					}
 					if (S.read_symbol_cmd) API->object[API->current_item[GMT_IN]]->n_expected_fields = GMT_MAX_COLUMNS;
 					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-S", s_args)) {	/* Found -Sargs */
@@ -1025,8 +1025,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			if (get_rgb) {
-				GMT_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
-				if (Ctrl->I.active) GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+				gmt_get_fill_from_z (GMT, P, in[GMT_Z], &current_fill);
+				if (Ctrl->I.active) gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
 				if (P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 			}
 
@@ -1193,14 +1193,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					}
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
 						dim[0] = p_in[ex1];
-						GMT_flip_angle_d (GMT, &dim[0]);
+						gmt_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2];
 						dim[2] = p_in[ex3];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
-						GMT_flip_angle_d (GMT, &dim[0]);
+						gmt_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
 						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
@@ -1277,7 +1277,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
 					}
 					else {	/* Compute tip coordinates from tail and length */
-						GMT_flip_angle_d (GMT, &direction);
+						gmt_flip_angle_d (GMT, &direction);
 						sincosd (direction, &s, &c);
 						x_2 = xpos[item] + length * c;
 						y_2 = plot_y + length * s;
@@ -1399,7 +1399,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			S.method = SEGM_REFPOINT;	S.level = SEGM_RECORD;
-			D = GMT_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the original data */
+			D = gmt_segmentize_data (GMT, Dtmp, &S);	/* Segmentize the original data */
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
 				Return (API->error);
 			}
@@ -1409,7 +1409,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			if ((Dtmp = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			D = GMT_segmentize_data (GMT, Dtmp, &(Ctrl->F.S));	/* Segmentize the data */
+			D = gmt_segmentize_data (GMT, Dtmp, &(Ctrl->F.S));	/* Segmentize the data */
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {	/* Be gone with the original */
 				Return (API->error);
 			}
@@ -1432,7 +1432,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
-				if (!polygon && GMT_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
+				if (!polygon && gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
 				
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
@@ -1444,7 +1444,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 
-				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
+				duplicate = (D->alloc_mode == GMT_ALLOC_EXTERNALLY && ((polygon && gmt_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) || GMT->current.map.path_mode == GMT_RESAMPLE_PATH));
 				if (duplicate)	/* Must duplicate externally allocated segment since it needs to be resampled below */
 					L = gmt_duplicate_segment (GMT, D->table[tbl]->segment[seg]);
 
@@ -1453,7 +1453,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (gmt_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front, quoted or decorated lines */
 						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_DECORATED_LINE && s_args[0] == '~') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */
 							gmt_contlabel_plot (GMT, &S.G);
-							GMT_contlabel_free (GMT, &S.G);
+							gmt_contlabel_free (GMT, &S.G);
 							gmt_parse_symbol_option (GMT, s_args, &S, 0, false);
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later */
 						}
@@ -1483,8 +1483,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					continue;
 				}
 				if (Ctrl->I.active) {
-					GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
-					GMT_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
+					gmt_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
+					gmt_illuminate (GMT, Ctrl->I.value, default_fill.rgb);
 				}
 				if (change & 4 && penset_OK) gmt_setpen (GMT, &current_pen);
 				if (change & 1) polygon = true;
@@ -1495,7 +1495,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				if (S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from segment header */
 					gmt_extract_label (GMT, L->header, S.G.label, L->ogr);
 
-				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
+				if (polygon && gmt_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
 					size_t n_alloc;
 					L->n_rows++;
@@ -1519,7 +1519,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					S.G.line_pen = current_pen;
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
 					for (k0 = 0; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
-					if (split) {	/* Must write out separate sections via GMT_hold_contour */
+					if (split) {	/* Must write out separate sections via gmt_hold_contour */
 						uint64_t k1, n_section;
 						size_t n_alloc;
 						double *xxx = NULL, *yyy = NULL;
@@ -1531,20 +1531,20 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							n_section = k1 - k0;	/* Number of points in this section */
 							GMT_Report (API, GMT_MSG_DEBUG, "Quoted Sub-line starts at point %d and have length %d\n", (int)k0, (int)n_section);
 							/* Make a copy of this section's coordinates */
-							/* Get temp array of length n_section since GMT_hold_contour may change length */
+							/* Get temp array of length n_section since gmt_hold_contour may change length */
 							n_alloc = 0;
 							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
 							GMT_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
 							GMT_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
-							GMT_hold_contour (GMT, &xxx, &yyy, n_section, 0.0, "N/A", 'A', S.G.label_angle, false, false, &S.G);
+							gmt_hold_contour (GMT, &xxx, &yyy, n_section, 0.0, "N/A", 'A', S.G.label_angle, false, false, &S.G);
 							k0 = k1;	/* Goto start of next section */
 							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
 						}
 					}
 					else {	/* Just one line, which may even be closed */
-						closed = !(GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
-						GMT_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
-						GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since GMT_hold_contour reallocates to fit the array */
+						closed = !(gmt_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n));
+						gmt_hold_contour (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, 0.0, "N/A", 'A', S.G.label_angle, closed, false, &S.G);
+						GMT->current.plot.n_alloc = GMT->current.plot.n;	/* Since gmt_hold_contour reallocates to fit the array */
 					}
 				}
 				else if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Decorated lines are dealt with by the contour machinery */
@@ -1554,7 +1554,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n, PSL_LINEAR);
 					/* gmt_geo_to_xy_line may have chopped the line into multiple pieces if exiting and reentering the domain */
 					for (k0 = 1; !split && k0 < GMT->current.plot.n; k0++) if (GMT->current.plot.pen[k0] == PSL_MOVE) split = true;
-					if (split) {	/* Must write out separate sections via GMT_hold_contour */
+					if (split) {	/* Must write out separate sections via gmt_hold_contour */
 						uint64_t k1, n_section;
 						size_t n_alloc;
 						double *xxx = NULL, *yyy = NULL;
@@ -1566,18 +1566,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							n_section = k1 - k0;	/* Number of points in this section */
 							GMT_Report (API, GMT_MSG_DEBUG, "Decorated Sub-line starts at point %d and have length %d\n", (int)k0, (int)n_section);
 							/* Make a copy of this section's coordinates */
-							/* Get temp array of length n_section since GMT_decorated_line may change length */
+							/* Get temp array of length n_section since gmt_decorated_line may change length */
 							n_alloc = 0;
 							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
 							GMT_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
 							GMT_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
-							GMT_decorated_line (GMT, &xxx, &yyy, n_section, &S.D, Decorate, seg_out);
+							gmt_decorated_line (GMT, &xxx, &yyy, n_section, &S.D, Decorate, seg_out);
 							k0 = k1;	/* Goto start of next section */
 							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
 						}
 					}
 					else	/* Just one line, which may even be closed */
-						GMT_decorated_line (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, &S.D, Decorate, seg_out);
+						gmt_decorated_line (GMT, &GMT->current.plot.x, &GMT->current.plot.y, GMT->current.plot.n, &S.D, Decorate, seg_out);
 				}
 				else {	/* Plot line */
 					uint64_t end;
@@ -1708,7 +1708,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	GMT_symbol_free (GMT, &S);
+	gmt_symbol_free (GMT, &S);
 	
 	gmt_plotend (GMT);
 

@@ -37,7 +37,7 @@
 
 #define GMT_PROG_OPTIONS "->Vbdhi"
 
-unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+unsigned int gmt_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 
@@ -125,7 +125,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
-	if (GMT_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
+	if (gmt_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT file [Default uses color table]. Append i to match the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input CPT file.\n");
@@ -329,7 +329,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+	if (Ctrl->G.active) Pin = gmt_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 	
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 	if (Ctrl->E.active && Ctrl->E.levels == 0) Ctrl->E.levels = Pin->n_colors + 1;	/* Default number of levels */
@@ -360,7 +360,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		nz = GMT_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
+		nz = gmt_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
 	}
 	else if (Ctrl->T.active) {	/* Establish linear grid */
 		if (Ctrl->T.inc == 0 && Ctrl->C.active) {	/* Compute interval from number of colors in palette */
@@ -413,11 +413,11 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 
 	/* Now we can resample the CPT file and write out the result */
 
-	Pout = GMT_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
+	Pout = gmt_sample_cpt (GMT, Pin, z, nz, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);
 
 	if (!Ctrl->T.file) gmt_free (GMT, z);
 
-	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
+	if (Ctrl->A.active) gmt_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;

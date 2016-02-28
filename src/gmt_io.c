@@ -734,7 +734,7 @@ GMT_LOCAL bool gmtio_is_a_NaN_line (char *line) {
 	char p[GMT_LEN256] = {""};
 
 	while ((GMT_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p))) {
-		GMT_str_tolower (p);
+		gmt_str_tolower (p);
 		if (strncmp (p, "nan", 3U)) return (false);
 	}
 	return (true);
@@ -2012,7 +2012,7 @@ GMT_LOCAL int gmtio_scanf_g_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd
 				return (-1);
 				break;
 		}
-		GMT_str_toupper (month);
+		gmt_str_toupper (month);
 		for (i = ival[1] = 0; i < 12 && ival[1] == 0; i++) {
 			if (!strcmp (month, GMT->current.language.month_name[3][i])) ival[1] = i + 1;
 		}
@@ -2618,7 +2618,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	}
 	if (T->ogr->geometry == GMT_IS_POLYGON || T->ogr->geometry == GMT_IS_MULTIPOLYGON) {	/* Must check consistency */
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
-			if ((T->ogr->geometry == GMT_IS_POLYGON || T->ogr->geometry == GMT_IS_MULTIPOLYGON) && GMT_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows)) {
+			if ((T->ogr->geometry == GMT_IS_POLYGON || T->ogr->geometry == GMT_IS_MULTIPOLYGON) && gmt_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -a option specified [M]POLY but open segments were detected!\n");
 				GMT_Destroy_Data (GMT->parent, &D[GMT_OUT]);
 				return (GMT_RUNTIME_ERROR);
@@ -2631,8 +2631,8 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		/* OK, they are all polygons.  Determine any polygon holes: if a point is fully inside another polygon (not on the edge) */
 		for (seg1 = 0; seg1 < T->n_segments; seg1++) {	/* For each segment in the table */
 			for (seg2 = seg1 + 1; seg2 < T->n_segments; seg2++) {	/* For each segment in the table */
-				if (GMT_inonout (GMT, T->segment[seg1]->coord[GMT_X][0], T->segment[seg1]->coord[GMT_Y][0], T->segment[seg2]) == GMT_INSIDE) T->segment[seg1]->ogr->pol_mode = GMT_IS_HOLE;
-				if (GMT_inonout (GMT, T->segment[seg2]->coord[GMT_X][0], T->segment[seg2]->coord[GMT_Y][0], T->segment[seg1]) == GMT_INSIDE) T->segment[seg2]->ogr->pol_mode = GMT_IS_HOLE;
+				if (gmt_inonout (GMT, T->segment[seg1]->coord[GMT_X][0], T->segment[seg1]->coord[GMT_Y][0], T->segment[seg2]) == GMT_INSIDE) T->segment[seg1]->ogr->pol_mode = GMT_IS_HOLE;
+				if (gmt_inonout (GMT, T->segment[seg2]->coord[GMT_X][0], T->segment[seg2]->coord[GMT_Y][0], T->segment[seg1]) == GMT_INSIDE) T->segment[seg2]->ogr->pol_mode = GMT_IS_HOLE;
 			}
 		}
 	}
@@ -2642,7 +2642,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		struct GMT_DATASEGMENT **L = NULL;
 
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
-			if (!GMT_crossing_dateline (GMT, T->segment[seg])) continue;	/* GIS-safe feature! */
+			if (!gmt_crossing_dateline (GMT, T->segment[seg])) continue;	/* GIS-safe feature! */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Feature %" PRIu64 " crosses the Dateline\n", seg);
 			if (!GMT->common.a.clip) continue;	/* Not asked to clip */
 			/* Here we must split into east and west part(s) */
@@ -3515,7 +3515,7 @@ GMT_LOCAL FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const 
 		/* Scan for geographical or time units */
 		if (gmt_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "long_name", long_name, GMT_LEN256)) long_name[0] = 0;
 		if (gmt_nc_get_att_text (GMT, GMT->current.io.ncid, GMT->current.io.varid[i], "units", units, GMT_LEN256)) units[0] = 0;
-		GMT_str_tolower (long_name); GMT_str_tolower (units);
+		gmt_str_tolower (long_name); gmt_str_tolower (units);
 
 		if (GMT->current.io.col_type[GMT_IN][i] == GMT_IS_FLOAT)
 			{ /* Float type is preset, do not alter */ }
@@ -4348,7 +4348,7 @@ int gmt_access (struct GMT_CTRL *GMT, const char* filename, int mode) {
 	if (file[0] == '\0')
 		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
-	if ((c = GMT_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
+	if ((c = gmt_file_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
@@ -4758,7 +4758,7 @@ int gmt_determine_pole (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	static char *pole[5] = {"south (CCW)", "south (CW)", "no", "north (CW)", "north (CCW)"};
 
 	if (n == 0) return -99;	/* Nothing given */
-	if (GMT_polygon_is_open (GMT, lon, lat, n)) {	/* Should not happen */
+	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* Should not happen */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot call gmt_determine_pole on an open polygon\n");
 		return -99;
 	}
@@ -6140,20 +6140,20 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 			z = (G) ? G->dvalue[ogr_col] : GMT->current.io.OGR->dvalue[col];
 			switch (GMT->common.a.col[col]) {
 				case GMT_IS_G:
-					if (GMT_getfill (GMT, txt, fill)) {
+					if (gmt_getfill (GMT, txt, fill)) {
 						*use_fill = true;
 						change = 1;
 						processed++;	/* Processed one option */
 					}
 					break;
 				case GMT_IS_W:
-					if (GMT_getpen (GMT, txt, pen)) {
+					if (gmt_getpen (GMT, txt, pen)) {
 						*use_pen = true;
 						change |= 4;
 					}
 					break;
 				case GMT_IS_Z:
-					GMT_get_fill_from_z (GMT, P, z, fill);
+					gmt_get_fill_from_z (GMT, P, z, fill);
 					*use_fill = true;
 					change |= 2;
 					processed++;	/* Processed one option */
@@ -6180,7 +6180,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 			if (*use_fill) change = 1;
 			processed++;	/* Processed one option */
 		}
-		else if (!GMT_getfill (GMT, line, &test_fill)) {	/* Successfully processed a -G<fill> option */
+		else if (!gmt_getfill (GMT, line, &test_fill)) {	/* Successfully processed a -G<fill> option */
 			*fill = test_fill;
 			*use_fill = true;
 			change = 1;
@@ -6190,13 +6190,13 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	}
 	if (P && gmt_parse_segment_item (GMT, header, "-Z", line)) {	/* Found a potential -Z option to set symbol r/g/b via cpt-lookup */
 		if(!strncmp (line, "NaN", 3U))	{	/* Got -ZNaN */
-			GMT_get_fill_from_z (GMT, P, GMT->session.d_NaN, fill);
+			gmt_get_fill_from_z (GMT, P, GMT->session.d_NaN, fill);
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
 		}
 		else if (sscanf (line, "%lg", &z) == 1) {
-			GMT_get_fill_from_z (GMT, P, z, fill);
+			gmt_get_fill_from_z (GMT, P, z, fill);
 			*use_fill = true;
 			change |= 2;
 			processed++;	/* Processed one option */
@@ -6217,7 +6217,7 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 			*use_pen = def_outline;
 			if (def_outline) change |= 4;
 		}
-		else if (!GMT_getpen (GMT, line, &test_pen)) {
+		else if (!gmt_getpen (GMT, line, &test_pen)) {
 			*pen = test_pen;
 			*use_pen = true;
 			change |= 4;
@@ -6844,7 +6844,7 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			n_read++;
 		}
 
-		if (pol_check) this_is_poly = (!GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
+		if (pol_check) this_is_poly = (!gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row));	/* true if this segment is closed polygon */
 		if (this_is_poly) n_poly_seg++;
 		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */
 			if (this_is_poly) poly = true;
@@ -6860,7 +6860,7 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 					row++;	/* Explicitly close polygon */
 				}
 			}
-			else if (GMT_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) {	/* Cartesian closure */
+			else if (gmt_polygon_is_open (GMT, GMT->hidden.mem_coord[GMT_X], GMT->hidden.mem_coord[GMT_Y], row)) {	/* Cartesian closure */
 				gmt_prep_tmp_arrays (GMT, row, T->segment[seg]->n_columns);	/* Init or update tmp read vectors */
 				for (col = 0; col < T->segment[seg]->n_columns; col++) GMT->hidden.mem_coord[col][row] = GMT->hidden.mem_coord[col][0];
 				row++;	/* Explicitly close polygon */

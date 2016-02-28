@@ -43,11 +43,11 @@
  * x2sys_free_coe_dbase : Free the array of COE structures
  *------------------------------------------------------------------
  * Core crossover functions are part of GMT:
- * GMT_init_track	: Prepares a track for crossover analysis
- * GMT_crossover	: Calculates crossovers for two data sets
+ * gmt_init_track	: Prepares a track for crossover analysis
+ * gmt_crossover	: Calculates crossovers for two data sets
  * GMT_x_alloc		: Allocate space for crossovers
- * GMT_x_free		: Free crossover structure
- * GMT_ysort		: Sorting routine used in x2sys_init_track [Hidden]
+ * gmt_x_free		: Free crossover structure
+ * support_ysort		: Sorting routine used in x2sys_init_track [Hidden]
  *------------------------------------------------------------------
  * These routines are local to x2sys and used by the above routines:
  *
@@ -1122,7 +1122,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					if (p[2] == 'd') geodetic = GMT_IS_M180_TO_P180_RANGE;
 					break;
 				case 'I':
-					if (GMT_getinc (GMT, &p[2], B->inc)) {
+					if (gmt_getinc (GMT, &p[2], B->inc)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
@@ -1731,11 +1731,11 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			else if (!strcmp (start[k], "NaN") || !strcmp (stop[k], "NaN"))	/* No time for this track */
 				P[p].start[k] = P[p].stop[k] = GMT->session.d_NaN;
 			else {
-				if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
+				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
 					exit (EXIT_FAILURE);
 				}
-				if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
+				if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
 					exit (EXIT_FAILURE);
 				}
@@ -1776,7 +1776,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = GMT->session.d_NaN;
-				else if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
+				else if (gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
 					exit (EXIT_FAILURE);
 				}

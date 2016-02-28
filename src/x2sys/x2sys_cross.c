@@ -561,7 +561,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 		time[0] = (has_time[0]) ? data[0][s->t_col] : x2sys_dummytimes (GMT, n_rec[0]) ;
 
-		GMT_init_track (GMT, data[0][s->y_col], n_rec[0], &ylist_A);
+		gmt_init_track (GMT, data[0][s->y_col], n_rec[0], &ylist_A);
 
 		for (B = A; B < n_tracks; B++) {
 			if (duplicate[B]) continue;
@@ -615,12 +615,12 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 				time[1] = (has_time[1]) ? data[1][s->t_col] : x2sys_dummytimes (GMT, n_rec[1]);
 
-				GMT_init_track (GMT, data[1][s->y_col], n_rec[1], &ylist_B);
+				gmt_init_track (GMT, data[1][s->y_col], n_rec[1], &ylist_B);
 			}
 
 			/* Calculate all possible crossover locations */
 
-			nx = GMT_crossover (GMT, data[0][s->x_col], data[0][s->y_col], data_set[0].ms_rec, ylist_A, n_rec[0], data[1][s->x_col], data[1][s->y_col], data_set[1].ms_rec, ylist_B, n_rec[1], (A == B), wrap, &XC);
+			nx = gmt_crossover (GMT, data[0][s->x_col], data[0][s->y_col], data_set[0].ms_rec, ylist_A, n_rec[0], data[1][s->x_col], data[1][s->y_col], data_set[1].ms_rec, ylist_B, n_rec[1], (A == B), wrap, &XC);
 
 			if (nx && xover_locations_only) {	/* Report crossover locations only */
 				sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
@@ -631,7 +631,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					if (s->geographic) gmt_lon_range_adjust (s->geodetic, &out[0]);
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
-				GMT_x_free (GMT, &XC);
+				gmt_x_free (GMT, &XC);
 			}
 			else if (nx) {	/* Got crossovers, now estimate crossover values */
 				int64_t start_s;
@@ -726,7 +726,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 							/* Ok, got enough data to interpolate at xover */
 
 							first = Ctrl->W.width - n_left;
-							n_errors = GMT_intpol (GMT, &t[first], &y[first], (n_left + n_right), 1, &time_x[k], &xdata[k][col], GMT->current.setting.interpolant);
+							n_errors = gmt_intpol (GMT, &t[first], &y[first], (n_left + n_right), 1, &time_x[k], &xdata[k][col], GMT->current.setting.interpolant);
 							if (n_errors == 0) {	/* OK */
 								ok[j]++;
 								n_ok++;
@@ -836,7 +836,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}
 
-				GMT_x_free (GMT, &XC);
+				gmt_x_free (GMT, &XC);
 			}
 
 			if (!same) {	/* Must free up memory for B */

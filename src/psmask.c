@@ -112,7 +112,7 @@ GMT_LOCAL void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, d
 }
 
 GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max) {
-	/* Loosely based on gmt_trace_contour in gmt_support.c.
+	/* Loosely based on support_trace_contour in gmt_support.c.
 	 * Differs in that grd[] is known to only have values 0 (no data) or 1 (data point).
 	 */
 	int k, k0, n_cuts, kk_opposite, first_k, more;
@@ -414,7 +414,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = gmt_memory (GMT, NULL, 1, struct PSMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
-	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
 		
 	return (C);
 }
@@ -528,14 +528,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 				break;
 			case 'G':
 				Ctrl->G.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
@@ -559,7 +559,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 				break;
 			case 'S':	/* Radius of influence */
 				Ctrl->S.active = true;
-				Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -712,7 +712,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			gmt_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
+			d_col = gmt_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
 		}
 		grd_x0 = gmt_grd_coord (GMT, Grid->header, GMT_X);
 		grd_y0 = gmt_grd_coord (GMT, Grid->header, GMT_Y);
@@ -748,13 +748,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			}
 
 			if (GMT_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
-			if (GMT_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
+			if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 			/* Data record to process */
 
 			/* Determine the node closest to the data point */
 
-			if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;			/* Outside grid node range */
+			if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;			/* Outside grid node range */
 
 			if (node_only) {
 				ij = GMT_IJP (Grid->header, row, col);
@@ -840,7 +840,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 				shrink_clip_contours (x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
 				if (Ctrl->F.active) orient_contours (GMT, Grid->header, grd, x, y, n, Ctrl->F.value);
 				if (Ctrl->D.active && n > (uint64_t)Ctrl->Q.min) {	/* Save the contour as output data */
-					S = GMT_prepare_contour (GMT, x, y, n, GMT->session.d_NaN);
+					S = gmt_prepare_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
 					if (n_seg == n_seg_alloc) {
 						size_t n_old_alloc = n_seg_alloc;
@@ -852,9 +852,9 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					D->table[0]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLE && !D->table[0]->file[GMT_OUT])
-						D->table[0]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+						D->table[0]->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENT)
-						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
+						S->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 				}
 				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
 				first = 0;

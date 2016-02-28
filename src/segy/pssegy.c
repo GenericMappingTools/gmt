@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *Ctrl, struct GMT_
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				if (GMT_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
+				if (gmt_getrgb (GMT, opt->arg, Ctrl->F.rgb)) {
 					n_errors++;
 					gmt_rgb_syntax (GMT, 'F', " ");
 				}

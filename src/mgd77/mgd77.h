@@ -225,6 +225,8 @@ typedef char* Text;	/* Used to indicate character strings */
 #define MGD77_COL_ADJ_FAA	4	/* Compute faa from gobs - igf */
 #define MGD77_COL_ADJ_FAA_EOT	5	/* Compute faa from gobs - igf + eot */
 
+#define mgd77_set_bit(k) (1 << (k))
+
 struct MGD77_COLINFO {
 	char *abbrev;		/* Short name that identifies this column */
 	char *name;		/* Longer, descriptive name for column */

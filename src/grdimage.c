@@ -227,7 +227,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 				switch (opt->arg[0]) {
 					case 'F':
 					case 'f':
-						if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
+						if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.f_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
@@ -236,7 +236,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 						break;
 					case 'B':
 					case 'b':
-						if (GMT_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
+						if (gmt_getrgb (GMT, &opt->arg[1], Ctrl->G.b_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
@@ -244,7 +244,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 							Ctrl->G.f_rgb[0] = -1;
 						break;
 					default:	/* Same as -Gf */
-						if (GMT_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
+						if (gmt_getrgb (GMT, opt->arg, Ctrl->G.f_rgb)) {
 							gmt_rgb_syntax (GMT, 'G', " ");
 							n_errors++;
 						}
@@ -709,7 +709,7 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->In.do_rgb) {
 		if (Ctrl->C.active) {		/* Read palette file */
-			if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
+			if ((P = gmt_get_cpt (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
 				Return (API->error);
 			}
 			gray_only = (P && P->is_gray);
@@ -805,16 +805,16 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 					}
 				}
 				else
-					index = GMT_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
+					index = gmt_get_rgb_from_z (GMT, P, Grid_proj[0]->data[node], rgb);
 
 				if (Ctrl->I.active && index != GMT_NAN - 3) {
 					if (!n_grids) {		/* Here we are illuminating an image. Must recompute "node" with the GMT_IJP macro */
 						node = GMT_IJP (Intens_proj->header, actual_row, 0) + (normal_x ? col : nx - col - 1);
 					}
 					if (use_intensity_grid)
-						GMT_illuminate (GMT, Intens_proj->data[node], rgb);
+						gmt_illuminate (GMT, Intens_proj->data[node], rgb);
 					else
-						GMT_illuminate (GMT, Ctrl->I.value, rgb);
+						gmt_illuminate (GMT, Ctrl->I.value, rgb);
 				}
 				
 				if (P && gray_only)		/* Color table only has grays, pick r */

@@ -592,14 +592,14 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				case 'l':  F->mode = DCW_GET_COUNTRY;  break;	/* Country list */
 				case 'L':  F->mode = DCW_GET_COUNTRY_AND_STATE;  break;	/* Country and state list */
 				case 'p':
-					if (GMT_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
+					if (gmt_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
 						gmt_pen_syntax (GMT, option, " ", 0);
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_OUTLINE;
 					break;
 				case 'g':
-					if (GMT_getfill (GMT, &p[1], &(this_item->fill))) {
+					if (gmt_getfill (GMT, &p[1], &(this_item->fill))) {
 						gmt_fill_syntax (GMT, option, " ");
 						n_errors++;
 					}

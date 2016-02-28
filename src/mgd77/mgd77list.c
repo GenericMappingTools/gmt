@@ -448,7 +448,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->D.mode = true;
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
+						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -457,7 +457,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 						Ctrl->D.mode = true;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
-						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
+						if (t && gmt_verify_expectations (GMT, GMT_IS_ABSTIME, gmt_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
@@ -1367,11 +1367,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 						double *cumdist_off_cl = NULL, *cumdist_cl = NULL, *mtf_int_cl = NULL, *mtf_cl = NULL;
 
 						for (k_off = 1; k_off < D->H.n_records; k_off++) {
-							/* Often cruises have repeated points that will prevent GMT_intpol usage because dx = 0
+							/* Often cruises have repeated points that will prevent gmt_intpol usage because dx = 0
 							   We will workaround it by adding a epsilon (.1 meter) to the repeated pt. However,
 							   often the situation is further complicated because repeat points can come in large
 							   packs. For those cases we add an increasingly small offset. But when the number of
-							   repetitions are large, even this strategy fails and we get error from GMT_intpol */
+							   repetitions are large, even this strategy fails and we get error from gmt_intpol */
 							if ((cumdist[k_off] - cumdist[k_off-1]) == 0.0) {
 								if ((k_off - last_k) == 1) {
 									off_rescue -= 0.000001;	/* Slightly and incrementally reduce the move away offset */
@@ -1393,7 +1393,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						/* --------------- Atack the NaNs problem -----------------*/
 						if (clean)		/* Nice, no NaNs at sight */
-							GMT_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
+							gmt_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
 						else {
 							/* Need to allocate these auxiliary vectors */
 							ind = gmt_memory(GMT, NULL, D->H.n_records, int);
@@ -1411,7 +1411,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 									n++;
 								}
 							}
-							GMT_intpol(GMT, cumdist_cl, mtf_cl, n, n, cumdist_off_cl, mtf_int_cl, GMT->current.setting.interpolant);
+							gmt_intpol(GMT, cumdist_cl, mtf_cl, n, n, cumdist_off_cl, mtf_int_cl, GMT->current.setting.interpolant);
 							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
 								if (ind[k_off])
 									mtf_int[k_off] = mtf_int_cl[n++];
