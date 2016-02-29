@@ -7180,6 +7180,10 @@ int gmt_get_V (char arg) {
 	}
 	return mode;
 }
+EXTERN_MSC int GMT_get_V (char arg);		/* For bckward compatibility in MEX for 5.2 */
+int GMT_get_V (char arg) {
+	return gmt_get_V(arg);
+}
 
 /*! . */
 int gmt_loaddefaults (struct GMT_CTRL *GMT, char *file) {
