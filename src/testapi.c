@@ -194,7 +194,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	void *In = NULL, *Out = NULL, *Intmp = NULL, *Outtmp = NULL;
 	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

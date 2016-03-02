@@ -123,6 +123,10 @@ EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customi
 EXTERN_MSC void gmt_fft_initialization (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
 EXTERN_MSC void api_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
+EXTERN_MSC void gmt_translin (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward linear	*/
+EXTERN_MSC void gmt_itranslin (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse linear	*/
+EXTERN_MSC double gmt_cartesian_dist (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
+EXTERN_MSC double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -9688,7 +9692,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
-			GMT_shore_adjust_res (GMT, 'c');
+			gmt_shore_adjust_res (GMT, 'c');
 			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256-1);
 			break;
 

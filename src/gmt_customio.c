@@ -889,7 +889,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0, kk = ij; i < width_in; i++, kk++) {
-			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
+			grid[kk] = gmt_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) {
@@ -1001,7 +1001,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		ij = imag_offset + j2 * width_in + i2;
-		for (iu = 0; iu < width_out; iu++) GMT_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
+		for (iu = 0; iu < width_out; iu++) gmt_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1013,7 +1013,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	return (GMT_NOERROR);
 }
 
-void GMT_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type) {
+void gmt_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type) {
 	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
@@ -1033,12 +1033,12 @@ void GMT_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned
 			((double *)vptr)[k] = (double)z;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to GMT_encode\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmt_encode\n");
 			break;
 	}
 }
 
-float GMT_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type) {
+float gmt_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type) {
 	/* Retrieve the z value from the array location of the (type) pointer */
 	float fval;
 
@@ -1060,7 +1060,7 @@ float GMT_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int typ
 			fval = (float)(((double *)vptr)[k]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to GMT_decode\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmt_decode\n");
 			fval = GMT->session.f_NaN;
 			break;
 	}
@@ -1376,7 +1376,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
-			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
+			grid[kk] = gmt_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (grid[kk] >= header->nan_value) {
 				header->has_NaNs = GMT_GRID_HAS_NANS;
 				grid[kk] = GMT->session.f_NaN;
@@ -1500,7 +1500,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
 		ij = imag_offset + j2 * width_in + i2;
-		for (iu = 0; iu < width_out; iu++) GMT_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
+		for (iu = 0; iu < width_out; iu++) gmt_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 

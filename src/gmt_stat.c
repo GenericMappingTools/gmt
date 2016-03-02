@@ -1885,7 +1885,7 @@ int gmt_mode (struct GMT_CTRL *GMT, double *x, uint64_t n, uint64_t j, bool sort
 		return (0);
 	}
 
-	if (sort) GMT_sort_array (GMT, x, n, GMT_DOUBLE);
+	if (sort) gmt_sort_array (GMT, x, n, GMT_DOUBLE);
 
 	istop = n - j;
 	multiplicity = 0;
@@ -1941,7 +1941,7 @@ int gmt_mode_f (struct GMT_CTRL *GMT, float *x, uint64_t n, uint64_t j, bool sor
 		*mode_est = x[0];
 		return (0);
 	}
-	if (sort) GMT_sort_array (GMT, x, n, GMT_FLOAT);
+	if (sort) gmt_sort_array (GMT, x, n, GMT_FLOAT);
 
 	istop = n - j;
 	multiplicity = 0;
@@ -1996,7 +1996,7 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 	}
 	dev = gmt_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
-	GMT_sort_array (GMT, dev, n, GMT_DOUBLE);
+	gmt_sort_array (GMT, dev, n, GMT_DOUBLE);
 	for (i = n; i > 1 && GMT_is_dnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
@@ -2017,7 +2017,7 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 	}
 	dev = gmt_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
-	GMT_sort_array (GMT, dev, n, GMT_FLOAT);
+	gmt_sort_array (GMT, dev, n, GMT_FLOAT);
 	for (i = n; i > 1 && GMT_is_fnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
@@ -2430,9 +2430,4 @@ void gmt_PvQv (struct GMT_CTRL *GMT, double x, double v_ri[], double pq[], unsig
 		pq[QV_IM] = a[1]*M_SQRT_PI*(A[GMT_IM] - B[GMT_IM])/2.0;
 	}
 }
-
-#if 0
-bool GMT_is_fnan_func (float value) { return (GMT_is_fnan (value)); }
-bool GMT_is_dnan_func (double value) { return (GMT_is_dnan (value)); }
-#endif
 

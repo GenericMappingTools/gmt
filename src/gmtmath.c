@@ -468,7 +468,7 @@ GMT_LOCAL bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DA
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A[-]<ftable>[+s]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
@@ -2496,7 +2496,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
 			for (row = info->T->segment[s]->n_rows; row > 1 && GMT_is_dnan (T->segment[s]->coord[col][row-1]); row--);
 			if (row) {
 				gmt_mode (GMT, T->segment[s]->coord[col], row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
@@ -2514,7 +2514,7 @@ GMT_LOCAL int table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	GMT_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
+	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	for (row = info->T->n_records; row > 1 && GMT_is_dnan (z[row-1]); row--);
 	if (row) {
 		gmt_mode (GMT, z, row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
@@ -2689,7 +2689,7 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
 			for (row = info->T->segment[s]->n_rows; row > 1 && GMT_is_dnan (T->segment[s]->coord[col][row-1]); row--);
 			if (row) {
 				med = (row%2) ? T->segment[s]->coord[col][row/2] : 0.5 * (T->segment[s]->coord[col][(row-1)/2] + T->segment[s]->coord[col][row/2]);
@@ -2705,7 +2705,7 @@ GMT_LOCAL int table_MAD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	GMT_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
+	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	for (row = info->T->n_records; row > 1 && GMT_is_dnan (z[row-1]); row--);
 	if (row) {
 		med = (row%2) ? z[row/2] : 0.5 * (z[(row-1)/2] + z[row/2]);
@@ -2782,7 +2782,7 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = k = 0; s < info->T->n_segments; s++) {
 		if (info->local) {
-			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
 			for (row = info->T->segment[s]->n_rows; row > 1 && GMT_is_dnan (T->segment[s]->coord[col][row-1]); row--);
 			if (row)
 				med = (row%2) ? T->segment[s]->coord[col][row/2] : 0.5 * (T->segment[s]->coord[col][(row-1)/2] + T->segment[s]->coord[col][row/2]);
@@ -2797,7 +2797,7 @@ GMT_LOCAL int table_MEDIAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	GMT_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
+	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	for (row = info->T->n_records; row > 1 && GMT_is_dnan (z[row-1]); row--);
 	if (row)
 		med = (row%2) ? z[row/2] : 0.5 * (z[(row-1)/2] + z[row/2]);
@@ -2863,7 +2863,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			gmt_sort_array (GMT, T->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
 			for (row = info->T->segment[s]->n_rows; row > 1 && GMT_is_dnan (T->segment[s]->coord[col][row-1]); row--);
 			if (row)
 				gmt_mode (GMT, T->segment[s]->coord[col], row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
@@ -2878,7 +2878,7 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			k += info->T->segment[s]->n_rows;
 		}
 	}
-	GMT_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
+	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	for (row = info->T->n_records; row > 1 && GMT_is_dnan (z[row-1]); row--);
 	if (row)
 		gmt_mode (GMT, z, row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
@@ -3196,7 +3196,7 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
-			GMT_sort_array (GMT, T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
+			gmt_sort_array (GMT, T_prev->segment[s]->coord[col], info->T->segment[s]->n_rows, GMT_DOUBLE);
 			p = gmt_quantile (GMT, T_prev->segment[s]->coord[col], S[last]->factor, info->T->segment[s]->n_rows);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
 		}
@@ -3206,7 +3206,7 @@ GMT_LOCAL int table_PQUANT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 		}
 	}
 	if (info->local) return 0;	/* Done with local */
-	GMT_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
+	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
 	p = gmt_quantile (GMT, z, S[last]->factor, info->T->n_records);
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->coord[col][row] = p;
 	gmt_free (GMT, z);
@@ -4368,7 +4368,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 	struct GMTMATH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

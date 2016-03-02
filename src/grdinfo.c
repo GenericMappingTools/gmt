@@ -88,7 +88,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|r|b]] [-L[0|1|2]] [-M]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[s]<dz>] [%s] [%s]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
@@ -235,7 +235,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -359,10 +359,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			 * the grid in the calling program is no longer the original values */
 			new_grid = gmt_set_outgrid (GMT, opt->arg, G, &G2);	/* true if input is a read-only array */
 			gmt_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
-			GMT_sort_array (GMT, G2->data, G2->header->nm, GMT_FLOAT);
+			gmt_sort_array (GMT, G2->data, G2->header->nm, GMT_FLOAT);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);
 			for (ij = 0; ij < n; ij++) G2->data[ij] = (float)fabs (G2->data[ij] - median);
-			GMT_sort_array (GMT, G2->data, n, GMT_FLOAT);
+			gmt_sort_array (GMT, G2->data, n, GMT_FLOAT);
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Free the temporary grid */
 				if (GMT_Destroy_Data (API, &G2) != GMT_OK) {

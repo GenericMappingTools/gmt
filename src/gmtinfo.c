@@ -33,8 +33,8 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("HMm")
 
-int gmt_geo_C_format (struct GMT_CTRL *GMT);
-unsigned int gmt_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+EXTERN_MSC int gmt_geo_C_format (struct GMT_CTRL *GMT);
+EXTERN_MSC unsigned int gmt_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1
@@ -108,7 +108,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deal
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtinfo [<table>] [-Aa|f|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
@@ -298,7 +298,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	struct MINMAX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

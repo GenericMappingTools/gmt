@@ -151,7 +151,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Dea
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmath [%s]\n\t[%s]\n\t[-D<resolution>][+] [%s]\n\t[-M] [-N] [%s] [%s] [%s] [%s]\n\t[%s]"
 		" [%s]\n\t[%s] [%s] [%s] [%s]\n\t%s",	GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT,
@@ -2467,7 +2467,7 @@ GMT_LOCAL void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
+	gmt_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n) {
 		gmt_mode_f (GMT, stack[last]->G->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
@@ -2566,7 +2566,7 @@ GMT_LOCAL void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct 
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4U, unsigned int);	/* Save original pad */
 	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
+	gmt_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n) {
 		med = (n%2) ? stack[last]->G->data[n/2] : 0.5 * (stack[last]->G->data[(n-1)/2] + stack[last]->G->data[n/2]);
@@ -2631,7 +2631,7 @@ GMT_LOCAL void grd_MEDIAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last], info->nm, GMT_FLOAT);
+	gmt_sort_array (GMT, stack[last], info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
 		med = (n%2) ? stack[last]->G->data[n/2] : 0.5f * (stack[last]->G->data[(n-1)/2] + stack[last]->G->data[n/2]);
@@ -2687,7 +2687,7 @@ GMT_LOCAL void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
+	gmt_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
 		gmt_mode_f (GMT, stack[last]->G->data, n, n/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
@@ -3031,7 +3031,7 @@ GMT_LOCAL void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	else {
 		GMT_memcpy (pad, stack[last]->G->header->pad, 4U, unsigned int);	/* Save original pad */
 		gmt_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-		GMT_sort_array (GMT, stack[prev]->G->data, info->nm, GMT_FLOAT);
+		gmt_sort_array (GMT, stack[prev]->G->data, info->nm, GMT_FLOAT);
 		p = (float) gmt_quantile_f (GMT, stack[prev]->G->data, stack[last]->factor, info->nm);
 		GMT_memset (stack[last]->G->data, info->size, float);	/* Wipes everything */
 		gmt_grd_pad_on (GMT, stack[last]->G, pad);		/* Reinstate the original pad */
@@ -4236,7 +4236,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -4373,7 +4373,7 @@ int GMT_grdmath (void *V_API, int mode, void *args) {
 	}
 	x_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_X];	y_noise = GMT_CONV4_LIMIT * info.G->header->inc[GMT_Y];
 	info.dx = gmt_memory (GMT, NULL, info.G->header->my, double);
-	if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
+	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set);
 	info.gshhg_res = Ctrl->D.set;	/* Selected GSHHG resolution, if used */
 	info.A = &Ctrl->A.info;		/* Selected GSHHG flags, if used */
 

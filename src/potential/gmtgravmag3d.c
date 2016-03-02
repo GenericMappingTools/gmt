@@ -154,7 +154,7 @@ GMT_LOCAL int check_triang_cw (unsigned int n, unsigned int type);
 GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0);
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d -T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-C<density>] [-G<outgrid>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
@@ -370,7 +370,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	struct  GMT_DATATABLE *point = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct	GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
 	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;

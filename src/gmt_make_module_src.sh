@@ -149,7 +149,6 @@ if [ "$U_TAG" = "CORE" ]; then
 #include "${FILE_GMT_MODULE_H}"
 #endif
 
-static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 EOF
 else
 	cat << EOF >> ${FILE_GMT_MODULE_C}

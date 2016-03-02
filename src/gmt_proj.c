@@ -1015,30 +1015,6 @@ void gmt_ilamb_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, do
 
 /* -JO OBLIQUE MERCATOR PROJECTION */
 
-void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
-	/* Convert a longitude/latitude point to Oblique Mercator coordinates
-	 * by way of rotation coordinates and then using regular Mercator */
-	double tlon, tlat;
-
-	gmt_obl (GMT, lon * D2R, lat * D2R, &tlon, &tlat);
-
-	*x = GMT->current.proj.j_x * tlon;
-	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) : copysign (DBL_MAX, tlat);
-}
-
-void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
-	/* Convert a longitude/latitude point from Oblique Mercator coordinates
-	 * by way of regular Mercator and then rotate coordinates */
-	double tlon, tlat;
-
-	tlon = x * GMT->current.proj.j_ix;
-	tlat = atan (sinh (y * GMT->current.proj.j_ix));
-
-	gmt_iobl (GMT, lon, lat, tlon, tlat);
-
-	(*lon) *= R2D;	(*lat) *= R2D;
-}
-
 void gmt_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double *olat) {
 	/* Convert a longitude/latitude point to Oblique lon/lat (all in rads) */
 	double p_cross_x[3], X[3];
@@ -1067,6 +1043,30 @@ void gmt_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, doub
 
 	while ((*lon) < 0.0) (*lon) += TWO_PI;
 	while ((*lon) >= TWO_PI) (*lon) -= TWO_PI;
+}
+
+void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
+	/* Convert a longitude/latitude point to Oblique Mercator coordinates
+	 * by way of rotation coordinates and then using regular Mercator */
+	double tlon, tlat;
+
+	gmt_obl (GMT, lon * D2R, lat * D2R, &tlon, &tlat);
+
+	*x = GMT->current.proj.j_x * tlon;
+	*y = (fabs (tlat) < M_PI_2) ? GMT->current.proj.j_x * d_log (GMT, tan (M_PI_4 + 0.5 * tlat)) : copysign (DBL_MAX, tlat);
+}
+
+void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
+	/* Convert a longitude/latitude point from Oblique Mercator coordinates
+	 * by way of regular Mercator and then rotate coordinates */
+	double tlon, tlat;
+
+	tlon = x * GMT->current.proj.j_ix;
+	tlat = atan (sinh (y * GMT->current.proj.j_ix));
+
+	gmt_iobl (GMT, lon, lat, tlon, tlat);
+
+	(*lon) *= R2D;	(*lat) *= R2D;
 }
 
 /* -JT TRANSVERSE MERCATOR PROJECTION */
@@ -1327,6 +1327,71 @@ void gmt_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 /* -JG GENERAL PERSPECTIVE PROJECTION */
 
 /* Set up General Perspective projection */
+
+/* Convert lon/lat to General Perspective x/y */
+
+void gmt_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, double *yt) {
+	double dlon, sin_lat, cos_lat, sin_dlon, cos_dlon;
+	double cosc, sinc;
+	double x, y, kp;
+	double angle;
+
+	dlon = lon - GMT->current.proj.central_meridian;
+	while (dlon < -GMT_180) dlon += 360.0;
+	while (dlon > 180.0) dlon -= 360.0;
+	dlon *= D2R;
+
+	lat = proj_genper_getgeocentric (GMT, lat, 0.0);
+
+	sincosd (lat, &sin_lat, &cos_lat);
+	sincos (dlon, &sin_dlon, &cos_dlon);
+
+	cosc = GMT->current.proj.sinp * sin_lat + GMT->current.proj.cosp * cos_lat * cos_dlon;
+	sinc = d_sqrt(1.0 - cosc * cosc);
+
+	GMT->current.proj.g_outside = false;
+
+	angle = M_PI - dlon;
+	if (cosc < GMT->current.proj.g_P_inverse) { /* over the horizon */
+		GMT->current.proj.g_outside = true;
+
+		if (GMT->current.proj.polar)
+			angle = M_PI - dlon;
+		else if (GMT->current.proj.cosp*sinc != 0.0) {
+			angle = d_acos((sin_lat - GMT->current.proj.sinp*cosc)/(GMT->current.proj.cosp*sinc));
+			if (dlon < 0.0) angle = -angle;
+		}
+		else
+			angle = 0.0;
+
+		sincos (angle, &x, &y);
+		x *= GMT->current.proj.g_rmax;
+		y *= GMT->current.proj.g_rmax;
+		angle *= R2D;
+	}
+	else if (GMT->current.proj.ECC2 != 0.0) { /* within field of view, ellipsoidal earth */
+		proj_genper_toxy (GMT, lat, lon, 0.0, &x, &y);
+		/* angle = GMT->current.proj.g_azimuth; */
+		angle = atan2d(x, y);
+		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
+	}
+	else { /* within field of view, spherical earth */
+		kp = GMT->current.proj.g_R * (GMT->current.proj.g_P - 1.0) / (GMT->current.proj.g_P - cosc);
+		x = kp * cos_lat * sin_dlon;
+		y = kp * (GMT->current.proj.cosp * sin_lat - GMT->current.proj.sinp * cos_lat * cos_dlon);
+		/* angle = GMT->current.proj.g_azimuth; */
+		angle = atan2d(x, y);
+		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
+	}
+
+	proj_genper_to_xtyt (GMT, angle, x, y, GMT->current.proj.g_yoffset, xt, yt);
+
+	if (GMT_is_dnan(*yt) || GMT_is_dnan(*xt)) {
+		gmt_message (GMT, "genper: yt or xt nan\n");
+		gmt_message (GMT, "genper: lon %6.3f lat %6.3f\n", lon, lat);
+		gmt_message (GMT, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);
+	}
+}
 
 void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitude, double azimuth, double tilt, double twist, double width, double height) {
 	double R, Req, Rpolar, Rlat0;
@@ -1626,70 +1691,6 @@ void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 
 }
 
-/* Convert lon/lat to General Perspective x/y */
-
-void gmt_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, double *yt) {
-	double dlon, sin_lat, cos_lat, sin_dlon, cos_dlon;
-	double cosc, sinc;
-	double x, y, kp;
-	double angle;
-
-	dlon = lon - GMT->current.proj.central_meridian;
-	while (dlon < -GMT_180) dlon += 360.0;
-	while (dlon > 180.0) dlon -= 360.0;
-	dlon *= D2R;
-
-	lat = proj_genper_getgeocentric (GMT, lat, 0.0);
-
-	sincosd (lat, &sin_lat, &cos_lat);
-	sincos (dlon, &sin_dlon, &cos_dlon);
-
-	cosc = GMT->current.proj.sinp * sin_lat + GMT->current.proj.cosp * cos_lat * cos_dlon;
-	sinc = d_sqrt(1.0 - cosc * cosc);
-
-	GMT->current.proj.g_outside = false;
-
-	angle = M_PI - dlon;
-	if (cosc < GMT->current.proj.g_P_inverse) { /* over the horizon */
-		GMT->current.proj.g_outside = true;
-
-		if (GMT->current.proj.polar)
-			angle = M_PI - dlon;
-		else if (GMT->current.proj.cosp*sinc != 0.0) {
-			angle = d_acos((sin_lat - GMT->current.proj.sinp*cosc)/(GMT->current.proj.cosp*sinc));
-			if (dlon < 0.0) angle = -angle;
-		}
-		else
-			angle = 0.0;
-
-		sincos (angle, &x, &y);
-		x *= GMT->current.proj.g_rmax;
-		y *= GMT->current.proj.g_rmax;
-		angle *= R2D;
-	}
-	else if (GMT->current.proj.ECC2 != 0.0) { /* within field of view, ellipsoidal earth */
-		proj_genper_toxy (GMT, lat, lon, 0.0, &x, &y);
-		/* angle = GMT->current.proj.g_azimuth; */
-		angle = atan2d(x, y);
-		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
-	}
-	else { /* within field of view, spherical earth */
-		kp = GMT->current.proj.g_R * (GMT->current.proj.g_P - 1.0) / (GMT->current.proj.g_P - cosc);
-		x = kp * cos_lat * sin_dlon;
-		y = kp * (GMT->current.proj.cosp * sin_lat - GMT->current.proj.sinp * cos_lat * cos_dlon);
-		/* angle = GMT->current.proj.g_azimuth; */
-		angle = atan2d(x, y);
-		/* XXX Which one is it? Forgotten R2D. Switched x and y. */
-	}
-
-	proj_genper_to_xtyt (GMT, angle, x, y, GMT->current.proj.g_yoffset, xt, yt);
-
-	if (GMT_is_dnan(*yt) || GMT_is_dnan(*xt)) {
-		gmt_message (GMT, "genper: yt or xt nan\n");
-		gmt_message (GMT, "genper: lon %6.3f lat %6.3f\n", lon, lat);
-		gmt_message (GMT, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);
-	}
-}
 
 /* Convert General Perspective x/y to lon/lat */
 

@@ -118,7 +118,7 @@ void Free_fitcircle_Ctrl (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *C) {	/* D
 }
 
 int GMT_fitcircle_usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: fitcircle [<table>] -L[<norm>] [-F[<flags>]] [-S[<lat>]] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
@@ -223,7 +223,7 @@ double circle_misfit (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint64_
 
 	if (norm == 1) {
 		for (i = 0; i < ndata; i++) work[i] = d_acos (gmt_dot3v (GMT, &data[i].x[0], pole));
-		GMT_sort_array (GMT, work, ndata, GMT_DOUBLE);
+		gmt_sort_array (GMT, work, ndata, GMT_DOUBLE);
 		*circle_distance = (ndata%2) ?  work[ndata/2] : 0.5 * (work[(ndata/2)-1] + work[ndata/2]);
 	}
 	else {
@@ -364,7 +364,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 	struct FITCIRCLE_DATA *data = NULL;
 	struct FITCIRCLE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

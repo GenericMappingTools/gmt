@@ -29,7 +29,6 @@
 #include "gmt_core_module.h"
 #endif
 
-static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 
 /* Sorted array with information for all GMT core modules */
 

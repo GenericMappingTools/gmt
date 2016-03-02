@@ -18,7 +18,8 @@
 
 /*!
  * \file gmt_internals.h
- * \brief All lower-level functions needed within library.
+ * \brief All lower-level functions just needed within the dev library.
+ * These are not available via gmt_dev.h.
  */
 
 /* Authors:	P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
@@ -48,10 +49,8 @@ struct GMT_XINGS {
         unsigned int nx;	/* Number of intersections (1 or 2) */
 };
 
-/* gmt_regexp.c */
-
 EXTERN_MSC int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pattern, bool caseless);
-
+EXTERN_MSC int gmt_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC struct GMT_PALETTE * gmt_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE *P_from, unsigned int mode);
 EXTERN_MSC unsigned int gmt_unit_lookup (struct GMT_CTRL *GMT, int c, unsigned int unit);
@@ -76,9 +75,8 @@ EXTERN_MSC int gmt_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, c
 EXTERN_MSC int gmt_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, double *c);
 EXTERN_MSC int gmt_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 EXTERN_MSC bool gmt_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos);
-EXTERN_MSC int GMT_comp_int_asc (const void *p_1, const void *p_2);
-EXTERN_MSC float GMT_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type);
-EXTERN_MSC void GMT_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type);
+EXTERN_MSC float gmt_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type);
+EXTERN_MSC void gmt_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type);
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * gmt_get_custom_symbol (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmt_free_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmt_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);
@@ -118,15 +116,12 @@ EXTERN_MSC bool gmt_init_complex (struct GMT_GRID_HEADER *h, unsigned int comple
 EXTERN_MSC struct GMT_MATRIX * gmt_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M_in, bool duplicate_data);
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmt_load_rot_matrix (double w, double R[3][3], double E[]);
-//EXTERN_MSC void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
 EXTERN_MSC int gmt_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 EXTERN_MSC double gmt_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
-
 EXTERN_MSC int gmt_gmonth_length (int year, int month);
 EXTERN_MSC void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 EXTERN_MSC int gmt_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
-EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
-EXTERN_MSC int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text);
+EXTERN_MSC void gmt_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 EXTERN_MSC bool gmt_check_url_name (char *fname);
 EXTERN_MSC int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
 EXTERN_MSC bool gmt_is_gleap (int gyear);
@@ -137,164 +132,23 @@ EXTERN_MSC void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double pl
 EXTERN_MSC int gmt_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void gmt_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data);
 EXTERN_MSC int gmtinit_backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
-
-/* Functions declared in gmt_proj.c */
-
-EXTERN_MSC void gmt_vpolar (struct GMT_CTRL *GMT, double lon0);
-EXTERN_MSC void gmt_vmerc (struct GMT_CTRL *GMT, double lon0, double slat);
-EXTERN_MSC void gmt_vcyleq (struct GMT_CTRL *GMT, double lon0, double slat);
-EXTERN_MSC void gmt_vcyleqdist (struct GMT_CTRL *GMT, double lon0, double slat);
-EXTERN_MSC void gmt_vcylstereo (struct GMT_CTRL *GMT, double lon0, double slat);
-EXTERN_MSC void gmt_vmiller (struct GMT_CTRL *GMT, double lon0);
-EXTERN_MSC void gmt_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon);
-EXTERN_MSC void gmt_vlamb (struct GMT_CTRL *GMT, double lon0, double lat0, double pha, double phb);
-EXTERN_MSC void gmt_vtm (struct GMT_CTRL *GMT, double lon0, double lat0);
-EXTERN_MSC void gmt_vlambeq (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon);
-EXTERN_MSC void gmt_vortho (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon);
-EXTERN_MSC void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitude, double azimuth, double tilt, double rotation, double width, double height);
-EXTERN_MSC void gmt_vgnomonic (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon);
-EXTERN_MSC void gmt_vazeqdist (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon);
-EXTERN_MSC void gmt_vmollweide (struct GMT_CTRL *GMT, double lon0, double scale);
-EXTERN_MSC void gmt_vhammer (struct GMT_CTRL *GMT, double lon0, double scale);
-EXTERN_MSC void gmt_vwinkel (struct GMT_CTRL *GMT, double lon0, double scale);
-EXTERN_MSC void gmt_veckert4 (struct GMT_CTRL *GMT, double lon0);
-EXTERN_MSC void gmt_veckert6 (struct GMT_CTRL *GMT, double lon0);
-EXTERN_MSC void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0);
-EXTERN_MSC void gmt_vsinusoidal (struct GMT_CTRL *GMT, double lon0);
-EXTERN_MSC void gmt_vcassini (struct GMT_CTRL *GMT, double lon0, double lat0);
-EXTERN_MSC void gmt_valbers (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2);
-EXTERN_MSC void gmt_valbers_sph (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2);
-EXTERN_MSC void gmt_veconic (struct GMT_CTRL *GMT, double lon0, double lat0, double ph1, double ph2);
-EXTERN_MSC void gmt_vpolyconic (struct GMT_CTRL *GMT, double lon0, double lat0);
-EXTERN_MSC void gmt_vgrinten (struct GMT_CTRL *GMT, double lon0, double scale);
-EXTERN_MSC void gmt_polar (struct GMT_CTRL *GMT, double x, double y, double *x_i, double *y_i);		/* Convert x/y (being theta,r) to x,y	*/
-EXTERN_MSC void gmt_ipolar (struct GMT_CTRL *GMT, double *x, double *y, double x_i, double y_i);		/* Convert (theta,r) to x,y	*/
-EXTERN_MSC void gmt_translin (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward linear	*/
-EXTERN_MSC void gmt_translind (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward linear, but using 0-360 degrees	*/
-EXTERN_MSC void gmt_itranslin (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse linear	*/
-EXTERN_MSC void gmt_itranslind (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse linear, but using 0-360 degrees	*/
-EXTERN_MSC void gmt_translog10 (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward log10	*/
-EXTERN_MSC void gmt_itranslog10 (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse log10	*/
-EXTERN_MSC void gmt_transpowx (struct GMT_CTRL *GMT, double x, double *x_in);				/* Forward pow x	*/
-EXTERN_MSC void gmt_itranspowx (struct GMT_CTRL *GMT, double *x, double x_in);				/* Inverse pow x	*/
-EXTERN_MSC void gmt_transpowy (struct GMT_CTRL *GMT, double y, double *y_in);				/* Forward pow y 	*/
-EXTERN_MSC void gmt_itranspowy (struct GMT_CTRL *GMT, double *y, double y_in);				/* Inverse pow y 	*/
-EXTERN_MSC void gmt_transpowz (struct GMT_CTRL *GMT, double z, double *z_in);				/* Forward pow z 	*/
-EXTERN_MSC void gmt_itranspowz (struct GMT_CTRL *GMT, double *z, double z_in);				/* Inverse pow z 	*/
-EXTERN_MSC void gmt_albers (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Albers)	*/
-EXTERN_MSC void gmt_ialbers (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Albers) to lon/lat	*/
-EXTERN_MSC void gmt_econic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Equidistant Conic)	*/
-EXTERN_MSC void gmt_ieconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Equidistant Conic) to lon/lat	*/
-EXTERN_MSC void gmt_polyconic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Polyconic)	*/
-EXTERN_MSC void gmt_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Polyconic) to lon/lat	*/
-EXTERN_MSC void gmt_albers_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Albers Spherical)	*/
-EXTERN_MSC void gmt_ialbers_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Albers Spherical) to lon/lat	*/
-EXTERN_MSC void gmt_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Azimuthal equal-distance)*/
-EXTERN_MSC void gmt_iazeqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Azimuthal equal-distance) to lon/lat*/
-EXTERN_MSC void gmt_cassini (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Cassini)	*/
-EXTERN_MSC void gmt_icassini (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cassini) to lon/lat	*/
-EXTERN_MSC void gmt_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Cassini Spherical)	*/
-EXTERN_MSC void gmt_icassini_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cassini Spherical) to lon/lat	*/
-EXTERN_MSC void gmt_hammer (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Hammer-Aitoff)	*/
-EXTERN_MSC void gmt_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Hammer-Aitoff) to lon/lat	*/
-EXTERN_MSC void gmt_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (van der Grinten)	*/
-EXTERN_MSC void gmt_igrinten (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (van der Grinten) to lon/lat	*/
-EXTERN_MSC void gmt_merc_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Mercator Spherical)	*/
-EXTERN_MSC void gmt_imerc_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Mercator Spherical) to lon/lat	*/
-EXTERN_MSC void GMT_plrs (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Polar)		*/
-EXTERN_MSC void GMT_iplrs (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Polar) to lon/lat		*/
-EXTERN_MSC void gmt_plrs_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Polar Spherical)	*/
-EXTERN_MSC void gmt_iplrs_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Polar Spherical) to lon/lat	*/
-EXTERN_MSC void gmt_lamb (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Lambert)	*/
-EXTERN_MSC void gmt_ilamb (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Lambert) to lon/lat 	*/
-EXTERN_MSC void gmt_lamb_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Lambert Spherical)	*/
-EXTERN_MSC void gmt_ilamb_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Lambert Spherical) to lon/lat 	*/
-EXTERN_MSC void gmt_oblmrc (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Oblique Mercator)	*/
-EXTERN_MSC void gmt_ioblmrc (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Oblique Mercator) to lon/lat 	*/
-EXTERN_MSC void gmt_genper (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (ORTHO)  */
-EXTERN_MSC void gmt_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (ORTHO) to lon/lat  */
-EXTERN_MSC void gmt_ortho (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (GMT_ORTHO)	*/
-EXTERN_MSC void gmt_iortho (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (GMT_ORTHO) to lon/lat 	*/
-EXTERN_MSC void gmt_gnomonic (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (GMT_GNOMONIC)	*/
-EXTERN_MSC void gmt_ignomonic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (GMT_GNOMONIC) to lon/lat 	*/
-EXTERN_MSC void gmt_sinusoidal (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (GMT_SINUSOIDAL)	*/
-EXTERN_MSC void gmt_isinusoidal (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (GMT_SINUSOIDAL) to lon/lat 	*/
-EXTERN_MSC void gmt_tm (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (TM)	*/
-EXTERN_MSC void gmt_itm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (TM) to lon/lat 	*/
-EXTERN_MSC void gmt_tm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (GMT_TM Spherical)	*/
-EXTERN_MSC void gmt_itm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (GMT_TM Spherical) to lon/lat 	*/
-EXTERN_MSC void gmt_utm (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (UTM)	*/
-EXTERN_MSC void gmt_iutm (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (UTM) to lon/lat 	*/
-EXTERN_MSC void gmt_utm_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (UTM Spherical)	*/
-EXTERN_MSC void gmt_iutm_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (UTM Spherical) to lon/lat 	*/
-EXTERN_MSC void gmt_winkel (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Winkel)	*/
-EXTERN_MSC void gmt_iwinkel (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Winkel) to lon/lat	*/
-EXTERN_MSC void gmt_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Eckert IV)	*/
-EXTERN_MSC void gmt_ieckert4 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Eckert IV) to lon/lat	*/
-EXTERN_MSC void gmt_eckert6 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Eckert VI)	*/
-EXTERN_MSC void gmt_ieckert6 (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Eckert VI) to lon/lat	*/
-EXTERN_MSC void gmt_robinson (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Robinson)	*/
-EXTERN_MSC void gmt_irobinson (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Robinson) to lon/lat	*/
-EXTERN_MSC void GMT_stereo1 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic)	*/
-EXTERN_MSC void GMT_stereo2 (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic, equatorial view)*/
-EXTERN_MSC void GMT_istereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Stereographic) to lon/lat 	*/
-EXTERN_MSC void gmt_stereo1_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic Spherical)*/
-EXTERN_MSC void gmt_stereo2_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Stereographic Spherical, equatorial view)	*/
-EXTERN_MSC void gmt_istereo_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Stereographic Spherical) to lon/lat 	*/
-EXTERN_MSC void gmt_lambeq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Lambert Azimuthal Equal-Area)*/
-EXTERN_MSC void gmt_ilambeq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Lambert Azimuthal Equal-Area) to lon/lat*/
-EXTERN_MSC void gmt_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Mollweide Equal-Area) */
-EXTERN_MSC void gmt_imollweide (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Mollweide Equal-Area) to lon/lat */
-EXTERN_MSC void gmt_cyleq (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Cylindrical Equal-Area)	*/
-EXTERN_MSC void gmt_icyleq (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Cylindrical Equal-Area) to lon/lat	*/
-EXTERN_MSC void gmt_cyleqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Cylindrical Equidistant)	*/
-EXTERN_MSC void gmt_icyleqdist (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cylindrical Equidistant) to lon/lat 	*/
-EXTERN_MSC void gmt_miller (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);		/* Convert lon/lat to x/y (Miller Cylindrical)	*/
-EXTERN_MSC void gmt_imiller (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);		/* Convert x/y (Miller Cylindrical) to lon/lat 	*/
-EXTERN_MSC void gmt_cylstereo (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y);	/* Convert lon/lat to x/y (Cylindrical Stereographic)	*/
-EXTERN_MSC void gmt_icylstereo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y);	/* Convert x/y (Cylindrical Stereographic) to lon/lat */
-EXTERN_MSC void gmt_obl (struct GMT_CTRL *GMT, double lon, double lat, double *olon, double *olat);	/* Convert lon/loat to oblique lon/lat */
-EXTERN_MSC void gmt_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat);	/* Convert oblique lon/lat to regular lon/lat */
-EXTERN_MSC double gmt_left_winkel (struct GMT_CTRL *GMT, double y);	/* For Winkel maps	*/
-EXTERN_MSC double gmt_right_winkel (struct GMT_CTRL *GMT, double y);	/* For Winkel maps	*/
-EXTERN_MSC double gmt_left_eckert4 (struct GMT_CTRL *GMT, double y);	/* For Eckert IV maps	*/
-EXTERN_MSC double gmt_right_eckert4 (struct GMT_CTRL *GMT, double y);	/* For Eckert IV maps	*/
-EXTERN_MSC double gmt_left_eckert6 (struct GMT_CTRL *GMT, double y);	/* For Eckert VI maps	*/
-EXTERN_MSC double gmt_right_eckert6 (struct GMT_CTRL *GMT, double y);	/* For Eckert VI maps	*/
-EXTERN_MSC double gmt_left_robinson (struct GMT_CTRL *GMT, double y);	/* For Robinson maps	*/
-EXTERN_MSC double gmt_right_robinson (struct GMT_CTRL *GMT, double y);	/* For Robinson maps	*/
-EXTERN_MSC double gmt_left_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For sinusoidal maps	*/
-EXTERN_MSC double gmt_right_sinusoidal (struct GMT_CTRL *GMT, double y);	/* For sinusoidal maps	*/
-EXTERN_MSC double gmt_left_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
-EXTERN_MSC double gmt_right_polyconic (struct GMT_CTRL *GMT, double y);	/* For polyconic maps	*/
-EXTERN_MSC double gmt_cartesian_dist (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1);
-EXTERN_MSC double gmt_cartesian_dist_proj (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
-
 EXTERN_MSC int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read);
 EXTERN_MSC uint64_t gmt_bin_colselect (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmt_gap_detected (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmt_set_gap (struct GMT_CTRL *GMT);
-
 EXTERN_MSC struct GMT_PS * gmt_create_ps (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols);
-EXTERN_MSC int gmt_init_track (struct GMT_CTRL *GMT, double y[], uint64_t n, struct GMT_XSEGMENT **S);
-
-/* From gmt_nc.c */
 EXTERN_MSC void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
-
-/* For supplements */
-EXTERN_MSC int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
-
-EXTERN_MSC void gmt_set_double_ptr (double **ptr, double *array);
-EXTERN_MSC void gmt_set_char_ptr (char **ptr, char *array);
 EXTERN_MSC void gmt_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data);
 EXTERN_MSC void gmt_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data);
 EXTERN_MSC void gmt_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P);
 EXTERN_MSC void gmt_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P);
 EXTERN_MSC unsigned int gmt_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix);
 EXTERN_MSC unsigned int gmt_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector);
+
 #ifdef HAVE_GDAL
 EXTERN_MSC void gmt_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image);
 EXTERN_MSC struct GMT_IMAGE *gmt_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode);
 #endif
+
 #endif /* _GMT_INTERNALS_H */

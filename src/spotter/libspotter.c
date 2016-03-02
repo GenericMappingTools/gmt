@@ -51,7 +51,7 @@
 
 #include "spotter.h"
 
-void GMT_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
+EXTERN_MSC void gmt_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 
 #define SPOTTER_N_STEPS		360
 #define SPOTTER_DEL_STEP	(TWO_PI/SPOTTER_N_STEPS)
@@ -1681,7 +1681,7 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 		dr_dist = R2D * d_asin (dr_local);	/* Undo orthographic projection to get great-circle distance */
 		azimuth = atan2 (dy_local, dx_local) * R2D;
 		/* Determine lon,lat of a point dr_dist away in the azim direction from center lon,lat */
-		GMT_get_point_from_r_az (GMT, p->lon, p->lat, dr_dist, azimuth, &lon[i], &lat[i]);
+		gmt_get_point_from_r_az (GMT, p->lon, p->lat, dr_dist, azimuth, &lon[i], &lat[i]);
 #ifdef DEBUG
 		if (dump) fprintf (fp, "%g\t%g\t%g\t%g\t%g\t%g\n", dx_local, dy_local, dr_dist, azimuth, lon[i], lat[i]);
 #endif

@@ -4851,7 +4851,7 @@ unsigned int gmt_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned i
 }
 
 /*! . */
-void GMT_sort_array (struct GMT_CTRL *GMT, void *base, uint64_t n, unsigned int type) {
+void gmt_sort_array (struct GMT_CTRL *GMT, void *base, uint64_t n, unsigned int type) {
 	/* Front function to call qsort on all <type> array into ascending order */
 	size_t width[GMT_N_TYPES] = {
 		sizeof(uint8_t),      /* GMT_UCHAR */
@@ -4890,7 +4890,7 @@ const char * GMT_strerror (int err) {
 }
 
 /*! . */
-int support_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const char *where) {
+int gmt_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const char *where) {
 	if (err == GMT_NOERROR) return (err);
 
 	/* When error code is non-zero: print error message */
@@ -10904,7 +10904,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 						/* Assign as crossover the middle of the overlapping segments */
 						X->x[nx] = xa[xa_start];
 						y4[0] = ya[xa_start];	y4[1] = ya[xa_stop];	y4[2] = yb[xb_start];	y4[3] = yb[xb_stop];
-						GMT_sort_array (GMT, y4, 4, GMT_DOUBLE);
+						gmt_sort_array (GMT, y4, 4, GMT_DOUBLE);
 						if (y4[1] != y4[2]) {
 							X->y[nx] = 0.5 * (y4[1] + y4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
@@ -10995,7 +10995,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 						/* Assign as crossover the middle of the overlapping segments */
 						X->y[nx] = ya[xa_start];
 						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
-						GMT_sort_array (GMT, x4, 4, GMT_DOUBLE);
+						gmt_sort_array (GMT, x4, 4, GMT_DOUBLE);
 						if (x4[1] != x4[2]) {
 							X->x[nx] = 0.5 * (x4[1] + x4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
@@ -11091,7 +11091,7 @@ uint64_t gmt_crossover (struct GMT_CTRL *GMT, double xa[], double ya[], uint64_t
 						double x4[4];
 						/* Assign as possible crossover the middle of the overlapping segments */
 						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
-						GMT_sort_array (GMT, x4, 4, GMT_DOUBLE);
+						gmt_sort_array (GMT, x4, 4, GMT_DOUBLE);
 						if (x4[1] != x4[2]) {
 							xc = 0.5 * (x4[1] + x4[2]);
 							yc = slp_a * (xc - xa[xa_start]) + ya[xa_start];
@@ -12630,7 +12630,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	/* Here we got something to return */
 	select->n = n;							/* Total number of items */
 	select->item = gmt_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
-	GMT_sort_array (GMT, select->item, n, GMT_ULONG);		/* Sort the selection */
+	gmt_sort_array (GMT, select->item, n, GMT_ULONG);		/* Sort the selection */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Number of integer selections returned: %" PRIu64 "\n", n);
 #ifdef DEBUG
 	if (GMT->current.setting.verbose == GMT_MSG_DEBUG) {

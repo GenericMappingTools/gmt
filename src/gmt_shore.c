@@ -480,7 +480,8 @@ int gmt_set_resolution (struct GMT_CTRL *GMT, char *res, char opt) {
 	return (base);
 }
 
-char GMT_shore_adjust_res (struct GMT_CTRL *GMT, char res) {	/* Returns the highest available resolution <= to specified resolution */
+char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res) {
+	/* Returns the highest available resolution <= to specified resolution */
 	int k, orig;
 	bool ok[5];
 	char *type = "clihf";

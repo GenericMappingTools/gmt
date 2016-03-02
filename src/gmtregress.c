@@ -128,7 +128,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *C) {	/* 
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtregress [<table>] [-A[<min>/<max>/<inc>]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T<min>/<max>/<inc> | -T<n>] [%s] [-W[w][x][y][r]] [%s]\n", GMT_V_OPT, GMT_a_OPT);
@@ -348,7 +348,7 @@ double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int no
 	if (norm != GMTREGRESS_NORM_L2) {	/* Need temporary space for scaled residuals */
 		ee = gmt_memory (GMT, NULL, n, double);
 		GMT_memcpy (ee, e, n, double);
-		GMT_sort_array (GMT, ee, n, GMT_DOUBLE);
+		gmt_sort_array (GMT, ee, n, GMT_DOUBLE);
 	}
 	switch (norm) {
 		case GMTREGRESS_NORM_L1:	/* Return median */
@@ -441,7 +441,7 @@ double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsi
 	double f, E, *ee = gmt_memory (GMT, NULL, n, double);
 	f = get_scale_factor (regression, slope);
 	for (k = 0; k < n; k++) ee[k] = W[k] * ey[k] * ey[k];
- 	GMT_sort_array (GMT, ee, n, GMT_DOUBLE);
+ 	gmt_sort_array (GMT, ee, n, GMT_DOUBLE);
 	E = (n%2) ? ee[n/2] : 0.5 * (ee[(n-1)/2] + ee[n/2]);
 	gmt_free (GMT, ee);
 	return (f * f * E);	/* f^2 since E was computed from squared misfits */
@@ -1008,7 +1008,7 @@ int GMT_gmtregress (void *V_API, int mode, void *args) {
 	struct GMTREGRESS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

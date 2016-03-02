@@ -100,9 +100,9 @@ int (*MGD77_column_test_string[9]) (char *, char *, size_t);
 
 unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
-int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
-bool gmt_is_gleap (int gyear);
-void gmt_str_toupper (char *string);
+EXTERN_MSC int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
+EXTERN_MSC bool gmt_is_gleap (int gyear);
+EXTERN_MSC void gmt_str_toupper (char *string);
 
 int MGD77_nc_status (struct GMT_CTRL *GMT, int status) {
 	/* This function checks the return status of a netcdf function and takes

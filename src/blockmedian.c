@@ -40,7 +40,7 @@
 #define GMT_PROG_OPTIONS "-:>RVabdfghior" GMT_OPT("FH")
 
 int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s]\n\t[-W[i][o]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -253,7 +253,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	struct BLK_DATA *data = NULL;
 	struct BLOCKMEDIAN_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -460,7 +460,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 			/* Turn z_tmp into absolute deviations from the median (out[GMT_Z]) */
 			if (nz > 1) {
 				for (node = 0; node < nz; node++) z_tmp[node] = fabs (z_tmp[node] - out[GMT_Z]);
-				GMT_sort_array (GMT, z_tmp, nz, GMT_DOUBLE);
+				gmt_sort_array (GMT, z_tmp, nz, GMT_DOUBLE);
 				out[3] = (nz%2) ? z_tmp[nz/2] : 0.5 * (z_tmp[(nz-1)/2] + z_tmp[nz/2]);
 				out[3] *= 1.4826;	/* This will be L1 MAD-based scale */
 			}

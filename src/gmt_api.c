@@ -442,7 +442,7 @@ GMT_LOCAL void *api_return_address (void *data, unsigned int type) {
 }
 
 /*! . */
-struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr) {
+struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {
 	/* Clean casting of void to API pointer at start of a module
  	 * If ptr is NULL we are in deep trouble...
 	 */
@@ -6117,7 +6117,7 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row) {
 		else {
 			if (GMT_fread (R->v_row, R->size, n_items, R->fp) != n_items) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 			for (col = 0; col < G->header->nx; col++)
-				row[col] = GMT_decode (GMT, R->v_row, col, fmt[1]);	/* Convert whatever to float */
+				row[col] = gmt_decode (GMT, R->v_row, col, fmt[1]);	/* Convert whatever to float */
 		}
 	}
 	if (R->check) {	/* Replace NaN-marker with actual NaN */
@@ -6186,7 +6186,7 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row) {
 				if (GMT_fwrite (row, R->size, n_items, R->fp) < n_items) return (GMT_GRDIO_WRITE_FAILED);
 			}
 			else {
-				for (col = 0; col < G->header->nx; col++) GMT_encode (GMT, R->v_row, col, row[col], fmt[1]);
+				for (col = 0; col < G->header->nx; col++) gmt_encode (GMT, R->v_row, col, row[col], fmt[1]);
 				if (GMT_fwrite (R->v_row, R->size, n_items, R->fp) < n_items) return (GMT_GRDIO_WRITE_FAILED);
 			}
 			break;
@@ -7338,7 +7338,7 @@ int GMT_FFT_Destroy_ (void *v_K) {
 #endif
 
 /*! Pretty print core module names and purposes */
-void GMT_show_name_and_purpose (void *API, const char *component, const char *name, const char *purpose) {
+void gmt_show_name_and_purpose (void *API, const char *component, const char *name, const char *purpose) {
 	char message[GMT_LEN256] = {""};
 	const char *lib = NULL;
 	static char *core = "core";

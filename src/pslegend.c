@@ -75,7 +75,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pslegend synopsis and optionally full usage information */
 
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<specfile>] -D%s+w<width>[/<height>][+l<spacing>]%s [%s]\n", GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [%s]\n", GMT_PANEL);
@@ -366,7 +366,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct GMT_DATASET *D[N_DAT];
 	struct GMT_DATASEGMENT *Ds[N_DAT];
 	struct GMT_PALETTE *P = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	GMT_memset (&header, 1, struct imageinfo);	/* initialize struct */
 	GMT_memset (fill, PSLEGEND_MAX_COLS, char *);	/* initialize array */

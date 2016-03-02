@@ -111,7 +111,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* 
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile>[%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|v]<cut>[/<file>]] [-L] [-N<nodes>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
@@ -436,7 +436,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	struct GPSGRIDDER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -707,7 +707,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 
 			/* Sort eigenvalues into ascending order */
-			GMT_sort_array (GMT, eig, n2, GMT_DOUBLE);
+			gmt_sort_array (GMT, eig, n2, GMT_DOUBLE);
 			eig_max = eig[n-1];
 			for (i = 0, j = n2-1; i < n2; i++, j--) {
 				E->table[0]->segment[0]->coord[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */

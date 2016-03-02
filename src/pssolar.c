@@ -32,7 +32,7 @@
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYbcpto"
 
-extern void gmt_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
+EXTERN_MSC void gmt_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 
 struct SUN_PARAMS {
 	double EQ_time;
@@ -118,7 +118,7 @@ GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	/* This displays the pssolar synopsis and optionally full usage information */
 
-	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pssolar [%s] [-C] [-G<fill>] [-I[lon/lat][+d<date>][+z<TZ>]]", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [-K] [-M] [-N] [-O]\n", GMT_J_OPT);
@@ -404,7 +404,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 	struct  GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct  GMT_OPTION *options = NULL;
 	struct  PSL_CTRL *PSL = NULL;			/* General PSL interal parameters */
-	struct  GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
+	struct  GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	struct  SUN_PARAMS *Sun = NULL;
 	struct	GMT_DATASEGMENT *S = NULL;
 
