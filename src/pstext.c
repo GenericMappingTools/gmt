@@ -35,7 +35,7 @@
 
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYacfhptxy" GMT_OPT("E")
 
-EXTERN_MSC void gmt_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
+EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
 
 #define PSTEXT_CLIPPLOT		1
 #define PSTEXT_CLIPONLY		2
@@ -812,7 +812,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				line = cp_line;
 
 				gmt_chop (line);	/* Chop of line feed */
-				gmt_enforce_rgb_triplets (GMT, line, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+				gmtlib_enforce_rgb_triplets (GMT, line, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
 				if (line[0] == 0) {	/* Blank line marked by single NULL character, replace by \r */
 					n_add = 1;
@@ -924,7 +924,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 			/* Here, in_text holds the text we wish to plot */
 
-			gmt_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+			gmtlib_enforce_rgb_triplets (GMT, in_txt, GMT_BUFSIZ);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 			if (Ctrl->Q.active) gmt_str_setcase (GMT, in_txt, Ctrl->Q.mode);
 			n_read++;
 			gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);

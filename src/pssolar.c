@@ -32,7 +32,7 @@
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYbcpto"
 
-EXTERN_MSC void gmt_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
+EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);	/* Break internal time into calendar and clock struct info  */
 
 struct SUN_PARAMS {
 	double EQ_time;
@@ -199,7 +199,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						Ctrl->I.TZ = TZ;
 						if (date) {
 							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
-							gmt_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
+							gmtlib_gcal_from_dt (GMT, t, &Ctrl->I.calendar);	/* Convert t to a complete calendar structure */
 						}
 					}
 				}
@@ -218,7 +218,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 						Ctrl->T.TZ = TZ;
 						if (date) {
 							gmt_scanf_arg (GMT, date, GMT_IS_ABSTIME, &t);
-							gmt_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
+							gmtlib_gcal_from_dt (GMT, t, &Ctrl->T.calendar);	/* Convert t to a complete calendar structure */
 						}
 					}
 					for (j = 0; j < (int)strlen(opt->arg); j++) {

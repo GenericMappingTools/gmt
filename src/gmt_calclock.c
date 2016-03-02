@@ -34,20 +34,20 @@
  *
  * gmt_dt2rdc           : 
  * gmt_format_calendar  : 
- * gmt_g_ymd_is_bad     : 
- * gmt_gcal_from_dt     : 
+ * gmtlib_g_ymd_is_bad     : 
+ * gmtlib_gcal_from_dt     : 
  * gmt_gcal_from_rd     : 
- * gmt_get_time_label   : 
- * gmt_gmonth_length    : 
- * gmt_is_gleap         : 
- * gmt_iso_ywd_is_bad   : 
- * gmt_moment_interval  : 
+ * gmtlib_get_time_label   : 
+ * gmtlib_gmonth_length    : 
+ * gmtlib_is_gleap         : 
+ * gmtlib_iso_ywd_is_bad   : 
+ * gmtlib_moment_interval  : 
  * gmt_rd_from_gymd     : 
- * gmt_rd_from_iywd     : 
+ * gmtlib_rd_from_iywd     : 
  * gmt_rdc2dt           : 
- * gmt_splitinteger     : 
- * gmt_verify_time_step : 
- * gmt_y2_to_y4_yearfix : 
+ * gmtlib_splitinteger     : 
+ * gmtlib_verify_time_step : 
+ * gmtlib_y2_to_y4_yearfix : 
  * gmt_cal_imod         : 
  * gmt_gyear_from_rd    : 
 */
@@ -62,7 +62,7 @@
    int calclock_nth_kday (int n, int kday, int date);
    int calclock_cal_imod (int x, int y);
    int calclock_gyear_from_rd (int date);
-   void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to gmt_moment_interval
+   void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, int init);  Aux to gmtlib_moment_interval
 */
 
 /* Modulo functions.  The C operation "x%y" and the POSIX
@@ -143,7 +143,7 @@ GMT_LOCAL int calclock_gyear_from_rd (int64_t date) {
 
 GMT_LOCAL void calclock_small_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, int step_secs, bool init) {
 
-	/* Called by gmt_moment_interval ().  Get here when p->stuff[0] is initialized and
+	/* Called by gmtlib_moment_interval ().  Get here when p->stuff[0] is initialized and
 	   0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
 
 	double x;
@@ -204,11 +204,11 @@ double gmt_rdc2dt (struct GMT_CTRL *GMT, int64_t rd, double secs) {
 	return ((f_days * GMT_DAY2SEC_F  + secs) * GMT->current.setting.time_system.i_scale);
 }
 
-int64_t gmt_splitinteger (double value, int epsilon, double *doublepart) {
+int64_t gmtlib_splitinteger (double value, int epsilon, double *doublepart) {
 	/* Split value into integer and and floating part for date usage.
 	   While the integer can be negative, doublepart is always >= 0
 	   When doublepart is close to 0 or close to epsilon, doublepart is set
-	   to zero and in the latter case, gmt_splitinteger is raised by one.
+	   to zero and in the latter case, gmtlib_splitinteger is raised by one.
 	   This makes value "snap" to multiples of epsilon.
 	*/
 	double x = floor (value / epsilon);
@@ -228,10 +228,10 @@ void gmt_dt2rdc (struct GMT_CTRL *GMT, double t, int64_t *rd, double *s) {
 	in rd and the seconds since the start of that day in s.  */
 	double t_sec;
 	t_sec = (t * GMT->current.setting.time_system.scale + GMT->current.setting.time_system.epoch_t0 * GMT_DAY2SEC_F);
-	*rd = gmt_splitinteger (t_sec, GMT_DAY2SEC_I, s) + GMT->current.setting.time_system.rata_die;
+	*rd = gmtlib_splitinteger (t_sec, GMT_DAY2SEC_I, s) + GMT->current.setting.time_system.rata_die;
 }
 
-int gmt_gmonth_length (int year, int month) {
+int gmtlib_gmonth_length (int year, int month) {
 	/* Return the number of days in a month,
 	   using the gregorian leap year rule.
 	   Months are numbered from 1 to 12.  */
@@ -245,13 +245,13 @@ int gmt_gmonth_length (int year, int month) {
 		return ((month < 8) ? 30 + k : 31 - k);
 	}
 
-	k = (gmt_is_gleap (year)) ? 29 : 28;
+	k = (gmtlib_is_gleap (year)) ? 29 : 28;
 	return (k);
 }
 
 /* Proleptic Gregorian Calendar operations  */
 
-bool gmt_is_gleap (int gyear) {
+bool gmtlib_is_gleap (int gyear) {
 	/* Given integer proleptic gregorian calendar year,
 	   return true if it is a Gregorian leap year;
 	   else return false.  */
@@ -282,7 +282,7 @@ int64_t gmt_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 	if (gm <= 2)
 		day_offset = 0;
 	else
-		day_offset = (gmt_is_gleap (gy)) ? -1 : -2;
+		day_offset = (gmtlib_is_gleap (gy)) ? -1 : -2;
 
 	yearm1 = gy - 1;
 	rd = day_offset + gd + 365 * (int64_t) yearm1;
@@ -294,7 +294,7 @@ int64_t gmt_rd_from_gymd (struct GMT_CTRL *GMT, int gy, int gm, int gd) {
 
 /* ISO calendar routine  */
 
-int64_t gmt_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id) {
+int64_t gmtlib_rd_from_iywd (struct GMT_CTRL *GMT, int iy, int iw, int id) {
 	/* Given ISO calendar year, week, day of week,
 	   return the rata die integer day number.  */
 
@@ -328,7 +328,7 @@ void gmt_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_GCAL *gcal
 	if (date < tempdate)
 		corexn = 0;
 	else
-		corexn = (gmt_is_gleap (gcal->year)) ? 1 : 2;
+		corexn = (gmtlib_is_gleap (gcal->year)) ? 1 : 2;
 
 	gcal->month = urint (floor ((12*(prior_days + corexn) + 373)/367.0));
 
@@ -339,13 +339,13 @@ void gmt_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_GCAL *gcal
 	/* ISO operations:  */
 
 	tempyear = (prior_days >= 3) ? gcal->year : gcal->year - 1;
-	tempdate = gmt_rd_from_iywd (GMT, tempyear+1, 1, 1);
+	tempdate = gmtlib_rd_from_iywd (GMT, tempyear+1, 1, 1);
 	gcal->iso_y = (date >= tempdate) ? tempyear + 1 : tempyear;
-	gcal->iso_w = 1U + urint (floor((date - gmt_rd_from_iywd (GMT, gcal->iso_y, 1, 1))/7.0));
+	gcal->iso_w = 1U + urint (floor((date - gmtlib_rd_from_iywd (GMT, gcal->iso_y, 1, 1))/7.0));
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7U;
 }
 
-int gmt_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2) {
+int gmtlib_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2) {
 
 	/* Convert 2-digit year to 4-digit year, using
 	   GMT->current.setting.time_Y2K_offset_year.
@@ -377,7 +377,7 @@ int gmt_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2) {
 	return (y2 + ((y2 >= GMT->current.time.Y2K_fix.y2_cutoff) ? GMT->current.time.Y2K_fix.y100 : GMT->current.time.Y2K_fix.y200));
 }
 
-bool gmt_g_ymd_is_bad (int y, int m, int d) {
+bool gmtlib_g_ymd_is_bad (int y, int m, int d) {
 
 	/* Check year, month, day values to see if they
 	   are an appropriate date in the proleptic
@@ -390,14 +390,14 @@ bool gmt_g_ymd_is_bad (int y, int m, int d) {
 
 	if (m < 1 || m > 12 || d < 1) return (true);
 
-	k = gmt_gmonth_length (y, m);	/* Number of day in the specified month */
+	k = gmtlib_gmonth_length (y, m);	/* Number of day in the specified month */
 
 	if (d > k) return (true);	/* More days than we've got in this month */
 
 	return (false);
 }
 
-bool gmt_iso_ywd_is_bad (int y, int w, int d) {
+bool gmtlib_iso_ywd_is_bad (int y, int w, int d) {
 
 	/* Check ISO_year, ISO_week_of_year, ISO_day_of_week
 	   values to see if they form a probably
@@ -417,7 +417,7 @@ bool gmt_iso_ywd_is_bad (int y, int w, int d) {
 	return (false);
 }
 
-void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal) {
+void gmtlib_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal) {
 
 	/* Given time in internal units, load cal and clock info in cal.
 	   Note: uses 0 through 23 for hours (no am/pm inside here).
@@ -430,12 +430,12 @@ void gmt_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_GCAL *cal) {
 	gmt_dt2rdc (GMT, t, &rd, &x);
 	gmt_gcal_from_rd (GMT, rd, cal);
 	/* split double seconds and integer time */
-	i = gmt_splitinteger (x, 60, &cal->sec);
+	i = gmtlib_splitinteger (x, 60, &cal->sec);
 	cal->hour = (unsigned int)(i / GMT_MIN2SEC_I);
 	cal->min  = (unsigned int)(i % GMT_MIN2SEC_I);
 }
 
-int gmt_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
+int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 
 	/* Return -1 if time step and/or unit look bad, 0 if OK.  */
 
@@ -543,11 +543,11 @@ int gmt_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 	return (retval);
 }
 
-void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, double dt_in, bool init) {
+void gmtlib_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, double dt_in, bool init) {
 	/* Unchanged by this routine:
 	     p->step is a positive interval width;
 	     p->unit is set to a time axis unit;
-	     These must be in valid ranges tested by gmt_verify_time_step().
+	     These must be in valid ranges tested by gmtlib_verify_time_step().
 	     p->init sets action to take; see below.
 
 	  Let a and b be points in time, both exactly on the start of intervals
@@ -647,7 +647,7 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 					p->sd[0] = 0.0;
 					p->dt[0] = gmt_rdc2dt (GMT, p->rd[0], p->sd[0]);
 				}
-				kyd = (gmt_is_gleap (p->cc[0].year)) ? 366 : 365;
+				kyd = (gmtlib_is_gleap (p->cc[0].year)) ? 366 : 365;
 				k = p->cc[0].day_y + p->step;
 				if (k > kyd) {
 					/* Go to 1st day of next year:  */
@@ -674,7 +674,7 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 					p->dt[0] = gmt_rdc2dt (GMT, p->rd[0], p->sd[0]);
 				}
 
-				kml = gmt_gmonth_length (p->cc[0].year, p->cc[0].month);
+				kml = gmtlib_gmonth_length (p->cc[0].year, p->cc[0].month);
 				if (p->cc[0].day_m + p->step > kml) {
 					/* Truncate to 1st of next month  */
 					if (p->cc[0].month == 12) {
@@ -760,11 +760,11 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				p->sd[0] = 0.0;
 				k = (p->cc[0].iso_w - 1)/p->step;
 				p->cc[0].iso_w = k * p->step + 1;
-				p->rd[0] = gmt_rd_from_iywd (GMT, p->cc[0].iso_y, p->cc[0].iso_w, 1);
+				p->rd[0] = gmtlib_rd_from_iywd (GMT, p->cc[0].iso_y, p->cc[0].iso_w, 1);
 				gmt_gcal_from_rd (GMT, p->rd[0], &(p->cc[0]) );
 				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_GCAL);	/* Set to same as first calendar */
 				p->dt[0] = gmt_rdc2dt (GMT, p->rd[0], p->sd[0]);
-				if (gmt_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
+				if (gmtlib_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
@@ -781,7 +781,7 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 			gmt_gcal_from_rd (GMT, p->rd[1], &(p->cc[1]) );
 			if (p->cc[1].iso_y != p->cc[0].iso_y) {
 				k = p->cc[1].iso_y;
-				p->rd[1] = gmt_rd_from_iywd (GMT, k, 1, 1);
+				p->rd[1] = gmtlib_rd_from_iywd (GMT, k, 1, 1);
 				if (p->rd[1] == p->rd[0]) p->rd[1] += p->step * 7; /* Just in case */
 				gmt_gcal_from_rd (GMT, p->rd[1], &(p->cc[1]) );
 			}
@@ -798,7 +798,7 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				p->cc[0].day_m = 1;
 				k = (p->cc[0].month-1)/p->step;
 				p->cc[0].month = k * p->step + 1;
-				if (gmt_g_ymd_is_bad (p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
+				if (gmtlib_g_ymd_is_bad (p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
@@ -826,7 +826,7 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 				if (GMT->current.plot.calclock.date.iso_calendar) {
 					p->sd[0] = 0.0;
 					if (p->step > 1) p->cc[0].iso_y -= calclock_cal_imod (p->cc[0].iso_y, p->step);
-					p->rd[0] = gmt_rd_from_iywd (GMT, p->cc[0].iso_y, 1, 1);
+					p->rd[0] = gmtlib_rd_from_iywd (GMT, p->cc[0].iso_y, 1, 1);
 				}
 				else {
 					p->sd[0] = 0.0;
@@ -840,7 +840,7 @@ void gmt_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 			/* Now step ahead step years, depending on calendar type:  */
 			if (GMT->current.plot.calclock.date.iso_calendar) {
 				p->cc[1].iso_y = p->cc[0].iso_y + p->step;
-				p->rd[1] = gmt_rd_from_iywd (GMT, p->cc[1].iso_y, 1, 1);
+				p->rd[1] = gmtlib_rd_from_iywd (GMT, p->cc[1].iso_y, 1, 1);
 			}
 			else {
 				p->cc[1].year = p->cc[0].year + p->step;
@@ -869,7 +869,7 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 
 	step = 0.5 / W->f_sec_to_int / GMT->current.setting.time_system.scale;	/* Precision desired in time units */
 
-	gmt_gcal_from_dt (GMT, dt + step, &calendar);			/* Convert dt to a complete calendar structure */
+	gmtlib_gcal_from_dt (GMT, dt + step, &calendar);			/* Convert dt to a complete calendar structure */
 
 	if (date) date[0] = 0;
 	if (date && !D->skip) {	/* Not NULL, want to format this string */
@@ -895,7 +895,7 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 				strncpy (text, GMT->current.language.week_name[kind], GMT_LEN16);
 			else
 				strncpy (text, GMT->current.language.month_name[kind][ival[D->item_pos[1]]-1], GMT_LEN16);
-			if (upper) gmt_str_toupper (text);
+			if (upper) gmtlib_str_toupper (text);
 			if (D->item_pos[1] == 0)		/* Month/week first */
 				sprintf (date, D->format, text, ival[1], ival[2]);
 			else if (D->item_pos[1] == 1)	/* Month/week second */
@@ -939,11 +939,11 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 		sprintf (clock, W->format, calendar.hour, calendar.min, i_sec, m_sec);
 }
 
-void gmt_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t) {
+void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t) {
 	/* Assemble the annotation label given the formatting options presented */
 	struct GMT_GCAL calendar;
 
-	gmt_gcal_from_dt (GMT, t, &calendar);			/* Convert t to a complete calendar structure */
+	gmtlib_gcal_from_dt (GMT, t, &calendar);			/* Convert t to a complete calendar structure */
 
 	switch (T->unit) {
 		case 'Y':	/* 4-digit integer year */
@@ -966,7 +966,7 @@ void gmt_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 			(P->date.compact) ? sprintf (string, "%d", calendar.iso_w) : sprintf (string, "%02d", calendar.iso_w);
 			break;
 		case 'K':	/*  ISO Weekday name */
-			if (T->upper_case) gmt_str_toupper (GMT->current.language.day_name[T->flavor][calendar.iso_d%7]);
+			if (T->upper_case) gmtlib_str_toupper (GMT->current.language.day_name[T->flavor][calendar.iso_d%7]);
 			sprintf (string, "%s", GMT->current.language.day_name[T->flavor][calendar.iso_d%7]);
 			break;
 		case 'k':	/* Day of the week 1-7 */
@@ -1000,7 +1000,7 @@ void gmt_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 				gmt_format_calendar (GMT, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmt_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmtlib_get_time_label\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1013,7 +1013,7 @@ void gmt_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 				(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			}
 			else {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmt_get_time_label\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmtlib_get_time_label\n");
 				sprintf (string, "NaN");
 			}
 			break;
@@ -1021,7 +1021,7 @@ void gmt_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmt_get_time_label\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to gmtlib_get_time_label\n");
 			sprintf (string, "NaN");
 			break;
 	}

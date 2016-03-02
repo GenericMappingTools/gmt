@@ -306,7 +306,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	n2 = lrint (ceil (header->nx / 2.0)) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
 	tmp = gmt_memory (GMT, NULL, n2, unsigned char);
@@ -405,7 +405,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -622,7 +622,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	mx = urint (ceil (header->nx / 32.0));	/* Whole multiple of 32-bit integers */
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
@@ -705,7 +705,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	do_header = gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	do_header = gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -860,7 +860,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	size = GMT_grd_data_size (GMT, header->type, &header->nan_value);
 	check = !isnan (header->nan_value);
 
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 
@@ -889,7 +889,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0, kk = ij; i < width_in; i++, kk++) {
-			grid[kk] = gmt_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
+			grid[kk] = gmtlib_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) {
@@ -958,7 +958,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	do_header = gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	do_header = gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -1001,7 +1001,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		ij = imag_offset + j2 * width_in + i2;
-		for (iu = 0; iu < width_out; iu++) gmt_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
+		for (iu = 0; iu < width_out; iu++) gmtlib_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1013,7 +1013,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	return (GMT_NOERROR);
 }
 
-void gmt_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type) {
+void gmtlib_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned int type) {
 	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
@@ -1033,12 +1033,12 @@ void gmt_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned
 			((double *)vptr)[k] = (double)z;
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmt_encode\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmtlib_encode\n");
 			break;
 	}
 }
 
-float gmt_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type) {
+float gmtlib_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int type) {
 	/* Retrieve the z value from the array location of the (type) pointer */
 	float fval;
 
@@ -1060,7 +1060,7 @@ float gmt_decode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, unsigned int typ
 			fval = (float)(((double *)vptr)[k]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmt_decode\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT: Bad call to gmtlib_decode\n");
 			fval = GMT->session.f_NaN;
 			break;
 	}
@@ -1338,7 +1338,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	size = GMT_grd_data_size (GMT, header->type, &header->nan_value);
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
@@ -1376,7 +1376,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
-			grid[kk] = gmt_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
+			grid[kk] = gmtlib_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
 			if (grid[kk] >= header->nan_value) {
 				header->has_NaNs = GMT_GRID_HAS_NANS;
 				grid[kk] = GMT->session.f_NaN;
@@ -1453,7 +1453,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	size = GMT_grd_data_size (GMT, header->type, &header->nan_value);
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -1500,7 +1500,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
 		ij = imag_offset + j2 * width_in + i2;
-		for (iu = 0; iu < width_out; iu++) gmt_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
+		for (iu = 0; iu < width_out; iu++) gmtlib_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1804,7 +1804,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	}
 
 	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	sscanf (header->pocket, "%[^/]/%s", driver, type);
 	to_GDALW = gmt_memory (GMT, NULL, 1, struct GMT_GDALWRITE_CTRL);

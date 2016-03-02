@@ -113,8 +113,8 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdhis" GMT_OPT("HMm")
 
-EXTERN_MSC int gmt_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
-EXTERN_MSC double gmt_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
+EXTERN_MSC int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist);
+EXTERN_MSC double gmtlib_great_circle_dist_degree (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 #define KM_PR_RAD (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
@@ -538,7 +538,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 					lat = hot[spot].h->lat;
 				}
 				/* Compute distance from track location to (moving or fixed) hotspot */
-				dist = gmt_great_circle_dist_degree (GMT, lon, lat, R2D * c[k], R2D * c[k+1]);
+				dist = gmtlib_great_circle_dist_degree (GMT, lon, lat, R2D * c[k], R2D * c[k+1]);
 				if (!Ctrl->L.degree) dist *= GMT->current.proj.DIST_KM_PR_DEG;
 				if (dist < hot[spot].np_dist) {
 					hot[spot].np_dist = dist;
@@ -566,7 +566,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			better = false;
 			if (hot[spot].nearest > 0) {	/* There is a point along the flowline before the nearest node */
 				gmt_geo_to_cart (GMT, c[k-2], c[k-3], A, false);	/* 3-D vector of end of this segment */
-				if (gmt_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
+				if (gmtlib_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
 						gmt_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
@@ -581,7 +581,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			}
 			if (hot[spot].nearest < (np-1) ) {	/* There is a point along the flowline after the nearest node */
 				gmt_geo_to_cart (GMT, c[k+4], c[k+3], A, false);	/* 3-D vector of end of this segment */
-				if (gmt_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
+				if (gmtlib_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
 						gmt_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);

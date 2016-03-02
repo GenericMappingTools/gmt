@@ -40,11 +40,11 @@
  *  gmt_write_grd_info      : Write header to new file
  *  gmt_write_grd           : Write header and data set to new file
  *  gmt_grd_coord           :
- *  gmt_grd_real_interleave :
+ *  gmtlib_grd_real_interleave :
  *  gmt_grd_mux_demux       :
  *  gmt_grd_set_units       :
  *  gmt_grd_pad_status      :
- *  gmt_get_grdtype         :
+ *  gmtlib_get_grdtype         :
  *  GMT_grd_data_size       :
  *  gmt_grd_set_ij_inc      :
  *  gmt_grd_format_decoder  :
@@ -62,8 +62,8 @@
  *  gmt_grd_zminmax         :
  *  gmt_grd_minmax          :
  *  gmt_grd_detrend         :
- *  gmt_init_complex        :
- *  gmt_check_url_name      :
+ *  gmtlib_init_complex        :
+ *  gmtlib_check_url_name      :
  *  gmt_read_img            : Read [subset from] a Sandwell/Smith *.img file
  *  gmt_grd_init            : Initialize grd header structure
  *  gmt_grd_shift           : Rotates grdfiles in x-direction
@@ -73,7 +73,7 @@
  *  gmt_decode_grd_h_info   : Decodes a -Dstring into header text components
  *  gmt_grd_RI_verify       : Test to see if region and incs are compatible
  *  gmt_scale_and_offset_f  : Routine that scales and offsets the data in a vector
- *  gmt_grd_flip_vertical  : Flips the grid in vertical direction
+ *  gmtlib_grd_flip_vertical  : Flips the grid in vertical direction
  *  grdio_pack_grid         : Packs or unpacks a grid by calling gmt_scale_and_offset_f()
  *
  *  Reading images via GDAL (if enabled):
@@ -161,7 +161,7 @@ GMT_LOCAL void grdio_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_H
 
 	if (GMT_is_geographic (GMT, direction)) return;	/* Does not apply to geographic data */
 	name = (file) ? file : h->name;
-	if ((c = gmt_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
+	if ((c = gmtlib_file_unitscale (name)) == NULL) return;	/* Did not find any modifier */
 	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = gmt_get_unit_number (GMT, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
@@ -398,7 +398,7 @@ GMT_LOCAL void grdio_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 		}
 
 		/* Change name of variable and unit to lower case for comparison */
-		gmt_str_tolower (string[i]);
+		gmtlib_str_tolower (string[i]);
 
 		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
 			/* Input data type is longitude */
@@ -678,7 +678,7 @@ double * gmt_grd_coord (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, in
 	return (coord);
 }
 
-void gmt_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data) {
+void gmtlib_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *data) {
 	/* Sub-function since this step is also needed in the specific case when a module
 	 * calls GMT_Read_Data with GMT_GRID_IS_COMPLEX_REAL but input comes via an
 	 * external interface (MATLAB, Python) and thus has not been multiplexed yet.
@@ -749,7 +749,7 @@ void gmt_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 		else if (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have RRRRRR..._________ and want R_R_R_R_... */
-			gmt_grd_real_interleave (GMT, header, data);
+			gmtlib_grd_real_interleave (GMT, header, data);
 		}
 		else {
 			/* Here we have _____...IIIII and want _I_I_I_I */
@@ -883,7 +883,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (header->type != GMT_GRID_IS_GD || !gmt_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
+			if (header->type != GMT_GRID_IS_GD || !gmtlib_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
 				if (!gmt_getdatapath (GMT, tmp, header->name, R_OK))
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
@@ -895,7 +895,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 #ifdef HAVE_GDAL
 		/* Check if file is an URL */
-		if (gmt_check_url_name(header->name)) {
+		if (gmtlib_check_url_name(header->name)) {
 			/* Then check for GDAL grid */
 			if (gmt_is_gdal_grid (GMT, header) == GMT_NOERROR)
 				return (GMT_NOERROR);
@@ -1034,7 +1034,7 @@ bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 	}
 }
 
-int gmt_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
+int gmtlib_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Determine if grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
 	if (GMT_x_is_lon (GMT, GMT_IN)) {	/* Data set is geographic with x = longitudes */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_CONV4_LIMIT) {
@@ -1106,7 +1106,7 @@ int gmt_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 		header->nan_value = invalid;
 
 	grdio_grd_get_units (GMT, header);
-	header->grdtype = gmt_get_grdtype (GMT, header);
+	header->grdtype = gmtlib_get_grdtype (GMT, header);
 
 	GMT_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 0), file);
 	nx = header->nx;	ny = header->ny;	/* Save copy */
@@ -1192,7 +1192,7 @@ int gmt_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *head
 
 	if (expand) /* Must undo the region extension and reset nx, ny using original pad  */
 		GMT_memcpy (header->wesn, wesn, 4, double);
-	header->grdtype = gmt_get_grdtype (GMT, header);	/* Since may change if a subset */
+	header->grdtype = gmtlib_get_grdtype (GMT, header);	/* Since may change if a subset */
 	GMT_grd_setpad (GMT, header, pad);	/* Copy the pad to the header */
 	gmt_set_grddim (GMT, header);		/* Update all dimensions */
 	if (expand) gmt_grd_zminmax (GMT, header, grid);	/* Reset min/max since current extrema includes the padded region */
@@ -2224,14 +2224,14 @@ int grdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	if (registration & GMT_GRID_DEFAULT_REG) registration |= GMT->common.r.registration;	/* Set the default registration */
 	header->registration = (registration & 1);
 	header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);
-	header->grdtype = gmt_get_grdtype (GMT, header);
+	header->grdtype = gmtlib_get_grdtype (GMT, header);
 	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	GMT_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 	grdio_grd_get_units (GMT, header);
 	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
-	header->grdtype = gmt_get_grdtype (GMT, header);	/* Set grid type (i.e. periodicity for global grids) */
+	header->grdtype = gmtlib_get_grdtype (GMT, header);	/* Set grid type (i.e. periodicity for global grids) */
 	return (GMT_NOERROR);
 }
 
@@ -2443,7 +2443,7 @@ void gmt_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	}
 }
 
-bool gmt_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_mode, uint64_t *imag_offset) {
+bool gmtlib_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_mode, uint64_t *imag_offset) {
 	/* Sets complex-related parameters based on the input complex_mode variable:
 	 * If complex_mode & GMT_GRID_NO_HEADER then we do NOT want to write a header [output only; only some formats]
 	 * If grid is the imaginary components of a complex grid then we compute the offset
@@ -2458,7 +2458,7 @@ bool gmt_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_mode
 }
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
+void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
 	/* Note: when grid is complex, pass 2x n_rows */
 	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
 	unsigned row;
@@ -2482,7 +2482,7 @@ void gmt_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n
 	gmt_str_free (tmp);
 }
 
-bool gmt_check_url_name (char *fname) {
+bool gmtlib_check_url_name (char *fname) {
 	/* File names starting as below should not be tested for existance or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns true. All cases are read via GDAL support or other. */

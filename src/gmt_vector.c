@@ -490,11 +490,11 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 					total_angle_rad = d_acos (gmt_dot3v (GMT, a, b));	/* Get spherical angle from a to b in radians; this is same distance as L */
 					gmt_cross3v (GMT, a, b, P);	/* Get pole P of plane trough a and b (and center of Earth) */
 					gmt_normalize3v (GMT, P);		/* Make sure P has unit length */
-					gmt_init_rot_matrix (Rot0, P);	/* Get partial rotation matrix since no actual angle is applied yet */
+					gmtlib_init_rot_matrix (Rot0, P);	/* Get partial rotation matrix since no actual angle is applied yet */
 				}
 				GMT_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 				angle_rad = total_angle_rad * frac_to_b;		/* Angle we need to rotate from a to c */
-				gmt_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
+				gmtlib_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
 				//gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
 				gmt_matrix_vect_mult (GMT, 3U, Rot, a, c);			/* Rotate from a to get c */
 				gmt_cart_to_geo (GMT, &lat_out[row_out], &lon_out[row_out], c, true);

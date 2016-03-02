@@ -33,8 +33,8 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("HMm")
 
-EXTERN_MSC int gmt_geo_C_format (struct GMT_CTRL *GMT);
-EXTERN_MSC unsigned int gmt_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
+EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1
@@ -329,13 +329,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (GMT_x_is_lon (GMT, GMT_IN)) {	/* Must check that output format won't mess things up by printing west > east */
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
-			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
+			GMT_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
-			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
+			GMT_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n",
 			            GMT->current.setting.format_geo_out);
 		}

@@ -35,7 +35,7 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYcptxy"
 
 void gmt_linearx_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-double gmt_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
@@ -925,7 +925,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			gmt_xy_axis (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL);
 			if (A->item[GMT_GRID_UPPER].active) {
-				dx = gmt_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}
@@ -1143,7 +1143,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
-				dx = gmt_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				gmt_linearx_grid (GMT, PSL, P->range[0].z_low, P->range[P->n_colors-1].z_high, 0.0, width, dx);
 			}

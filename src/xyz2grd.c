@@ -34,7 +34,7 @@
 
 #define GMT_PROG_OPTIONS "-:JRVbdfhirs" GMT_OPT("FH")
 
-EXTERN_MSC void gmt_str_tolower (char *string);
+EXTERN_MSC void gmtlib_str_tolower (char *string);
 
 struct XYZ2GRD_CTRL {
 	struct In {
@@ -489,7 +489,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to read nodata-flag or first data record from ESRI file\n");
 			Return (EXIT_FAILURE);
 		}
-		gmt_str_tolower (line);
+		gmtlib_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
 			if (fscanf (fp, "%lf", &value) != 1) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to parse nodata-flag from ESRI file\n");

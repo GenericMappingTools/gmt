@@ -51,9 +51,9 @@
 #define POS 1
 #define NEG 0
 
-EXTERN_MSC bool gmt_is_gleap (int gyear);
-EXTERN_MSC int gmt_gmonth_length (int year, int month);
-EXTERN_MSC void gmt_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
+EXTERN_MSC bool gmtlib_is_gleap (int gyear);
+EXTERN_MSC int gmtlib_gmonth_length (int year, int month);
+EXTERN_MSC void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *S, unsigned int mode);
 
 GMT_LOCAL double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double *sorted = NULL, med;
@@ -612,7 +612,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) bailout (API->error);
 
 	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
-	gmt_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
+	gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 
 	MGD77_Init (GMT, &M);
 	MGD77_Init (GMT, &Out);
@@ -2027,7 +2027,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					old_anom = gmt_memory (GMT, old_anom, n_alloc, double);
 				}
 				MGD77_gcal_from_dt (GMT, &M, D[i].time, &cal);	/* No adjust for TZ; this is GMT UTC time */
-				n_days = (gmt_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
+				n_days = (gmtlib_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 				/* Get date as decimal year */
 				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
 				MGD77_igrf10syn (GMT, 0, date, 1, 0.0, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], IGRF);
@@ -2321,7 +2321,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if ((E[curr].flags[E77_VALUE] & (1 << MGD77_YEAR)) || (E[curr].flags[E77_VALUE] & (1 << MGD77_MONTH)))
 									last_day = irint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
 								else
-									last_day = (int)gmt_gmonth_length (irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
+									last_day = (int)gmtlib_gmonth_length (irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
 
 								if (GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
 									E[curr].flags[E77_VALUE] |= (1 << i);

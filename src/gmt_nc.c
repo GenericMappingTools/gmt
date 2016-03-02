@@ -261,9 +261,9 @@ GMT_LOCAL void gmtnc_get_units (struct GMT_CTRL *GMT, int ncid, int varid, char 
 	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
 	char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
-	if (gmt_nc_get_att_text (GMT, ncid, varid, "long_name", name, GMT_GRID_UNIT_LEN80))
+	if (gmtlib_nc_get_att_text (GMT, ncid, varid, "long_name", name, GMT_GRID_UNIT_LEN80))
 		nc_inq_varname (ncid, varid, name);
-	if (!gmt_nc_get_att_text (GMT, ncid, varid, "units", units, GMT_GRID_UNIT_LEN80) && units[0])
+	if (!gmtlib_nc_get_att_text (GMT, ncid, varid, "units", units, GMT_GRID_UNIT_LEN80) && units[0])
 		sprintf (name_units, "%s [%s]", name, units);
 	else
 		strcpy (name_units, name);
@@ -520,11 +520,11 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 	if (job == 'r') {
 		/* Get global information */
-		if (gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
-			gmt_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
-		if (gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
-			gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
-		gmt_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
+			gmtlib_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
+		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
+			gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
+		gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
 
 		if (gm_id > 0) {
 			size_t len;
@@ -1256,7 +1256,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	GMT_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
 
 	/* Set stride and offset if complex */
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 	pgrid = grid + imag_offset;	/* Start of this complex component (or start of non-complex grid) */
 
 #ifdef NC4_DEBUG
@@ -1350,7 +1350,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		gmt_grd_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
+		gmtlib_grd_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	// gmtnc_pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
@@ -1442,7 +1442,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		goto nc_err;
 
 	/* Set stride and offset if complex */
-	(void)gmt_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 	pgrid = grid + imag_offset;	/* Beginning of this complex component (or the regular non-complex grid) */
 
 	/* Remove padding from grid */
@@ -1454,7 +1454,7 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		gmt_grd_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
+		gmtlib_grd_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
 
 	/* get stats */
 	header->z_min = DBL_MAX;

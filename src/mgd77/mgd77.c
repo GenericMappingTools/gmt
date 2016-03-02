@@ -100,9 +100,9 @@ int (*MGD77_column_test_string[9]) (char *, char *, size_t);
 
 unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
-EXTERN_MSC int64_t gmt_splitinteger (double value, int epsilon, double *doublepart);
-EXTERN_MSC bool gmt_is_gleap (int gyear);
-EXTERN_MSC void gmt_str_toupper (char *string);
+EXTERN_MSC int64_t gmtlib_splitinteger (double value, int epsilon, double *doublepart);
+EXTERN_MSC bool gmtlib_is_gleap (int gyear);
+EXTERN_MSC void gmtlib_str_toupper (char *string);
 
 int MGD77_nc_status (struct GMT_CTRL *GMT, int status) {
 	/* This function checks the return status of a netcdf function and takes
@@ -2547,7 +2547,7 @@ static void MGD77_dt2rdc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double 
 	double t_sec;
 	GMT_UNUSED(GMT);
 	t_sec = (t * F->utime.scale + F->utime.epoch_t0 * GMT_DAY2SEC_F);
-	i = gmt_splitinteger (t_sec, 86400, s) + F->utime.rata_die;
+	i = gmtlib_splitinteger (t_sec, 86400, s) + F->utime.rata_die;
 	*rd = i;
 }
 
@@ -3154,7 +3154,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		H->errors[ERR]++;
 	}
 	strncpy (copy, P->Format_Description, 151U);
-	gmt_str_toupper (copy);
+	gmtlib_str_toupper (copy);
 	if (strcmp (copy, "(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)") OR_TRUE) {
 		if (F->verbose_level & 2) fprintf (fp_err, "Y-E-%s-H10-02: Invalid Format Description: (%s) [(I1,A8,I3,I4,3I2,F5.3,F8.5,F9.5,I1,F6.4,F6.1,I2,I1,3F6.1,I1,F5.1,F6.0,F7.1,F6.1,F5.1,A5,A6,I1)]\n", F->NGDC_id, P->Format_Description);
 		H->errors[ERR]++;
@@ -5762,7 +5762,7 @@ double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_GCAL *cal) {
 	/* Convert GMT calendar structure to decimal year for use with IGRF/CM4 function */
 	double n_days;
 	GMT_UNUSED(GMT);
-	n_days = (gmt_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
+	n_days = (gmtlib_is_gleap (cal->year)) ? 366.0 : 365.0;	/* Number of days in this year */
 	return (cal->year + ((cal->day_y - 1.0) + (cal->hour * GMT_HR2SEC_I + cal->min * GMT_MIN2SEC_I + cal->sec) * GMT_SEC2DAY) / n_days);
 }
 
@@ -5797,7 +5797,7 @@ void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t
 	MGD77_dt2rdc (GMT, F, t, &rd, &x);
 	gmt_gcal_from_rd (GMT, rd, cal);
 	/* split double seconds and integer time */
-	i = (int)gmt_splitinteger (x, 60, &cal->sec);
+	i = (int)gmtlib_splitinteger (x, 60, &cal->sec);
 	cal->hour = i/60;
 	cal->min  = i%60;
 	return;

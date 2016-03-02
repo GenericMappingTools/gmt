@@ -779,7 +779,7 @@ void gmt_vstereo (struct GMT_CTRL *GMT, double lon0, double lat0, double horizon
 
 	double clat;
 	if (GMT->current.proj.GMT_convert_latitudes) {	/* Set Conformal radius and pole latitude */
-		gmt_scale_eqrad (GMT);
+		gmtlib_scale_eqrad (GMT);
 		clat = GMT_latg_to_latc (GMT, lat0);
 	}
 	else
@@ -1748,7 +1748,7 @@ void gmt_igenper (struct GMT_CTRL *GMT, double *lon, double *lat, double xt, dou
 	return;
 }
 
-int gmt_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x, double *work_y) {
+int gmtlib_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work_x, double *work_y) {
 	uint64_t i;
 	double da, angle;
 	double x, y, xt, yt;
@@ -2400,14 +2400,14 @@ void gmt_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 	GMT->current.proj.n_phi[17] = 85;	GMT->current.proj.n_X[17] = 0.5722;	GMT->current.proj.n_Y[17] = 0.9761;
 	GMT->current.proj.n_phi[18] = 90;	GMT->current.proj.n_X[18] = 0.5322;	GMT->current.proj.n_Y[18] = 1.0000;
 	if (GMT->current.setting.interpolant == GMT_SPLINE_CUBIC) {	/* Natural cubic spline */
-		err_flag  = gmt_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
-		err_flag += gmt_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
-		err_flag += gmt_cspline (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
+		err_flag  = gmtlib_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
+		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
+		err_flag += gmtlib_cspline (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
 	else {	/* Akimas spline */
-		err_flag  = gmt_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
-		err_flag += gmt_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
-		err_flag += gmt_akima (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
+		err_flag  = gmtlib_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT_N_ROBINSON, GMT->current.proj.n_x_coeff);
+		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_phi, GMT->current.proj.n_Y, GMT_N_ROBINSON, GMT->current.proj.n_y_coeff);
+		err_flag += gmtlib_akima (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT_N_ROBINSON, GMT->current.proj.n_iy_coeff);
 	}
 	if (err_flag) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error:  Interpolation failed in gmt_vrobinson?\n");
 }

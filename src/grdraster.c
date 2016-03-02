@@ -40,7 +40,7 @@
 
 #define GMT_PROG_OPTIONS "-JRVbdh"
 
-EXTERN_MSC void gmt_str_toupper (char *string);
+EXTERN_MSC void gmtlib_str_toupper (char *string);
 
 struct GRDRASTER_CTRL {
 	struct In {
@@ -798,7 +798,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Check if given argument is an integer ID.  If so, assign iselect, else set it to UINT_MAX */
 
 	tselect = strdup (Ctrl->In.file);
-	gmt_str_toupper (tselect);	/* Make it upper case - which wont affect integers */
+	gmtlib_str_toupper (tselect);	/* Make it upper case - which wont affect integers */
 	for (j = i = 0; tselect[j] && i == 0; j++) if (!isdigit ((int)tselect[j])) i = 1;
 	if (i == 0)
 		iselect = atoi (tselect);
@@ -817,7 +817,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		}
 		else {	/* We gave a text snippet to match in command */
 			strncpy (match, rasinfo[i].h.command, GMT_GRID_REMARK_LEN160-1);
-			gmt_str_toupper (match);	/* Make it upper case  */
+			gmtlib_str_toupper (match);	/* Make it upper case  */
 			if (strstr (match, tselect)) {	/* Found a matching text string */
 				if (j == UINT_MAX)
 					j = i;

@@ -219,7 +219,7 @@ struct GMT_INIT { /* Holds misc run-time parameters */
 struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	uint64_t n;			/* Number of such points */
 	size_t n_alloc;			/* Size of allocated plot arrays */
-	bool r_theta_annot;		/* true for special r-theta map annotation (see gmt_get_annot_label) */
+	bool r_theta_annot;		/* true for special r-theta map annotation (see gmtlib_get_annot_label) */
 	unsigned int mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	unsigned int *pen;		/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	struct GMT_PLOT_CALCLOCK calclock;

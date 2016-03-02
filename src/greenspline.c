@@ -55,7 +55,7 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbdfghiors" GMT_OPT("FH") GMT_ADD_x_OPT
 
-EXTERN_MSC int gmt_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
+EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
 /* Control structure for greenspline */
 
@@ -996,7 +996,7 @@ GMT_LOCAL void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double p
 	GMT_UNUSED(GMT);
 	GMT_UNUSED(par);
 	L->c = gmt_memory (GMT, NULL, 3*L->n, double);
-	gmt_cspline (GMT, x, L->y, L->n, L->c);
+	gmtlib_cspline (GMT, x, L->y, L->n, L->c);
 }
 
 GMT_LOCAL void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg) {

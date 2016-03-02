@@ -1096,7 +1096,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			if (id < 0) {	/* Found a corner */
 				cid = id + 4;	/* ID of the corner */
 				nid = (dir == 1) ? (cid + 1) % 4 : cid;	/* Next corner [I think] */
-				if ((add = (int)gmt_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp)) != 0) {
+				if ((add = (int)gmtlib_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp)) != 0) {
 					/* Add the bin-border segment from last point in the growing polygon to the specified corner */
 					n_alloc += add;
 					p[P].lon = gmt_memory (GMT, p[P].lon, n_alloc, double);
@@ -1110,7 +1110,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 			}
 			else {	/* Found a segment to add to our polygon */
 				shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);	/* Get lon,lat of start of segment */
-				if ((add = (int)gmt_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp)) != 0) {
+				if ((add = (int)gmtlib_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp)) != 0) {
 					/* Connect the last point in the growing polygon with the starting point of this next segment */
 					n_alloc += add;
 					p[P].lon = gmt_memory (GMT, p[P].lon, n_alloc, double);

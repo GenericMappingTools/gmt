@@ -37,7 +37,7 @@
 
 #define GMT_PROG_OPTIONS "->Vbdhi"
 
-EXTERN_MSC unsigned int gmt_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
+EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 
@@ -360,7 +360,7 @@ int GMT_makecpt (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		nz = gmt_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
+		nz = gmtlib_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
 	}
 	else if (Ctrl->T.active) {	/* Establish linear grid */
 		if (Ctrl->T.inc == 0 && Ctrl->C.active) {	/* Compute interval from number of colors in palette */
