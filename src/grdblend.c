@@ -109,10 +109,10 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 
 int found_unsupported_format (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file)
 {	/* Check that grid files are not among the unsupported formats that has no row-by-row io yet */
-	unsigned int i;
+	unsigned int i, type;
 	static char *not_supported[N_NOT_SUPPORTED] = {"rb", "rf", "sf", "sd", "af", "ei", "ef", "gd"};
 	for (i = 0; i < N_NOT_SUPPORTED; i++) {	/* Only allow netcdf (both v3 and new) and native binary output */
-		if (GMT_grd_format_decoder (GMT, not_supported[i], &h->type) != GMT_NOERROR) {
+		if (GMT_grd_format_decoder (GMT, not_supported[i], &type) != GMT_NOERROR) {
 			/* no valid type id */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Grid format type %s for file %s is not directly supported\n", not_supported[i], file);
 			return (1);
