@@ -3804,6 +3804,10 @@ void * gmt_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status) {
 int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Process a binary record to determine what kind of record it is. Return values:
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
+	 * Also takes these optional actions:
+	 * -:  Flips x and u
+	 * Adjusts periodicity on longitudes
+	 * Handles inverse projections if given projected coordinates.
 	*/
 	uint64_t col_no, n_NaN;
 	bool bad_record = false, set_nan_flag = false;
