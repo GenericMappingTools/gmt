@@ -750,8 +750,8 @@ GMT_LOCAL unsigned int api_pick_in_col_number (struct GMT_CTRL *GMT, unsigned in
 	unsigned int col_pos;
 	if (GMT->common.i.active)	/* -i has selected some columns */
 		col_pos = GMT->current.io.col[GMT_IN][col].col;	/* Which data column to pick */
-	else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z)	/* Worry about -: for lon,lat */
-		col_pos = 1 - col;	/* Read lat/lon instead of lon/lat */
+	//else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z)	/* Worry about -: for lon,lat */
+	//	col_pos = 1 - col;	/* Read lat/lon instead of lon/lat */
 	else
 		col_pos = col;	/* Just goto that column */
 	return (col_pos);
