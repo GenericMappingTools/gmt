@@ -230,7 +230,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 			case 'L':	/* Overwride default labeling */
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
-					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
+					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4, "Syntax error -L option: Expected\n\t-L<westlabel>/<eastlabel>/<southlabel>/<northlabel>\n");
 					Ctrl->L.w = strdup (txt_a);	Ctrl->L.e = strdup (txt_b);
 					Ctrl->L.s = strdup (txt_c);	Ctrl->L.n = strdup (txt_d);
 				}
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'M':	/* Get arrow parameters */
 				Ctrl->M.active = true;
-				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
+				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || gmt_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
@@ -249,9 +249,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
 						Ctrl->W.active[1] = true;
-						Ctrl->W.pen[1].width = GMT_to_points (GMT, txt_a);
-						Ctrl->M.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
-						Ctrl->M.S.v.h_width = (float)GMT_to_inch (GMT, txt_c);
+						Ctrl->W.pen[1].width = gmt_M_to_points (GMT, txt_a);
+						Ctrl->M.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
+						Ctrl->M.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 						Ctrl->M.S.v.v_angle = (float)atand (0.5 * Ctrl->M.S.v.h_width / Ctrl->M.S.v.h_length);
 						Ctrl->M.S.v.status |= (GMT_VEC_OUTLINE + GMT_VEC_FILL);
 					}
@@ -263,7 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 					else {	/* Size, plus possible attributes */
 						n = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
-						Ctrl->M.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+						Ctrl->M.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 						n_errors += gmt_parse_vector (GMT, 'v', txt_b, &Ctrl->M.S);
 					}
 					Ctrl->M.S.v.status |= GMT_VEC_OUTLINE;
@@ -278,7 +278,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				n = (int)strlen (opt->arg) - 1;
 				if (opt->arg[n] == 'n') opt->arg[n] = 0;	/* Temporarily remove the n */
 				k = (opt->arg[0] == 'n') ? 1 : 0;		/* If we got -Sn<radius> */
-				Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[k]);
+				Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[k]);
 				if (Ctrl->S.normalize && k == 0) opt->arg[n] = 'n';	/* Put back the n */
 				break;
 			case 'T':	/* Oriented instead of directed data */
@@ -314,14 +314,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && gmt_access (GMT, Ctrl->C.file, R_OK),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && gmt_access (GMT, Ctrl->C.file, R_OK),
 	                                 "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, GMT_IS_ZERO (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, gmt_M_is_zero (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
 	if (!Ctrl->I.active) {
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
 			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
 				"Syntax error -R option: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
@@ -331,7 +331,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psrose (void *V_API, int mode, void *args) {
@@ -382,7 +382,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-	GMT_memset (dim, PSL_MAX_DIMS, double);
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 
 	max_radius = GMT->common.R.wesn[XHI];
 	if (doubleAlmostEqual (GMT->common.R.wesn[YLO], -90.0))
@@ -438,11 +438,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -539,7 +539,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char *kind[2] = {"r", "bin sum"};
 		sprintf (format, "Info for data: n = %% " PRIu64 " mean az = %s mean r = %s mean resultant length = %s max %s = %s scaled mean r = %s linear length sum = %s\n",
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
@@ -556,20 +556,20 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	if (automatic) {
-		if (GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval)) {
+		if (gmt_M_is_zero (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval)) {
 			tmp = pow (10.0, floor (d_log10 (GMT, max)));
 			if ((max / tmp) < 3.0) tmp *= 0.5;
 		}
 		else
 			tmp = GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 		max_radius = ceil (max / tmp) * tmp;
-		if (GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) || GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval)) {	/* Tickmarks not set */
+		if (gmt_M_is_zero (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) || gmt_M_is_zero (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval)) {	/* Tickmarks not set */
 			GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval = tmp;
 			GMT->current.map.frame.draw = true;
 		}
 	}
 
-	if (GMT->current.map.frame.draw && GMT_IS_ZERO (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval)) GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval = 30.0;
+	if (GMT->current.map.frame.draw && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval)) GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval = GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval = 30.0;
 
 	/* Ready to plot.  So set up GMT projections (not used by psrose), we set region to actual plot width and scale to 1 */
 

@@ -94,7 +94,7 @@ int spotter_comp_total (const void *p_1, const void *p_2) {
 void spotter_matrix_to_pole (struct GMT_CTRL *GMT, double T[3][3], double *plon, double *plat, double *w) {
 	/* Based on Cox and Hart, 1986 */
 	double T13_m_T31, T32_m_T23, T21_m_T12, L, H, tr;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	T13_m_T31 = T[0][2] - T[2][0];
 	T32_m_T23 = T[2][1] - T[1][2];
@@ -178,7 +178,7 @@ void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[
 void set_I_matrix (double R[3][3]) {
 	/* Simply sets R to I, the identity matrix */
 
-	GMT_memset (R, 9, double);
+	gmt_M_memset (R, 9, double);
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
@@ -222,7 +222,7 @@ void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[])
 	 * covariance matrix is stored as [k_hat a b c d e f g df] */
 	
 	unsigned int k;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	K[0] = e->k_hat;
 	K[7] = e->g;
 	K[8] = e->df;
@@ -345,7 +345,7 @@ bool spotter_GPlates_pair (char *file) {
 unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct SPOTTER_ROT *R) {
 	unsigned int n_errors = 0, k = (arg[0] == '+') ? 1 : 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	if (k == 0 && spotter_GPlates_pair (arg)) {	/* A GPlates plate pair to look up in the rotation table */
 		R->file = strdup (arg);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received GPlates pair: %s\n", arg);
@@ -381,7 +381,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 
 void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e) {
 	/* Update this rotation's derived settings */
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	e->duration = e->t_start - e->t_stop;
 	e->omega /= e->duration;	/* Convert to opening rate */
 	e->omega_r = e->omega * D2R;
@@ -474,7 +474,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 
 		if (GPlates) {
 			if ((nf = sscanf (buffer, "%d %lf %lf %lf %lf %d %[^\n]", &p1, &t, &lat, &lon, &rot, &p2, comment)) != 7) continue;
-			if (GMT_IS_ZERO (t)) continue;	/* Not a rotation */
+			if (gmt_M_is_zero (t)) continue;	/* Not a rotation */
 			if (strstr (comment, "cross-over") || strstr (comment, "cross over") || strstr (comment, "crossover")) continue;	/* Skip GPlates cross-over rotations */
 			if (A_id == p1 && B_id == p2 && !V2) {	/* Exactly what we wanted */
 				e[i].lon = lon;	e[i].lat = lat;	e[i].omega = rot;	e[i].t_start = t;
@@ -637,7 +637,7 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 int spotter_stage (struct GMT_CTRL *GMT, double t, struct EULER p[], unsigned int ns) {
 	/* Return the stage ID for given t, or -1 if not within time range */
 	unsigned int j = 0;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	while (j < ns && t < p[j].t_stop) j++;	/* Find first applicable stage pole */
 	if (j == ns) return (-1);	/* Outside in time */
 	return (j);
@@ -1072,7 +1072,7 @@ void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], unsigned i
 		if (stage_rates) p[stage].omega *= p[stage].duration;					/* Convert opening rate to opening angle */
 		gmt_make_rot_matrix (GMT, p[stage].lon, p[stage].lat, p[stage].omega, R_stage);	/* Make matrix from rotation parameters */
 		spotter_matrix_mult (GMT, R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
-		GMT_memcpy (R_old, R_young, 9, double);							/* Set R_old = R_young for next time around */
+		gmt_M_memcpy (R_old, R_young, 9, double);							/* Set R_old = R_young for next time around */
 		spotter_matrix_to_pole (GMT, R_young, &elon[stage], &elat[stage], &ew[stage]);		/* Get rotation parameters from matrix */
 		if (elon[stage] > 180.0) elon[stage] -= 360.0;						/* Adjust lon */
 	}
@@ -1210,11 +1210,11 @@ void spotter_add_rotations (struct GMT_CTRL *GMT, struct EULER a[], int n_a_in, 
 			if (sign_a < 0.0)
 				spotter_cov_of_inverse (GMT, &a2[i], Ca);
 			else
-				GMT_memcpy (Ca, a2[i].C, 9, double);
+				gmt_M_memcpy (Ca, a2[i].C, 9, double);
 			if (sign_b < 0.0)
 				spotter_cov_of_inverse (GMT, &b2[i], Cb);
 			else
-				GMT_memcpy (Cb, b2[i].C, 9, double);
+				gmt_M_memcpy (Cb, b2[i].C, 9, double);
 			spotter_matrix_mult (GMT, Cb, Ra, tmp);
 			spotter_matrix_mult (GMT, RaT, tmp, c2[i].C);
 			for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) c2[i].C[k][j] *= fb;
@@ -1236,7 +1236,7 @@ double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], unsigned int n, doub
 
 	int i;
 	double w = 0.0;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	i = n - 1;
 	while (i >= 0 && t > a[i].t_start) {
@@ -1279,7 +1279,7 @@ void set_rot_angle (double w, double R[3][3], double E[])
 void spotter_matrix_mult (struct GMT_CTRL *GMT, double a[3][3], double b[3][3], double c[3][3]) {
 	/* C = A * B */
 	unsigned int i, j, k;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	for (i = 0; i < 3; i++) {
 		for (j = 0; j < 3; j++) {
@@ -1293,7 +1293,7 @@ void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3
 	/* Computes the matrix transpose */
 
 	unsigned int i, j;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 3; i++) {
 			At[i][j] = A[j][i];
@@ -1305,7 +1305,7 @@ void spotter_matrix_add (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], d
 	/* Computes the matrix addition */
 
 	unsigned int i, j;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	for (j = 0; j < 3; j++) {
 		for (i = 0; i < 3; i++) {
 			C[i][j] = A[i][j] + B[i][j];
@@ -1337,7 +1337,7 @@ void spotter_get_rotation (struct GMT_CTRL *GMT, struct EULER *p, unsigned int n
 	/* Here we must add a partial rotation to the last finite rotation */
 	
 	i--;
-	GMT_memcpy (e, &p[i], 2, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
+	gmt_M_memcpy (e, &p[i], 2, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
 	spotter_total_to_stages (GMT, e, 2, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	gmt_make_rot_matrix (GMT, e[1].lon, e[1].lat, e[1].omega * e[1].duration, R);	/* Get matrix R for main rotation */
 	omega = e[1].omega * (t - e[0].t_stop);						/* Compute rotation angle for the partial rotation */
@@ -1381,7 +1381,7 @@ bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double 
 	gmt_make_rot_matrix (GMT, p[k].lon, p[k].lat, w, R);
 	spotter_matrix_transpose (GMT, Rt, R);			/* Get the transpose of R^t */
 	if (!forward) {		/* Rotate the point into the present */
-		GMT_memcpy (cov, p[k].C, 9, double);	/* The rotation's covarience matrix */
+		gmt_M_memcpy (cov, p[k].C, 9, double);	/* The rotation's covarience matrix */
 	}
 	else {	/* Use inverse rotation to rotate the point from the present to past rotations */
 		/* We change the sign of w so then R is actually R^t */
@@ -1431,13 +1431,13 @@ bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double 
 
 void spotter_matrix_1Dto2D (struct GMT_CTRL *GMT, double *M, double X[3][3]) {
 	unsigned int i, j;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) X[i][j] = M[3*i+j];
 }
 
 void spotter_matrix_2Dto1D (struct GMT_CTRL *GMT, double *M, double X[3][3]) {
 	unsigned int i, j;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) M[3*i+j] = X[i][j];
 }
 
@@ -1446,7 +1446,7 @@ void spotter_inv_cov (struct GMT_CTRL *GMT, double Ci[3][3], double C[3][3]) {
 	 * (or any symmetric 3x3 matrix) */
 	
 	double inv_D;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	inv_D = 1.0 / (-C[0][0]*C[1][1]*C[2][2] + C[0][0]*C[1][2]*C[1][2] + C[0][1]*C[0][1]*C[2][2] - 2.0*C[0][1]*C[0][2]*C[1][2] + C[0][2]*C[0][2]*C[1][1]);
 	Ci[0][0] = (-C[1][1] * C[2][2] + C[1][2]*C[1][2]) * inv_D;
 	Ci[0][1] = Ci[1][0] = (C[0][1]*C[2][2] - C[0][2]*C[1][2]) * inv_D;
@@ -1480,13 +1480,13 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 #endif	
 	c2 = gmt_chi2crit (GMT, alpha, nu);
 	c = sqrt (c2);
-	GMT_memset (phi, SPOTTER_N_FINE_STEPS+1, double);
-	GMT_memset (t, SPOTTER_N_FINE_STEPS+1, double);
-	GMT_memset (t_inner, SPOTTER_N_FINE_STEPS+1, double);
+	gmt_M_memset (phi, SPOTTER_N_FINE_STEPS+1, double);
+	gmt_M_memset (t, SPOTTER_N_FINE_STEPS+1, double);
+	gmt_M_memset (t_inner, SPOTTER_N_FINE_STEPS+1, double);
 
 	spotter_matrix_2Dto1D (GMT, C, p->C);			/* Reformat p->C to 1-D format C for gmt_jacobi */
 	if (fake) {
-		GMT_memset (C, 9, double);
+		gmt_M_memset (C, 9, double);
 		C[0] = C[4] = C[8] = fval;
 	}
 	gmt_jacobi (GMT, C, matrix_dim, matrix_dim, EigenValue, EigenVector, work1, work2, &nrots);	/* Solve eigen-system C = EigenVector * EigenValue * EigenVector^T */
@@ -1506,12 +1506,12 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	 * loop over angles. The two horizontal axes are indicated by the indices axis[]GMT_X] and axis[GMT_Y], with
 	 * axis[GMT_Z] being the axis most parallel with r_t .*/
 
-	GMT_memset (N, 3, double);	N[0] = 1.0;
+	gmt_M_memset (N, 3, double);	N[0] = 1.0;
 	angle = gmt_dot3v (GMT, r_t_unit, N);	axis[GMT_Z] = GMT_X;
-	GMT_memset (N, 3, double);	N[1] = 1.0;
+	gmt_M_memset (N, 3, double);	N[1] = 1.0;
 	new_angle = gmt_dot3v (GMT, r_t_unit, N);
 	if (new_angle > angle) {axis[GMT_Z] = GMT_Y; angle = new_angle;}
-	GMT_memset (N, 3, double);	N[2] = 1.0;
+	gmt_M_memset (N, 3, double);	N[2] = 1.0;
 	new_angle = gmt_dot3v (GMT, r_t_unit, N);
 	if (new_angle > angle) {axis[GMT_Z] = GMT_Z; angle = new_angle;}
 	axis[GMT_X] = (axis[GMT_Z] == 0) ? 1 : 0;	/* u will be either first or second original axis */
@@ -1711,7 +1711,7 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	
 	if (override) {
 		spotter_matrix_transpose (GMT, tmp, D);
-		GMT_memcpy (D, tmp, 9, double);
+		gmt_M_memcpy (D, tmp, 9, double);
 	}
 	
 	/* Get square of each axis */
@@ -1735,7 +1735,7 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	r = sqrt (A*A - 2*A*C + C*C + 4*B*B);
 	par[1] = 1.0/sqrt (0.5 * (A + C + r));
 	par[2] = 1.0/sqrt (0.5 * (A + C - r));
-	par[0] = (GMT_IS_ZERO (B)) ? ((A > C) ? 90.0 : 0.0) : 90.0 - atan2 (-0.5 * (A - C - r)/B, 1.0) * R2D;
+	par[0] = (gmt_M_is_zero (B)) ? ((A > C) ? 90.0 : 0.0) : 90.0 - atan2 (-0.5 * (A - C - r)/B, 1.0) * R2D;
 	if (par[2] > par[1]) {	/* Switch so that par[1] is the major axis */
 		double_swap (par[1], par[2]);
 		par[0] += 90.0;
@@ -1747,7 +1747,7 @@ void spotter_project_ellipsoid_new (struct GMT_CTRL *GMT, double X[3][3], double
 	/* Project an arbitrarily oriented ellipsoid orthographically onto the x-y plane
 	 */
 	double a, b, c, r;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	a = X[0][0] - (X[0][2] * X[0][2] / X[2][2]);
 	b = X[0][1] - (X[0][2] * X[1][2] / X[2][2]);
@@ -1755,7 +1755,7 @@ void spotter_project_ellipsoid_new (struct GMT_CTRL *GMT, double X[3][3], double
 	r = sqrt (a*a - 2.0*a*c + c*c + 4.0*b*b);
 	par[1] = sqrt (0.5 * (a + c + r));
 	par[2] = sqrt (0.5 * (a + c - r));
-	par[0] = (GMT_IS_ZERO (b)) ? ((a > c) ? 90.0 : 0.0) : 90.0 - atan2 (-0.5 * (a - c - r)/b, 1.0) * R2D;
+	par[0] = (gmt_M_is_zero (b)) ? ((a > c) ? 90.0 : 0.0) : 90.0 - atan2 (-0.5 * (a - c - r)/b, 1.0) * R2D;
 	if (par[2] > par[1]) {	/* Switch so that par[1] is the major axis */
 		double_swap (par[1], par[2]);
 		par[0] += 90.0;
@@ -1789,7 +1789,7 @@ bool on_the_ellipse (double xyz[3], double L[3], double c) {
 	double sum;
 	sum = c * c;
 	for (i = 0; i < 3; i++) sum -= pow (xyz[i]/L[i],2.0);
-	return (GMT_IS_ZERO (sum));
+	return (gmt_M_is_zero (sum));
 }
 
 void spotter_ellipsoid_normal (struct GMT_CTRL *GMT, double X[3], double L[3], double c, double N[3]) {
@@ -1798,8 +1798,8 @@ void spotter_ellipsoid_normal (struct GMT_CTRL *GMT, double X[3], double L[3], d
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Point X is not on the ellipsoid in ellipsoid_normal!");
 		return;
 	}
-	if (GMT_IS_ZERO (X[GMT_Z])) {	/* Normal vector lies entirely in (x-y) plane */
-		if (GMT_IS_ZERO (X[GMT_Y])) {	/* Special case where N is aligned with x-axis */
+	if (gmt_M_is_zero (X[GMT_Z])) {	/* Normal vector lies entirely in (x-y) plane */
+		if (gmt_M_is_zero (X[GMT_Y])) {	/* Special case where N is aligned with x-axis */
 			N[GMT_X] = copysign (1.0, X[GMT_X]);	/* Pointing in the sign(x) direction */
 			N[GMT_Y] = N[GMT_Z] = 0.0;
 		}

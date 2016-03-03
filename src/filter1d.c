@@ -278,7 +278,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 							}
 							break;
 					}
-					n_errors += GMT_check_condition (GMT, Ctrl->F.file == NULL && Ctrl->F.width <= 0.0, "Syntax error -F option: Filterwidth must be positive\n");
+					n_errors += gmt_M_check_condition (GMT, Ctrl->F.file == NULL && Ctrl->F.width <= 0.0, "Syntax error -F option: Filterwidth must be positive\n");
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
@@ -295,7 +295,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 				break;
 			case 'N':	/* Select column with independent coordinate [0] */
 				Ctrl->N.active = true;
-				if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
+				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 						int sval0;
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
@@ -309,7 +309,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 				}
 				else
 					sval = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N option: Time column cannot be negative.\n");
+				n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -N option: Time column cannot be negative.\n");
 				Ctrl->N.col = sval;
 				break;
 			case 'Q':	/* Assess quality of output */
@@ -343,12 +343,12 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 
 	/* Check arguments */
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D: must give positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "Syntax error -T option: Output interval < filterwidth\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option: Unreasonable lack-of-data interval\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option: Enter a factor between 0 and 1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F is required\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.inc <= 0.0, "Syntax error -D: must give positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.max - Ctrl->T.min) < Ctrl->F.width, "Syntax error -T option: Output interval < filterwidth\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && (Ctrl->L.value < 0.0 || Ctrl->L.value > Ctrl->F.width) , "Syntax error -L option: Unreasonable lack-of-data interval\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->S.value < 0.0 || Ctrl->S.value > 1.0) , "Syntax error -S option: Enter a factor between 0 and 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && (Ctrl->Q.value < 0.0 || Ctrl->Q.value > 1.0), "Syntax error -Q option: Enter a factor between 0 and 1\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -393,9 +393,9 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	if (F->filter_type == FILTER1D_CUSTOM) {	/* Use coefficients we read from file */
 		F->n_f_wts = F->Fin->n_records;
 		F->f_wt = gmt_memory (GMT, F->f_wt, F->n_f_wts, double);
-		GMT_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->coord[GMT_X], F->n_f_wts, double);
+		gmt_M_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->coord[GMT_X], F->n_f_wts, double);
 		for (i = 0, w_sum = 0.0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
-		F->f_operator = (GMT_IS_ZERO (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
+		F->f_operator = (gmt_M_is_zero (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
 		F->half_n_f_wts = F->n_f_wts / 2;
 		F->half_width = F->half_n_f_wts * F->dt;
 		F->filter_width = 2.0 * F->half_width;
@@ -791,7 +791,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -828,7 +828,7 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the filter1d main code ----------------------------*/
 
-	GMT_memset (&F, 1, struct FILTER1D_INFO);	/* Init control structure to NULL */
+	gmt_M_memset (&F, 1, struct FILTER1D_INFO);	/* Init control structure to NULL */
 	F.n_work_alloc = GMT_CHUNK;
 	F.equidist = true;
 

@@ -88,19 +88,12 @@ enum Gmt_error_code {
 	GMT_MAP_BAD_MEASURE_UNIT
 };
 
-/* Definition for an error trap */
-#ifdef DEBUG
-#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
-#else
-#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
-#endif
-
 EXTERN_MSC const char * GMT_strerror (int err);
 
-#define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
+#define gmt_M_is_verbose(C,level) (C->current.setting.verbose >= level)
 
 /* Check condition and report error if true */
-#define GMT_check_condition(C,condition,...) ((condition) ? 1+GMT_Report(C->parent,GMT_MSG_NORMAL,__VA_ARGS__) : 0)
+#define gmt_M_check_condition(C,condition,...) ((condition) ? 1+GMT_Report(C->parent,GMT_MSG_NORMAL,__VA_ARGS__) : 0)
 
 /* Set __func__ identifier */
 #ifndef HAVE___FUNC__

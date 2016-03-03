@@ -154,7 +154,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 			/* Supplemental parameters */
 
 			case 'C':	/* Now done automatically in spotter_init */
-				if (GMT_compat_check (GMT, 4))
+				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -213,7 +213,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 				/* Not a file */
 				k = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 				if (k == 3) {	/* Gave -Ttstart/tstop/tinc or possibly ancient -Tlon/lat/angle */
-					if (GMT_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
+					if (gmt_M_compat_check (GMT, 4) && !gave_e) {	/* No -E|e so likely ancient syntax */
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -E<lon>/<lat>/<angle> instead.\n");
 						Ctrl->E.rot.single = Ctrl->E.active = true;
 						Ctrl->T.active = false;
@@ -252,15 +252,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot use -N with -S\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->G.active, "Syntax error: No output grid file allowed with -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: Cannot use -N with -S\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active, "Syntax error: -N and -S cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3,
 	                                 "Syntax error: Binary input data (-bi) must have at least 2 columns\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->N.active, "Syntax error: -N and -D cannot both be given\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Option -E is required\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -294,7 +294,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 		S->coord[GMT_X] = gmt_memory (GMT, NULL, add, double);
 		S->coord[GMT_Y] = gmt_memory (GMT, NULL, add, double);
 		for (col = 0; col < add; col++) {
-			S->coord[GMT_X][col] = GMT_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_X][col] = gmt_M_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
 			S->coord[GMT_Y][col] = h->wesn[YLO];
 		}
 	}
@@ -305,7 +305,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np, double);
 	for (row = 0; row < add; row++) {	/* Loop along east border from south to north */
 		S->coord[GMT_X][np+row] = h->wesn[XHI];
-		S->coord[GMT_Y][np+row] = GMT_row_to_y (GMT, h->ny - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		S->coord[GMT_Y][np+row] = gmt_M_row_to_y (GMT, h->ny - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	/* Add north border e->w */
@@ -321,7 +321,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 		S->coord[GMT_X] = gmt_memory (GMT, S->coord[GMT_X], add + np, double);
 		S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np, double);
 		for (col = 0; col < add; col++) {
-			S->coord[GMT_X][np+col] = GMT_col_to_x (GMT, h->nx - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_X][np+col] = gmt_M_col_to_x (GMT, h->nx - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
 			S->coord[GMT_Y][np+col] = h->wesn[YHI];
 		}
 	}
@@ -332,7 +332,7 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
 	for (row = 0; row < add; row++) {	/* Loop along west border from north to south */
 		S->coord[GMT_X][np+row] = h->wesn[XLO];
-		S->coord[GMT_Y][np+row] = GMT_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+		S->coord[GMT_Y][np+row] = gmt_M_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	S->coord[GMT_X][np] = S->coord[GMT_X][0];	/* Close polygon explicitly */
@@ -352,13 +352,13 @@ GMT_LOCAL bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, d
 	uint64_t seg;
 	unsigned int inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
-		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+		if (gmt_M_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
 		inside = (gmt_inonout (GMT, lon, lat, P->segment[seg]) > 0);
 	}
 	return ((inside) ? false : true);	/* true if outside */
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdrotater (void *V_API, int mode, void *args) {
@@ -412,7 +412,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
+		if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
@@ -422,7 +422,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
 							&& doubleAlmostEqual (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO], 180.0));
-		if (!GMT->common.R.active) global = GMT_grd_is_global (GMT, G->header);
+		if (!GMT->common.R.active) global = gmt_M_grd_is_global (GMT, G->header);
 	}
 	not_global = !global;
 
@@ -551,7 +551,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Then, find min/max of reconstructed outline */
 
 		if (global)
-			GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
+			gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
 		else {
 			GMT->common.R.wesn[XLO] = floor (polr->min[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
 			GMT->common.R.wesn[XHI] = ceil  (polr->max[GMT_X] * G->header->r_inc[GMT_X]) * G->header->inc[GMT_X];
@@ -582,7 +582,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 		gmt_make_rot_matrix (GMT, plon, plat, -pw, R);	/* Make inverse rotation using negative angle */
 
-		GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
+		gmt_M_grd_loop (GMT, G_rot, row, col, ij_rot) {
 			G_rot->data[ij_rot] = GMT->session.f_NaN;
 			if (not_global && skip_if_outside (GMT, polr, grd_x[col], grd_y[row])) continue;	/* Outside rotated polygon */
 
@@ -603,8 +603,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 				lon = pol->segment[seg]->coord[GMT_X][rec];
 				while (lon < G_rot->header->wesn[XLO]) lon += 360.0;
-				scol = (int)GMT_grd_x_to_col (GMT, lon, G_rot->header);
-				srow = (int)GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
+				scol = (int)gmt_M_grd_x_to_col (GMT, lon, G_rot->header);
+				srow = (int)gmt_M_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
 				/* Visit the PAD * PAD number of cells centered on col, row and make sure they have been set */
 				start_row = (srow > PAD) ? srow - PAD : 0;
 				stop_row  = ((srow + PAD) >= 0) ? srow + PAD : 0;
@@ -614,20 +614,20 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 					if (row >= G_rot->header->ny) continue;
 					for (col = start_col; col <= stop_col; col++) {
 						if (col >= G_rot->header->nx) continue;
-						ij_rot = GMT_IJP (G_rot->header, row, col);
+						ij_rot = gmt_M_ijp (G_rot->header, row, col);
 						if (!GMT_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
 						if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
 						gmt_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 						gmt_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 						gmt_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */
 						yy = gmt_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-						scol = (int)GMT_grd_x_to_col (GMT, xx, G->header);
+						scol = (int)gmt_M_grd_x_to_col (GMT, xx, G->header);
 						if (scol < 0) continue;
 						col_o = scol;	if (col_o >= G->header->nx) continue;
-						srow = (int)GMT_grd_y_to_row (GMT, yy, G->header);
+						srow = (int)gmt_M_grd_y_to_row (GMT, yy, G->header);
 						if (srow < 0) continue;
 						row_o = srow;	if (row_o >= G->header->ny) continue;
-						ij = GMT_IJP (G->header, row_o, col_o);
+						ij = gmt_M_ijp (G->header, row_o, col_o);
 						G_rot->data[ij_rot] = G->data[ij];
 					}
 				}

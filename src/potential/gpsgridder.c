@@ -225,8 +225,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
 						return (API->error);
 					}
-					GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
-					GMT_memcpy (Ctrl->I.inc, G->header->inc, 2, double);
+					gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);
+					gmt_M_memcpy (Ctrl->I.inc, G->header->inc, 2, double);
 					GMT->common.r.registration = G->header->registration;
 					if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 						return (API->error);
@@ -245,15 +245,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !(GMT->common.R.active || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
+	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active || Ctrl->N.active || Ctrl->T.active), "Syntax error: No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_check_binary_io (GMT, 4 + 2*Ctrl->W.active);
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode == 1 && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Must specify a template file name containing %%s\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode == 1 && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N: Cannot read file %s!\n", Ctrl->N.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Must specify a template file name containing %%s\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active + GMT->common.R.active) == 1, "Syntax error: Must specify -R, -I, [-r], -G for gridding\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -283,7 +283,7 @@ GMT_LOCAL void do_gps_normalization (struct GMTAPI_CTRL *API, double **X, double
 	double d, umin = DBL_MAX, vmin = DBL_MAX, umax = -DBL_MAX, vmax = -DBL_MAX;
 
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalization mode: %d\n", mode);
-	GMT_memset (coeff, GSP_LENGTH, double);
+	gmt_M_memset (coeff, GSP_LENGTH, double);
 	for (i = 0; i < n; i++) {	/* Find mean u and v-values */
 		coeff[GSP_MEAN_U] += u[i];
 		coeff[GSP_MEAN_V] += v[i];
@@ -385,7 +385,7 @@ GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, doubl
 	/* Get increments dx,dy between point 1 and 0, as measured from point 1 */
 	if (geo) {	/* Do flat Earth approximation in meters */
 		double dlon;
-		GMT_set_delta_lon (X0[GMT_X], X1[GMT_X], dlon);
+		gmt_M_set_delta_lon (X0[GMT_X], X1[GMT_X], dlon);
 		*dx = dlon * cosd (0.5 * (X1[GMT_Y] + X0[GMT_Y])) * GMT->current.proj.DIST_M_PR_DEG;
 		*dy = (X1[GMT_Y] - X0[GMT_Y]) * GMT->current.proj.DIST_M_PR_DEG;
 	}
@@ -409,7 +409,7 @@ GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], dou
 	G[2] = dx * dy * dr2;
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gpsgridder (void *V_API, int mode, void *args) {
@@ -460,11 +460,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	gmt_enable_threads (GMT);	/* Set number of active threads, if supported */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	GMT_memset (norm, GSP_LENGTH, double);
-	GMT_memset (&info, 1, struct GMT_GRID_INFO);
+	gmt_M_memset (norm, GSP_LENGTH, double);
+	gmt_M_memset (&info, 1, struct GMT_GRID_INFO);
 
-	geo = GMT_is_geographic (GMT, GMT_IN);
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Set pointers to 2-D distance functions */
+	geo = gmt_M_is_geographic (GMT, GMT_IN);
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Set pointers to 2-D distance functions */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
 		gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
@@ -499,11 +499,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	r_min = DBL_MAX;	r_max = -DBL_MAX;
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -520,7 +520,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		skip = false;
 		for (i = 0; !skip && i < n; i++) {
 			r = get_gps_radius (GMT, X[i], X[n]);
-			if (GMT_IS_ZERO (r)) {	/* Duplicates will give zero point separation */
+			if (gmt_M_is_zero (r)) {	/* Duplicates will give zero point separation */
 				if (doubleAlmostEqualZero (in[GMT_U], u[i]) && doubleAlmostEqualZero (in[GMT_V], v[i])) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Data constraint %" PRIu64 " is identical to %" PRIu64 " and will be skipped\n", n_read, i);
 					skip = true;
@@ -577,7 +577,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	if (n_duplicates) {	/* These differ in observation value so need to be averaged, medianed, or whatever first */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
-		if (!Ctrl->C.active || GMT_IS_ZERO (Ctrl->C.value)) {
+		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running gpsgridder since they will result in a singular matrix\n");
 			for (p = 0; p < n; p++) gmt_free (GMT, X[p]);
 			gmt_free (GMT, X);
@@ -612,7 +612,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		(void)gmt_set_outgrid (GMT, Ctrl->T.file, Grid, &Out[GMT_X]);	/* true if input is a read-only array; otherwise Out[GMT_X] is just a pointer to Grid */
 		n_ok = Out[GMT_X]->header->nm;
-		GMT_grd_loop (GMT, Out[GMT_X], row, col, k) if (GMT_is_fnan (Out[GMT_X]->data[k])) n_ok--;
+		gmt_M_grd_loop (GMT, Out[GMT_X], row, col, k) if (GMT_is_fnan (Out[GMT_X]->data[k])) n_ok--;
 		/* Duplicate to get grid for v */
 		if ((Out[GMT_Y] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Out[GMT_X])) == NULL) {
 			Return (API->error);
@@ -680,7 +680,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_memcpy (&u[n], v, n, double);	/* Place v array at end of u array */
+	gmt_M_memcpy (&u[n], v, n, double);	/* Place v array at end of u array */
 	obs = u;				/* Use obs to refer to this combined u,v array */
 	
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
@@ -700,7 +700,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			double *eig = gmt_memory (GMT, NULL, n2, double);
 			uint64_t e_dim[4] = {1, 1, n2, 2};
 			struct GMT_DATASET *E = NULL;
-			GMT_memcpy (eig, s, n2, double);
+			gmt_M_memcpy (eig, s, n2, double);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving eigenvalues\n");
 				Return (API->error);
@@ -736,7 +736,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 		}
 		b = gmt_memory (GMT, NULL, n2, double);
-		GMT_memcpy (b, obs, n2, double);
+		gmt_M_memcpy (b, obs, n2, double);
 		limit = Ctrl->C.value;
 		n_use = gmt_solve_svd (GMT, A, (unsigned int)n2, (unsigned int)n2, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
@@ -748,7 +748,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 	else {				/* Gauss-Jordan elimination */
 		int error;
-		if (GMT_IS_ZERO (r_min)) {
+		if (gmt_M_is_zero (r_min)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Your matrix is singular because you have duplicate data constraints\n");
 			GMT_Report (API, GMT_MSG_NORMAL, "Preprocess your data with one of the blockm* modules to eliminate them\n");
 
@@ -788,7 +788,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 			Return (error);
 		}
-		GMT_memset (out, 4, double);
+		gmt_M_memset (out, 4, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
 		/* This cannot be under OpenMP as is since the record writing will appear out of sync.  Must instead
 		 * save to memory and THEN write the output via GMT_Write_Data */
@@ -822,14 +822,14 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		/* Precalculate coordinates */
 		xp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_X);
 		yp = gmt_grd_coord (GMT, Out[GMT_X]->header, GMT_Y);
-		GMT_memset (V, 4, double);
+		gmt_M_memset (V, 4, double);
 #ifdef _OPENMP
 #pragma omp parallel for private(V,row,col,ij,p,dx,dy) shared(yp,Out,xp,X,Ctrl,GMT,alpha_x,alpha_y,norm,n,normalize,geo)
 #endif
 		for (row = 0; row < Out[GMT_X]->header->ny; row++) {	/* This would be a dummy loop for 1 row if 1-D data */
 			V[GMT_Y] = yp[row];
 			for (col = 0; col < Out[GMT_X]->header->nx; col++) {	/* This loop is always active for 1,2,3D */
-				ij = GMT_IJP (Out[GMT_X]->header, row, col);
+				ij = gmt_M_ijp (Out[GMT_X]->header, row, col);
 				if (GMT_is_fnan (Out[GMT_X]->data[ij])) continue;	/* Only do solution where mask is not NaN */
 				V[GMT_X] = xp[col];
 				/* Here, V holds the current output coordinates */

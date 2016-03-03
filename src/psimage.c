@@ -115,7 +115,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default no transparency].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
 	GMT_Option (API, "J-Z,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using GMT_YIQ-transformation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using gmt_M_yiq-transformation.\n");
 	GMT_Option (API, "O,P,R,U,V,X,c,p");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
 	GMT_Option (API, "t,.");
@@ -178,7 +178,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
+						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'n', string)) {
 						n = sscanf (string, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
 						if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
@@ -196,7 +196,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				break;
 			case 'F':	/* Specify frame pen */
 				Ctrl->F.active = true;
-				if (GMT_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
+				if (gmt_M_compat_check (GMT, 5) && opt->arg[0] != '+') /* Warn but process old -F<pen> */
 					sprintf (string, "+c0+p%s", opt->arg);
 				else
 					strcpy (string, opt->arg);
@@ -254,7 +254,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D modifier +n instead.\n");
 				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.nx, &Ctrl->D.ny);
 				if (n == 1) Ctrl->D.ny = Ctrl->D.nx;
-				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option: Must give values for replication\n");
+				n_errors += gmt_M_check_condition (GMT, n < 1, "Syntax error -N option: Must give values for replication\n");
 				break;
 			case 'W':	/* Image width */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -W option is deprecated; use -D modifier +w instead.\n");
@@ -282,11 +282,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 	}
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+e)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.nx < 1 || Ctrl->D.ny < 1,
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input raster or EPS file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_X] <= 0.0 && Ctrl->D.dpi <= 0.0, "Syntax error -D option: Must specify image width (+w) or dpi (+e)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.nx < 1 || Ctrl->D.ny < 1,
 			"Syntax error -D option: Must specify positive values for replication with +n\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.f_rgb[0] < 0 && Ctrl->G.b_rgb[0] < 0,
 			"Syntax error -G option: Only one of fore/back-ground can be transparent for 1-bit images\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -298,7 +298,7 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if
 	unsigned char c[4], magic_ras[4] = {0x59, 0xa6, 0x6a, 0x95}, magic_ps[4] = {'%', '!', 'P', 'S'};
 	int j;
 
-	if (GMT_File_Is_Memory (file)) return (0);	/* Special passing of image */
+	if (gmt_M_file_is_memory (file)) return (0);	/* Special passing of image */
 	j = (int)strlen(file) - 1;
 	while (j && file[j] && file[j] != '+') j--;	/* See if we have a band request */
 	if (j && file[j+1] == 'b') file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
@@ -307,14 +307,14 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
-	if (GMT_fread (c, 1U, 4U, fp) != 4U) {
+	if (gmt_M_fread (c, 1U, 4U, fp) != 4U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not read 4 bytes from file %s\n", file);
 		gmt_fclose (GMT, fp);
 		return (-1);
 	}
 	gmt_fclose (GMT, fp);
 	if (j) file[j] = '+';			/* Reset the band request string */
-	/* Note: cannot use GMT_same_rgb here, because that requires doubles */
+	/* Note: cannot use gmt_M_same_rgb here, because that requires doubles */
 	if (c[0] == magic_ps[0] && c[1] == magic_ps[1] && c[2] == magic_ps[2] && c[3] == magic_ps[3]) return(1);
 	if (c[0] == magic_ras[0] && c[1] == magic_ras[1] && c[2] == magic_ras[2] && c[3] == magic_ras[3]) return(2);
 	return (0);	/* Neither */
@@ -361,7 +361,7 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 }
 #undef Return
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 
@@ -511,7 +511,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		n = j * (header.width * header.height + 1);
 		buffer = gmt_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
-		GMT_memcpy (&(buffer[j]), picture, n - j, unsigned char);
+		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
 			Return (API->error);
@@ -530,7 +530,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	/* The following is needed to have psimage work correctly in perspective */
 
-	GMT_memset (wesn, 4, double);
+	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;

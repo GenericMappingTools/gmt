@@ -114,7 +114,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtget (void *V_API, int mode, void *args) {

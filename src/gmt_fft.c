@@ -151,7 +151,7 @@ void fft_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, un
 	nonsym = MAX (nonsymx, nonsymy);
 
 	/* Now get factors of ntotal  */
-	ntotal = GMT_get_nm (GMT, nx, ny);
+	ntotal = gmt_M_get_nm (GMT, nx, ny);
 	n_factors = gmt_get_prime_factors (GMT, ntotal, f);
 	storage = MAX (nonsym, f[n_factors-1]);
 	*s = (storage == 2) ? 0 : storage;
@@ -348,7 +348,7 @@ int gmt_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WA
 double GMT_FFT_Wavenumber (void *V_API, uint64_t k, unsigned int mode, void *v_K) {
 	/* Lets you specify which 1-D or 2-D wavenumber you want */
 	struct GMT_FFT_WAVENUMBER *K = fft_get_fftwave_ptr (v_K);
-	GMT_UNUSED(V_API);
+	gmt_M_unused(V_API);
 	if (K->dim == 2) return (gmt_fft_any_wave (k, mode, K));
 	else return (fft_kx (k, K));
 }
@@ -517,7 +517,7 @@ GMT_LOCAL fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *GMT, unsigned ny, unsig
 
 GMT_LOCAL int fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
 	fftwf_plan plan = NULL;
-	GMT_UNUSED(mode);
+	gmt_M_unused(mode);
 
 	/* Generate FFTW plan for complex 1d DFT */
 	plan = gmt_fftwf_plan_dft(GMT, 0, n, (fftwf_complex*)data, direction);
@@ -529,7 +529,7 @@ GMT_LOCAL int fft_1d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int n, i
 
 GMT_LOCAL int fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
 	fftwf_plan plan = NULL;
-	GMT_UNUSED(mode);
+	gmt_M_unused(mode);
 
 	/* Generate FFTW plan for complex 2d DFT */
 	plan = gmt_fftwf_plan_dft(GMT, ny, nx, (fftwf_complex*)data, direction);
@@ -559,7 +559,7 @@ GMT_LOCAL int fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, in
 	/* Base 2 exponent that specifies the largest power of
 	 * two that can be processed by fft: */
 	vDSP_Length log2n = radix2 (n);
-	GMT_UNUSED(mode);
+	gmt_M_unused(mode);
 
 	if (log2n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
@@ -606,7 +606,7 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, u
 	vDSP_Length log2nx = radix2 (nx);
 	vDSP_Length log2ny = radix2 (ny);
 	unsigned int n_xy = nx * ny;
-	GMT_UNUSED(mode);
+	gmt_M_unused(mode);
 
 	if (log2nx == 0 || log2ny == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [nx/ny]\n",
@@ -649,7 +649,7 @@ GMT_LOCAL int fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, u
 GMT_LOCAL int fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode) {
 	kiss_fft_cpx *fin, *fout;
 	kiss_fft_cfg config;
-	GMT_UNUSED(GMT); GMT_UNUSED(mode);
+	gmt_M_unused(GMT); gmt_M_unused(mode);
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
 	config = kiss_fft_alloc(n, direction == GMT_FFT_INV, NULL, NULL);
@@ -665,7 +665,7 @@ GMT_LOCAL int fft_2d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int nx, u
 	const int dimcount = 2;      /* number of dimensions */
 	kiss_fft_cpx *fin, *fout;
 	kiss_fftnd_cfg config;
-	GMT_UNUSED(GMT); GMT_UNUSED(mode);
+	gmt_M_unused(GMT); gmt_M_unused(mode);
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
 	config = kiss_fftnd_alloc (dim, dimcount, direction == GMT_FFT_INV, NULL, NULL);
@@ -1555,7 +1555,7 @@ GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, un
         nonsym = MAX (nonsymx, nonsymy);
 	
         /* Now get factors of ntotal  */
-        ntotal = GMT_get_nm (GMT, nx, ny);
+        ntotal = gmt_M_get_nm (GMT, nx, ny);
         n_factors = gmt_get_prime_factors (GMT, ntotal, f);
         storage = MAX (nonsym, f[n_factors-1]);
         if (storage != 2) storage *= 2;

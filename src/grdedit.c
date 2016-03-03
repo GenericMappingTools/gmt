@@ -196,21 +196,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify an output grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->A.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify an output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->A.active,
 	                                 "Syntax error -S option: Incompatible with -A\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active &&
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active &&
 	                                 (Ctrl->A.active || Ctrl->D.active || Ctrl->N.active || Ctrl->S.active || Ctrl->T.active),
 	                                 "Syntax error -E option: Incompatible with -A, -D, -N, -S, and -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->T.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->T.active,
 	                                 "Syntax error -S option: Incompatible with -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->N.active,
 	                                 "Syntax error -S option: Incompatible with -N\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !GMT->common.R.active,
 	                                 "Syntax error -S option: Must also specify -R\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]),
 	                                 "Syntax error -S option: -R longitudes must span exactly 360 degrees\n");
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	if (Ctrl->N.active) {
 		n_errors += gmt_check_binary_io (GMT, 3);
 	}
@@ -218,7 +218,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdedit (void *V_API, int mode, void *args) {
@@ -267,7 +267,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	if (Ctrl->S.active && !GMT_grd_is_global (GMT, G->header)) {
+	if (Ctrl->S.active && !gmt_M_grd_is_global (GMT, G->header)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Shift only allowed for global grids\n");
 		Return (EXIT_FAILURE);
 	}
@@ -343,11 +343,11 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		n_data = n_use = 0;
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 
@@ -355,17 +355,17 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 			n_data++;
 
-			if (GMT_y_is_outside (GMT, in[GMT_Y],  G->header->wesn[YLO], G->header->wesn[YHI])) continue;	/* Outside y-range */
+			if (gmt_M_y_is_outside (GMT, in[GMT_Y],  G->header->wesn[YLO], G->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (gmt_x_is_outside (GMT, &in[GMT_X], G->header->wesn[XLO], G->header->wesn[XHI])) continue;	/* Outside x-range */
 			if (gmt_row_col_out_of_bounds (GMT, in, G->header, &row, &col)) continue;			/* Outside grid node range */
 
-			ij = GMT_IJP (G->header, row, col);
+			ij = gmt_M_ijp (G->header, row, col);
 			G->data[ij] = (float)in[GMT_Z];
 			n_use++;
-			if (GMT_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
+			if (gmt_M_grd_duplicate_column (GMT, G->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 				/* Possibly need to replicate e/w value */
-				if (col == 0) {ij = GMT_IJP (G->header, row, G->header->nx-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
-				else if (col == (G->header->nx-1)) {ij = GMT_IJP (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
+				if (col == 0) {ij = gmt_M_ijp (G->header, row, G->header->nx-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
+				else if (col == (G->header->nx-1)) {ij = gmt_M_ijp (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
 			}
 		} while (true);
 
@@ -409,7 +409,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 
 		h_tr = gmt_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
-		GMT_memcpy (h_tr, G->header, 1, struct GMT_GRID_HEADER);	/* First make a copy of header */
+		gmt_M_memcpy (h_tr, G->header, 1, struct GMT_GRID_HEADER);	/* First make a copy of header */
 		if (strchr ("ltr", Ctrl->E.mode)) {	/* These operators interchange x and y */
 			h_tr->wesn[XLO] = G->header->wesn[YLO];
 			h_tr->wesn[XHI] = G->header->wesn[YHI];
@@ -425,32 +425,32 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		/* Now transpose the matrix */
 
 		a_tr = gmt_memory (GMT, NULL, G->header->size, float);
-		GMT_grd_loop (GMT, G, row, col, ij) {
+		gmt_M_grd_loop (GMT, G, row, col, ij) {
 			switch (Ctrl->E.mode) {
 				case 'a': /* Rotate grid around 180 degrees */
-					ij_tr = GMT_IJP (h_tr, G->header->ny-1-row, G->header->nx-1-col);
+					ij_tr = gmt_M_ijp (h_tr, G->header->ny-1-row, G->header->nx-1-col);
 					break;
 				case 'h': /* Flip horizontally (FLIPLR) */
-					ij_tr = GMT_IJP (h_tr, row, G->header->nx-1-col);
+					ij_tr = gmt_M_ijp (h_tr, row, G->header->nx-1-col);
 					break;
 				case 'l': /* Rotate 90 CCW */
-					ij_tr = GMT_IJP (h_tr, G->header->nx-1-col, row);
+					ij_tr = gmt_M_ijp (h_tr, G->header->nx-1-col, row);
 					break;
 				case 'r': /* Rotate 90 CW */
-					ij_tr = GMT_IJP (h_tr, col, G->header->ny-1-row);
+					ij_tr = gmt_M_ijp (h_tr, col, G->header->ny-1-row);
 					break;
 				case 't': 	/* Transpose */
-					ij_tr = GMT_IJP (h_tr, col, row);
+					ij_tr = gmt_M_ijp (h_tr, col, row);
 					break;
 				case 'v': /* Flip vertically (FLIPUD) */
-					ij_tr = GMT_IJP (h_tr, G->header->ny-1-row, col);
+					ij_tr = gmt_M_ijp (h_tr, G->header->ny-1-row, col);
 					break;
 			}
 			a_tr[ij_tr] = G->data[ij];
 		}
 		save_grid_pointer = G->data;	/* Save original grid pointer and hook on the modified grid instead */
 		G->data = a_tr;
-		GMT_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
+		gmt_M_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
 		gmt_free (GMT, h_tr);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, G) != GMT_OK) {
 			Return (API->error);
@@ -472,12 +472,12 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		if (GMT->common.R.active) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n",
 				Ctrl->In.file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-			GMT_memcpy (G->header->wesn, GMT->common.R.wesn, 4, double);
+			gmt_M_memcpy (G->header->wesn, GMT->common.R.wesn, 4, double);
 			Ctrl->A.active = true;	/* Must ensure -R -I compatibility */
 		}
 		if (Ctrl->A.active) {
-			G->header->inc[GMT_X] = GMT_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);
-			G->header->inc[GMT_Y] = GMT_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, G->header->registration);
+			G->header->inc[GMT_X] = gmt_M_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);
+			G->header->inc[GMT_Y] = gmt_M_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, G->header->registration);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Reset grid-spacing in file %s to %g/%g\n",
 				Ctrl->In.file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}

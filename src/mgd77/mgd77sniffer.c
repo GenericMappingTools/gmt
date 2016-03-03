@@ -59,7 +59,7 @@ GMT_LOCAL double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double *sorted = NULL, med;
 
 	sorted = gmt_memory (GMT, NULL, n, double);
-	GMT_memcpy (sorted, x, n, double);
+	gmt_M_memcpy (sorted, x, n, double);
 	gmt_sort_array (GMT, sorted, n, GMT_DOUBLE);
 	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
 	gmt_free (GMT, sorted);
@@ -87,10 +87,10 @@ GMT_LOCAL void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, doubl
 
 	for (i=0; i < 4; i++)
 		stats[i] = 0;
-	GMT_memset (slp,   n_angle, double);
-	GMT_memset (icept, n_angle, double);
-	GMT_memset (angle, n_angle, double);
-	GMT_memset (e,     n_angle, double);
+	gmt_M_memset (slp,   n_angle, double);
+	gmt_M_memset (icept, n_angle, double);
+	gmt_M_memset (angle, n_angle, double);
+	gmt_M_memset (e,     n_angle, double);
 	da = (angle1 - angle0) / (n_angle - 1);
 
 	for (i = 0; i < n_angle; i++) {
@@ -279,7 +279,7 @@ GMT_LOCAL unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO
 		g[n_grid][rec] = MGD77_NaN;	/* Default value if we are outside the grid domain */
 		if (y < info->G->header->wesn[YLO] || y > info->G->header->wesn[YHI]) continue;	/* Outside latitude range */
 
-		if (GMT_x_is_lon (GMT, GMT_IN)) {
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {
 			while (x > info->G->header->wesn[XHI]) x -= 360.0;
 			while (x < info->G->header->wesn[XLO]) x += 360.0;
 		}
@@ -311,7 +311,7 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 #ifdef DUMP_DECIMATE
 	char buffer[GMT_BUFSIZ] = {""};
 #endif
-	GMT_UNUSED(fieldTest);
+	gmt_M_unused(fieldTest);
 
 	/* Create a 2-D bin table */
 	n = urint ((max - min)/delta) + 1;
@@ -349,7 +349,7 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 				dnew[k] = min + grid_bin * delta;
 #ifdef DUMP_DECIMATE
 				sprintf(buffer,"%s\torig:\t%f\tnew:\t%f\n",fieldTest,dorig[k],dnew[k]);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 #endif
 				k++;	/* Count number of non-empty bins */
 			}
@@ -527,7 +527,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 
 int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
@@ -649,7 +649,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		adjustScale[i] = MGD77_NaN;
 		adjustDC[i] = MGD77_NaN;
 	}
-	GMT_memset (this_grid, 8, struct MGD77_GRID_INFO);
+	gmt_M_memset (this_grid, 8, struct MGD77_GRID_INFO);
 
 	/* READ COMMAND LINE ARGUMENTS */
 	for (opt = options; opt; opt = opt->next) {
@@ -994,19 +994,19 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* PRINT OUT DEFAULT GEOPHYSICAL LIMITS */
 	if (!strcmp(display,"LIMITS")) {
 		sprintf (buffer, "#abbrev\tmin\tmax\tmaxSlope\tmaxArea\n");
-		GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+		gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 		for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {
 			if ((1 << i) & (MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS)) {
 				sprintf (buffer, "%s%s",mgd77defs[i].abbrev,GMT->current.setting.io_col_separator);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].minValue, GMT_X);
-				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxValue, GMT_Y);
-				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], maxSlope[i], GMT_Z);
-				GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], mgd77snifferdefs[i].maxArea, 3);
-				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
+				gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 		}
 		bailout (EXIT_FAILURE);
@@ -1015,75 +1015,75 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	/* PRINT HEADER FOR SNIFFER DATA DUMPS */
 	if (display && !GMT->common.b.active[GMT_OUT]) {
 		if (!strcmp(display,"SLOPES")) {
-			sprintf (buffer, "#speed(%s)%s",speed_units,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[twt]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[depth]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[mtf1]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[mtf2]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[mag]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[diur]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[msd]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[gobs]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[eot]%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "d[faa]\n");	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "#speed(%s)%s",speed_units,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[twt]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[depth]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[mtf1]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[mtf2]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[mag]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[diur]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[msd]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[gobs]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[eot]%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "d[faa]\n");	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 		}
 		else if (!strcmp(display,"DFDS")) {
 			if (!strcmp(derivative,"TIME")) {
-				sprintf (buffer, "#d[twt]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[depth]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[mtf1]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[mtf2]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[mag]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[diur]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[msd]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[gobs]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[eot]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[faa]%sdt\n",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "#d[twt]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[depth]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[mtf1]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[mtf2]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[mag]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[diur]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[msd]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[gobs]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[eot]%sdt%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[faa]%sdt\n",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 			else {
-				sprintf (buffer, "#d[twt]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[depth]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[mtf1]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[mtf2]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[mag]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[diur]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[msd]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[gobs]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[eot]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "d[faa]%sds\n",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "#d[twt]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[depth]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[mtf1]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[mtf2]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[mag]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[diur]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[msd]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[gobs]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[eot]%sds%s",GMT->current.setting.io_col_separator,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "d[faa]%sds\n",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 		}
 		else if (!strcmp(display,"VALS")) {
-			sprintf (buffer, "#lat%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "lon%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "twt%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "depth%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "mtf1%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "mtf2%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "mag%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "diur%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "msd%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "gobs%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "eot%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-			sprintf (buffer, "faa\n");	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "#lat%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "lon%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "twt%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "depth%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "mtf1%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "mtf2%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "mag%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "diur%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "msd%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "gobs%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "eot%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+			sprintf (buffer, "faa\n");	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 		}
 		else if (n_grids > 0) {
 			if (!strcmp(display,"DIFFS")) {
-				sprintf (buffer, "#lat%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "lon%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "dist%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "#lat%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "lon%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "dist%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				for (i = 0; i < n_grids; i++) {
-					sprintf (buffer, "crs_%s%s",this_grid[i].abbrev,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-					sprintf (buffer, "grd_%s%s",this_grid[i].abbrev,GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-					sprintf (buffer, "diff%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					sprintf (buffer, "crs_%s%s",this_grid[i].abbrev,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+					sprintf (buffer, "grd_%s%s",this_grid[i].abbrev,GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+					sprintf (buffer, "diff%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
-				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
+				gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 			}
 			else if (!strcmp(display,"DTC")) {
-				sprintf (buffer, "#lat%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "lon%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "dist%s",GMT->current.setting.io_col_separator);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-				sprintf (buffer, "distToCoast\n");	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "#lat%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "lon%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "dist%s",GMT->current.setting.io_col_separator);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+				sprintf (buffer, "distToCoast\n");	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 		}
 	}
@@ -1193,7 +1193,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				E77_APPLY,E77_WARN,list[argno],NAV_TIME_OOR,n_nan,nvalues);
 			else if (warn[SUMMARY_WARN]) {
 				sprintf (buffer, "%s Warning - %d of %d records contain invalid time\n",list[argno],n_nan,nvalues);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 		}
 		/* Implicit case n_nan == nvalues, time not reported */
@@ -1241,7 +1241,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* Allocate memory for error array */
 		E = gmt_memory (GMT, E, nvalues, struct MGD77_ERROR);
-		GMT_memset (E, nvalues, struct MGD77_ERROR);
+		gmt_M_memset (E, nvalues, struct MGD77_ERROR);
 
 		/* RECURSIVELY CHECK FOR BAD NAVIGATION
 		   This algorithm assumes quality navigation at start of cruise. It is
@@ -1327,7 +1327,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, D[curr].time-D[j].time);
 								sprintf (buffer, "%s - Time not monotonically increasing (%s sec.)\n",placeStr, text);
-								GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+								gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 							}
 							if (timeErrorStart == -1)
 								timeErrorStart = (int)curr;
@@ -1361,7 +1361,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, speed);
 								sprintf (buffer, "%s - Excessive speed %s %s\n",placeStr, text, speed_units);
-								GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+								gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 							}
 							if (fabs(prev_speed) <= max_speed) { /* Bad nav in current record */
 								n_bad++;
@@ -1383,7 +1383,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					list[argno],E77_HDR_NAV);
 				if (warn[SPEED_WARN]) {
 					sprintf (buffer, "%s - Warning! Navigation flags flipped by user!\n",list[argno]);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
 		}
@@ -1483,10 +1483,10 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					E77_APPLY,E77_WARN,list[argno],E77_HDR_NAV,n_bad*100.0/nvalues);
 				if (warn[SPEED_WARN]) {
 					sprintf (buffer, "%s - Flagged %.2f %% of records with bad navigation", list[argno],n_bad*100.0/nvalues);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
-					if ((n_bad*1.0)/nvalues > .25) GMT_fputs (", suggest manual navigation review", GMT->session.std[GMT_OUT]);
-					if ((n_bad*1.0)/nvalues > .5) GMT_fputs (", may need to flip flags (see -K option)", GMT->session.std[GMT_OUT]);
-					GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
+					if ((n_bad*1.0)/nvalues > .25) gmt_M_fputs (", suggest manual navigation review", GMT->session.std[GMT_OUT]);
+					if ((n_bad*1.0)/nvalues > .5) gmt_M_fputs (", may need to flip flags (see -K option)", GMT->session.std[GMT_OUT]);
+					gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 				}
 			}
 		}
@@ -1574,7 +1574,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (%s) RLS m: %s b: %s rms: %s r: %s sig: %d dec: %d\n",
 							list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-%s-%.02d: RLS m: %s b: %s rms: %s r: %s sig: %d dec: %d\n",E77_APPLY,E77_INFO,list[argno],this_grid[i].abbrev,\
@@ -1590,7 +1590,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[SUMMARY_WARN]) {
 									sprintf (buffer, "%s (%s) Slope %s is statistically different from 1\n",\
 									list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE]);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 								/* Check if regression slope matches common scales (0.1, 10, etc.)  */
 								for (j = 0; j < 4; j++) { 
@@ -1602,7 +1602,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Slope %s statistically identical to %s. Recommended: [%g]\n",list[argno],this_grid[i].abbrev,\
 											fstats[MGD77_RLS_SLOPE],text,1/test_slope[j]);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 
 		#ifdef FIX
@@ -1611,7 +1611,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 											D[n].number[this_grid[i].col] /= test_slope[j];
 											diff[i][n] = D[n].number[this_grid[i].col] - G[i][n]; /* Re-compute cruise - grid differences */
 										}
-										if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+										if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 											sprintf (text, GMT->current.setting.format_float_out, test_slope[j]);
 											GMT_Report (API, GMT_MSG_NORMAL, "%s (%s) Warning: Scaled by %s for internal along-track analysis\n",\
 											list[argno],this_grid[i].abbrev, text);
@@ -1633,7 +1633,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									else if (warn[SUMMARY_WARN]) {
 										sprintf (buffer, "%s (%s) Slope %s different from 1. Recommended: [%s]\n",list[argno],this_grid[i].abbrev,\
 										fstats[MGD77_RLS_SLOPE],text);
-										GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 									}
 								}
 							}
@@ -1645,7 +1645,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								else if (warn[SUMMARY_WARN]) {
 									sprintf (buffer, "%s (%s) Ship and %s grid appear identical (m=1,b=0,s=0)\n",\
 									list[argno],this_grid[i].abbrev,this_grid[i].fname);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 						}
@@ -1669,7 +1669,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								}
 								else if (warn[GRID_WARN]) {
 									sprintf (buffer, "%s (%s) Offset different than 0 (%s)\n",list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_ICEPT]);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 
 		#ifdef FIX
@@ -1692,7 +1692,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								E77_REVIEW,E77_ERROR,list[argno],this_grid[i].abbrev,E77_HDR_ANOM_FAA_IGF);
 							else if (warn[SUMMARY_WARN]) {
 								sprintf (buffer, "%s (%s) Free-air anomalies may have been computed using IGF 1930.\n",list[argno],this_grid[i].abbrev);
-								GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+								gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 							}
 						}
 
@@ -1710,7 +1710,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression slope (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/* Check depth rls rms (right sided test) */
@@ -1722,7 +1722,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression rms (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_RMS],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/* Check depth rls correlation (left sided test) */
@@ -1734,7 +1734,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression correlation (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_CORR],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 								}
@@ -1749,7 +1749,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression slope (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_SLOPE],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/*check faa rls intercept (two sided test) */
@@ -1760,7 +1760,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression offset (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_ICEPT],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/*check faa rls rms (right sided test) */
@@ -1772,7 +1772,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression rms (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_RMS],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 									/*check faa rls correlation (left sided test) */
@@ -1784,7 +1784,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 										else if (warn[SUMMARY_WARN]) {
 											sprintf (buffer, "%s (%s) Regression correlation (%s) outside %s%% limits.\n",\
 											list[argno],this_grid[i].abbrev,fstats[MGD77_RLS_CORR],fpercent_limit);
-											GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+											gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										}
 									}
 								}
@@ -1879,7 +1879,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						else if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (faa) anomaly differs from gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,fstats[MGD77_RLS_SLOPE],\
 							fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					} else {
 						if (!strcmp(display,"E77"))
@@ -1888,7 +1888,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						else if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (faa) anomaly statistically the same as gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,\
 							fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					}
 					if (m == 1 && stats[MGD77_RLS_CORR] > lastCorr) {
@@ -1897,7 +1897,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							E77_HDR_ANOM_FAA_EOT);
 						else if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (faa) gobs may not be corrected for Eotvos (correlation for gobs-IGF80+eot > correlation for gobs-IGF80)\n",list[argno]);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					}
 				} else {
@@ -1907,7 +1907,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) insignificant regression: reported versus gobs-IGF80%s(m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],text,fstats[MGD77_RLS_SLOPE],\
 						fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				if (m == 0) lastCorr = stats[MGD77_RLS_CORR];
@@ -1953,7 +1953,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				else if (warn[SUMMARY_WARN]) {
 					sprintf (buffer, "%s (faa) Free-air anomalies may have been computed using IGF 1930 (m: %s b: %s rms: %s r: %s sig: %d dec: %d). (Consider adjusting to 1980).\n",\
 					list[argno],fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
 			gmt_free (GMT, new_anom);
@@ -1971,7 +1971,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression slope (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_SLOPE],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check faa rls intercept */
@@ -1982,7 +1982,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression intercept (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_ICEPT],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check faa rls rms  (right sided test)*/
@@ -1994,7 +1994,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression rms (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_RMS],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check faa rls correlation (left sided test) */
@@ -2006,7 +2006,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (faa) Recomputed anomaly regression correlation (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_CORR],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 			}
@@ -2094,13 +2094,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						else if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (mag) anomaly differs from mtf%d-IGRF (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],2-(int)mtf1,\
 							fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					} else {
 						if (warn[SUMMARY_WARN]) {
 							sprintf (buffer, "%s (mag) anomaly same as expected (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],fstats[MGD77_RLS_SLOPE],\
 							fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (!strcmp(display,"E77"))
 							fprintf (fpout, "%c-%c-%s-mag-%.02d: Anomaly equivalent to mtf%d-IGRF (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",E77_APPLY,E77_INFO,list[argno],\
@@ -2110,12 +2110,12 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) recalculated anomaly regression insignificant (m: %s b: %s rms: %s r: %s sig: %d dec: %d)\n",list[argno],fstats[MGD77_RLS_SLOPE],\
 						fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 			} else {
 				sprintf (buffer, "%s (mag) unable to recompute anomalies\n",list[argno]);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 			gmt_free (GMT, new_anom);
 			gmt_free (GMT, old_anom);
@@ -2132,7 +2132,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression slope (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_SLOPE],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check mag rls intercept */
@@ -2143,7 +2143,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression intercept (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_ICEPT],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check mag rls rms (right sided test) */
@@ -2155,7 +2155,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression rms (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_RMS],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 				/* check mag rls correlation (left sided test) */
@@ -2167,7 +2167,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					else if (warn[SUMMARY_WARN]) {
 						sprintf (buffer, "%s (mag) Recomputed anomaly regression correlation (%s) outside %s%% limits.\n",\
 						list[argno],fstats[MGD77_RLS_CORR],fpercent_limit);
-						GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+						gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 					}
 				}
 			}
@@ -2219,7 +2219,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				E[curr].flags[E77_NAV] |= NAV_TIME_OOR;
 				if (warn[TIME_WARN]) {
 					sprintf (buffer, "%s - Time out of range\n",placeStr);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
 
@@ -2252,7 +2252,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[TYPE_WARN]) {
 									sprintf (buffer, "%s - Invalid code %s [%d]\n",\
 									placeStr,mgd77defs[i].abbrev, (int) D[curr].number[i]);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 							break;
@@ -2264,7 +2264,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[TYPE_WARN]) {
 									sprintf (buffer, "%s - Invalid code %s [%d]\n",\
 									placeStr,mgd77defs[i].abbrev, (int) D[curr].number[i]);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 							break;
@@ -2275,7 +2275,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[TYPE_WARN]) {
 									sprintf (buffer, "%s - Invalid code %s [%d]\n", \
 									placeStr,mgd77defs[i].abbrev, (int) D[curr].number[i]);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 							break;
@@ -2286,7 +2286,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[TYPE_WARN]) {
 									sprintf (buffer, "%s - Invalid code %s [%d]\n",placeStr,\
 									mgd77defs[i].abbrev, (int) D[curr].number[i]);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 							break;
@@ -2309,7 +2309,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 											if (warn[TYPE_WARN]) {
 												sprintf (buffer, "%s - Invalid code %s [%d]\n",placeStr,\
 												mgd77defs[i].abbrev, (int) bccCode);
-												GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+												gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 											}
 											break;
 									}
@@ -2328,7 +2328,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									if (warn[VALUE_WARN]) {
 										sprintf (text, GMT->current.setting.format_float_out, D[curr].number[i]);
 										sprintf (buffer, "%s - %s out of range [%s]\n", placeStr, mgd77defs[i].abbrev, text);
-										GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 									}
 								}
 							}
@@ -2338,7 +2338,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[VALUE_WARN]) {
 									sprintf (text, GMT->current.setting.format_float_out, D[curr].number[i]);
 									sprintf (buffer, "%s - %s adjusted %s to +/- 180\n", placeStr, mgd77defs[i].abbrev, text);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 								D[curr].number[i] -= 360.0;
 							}
@@ -2350,14 +2350,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[VALUE_WARN]) {
 									sprintf (text, GMT->current.setting.format_float_out, D[curr].number[i]);
 									sprintf (buffer, "%s - %s out of range [%s]\n", placeStr, mgd77defs[i].abbrev, text);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 							if ((i == MGD77_LATITUDE || i == MGD77_LONGITUDE) && GMT_is_dnan(D[curr].number[i])) {
 								E[curr].flags[E77_NAV] |= NAV_UNDEF;
 								if (warn[VALUE_WARN]) {
 									sprintf (buffer, "%s - %s cannot be nine-filled\n", placeStr, mgd77defs[i].abbrev);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 							/* Record sign of current value */
@@ -2387,14 +2387,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						if (warn[TIME_WARN]) {
 							sprintf (text, GMT->current.setting.format_float_out, dt);
 							sprintf (buffer, "%s - Time not monotonically increasing (%s sec.)\n",placeStr, text);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						dt = MGD77_NaN;
 					} else {
 						if (warn[TIME_WARN]) {
 							sprintf (text, GMT->current.setting.format_float_out, dt);
 							sprintf (buffer, "%s - Time decreasing (%s sec.)\n",placeStr, text);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					}
 				}
@@ -2479,7 +2479,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								if (warn[SLOPE_WARN]) {
 									sprintf (text, GMT->current.setting.format_float_out, gradient);
 									sprintf (buffer, "%s - excessive %s gradient %s\n", placeStr, mgd77defs[i].abbrev, text);
-									GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
 
@@ -2582,12 +2582,12 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									if (warn[GRID_WARN]) {
 										sprintf (text, GMT->current.setting.format_float_out, fabs(offsetArea[i]));
 										sprintf (buffer, "%s - excessive offset from %s grid: Area/Length/Height %s\t",placeStr,this_grid[i].abbrev,text);
-										GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										sprintf (text, GMT->current.setting.format_float_out, offsetLength[i]);
-										sprintf (buffer, "%s\t",text);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										sprintf (buffer, "%s\t",text);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 										sprintf (text, GMT->current.setting.format_float_out, offsetLength[i]);
 										sprintf (text, GMT->current.setting.format_float_out, fabs(offsetArea[i]/offsetLength[i]));
-										sprintf (buffer, "%s\n",text);	GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										sprintf (buffer, "%s\n",text);	gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 									}
 									if (!strcmp(display,"E77"))
 										fprintf (fpout, "%c-%c-%s-%s-%.2d: Extended offset from grid [%d-%d]\n",E77_REVIEW,E77_ERROR,list[argno],\
@@ -2595,7 +2595,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									else if (warn[SUMMARY_WARN]) {
 										sprintf (buffer, "%s (%s) extended offset from grid (%d-%d)\n",list[argno],this_grid[i].abbrev,\
 										offsetStart[i]+1,curr+1);
-										GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 									}
 								}
 								offsetArea[i] = 0;
@@ -2638,7 +2638,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									if (warn[VALUE_WARN]) {
 										sprintf (buffer, "%s - %d duplicate %s records\n",placeStr,\
 										duplicates[i], mgd77defs[i].abbrev);
-										GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+										gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 									}
 									for (k = curr-1; k >= curr-duplicates[i]; k--)
 										E[k].flags[E77_VALUE] |= (1 << i);
@@ -2662,9 +2662,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						else {
 							for (i = 0; i < n_out_columns; i++) {
 								gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[curr][i], i);
-								if ((i+1) < n_out_columns) GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
+								if ((i+1) < n_out_columns) gmt_M_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 							}
-							GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
+							gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 						}
 					}
 				}
@@ -2710,9 +2710,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						else {
 							for (i = 0; i < (n_out_columns); i++) {
 								gmt_ascii_output_col (GMT->session.std[GMT_OUT], out[rec][i], i);
-								if ((i+1) < n_out_columns) GMT_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
+								if ((i+1) < n_out_columns) gmt_M_fputs (GMT->current.setting.io_col_separator, GMT->session.std[GMT_OUT]);
 							}
-							GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
+							gmt_M_fputs ("\n", GMT->session.std[GMT_OUT]);
 						}
 					}
 				}
@@ -2729,7 +2729,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			else if (warn[SUMMARY_WARN]) {
 				sprintf (buffer, "%s (%s) encountered possible PDR wrap errors (%.1f) [%.1f]\n",list[argno],mgd77defs[MGD77_TWT].abbrev,\
 				wrapsum/n_wrap, 5.0 * rint ((wrapsum/n_wrap)/5.0));
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 		}
 
@@ -2737,11 +2737,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		if (warn[TYPE_WARN]) {
 			if (bccCode != 63 && bccCode != 88 && (M.bit_pattern[0] & MGD77_TWT_BIT)) {
 				sprintf (buffer, "%s - new bathymetry correction table available\n",placeStr);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 			else if (bccCode > 0 && bccCode < 56 && !(M.bit_pattern[0] & MGD77_TWT_BIT)) {
 				sprintf (buffer, "%s - twt may be extracted from depth for Carter correction\n",placeStr);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 		}
 
@@ -2752,23 +2752,23 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (warn[SUMMARY_WARN]) {
 						if (MGD77_sign_bit[i] == (MGD77_ZERO_BIT)) {
 							sprintf (buffer, "%s - all %s anomalies are zero.\n",placeStr,mgd77defs[i].abbrev);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (MGD77_sign_bit[i] == (MGD77_NEG_BIT)) {
 							sprintf (buffer, "%s - only found negative %s values.\n",placeStr,mgd77defs[i].abbrev);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (MGD77_sign_bit[i] == (MGD77_NEG_BIT + MGD77_ZERO_BIT)) {
 							sprintf (buffer, "%s - all %s values less than or equal to zero.\n",placeStr,mgd77defs[i].abbrev);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (MGD77_sign_bit[i] == (MGD77_POS_BIT)) {
 							sprintf (buffer, "%s - only found positive %s values.\n",placeStr,mgd77defs[i].abbrev);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 						else if (MGD77_sign_bit[i] == (MGD77_POS_BIT + MGD77_ZERO_BIT)) {
 							sprintf (buffer, "%s - all %s values greater than or equal to zero.\n",placeStr,mgd77defs[i].abbrev);
-							GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+							gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 						}
 					}
 					if (!strcmp(display,"E77")) {
@@ -2922,35 +2922,35 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		if (warn[SUMMARY_WARN]) {
 			if (noTimeCount == curr - 1) {			/* no valid time in data */
 				sprintf (buffer, "%s (time) Cruise contains no time record\n", list[argno]);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 
 			if (noTimeCount >0 && noTimeCount < curr) {	/* print the first and number of nine-filled time records */
 				sprintf (buffer, "%s (time) %d records contain no time starting at record #%d\n",list[argno],\
 				noTimeCount, noTimeStart);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 
 			if (timeErrorCount > 0 && timeErrorCount < curr) {/* print the first and number of time errors */
 				sprintf (buffer, "%s (time) %d records had time errors starting at record #%d\n",list[argno],\
 				timeErrorCount, timeErrorStart);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 
 			if (distanceErrorCount > 0) { /* print the first and number of distance errors */
 				sprintf (buffer, "%s (dist) %d records had distance errors starting at record #%d\n",list[argno],\
 				distanceErrorCount,distanceErrorStart);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 
 			for (i = MGD77_LATITUDE; i < MGD77_N_NUMBER_FIELDS; i++) {
 				if ((lowPrecision & (1 << i)) && !(lowPrecision5 & (1 << i))) {
 					sprintf (buffer, "%s (%s) Data Precision Warning: only integer values found\n",list[argno],mgd77defs[i].abbrev);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 				if (lowPrecision5 & (1 << i)) {	/* low precision data */
 					sprintf (buffer, "%s (%s) Data Precision Warning: only integer multiples of 5 found\n",list[argno], mgd77defs[i].abbrev);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
 
@@ -2959,14 +2959,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					sprintf (text, GMT->current.setting.format_float_out, MaxDiff[i]);
 					sprintf (buffer, "%s (%s) Max ship-grid difference [%s] at record %d\n",list[argno],\
 					mgd77defs[this_grid[i].col].abbrev,text,iMaxDiff[i]);
-					GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
 
 			if (landcruise) {	/* vessel went over land (GPS error or other gross navigation) */
 				sprintf (buffer, "%s (nav) Navigation Warning: %d records went over land starting at record %d\n",\
 				list[argno], overLandCount, overLandStart);
-				GMT_fputs (buffer, GMT->session.std[GMT_OUT]);
+				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
 		}
 		/* Clean-up after finishing this cruise */

@@ -188,17 +188,17 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 		j = sscanf (&arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 		switch (j) {
 			case 1:	/* Got uniform margin */
-				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_a);
+				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_a);
 				break;
 			case 2:	/* Got seprate x/y margins */
-				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = GMT_to_points (GMT, txt_a);
-				Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_b);
+				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_a);
+				Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_b);
 				break;
 			case 4:	/* Got uniform margin */
-				Ctrl->A.margin[XLO] = GMT_to_points (GMT, txt_a);
-				Ctrl->A.margin[XHI] = GMT_to_points (GMT, txt_b);
-				Ctrl->A.margin[YLO] = GMT_to_points (GMT, txt_c);
-				Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_d);
+				Ctrl->A.margin[XLO] = gmt_M_to_points (GMT, txt_a);
+				Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_b);
+				Ctrl->A.margin[YLO] = gmt_M_to_points (GMT, txt_c);
+				Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_d);
 				break;
 			default:
 				error++;
@@ -243,11 +243,11 @@ GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTE
 				j = sscanf (&p[k], "%[^/]/%s", txt_a, txt_b);
 				switch (j) {
 					case 1:	/* Got width only. Height will be computed later */
-						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
+						Ctrl->A.new_size[0] = gmt_M_to_points (GMT, txt_a);
 						break;
 					case 2:	/* Got separate width/height */
-						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
-						Ctrl->A.new_size[1] = GMT_to_points (GMT, txt_b);
+						Ctrl->A.new_size[0] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->A.new_size[1] = gmt_M_to_points (GMT, txt_b);
 						break;
 					default:
 						GMT_Report (Ctrl, GMT_MSG_NORMAL, "GMT ERROR -A+s[m]<width[/height]>: Wrong size parameters\n");
@@ -274,7 +274,7 @@ GMT_LOCAL int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RAST
 	bool error = false;
 	unsigned int pos = 0;
 	char txt[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	C->W.active = true;
 	strncpy (txt, arg, GMT_BUFSIZ-1);
@@ -547,7 +547,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 			case 'F':	/* Set explicitly the output file name */
 				if ((Ctrl->F.active = gmt_check_filearg (GMT, 'F', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
 					Ctrl->F.file = strdup (opt->arg);
-					if (!GMT_File_Is_Memory (Ctrl->F.file)) gmt_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
+					if (!gmt_M_file_is_memory (Ctrl->F.file)) gmt_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				}
 				else
 					n_errors++;
@@ -654,19 +654,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
 
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[0] && (Ctrl->Q.bits[0] < 1 || Ctrl->Q.bits[0] > 4),
 		"Syntax error: Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
 
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[1] && (Ctrl->Q.bits[1] < 1 || Ctrl->Q.bits[1] > 4),
 		"Syntax error: Anti-aliasing for text requires sub-sampling box of 1,2, or 4\n");
 
-	n_errors += GMT_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
 		"Syntax error: Cannot handle both a file list and multiple ps files in input\n");
 
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
 		"Error: Cannot read list file %s\n", Ctrl->L.file);
 
-	n_errors += GMT_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.device == -GS_DEV_PDF && !Ctrl->F.active,
 		"Syntax error: Creation of Multipage PDF requires setting -F option\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -694,7 +694,7 @@ GMT_LOCAL int64_t line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FIL
 	return in;
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL inline char *alpha_bits (struct PS2RASTER_CTRL *Ctrl) {
@@ -856,7 +856,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		Ctrl->F.active = false;
 	}
 
-	if (Ctrl->F.active && GMT_File_Is_Memory (Ctrl->F.file)) {
+	if (Ctrl->F.active && gmt_M_file_is_memory (Ctrl->F.file)) {
 		if (Ctrl->T.device <= GS_DEV_SVG || Ctrl->In.n_files > 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Can only return one raster image to calling program via memory array.\n");
 			Return (EXIT_FAILURE);
@@ -964,7 +964,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
-		if (GMT_File_Is_Memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
+		if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
 			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
 			if (GMT_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s.  Skipping.\n", ps_file, ps_names[k]);
@@ -1290,7 +1290,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
 					fprintf (fpo, "%d rotate\n", r);
-				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt))
+				if (!gmt_M_is_zero (xt) || !gmt_M_is_zero (yt))
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;
@@ -1386,7 +1386,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			else if (!strncmp (line, "%%Page:", 7)) {
 				if (r != 0)
 					fprintf (fpo, "%d rotate\n", r);
-				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt))
+				if (!gmt_M_is_zero (xt) || !gmt_M_is_zero (yt))
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
 				r = 0;

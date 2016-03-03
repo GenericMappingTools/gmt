@@ -508,7 +508,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 		/* zap structure (nc_get_att_text does not null-terminate strings!) */
-		GMT_memset (c, 1, struct GMT_SHORE);
+		gmt_M_memset (c, 1, struct GMT_SHORE);
 
 	/* Open shoreline file */
 	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
@@ -831,7 +831,7 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
 
 	/* zap structure (nc_get_att_text does not null-terminate strings!) */
-	GMT_memset (c, 1, struct GMT_BR);
+	gmt_M_memset (c, 1, struct GMT_BR);
 
 	if (which == 'r')
 		sprintf (stem, "binned_river_%c", res);
@@ -1034,7 +1034,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 
 	/* Check the consistency of node levels in case some features have been dropped */
 
-	GMT_memset (nseg_at_level, GSHHS_MAX_LEVEL + 1, int);
+	gmt_M_memset (nseg_at_level, GSHHS_MAX_LEVEL + 1, int);
 	for (id = 0; id < c->ns; id++) if (c->seg[id].entry != 4) nseg_at_level[c->seg[id].level]++;	/* Only count segments that crosses the bin */
 	for (n = 0; n <= GSHHS_MAX_LEVEL; n++) if (nseg_at_level[n]) high_seg_level = n;
 
@@ -1101,8 +1101,8 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 					n_alloc += add;
 					p[P].lon = gmt_memory (GMT, p[P].lon, n_alloc, double);
 					p[P].lat = gmt_memory (GMT, p[P].lat, n_alloc, double);
-					GMT_memcpy (&p[P].lon[n], xtmp, add, double);
-					GMT_memcpy (&p[P].lat[n], ytmp, add, double);
+					gmt_M_memcpy (&p[P].lon[n], xtmp, add, double);
+					gmt_M_memcpy (&p[P].lat[n], ytmp, add, double);
 					n += add;
 				}
 				next_side = ((id + 4) + dir + 4) % 4;	/* This will go to the next side either CCW or CW, depending on dir */
@@ -1115,8 +1115,8 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 					n_alloc += add;
 					p[P].lon = gmt_memory (GMT, p[P].lon, n_alloc, double);
 					p[P].lat = gmt_memory (GMT, p[P].lat, n_alloc, double);
-					GMT_memcpy (&p[P].lon[n], xtmp, add, double);
-					GMT_memcpy (&p[P].lat[n], ytmp, add, double);
+					gmt_M_memcpy (&p[P].lon[n], xtmp, add, double);
+					gmt_M_memcpy (&p[P].lat[n], ytmp, add, double);
 					n += add;
 				}
 				entry_pos = shore_get_position (next_side, c->seg[id].dx[0], c->seg[id].dy[0]);	/* Position on the next side */
@@ -1159,7 +1159,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 				size_t old_p_alloc = p_alloc;
 				p_alloc <<= 1;
 				p = gmt_memory (GMT, p, p_alloc, struct GMT_GSHHS_POL);
-				GMT_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
+				gmt_M_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
 			}
 		}
 		/* Then we go back to top of loop and if there are more segments we start all over with a new polygon */
@@ -1194,7 +1194,7 @@ int gmt_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool
 				size_t old_p_alloc = p_alloc;
 				p_alloc <<= 1;
 				p = gmt_memory (GMT, p, p_alloc, struct GMT_GSHHS_POL);
-				GMT_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
+				gmt_M_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
 			}
 		}
 	}
@@ -1255,8 +1255,8 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 				/* Allocate segment to hold this line segment and memcpy over the coordinates */
 				S = gmt_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT);
 				gmt_alloc_segment (GMT, S, p[k].n, 2U, true);
-				GMT_memcpy (S->coord[GMT_X], p[k].lon, S->n_rows, double);
-				GMT_memcpy (S->coord[GMT_Y], p[k].lat, S->n_rows, double);
+				gmt_M_memcpy (S->coord[GMT_X], p[k].lon, S->n_rows, double);
+				gmt_M_memcpy (S->coord[GMT_Y], p[k].lat, S->n_rows, double);
 				D->table[tbl]->segment[seg++] = S;	/* Hook onto dataset structure */
 				D->table[tbl]->n_records += S->n_rows;	/* Add up records in this table */
 			}
@@ -1390,8 +1390,8 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[k].lon = gmt_memory (GMT, p[k].lon, n_alloc, double);
 			p[k].lat = gmt_memory (GMT, p[k].lat, n_alloc, double);
-			GMT_memcpy (p[k].lon, GMT->current.plot.x, n_use, double);
-			GMT_memcpy (p[k].lat, GMT->current.plot.y, n_use, double);
+			gmt_M_memcpy (p[k].lon, GMT->current.plot.x, n_use, double);
+			gmt_M_memcpy (p[k].lat, GMT->current.plot.y, n_use, double);
 			if (close) {	/* Must explicitly close the polygon */
 				p[k].lon[n_use] = p[k].lon[0];
 				p[k].lat[n_use] = p[k].lat[0];
@@ -1407,8 +1407,8 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[np_new].lon = gmt_memory (GMT, NULL, n_alloc, double);
 			p[np_new].lat = gmt_memory (GMT, NULL, n_alloc, double);
-			GMT_memcpy (p[np_new].lon, GMT->current.plot.x, n_use, double);
-			GMT_memcpy (p[np_new].lat, GMT->current.plot.y, n_use, double);
+			gmt_M_memcpy (p[np_new].lon, GMT->current.plot.x, n_use, double);
+			gmt_M_memcpy (p[np_new].lat, GMT->current.plot.y, n_use, double);
 			if (close) {	/* Must explicitly close the polygon */
 				p[np_new].lon[n_use] = p[np_new].lon[0];
 				p[np_new].lat[n_use] = p[np_new].lat[0];
@@ -1432,8 +1432,8 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 				n_alloc = (close) ? n_use + 1 : n_use;
 				p[k].lon = gmt_memory (GMT, p[k].lon, n_alloc, double);
 				p[k].lat = gmt_memory (GMT, p[k].lat, n_alloc, double);
-				GMT_memcpy (p[k].lon, xtmp, n_use, double);
-				GMT_memcpy (p[k].lat, ytmp, n_use, double);
+				gmt_M_memcpy (p[k].lon, xtmp, n_use, double);
+				gmt_M_memcpy (p[k].lat, ytmp, n_use, double);
 				if (close) {	/* Must explicitly close the polygon */
 					p[k].lon[n_use] = p[k].lon[0];
 					p[k].lat[n_use] = p[k].lat[0];

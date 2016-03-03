@@ -197,8 +197,8 @@ int GMT_fitcircle_parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, stru
 	}
 	if (Ctrl->F.active && Ctrl->F.mode == 0) Ctrl->F.mode = (Ctrl->S.active) ? 31 : 15;	/* Select all */
 
-	n_errors += GMT_check_condition (GMT, Ctrl->F.mode & 16 && !Ctrl->S.active, "Syntax error -F option: Cannot select c without setting -S\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option: Choose between 1, 2, or 3\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.mode & 16 && !Ctrl->S.active, "Syntax error -F option: Cannot select c without setting -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.norm < 1 || Ctrl->L.norm > 3, "Syntax error -L option: Choose between 1, 2, or 3\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -263,12 +263,12 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 	tryneg = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 
 	if (tryneg < trypos) {
-		GMT_cpy3v (a, center);
+		gmt_M_cpy3v (a, center);
 		for (i = 0; i < 3; i++) b[i] = -gcpole[i];
 	}
 	else {
-		GMT_cpy3v (a, center);
-		GMT_cpy3v (b, gcpole);
+		gmt_M_cpy3v (a, center);
+		gmt_M_cpy3v (b, gcpole);
 	}
 
 	/* Now a is at center and b is at pole on correct side. */
@@ -297,12 +297,12 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 
 	if (j == 90) {	/* Bad news.  There isn't a better fitting pole anywhere.  */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
-		GMT_cpy3v (scpole, gcpole);
+		gmt_M_cpy3v (scpole, gcpole);
 		return (-1.0);
 	}
 	/* Get here when temppole points to a minimum bracketed by a and b.  */
 
-	GMT_cpy3v (oldpole, temppole);
+	gmt_M_cpy3v (oldpole, temppole);
 	oldfit = fit;
 
 	/* Now, while not converged, take golden section of wider interval.  */
@@ -315,36 +315,36 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 			gmt_normalize3v (GMT, temppole);
 			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 			if (fit < oldfit) {	/* Improvement.  b = oldpole, oldpole = temppole  */
-				GMT_cpy3v (b, oldpole);
-				GMT_cpy3v (oldpole, temppole);
+				gmt_M_cpy3v (b, oldpole);
+				gmt_M_cpy3v (oldpole, temppole);
 				oldfit = fit;
 			}
 			else	/* Not improved.  a = temppole  */
-				GMT_cpy3v (a, temppole);
+				gmt_M_cpy3v (a, temppole);
 		}
 		else {	/* Section b_old  */
 			for (i = 0; i < 3; i++) temppole[i] = (0.38197*b[i] + 0.61803*oldpole[i]);
 			gmt_normalize3v (GMT, temppole);
 			fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);
 			if (fit < oldfit) {	/* Improvement.  a = oldpole, oldpole = temppole  */
-				GMT_cpy3v (a, oldpole);
-				GMT_cpy3v (oldpole, temppole);
+				gmt_M_cpy3v (a, oldpole);
+				gmt_M_cpy3v (oldpole, temppole);
 				oldfit = fit;
 			}
 			else	/* Not improved.  b = temppole  */
-				GMT_cpy3v (b, temppole);
+				gmt_M_cpy3v (b, temppole);
 		}
 		length_ab   = d_acos (gmt_dot3v (GMT, a, b));
 		length_aold = d_acos (gmt_dot3v (GMT, a, oldpole));
 		length_bold = d_acos (gmt_dot3v (GMT, b, oldpole));
 	} while (length_ab > 0.0001);	/* 0.1 milliradian ~ 0.006 degree  */
 
-	GMT_cpy3v (scpole, oldpole);
+	gmt_M_cpy3v (scpole, oldpole);
 	return (R2D * circle_distance);
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_fitcircle_Ctrl (GMT, Ctrl); gmt_free (GMT, data); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_fitcircle (void *V_API, int mode, void *args) {
@@ -402,11 +402,11 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -466,7 +466,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 
 	/* Get Fisher mean in any case, in order to set L2 mean correctly, if needed.  */
 
-	GMT_memset (meanv, 3, double);
+	gmt_M_memset (meanv, 3, double);
 	for (i = 0; i < n_data; i++) for (j = 0; j < 3; j++) meanv[j] += data[i].x[j];
 	gmt_normalize3v (GMT, meanv);
 	if (lonsum > 180.0) greenwich = true;
@@ -482,7 +482,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 			sprintf (item, "%sL1 Average Position (Fisher's Method)", GMT->current.setting.io_col_separator);	strcat (record, item);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
-		GMT_memset (cross_sum, 3, double);
+		gmt_M_memset (cross_sum, 3, double);
 		for (i = 0; i < n_data; i++) {
 			gmt_cross3v (GMT, &data[i].x[0], meanv, cross);
 			if (cross[2] < 0.0)
@@ -491,7 +491,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args) {
 				gmt_add3v (GMT, cross_sum, cross, cross_sum);
 		}
 		gmt_normalize3v (GMT, cross_sum);
-		if (Ctrl->S.active) GMT_cpy3v (gcpole, cross_sum);
+		if (Ctrl->S.active) gmt_M_cpy3v (gcpole, cross_sum);
 
 		gmt_cart_to_geo (GMT, &latsum, &lonsum, cross_sum, true);
 		if (greenwich && lonsum < 0.0) lonsum += 360.0;

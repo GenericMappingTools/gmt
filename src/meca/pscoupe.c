@@ -580,7 +580,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						Ctrl->A2.active = true;
 						strncpy (txt, &opt->arg[2], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
-						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
+						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
 						if (p) {
 							p++;
 							switch (strlen (p)) {
@@ -627,7 +627,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 						if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
 						txt[0] = txt_b[0] = txt_c[0] = '\0';
 						sscanf (&opt->arg[2], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-						if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
+						if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
 						if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 						if (txt_c[0]) Ctrl->S.offset = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 						if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
@@ -671,7 +671,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 				if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
 				txt[0] = txt_b[0] = txt_c[0] = '\0';
 				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-				if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
+				if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
 				if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				if (txt_c[0]) Ctrl->S.offset = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 				if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
@@ -750,9 +750,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->A.active, "Syntax error: Must specify -A option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.symbol && GMT_IS_ZERO (Ctrl->S.scale), "Syntax error: -S must specify scale\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->A.active, "Syntax error: Must specify -A option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.symbol && gmt_M_is_zero (Ctrl->S.scale), "Syntax error: -S must specify scale\n");
 
 	/* Set to default pen where needed */
 
@@ -769,7 +769,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscoupe (void *V_API, int mode, void *args) {
@@ -812,9 +812,9 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pscoupe main code ----------------------------*/
 
-	GMT_memset (&meca, 1, meca);
-	GMT_memset (&moment, 1, moment);
-	GMT_memset (col, GMT_LEN64*15, char);
+	gmt_M_memset (&meca, 1, meca);
+	gmt_M_memset (&moment, 1, moment);
+	gmt_M_memset (col, GMT_LEN64*15, char);
 
 	if (Ctrl->Z.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
@@ -827,7 +827,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		GMT->common.R.wesn[XHI] = Ctrl->A.p_length;
 		GMT->common.R.wesn[YLO] = Ctrl->A.dmin;
 		GMT->common.R.wesn[YHI] = Ctrl->A.dmax;
-		if (GMT_IS_ZERO (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
+		if (gmt_M_is_zero (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
 
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -864,18 +864,18 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 		n_k = 15;
 	else if (Ctrl->S.readmode == READ_TENSOR)
 		n_k = 12;
-	else if (GMT_IS_ZERO (Ctrl->S.scale))
+	else if (gmt_M_is_zero (Ctrl->S.scale))
 		n_k = 4;
 	else
 		n_k = 3;
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -914,9 +914,9 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				col[8], col[9], col[10], col[11], event_title);
 			if (strlen (event_title) <= 0) sprintf (event_title,"\n");
 		}
-		else if (GMT_IS_ZERO (Ctrl->S.scale)) {
+		else if (gmt_M_is_zero (Ctrl->S.scale)) {
 			sscanf (line, "%s %s %s %s %[^\n]\n", col[0], col[1], col[2], col[3], event_title);
-			size = GMT_to_inch (GMT, col[3]);
+			size = gmt_M_to_inch (GMT, col[3]);
 		}
 		else
 			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);

@@ -261,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 
 			/* Supplemental parameters */
 			case 'C':	/* Now done automatically in spotter_init */
-				if (GMT_compat_check (GMT, 4))
+				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -319,7 +319,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 			case 'S':
 				Ctrl->S.active = true;
 				k = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, k < 1, "Syntax error -S: Must specify a positive number of hotspots\n");
+				n_errors += gmt_M_check_condition (GMT, k < 1, "Syntax error -S: Must specify a positive number of hotspots\n");
 				Ctrl->S.n = k;
 				break;
 			case 'T':
@@ -341,16 +341,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct 
 	n_input = (Ctrl->Q.active) ? 3 : 5;
         if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_input;
 
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_input);
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.file, "Syntax error -F: Must specify hotspot file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.file, "Syntax error -F: Must specify Euler pole file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error -D: Must specify a positive interval\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.dist <= 0.0, "Syntax error -W: Must specify a positive distance in km\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_input, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_input);
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->F.file, "Syntax error -F: Must specify hotspot file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file, "Syntax error -F: Must specify Euler pole file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value <= 0.0, "Syntax error -D: Must specify a positive interval\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.dist <= 0.0, "Syntax error -W: Must specify a positive distance in km\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_originator (void *V_API, int mode, void *args) {
@@ -479,11 +479,11 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -524,7 +524,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 
 		np = lrint (c[0]);
 
-		GMT_memcpy (hot, hotspot, n_hotspots, struct HOTSPOT_ORIGINATOR);
+		gmt_M_memcpy (hot, hotspot, n_hotspots, struct HOTSPOT_ORIGINATOR);
 
 		for (kk = 0, k = 1; kk < np; kk++, k += 3) {	/* For this seamounts track */
 			for (spot = 0; spot < n_hotspots; spot++) {	/* For all hotspots */
@@ -607,7 +607,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			 * x-axis and y-axis is normal to that, flowlines whose closest approach point's longitude is
 			 * further east are said to have negative distance. */
 			 
-			GMT_set_delta_lon (hot[spot].np_lon, lon, dlon);
+			gmt_M_set_delta_lon (hot[spot].np_lon, lon, dlon);
 			hot[spot].np_sign = copysign (1.0, dlon);
 			 
 			/* Assign stage id for this point on the flowline */

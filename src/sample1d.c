@@ -228,7 +228,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 			case 'T':
 				Ctrl->T.active = true;
 				col = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
+				n_errors += gmt_M_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
 				Ctrl->T.col = col;
 				break;
 
@@ -238,18 +238,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == 1 && Ctrl->S.stop <= Ctrl->S.start, "Syntax error -S option: <stop> must exceed <start>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->I.active, "Syntax error: Specify only one of -N and -S\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == 1 && Ctrl->S.stop <= Ctrl->S.start, "Syntax error -S option: <stop> must exceed <start>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->I.active, "Syntax error: Specify only one of -N and -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.inc <= 0.0, "Syntax error -I option: Must specify positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && gmt_access (GMT, Ctrl->N.file, R_OK), "Syntax error -N. Cannot read file %s\n", Ctrl->N.file);
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->T.col >= 2) ? Ctrl->T.col + 1 : 2);
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Syntax error -F option: Only 1st or 2nd derivatives may be requested\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_sample1d (void *V_API, int mode, void *args) {
@@ -302,8 +302,8 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
 			Ctrl->I.smode = GMT_GREATCIRCLE;
 		}
-		if (Ctrl->I.mode == INT_2D_GEO && !GMT_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
-		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
+		if (Ctrl->I.mode == INT_2D_GEO && !gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
@@ -339,7 +339,7 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 		T = Cin->table[0];	/* Since we only have one table here */
 		t_supplied_out = gmt_memory (GMT, NULL, Cin->table[0]->n_records, double);
 		for (seg = 0; seg < T->n_segments; seg++) {
-			GMT_memcpy (&t_supplied_out[m], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
+			gmt_M_memcpy (&t_supplied_out[m], T->segment[seg]->coord[GMT_X], T->segment[seg]->n_rows, double);
 			m += T->segment[seg]->n_rows;
 		}
 		m_supplied = m;
@@ -365,14 +365,14 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Warning: Segment %" PRIu64 " in table %" PRIu64 " has < 2 records - skipped as no interpolation is possible\n", seg, tbl);
 				continue;
 			}
-			GMT_memset (nan_flag, Din->n_columns, unsigned char);
+			gmt_M_memset (nan_flag, Din->n_columns, unsigned char);
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = true;
 			if (resample_path) {	/* Need distances for path interpolation */
 				dist_in = gmt_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
 				lon = gmt_memory (GMT, NULL, S->n_rows, double);
 				lat = gmt_memory (GMT, NULL, S->n_rows, double);
-				GMT_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
-				GMT_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
+				gmt_M_memcpy (lon, S->coord[GMT_X], S->n_rows, double);
+				gmt_M_memcpy (lat, S->coord[GMT_Y], S->n_rows, double);
 				m = gmt_resample_path (GMT, &lon, &lat, S->n_rows, Ctrl->I.inc, Ctrl->A.mode);
 				t_out = gmt_dist_array (GMT, lon, lat, m, true);
 			}
@@ -426,11 +426,11 @@ int GMT_sample1d (void *V_API, int mode, void *args) {
 			Sout = Tout->segment[seg];	/* Current output segment */
 			gmt_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
 			if (resample_path) {	/* Use resampled path coordinates */
-				GMT_memcpy (Sout->coord[GMT_X], lon, m, double);
-				GMT_memcpy (Sout->coord[GMT_Y], lat, m, double);
+				gmt_M_memcpy (Sout->coord[GMT_X], lon, m, double);
+				gmt_M_memcpy (Sout->coord[GMT_Y], lat, m, double);
 			}
 			else
-				GMT_memcpy (Sout->coord[Ctrl->T.col], t_out, m, double);
+				gmt_M_memcpy (Sout->coord[Ctrl->T.col], t_out, m, double);
 			if (S->header) Sout->header = strdup (S->header);	/* Duplicate header */
 			Sout->n_rows = m;
 				

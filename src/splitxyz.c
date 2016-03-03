@@ -213,29 +213,29 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 
 			case 'A':
 				Ctrl->A.active = true;
-				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2,
+				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth, &Ctrl->A.tolerance)) != 2,
 				                                       "Syntax error -A option: Can't decipher values\n");
 				break;
 			case 'C':
 				Ctrl->C.active = true;
-				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1,
+				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->C.value)) != 1,
 				                                       "Syntax error -C option: Can't decipher value\n");
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1,
+				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf", &Ctrl->D.value)) != 1,
 				                                       "Syntax error -D option: Can't decipher value\n");
 				break;
 			case 'F':
 				Ctrl->F.active = true;
-				n_errors += GMT_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2,
+				n_errors += gmt_M_check_condition (GMT, (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2,
 				                                       "Syntax error -F option: Can't decipher values\n");
 				break;
 			case 'G':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
-					if (GMT_is_geographic (GMT, GMT_IN))	
+					if (gmt_M_is_geographic (GMT, GMT_IN))	
 						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
 					else
 						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
@@ -245,9 +245,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'M':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!GMT_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					if (!gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -278,7 +278,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 				Ctrl->S.active = true;
 				break;
 			case 'Z':
-				if (GMT_compat_check (GMT, 5)) /* Warn and pass through */
+				if (gmt_M_compat_check (GMT, 5)) /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Z option is deprecated and not longer required.\n");
 				break;
 
@@ -288,20 +288,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.value < 0.0, "Syntax error -D option: Minimum segment distance must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.value <= 0.0, "Syntax error -C option: Course change tolerance must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.tolerance < 0.0, "Syntax error -A option: Azimuth tolerance must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT] && !Ctrl->N.name,
 	                                 "Syntax error: Binary output requires a namestem in -N\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
 	                                 "Syntax error -N: Output template must contain %%d\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_splitxyz (void *V_API, int mode, void *args) {
@@ -356,7 +356,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
+	gmt_M_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
 	no_z_column = (D[GMT_IN]->n_columns == 2);
 	
 	if (no_z_column && Ctrl->S.active) {
@@ -396,7 +396,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		}
 		n_outputs++;
 	}
-	if (GMT_is_geographic (GMT, GMT_IN))
+	if (gmt_M_is_geographic (GMT, GMT_IN))
 		gmt_set_geographic (GMT, GMT_OUT);
 
 	if (n_outputs == 0) {	/* Generate default -Q setting (all) */
@@ -464,8 +464,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 			for (row = 1; row < S->n_rows; row++) {
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
 					dy = S->coord[GMT_Y][row] - S->coord[GMT_Y][row-1];
-					if (GMT_is_geographic (GMT, GMT_IN)) {
-						GMT_set_delta_lon (S->coord[GMT_X][row-1], S->coord[GMT_X][row], dx);
+					if (gmt_M_is_geographic (GMT, GMT_IN)) {
+						gmt_M_set_delta_lon (S->coord[GMT_X][row-1], S->coord[GMT_X][row], dx);
 						dy *= GMT->current.proj.DIST_KM_PR_DEG;
 						dx *= (GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (S->coord[GMT_Y][row] + S->coord[GMT_Y][row-1])));
 					}

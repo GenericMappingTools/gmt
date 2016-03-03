@@ -386,12 +386,12 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 					d2 += gmt_distance (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], Sp->coord[GMT_X][S->n_rows-row-1], Sp->coord[GMT_Y][S->n_rows-row-1]);
 				}
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "S to Sp of same length and gave d1 = %g and d2 = %g\n", d1, d2);
-				if (GMT_IS_ZERO (d1)) { /* Exact duplicate */
+				if (gmt_M_is_zero (d1)) { /* Exact duplicate */
 					L[tbl][seg].mode = +1;
 					n_dup++;
 					continue;
 				}
-				else if (GMT_IS_ZERO (d2)) {	/* Exact duplicate but reverse order */
+				else if (gmt_M_is_zero (d2)) {	/* Exact duplicate but reverse order */
 					L[tbl][seg].mode = -1;
 					n_dup++;
 					continue;
@@ -701,7 +701,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->Q.unit = 'k';	/* Default geographic distance unit is km */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) Ctrl->Q.unit = 'k';	/* Default geographic distance unit is km */
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -731,7 +731,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
 					else
 						Ctrl->A.smode = 2;	/* Great circle */
 					Ctrl->A.unit = (Ctrl->A.smode == 2) ? opt->arg[0] : opt->arg[1];
-					if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Data was not geographic, revert to Cartesian settings */
+					if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Data was not geographic, revert to Cartesian settings */
 						Ctrl->A.smode = 0;
 						Ctrl->A.unit = 'X';
 					}
@@ -899,19 +899,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct 
  	if (Ctrl->E.active) Ctrl->Q.active = true;
 	
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least %d columns\n", 2);
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active, "Syntax error: -T without a polygon requires -R\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active, "Syntax error: -C requires -R\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active, "Syntax error: -L requires -R\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Syntax error: -L requires a positive cutoff in meters\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
-	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 2, "Syntax error: Binary input data (-bi) must have at least %d columns\n", 2);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == POL_CLIP && !Ctrl->T.file && !GMT->common.R.active, "Syntax error: -T without a polygon requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->T.active && !GMT->common.R.active, "Syntax error: -C requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !GMT->common.R.active, "Syntax error: -L requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.s_cutoff < 0.0, "Syntax error: -L requires a positive cutoff in meters\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.file && gmt_access (GMT, Ctrl->D.file, R_OK), "Syntax error -D: Cannot read file %s!\n", Ctrl->D.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.file && gmt_access (GMT, Ctrl->T.file, R_OK), "Syntax error -T: Cannot read file %s!\n", Ctrl->T.file);
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtspatial (void *V_API, int mode, void *args) {
@@ -1033,7 +1033,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					iw = 1.0 / w;	/* Inverse weight for scaling */
 					/* Compute weighted average z */
 					NN_dist[a].coord[GMT_Z] = iw * (NN_dist[a].coord[GMT_Z] * NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_Z] * NN_dist[b].coord[GMT_W]);
-					if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must do vector averaging */
+					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must do vector averaging */
 						gmt_geo_to_cart (GMT, NN_dist[a].coord[GMT_Y], NN_dist[a].coord[GMT_X], A, true);
 						gmt_geo_to_cart (GMT, NN_dist[b].coord[GMT_Y], NN_dist[b].coord[GMT_X], B, true);
 						for (col = 0; col < 3; col++) {	/* Get weighted average vector */
@@ -1060,7 +1060,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 7)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
 				char header[GMT_BUFSIZ] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
-				k = (GMT_is_geographic (GMT, GMT_IN)) ? 1 : 0;
+				k = (gmt_M_is_geographic (GMT, GMT_IN)) ? 1 : 0;
 				sprintf (header, "#%s[0]\t%s[1]\tz[2]\tweight[3]\tNN_dist[4]\tID[5]\tNN_ID[6]", name[k][GMT_X], name[k][GMT_Y]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
 			}
@@ -1078,7 +1078,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		for (k = 0; k < n_points; k++) {
 			d_bar += NN_dist[k].distance;
 			if (Ctrl->A.mode) {	/* Want all points out, including their coordinates */
-				GMT_memcpy (out, NN_dist[k].coord, 4, double);
+				gmt_M_memcpy (out, NN_dist[k].coord, 4, double);
 				col = 4;
 			}
 			else {	/* Just get the unique NN distances and the points involved */
@@ -1090,10 +1090,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			out[col++] = (double)NN_dist[k].neighbor;
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write area or length to output */
 		}
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			d_bar /= n_points;
 			if (GMT->common.R.active) {
-				int geo = GMT_is_geographic (GMT, GMT_IN) ? 1 : 0;
+				int geo = gmt_M_is_geographic (GMT, GMT_IN) ? 1 : 0;
 				double info[3], d_expect, R_index;
 				struct GMT_DATASEGMENT *S = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 				gmt_alloc_segment (GMT, S, 5, 2, true);
@@ -1181,11 +1181,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		char line[GMT_BUFSIZ];
 		
-		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
+		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
 			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		}
-		geo = GMT_is_geographic (GMT, GMT_IN);
-		if (GMT_is_geographic (GMT, GMT_IN)) gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
+		geo = gmt_M_is_geographic (GMT, GMT_IN);
+		if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_init_distaz (GMT, Ctrl->Q.unit, Ctrl->Q.dmode, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
 			qmode = Ctrl->Q.mode;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which we want with +p */
@@ -1299,7 +1299,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		wrap = (GMT_is_geographic (GMT, GMT_IN) && GMT->common.R.active && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
+		wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 
 		sprintf (fmt, "%s%s%s%s%s%s%s%s%%s%s%%s\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
@@ -1505,7 +1505,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				else
 					S2 = S1;
 				poly_S2 = (gmt_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) ? 1 : 0;
-				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) GMT_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
+				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) gmt_M_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
 				n_dup = is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
 				if (same_feature) {
 					S1->n_rows = S2->n_rows;	/* Reset the count */
@@ -1562,7 +1562,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		double *cp[2] = {NULL, NULL};
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj for Cartesian or geographic data */
-			if (GMT_is_geographic (GMT, GMT_IN))
+			if (gmt_M_is_geographic (GMT, GMT_IN))
 				gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear degree projection */
 			else
 				gmt_parse_common_options (GMT, "J", 'J', "x1");		/* Fake linear Cartesian projection */
@@ -1579,7 +1579,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (np > S->n_rows) gmt_alloc_segment (GMT, S, np, S->n_columns, false);
 				for (p = 0; p < np; p++) gmt_xy_to_geo (GMT, &cp[GMT_X][p], &cp[GMT_Y][p], cp[GMT_X][p], cp[GMT_Y][p]);
 				for (col = 0; col < 2; col++) {
-					GMT_memcpy (S->coord[col], cp[col], np, double);
+					gmt_M_memcpy (S->coord[col], cp[col], np, double);
 					gmt_free (GMT, cp[col]);
 				}
 				S->n_rows = np;
@@ -1623,7 +1623,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		count = gmt_memory (GMT, NULL, D->n_segments, unsigned int);
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
-			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in gmt_inonout */
+			if (gmt_M_polygon_is_hole (S2)) continue;	/* Holes are handled in gmt_inonout */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
@@ -1723,7 +1723,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					uint64_t old_n_segs = n_segs;
 					n_segs = Dout->table[tbl]->n_segments;
 					T->segment = gmt_memory (GMT, T->segment, n_segs, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
-					GMT_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_DATASEGMENT *);	/* Set to NULL */
+					gmt_M_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_DATASEGMENT *);	/* Set to NULL */
 				}
 				/* Here there are space for all segments if new ones are added via splitting */
 				if (crossing) {

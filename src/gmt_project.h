@@ -37,22 +37,21 @@
 
 /*! GMT_180 is used to see if a value really is exceeding it (beyond roundoff) */
 #define GMT_180	(180.0 + GMT_CONV8_LIMIT)
-/*! GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
-#define GMT_WIND_LON(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
+/*! gmt_M_wind_lon will remove central meridian value and adjust so lon fits between -180/+180 */
+#define gmt_M_wind_lon(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
 
 /*! Some shorthand notation for GMT specific cases */
 EXTERN_MSC double map_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]);
 
-#define GMT_latg_to_latc(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2C])
-#define GMT_latg_to_lata(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2A])
-#define GMT_latc_to_latg(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_C2G])
-#define GMT_lata_to_latg(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_A2G])
+#define gmt_M_latg_to_latc(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2C])
+#define gmt_M_latg_to_lata(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_G2A])
+#define gmt_M_latc_to_latg(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_C2G])
+#define gmt_M_lata_to_latg(C,lat) map_lat_swap_quick (C, lat, C->current.proj.lat_swap_vals.c[GMT_LATSWAP_A2G])
 
 /*! Macros returns true if the two coordinates are lon/lat; way should be GMT_IN or GMT_OUT */
-#define GMT_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON)
-#define GMT_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)
-#define GMT_is_geographic(C,way) (GMT_x_is_lon(C,way) && GMT_y_is_lat(C,way))
-#define GMT_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
+#define gmt_M_x_is_lon(C,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON)
+#define gmt_M_y_is_lat(C,way) (C->current.io.col_type[way][GMT_Y] == GMT_IS_LAT)
+#define gmt_M_is_geographic(C,way) (gmt_M_x_is_lon(C,way) && gmt_M_y_is_lat(C,way))
 
 #define GMT_N_PROJECTIONS	29	/* Total number of projections in GMT */
 
@@ -62,7 +61,7 @@ EXTERN_MSC double map_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c
 #define GMT_NO_PROJ		-1	/* Projection not specified (initial value) */
 
 /*! Linear projections tagged 0-99 */
-#define GMT_IS_LINEAR(C) (C->current.proj.projection / 100 == 0)
+#define gmt_M_is_linear(C) (C->current.proj.projection / 100 == 0)
 
 enum GMT_enum_annot {GMT_LINEAR = 0,
 	GMT_LOG10,	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
@@ -74,7 +73,7 @@ enum GMT_enum_annot {GMT_LINEAR = 0,
 #define GMT_ZAXIS		50
 
 /*! Cylindrical projections tagged 100-199 */
-#define GMT_IS_CYLINDRICAL(C) (C->current.proj.projection / 100 == 1)
+#define gmt_M_is_cylindrical(C) (C->current.proj.projection / 100 == 1)
 
 enum GMT_enum_cyl {GMT_MERCATOR = 100,
 	GMT_CYL_EQ,
@@ -88,7 +87,7 @@ enum GMT_enum_cyl {GMT_MERCATOR = 100,
 	GMT_OBLIQUE_MERC_POLE};
 
 /*! Conic projections tagged 200-299 */
-#define GMT_IS_CONICAL(C) (C->current.proj.projection / 100 == 2)
+#define gmt_M_is_conical(C) (C->current.proj.projection / 100 == 2)
 
 enum GMT_enum_conic {GMT_ALBERS = 200,
 	GMT_ECONIC,
@@ -96,8 +95,7 @@ enum GMT_enum_conic {GMT_ALBERS = 200,
 	GMT_LAMBERT = 250};
 
 /* Azimuthal projections tagged 300-399 */
-#define GMT_IS_AZIMUTHAL(C) (C->current.proj.projection / 100 == 3)
-#define GMT_IS_PERSPECTIVE(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
+#define gmt_M_is_azimuthal(C) (C->current.proj.projection / 100 == 3)
 enum GMT_enum_azim {GMT_STEREO = 300,
 	GMT_LAMB_AZ_EQ,
 	GMT_ORTHO,
@@ -107,7 +105,7 @@ enum GMT_enum_azim {GMT_STEREO = 300,
 	GMT_POLAR = 350};
 
 /* Misc projections tagged 400-499 */
-#define GMT_IS_MISC(C) (C->current.proj.projection / 100 == 4)
+#define gmt_M_is_misc(C) (C->current.proj.projection / 100 == 4)
 enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_HAMMER,
 	GMT_SINUSOIDAL,
@@ -130,28 +128,24 @@ enum GMT_enum_units {GMT_IS_METER = 0,
 	GMT_N_UNITS,
 	GMT_IS_NOUNIT = -1};
 
-/* GMT_IS_RECT_GRATICULE means parallels and meridians are orthogonal, but does not imply linear spacing */
-#define GMT_IS_RECT_GRATICULE(C) (C->current.proj.projection <= GMT_MILLER)
+/* gmt_M_is_rect_graticule means parallels and meridians are orthogonal, but does not imply linear spacing */
+#define gmt_M_is_rect_graticule(C) (C->current.proj.projection <= GMT_MILLER)
 
-/* GMT_IS_NONLINEAR_GRATICULE means parallels and meridians are not orthogonal or have nonlinear spacing */
-#define GMT_IS_NONLINEAR_GRATICULE(C)	(!(C->current.proj.projection == GMT_CYL_EQDIST || C->current.proj.projection == GMT_LINEAR) || \
+/* gmt_M_is_nonlinear_graticule means parallels and meridians are not orthogonal or have nonlinear spacing */
+#define gmt_M_is_nonlinear_graticule(C)	(!(C->current.proj.projection == GMT_CYL_EQDIST || C->current.proj.projection == GMT_LINEAR) || \
 	C->current.proj.xyz_projection[GMT_X] == GMT_LOG10 || C->current.proj.xyz_projection[GMT_X] == GMT_POW || \
 	C->current.proj.xyz_projection[GMT_Y] == GMT_LOG10 || C->current.proj.xyz_projection[GMT_Y] == GMT_POW)
 
-#define GMT_POLE_IS_POINT(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN))
-
-#define GMT_IS_SPHERICAL(C) (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening < 1.0e-10)
-#define GMT_IS_FLATEARTH(C) (!strcmp (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].name, "FlatEarth"))
-
-#define GMT_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
+#define gmt_M_is_spherical(C) (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening < 1.0e-10)
+#define gmt_M_is_flatearth(C) (!strcmp (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].name, "FlatEarth"))
 
 /* Return 0 for Flat Earth, 1 for Great-circles, 2 for geodesics, and 3 for loxodromes */
-#define GMT_sph_mode(C) (GMT_IS_FLATEARTH (C) ? GMT_FLATEARTH : (GMT_IS_SPHERICAL (C) ? GMT_GREATCIRCLE : (C->current.map.loxodrome ? GMT_LOXODROME : GMT_GEODESIC)))
+#define gmt_M_sph_mode(C) (gmt_M_is_flatearth (C) ? GMT_FLATEARTH : (gmt_M_is_spherical (C) ? GMT_GREATCIRCLE : (C->current.map.loxodrome ? GMT_LOXODROME : GMT_GEODESIC)))
 
-#define GMT_360_RANGE(w,e) (doubleAlmostEqual (fabs((e) - (w)), 360.0))
-#define GMT_180_RANGE(s,n) (doubleAlmostEqual (fabs((n) - (s)), 180.0))
-#define GMT_IS_POLE(y) (doubleAlmostEqual (fabs(y), 90.0))
-#define GMT_IS_ZERO(x) (fabs (x) < GMT_CONV8_LIMIT)
+#define gmt_M_360_range(w,e) (doubleAlmostEqual (fabs((e) - (w)), 360.0))
+#define gmt_M_180_range(s,n) (doubleAlmostEqual (fabs((n) - (s)), 180.0))
+#define gmt_M_is_pole(y) (doubleAlmostEqual (fabs(y), 90.0))
+#define gmt_M_is_zero(x) (fabs (x) < GMT_CONV8_LIMIT)
 
 #ifndef D2R
 #define D2R (M_PI / 180.0)
@@ -424,7 +418,6 @@ enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis
 
 /* Some convenient macros for axis routines */
 
-#define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? true : false)	/* true for uneven units */
 
 /* The array side in GMT_PLOT_FRAME follows the order south, east, north, west (CCW loop) + z.
  * Ro avoid using confusing indices 0-4 we define very brief constants S_SIDE, E_SIDE, N_SIDE

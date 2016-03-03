@@ -63,32 +63,32 @@ GMT_LOCAL int agc_read_record (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT]) {
 	size_t nitems;
 	float garbage[PREHEADSIZE];
 
-	if (GMT_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < PREHEADSIZE)
+	if (gmt_M_fread (garbage, sizeof(float), PREHEADSIZE, fpi) < PREHEADSIZE)
 		return (GMT_GRDIO_READ_FAILED);
-	nitems = GMT_fread (z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
+	nitems = gmt_M_fread (z, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, fpi);
 
 	if (nitems != ZBLOCKWIDTH * ZBLOCKHEIGHT && !feof(fpi))
 		return (GMT_GRDIO_READ_FAILED);	/* Bad stuff */
-	if (GMT_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < POSTHEADSIZE)
+	if (gmt_M_fread (garbage, sizeof(float), POSTHEADSIZE, fpi) < POSTHEADSIZE)
 		return (GMT_GRDIO_READ_FAILED);
 	return (GMT_NOERROR);
 }
 
 GMT_LOCAL int agc_write_record (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec) {
 	/* Writes one block of data, including pre- and post-headers */
-	if (GMT_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE)
+	if (gmt_M_fwrite (prerec, sizeof(float), PREHEADSIZE, file) < PREHEADSIZE)
 		return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file) < ZBLOCKWIDTH * ZBLOCKHEIGHT)
+	if (gmt_M_fwrite (rec, sizeof(float), ZBLOCKWIDTH * ZBLOCKHEIGHT, file) < ZBLOCKWIDTH * ZBLOCKHEIGHT)
 		return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < POSTHEADSIZE)
+	if (gmt_M_fwrite (postrec, sizeof(float), POSTHEADSIZE, file) < POSTHEADSIZE)
 		return (GMT_GRDIO_WRITE_FAILED);
 	return (GMT_NOERROR);
 }
 
 GMT_LOCAL void agc_pack_header (float *prez, float *postz, struct GMT_GRID_HEADER *header) {
 	/* Places grd header info in the AGC header array */
-	GMT_memset (prez,  PREHEADSIZE,  float);
-	GMT_memset (postz, POSTHEADSIZE, float);
+	gmt_M_memset (prez,  PREHEADSIZE,  float);
+	gmt_M_memset (postz, POSTHEADSIZE, float);
 	prez[0] = (float)header->wesn[YLO];
 	prez[1] = (float)header->wesn[YHI];
 	prez[2] = (float)header->wesn[XLO];
@@ -131,7 +131,7 @@ int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
 	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);			/* Opening the file failed somehow */
-	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
+	if (gmt_M_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
 		return (GMT_GRDIO_READ_FAILED);
 
 	y_min = recdata[0];	y_max = recdata[1];
@@ -143,10 +143,10 @@ int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	y_inc = recdata[4];	x_inc = recdata[5];
 	if (x_inc <= 0.0 || y_inc <= 0.0)
 		return (GMT_GRDIO_BAD_VAL);
-	nx = (int)GMT_get_n (GMT, x_min, x_max, x_inc, 0);
+	nx = (int)gmt_M_get_n (GMT, x_min, x_max, x_inc, 0);
 	if (nx <= 0)
 		return (GMT_GRDIO_BAD_VAL);
-	ny = (int)GMT_get_n (GMT, y_min, y_max, y_inc, 0);
+	ny = (int)gmt_M_get_n (GMT, y_min, y_max, y_inc, 0);
 	if (ny <= 0)
 		return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
@@ -175,7 +175,7 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
+	if (gmt_M_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
 	header->registration = GMT_GRID_NODE_REG;	/* Hardwired since no info about this in the header */
 	header->wesn[XLO]  = recdata[2];
@@ -184,8 +184,8 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	header->wesn[YHI]  = recdata[1];
 	header->inc[GMT_Y] = recdata[4];
 	header->inc[GMT_X] = recdata[5];
-	header->nx = GMT_grd_get_nx (GMT, header);
-	header->ny = GMT_grd_get_ny (GMT, header);
+	header->nx = gmt_M_grd_get_nx (GMT, header);
+	header->ny = gmt_M_grd_get_ny (GMT, header);
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
@@ -214,7 +214,7 @@ int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	
 	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	if (GMT_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
+	if (gmt_M_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 
 	gmt_fclose (GMT, fp);
 
@@ -264,7 +264,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	/* Rows are read south to north */
 	
-	GMT_memset (z, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* Initialize buffer to zero */
+	gmt_M_memset (z, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* Initialize buffer to zero */
 
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
@@ -303,7 +303,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	gmt_free (GMT, k);
 
 	header->nx = width_in;	header->ny = height_in;
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
 	
@@ -350,7 +350,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	/* Find z_min/z_max */
 
@@ -377,7 +377,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	GMT_memset (outz, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* or agc_write_record (fp, outz, prez, postz); points to uninitialised buffer */
+	gmt_M_memset (outz, ZBLOCKWIDTH * ZBLOCKHEIGHT, float); /* or agc_write_record (fp, outz, prez, postz); points to uninitialised buffer */
 
 	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
 	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));

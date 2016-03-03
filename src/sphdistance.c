@@ -97,12 +97,12 @@ GMT_LOCAL void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 	/* Then loop over points to accumulate sums */
 
 	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
-		GMT_set_delta_lon (P->coord[GMT_X][row-1], P->coord[GMT_X][row], dlon);
+		gmt_M_set_delta_lon (P->coord[GMT_X][row-1], P->coord[GMT_X][row], dlon);
 		lon_sum += dlon;
 		lat_sum += P->coord[GMT_Y][row];
 	}
 	P->pole = 0;
-	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* Contains a pole */
+	if (gmt_M_360_range (lon_sum, 0.0)) {	/* Contains a pole */
 		if (lat_sum < 0.0) { /* S */
 			P->pole = -1;
 			P->lat_limit = P->min[GMT_Y];
@@ -196,7 +196,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 				Ctrl->C.active = true;
 				break;
 			case 'D':
-				if (GMT_compat_check (GMT, 4))
+				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; duplicates are automatically removed.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -250,16 +250,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, struct
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT->common.b.active[GMT_IN] && !Ctrl->N.active, "Syntax error: Binary input data (-bi) with -Q also requires -N.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->common.b.active[GMT_IN] && !Ctrl->N.active, "Syntax error: Binary input data (-bi) with -Q also requires -N.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_sphdistance (void *V_API, int mode, void *args) {
@@ -308,9 +308,9 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the sphdistance main code ----------------------------*/
 
-	GMT_memset (&T, 1, struct STRIPACK);
+	gmt_M_memset (&T, 1, struct STRIPACK);
 
-	gmt_init_distaz (GMT, Ctrl->L.unit, GMT_sph_mode (GMT), GMT_MAP_DIST);
+	gmt_init_distaz (GMT, Ctrl->L.unit, gmt_M_sph_mode (GMT), GMT_MAP_DIST);
 
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
@@ -350,8 +350,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			GMT_memcpy (lon, NTable->segment[0]->coord[GMT_X], NTable->n_records, double);
-			GMT_memcpy (lat, NTable->segment[0]->coord[GMT_Y], NTable->n_records, double);
+			gmt_M_memcpy (lon, NTable->segment[0]->coord[GMT_X], NTable->n_records, double);
+			gmt_M_memcpy (lat, NTable->segment[0]->coord[GMT_Y], NTable->n_records, double);
 			if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
 				Return (API->error);
 			}
@@ -393,13 +393,13 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_TABLE_HEADER (GMT)) 	/* Skip all table headers */
+				if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Parse segment headers */
+				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
 					first = true;
 					continue;
 				}
@@ -471,7 +471,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args) {
 	grid_lat = gmt_grd_coord (GMT, Grid->header, GMT_Y);
 
 	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->nx : Grid->header->nx - 1;
-	periodic = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+	periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 
 	if (Ctrl->Q.active)	/* Pre-chewed, just get number of nodes */
@@ -536,12 +536,12 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 		P->n_rows = gmt_fix_up_path (GMT, &P->coord[GMT_X], &P->coord[GMT_Y], P->n_rows, Ctrl->E.dist, GMT_STAIRS_OFF);
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
-		south_row = (int)GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
-		north_row = (int)GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
-		w_col  = (int)GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
+		north_row = (int)gmt_M_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
+		w_col  = (int)gmt_M_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
 		while (w_col < 0) w_col += nx1;
 		west_col = w_col;
-		e_col = (int)GMT_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
+		e_col = (int)gmt_M_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
 		while (e_col < w_col) e_col += nx1;
 		east_col = e_col;
 		/* So here, any polygon will have a positive (or 0) west_col with an east_col >= west_col */
@@ -561,7 +561,7 @@ w_col,west_col,e_col,east_col,s_row,row,p_col,col,side,ij) shared(API,GMT,Ctrl,T
 				side = gmt_inonout (GMT, grid_lon[col], grid_lat[row], P);
 				
 				if (side == 0) continue;	/* Outside spherical polygon */
-				ij = GMT_IJP (Grid->header, row, col);
+				ij = gmt_M_ijp (Grid->header, row, col);
 				if (Ctrl->E.mode == SPHD_DIST)
 					f_val = (float)gmt_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
 				Grid->data[ij] = f_val;

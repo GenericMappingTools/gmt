@@ -104,7 +104,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.S.v.v_angle = 30.0f;
 	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
-	if (GMT_compat_check (GMT, 4)) GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
+	if (gmt_M_compat_check (GMT, 4)) GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
 	C->D.scale = 1.0;
 	gmt_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	gmt_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -174,7 +174,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol;
 	struct GMT_OPTION *opt = NULL;
 
-	symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+	symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -188,12 +188,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 
 			case 'A':	/* Change size of arrow head */
 				got_A = true;
-				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
+				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -A<awidth>/<alength>/<hwidth>; use -A<vecpar> instead.\n");
 					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
-					Ctrl->A.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
-					Ctrl->A.S.v.h_width = (float)GMT_to_inch (GMT, txt_c);
+					Ctrl->A.S.v.pen.width = gmt_M_to_points (GMT, txt);
+					Ctrl->A.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
+					Ctrl->A.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 					Ctrl->A.S.v.v_angle = (float)atand (0.5 * Ctrl->A.S.v.h_width / Ctrl->A.S.v.h_length);
 					Ctrl->A.S.v.status |= GMT_VEC_OUTLINE2;
 				}
@@ -204,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 					else {	/* Size, plus possible attributes */
 						n = sscanf (opt->arg, "%[^+]%s", txt, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
-						Ctrl->A.S.size_x = GMT_to_inch (GMT, txt);	/* Length of vector */
+						Ctrl->A.S.size_x = gmt_M_to_inch (GMT, txt);	/* Length of vector */
 						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->A.S);
 					}
 				}
@@ -238,17 +238,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
  				if (opt->arg[0] == 'e' || opt->arg[0] == 'r') {
 					strncpy (txt, &opt->arg[1], GMT_LEN256);
 					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;
-					Ctrl->S.scale = GMT_to_inch (GMT, txt);
+					Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
 					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
 					/* confidence scaling */
 					Ctrl->S.conrad = sqrt (-2.0 * log (1.0 - Ctrl->S.confidence));
 					if (txt_b[0]) Ctrl->S.fontsize = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				}
-				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[1]);
+				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
 				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
 					strncpy(txt, &opt->arg[1], GMT_LEN256);
 					n=0; while (txt[n] && txt[n] != '/') n++; txt[n]=0;
-					Ctrl->S.scale = GMT_to_inch (GMT, txt);
+					Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
 					sscanf(strchr(&opt->arg[1],'/')+1, "%lf", &Ctrl->S.wedge_amp);
 				}
 				switch (opt->arg[0]) {
@@ -293,17 +293,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_
 	no_size_needed = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE || Ctrl->S.readmode == READ_ANISOTROPY || Ctrl->S.readmode == READ_CROSS || Ctrl->S.readmode == READ_WEDGE );
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, n_set > 1, "Syntax error: Only one -S setting is allowed.\n");
-	n_errors += GMT_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error: Must specify symbol size.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error: -D requres -Se|w.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, n_set > 1, "Syntax error: Only one -S setting is allowed.\n");
+	n_errors += gmt_M_check_condition (GMT, !no_size_needed && (Ctrl->S.symbol > 1 && Ctrl->S.scale <= 0.0), "Syntax error: Must specify symbol size.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && ! (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_WEDGE), "Syntax error: -D requres -Se|w.\n");
 
 	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
-	if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2 && Ctrl->W.active) GMT_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
+	if (Ctrl->A.S.v.status & GMT_VEC_OUTLINE2 && Ctrl->W.active) gmt_M_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psvelo (void *V_API, int mode, void *args) {
@@ -347,8 +347,8 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
-	GMT_memset (col, GMT_LEN64*12, char);
-	GMT_memset (dim, PSL_MAX_DIMS, double);
+	gmt_M_memset (col, GMT_LEN64*12, char);
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 	if (Ctrl->E.active) Ctrl->L.active = true;
@@ -374,11 +374,11 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 

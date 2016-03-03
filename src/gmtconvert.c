@@ -240,7 +240,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			case 'F':
 				Ctrl->F.active = true;
 				if (opt->arg[0] == '\0') {	/* No arguments, must be old GMT4 option -F */
-					if (GMT_compat_check (GMT, 4)) {
+					if (gmt_M_compat_check (GMT, 4)) {
 						GMT_Report (API, GMT_MSG_COMPAT,
 						            "Warning: Option -F for output columns is deprecated; use -o instead\n");
 						gmt_parse_o_option (GMT, opt->arg);
@@ -322,23 +322,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct 
 			Ctrl->D.mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0,
 	                                 "Syntax error: Must specify number of columns in binary input data (-bi)\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active),
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && (Ctrl->L.active || Ctrl->S.active),
 	                                 "Syntax error: -L or -S requires ASCII input data\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.min > Ctrl->C.max),
 	                                 "Syntax error: -C minimum records cannot exceed maximum records\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.name && !strstr (Ctrl->D.name, "%"),
 	                                 "Syntax error: -D Output template must contain %%d\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->S.active,
 	                                 "Syntax error: Only one of -Q and -S can be used simultaneously\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtconvert (void *V_API, int mode, void *args) {

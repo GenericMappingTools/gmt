@@ -146,7 +146,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'C':	/* Coordinates relative to origin */
 				Ctrl->C.active = true;
 				if (opt->arg[0]) 	/* Also gave shifts */
-					n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
+					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
 						 "Syntax error: Expected -C[<false_easting>/<false_northing>]\n");
 				break;
 			case 'D':	/* Grid spacings */
@@ -159,11 +159,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'E':	/* Set dpi of grid */
 				Ctrl->E.active = true;
 				sval = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -E option: Must specify positive dpi\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -E option: Must specify positive dpi\n");
 				Ctrl->E.dpi = sval;
 				break;
 			case 'A':	/* Old Force specific unit option */
-				if (GMT_compat_check (GMT, 5))	/* Honor old -A[<unit>] option */
+				if (gmt_M_compat_check (GMT, 5))	/* Honor old -A[<unit>] option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -F instead.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -186,11 +186,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 			case 'M':	/* Directly specify units */
 				Ctrl->M.active = true;
 				Ctrl->M.unit = opt->arg[0];
-				n_errors += GMT_check_condition (GMT, !Ctrl->M.unit,
+				n_errors += gmt_M_check_condition (GMT, !Ctrl->M.unit,
 							"Syntax error -M option: projected measure unit must be one of 'c', i', or 'p'\n");
 				break;
 			case 'N':	/* GMT4 Backwards compatible.  nx/ny can now be set with -D */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
 					Ctrl->D.active = true;
 					sscanf (opt->arg, "%d/%d", &ii, &jj);
@@ -212,18 +212,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct 
 
 	gmt_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.registration, &Ctrl->D.active);
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -F and -M\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0),
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->M.active + Ctrl->F.active) == 2, "Syntax error: Can specify only one of -F and -M\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0),
 	                                 "Syntax error -D option: Must specify positive increment(s)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdproject (void *V_API, int mode, void *args) {
@@ -270,14 +270,14 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 	gmt_init_scales (GMT, unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, unit_name);
 
 	if (GMT->common.R.active)	/* Load the w/e/s/n from -R */
-		GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
+		gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 	else {	/* If -R was not given we infer the option via the input grid */
 		char opt_R[GMT_BUFSIZ];
 		struct GMT_GRID *G = NULL;
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		GMT_memcpy (wesn, G->header->wesn, 4, double);
+		gmt_M_memcpy (wesn, G->header->wesn, 4, double);
 		if (!Ctrl->I.active) {
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
@@ -315,7 +315,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			}
 			gmt_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
-			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
 			if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
@@ -338,10 +338,10 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			gmt_xy_to_geo (GMT, &ww, &ss, wesn[XLO], wesn[YLO]);		/* SW corner */
 			gmt_xy_to_geo (GMT, &ee, &nn, wesn[XHI], wesn[YHI]);		/* NE corner */
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", ww, ss, ee, nn);
-			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
+			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = false;
 			gmt_parse_common_options (GMT, "R", 'R', opt_R);
-			GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
+			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
 		}
 		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
@@ -398,7 +398,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 
 		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL) Return (API->error);	/* Just to get a header we can change */
 
-		if (GMT_IS_AZIMUTHAL(GMT) && GMT->current.proj.polar) {	/* Watch out for polar cap grids */
+		if (gmt_M_is_azimuthal(GMT) && GMT->current.proj.polar) {	/* Watch out for polar cap grids */
 			if (doubleAlmostEqual (GMT->current.proj.pole, -90.0)) {	/* Covers S pole; implies 360 longitude range */
 				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YHI] = MAX(wesn[YLO], wesn[YHI]);	wesn[YLO] = -90.0;
 			}
@@ -406,7 +406,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = MIN(wesn[YLO], wesn[YHI]);	wesn[YHI] = +90.0;
 			}
 		}
-		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
+		gmt_M_memcpy (Geo->header->wesn, wesn, 4, double);
 
 		offset = Rect->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
@@ -420,7 +420,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Geo->header, options, true);
 		gmt_BC_init (GMT, Geo->header);
 
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
 			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_Message (API, GMT_TIME_NONE, " <-- ");
@@ -475,7 +475,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 		}
 
 		if ((Rect = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Geo)) == NULL) Return (API->error);	/* Just to get a header we can change */
-		GMT_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
+		gmt_M_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->F.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */
 				Ctrl->D.inc[GMT_X] *= inv_scale;
@@ -493,7 +493,7 @@ int GMT_grdproject (void *V_API, int mode, void *args) {
 			use_ny = Geo->header->ny;
 		}
 
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
 			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
 			GMT_Message (API, GMT_TIME_NONE, " --> ");

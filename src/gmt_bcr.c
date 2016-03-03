@@ -156,7 +156,7 @@ GMT_LOCAL uint64_t bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, do
 	*/
 
 	/* Save the location of the upper left corner point of the convolution kernel */
-	ij = GMT_IJP (h, row, col);
+	ij = gmt_M_ijp (h, row, col);
 
 	/* Build weights */
 
@@ -329,7 +329,7 @@ int gmt_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, doubl
 
 	ij = bcr_prep (G->header, xx, yy, wx, wy);
 
-	GMT_memset (retval, 4, double);
+	gmt_M_memset (retval, 4, double);
 	wsum = 0.0;
 	for (j = 0; j < G->header->bcr_n; j++) {
 		for (i = 0; i < G->header->bcr_n; i++) {
@@ -346,6 +346,6 @@ int gmt_bcr_get_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, doubl
 		}
 	}
 	else
-		for (b = 0; b < nb; b++) z[b] = GMT_u255 (GMT->current.setting.color_patch[GMT_NAN][b]);
+		for (b = 0; b < nb; b++) z[b] = gmt_M_u255 (GMT->current.setting.color_patch[GMT_NAN][b]);
 	return (0);
 }

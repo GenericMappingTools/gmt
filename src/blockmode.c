@@ -171,9 +171,9 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->E.active, "Syntax error -D option: Cannot be combined with -E\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->E.active, "Syntax error -D option: Cannot be combined with -E\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -231,9 +231,9 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 	unsigned int n_modes = 0;
 	int bin, mode_bin = 0;
 	bool done;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
-	GMT_memset (B->count, B->n_bins, double);	/* Reset the counts */
+	gmt_M_memset (B->count, B->n_bins, double);	/* Reset the counts */
 	for (i = 0; i < n; i++) {	/* Loop over sorted data points */
 		bin = urint (floor ((d[i].a[k] * B->i_width) + B->i_offset)) - B->min;
 		B->count[bin] += d[i].a[BLK_W];		/* Add up counts or weights */
@@ -389,7 +389,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); Free_blockmode_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmode (void *V_API, int mode, void *args) {
@@ -444,11 +444,11 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 
-	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	mode_xy = !Ctrl->C.active;
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
@@ -496,11 +496,11 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -511,7 +511,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 		n_read++;						/* Number of records read */
 
-		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
+		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 		/* We appear to be inside: Get row and col indices of this block */
@@ -529,7 +529,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			if (!doubleAlmostEqual (d_intval, in[GMT_Z])) is_integer = false;
 		}
 
-		node = GMT_IJP (Grid->header, row, col);		/* Bin node */
+		node = gmt_M_ijp (Grid->header, row, col);		/* Bin node */
 
 		if (n_pitched == n_alloc) data = gmt_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].ij = node;
@@ -600,10 +600,10 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 			nz = 1;
 		}
 		if (Ctrl->C.active) {	/* Use block center */
-			row = (unsigned int)GMT_row (Grid->header, data[first_in_cell].ij);
-			col = (unsigned int)GMT_col (Grid->header, data[first_in_cell].ij);
-			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
-			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
+			row = (unsigned int)gmt_M_row (Grid->header, data[first_in_cell].ij);
+			col = (unsigned int)gmt_M_col (Grid->header, data[first_in_cell].ij);
+			out[GMT_X] = gmt_M_grd_col_to_x (GMT, col, Grid->header);
+			out[GMT_Y] = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 		}
 		else {
 			out[GMT_X] = data[first_in_cell].a[GMT_X];

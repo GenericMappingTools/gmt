@@ -134,7 +134,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;		/* Default is that points on a boundary are inside */
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;	/* Default is to pass if we are inside */
-	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);		/* Default for "wet" areas = false (outside) */
+	gmt_M_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);		/* Default for "wet" areas = false (outside) */
 	C->N.mask[1] = C->N.mask[3] = true;				/* Default for "dry" areas = true (inside) */
 	C->Z.max_col = 1;						/* Minimum number of columns to expect is 1 unless "x,y" data are implied [2] */
 	
@@ -304,7 +304,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 			case 'C':	/* Near a point test */
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'f') {
-					if (GMT_compat_check (GMT, 4)) {	/* Allow old-style quick-mode specification */
+					if (gmt_M_compat_check (GMT, 4)) {	/* Allow old-style quick-mode specification */
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
 						opt->arg[0] = '-';
 						fix = true;
@@ -393,7 +393,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 			case 'N':	/* Inside/outside GSHHS land */
 				Ctrl->N.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
-				if (buffer[strlen(buffer)-1] == 'o' && GMT_compat_check (GMT, 4)) { /* Edge is considered outside */
+				if (buffer[strlen(buffer)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
@@ -441,7 +441,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
 						gmt_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
 				}
-				n_errors += GMT_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
+				n_errors += gmt_M_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
 				if (col > Ctrl->Z.max_col) Ctrl->Z.max_col = col;
 				Ctrl->Z.n_tests++;
@@ -460,25 +460,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct G
 	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active)) Ctrl->Z.max_col = 2;
 	if (Ctrl->Z.n_tests) Ctrl->Z.limit = gmt_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C: Distance is negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK), "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L: Unrecognized distance unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == -3, "Syntax error -C: Distance is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && gmt_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && gmt_access (GMT, Ctrl->F.file, R_OK), "Syntax error -F: Cannot read file %s!\n", Ctrl->F.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_access (GMT, Ctrl->L.file, R_OK), "Syntax error -L: Cannot read file %s!\n", Ctrl->L.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -1, "Syntax error -L: Unrecognized distance unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->Z.max_col);
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5], "Syntax error: -Iz can only be used with one -Z range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5], "Syntax error: -Iz can only be used with one -Z range\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtselect (void *V_API, int mode, void *args) {
@@ -526,7 +526,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
+	if (Ctrl->C.active && !gmt_M_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
 
 	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
@@ -546,7 +546,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		else
 			do_project = true;	/* Only true when the USER selected -J, not when we supply a dummy -Jx1d */
 		Ctrl->dbg.step = 0.01;
-		if (GMT_is_geographic (GMT, GMT_IN)) {
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {
 			while (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {	/* Make all-negative longitude range positive instead */
 				GMT->common.R.wesn[XLO] += 360.0;
 				GMT->common.R.wesn[XHI] += 360.0;
@@ -577,7 +577,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	}
 
 	/* Initiate pointer to distance calculation function */
-	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)
 			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		else if (Ctrl->L.active)
@@ -714,15 +714,15 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+			if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				continue;
 			}
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
-			else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {
+			else if (gmt_M_rec_is_segment_header (GMT)) {
 				output_header = true;
 				need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 				continue;
@@ -788,7 +788,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				gmt_set_cartesian (GMT, GMT_IN);
 			inside = 0;
 			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
-				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+				if (gmt_M_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
 				inside = (gmt_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
 			if (do_project)	/* Reset input type for gmt_inonout to do Cartesian mode */

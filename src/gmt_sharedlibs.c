@@ -108,7 +108,7 @@ void *dlopen_special(const char *name) {
 void *dlopen_special(const char *name) {
 	/* Opens the shared library file of the current process under *nix.
 	 * Just call dlopen with NULL and RTLD_LAZY */
-	GMT_UNUSED(name);
+	gmt_M_unused(name);
 	return (dlopen (NULL, RTLD_LAZY));
 }
 #endif

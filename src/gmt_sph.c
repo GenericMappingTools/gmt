@@ -193,7 +193,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 
 	/* Create the triangulation. Main output is (P.I->(list, lptr, lend) */
 
-	GMT_memset (&P, 1, struct STRIPACK);
+	gmt_M_memset (&P, 1, struct STRIPACK);
 	P.mode = INTERPOLATE;
 	gmt_stripack_lists (GMT, n, x, y, z, &P);
 	
@@ -201,8 +201,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 	
 	plon = gmt_memory (GMT, NULL, h->nx, double);
 	plat = gmt_memory (GMT, NULL, h->ny, double);
-	for (col = 0; col < h->nx; col++) plon[col] = D2R * GMT_grd_col_to_x (GMT, col, h);
-	for (row = 0; row < h->ny; row++) plat[row] = D2R * GMT_grd_row_to_y (GMT, row, h);
+	for (col = 0; col < h->nx; col++) plon[col] = D2R * gmt_M_grd_col_to_x (GMT, col, h);
+	for (row = 0; row < h->ny; row++) plat[row] = D2R * gmt_M_grd_row_to_y (GMT, row, h);
 	nm = h->nx * h->ny;
 	
 	/* Time to work on the interpolation */
@@ -265,7 +265,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		int64_t maxit, nitg;
 		double dgmax;
 		/* initialize gradients grad to zeros. */
-		GMT_memset (grad, 3*n, double);
+		gmt_M_memset (grad, 3*n, double);
 		itgs  = (par[0] == 0.0) ? 3    : lrint (par[0]);
 		maxit = (par[1] == 0.0) ? 10   : lrint (par[1]);
 		dgmax = (par[2] == 0.0) ? 0.01 : par[2];

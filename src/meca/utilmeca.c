@@ -410,7 +410,7 @@ double computed_strike1 (struct nodal_plane NP1)
 
 	double str2, temp, cp2, sp2, ss, cs, sr, cr;
 	double cd1 = cosd (NP1.dip);
-	double am = (GMT_IS_ZERO (NP1.rake) ? 1. : NP1.rake /fabs (NP1.rake));
+	double am = (gmt_M_is_zero (NP1.rake) ? 1. : NP1.rake /fabs (NP1.rake));
 
 	sincosd (NP1.rake, &sr, &cr);
 	sincosd (NP1.str, &ss, &cs);
@@ -446,7 +446,7 @@ double computed_dip1 (struct nodal_plane NP1)
 	   Genevieve Patau
 	*/
 
-	double am = (GMT_IS_ZERO (NP1.rake) ? 1.0 : NP1.rake / fabs (NP1.rake));
+	double am = (gmt_M_is_zero (NP1.rake) ? 1.0 : NP1.rake / fabs (NP1.rake));
 	double dip2;
 
 	dip2 = acosd (am * sind (NP1.rake) * sind (NP1.dip));
@@ -469,7 +469,7 @@ double computed_rake1 (struct nodal_plane NP1)
 	double rake2, sinrake2;
 	double str2 = computed_strike1(NP1);
 	double dip2 = computed_dip1(NP1);
-	double am = (GMT_IS_ZERO (NP1.rake) ? 1.0 : NP1.rake / fabs (NP1.rake));
+	double am = (gmt_M_is_zero (NP1.rake) ? 1.0 : NP1.rake / fabs (NP1.rake));
 	double sd, cd, ss, cs;
 	sincosd (NP1.dip, &sd, &cd);
 	sincosd (NP1.str - str2, &ss, &cs);
@@ -611,7 +611,7 @@ double ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double 
 	double radius_size, si, co, ssize[1];
 
 	struct GMT_FILL *F1 = NULL, *F2 = NULL;
-	GMT_UNUSED(outline);
+	gmt_M_unused(outline);
 
 	a[0] = T.str; a[1] = N.str; a[2] = P.str;
 	p[0] = T.dip; p[1] = N.dip; p[2] = P.dip;
@@ -1244,9 +1244,9 @@ int trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, do
 
 	/* local */
 	double dx, dy, x1, x2, y1, y2, hl, hw, vw, s, c, dim[PSL_MAX_DIMS];
-	GMT_UNUSED(outline);
+	gmt_M_unused(outline);
 
-	GMT_memset (dim, PSL_MAX_DIMS, double);
+	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_setpen (GMT, &pen);			/* Pen for segment line */
 	PSL_setfill (GMT->PSL, pen.rgb, 0);	/* Same color for arrow head fill with no outline */
 	sincosd (theta, &s, &c);
@@ -1485,7 +1485,7 @@ void paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, doubl
 	double dxe[NPOINTS], dye[NPOINTS];
 	/* absolute paper coordinates */
 	double axe[NPOINTS], aye[NPOINTS];
-	GMT_UNUSED(outline);
+	gmt_M_unused(outline);
 
 	/* draw wedge */
 

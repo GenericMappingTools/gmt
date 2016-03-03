@@ -152,7 +152,7 @@ EXTERN_MSC void api_list_objects (struct GMTAPI_CTRL *ptr, char *txt);
 
 /* Macro to test if filename is a special name indicating memory location */
 
-#define GMT_File_Is_Memory(file) (file && !strncmp (file, "@GMTAPI@-", 9U))
+#define gmt_M_file_is_memory(file) (file && !strncmp (file, "@GMTAPI@-", 9U))
 
 #ifdef __cplusplus
 }

@@ -123,7 +123,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 	struct GMTAPI_CTRL *API = GMT->parent;
 	EXTERN_MSC unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg);
 
-	GMT_memset (io, 1, struct GMT_Z_IO);
+	gmt_M_memset (io, 1, struct GMT_Z_IO);
 	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -141,7 +141,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
 				break;
 			case 'E':	/* Old ESRI option */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					Ctrl->E.active = true;
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdconvert instead.\n");
 					if (opt->arg[0] == 'f') Ctrl->E.floating = true;
@@ -151,9 +151,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
-					GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
+					gmt_M_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 					GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
 					GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
 					GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
@@ -164,7 +164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Nan-value */
-				if (GMT_compat_check (GMT, 4)) {	/* Honor old -N[i]<value> option */
+				if (gmt_M_compat_check (GMT, 4)) {	/* Honor old -N[i]<value> option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N is deprecated; use GMT common option -d[i|o]<nodata> instead.\n");
 					if (opt->arg[0]) {
 						if (opt->arg[0] == 'i')	/* Simulate -di<nodata> */
@@ -200,14 +200,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT
 
 	if (Ctrl->Z.active) gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
-	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grd2xyz (void *V_API, int mode, void *args) {
@@ -215,7 +215,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	unsigned int row, col, n_output;
 	int error = 0, write_error = 0;
 	
-	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
+	uint64_t ij, ij_gmt, n_total = 0, n_suppressed = 0;
 
 	char header[GMT_BUFSIZ];
 
@@ -249,14 +249,14 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 	
-	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if (GMT->common.b.active[GMT_OUT]) {
 		if (Ctrl->Z.active && !io.binary) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Z overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
-		if (Ctrl->E.active && GMT_compat_check (GMT, 4)) {
+		if (Ctrl->E.active && gmt_M_compat_check (GMT, 4)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
@@ -285,7 +285,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", G->header->name);
 
-		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
+		if (gmt_M_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, G) == NULL) {
@@ -306,8 +306,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
 				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {
-				gmt_ij = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
-				d_value = G->data[gmt_ij];
+				ij_gmt = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
+				d_value = G->data[ij_gmt];
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
 				if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (d_value))	/* Grid node is NaN and -d was set, so change to nan-proxy */
 					d_value = GMT->common.d.nan_proxy[GMT_OUT];
@@ -325,7 +325,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			char *record = NULL, item[GMT_BUFSIZ];
 			size_t n_alloc, len, rec_len;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
-			if (!GMT_IS_ZERO (slop)) {
+			if (!gmt_M_is_zero (slop)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
 				Return (EXIT_FAILURE);
 			}
@@ -360,9 +360,9 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
 			sprintf (record, "nodata_value %ld", lrint (Ctrl->E.nodata));
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
-			GMT_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
+			gmt_M_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
 				rec_len = 0;
-				GMT_col_loop (GMT, G, row, col, ij) {
+				gmt_M_col_loop (GMT, G, row, col, ij) {
 					if (GMT_is_fnan (G->data[ij]))
 						sprintf (item, "%ld", lrint (Ctrl->E.nodata));
 					else if (Ctrl->E.floating)
@@ -393,8 +393,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			y = gmt_grd_coord (GMT, G->header, GMT_Y);
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
-					GMT_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;
-					GMT_col_loop2 (GMT, G, col) x[col] = col + Ctrl->C.mode;
+					gmt_M_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;
+					gmt_M_col_loop2 (GMT, G, col) x[col] = col + Ctrl->C.mode;
 				}
 				else
 					GMT->current.io.io_nan_col[0] = GMT_Y;	/* Since that is where z will go now */
@@ -421,9 +421,9 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				first = false;
 			}
 
-			GMT_grd_loop (GMT, G, row, col, ij) {
+			gmt_M_grd_loop (GMT, G, row, col, ij) {
 				if (Ctrl->C.mode == 2) {	/* Write index, z */
-					out[GMT_X] = (double)GMT_IJ0 (G->header, row, col);
+					out[GMT_X] = (double)gmt_M_ij0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Y] = GMT->common.d.nan_proxy[GMT_OUT];

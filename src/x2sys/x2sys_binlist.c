@@ -127,8 +127,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, stru
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->D.active, "Syntax error: -E requires -D\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->D.active, "Syntax error: -E requires -D\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -163,7 +163,7 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 	return (0);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
@@ -296,10 +296,10 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		
 		/* Reset bin flags */
 
-		GMT_memset (B.binflag, B.nm_bin, unsigned int);
+		gmt_M_memset (B.binflag, B.nm_bin, unsigned int);
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
-			GMT_memset (dist_bin, B.nm_bin, double);
+			gmt_M_memset (dist_bin, B.nm_bin, double);
 			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
@@ -383,7 +383,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 				for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
 					x = B.wesn[XLO] + bcol * B.inc[GMT_X];
 					if (s->geographic && x >= 360.0) x -= 360.0;
-					GMT_set_delta_lon (data[s->x_col][row-1], x, del_x);
+					gmt_M_set_delta_lon (data[s->x_col][row-1], x, del_x);
 					del_y = (dx == 0.0) ? 0.5 * (data[s->y_col][row] - data[s->y_col][row-1]) : del_x * (data[s->y_col][row] - data[s->y_col][row-1]) / dx;
 					y = data[s->y_col][row-1] + del_y;
 					if (s->geographic && fabs (y) > y_max) {

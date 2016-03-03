@@ -193,7 +193,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 				}
 				switch (opt->arg[0]) {	/* Output format */
 					case 'f':
-						if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+						if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 							GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
 						else {
 							GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
@@ -243,14 +243,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struc
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, (Ctrl->S.active + Ctrl->N.active + Ctrl->W.active) > 1, "Syntax error: Specify only one of -N, -S, and -W!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error: -E requires stage rotations on output\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->S.active + Ctrl->N.active + Ctrl->W.active) > 1, "Syntax error: Specify only one of -N, -S, and -W!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->F.mode, "Syntax error: -E requires stage rotations on output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->F.mode, "Syntax error: -G requires total reconstruction rotations on output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_rotconverter (void *V_API, int mode, void *args) {
@@ -328,7 +328,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the rotconverter main code ----------------------------*/
 
-	GMT_memset (out, 20, double);
+	gmt_M_memset (out, 20, double);
 	if (Ctrl->G.active) {
 		GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT_IS_FLOAT;
 		GMT->current.io.col_type[GMT_OUT][2] = GMT_IS_LAT;

@@ -93,7 +93,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is now the default behavior.\n");
 				}
 				else
@@ -106,13 +106,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files, "Syntax error: No input files are expected\n");
+	n_errors += gmt_M_check_condition (GMT, n_files, "Syntax error: No input files are expected\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtdefaults (void *V_API, int mode, void *args) {

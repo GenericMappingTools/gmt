@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 				}
 				break;
 			case 'm':
-				if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+				if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -217,19 +217,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	n_errors += gmt_check_binary_io (GMT, 2);
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchck triangulation algorithm\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->Q.active, "Syntax error -G option: Cannot be used with -Q\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.active, "Syntax error -N option: Only required with -G\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && !GMT->common.R.active, "Syntax error -Q option: Requires -R\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON, "Syntax error -Q option: Requires Shewchck triangulation algorithm\n");
 	if (!(Ctrl->M.active || Ctrl->Q.active || Ctrl->S.active || Ctrl->N.active)) Ctrl->N.active = !Ctrl->G.active;	/* The default action */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_triangulate (void *V_API, int mode, void *args) {
@@ -317,13 +317,13 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 	n = 0;
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) {		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
 				gmt_free (GMT, xx);		gmt_free (GMT, yy);		gmt_free (GMT, zz);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -426,10 +426,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			   in the -R region (Grid->header->wesn[XLO]/x_max etc.)  Always, col_min <= col_max, row_min <= row_max.
 			 */
 
-			xp = MIN (MIN (vx[0], vx[1]), vx[2]);	col_min = (int)GMT_grd_x_to_col (GMT, xp, Grid->header);
-			xp = MAX (MAX (vx[0], vx[1]), vx[2]);	col_max = (int)GMT_grd_x_to_col (GMT, xp, Grid->header);
-			yp = MAX (MAX (vy[0], vy[1]), vy[2]);	row_min = (int)GMT_grd_y_to_row (GMT, yp, Grid->header);
-			yp = MIN (MIN (vy[0], vy[1]), vy[2]);	row_max = (int)GMT_grd_y_to_row (GMT, yp, Grid->header);
+			xp = MIN (MIN (vx[0], vx[1]), vx[2]);	col_min = (int)gmt_M_grd_x_to_col (GMT, xp, Grid->header);
+			xp = MAX (MAX (vx[0], vx[1]), vx[2]);	col_max = (int)gmt_M_grd_x_to_col (GMT, xp, Grid->header);
+			yp = MAX (MAX (vy[0], vy[1]), vy[2]);	row_min = (int)gmt_M_grd_y_to_row (GMT, yp, Grid->header);
+			yp = MIN (MIN (vy[0], vy[1]), vy[2]);	row_max = (int)gmt_M_grd_y_to_row (GMT, yp, Grid->header);
 
 			/* Adjustments for triangles outside -R region. */
 			/* Triangle to the left or right. */
@@ -443,10 +443,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 			if (row_min < 0) row_min = 0;       if (row_max >= ny) row_max = Grid->header->ny - 1;
 
 			for (row = row_min; row <= row_max; row++) {
-				yp = GMT_grd_row_to_y (GMT, row, Grid->header);
-				p = GMT_IJP (Grid->header, row, col_min);
+				yp = gmt_M_grd_row_to_y (GMT, row, Grid->header);
+				p = gmt_M_ijp (Grid->header, row, col_min);
 				for (col = col_min; col <= col_max; col++, p++) {
-					xp = GMT_grd_col_to_x (GMT, col, Grid->header);
+					xp = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 
 					if (!gmt_non_zero_winding (GMT, xp, yp, vx, vy, 4)) continue;	/* Outside */
 

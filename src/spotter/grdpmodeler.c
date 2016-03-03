@@ -233,26 +233,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 	}
 
 	if (!Ctrl->In.file) {	/* Must have -R -I [-r] */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !Ctrl->I.active, "Syntax error: Must specify input file or -R -I [-r]\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active && !Ctrl->I.active, "Syntax error: Must specify input file or -R -I [-r]\n");
 	}
 	else {	/* Must not have -I -r */
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active || GMT->common.r.active, "Syntax error: Cannot specify input file AND -R -r\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active || GMT->common.r.active, "Syntax error: Cannot specify input file AND -R -r\n");
 	}
 	if (Ctrl->G.active) {	/* Specified output grid(s) */
-		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.n_items > 1 && !strstr (Ctrl->G.file, "%s"), "Syntax error -G: File name must be a template containing \"%s\"\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items > 1 && !strstr (Ctrl->G.file, "%s"), "Syntax error -G: File name must be a template containing \"%s\"\n");
 	}
 	else
-		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file when no output grids are created\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must specify -E\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.n_items == 0, "Syntax error: Must specify one or more fields with -S\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.value < 0.0, "Syntax error -T: Must specify positive age.\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file when no output grids are created\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error: Must specify -E\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.n_items == 0, "Syntax error: Must specify one or more fields with -S\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.value < 0.0, "Syntax error -T: Must specify positive age.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {gmt_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdpmodeler (void *V_API, int mode, void *args) {
@@ -303,17 +303,17 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
+		gmt_M_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G_age) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		GMT_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
+		gmt_M_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
 		registration = G_age->header->registration;
-		GMT_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);
+		gmt_M_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);
 		GMT->common.R.active = true;
 	}
 	else {	/* Use the input options of -R -I [and -r] */
-		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
+		gmt_M_memcpy (inc, Ctrl->I.inc, 2, double);
 		registration = GMT->common.r.registration;
 	}
 
@@ -405,10 +405,10 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	grd_yc = gmt_memory (GMT, NULL, G->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
 	for (row = 0; row < G->header->ny; row++) {
-		grd_y[row]  = GMT_grd_row_to_y (GMT, row, G->header);
+		grd_y[row]  = gmt_M_grd_row_to_y (GMT, row, G->header);
 		grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 	}
-	for (col = 0; col < G->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G->header);
+	for (col = 0; col < G->header->nx; col++) grd_x[col] = gmt_M_grd_col_to_x (GMT, col, G->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 
@@ -416,11 +416,11 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	gmt_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
 	if (Ctrl->S.center) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
-	GMT_grd_loop (GMT, G, row, col, node) {
+	gmt_M_grd_loop (GMT, G, row, col, node) {
 		skip = false;
 		if (Ctrl->F.active) {	/* Use the bounding polygon */
 			for (seg = inside = 0; seg < pol->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
-				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+				if (gmt_M_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
 				inside = (gmt_inonout (GMT, grd_x[col], grd_y[row], pol->segment[seg]) > 0);
 			}
 			if (!inside) skip = true, n_outside++;	/* Outside the polygon(s); set all output grids to NaN for this node */

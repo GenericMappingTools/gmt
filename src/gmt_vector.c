@@ -463,7 +463,7 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 		while (row_in < n_in && dist_in[row_in] < dist_out) row_in++;	/* Wind so row points to the next input point with a distance >= dist_out */
 		gap = dist_in[row_in] - dist_out;	/* Distance to next input datapoint */
 		new_pair = (row_in > last_row_in);
-		if (GMT_IS_ZERO (gap)) {	/* Use the input point as is */
+		if (gmt_M_is_zero (gap)) {	/* Use the input point as is */
 			lon_out[row_out] = lon_in[row_in];	lat_out[row_out] = lat_in[row_in];
 		}
 		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
@@ -475,7 +475,7 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
 			if (GMT->current.map.loxodrome) {	/* Linear resampling along Mercator straight line */
-				if (new_pair) GMT_set_delta_lon (lon_in[row_in-1], lon_in[row_in], d_lon);
+				if (new_pair) gmt_M_set_delta_lon (lon_in[row_in-1], lon_in[row_in], d_lon);
 				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (GMT, tand (45.0 + 0.5 * ya));
 				b[0] = D2R * (lon_in[row_in-1] + d_lon);	b[1] = d_log (GMT, tand (45.0 + 0.5 * yb));
 				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
@@ -492,7 +492,7 @@ GMT_LOCAL uint64_t vector_resample_path_spherical (struct GMT_CTRL *GMT, double 
 					gmt_normalize3v (GMT, P);		/* Make sure P has unit length */
 					gmtlib_init_rot_matrix (Rot0, P);	/* Get partial rotation matrix since no actual angle is applied yet */
 				}
-				GMT_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
+				gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 				angle_rad = total_angle_rad * frac_to_b;		/* Angle we need to rotate from a to c */
 				gmtlib_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
 				//gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
@@ -564,7 +564,7 @@ GMT_LOCAL uint64_t vector_resample_path_cartesian (struct GMT_CTRL *GMT, double 
 		while (row_in < n_in && dist_in[row_in] < dist_out) row_in++;	/* Wind so row points to the next input point with a distance >= dist_out */
 		gap = dist_in[row_in] - dist_out;	/* Distance to next input datapoint */
 		new_pair = (row_in > last_row_in);
-		if (GMT_IS_ZERO (gap)) {	/* Use the input point as is */
+		if (gmt_M_is_zero (gap)) {	/* Use the input point as is */
 			x_out[row_out] = x_in[row_in];	y_out[row_out] = y_in[row_in];
 		}
 		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
@@ -684,8 +684,8 @@ int gmt_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m,
 	/* Begin by initializing v, b, d, and z.  v = identity matrix,
 		b = d = diag(a), and z = 0:  */
 
-	GMT_memset (v, m*n, double);
-	GMT_memset (z, n, double);
+	gmt_M_memset (v, m*n, double);
+	gmt_M_memset (z, n, double);
 
 	mp1 = m + 1;
 
@@ -996,8 +996,8 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	int n = m_in, lda = m_in, info, lwork;
 	double wkopt, *work = NULL;
 	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
-	GMT_UNUSED(n_in);	/* Since we are actually only doing square matrices... */
-	GMT_UNUSED(v);
+	gmt_M_unused(n_in);	/* Since we are actually only doing square matrices... */
+	gmt_M_unused(v);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_svdcmp: Using Lapack dsyev\n");
 	/* Query and allocate the optimal workspace */
         lwork = -1;
@@ -1036,10 +1036,10 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	double w_abs, sing_max, total_variance, variance = 0.0, limit;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = gmt_memory (GMT, NULL, n, double);
-	GMT_UNUSED(m);	/* Since we are actually only doing square matrices... */
-	GMT_UNUSED(k);	/* Since we are actually only doing one rhs row here */
+	gmt_M_unused(m);	/* Since we are actually only doing square matrices... */
+	gmt_M_unused(k);	/* Since we are actually only doing one rhs row here */
 #ifdef HAVE_LAPACK
-	GMT_UNUSED(v);	/* Not used when we solve via Lapack */
+	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_solve_svd: Evaluate solution\n");
 	/* find maximum singular value and total variance.  Assumes w[] may have negative eigenvalues */
@@ -1148,31 +1148,31 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 }
 
 double gmt_dot3v (struct GMT_CTRL *GMT, double *a, double *b) {
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y] + a[GMT_Z]*b[GMT_Z]);
 }
 
 double gmt_dot2v (struct GMT_CTRL *GMT, double *a, double *b) {
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y]);
 }
 
 double gmt_mag3v (struct GMT_CTRL *GMT, double *a) {
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	return (d_sqrt(a[GMT_X]*a[GMT_X] + a[GMT_Y]*a[GMT_Y] + a[GMT_Z]*a[GMT_Z]));
 }
 
 void gmt_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
 	/* C = A + B */
 	int k;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	for (k = 0; k < 3; k++) c[k] = a[k] + b[k];
 }
 
 void gmt_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
 	/* C = A - B */
 	int k;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	for (k = 0; k < 3; k++) c[k] = a[k] - b[k];
 }
 
@@ -1189,7 +1189,7 @@ void gmt_normalize3v (struct GMT_CTRL *GMT, double *a) {
 
 void gmt_normalize2v (struct GMT_CTRL *GMT, double *a) {
 	double r_length;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	r_length = hypot (a[GMT_X], a[GMT_Y]);
 	if (r_length != 0.0) {
 		r_length = 1.0 / r_length;
@@ -1199,7 +1199,7 @@ void gmt_normalize2v (struct GMT_CTRL *GMT, double *a) {
 }
 
 void gmt_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	c[GMT_X] = a[GMT_Y] * b[GMT_Z] - a[GMT_Z] * b[GMT_Y];
 	c[GMT_Y] = a[GMT_Z] * b[GMT_X] - a[GMT_X] * b[GMT_Z];
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
@@ -1208,7 +1208,7 @@ void gmt_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c) {
 void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3]) {
 	/* c = A * b for 2 or 3 D */
 	unsigned int i, j;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
@@ -1222,7 +1222,7 @@ void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R
  */
 
 	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	sincosd (w, &sin_w, &cos_w);
 	c = 1 - cos_w;
@@ -1266,7 +1266,7 @@ void gmt_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, b
 	   input coordinates are in degrees, otherwise in radian */
 
 	double clat, clon, slon;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	if (degrees) {
 		lat *= D2R;
@@ -1283,7 +1283,7 @@ void gmt_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a,
 	   coordinates (lat, lon). If degrees = true, the output coordinates
 	   are in degrees, otherwise in radian. */
 
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	if (degrees) {
 		*lat = d_asind (a[GMT_Z]);
 		*lon = d_atan2d (a[GMT_Y], a[GMT_X]);
@@ -1309,7 +1309,7 @@ void gmt_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a,
 	   to a 2-vector of unit length (a). If degrees = true,
 	   input theta is in degrees, otherwise in radian */
 
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	if (degrees) theta *= D2R;
 	sincos (theta, &a[GMT_Y], &a[GMT_X]);
 	a[GMT_X] *= r;
@@ -1321,7 +1321,7 @@ void gmt_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *
 	   coordinates (r, theta). If degrees = true, the output coordinates
 	   are in degrees, otherwise in radian. */
 
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	*r = hypot (a[GMT_X], a[GMT_Y]);
 	*theta = d_atan2 (a[GMT_Y], a[GMT_X]);
 	if (degrees) *theta *= R2D;
@@ -1331,7 +1331,7 @@ void gmt_set_line_resampling (struct GMT_CTRL *GMT, bool active, unsigned int mo
 	/* Sets the GMT->current.map.path_mode setting given -A and data type.
 	 * By default, path_mode = GMT_RESAMPLE_PATH = 0. */
 
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Geographic data: Default is to resample along great circles unless -A given */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Geographic data: Default is to resample along great circles unless -A given */
 		if (active && mode == GMT_STAIRS_OFF) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
 	}
 	else {	/* Cartesian data: Default is to leave alone unless -Ax|y was set */
@@ -1356,7 +1356,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i;
 
-	if (!GMT_is_geographic (GMT, GMT_IN)) return (vector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) return (vector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
 
 	lon = *a_lon;	lat = *a_lat;	/* Input arrays */
 
@@ -1460,7 +1460,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		gmt_prep_tmp_arrays (GMT, n_new, 2);	/* Init or reallocate tmp read vectors */
 		GMT->hidden.mem_coord[GMT_X][n_new] = lon[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = lat[i];
 		n_new++;
-		GMT_cpy3v (a, b);
+		gmt_M_cpy3v (a, b);
 	}
 
 	/* Destroy old allocated memory and put the new one in place */
@@ -1487,7 +1487,7 @@ uint64_t gmt_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64
 	 * Returns the new number of points.
 	 */
 	uint64_t n_out;
-	if (GMT_is_geographic (GMT, GMT_IN))
+	if (gmt_M_is_geographic (GMT, GMT_IN))
 		n_out = vector_resample_path_spherical (GMT, x, y, n_in, step_out, mode);
 	else
 		n_out = vector_resample_path_cartesian (GMT, x, y, n_in, step_out, mode);
@@ -1525,7 +1525,7 @@ int gmt_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int
 */
 	int i, j, k, ik, ij, kj, kk, nrp1;
 	double eigmax, eigmin;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	nrp1 = nr + 1;
 
@@ -1587,7 +1587,7 @@ void gmt_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n
 */
 
 	int kbad, i, j, ii, ij, ji, nrp1;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	kbad = abs (nerr) - 1;
 	nrp1 = nr + 1;
@@ -1621,7 +1621,7 @@ void gmt_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int n
 	W H F Smith, 18 Feb 2000
 */
 	int i, j, ij, ji, ii, nrp1;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	nrp1 = nr + 1;
 

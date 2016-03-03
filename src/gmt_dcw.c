@@ -157,9 +157,9 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	dim[2] = n;	/* Number of countries with states */
 	if (CS) {	/* Wants list returned */
 		Country_State = gmt_memory (GMT, NULL, n, struct GMT_DCW_COUNTRY_STATE);
-		GMT_memcpy (Country_State[0].country, State[0].country, 4, char);
+		gmt_M_memcpy (Country_State[0].country, State[0].country, 4, char);
 		for (k = n = 1; k < dim[1]; k++) {
-			if (strcmp (State[k].country, State[k-1].country)) GMT_memcpy (Country_State[n++].country, State[k].country, 4, char);
+			if (strcmp (State[k].country, State[k-1].country)) gmt_M_memcpy (Country_State[n++].country, State[k].country, 4, char);
 		}
 		*CS = Country_State;
 	}
@@ -306,7 +306,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 
 	/* Get global attributes */
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char version[GMT_LEN16] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title);
@@ -323,7 +323,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	while (gmt_strtok (list, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
 		if (code[2] == '.') {	/* Requesting a state */
-			GMT_memset (state, GMT_LEN16, char);
+			gmt_M_memset (state, GMT_LEN16, char);
 			strcpy (state, &code[3]);
 			code[2] = '\0';
 			want_state = true;
@@ -443,8 +443,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				S = D->table[tbl]->segment[seg];
 				S->n_rows = P->n_rows;
 				gmt_malloc2 (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, NULL, double);
-				GMT_memcpy (S->coord[GMT_X], lon, S->n_rows, double);
-				GMT_memcpy (S->coord[GMT_Y], lat, S->n_rows, double);
+				gmt_M_memcpy (S->coord[GMT_X], lon, S->n_rows, double);
+				gmt_M_memcpy (S->coord[GMT_Y], lat, S->n_rows, double);
 				seg++;
 			}
 			else {	/* mode & GMT_DCW_PLOT: Plot this piece */

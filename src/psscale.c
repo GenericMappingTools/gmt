@@ -180,7 +180,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <gap> is appended, we separate each rectangle by <gap> units and center each\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome colorbar using gmt_M_yiq transformation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Control how color-scale is represented by PostScript.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to indicate a preference for using polygons, if possible;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   otherwise it indicates a preference for using colorimage, if possible.\n");
@@ -266,14 +266,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						if (strchr (string, 'f')) Ctrl->D.emode |= 2;
 						if ((Ctrl->D.emode&3) == 0) Ctrl->D.emode |= 3;	/* No b|f added */
 						j = 0; while (string[j] == 'b' || string[j] == 'f') j++;
-						if (string[j]) Ctrl->D.elength = GMT_to_inch (GMT, &string[j]);
+						if (string[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &string[j]);
 					}
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'h', string))
 						Ctrl->D.horizontal = true;
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
+						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'm', string)) {
 						Ctrl->D.move = true;
 						if (!string[0]) Ctrl->D.mmode = (PSSCALE_FLIP_ANNOT+PSSCALE_FLIP_LABEL);	/* Default is +mal */
@@ -302,8 +302,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 						Ctrl->D.horizontal = true;
 						txt_b[j] = 0;	/* Remove this to avoid unit confusion */
 					}
-					Ctrl->D.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
-					Ctrl->D.dim[GMT_Y]  = GMT_to_inch (GMT, txt_b);
+					Ctrl->D.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+					Ctrl->D.dim[GMT_Y]  = gmt_M_to_inch (GMT, txt_b);
 					if (Ctrl->D.refpoint->mode == GMT_REFPOINT_JUST)	/* With -Dj, set default as the mirror to reference justify point */
 						Ctrl->D.justify = gmt_flip_justify (GMT, Ctrl->D.refpoint->justify);
 					else
@@ -311,8 +311,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					/* Now deal with optional arguments, if any */
 					switch (n) {
 						case 3: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	break;	/* Just got justification */
-						case 4: Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_d); break;	/* Just got offsets */
-						case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = GMT_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = GMT_to_inch (GMT, txt_e); break;	/* Got both */
+						case 4: Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_c); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_d); break;	/* Just got offsets */
+						case 5: Ctrl->D.justify = gmt_just_decode (GMT, txt_c, PSL_TC);	Ctrl->D.off[GMT_X] = gmt_M_to_inch (GMT, txt_d); 	Ctrl->D.off[GMT_Y] = gmt_M_to_inch (GMT, txt_e); break;	/* Got both */
 					}
 				}
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
@@ -346,7 +346,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					j++;
 				}
 				if (j == 0) Ctrl->D.emode |= 3;	/* No b|f added */
-				if (opt->arg[j]) Ctrl->D.elength = GMT_to_inch (GMT, &opt->arg[j]);
+				if (opt->arg[j]) Ctrl->D.elength = gmt_M_to_inch (GMT, &opt->arg[j]);
 				if (c) *c = '+';	/* Put back the + sign */
 				break;
 			case 'F':
@@ -359,10 +359,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += GMT_check_condition (GMT, j < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, j < 2, "Syntax error -G option: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += GMT_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_M_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -382,7 +382,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				Ctrl->L.active = true;
 				j = 0;
 				if (opt->arg[0] == 'i') Ctrl->L.interval = true, j = 1;
-				if (opt->arg[j]) Ctrl->L.spacing = GMT_to_inch (GMT, &opt->arg[j]);
+				if (opt->arg[j]) Ctrl->L.spacing = gmt_M_to_inch (GMT, &opt->arg[j]);
 				break;
 			case 'M':
 				Ctrl->M.active = true;
@@ -404,7 +404,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				Ctrl->S.active = true;
 				break;
 			case 'T':
-				if (GMT_compat_check (GMT, 5)) { /* Warn but process old -T */
+				if (gmt_M_compat_check (GMT, 5)) { /* Warn but process old -T */
 					unsigned int pos = 0, ns = 0;
 					double off[4] = {0.0, 0.0, 0.0, 0.0};
 					char extra[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
@@ -412,10 +412,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 					/* We will build a -F compatible string and parse it */
 					while (gmt_strtok (opt->arg, "+", &pos, p)) {
 						switch (p[0]) {
-							case 'l': off[XLO] = GMT_to_inch (GMT, &p[1]); ns++; break; /* Left nudge */
-							case 'r': off[XHI] = GMT_to_inch (GMT, &p[1]); ns++; break; /* Right nudge */
-							case 'b': off[YLO] = GMT_to_inch (GMT, &p[1]); ns++; break; /* Bottom nudge */
-							case 't': off[YHI] = GMT_to_inch (GMT, &p[1]); ns++; break; /* Top nudge */
+							case 'l': off[XLO] = gmt_M_to_inch (GMT, &p[1]); ns++; break; /* Left nudge */
+							case 'r': off[XHI] = gmt_M_to_inch (GMT, &p[1]); ns++; break; /* Right nudge */
+							case 'b': off[YLO] = gmt_M_to_inch (GMT, &p[1]); ns++; break; /* Bottom nudge */
+							case 't': off[YHI] = gmt_M_to_inch (GMT, &p[1]); ns++; break; /* Top nudge */
 							case 'g': strcat (extra, "+"); strcat (extra, p); break; /* Fill */
 							case 'p': strcat (extra, "+"); strcat (extra, p); break; /* Pen */
 							default: n_errors++;	break;
@@ -458,14 +458,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 		n_errors++;
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Syntax error -D option: scale width must be positive\n");
+		n_errors += gmt_M_check_condition (GMT, fabs (Ctrl->D.dim[GMT_X]) < GMT_CONV4_LIMIT , "Syntax error -D option: scale length must be nonzero\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.dim[GMT_Y] <= 0.0, "Syntax error -D option: scale width must be positive\n");
 	}
-	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Syntax error -L option: Cannot be used if -B option sets increments.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files are allowed\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Syntax error -L option: Cannot be used if -B option sets increments.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Syntax error -N option: The dpi must be > 0.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Syntax error -Z option: No file given\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Syntax error -Z option: Cannot access file %s\n", Ctrl->Z.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -665,18 +665,18 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			gmt_get_rgb_from_z (GMT, P, z, rrggbb);
 			ii = (reverse) ? nx - i - 1 : i;
 			for (j = 0; j < ny; j++) {
-				GMT_rgb_copy (rgb, rrggbb);
+				gmt_M_rgb_copy (rgb, rrggbb);
 				k = j * nx + ii;
 				if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1] - j * inc_j, rgb);
 				if (P->is_gray)	/* All gray, pick red */
-					bar[k] = GMT_u255 (rgb[0]);
-				else if (Ctrl->M.active)	/* Convert to gray using the GMT_YIQ transformation */
-					bar[k] = GMT_u255 (GMT_YIQ (rgb));
+					bar[k] = gmt_M_u255 (rgb[0]);
+				else if (Ctrl->M.active)	/* Convert to gray using the gmt_M_yiq transformation */
+					bar[k] = gmt_M_u255 (gmt_M_yiq (rgb));
 				else {
 					k *= 3;
-					bar[k++] = GMT_u255 (rgb[0]);
-					bar[k++] = GMT_u255 (rgb[1]);
-					bar[k++] = GMT_u255 (rgb[2]);
+					bar[k++] = gmt_M_u255 (rgb[0]);
+					bar[k++] = gmt_M_u255 (rgb[1]);
+					bar[k++] = gmt_M_u255 (rgb[2]);
 #ifdef DEBUG
 					if (dump && j == dump_k_val) fprintf (stderr, "%g\t%g\t%g\t%g\t%g\t%g\t%g\t%d\t%d\t%d\n",
 						z, rrggbb[0], rrggbb[1], rrggbb[2], rgb[0], rgb[1], rgb[2], bar[k-3], bar[k-2], bar[k-1]);
@@ -842,9 +842,9 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					PSL_setfill (PSL, GMT->session.no_rgb, center);
 				}
 				else {
-					GMT_rgb_copy (rgb, P->range[ii].rgb_low);
+					gmt_M_rgb_copy (rgb, P->range[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
-					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 					PSL_setfill (PSL, rgb, center);
 				}
 				PSL_plotbox (PSL, x0+gap, 0.0, x1-gap, width);
@@ -868,8 +868,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if ((f = P->patch[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				GMT_rgb_copy (rgb, P->patch[id].rgb);
-				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
@@ -884,8 +884,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if ((f = P->patch[GMT_NAN].fill) != NULL)
 				gmt_setfill (GMT, f, true);
 			else {
-				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
-				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				gmt_M_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
@@ -900,8 +900,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if ((f = P->patch[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				GMT_rgb_copy (rgb, P->patch[id].rgb);
-				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
@@ -1037,9 +1037,9 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 					PSL_setfill (PSL, GMT->session.no_rgb, center);
 				}
 				else {
-					GMT_rgb_copy (rgb, P->range[ii].rgb_low);
+					gmt_M_rgb_copy (rgb, P->range[ii].rgb_low);
 					if (Ctrl->I.active) gmt_illuminate (GMT, max_intens[1], rgb);
-					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+					if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 					PSL_setfill (PSL, rgb, center);
 				}
 				if (P->range[ii].fill) {	/* Must undo rotation so patterns remain aligned with original setup */
@@ -1085,8 +1085,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if ((f = P->patch[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				GMT_rgb_copy (rgb, P->patch[id].rgb);
-				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
@@ -1101,8 +1101,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if ((f = P->patch[GMT_NAN].fill) != NULL)
 				gmt_setfill (GMT, f, true);
 			else {
-				GMT_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
-				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				gmt_M_rgb_copy (rgb, P->patch[GMT_NAN].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, true);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
@@ -1117,8 +1117,8 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			if ((f = P->patch[id].fill) != NULL)
 				gmt_setfill (GMT, f, false);
 			else {
-				GMT_rgb_copy (rgb, P->patch[id].rgb);
-				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = GMT_YIQ (rgb);
+				gmt_M_rgb_copy (rgb, P->patch[id].rgb);
+				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, false);
 			}
 			PSL_plotpolygon (PSL, xp, yp, 3);
@@ -1150,7 +1150,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			PSL_setorigin (PSL, 0.0, 0.0, -90.0, PSL_FWD);	/* Rotate back so we can plot y-axis */
 			/* Copy x-axis annotation and scale info to y-axis.  We dont need to undo this since gmt_end_module will restore it for us */
 			custum = GMT->current.map.frame.axis[GMT_Y].file_custom;	/* Need to remember what this was */
-			GMT_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
+			gmt_M_memcpy (&GMT->current.map.frame.axis[GMT_Y], &GMT->current.map.frame.axis[GMT_X], 1, struct GMT_PLOT_AXIS);
 			double_swap (GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y]);
 			double_swap (GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
 			uint_swap (GMT->current.proj.xyz_projection[GMT_X], GMT->current.proj.xyz_projection[GMT_Y]);
@@ -1269,7 +1269,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 	PSL_setlinejoin (PSL, join);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psscale (void *V_API, int mode, void *args) {
@@ -1371,7 +1371,7 @@ int GMT_psscale (void *V_API, int mode, void *args) {
 		stop_val  = P->range[P->n_colors-1].z_high;
 	}
 
-	GMT_memset (wesn, 4, double);
+	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;
 		GMT->common.J.active = false;

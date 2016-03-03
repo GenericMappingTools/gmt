@@ -128,7 +128,7 @@ GMT_LOCAL int customio_read_rasheader (FILE *fp, struct rasterfile *h) {
 
 	for (i = 0; i < 8; i++) {
 
-		if (GMT_fread (byte, sizeof (uint8_t), 4, fp) != 4)
+		if (gmt_M_fread (byte, sizeof (uint8_t), 4, fp) != 4)
 			return (GMT_GRDIO_READ_FAILED);
 
 		value = (byte[0] << 24) + (byte[1] << 16) + (byte[2] << 8) + byte[3];
@@ -182,7 +182,7 @@ GMT_LOCAL int customio_write_rasheader (FILE *fp, struct rasterfile *h) {
 		byte[2] = (uint8_t)((value >> 8) & 0xFF);
 		byte[3] = (uint8_t)(value & 0xFF);
 
-		if (GMT_fwrite (byte, sizeof (uint8_t), 4, fp) != 4)
+		if (gmt_M_fwrite (byte, sizeof (uint8_t), 4, fp) != 4)
 			return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -197,7 +197,7 @@ int GMT_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
-	GMT_memset (&h, 1, struct rasterfile);
+	gmt_M_memset (&h, 1, struct rasterfile);
 	if (customio_read_rasheader (fp, &h))
 		return (GMT_GRDIO_READ_FAILED);
 	if (h.magic != RAS_MAGIC)
@@ -223,13 +223,13 @@ int GMT_ras_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_memset (&h, 1, struct rasterfile);
+	gmt_M_memset (&h, 1, struct rasterfile);
 	if (customio_read_rasheader (fp, &h)) return (GMT_GRDIO_READ_FAILED);
 	if (h.magic != RAS_MAGIC) return (GMT_GRDIO_NOT_RAS);
 	if (h.type != 1 || h.depth != 8) return (GMT_GRDIO_NOT_8BIT_RAS);
 
 	for (i = 0; i < h.maplength; i++) {
-		if (GMT_fread (&u, sizeof (unsigned char), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED);	/* Skip colormap by reading since fp could be stdin */
+		if (gmt_M_fread (&u, sizeof (unsigned char), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED);	/* Skip colormap by reading since fp could be stdin */
 	}
 	gmt_fclose (GMT, fp);
 
@@ -291,7 +291,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	unsigned char *tmp = NULL;
 	struct rasterfile h;
 
-	GMT_memset (&h, 1, struct rasterfile);
+	gmt_M_memset (&h, 1, struct rasterfile);
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
 		gmt_setmode (GMT, GMT_IN);
@@ -321,7 +321,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	if (piping) {	/* Skip data by reading it */
 		for (j = 0; j < first_row; j++) {
-			if (GMT_fread (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
+			if (gmt_M_fread (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
 		}
 	}
 	else {/* Simply seek by it */
@@ -333,7 +333,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		ij = imag_offset + (j2 + pad[3]) * width_out + pad[XLO];
-		if (GMT_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
+		if (gmt_M_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			grid[kk] = (float) tmp[actual_row[i]];
@@ -347,11 +347,11 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip data by reading it */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
 	}
 	header->nx = width_in;
 	header->ny = height_in;
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
 
@@ -411,7 +411,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	h.width = header->nx;
 	h.height = header->ny;
@@ -429,7 +429,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			if (check && GMT_is_fnan (grid[kk])) grid[kk] = header->nan_value;
 			tmp[i] = (unsigned char) grid[kk];
 		}
-		if (GMT_fwrite (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_WRITE_FAILED);
+		if (gmt_M_fwrite (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_WRITE_FAILED);
 	}
 	gmt_fclose (GMT, fp);
 
@@ -468,8 +468,8 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 GMT_LOCAL int customio_native_read_grd_header (FILE *fp, struct GMT_GRID_HEADER *header) {
 	int err = GMT_NOERROR;
 	/* Because GMT_GRID_HEADER is not 64-bit aligned we must read it in parts */
-	if (GMT_fread (&header->nx, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
-			GMT_fread (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
+	if (gmt_M_fread (&header->nx, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
+			gmt_M_fread (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
 	err = GMT_GRDIO_READ_FAILED;
 	return (err);
 }
@@ -501,7 +501,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	double item_size;
 	struct stat buf;
 	struct GMT_GRID_HEADER t_head;
-	GMT_memset (&t_head, 1, struct GMT_GRID_HEADER);	/* Wipe it */
+	gmt_M_memset (&t_head, 1, struct GMT_GRID_HEADER);	/* Wipe it */
 	if (!strcmp (header->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if (stat (header->name, &buf))
@@ -513,7 +513,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
 	if (t_head.wesn[XLO] >= t_head.wesn[XHI] || t_head.wesn[YLO] >= t_head.wesn[YHI])
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for wesn */
-	nm = GMT_get_nm (GMT, t_head.nx, t_head.ny);
+	nm = gmt_M_get_nm (GMT, t_head.nx, t_head.ny);
 	if (nm <= 0)
 		return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
 	item_size = (double)((buf.st_size - GMT_GRID_HEADER_SIZE) / nm);	/* Estimate size of elements */
@@ -538,7 +538,7 @@ int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			break;
 		case 4:	/* 4-byte elements - could be int or float */
 			/* See if we can decide it is a float grid */
-			if (GMT_compat_check (GMT, 4)) {
+			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Will try to determine if a native 4-byte grid is float or int but may be wrong.\n");
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Please append =bf (float) or =bi (integer) to avoid this situation.\n");
 				/* Naive test to see if we can decide it is a float grid */
@@ -571,15 +571,15 @@ GMT_LOCAL int customio_native_write_grd_header (FILE *fp, struct GMT_GRID_HEADER
 	int err = GMT_NOERROR;
 	/* Because GMT_GRID_HEADER is not 64-bit aligned we must write it in parts */
 
-	if (GMT_fwrite (&header->nx, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
-			GMT_fwrite (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
+	if (gmt_M_fwrite (&header->nx, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
+			gmt_M_fwrite (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
 		err = GMT_GRDIO_WRITE_FAILED;
 	return (err);
 }
 
 GMT_LOCAL int customio_native_skip_grd_header (FILE *fp, struct GMT_GRID_HEADER *header) {
 	int err = GMT_NOERROR;
-	GMT_UNUSED(header);
+	gmt_M_unused(header);
 	/* Because GMT_GRID_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 
 	if (fseek (fp, SIZEOF_NATIVE_GRD_HDR, SEEK_SET))
@@ -631,7 +631,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	tmp = gmt_memory (GMT, NULL, mx, unsigned int);
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) if (GMT_fread (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
+		for (j = 0; j < first_row; j++) if (gmt_M_fread (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek by it */
 		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
@@ -640,7 +640,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
@@ -661,12 +661,12 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip data by reading it */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
 	}
 
 	header->nx = width_in;
 	header->ny = height_in;
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
 
@@ -711,7 +711,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	/* Find z_min/z_max */
 
@@ -741,7 +741,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
-		GMT_memset (tmp, mx, unsigned int);
+		gmt_M_memset (tmp, mx, unsigned int);
 		ij = j2 * width_in + i2 + imag_offset;
 		for (iu = 0; iu < width_out; iu++) {
 			kk = ij + actual_col[iu];
@@ -751,7 +751,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			if (ival > 1) ival = 1;	/* Truncate to 1 */
 			tmp[word] |= (ival << bit);
 		}
-		if (GMT_fwrite (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_WRITE_FAILED);
+		if (gmt_M_fwrite (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
 	gmt_fclose (GMT, fp);
@@ -876,7 +876,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	/* Now deal with skipping */
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+		for (j = 0; j < first_row; j++) if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek over it */
 		if (fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
@@ -885,7 +885,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (GMT_fread (tmp, size, n_expected, fp) < n_expected)
+		if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected)
 			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0, kk = ij; i < width_in; i++, kk++) {
@@ -903,12 +903,12 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	}
 	if (piping) {	/* Skip remaining data by reading them */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 
 	header->nx = width_in;
 	header->ny = height_in;
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
 
@@ -964,7 +964,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	/* Find z_min/z_max */
 
@@ -1002,7 +1002,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		ij = imag_offset + j2 * width_in + i2;
 		for (iu = 0; iu < width_out; iu++) gmtlib_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
-		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
+		if (gmt_M_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
 	gmt_free (GMT, k);
@@ -1141,7 +1141,7 @@ int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
-	if (GMT_fread (id, sizeof (char), 4U, fp) < 4U)
+	if (gmt_M_fread (id, sizeof (char), 4U, fp) < 4U)
 		return (GMT_GRDIO_READ_FAILED);
 	gmt_fclose (GMT, fp);
 	if (!strncmp (id, "DSBB", 4U))
@@ -1155,14 +1155,14 @@ int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 GMT_LOCAL int customio_read_srfheader6 (FILE *fp, struct srf_header6 *h) {
 	/* Reads the header of a Surfer 6 gridfile */
-	/* if (GMT_fread (h, sizeof (struct srf_header6), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED); */
+	/* if (gmt_M_fread (h, sizeof (struct srf_header6), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED); */
 
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
-	if (GMT_fread (h->id, 4*sizeof (char), 1U, fp) != 1U)
+	if (gmt_M_fread (h->id, 4*sizeof (char), 1U, fp) != 1U)
 		return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->nx, 2*sizeof (short int), 1U, fp) != 1U)
+	if (gmt_M_fread (&h->nx, 2*sizeof (short int), 1U, fp) != 1U)
 		return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (h->wesn, sizeof (struct srf_header6) - ((size_t)h->wesn - (size_t)h->id), 1U, fp) != 1U)
+	if (gmt_M_fread (h->wesn, sizeof (struct srf_header6) - ((size_t)h->wesn - (size_t)h->id), 1U, fp) != 1U)
 		return (GMT_GRDIO_READ_FAILED);
 
 	return GMT_NOERROR;
@@ -1173,31 +1173,31 @@ GMT_LOCAL int customio_read_srfheader7 (FILE *fp, struct srf_header7 *h) {
 
 	if (fseek (fp, (off_t)(3*sizeof(int)), SEEK_SET))
 		return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
-	/* if (GMT_fread (h, sizeof (struct srf_header7), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED); */
+	/* if (gmt_M_fread (h, sizeof (struct srf_header7), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED); */
 
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
-	if (GMT_fread (h->id2, 4*sizeof (char), 1U, fp) != 1)
+	if (gmt_M_fread (h->id2, 4*sizeof (char), 1U, fp) != 1)
 		return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->len_g, 3*sizeof (int), 1U, fp) != 1)
+	if (gmt_M_fread (&h->len_g, 3*sizeof (int), 1U, fp) != 1)
 		return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->x_min, 8*sizeof (double), 1U, fp) != 1)
+	if (gmt_M_fread (&h->x_min, 8*sizeof (double), 1U, fp) != 1)
 		return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (h->id3, 4*sizeof (char), 1U, fp) != 1)
+	if (gmt_M_fread (h->id3, 4*sizeof (char), 1U, fp) != 1)
 		return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->len_d, sizeof (int), 1U, fp) != 1)
+	if (gmt_M_fread (&h->len_d, sizeof (int), 1U, fp) != 1)
 		return (GMT_GRDIO_READ_FAILED);
 
 	return GMT_NOERROR;
 }
 
 GMT_LOCAL int customio_write_srfheader (FILE *fp, struct srf_header6 *h) {
-	/* if (GMT_fwrite (h, sizeof (struct srf_header6), 1U, fp) < 1U) return (GMT_GRDIO_WRITE_FAILED); */
+	/* if (gmt_M_fwrite (h, sizeof (struct srf_header6), 1U, fp) < 1U) return (GMT_GRDIO_WRITE_FAILED); */
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must write it in parts */
-	if (GMT_fwrite (h->id, 4*sizeof (char), 1U, fp) != 1)
+	if (gmt_M_fwrite (h->id, 4*sizeof (char), 1U, fp) != 1)
 		return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (&h->nx, 2*sizeof (short int), 1U, fp) != 1)
+	if (gmt_M_fwrite (&h->nx, 2*sizeof (short int), 1U, fp) != 1)
 		return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (h->wesn, sizeof (struct srf_header6) - ((size_t)h->wesn - (size_t)h->id), 1U, fp) != 1)
+	if (gmt_M_fwrite (h->wesn, sizeof (struct srf_header6) - ((size_t)h->wesn - (size_t)h->id), 1U, fp) != 1)
 		return (GMT_GRDIO_WRITE_FAILED);
 	return GMT_NOERROR;
 }
@@ -1217,12 +1217,12 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if (GMT_fread (id, sizeof (char), 4U, fp) < 4U) return (GMT_GRDIO_READ_FAILED);
+	if (gmt_M_fread (id, sizeof (char), 4U, fp) < 4U) return (GMT_GRDIO_READ_FAILED);
 	if (fseek(fp, (off_t)0, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 	if (strncmp (id, "DSBB", 4U) && strncmp (id, "DSRB", 4U)) return (GMT_GRDIO_NOT_SURFER);
 
-	GMT_memset (&h6, 1, struct srf_header6);
-	GMT_memset (&h7, 1, struct srf_header7);
+	gmt_M_memset (&h6, 1, struct srf_header6);
+	gmt_M_memset (&h7, 1, struct srf_header7);
 	if (!strncmp (id, "DSBB", 4U)) {		/* Version 6 format */
 		if (customio_read_srfheader6 (fp, &h6)) return (GMT_GRDIO_READ_FAILED);
 		header->type = GMT_GRID_IS_SF;
@@ -1242,8 +1242,8 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 		header->wesn[XLO] = h6.wesn[XLO];	header->wesn[XHI] = h6.wesn[XHI];
 		header->wesn[YLO] = h6.wesn[YLO];	header->wesn[YHI] = h6.wesn[YHI];
 		header->z_min = h6.z_min;		header->z_max = h6.z_max;
-		header->inc[GMT_X] = GMT_get_inc (GMT, h6.wesn[XLO], h6.wesn[XHI], h6.nx, header->registration);
-		header->inc[GMT_Y] = GMT_get_inc (GMT, h6.wesn[YLO], h6.wesn[YHI], h6.ny, header->registration);
+		header->inc[GMT_X] = gmt_M_get_inc (GMT, h6.wesn[XLO], h6.wesn[XHI], h6.nx, header->registration);
+		header->inc[GMT_Y] = gmt_M_get_inc (GMT, h6.wesn[YLO], h6.wesn[YHI], h6.ny, header->registration);
 	}
 	else {			/* Format GMT_GRID_IS_SD */
 		strcpy (header->title, "Grid originally in Surfer 7 format");
@@ -1280,7 +1280,7 @@ int GMT_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		h.wesn[YLO] = header->wesn[YLO] + header->inc[GMT_Y]/2.0;	 h.wesn[YHI] = header->wesn[YHI] - header->inc[GMT_Y]/2.0;
 	}
 	else
-		GMT_memcpy (h.wesn, header->wesn, 4, double);
+		gmt_M_memcpy (h.wesn, header->wesn, 4, double);
 	h.z_min = header->z_min;	 h.z_max = header->z_max;
 
 	if (customio_write_srfheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
@@ -1361,7 +1361,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	if (piping) {	/* Skip data by reading it */
 		for (j = 0; j < first_row; j++)
-			if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+			if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek over it */
 		if (first_row && fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
@@ -1372,7 +1372,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 
 	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
-		if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
@@ -1389,12 +1389,12 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip remaining data by reading it */
 		for (j = last_row + 1; j < ny; j++)
-			if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+			if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 
 	header->nx = width_in;
 	header->ny = height_in;
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_fclose (GMT, fp);
 
@@ -1459,7 +1459,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	/* Find z_min/z_max */
 
@@ -1486,11 +1486,11 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		h.wesn[YLO] = header->wesn[YLO] + header->inc[GMT_Y]/2;	 h.wesn[YHI] = header->wesn[YHI] - header->inc[GMT_Y]/2;
 	}
 	else
-		GMT_memcpy (h.wesn, header->wesn, 4, double);
+		gmt_M_memcpy (h.wesn, header->wesn, 4, double);
 
 	h.z_min = header->z_min;	 h.z_max = header->z_max;
 
-	if (GMT_fwrite (&h, sizeof (struct srf_header6), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
+	if (gmt_M_fwrite (&h, sizeof (struct srf_header6), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
@@ -1501,7 +1501,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
 		ij = imag_offset + j2 * width_in + i2;
 		for (iu = 0; iu < width_out; iu++) gmtlib_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
-		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
+		if (gmt_M_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
 	gmt_free (GMT, k);
@@ -1564,7 +1564,7 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	header->registration = (int)from_gdalread->hdr[6];	/* Which registration? */
 	strcpy (header->title, "Grid imported via GDAL");
 	header->nx = from_gdalread->RasterXsize, header->ny = from_gdalread->RasterYsize;
-	GMT_memcpy (header->wesn, from_gdalread->hdr, 4, double);
+	gmt_M_memcpy (header->wesn, from_gdalread->hdr, 4, double);
 	header->inc[GMT_X] = from_gdalread->hdr[7];
 	header->inc[GMT_Y] = from_gdalread->hdr[8];
 	header->z_min = from_gdalread->hdr[4];
@@ -1594,7 +1594,7 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 }
 
 int GMT_gdal_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
-	GMT_UNUSED(GMT); GMT_UNUSED(header);
+	gmt_M_unused(GMT); gmt_M_unused(header);
 	return (GMT_NOERROR);
 }
 
@@ -1622,7 +1622,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		to_gdalread->Z.complex_mode = (int)((complex_mode & GMT_GRID_IS_COMPLEX_MASK) >> 2);	/* Gives 0, 1, or 2 */
 	}
 
-	subset = GMT_is_subset (GMT, header, wesn);	/* We have a Sub-region demand */
+	subset = gmt_M_is_subset (GMT, header, wesn);	/* We have a Sub-region demand */
 	if (subset) {	/* We have a Sub-region demand */
 		to_gdalread->R.active = true;
 		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
@@ -1638,7 +1638,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		if (pad[XLO] >= header->nx - 1) {	/* With -1 we account for both grid & pixel registration cases */
 			to_gdalread->mini_hdr.offset = pad[XLO];		to_gdalread->mini_hdr.side[0] = 'r';
 			to_gdalread->mini_hdr.mx = header->mx;
-			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
+			if (gmt_M_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
 				gmt_free (GMT, to_gdalread);
 				return (EXIT_FAILURE);
 			}
@@ -1646,7 +1646,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		else if (pad[XHI] >= header->nx - 1) {
 			to_gdalread->mini_hdr.offset = pad[XHI];		to_gdalread->mini_hdr.side[0] = 'l';
 			to_gdalread->mini_hdr.mx = header->mx;
-			if (GMT_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
+			if (gmt_M_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
 				gmt_free (GMT, to_gdalread);
 				return (EXIT_FAILURE);
 			}
@@ -1654,7 +1654,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		else if (pad[YLO] >= header->ny - 1) {
 			to_gdalread->mini_hdr.offset = pad[YLO];		to_gdalread->mini_hdr.side[0] = 't';
 			to_gdalread->mini_hdr.my = header->my;
-			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
+			if (gmt_M_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
 				gmt_free (GMT, to_gdalread);
 				return (EXIT_FAILURE);
 			}
@@ -1662,7 +1662,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		else if (pad[YHI] >= header->ny - 1) {
 			to_gdalread->mini_hdr.offset = pad[YHI];		to_gdalread->mini_hdr.side[0] = 'b';
 			to_gdalread->mini_hdr.my = header->my;
-			if (GMT_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
+			if (gmt_M_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
 				gmt_free (GMT, to_gdalread);
 				return (EXIT_FAILURE);
 			}
@@ -1705,7 +1705,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		header->nx = from_gdalread->RasterXsize;
 		header->ny = from_gdalread->RasterYsize;
 		header->nm = gmt_grd_get_nm (header);		/* Sets the number of actual data items */
-		GMT_memcpy (header->wesn, from_gdalread->hdr, 4, double);
+		gmt_M_memcpy (header->wesn, from_gdalread->hdr, 4, double);
 		header->z_min = from_gdalread->hdr[4];
 		header->z_max = from_gdalread->hdr[5];
 	}
@@ -1714,7 +1714,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (from_gdalread->Float.active) {
 		if (!to_gdalread->f_ptr.active)		/* If the float array was allocated inside _gdalread */
-			GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
+			gmt_M_memcpy (grid, from_gdalread->Float.data, header->size, float);
 		else if (!to_gdalread->c_ptr.active && from_gdalread->UInt8.active) {		/* If the char array was allocated inside _gdalread */
 			for (j = 0; j < header->size; j++)
 				grid[j] = (float)from_gdalread->UInt8.data[j];
@@ -1795,7 +1795,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	int *zi32 = NULL;
 	unsigned int *zu32 = NULL;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
-	GMT_UNUSED(pad);
+	gmt_M_unused(pad);
 	type[0] = '\0';
 
 	if (header->pocket == NULL) {
@@ -1811,7 +1811,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	to_GDALW->driver = strdup(driver);
 	to_GDALW->P.ProjectionRefPROJ4 = NULL;
 	to_GDALW->flipud = 0;
-	if (GMT_is_geographic (GMT, GMT_IN))
+	if (gmt_M_is_geographic (GMT, GMT_IN))
 		to_GDALW->geog = 1;
 	else
 		to_GDALW->geog = 0;
@@ -1824,8 +1824,8 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	to_GDALW->pad[2] = header->pad[YLO];		to_GDALW->pad[3] = header->pad[YHI];
 	to_GDALW->ULx = wesn[XLO];
 	to_GDALW->ULy = wesn[YHI];
-	to_GDALW->x_inc = GMT_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
-	to_GDALW->y_inc = GMT_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
+	to_GDALW->x_inc = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
+	to_GDALW->y_inc = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
 	to_GDALW->nan_value = header->nan_value;
 	to_GDALW->command = header->command;
 
@@ -1851,7 +1851,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	else if (gmt_strlcmp(type,"u8") || gmt_strlcmp(type,"u08")) {
 		zu8 = gmt_memory(GMT, NULL, width_out * height_out, unsigned char);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
+			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu8[node++] = (unsigned char)grid[ij];
 
 		to_GDALW->data = zu8;
@@ -1860,7 +1860,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	else if (gmt_strlcmp(type,"i16")) {
 		zi16 = gmt_memory(GMT, NULL, width_out * height_out, short int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
+			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi16[node++] = (short int)grid[ij];
 
 		to_GDALW->data = zi16;
@@ -1869,7 +1869,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	else if (gmt_strlcmp(type,"u16")) {
 		zu16 = gmt_memory(GMT, NULL, width_out * height_out, unsigned short int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
+			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu16[node++] = (unsigned short int)grid[ij];
 
 		to_GDALW->data = zu16;
@@ -1878,7 +1878,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	else if (gmt_strlcmp(type,"i32")) {
 		zi32 = gmt_memory(GMT, NULL, width_out * height_out, int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
+			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi32[node++] = (int)grid[ij];
 
 		to_GDALW->data = zi32;
@@ -1887,7 +1887,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	else if (gmt_strlcmp(type,"u32")) {
 		zu32 = gmt_memory(GMT, NULL, width_out * height_out, unsigned int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
+			for (col = first_col, ij = gmt_M_ijp (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu32[node++] = (unsigned int)grid[ij];
 
 		to_GDALW->data = zu32;

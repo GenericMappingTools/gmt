@@ -250,8 +250,8 @@ GMT_LOCAL unsigned int grdcontour_old_T_parser (struct GMT_CTRL *GMT, char *arg,
 	if (strchr (arg, '/')) {	/* Gave gap/length */
 		n = sscanf (arg, "%[^/]/%[^:]", txt_a, txt_b);
 		if (n == 2) {
-			Ctrl->T.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
-			Ctrl->T.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
+			Ctrl->T.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+			Ctrl->T.dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
 		}
 	}
 	n = 0;
@@ -327,7 +327,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				break;
 			case 'C':	/* Contour interval/cpt */
 				Ctrl->C.active = true;
-				if (GMT_File_Is_Memory (opt->arg)) {	/* Passed a memory reference from a module */
+				if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
 					gmt_str_free (Ctrl->C.file);
@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				n_errors += gmt_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
 				break;
 			case 'M': case 'm':	/* GMT4 Old-options no longer required - quietly skipped under compat */
-				if (!GMT_compat_check (GMT, 4)) n_errors += gmt_default_error (GMT, opt->option);
+				if (!gmt_M_compat_check (GMT, 4)) n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Limits on range */
 				Ctrl->L.active = true;
@@ -376,13 +376,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 			case 'Q':	/* Skip small closed contours */
 				Ctrl->Q.active = true;
 				n = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
+				n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
 				Ctrl->Q.min = n;
 				break;
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
 				j = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, j < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
+				n_errors += gmt_M_check_condition (GMT, j < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
 				Ctrl->S.value = j;
 				break;
 			case 'T':	/* Ticking of innermost closed contours */
@@ -419,7 +419,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 					}
 					else
 						n_errors += grdcontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
-					n_errors += GMT_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0,
+					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0,
 					                                 "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n",
 					                                 GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
@@ -466,18 +466,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 
 	if (Ctrl->A.interval > 0.0 && (!Ctrl->C.file && Ctrl->C.interval == 0.0)) Ctrl->C.interval = Ctrl->A.interval;
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
 	                                 "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
 			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont),
 	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Syntax error -L option: lower limit > upper!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Syntax error -L option: lower limit > upper!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0,
 	                                 "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt,
 	                                 "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -553,7 +553,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			/* The following uses 10^-7 as limit, hence the 0.1 */
 			da = save[pol].y[0] - save[pol2].y[0]; db = save[pol].y[save[pol].n-1] - save[pol2].y[save[pol2].n-1];
 			dc = save[pol].y[0] - save[pol2].y[save[pol2].n-1];	dd = save[pol].y[save[pol].n-1] - save[pol2].y[0];
-			match = ((GMT_IS_ZERO (0.1*da) && GMT_IS_ZERO (0.1*db)) || (GMT_IS_ZERO (0.1*dc) && GMT_IS_ZERO (0.1*dd)));
+			match = ((gmt_M_is_zero (0.1*da) && gmt_M_is_zero (0.1*db)) || (gmt_M_is_zero (0.1*dc) && gmt_M_is_zero (0.1*dd)));
 			if (!match) continue;
 			if ((save[pol].do_it + save[pol2].do_it) == 1) save[pol].do_it = save[pol2].do_it = false;
 			found = true;
@@ -572,8 +572,8 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 		if (abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
 			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->nx - 1;
-			row = (int)GMT_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
-			row += (int)GMT_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
+			row = (int)gmt_M_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
+			row += (int)gmt_M_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
 			row /= 2;
 		}
 		else if (abs (save[pol].kind) >= 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
@@ -594,13 +594,13 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			/* Pick the mid-latitude and march along that line from east to west */
 
 			this_lat = 0.5 * (ymax + ymin);	/* Mid latitude, probably not exactly on a y-node */
-			row = (int)MIN (G->header->ny - 1, GMT_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
-			this_lat = GMT_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
-			col  = (int)GMT_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
-			stop = (int)GMT_grd_x_to_col (GMT, xmax, G->header);		/* Eastermost point */
+			row = (int)MIN (G->header->ny - 1, gmt_M_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
+			this_lat = gmt_M_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
+			col  = (int)gmt_M_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
+			stop = (int)gmt_M_grd_x_to_col (GMT, xmax, G->header);		/* Eastermost point */
 			done = false;
 			while (!done && col <= stop) {
-				this_lon = GMT_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
+				this_lon = gmt_M_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
 				inside = gmt_non_zero_winding (GMT, this_lon, this_lat, save[pol].x, save[pol].y, np);
 				if (inside == 2)	/* OK, this point is inside */
 					done = true;
@@ -609,7 +609,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 			}
 			if (!done) continue;	/* Failed to find an inside point */
 		}
-		ij = GMT_IJP (G->header, row, col);
+		ij = gmt_M_ijp (G->header, row, col);
 		save[pol].high = (G->data[ij] > save[pol].cval);
 
 		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
@@ -666,7 +666,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 	for (pol = 0; tick_label && pol < n; pol++) {	/* Finally, do labels */
 		if (!save[pol].do_it) continue;
-		if (abs (save[pol].kind) == 2 && GMT_IS_AZIMUTHAL (GMT)) {	/* Only plot once at mean location */
+		if (abs (save[pol].kind) == 2 && gmt_M_is_azimuthal (GMT)) {	/* Only plot once at mean location */
 			for (pol2 = 0, k = -1; pol2 < n && k == -1; pol2++) {	/* Finally, do labels */
 				if (save[pol2].kind != -save[pol].kind) continue;
 				if (save[pol2].cval != save[pol].cval) continue;
@@ -703,25 +703,25 @@ GMT_LOCAL void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, s
 		C = G->segment[seg];	/* Pointer to current segment */
 		for (k = 0; k < C->n_labels; k++) {
 			gmt_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
-			row = (int)GMT_grd_y_to_row (GMT, y_on, Grid->header);
+			row = (int)gmt_M_grd_y_to_row (GMT, y_on, Grid->header);
 			if (row < 0 || row >= (int)Grid->header->ny) continue;		/* Somehow, outside y range */
-			while (GMT_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
-			while (GMT_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
-			col = (int)GMT_grd_x_to_col (GMT, x_on, Grid->header);
+			while (gmt_M_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
+			while (gmt_M_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
+			col = (int)gmt_M_grd_x_to_col (GMT, x_on, Grid->header);
 			if (col < 0 || col >= (int)Grid->header->nx) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
 			if (angle > 90.0) angle -= 180.0;
 			sincosd (angle + 90, &ny, &nx);	/* Coordinate of normal to label line */
-			x_node = GMT_grd_col_to_x (GMT, col, Grid->header);
-			y_node = GMT_grd_row_to_y (GMT, row, Grid->header);
+			x_node = gmt_M_grd_col_to_x (GMT, col, Grid->header);
+			y_node = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 			gmt_geo_to_xy (GMT, x_node, y_node, &x_node_p, &y_node_p);	/* Projected coordinates of nearest node point */
 			dx = x_node_p - C->L[k].x;
 			dy = y_node_p - C->L[k].y;
-			if (GMT_IS_ZERO (hypot (dx, dy))) {
+			if (gmt_M_is_zero (hypot (dx, dy))) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to adjust hill label contour orientation (node point on contour)\n");
 				continue;
 			}
-			ij = GMT_IJP (Grid->header, row, col);
+			ij = gmt_M_ijp (Grid->header, row, col);
 			dz = Grid->data[ij] - C->z;
 			if (doubleAlmostEqualZero (Grid->data[ij], C->z)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to adjust hill label contour orientation (node value = contour value)\n");
@@ -744,7 +744,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 		closed = cont_is_closed;
 		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
 	}
-	else if (GMT_is_geographic (GMT, GMT_IN) && GMT_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
+	else if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
 		if (fabs (x[0] - G->header->wesn[XLO]) < small_x && fabs (x[n-1] - G->header->wesn[XLO]) < small_x) {	/* Split periodic boundary contour */
 			closed = cont_is_closed_straddles_west;	/* Left periodic */
 			x[0] = x[n-1] = G->header->wesn[XLO];	/* Force exact closure */
@@ -753,7 +753,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 			closed = cont_is_closed_straddles_east;	/* Right periodic */
 			x[0] = x[n-1] = G->header->wesn[XHI];	/* Force exact closure */
 		}
-		else if (GMT_360_RANGE (x[0], x[n-1])) {	/* Must be a polar cap */
+		else if (gmt_M_360_range (x[0], x[n-1])) {	/* Must be a polar cap */
 			/* Determine if the polar cap stays on one side of the equator */
 			y_min = y_max = y[0];
 			for (k = 1; k < n; k++) {
@@ -771,7 +771,7 @@ GMT_LOCAL enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, stru
 	return (closed);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdcontour (void *V_API, int mode, void *args) {
@@ -840,7 +840,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
+	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, G->header->wesn, 4, double);	/* -R was not set so we use the grid domain */
 
 	if (need_proj && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
@@ -877,11 +877,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		double t_epoch_unit, t_epoch_unit_even, tmp;
 		data_is_time = true;
 		/* Save original date and clock output formatting structures */
-		GMT_memcpy (&Clock, &GMT->current.io.clock_output, 1, struct GMT_CLOCK_IO);
-		GMT_memcpy (&Date, &GMT->current.io.date_output, 1, struct GMT_DATE_IO);
+		gmt_M_memcpy (&Clock, &GMT->current.io.clock_output, 1, struct GMT_CLOCK_IO);
+		gmt_M_memcpy (&Date, &GMT->current.io.date_output, 1, struct GMT_DATE_IO);
 		/* Set date and clock output to the corresponding MAP versions */
-		GMT_memcpy (&GMT->current.io.clock_output, &GMT->current.plot.calclock.clock, 1, struct GMT_CLOCK_IO);
-		GMT_memcpy (&GMT->current.io.date_output,  &GMT->current.plot.calclock.date, 1, struct GMT_DATE_IO);
+		gmt_M_memcpy (&GMT->current.io.clock_output, &GMT->current.plot.calclock.clock, 1, struct GMT_CLOCK_IO);
+		gmt_M_memcpy (&GMT->current.io.date_output,  &GMT->current.plot.calclock.date, 1, struct GMT_DATE_IO);
 		/* We want time to align on integer TIME_UNIT.  If epoch is not a multiple of TIME_UNIT
 		 * then we compute the offset and add to z */
 		tmp = GMT->current.setting.time_system.epoch_t0; GMT->current.setting.time_system.epoch_t0 = 0.0;	/* Save */
@@ -985,11 +985,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
@@ -1173,10 +1173,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 		if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
 			gmt_get_rgb_from_z (GMT, P, cval, rgb);
-			GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
+			gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 		}
 		if (Ctrl->W.color_text)	/* Override label color according to CPT file */
-			GMT_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
+			gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 
 		n_alloc = 0;
 		begin = true;
@@ -1194,7 +1194,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t old_n_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = gmt_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
-						GMT_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
+						gmt_M_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
 					D->table[tbl]->n_segments++;	D->n_segments++;
@@ -1211,11 +1211,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					if (n_save == n_save_alloc) save = gmt_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 					extra = (abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
 					n_alloc = 0;
-					GMT_memset (&save[n_save], 1, struct SAVE);
+					gmt_M_memset (&save[n_save], 1, struct SAVE);
 					gmt_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
-					GMT_memcpy (save[n_save].x, x, n, double);
-					GMT_memcpy (save[n_save].y, y, n, double);
-					GMT_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
+					gmt_M_memcpy (save[n_save].x, x, n, double);
+					gmt_M_memcpy (save[n_save].y, y, n, double);
+					gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
 					save[n_save].do_it = true;
 					save[n_save].cval = cval;
 					save[n_save].kind = closed;
@@ -1267,8 +1267,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 	if (data_is_time) {	/* Undo earlier swapparoo */
 		/* Restore original date and clock output formatting structures */
-		GMT_memcpy (&GMT->current.io.clock_output, &Clock, 1, struct GMT_CLOCK_IO);
-		GMT_memcpy (&GMT->current.io.date_output, &Date, 1, struct GMT_DATE_IO);
+		gmt_M_memcpy (&GMT->current.io.clock_output, &Clock, 1, struct GMT_CLOCK_IO);
+		gmt_M_memcpy (&GMT->current.io.date_output, &Date, 1, struct GMT_DATE_IO);
 	}
 
 	if (make_plot) label_mode |= 1;		/* Would want to plot ticks and labels if -T is set */

@@ -320,14 +320,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct
 	}
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
-	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Warning: Cannot specify -F for discs; ignored\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Syntax error -A option: Cannot use -L, -N, -T or -Z with -A\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file or template\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Syntax error option -Z: Cannot be used with -Qi\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Filename template must contain format specifier when -T is used\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.mode == SHAPE_DISC && Ctrl->F.active, "Warning: Cannot specify -F for discs; ignored\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->N.active || Ctrl->Z.active || Ctrl->L.active || Ctrl->T.active), "Syntax error -A option: Cannot use -L, -N, -T or -Z with -A\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file or template\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Q.bmode == SMT_INCREMENTAL, "Syntax error option -Z: Cannot be used with -Qi\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !strchr (Ctrl->G.file, '%'), "Syntax error -G option: Filename template must contain format specifier when -T is used\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && !Ctrl->T.active, "Syntax error -M option: Requires time information via -T\n");
 	n_expected_fields = ((Ctrl->E.active) ? 6 : 4) + ((Ctrl->F.mode == TRUNC_FILE) ? 1 : 0);
 	if (Ctrl->T.active) n_expected_fields += 2;	/* The two cols with start and stop time */
 	n_errors += gmt_check_binary_io (GMT, n_expected_fields);
@@ -341,7 +341,7 @@ GMT_LOCAL void disc_area_volume_height (double a, double b, double h, double hc,
 	 * Here, f is not used; ignore compiler warning. */
 
 	double r2;
-	GMT_UNUSED(f);
+	gmt_M_unused(f);
 
 	r2 = a * b;
 	*A = M_PI * r2;
@@ -490,7 +490,7 @@ GMT_LOCAL int parse_the_record (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C
 	return 0;	/* OK */	
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdseamount (void *V_API, int mode, void *args) {
@@ -573,7 +573,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 
 	build_mode = (Ctrl->T.active) ? SHAPE_DISC : Ctrl->C.mode;	/* For incremental building we use disc increments regardless of shape */
 	
-	map = GMT_is_geographic (GMT, GMT_IN);
+	map = gmt_M_is_geographic (GMT, GMT_IN);
 	if (map) {	/* Geographic data */
 		DEG_PR_KM = 1.0 / GMT->current.proj.DIST_KM_PR_DEG;
 		d_mode = 2, unit = 'k';	/* Select km and great-circle distances */
@@ -627,7 +627,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	/* Calculate the area, volume, height for each shape; if -L then also write the results */
 	
-	GMT_memset (in, 9, double);
+	gmt_M_memset (in, 9, double);
 	for (tbl = n_smts = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
@@ -680,7 +680,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	nx1 = Grid->header->nx + Grid->header->registration - 1;
-	if (map && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
+	if (map && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) periodic = true;
 	replicate = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);
 	if (Ctrl->A.active) for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->A.value[GMT_OUT];
 	if (Ctrl->Z.active) {	/* Start with the background depth */
@@ -696,7 +696,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			this_user_time = Ctrl->T.time[t].value;	/* In years */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating bathymetry for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 		}
-		if (Ctrl->Q.bmode == SMT_INCREMENTAL) GMT_memset (Grid->data, Grid->header->size, float);	/* Wipe clean for next increment */
+		if (Ctrl->Q.bmode == SMT_INCREMENTAL) gmt_M_memset (Grid->data, Grid->header->size, float);	/* Wipe clean for next increment */
 		max = -DBL_MAX;
 		empty = true;	/* So far, no seamounts have left a contribution */
 				
@@ -708,7 +708,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (parse_the_record (GMT, Ctrl, S->record[rec], n_expected_fields, (int)n_smts, map, inv_scale, in)) continue;
 					
 					if (Ctrl->T.active && (this_user_time >= in[t0_col] || this_user_time < in[t1_col])) continue;	/* Outside time-range */
-					if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
+					if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 					if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 					GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate seamount # %6d\n", n_smts);
@@ -760,10 +760,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 						}
 					}
 					
-					scol_0 = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
+					scol_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);	/* Center column */
 					if (scol_0 < 0) continue;	/* Still outside x-range */
 					if ((col_0 = scol_0) >= Grid->header->nx) continue;	/* Still outside x-range */
-					srow_0 = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
+					srow_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);	/* Center row */
 					if (srow_0 < 0) continue;	/* Still outside y-range */
 					if ((row_0 = srow_0) >= Grid->header->ny) continue;	/* Still outside y-range */
 					
@@ -815,7 +815,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
 						if (srow < 0) continue;
 						if ((row = srow) >= Grid->header->ny) continue;
-						y = GMT_grd_row_to_y (GMT, row, Grid->header);
+						y = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 						first = replicate;	/* Used to help us deal with duplicate columns for grid-line registered global grids */
 						for (scol = scol_0 - (int)d_col[row]; scol <= (scol_0 + (int)d_col[row]); scol++) {
 							if (!periodic) {
@@ -827,7 +827,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 							else if ((col = scol) >= Grid->header->nx) 	/* Periodic grid: Wrap around to other side */
 								col -= nx1;
 							/* "silent" else we are inside w/e */
-							x = GMT_grd_col_to_x (GMT, col, Grid->header);
+							x = gmt_M_grd_col_to_x (GMT, col, Grid->header);
 							this_r = gmt_distance (GMT, in[GMT_X], in[GMT_Y], x, y);	/* In Cartesian units or km (if map is true) */
 							if (this_r > r_km) continue;	/* Beyond the base of the seamount */
 							if (Ctrl->E.active) {	/* For Gaussian we must deal with direction etc */
@@ -862,7 +862,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 									add = (rr < Ctrl->F.value) ? 1.0 : exp (f * this_r * this_r) * h_scale - noise;
 							}
 							if (add <= 0.0) continue;	/* No amplitude, so skip */
-							ij = GMT_IJP (Grid->header, row, col);	/* Current node location */
+							ij = gmt_M_ijp (Grid->header, row, col);	/* Current node location */
 							z_assign = amplitude * add;		/* height to be added */
 							if (Ctrl->A.active)	/* Just set inside value for mask */
 								Grid->data[ij] = Ctrl->A.value[GMT_IN];
@@ -917,11 +917,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		}
 
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
-		GMT_memcpy (data, Grid->data, Grid->header->size, float);	/* This will go away once gmt_nc.c is fixed to leave array alone */
+		gmt_M_memcpy (data, Grid->data, Grid->header->size, float);	/* This will go away once gmt_nc.c is fixed to leave array alone */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Grid) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_memcpy (Grid->data, data, Grid->header->size, float);
+		gmt_M_memcpy (Grid->data, data, Grid->header->size, float);
 	}
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_OK) {

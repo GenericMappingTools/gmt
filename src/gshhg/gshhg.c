@@ -148,14 +148,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 					Ctrl->I.mode = 1;
 				else {
 					sval = atoi (opt->arg);
-					n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -I: ID cannot be negative!\n");
+					n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -I: ID cannot be negative!\n");
 					Ctrl->I.id = sval;
 				}
 				break;
 			case 'N':
 				Ctrl->N.active = true;
 				sval = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N: Level cannot be negative!\n");
+				n_errors += gmt_M_check_condition (GMT, sval < 0, "Syntax error -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;
 			case 'Q':
@@ -173,14 +173,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gshhg (void *V_API, int mode, void *args) {
@@ -339,7 +339,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				T = gmt_memory (GMT, T, n_alloc, struct GMT_DATASEGMENT *);
-				GMT_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
+				gmt_M_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 			}
 		}
 

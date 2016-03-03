@@ -241,12 +241,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct G
 	if (Ctrl->E.active) n_opts++;
 	if (Ctrl->C.active) n_opts++;
 	if (Ctrl->L.active) n_opts++;
-	n_errors += GMT_check_condition (GMT, n_opts != 1, "Syntax error: Specify one of -C, -E, -L, or -M\n");
+	n_errors += gmt_M_check_condition (GMT, n_opts != 1, "Syntax error: Specify one of -C, -E, -L, or -M\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77info (void *V_API, int mode, void *args) {
@@ -429,8 +429,8 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
 		ymax = -180.0;
-		GMT_memset (quad, 4, bool);	/* Set all to false */
-		GMT_memset (counter, MGD77_MAX_COLS, uint64_t);
+		gmt_M_memset (quad, 4, bool);	/* Set all to false */
+		gmt_M_memset (counter, MGD77_MAX_COLS, uint64_t);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
 			dvalue[i] = D->values[i];
@@ -464,7 +464,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			xmin2 = MIN (this_lon, xmin2);
 			xmax2 = MAX (this_lon, xmax2);
 			if (rec > 0) {	/* Need a previous point to calculate distance, speed, and heading */
-				GMT_set_delta_lon (last_lon, this_lon, dlon);
+				gmt_M_set_delta_lon (last_lon, this_lon, dlon);
 				dx = dlon * cosd (0.5 * (this_lat + last_lat));
 				dy = this_lat - last_lat;
 				ds = GMT->current.proj.DIST_KM_PR_DEG * hypot (dx, dy);

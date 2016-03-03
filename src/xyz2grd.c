@@ -182,7 +182,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':
-				if (!opt->arg[0] && GMT_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
+				if (!opt->arg[0] && gmt_M_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -Az instead.\n");
 					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
@@ -201,7 +201,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 			case 'E':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdconvert instead.\n");
 					Ctrl->E.active = true;
 					if (opt->arg[0]) {
@@ -226,7 +226,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'N':
-				if (GMT_compat_check (GMT, 4)) {	/* Honor old -N<value> option */
+				if (gmt_M_compat_check (GMT, 4)) {	/* Honor old -N<value> option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N is deprecated; use GMT common option -di<nodata> instead.\n");
 					if (opt->arg[0]) {
 						char arg[GMT_LEN64] = {""};
@@ -263,7 +263,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 		n_errors += gmt_parse_z_io (GMT, ptr_to_arg, &Ctrl->Z);
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error -S option: Must also specify -Z\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error -S option: Must also specify -Z\n");
 	if (Ctrl->S.active) {	/* Reading and writing binary file */
 		if (n_files > 1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -S can only handle one input file\n");
@@ -287,17 +287,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT
 
 	do_grid = !(Ctrl->S.active || Ctrl->E.active);
 	if (do_grid) {
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	}
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active && !(Ctrl->G.active || Ctrl->G.file), "Syntax error option -G: Must specify output file\n");
 	n_req = (Ctrl->Z.active) ? 1 : ((Ctrl->A.mode == 'n') ? 2 : 3);
 	n_errors += gmt_check_binary_io (GMT, n_req);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL void protect_J(struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
@@ -317,7 +317,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL;
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
-	uint64_t ij, gmt_ij, n_read, n_filled = 0, n_used = 0, n_req;
+	uint64_t ij, ij_gmt, n_read, n_filled = 0, n_used = 0, n_req;
 
 	char c, Amode;
 
@@ -401,11 +401,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
 					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 
@@ -431,7 +431,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	/* PW: This is now done in grdconvert since ESRI Arc Interchange is a recognized format */
-	if (Ctrl->E.active && GMT_compat_check (GMT, 4)) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
+	if (Ctrl->E.active && gmt_M_compat_check (GMT, 4)) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
 		uint64_t n_left;
 		double value;
 		char line[GMT_BUFSIZ];
@@ -502,14 +502,14 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				Ctrl->E.nodata = value;
 		}
 		else {	/* Instead got the very first data value */
-			ij = GMT_IJP (Grid->header, row, col);
+			ij = gmt_M_ijp (Grid->header, row, col);
 			value = atof (line);
 			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
 			if (++col == Grid->header->nx) col = 0, row++;
 			n_left--;
 		}
 		while (fscanf (fp, "%lf", &value) == 1 && n_left) {
-			ij = GMT_IJP (Grid->header, row, col);
+			ij = gmt_M_ijp (Grid->header, row, col);
 			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
 			if (++col == Grid->header->nx) col = 0, row++;
 			n_left--;
@@ -565,7 +565,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	else {
 		zcol = GMT_Z;
 		flag = gmt_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
-		GMT_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
+		gmt_M_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
@@ -592,11 +592,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -609,25 +609,25 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_NORMAL, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
 				Return (EXIT_FAILURE);
 			}
-			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
-			Grid->data[gmt_ij] = (gmt_z_input_is_nan_proxy (GMT, GMT_Z, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
+			ij_gmt = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
+			Grid->data[ij_gmt] = (gmt_z_input_is_nan_proxy (GMT, GMT_Z, in[zcol])) ? GMT->session.f_NaN : (float)in[zcol];
 			ij++;
 		}
 		else {	/* Get x, y, z */
-			if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
+			if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;	/* Outside y-range */
 			if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;	/* Outside x-range */
 
 			/* Ok, we are inside the region - process data */
 
-			scol = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+			scol = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 			if (scol == -1) scol++, n_confused++;
 			col = scol;
 			if (col == Grid->header->nx) col--, n_confused++;
-			srow = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+			srow = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 			if (srow == -1) srow++, n_confused++;
 			row = srow;
 			if (row == Grid->header->ny) row--, n_confused++;
-			ij = GMT_IJ0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
+			ij = gmt_M_ij0 (Grid->header, row, col);	/* Because padding is turned off we can use ij for both Grid and flag */
 			if (Amode == 'f') {	/* Want the first value to matter only */
 				if (flag[ij] == 0) {	/* Assign first value and that is the end of it */
 					Grid->data[ij] = (float)in[zcol];
@@ -683,13 +683,13 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		gmt_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
 	}
 	else {	/* xyz data could have resulted in duplicates */
-		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
+		if (gmt_M_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 			uint64_t ij_west, ij_east;
 			bool first_bad = true;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
-				ij_west = GMT_IJ0 (Grid->header, row, 0);
-				ij_east = GMT_IJ0 (Grid->header, row, Grid->header->nx - 1);
+				ij_west = gmt_M_ij0 (Grid->header, row, 0);
+				ij_east = gmt_M_ij0 (Grid->header, row, Grid->header->nx - 1);
 				
 				if (flag[ij_west] && !flag[ij_east]) {		/* Nothing in east bin, just copy from west */
 					Grid->data[ij_east] = Grid->data[ij_west];
@@ -746,7 +746,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		}
 		gmt_free (GMT, flag);
 		
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			(GMT->common.d.active[GMT_IN]) ? sprintf (e_value, GMT->current.setting.format_float_out, GMT->common.d.nan_proxy[GMT_IN]) : sprintf (e_value, "NaN");

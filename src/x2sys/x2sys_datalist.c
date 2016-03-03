@@ -170,9 +170,9 @@ int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Syntax error: -F must be given a comma-separated list of columns.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error: -I must be given a filename.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Syntax error: -F must be given a comma-separated list of columns.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error: -I must be given a filename.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -213,7 +213,7 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	return (true);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
@@ -278,7 +278,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	s->ascii_out = !GMT->common.b.active[1];
 
-	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
+	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
 
 	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;
 
@@ -329,7 +329,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(km/hr)");
 			break;
 		case 'm':
-			if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
@@ -363,7 +363,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(km)");
 			break;
 		case 'm':
-			if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+			if (gmt_M_compat_check (GMT, 4)) /* Warn and fall through */
 				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");

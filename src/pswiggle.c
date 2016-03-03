@@ -273,12 +273,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				Ctrl->C.value = atof (opt->arg);
 				break;
 			case 'D':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
 					GMT->common.g.active = true;
 					if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 						sprintf (txt_a, "d%s", &opt->arg[1]);
-					else if (GMT_is_geographic (GMT, GMT_IN))	
+					else if (gmt_M_is_geographic (GMT, GMT_IN))	
 						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
 					else
 						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
@@ -306,7 +306,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 				Ctrl->I.active = true;
 				break;
 			case 'N':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
 					N_active = true;
 				}
@@ -326,7 +326,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 					units++;
 					Ctrl->S.label = strdup (units);
 				}
-				n_errors += GMT_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
+				n_errors += gmt_M_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -355,22 +355,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 		}
 	}
 
-	if (N_active && GMT_compat_check (GMT, 4)) {
+	if (N_active && gmt_M_compat_check (GMT, 4)) {
 		Ctrl->G.active[1] = Ctrl->G.active[0];
 		Ctrl->G.active[0] = false;
 		Ctrl->G.fill[1] = Ctrl->G.fill[0];
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active[0] || Ctrl->G.active[1]), "Syntax error: Must specify at least one of -G, -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->W.active || Ctrl->G.active[0] || Ctrl->G.active[1]), "Syntax error: Must specify at least one of -G, -W\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: scale must be nonzero\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **yy, double **zz) {

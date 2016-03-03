@@ -160,7 +160,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+	symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -185,7 +185,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
 					Ctrl->Q.S.v.status |= GMT_VEC_JUST_C;
 				}
@@ -212,12 +212,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				break;
 			case 'Q':	/* Vector plots, with parameters */
 				Ctrl->Q.active = true;
-				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
+				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
-						Ctrl->Q.S.v.v_norm = (float)GMT_to_inch (GMT, &opt->arg[j+1]);
-						n_errors += GMT_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
+						Ctrl->Q.S.v.v_norm = (float)gmt_M_to_inch (GMT, &opt->arg[j+1]);
+						n_errors += gmt_M_check_condition (GMT, Ctrl->Q.S.v.v_norm <= 0.0, "Syntax error -Qn option: No reference length given\n");
 						opt->arg[j] = '\0';	/* Temporarily chop of the n<norm> string */
 					}
 					if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
@@ -226,9 +226,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
-							Ctrl->Q.S.v.pen.width = GMT_to_points (GMT, txt_a);
-							Ctrl->Q.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
-							Ctrl->Q.S.v.h_width = (float)GMT_to_inch (GMT, txt_c);
+							Ctrl->Q.S.v.pen.width = gmt_M_to_points (GMT, txt_a);
+							Ctrl->Q.S.v.h_length = (float)gmt_M_to_inch (GMT, txt_b);
+							Ctrl->Q.S.v.h_width = (float)gmt_M_to_inch (GMT, txt_c);
 							Ctrl->Q.S.v.v_angle = (float)atand (0.5 * Ctrl->Q.S.v.h_width / Ctrl->Q.S.v.h_length);
 						}
 					}
@@ -243,7 +243,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 					else {	/* Size, plus possible attributes */
 						j = sscanf (opt->arg, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 						if (j == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
-						Ctrl->Q.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+						Ctrl->Q.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->Q.S);
 					}
 				}
@@ -288,23 +288,23 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
 	                                 "Syntax error -I option: Must specify positive increments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option: Scale must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor == 0.0 && !Ctrl->S.constant, "Syntax error -S option: Scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.factor <= 0.0 && Ctrl->S.constant, "Syntax error -Sl option: Length must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.constant && Ctrl->Q.S.v.v_norm > 0.0,
 	                                 "Syntax error -Sl, -Q options: Cannot use -Q..n<size> with -Sl\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->A.active,
 	                                 "Syntax error -Z option: Azimuth adjustment does not apply to Cartesian component grids\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->W.active || Ctrl->C.active),
 	                                 "Syntax error: Must specify at least one of -G, -W, -C\n");
-	n_errors += GMT_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 2, "Syntax error: Must specify two input grid files\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdvector (void *V_API, int mode, void *args) {
@@ -359,14 +359,14 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		gmt_grd_init (GMT, Grid[k]->header, options, true);
 	}
 
-	if (!(GMT_grd_same_shape (GMT, Grid[0], Grid[1]) && GMT_grd_same_region (GMT, Grid[0], Grid[1]) && GMT_grd_same_inc (GMT, Grid[0], Grid[1]))) {
+	if (!(gmt_M_grd_same_shape (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_region (GMT, Grid[0], Grid[1]) && gmt_M_grd_same_inc (GMT, Grid[0], Grid[1]))) {
 		GMT_Report (API, GMT_MSG_NORMAL, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
 		Return (EXIT_FAILURE);
 	}
 
 	/* Determine what wesn to pass to map_setup */
 
-	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid[0]->header->wesn, 4, double);
+	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, Grid[0]->header->wesn, 4, double);
 
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
@@ -401,7 +401,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		}
 		else {	/* Find min/max vector lengths from the components */
 			v_min = DBL_MAX;	v_max = 0.0;
-			GMT_grd_loop (GMT, Grid[GMT_X], row, col, ij) {
+			gmt_M_grd_loop (GMT, Grid[GMT_X], row, col, ij) {
 				vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
 				if (vec_length < v_min) v_min = vec_length;
 				if (vec_length > v_max) v_max = vec_length;
@@ -412,7 +412,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		}
 	}
 
-	Geographic = (GMT_is_geographic (GMT, GMT_IN));
+	Geographic = (gmt_M_is_geographic (GMT, GMT_IN));
 	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 
 	if (Geographic) {	/* Now that we know this we make sure -T is diabled if given */
@@ -487,12 +487,12 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 	
 	PSL_command (GMT->PSL, "V\n");
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
-		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
+		y = gmt_M_grd_row_to_y (GMT, row, Grid[0]->header);	/* Latitude OR y OR radius */
 		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
 
-			ij = GMT_IJP (Grid[0]->header, row, col);
+			ij = gmt_M_ijp (Grid[0]->header, row, col);
 			if (GMT_is_fnan (Grid[0]->data[ij]) || GMT_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
-			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);	/* Longitude OR x OR theta [or azimuth] */
+			x = gmt_M_grd_col_to_x (GMT, col, Grid[0]->header);	/* Longitude OR x OR theta [or azimuth] */
 			if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
 				gmt_map_outside (GMT, x, y);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
@@ -516,7 +516,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 			
 			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
 				gmt_get_fill_from_z (GMT, P, vec_length, &Ctrl->G.fill);
-				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
+				gmt_M_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				gmt_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				gmt_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
@@ -543,7 +543,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 				x2 = plot_x + scaled_vec_length * c;
 				y2 = plot_y + scaled_vec_length * s;
 
-				justify = GMT_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
+				justify = gmt_M_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
 				if (justify) {	/* Justify vector at center, or tip [beginning] */
 					x_off = justify * 0.5 * (x2 - plot_x);	y_off = justify * 0.5 * (y2 - plot_y);
 					plot_x -= x_off;	plot_y -= y_off;

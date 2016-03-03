@@ -121,12 +121,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 						Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 					else	/* With -Dj or -DJ, set default to reference justify point, else BL */
-						Ctrl->D.justify = GMT_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
+						Ctrl->D.justify = gmt_M_just_default (GMT, Ctrl->D.refpoint, PSL_BL);
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'o', string)) {
 						if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->D.off)) < 0) n_errors++;
 					}
 					if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string))	/* Get logo width */
-						Ctrl->D.width = GMT_to_inch (GMT, string);
+						Ctrl->D.width = gmt_M_to_inch (GMT, string);
 				}
 				break;
 			case 'F':
@@ -138,7 +138,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Scale for the logo */
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -W is deprecated; -D...+w%s was set instead, use this in the future.\n", opt->arg);
-				Ctrl->D.width = GMT_to_inch (GMT, opt->arg);
+				Ctrl->D.width = gmt_M_to_inch (GMT, opt->arg);
 				break;
 
 			default:	/* Report bad options */
@@ -150,12 +150,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *Ctrl, struct GMT
 		Ctrl->D.refpoint = gmt_get_refpoint (GMT, "x0/0");	/* Default if no -D given */
 		Ctrl->D.active = true;
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.width < 0.0, "Syntax error -D option, +w modifier: Width cannot be zero or negative!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_gmtlogo (void *V_API, int mode, void *args) {
@@ -198,7 +198,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* The following is needed to have gmtlogo work correctly in perspective */
 
-	GMT_memset (wesn, 4, double);
+	gmt_M_memset (wesn, 4, double);
 	dim[GMT_X] = Ctrl->D.width, dim[GMT_Y] = 0.5 * Ctrl->D.width; /* Height is 0.5 * width */
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
 		GMT->common.R.active = true;

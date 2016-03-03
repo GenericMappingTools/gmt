@@ -218,8 +218,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify an input grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Specify 1-10 model parameters\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error: Must specify an input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Syntax error -N option: Specify 1-10 model parameters\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -273,9 +273,9 @@ GMT_LOCAL void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *
 	/* Find trend from a model  */
 	unsigned int row, col, k;
 	uint64_t ij;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
-	GMT_grd_loop (GMT, T, row, col, ij) {
+	gmt_M_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
 		T->data[ij] = 0.0f;
 		for (k = 0; k < n_model; k++) T->data[ij] += (float)(pstuff[k]*gtd[k]);
@@ -286,9 +286,9 @@ GMT_LOCAL void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct G
 	/* Find residuals from a trend  */
 	unsigned int row, col;
 	uint64_t ij;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
-	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
+	gmt_M_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
 void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model) {
@@ -300,17 +300,17 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 	unsigned int row, col;
 	uint64_t ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	/* First zero the model parameters to use for sums */
 
-	GMT_memset (gtd, n_model, double);
+	gmt_M_memset (gtd, n_model, double);
 
 	/* Now accumulate sums */
 
-	GMT_row_loop (GMT, G, row) {
+	gmt_M_row_loop (GMT, G, row) {
 		y2 = yval[row] * yval[row];
-		GMT_col_loop (GMT, G, row, col, ij) {
+		gmt_M_col_loop (GMT, G, row, col, ij) {
 			x2 = xval[col] * xval[col];
 			sumx2 += x2;
 			sumy2 += y2;
@@ -337,9 +337,9 @@ GMT_LOCAL double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct
 	unsigned int row, col;
 	uint64_t ij;
 	double tmp, chisq = 0.0;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
-	GMT_grd_loop (GMT, R, row, col, ij) {
+	gmt_M_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) continue;
 		tmp = R->data[ij];
 		if (scale != 1.0) tmp /= scale;
@@ -356,7 +356,7 @@ GMT_LOCAL double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R
 	uint64_t j = 0, j2, ij;
 	float r, mad, scale;
 
-	GMT_grd_loop (GMT, R, row, col, ij) {
+	gmt_M_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) continue;
 		W->data[j++] = fabsf (R->data[ij]);
 	}
@@ -372,8 +372,8 @@ GMT_LOCAL double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R
 
 	/* Use weight according to Huber (1981), but squared */
 
-	GMT_memset (W->data, W->header->size, float);	/* Wipe W clean */
-	GMT_grd_loop (GMT, R, row, col, ij) {
+	gmt_M_memset (W->data, W->header->size, float);	/* Wipe W clean */
+	gmt_M_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) {
 			W->data[ij] = R->data[ij];
 			continue;
@@ -418,20 +418,20 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 
 	unsigned int row, col, k, l, n_used = 0;
 	uint64_t ij;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	/* First zero things out to start */
 
-	GMT_memset (gtd, n_model, double);
-	GMT_memset (gtg, n_model * n_model, double);
+	gmt_M_memset (gtd, n_model, double);
+	gmt_M_memset (gtg, n_model * n_model, double);
 
 	/* Now get going.  Have to load_pstuff separately in i and j,
 	   because it is possible that we skip data when i = 0.
 	   Loop over all data */
 
-	GMT_row_loop (GMT, G, row) {
+	gmt_M_row_loop (GMT, G, row) {
 		load_pstuff (pstuff, n_model, xval[0], yval[row], 0, 1);
-		GMT_col_loop (GMT, G, row, col, ij) {
+		gmt_M_col_loop (GMT, G, row, col, ij) {
 
 			if (GMT_is_fnan (G->data[ij]))continue;
 
@@ -472,7 +472,7 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 	return;
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdtrend (void *V_API, int mode, void *args) {
@@ -521,11 +521,11 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	weighted = (Ctrl->N.robust || Ctrl->W.active);
 	trivial = (Ctrl->N.value < 5 && !weighted);
 
-	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
@@ -566,7 +566,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		}
 		if (set_ones) {
 			if ((W = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with unit weights  */
-			GMT_setnval (W->data, W->header->size, 1.0f);
+			gmt_M_setnval (W->data, W->header->size, 1.0f);
 		}
 	}
 
@@ -604,7 +604,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			sprintf (format, "grdtrend: Robust iteration %%d:  Old Chi Squared: %s  New Chi Squared: %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			do {
 				old_chisq = chisq;
-				GMT_memcpy (old, gtd, Ctrl->N.value, double);
+				gmt_M_memcpy (old, gtd, Ctrl->N.value, double);
 				scale = compute_robust_weight (GMT, R, W);
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 				ierror = gmt_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
@@ -621,7 +621,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 			/* Get here when new model not significantly better; use old one */
 
-			GMT_memcpy (gtd, old, Ctrl->N.value, double);
+			gmt_M_memcpy (gtd, old, Ctrl->N.value, double);
 			compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 			compute_resid (GMT, G, T, R);
 		}
@@ -631,7 +631,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/* Get here when ready to do output */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) write_model_parameters (GMT, gtd, Ctrl->N.value);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) write_model_parameters (GMT, gtd, Ctrl->N.value);
 	if (Ctrl->T.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend surface", T)) Return (API->error);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, T)) Return (API->error);

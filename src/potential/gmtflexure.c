@@ -285,11 +285,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active, "Syntax error -E option: Must specify plate thickness or rigidity\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error -Q option: Must specify load option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Syntax error -Q option: Must specify equidistant min/max/inc setting\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Must set density values\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active, "Syntax error -E option: Must specify plate thickness or rigidity\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->Q.active, "Syntax error -Q option: Must specify load option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.file && Ctrl->Q.mode == NO_LOAD && !Ctrl->Q.set_x, "Syntax error -Q option: Must specify equidistant min/max/inc setting\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -1221,7 +1221,7 @@ GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[],
 }
 #endif
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtflexure (void *V_API, int mode, void *args) {
@@ -1323,7 +1323,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			for (tbl = 0; tbl < Q->n_tables; tbl++) {
 				for (seg = 0; seg < Q->table[tbl]->n_segments; seg++) {
 					S = Q->table[tbl]->segment[seg];	/* Current segment */
-					GMT_memset (S->coord[GMT_Y], S->n_rows, double);
+					gmt_M_memset (S->coord[GMT_Y], S->n_rows, double);
 				}
 			}
 		}
@@ -1380,7 +1380,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 			deflection = W->table[tbl]->segment[seg]->coord[GMT_Y];	/* Current flexure */
 			load = S->coord[GMT_Y];	/* Current load */
 			rigidity = E->table[tbl]->segment[seg]->coord[GMT_Y];	/* Current rigidities */
-			GMT_memcpy (W->table[tbl]->segment[seg]->coord[GMT_X], S->coord[GMT_X], S->n_rows, double);
+			gmt_M_memcpy (W->table[tbl]->segment[seg]->coord[GMT_X], S->coord[GMT_X], S->n_rows, double);
 			sprintf (msg, "BCs > ");
 			if (Ctrl->A.bc[LEFT] == BC_INFINITY) strcat (msg, "infinity at left edge + ");
 			else if (Ctrl->A.bc[LEFT] == BC_PERIODIC) strcat (msg, "periodic at left edge + ");

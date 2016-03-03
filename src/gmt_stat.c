@@ -88,6 +88,8 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+enum gmtstat_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
+
 /* --------- Local functions to this file ------- */
 
 #define ITMAX 100
@@ -372,7 +374,7 @@ GMT_LOCAL int gmtstat_f_q (struct GMT_CTRL *GMT, double chisq1, uint64_t nu1, do
 		the value.  All subsequent code is not used.  */
 
 	if (gmtstat_inc_beta (GMT, 0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_q_p:  Trouble in gmtstat_inc_beta call.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_f_q:  Trouble in gmtstat_inc_beta call.\n");
 		return (-1);
 	}
 	return (0);
@@ -623,7 +625,7 @@ GMT_LOCAL double gmtstat_Cabs (double A[]) {
 
 GMT_LOCAL void gmtstat_F_to_ch1_ch2 (struct GMT_CTRL *GMT, double F, double nu1, double nu2, double *chisq1, double *chisq2) {
 	/* Silly routine to break F up into parts needed for gmtstat_f_q */
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	*chisq2 = 1.0;
 	*chisq1 = F * nu1 / nu2;
 }
@@ -664,7 +666,7 @@ int gmt_sig_f (struct GMT_CTRL *GMT, double chi1, uint64_t n1, double chi2, uint
 
 double gmt_ber (struct GMT_CTRL *GMT, double x) {
 	double t, rxsq, alpha, beta;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	if (x == 0.0) return (1.0);
 
@@ -701,7 +703,7 @@ double gmt_ber (struct GMT_CTRL *GMT, double x) {
 
 double gmt_bei (struct GMT_CTRL *GMT, double x) {
 	double t, rxsq, alpha, beta;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	if (x == 0.0) return (0.0);
 
@@ -816,7 +818,7 @@ double gmt_kei (struct GMT_CTRL *GMT, double x) {
 double gmt_i0 (struct GMT_CTRL *GMT, double x) {
 /* Modified from code in Press et al. */
 	double y, res;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	if (x < 0.0) x = -x;
 
@@ -834,7 +836,7 @@ double gmt_i0 (struct GMT_CTRL *GMT, double x) {
 double gmt_i1 (struct GMT_CTRL *GMT, double x) {
 	/* Modified Bessel function I1(x) */
 	double y, res;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	if (x < 0.0) x = -x;
 	if (x < 3.75) {
@@ -884,7 +886,7 @@ double gmt_in (struct GMT_CTRL *GMT, unsigned int n, double x) {
 double gmt_k0 (struct GMT_CTRL *GMT, double x) {
 /* Modified from code in Press et al. */
 	double y, z, res;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	if (x < 0.0) x = -x;
 
@@ -1195,7 +1197,7 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 /* gmt_sinc (x) calculates the sinc function */
 
 double gmt_sinc (struct GMT_CTRL *GMT, double x) {
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	if (x == 0.0) return (1.0);
 	x *= M_PI;
 	return (sin (x) / x);
@@ -1363,7 +1365,7 @@ double gmt_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu) {
 double gmt_t_cdf (struct GMT_CTRL *GMT, double t, uint64_t nu) {
 	double p;
 	/* Cumulative Student t distribution */
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	gmtstat_student_t_a (GMT, fabs (t), nu, &p);
 	p = 0.5 * p + 0.5;
 	if (t < 0.0)
@@ -1373,7 +1375,7 @@ double gmt_t_cdf (struct GMT_CTRL *GMT, double t, uint64_t nu) {
 
 double gmt_weibull_pdf (struct GMT_CTRL *GMT, double x, double scale, double shape) {
 	double p, z;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	/* Weibull distribution */
 	if (x < 0.0) return 0.0;
 	z = x / scale;
@@ -1383,7 +1385,7 @@ double gmt_weibull_pdf (struct GMT_CTRL *GMT, double x, double scale, double sha
 
 double gmt_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double shape) {
 	double p, z;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	/* Cumulative Weibull distribution */
 	if (x < 0.0) return 0.0;
 	z = x / scale;
@@ -1393,7 +1395,7 @@ double gmt_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double sha
 
 double gmt_weibull_crit (struct GMT_CTRL *GMT, double p, double scale, double shape) {
 	double z;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	/* Critical values for Weibull distribution */
 	z = scale * pow (-log (1.0 - p), 1.0/shape);
 	return (z);
@@ -1421,7 +1423,7 @@ double gmt_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p) {
 
 double gmt_zdist (struct GMT_CTRL *GMT, double x) {
 	/* Cumulative Normal (z) distribution */
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	return (0.5 * (erf (x / M_SQRT2) + 1.0));
 }
 

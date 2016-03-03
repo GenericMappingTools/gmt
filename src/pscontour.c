@@ -324,8 +324,8 @@ GMT_LOCAL void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 		/* Now try to find a data point inside this contour */
 		
 		for (j = 0, k = -1; k < 0 && j < nn; j++) {
-			if (GMT_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
-			if (GMT_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use GMT_y_is_outside since projected x-coordinates)*/
+			if (gmt_M_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
+			if (gmt_M_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use gmt_M_y_is_outside since projected x-coordinates)*/
 			
 			inside = gmt_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
@@ -458,8 +458,8 @@ GMT_LOCAL unsigned int pscontour_old_T_parser (struct GMT_CTRL *GMT, char *arg, 
 	if (strchr (arg, '/')) {	/* Gave gap/length */
 		n = sscanf (arg, "%[^/]/%[^:]", txt_a, txt_b);
 		if (n == 2) {
-			Ctrl->T.dim[GMT_X] = GMT_to_inch (GMT, txt_a);
-			Ctrl->T.dim[GMT_Y] = GMT_to_inch (GMT, txt_b);
+			Ctrl->T.dim[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+			Ctrl->T.dim[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
 		}
 	}
 	n = 0;
@@ -530,7 +530,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* CPT table */
 				Ctrl->C.active = true;
-				if (GMT_File_Is_Memory (opt->arg)) {	/* Passed a memory reference from a module */
+				if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
 					gmt_str_free (Ctrl->C.file);
@@ -573,7 +573,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Skip small closed contours */
-				if (!gmt_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the now old -Q<indexfile> option, set to -E */
+				if (!gmt_access (GMT, opt->arg, F_OK) && gmt_M_compat_check (GMT, 4)) {	/* Must be the now old -Q<indexfile> option, set to -E */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Q<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.active = true;
@@ -581,7 +581,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				}
 				Ctrl->Q.active = true;
 				n = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
+				n_errors += gmt_M_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
 				Ctrl->Q.min = n;
 				break;
 			case 'S':	/* Skip points outside border */
@@ -590,7 +590,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 				else if (opt->arg[0] == 't') Ctrl->S.mode = 1;
 				break;
 			case 'T':	/* Embellish innermost closed contours */
-				if (!gmt_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -E */
+				if (!gmt_access (GMT, opt->arg, F_OK) && gmt_M_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -E */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
 					Ctrl->E.active = true;
@@ -628,7 +628,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 					}
 					else
 						n_errors += pscontour_old_T_parser (GMT, &opt->arg[j], Ctrl);
-					n_errors += GMT_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+					n_errors += gmt_M_check_condition (GMT, Ctrl->T.dim[GMT_X] <= 0.0 || Ctrl->T.dim[GMT_Y] == 0.0, "Syntax error -T option: Expected\n\t-T[+|-][+d<tick_gap>[%s][/<tick_length>[%s]]][+lLH], <tick_gap> must be > 0\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 				}
 				break;
 			case 'W':	/* Sets pen attributes */
@@ -669,26 +669,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct G
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
 	                                 "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active && !Ctrl->D.active, "Syntax error: Must specify a region with the -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
 	                                 "Syntax error -C option: Must specify contour interval, file name with levels, or CPT file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active && !Ctrl->E.active && !(Ctrl->W.active || Ctrl->I.active),
 	                                 "Syntax error: Must specify one of -W or -I\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active),
 	                                 "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Syntax error -E option: Must specify an index file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && gmt_access (GMT, Ctrl->E.file, F_OK),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && !Ctrl->E.file, "Syntax error -E option: Must specify an index file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.file && gmt_access (GMT, Ctrl->E.file, F_OK),
 	                                 "Syntax error -E option: Cannot find file %s\n", Ctrl->E.file);
-	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a CPT file\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscontour (void *V_API, int mode, void *args) {
@@ -783,11 +783,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -963,11 +963,11 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		c = 0;
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, &NL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 			if (gmt_is_a_blank_line (record)) continue;	/* Nothing in this record */
@@ -975,7 +975,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			/* Data record to process */
 
 			if (c == c_alloc) cont = gmt_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
-			GMT_memset (&cont[c], 1, struct PSCONTOUR);
+			gmt_M_memset (&cont[c], 1, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
 			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? true : false;
@@ -1019,7 +1019,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			aval = xyz[1][GMT_Z] + 1.0;
 		for (ic = irint (min/Ctrl->C.interval), c = 0; ic <= irint (max/Ctrl->C.interval); ic++, c++) {
 			if (c == c_alloc) cont = gmt_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
-			GMT_memset (&cont[c], 1, struct PSCONTOUR);
+			gmt_M_memset (&cont[c], 1, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_CONV4_LIMIT) ? 'A' : 'C';
@@ -1284,10 +1284,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 			Ctrl->contour.line_pen = Ctrl->W.pen[id];	/* Load current pen into contour structure */
 			if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
 				gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
-				GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
+				gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 			}
 			if (Ctrl->W.color_text)	/* Override label color according to CPT file */
-				GMT_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
+				gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 			
 			head_c = last_c = gmt_memory (GMT, NULL, 1, struct PSCONTOUR_CHAIN);
 
@@ -1382,10 +1382,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 						if (Ctrl->W.color_cont) {	/* Override pen color according to CPT file */
 							gmt_get_rgb_from_z (GMT, P, cont[c].val, rgb);
 							PSL_setcolor (PSL, rgb, PSL_IS_STROKE);
-							GMT_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
+							gmt_M_rgb_copy (&Ctrl->contour.line_pen.rgb, rgb);
 						}
 						if (Ctrl->W.color_text && Ctrl->contour.curved_text) {	/* Override label color according to CPT file */
-							GMT_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
+							gmt_M_rgb_copy (&Ctrl->contour.font_label.fill.rgb, rgb);
 						}
 					}
 					current_contour = cont[c].val;
@@ -1415,7 +1415,7 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t n_old_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = gmt_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
-						GMT_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
+						gmt_M_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
 					D->table[tbl]->n_segments++;	D->n_segments++;
@@ -1431,12 +1431,12 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 					if (cont[c].do_tick && is_closed) {	/* Must store the entire contour for later processing */
 						if (n_save == n_save_alloc) save = gmt_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 						n_alloc = 0;
-						GMT_memset (&save[n_save], 1, struct SAVE);
+						gmt_M_memset (&save[n_save], 1, struct SAVE);
 						gmt_malloc2 (GMT, save[n_save].x, save[n_save].y, m, &n_alloc, double);
-						GMT_memcpy (save[n_save].x, xp, m, double);
-						GMT_memcpy (save[n_save].y, yp, m, double);
+						gmt_M_memcpy (save[n_save].x, xp, m, double);
+						gmt_M_memcpy (save[n_save].y, yp, m, double);
 						save[n_save].n = m;
-						GMT_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
+						gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
 						save[n_save].do_it = true;
 						save[n_save].cval = cont[c].val;
 						n_save++;

@@ -111,7 +111,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case 'z':	/* GMT4 LEVEL: Report data sums */
-						if (GMT_compat_check (GMT, 4)) {
+						if (gmt_M_compat_check (GMT, 4)) {
 							GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -S and -Sz options are deprecated; use -Ss instead.\n");
 							Ctrl->S.mode = 1;
 						}
@@ -152,16 +152,16 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->W.weighted[GMT_IN], "Syntax error: The -Ep option requires weights (= 1/sigma^2) on input\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode && !Ctrl->W.weighted[GMT_IN], "Syntax error: The -Ep option requires weights (= 1/sigma^2) on input\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, &Grid); gmt_free (GMT, zw); gmt_free (GMT, xy); gmt_free (GMT, np); gmt_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_blockmean (void *V_API, int mode, void *args) {
@@ -205,7 +205,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad since no BC work needed */
 
-	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	use_xy = !Ctrl->C.active;	/* If not -C then we must keep track of x,y locations */
 	zw = gmt_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
@@ -231,12 +231,12 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	}
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 	
-	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
 		unsigned int kind = 0;
 		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
 		double mem;
@@ -264,11 +264,11 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 		
@@ -279,7 +279,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 		n_read++;							/* Number of records read */
 
-		if (GMT_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;		/* Outside y-range */
+		if (gmt_M_y_is_outside (GMT, in[GMT_Y],  wesn[YLO], wesn[YHI])) continue;		/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn[XLO], wesn[XHI])) continue;		/* Outside x-range (or periodic longitude) */
 
 		/* We appear to be inside: Get row and col indices of this block */
@@ -294,7 +294,7 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 
 		if (use_weight) weight = in[3];		/* Use provided weight instead of 1 */
 		weighted_z = in[GMT_Z] * weight;			/* Weighted value */
-		node = GMT_IJ0 (Grid->header, row, col);		/* Bin node */
+		node = gmt_M_ij0 (Grid->header, row, col);		/* Bin node */
 		if (use_xy) {						/* Must keep track of weighted location */
 			xy[node].a[GMT_X] += (in[GMT_X] * weight);
 			xy[node].a[GMT_Y] += (in[GMT_Y] * weight);
@@ -366,10 +366,10 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 			out[GMT_Y] = xy[node].a[GMT_Y] * iw;
 		}
 		else {		/* Report block center */
-			col = (unsigned int)GMT_col (Grid->header, node);
-			row = (unsigned int)GMT_row (Grid->header, node);
-			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
-			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
+			col = (unsigned int)gmt_M_col (Grid->header, node);
+			row = (unsigned int)gmt_M_row (Grid->header, node);
+			out[GMT_X] = gmt_M_grd_col_to_x (GMT, col, Grid->header);
+			out[GMT_Y] = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 		}
 		if (Ctrl->S.mode)	/* Report block sums or weights */
 			out[GMT_Z] = (Ctrl->S.mode >= 2) ? zw[node].a[BLK_W] : zw[node].a[BLK_Z];

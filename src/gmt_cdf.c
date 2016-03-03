@@ -105,7 +105,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 
 	/* Get or assign attributes */
 
-	GMT_memset (text, GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160, char);
+	gmt_M_memset (text, GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160, char);
 
 	if (job == 'u') GMT_err_trap (nc_redef (ncid));
 
@@ -278,7 +278,7 @@ int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	header->nx = width_in;
 	header->ny = height_in;
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 
 	gmt_free (GMT, actual_col);
 	gmt_free (GMT, tmp);
@@ -340,7 +340,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
 
-	GMT_memcpy (header->wesn, wesn, 4, double);
+	gmt_M_memcpy (header->wesn, wesn, 4, double);
 	header->nx = width_out;
 	header->ny = height_out;
 

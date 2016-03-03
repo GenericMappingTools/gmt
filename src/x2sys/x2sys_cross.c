@@ -238,10 +238,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.width < 1, "Syntax error: Error -W: window must be at least 1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Syntax error: Error -S: lower speed cutoff higher than upper cutoff!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Error -Q: Only one of -Qe -Qi can be specified!\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.width < 1, "Syntax error: Error -W: window must be at least 1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Syntax error: Error -S: lower speed cutoff higher than upper cutoff!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Error -Q: Only one of -Qe -Qi can be specified!\n");
 
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -259,7 +259,7 @@ GMT_LOCAL int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t 
 	return (false);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_x2sys_cross (void *V_API, int mode, void *args) {
@@ -420,7 +420,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 				add_chunk *= 2;
 				n_alloc += add_chunk;
 				pair = gmt_memory (GMT, pair, n_alloc, struct PAIR);
-				GMT_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct PAIR);
+				gmt_M_memset (&(pair[old_n_alloc]), n_alloc - old_n_alloc, struct PAIR);
 			}
 		}
 		fclose (fp);
@@ -516,7 +516,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 			break;
 	}
 	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
-	wrap = (GMT_is_geographic (GMT, GMT_IN) && GMT->common.R.active && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
+	wrap = (gmt_M_is_geographic (GMT, GMT_IN) && GMT->common.R.active && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]));
 	
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
@@ -639,7 +639,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 				for (i = 0; i < nx; i++) {	/* For each potential crossover */
 
-					GMT_memset (ok, n_data_col, unsigned int);
+					gmt_M_memset (ok, n_data_col, unsigned int);
 					n_ok = 0;
 
 					for (k = 0; k < 2; k++) {	/* For each of the two data sets involved */

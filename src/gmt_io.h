@@ -66,7 +66,7 @@ enum GMT_ogr_status {
 	GMT_OGR_FALSE,		/* This is NOT a GMT/OGR file */
 	GMT_OGR_TRUE};		/* This is a GMT/OGR file */
 
-#define GMT_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
+#define gmt_M_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
 
 /* Specific feature geometries as obtained from OGR */
 /* Note: As far as registering or reading data, GMT only needs to know if data type is POINT, LINE, or POLY */
@@ -89,25 +89,22 @@ enum GMT_enum_segopt {
 	/*! -Z */	GMT_IS_Z = -7};
 
 /* Macros to simplify check for return status */
-#define GMT_REC_IS_TABLE_HEADER(C)	(C->current.io.status & GMT_IO_TABLE_HEADER)
-#define GMT_REC_IS_SEGMENT_HEADER(C)	(C->current.io.status & GMT_IO_SEGMENT_HEADER)
-#define GMT_REC_IS_ANY_HEADER(C)	(C->current.io.status & GMT_IO_ANY_HEADER)
-#define GMT_REC_IS_ERROR(C)		(C->current.io.status & GMT_IO_MISMATCH)
-#define GMT_REC_IS_EOF(C)		(C->current.io.status & GMT_IO_EOF)
-#define GMT_REC_IS_NAN(C)		(C->current.io.status & GMT_IO_NAN)
-#define GMT_REC_IS_GAP(C)		(C->current.io.status & GMT_IO_GAP)
-#define GMT_REC_IS_NEW_SEGMENT(C)	(C->current.io.status & GMT_IO_NEW_SEGMENT)
-#define GMT_REC_IS_LINE_BREAK(C)	(C->current.io.status & GMT_IO_LINE_BREAK)
-#define GMT_REC_IS_FILE_BREAK(C)	(C->current.io.status & GMT_IO_NEXT_FILE)
-#define GMT_REC_IS_DATA(C)		(C->current.io.status == 0 || C->current.io.status == GMT_IO_NAN)
+#define gmt_M_rec_is_table_header(C)	(C->current.io.status & GMT_IO_TABLE_HEADER)
+#define gmt_M_rec_is_segment_header(C)	(C->current.io.status & GMT_IO_SEGMENT_HEADER)
+#define gmt_M_rec_is_any_header(C)	(C->current.io.status & GMT_IO_ANY_HEADER)
+#define gmt_M_rec_is_error(C)		(C->current.io.status & GMT_IO_MISMATCH)
+#define gmt_M_rec_is_eof(C)		(C->current.io.status & GMT_IO_EOF)
+#define gmt_M_rec_is_nan(C)		(C->current.io.status & GMT_IO_NAN)
+#define gmt_M_rec_is_gap(C)		(C->current.io.status & GMT_IO_GAP)
+#define gmt_M_rec_is_new_segment(C)	(C->current.io.status & GMT_IO_NEW_SEGMENT)
+#define gmt_M_rec_is_line_break(C)	(C->current.io.status & GMT_IO_LINE_BREAK)
+#define gmt_M_rec_is_file_break(C)	(C->current.io.status & GMT_IO_NEXT_FILE)
+#define gmt_M_rec_is_data(C)		(C->current.io.status == 0 || C->current.io.status == GMT_IO_NAN)
 
 /* Get current setting for in/out columns */
 
-/* Determine if current binary table has header */
-#define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)
-
 /*! Types of possible column entries in a file: */
-enum GMT_col_enum {
+enum gmt_M_col_enum {
 	GMT_IS_NAN   =   0,	/* Returned by gmt_scanf routines when read fails */
 	GMT_IS_FLOAT	=   1,	/* Generic (double) data type, no special format */
 	GMT_IS_LAT		=   2,
@@ -163,13 +160,10 @@ enum GMT_io_nan_enum {
 	typedef long off_t;
 #endif /* HAVE__FSEEKI64 && HAVE__FTELLI64 */
 
-#define GMT_fdopen(handle, mode) fdopen(handle, mode)
-#define GMT_fgetc(stream) fgetc(stream)
-#define GMT_ungetc(c, stream) ungetc(c, stream)
-#define GMT_fputs(line,fp) fputs(line,fp)
-#define GMT_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
-#define GMT_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
-#define GMT_rewind(stream) rewind(stream)
+#define gmt_M_fputs(line,fp) fputs(line,fp)
+#define gmt_M_fread(ptr,size,nmemb,stream) fread(ptr,size,nmemb,stream)
+#define gmt_M_fwrite(ptr,size,nmemb,stream) fwrite(ptr,size,nmemb,stream)
+#define gmt_M_rewind(stream) rewind(stream)
 
 /* Low-level structures used internally */
 

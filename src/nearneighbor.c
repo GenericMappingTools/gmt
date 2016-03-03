@@ -204,7 +204,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 				}
 				break;
 			case 'L':	/* BCs */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
 					/* We turn on geographic coordinates if -Lg is given by faking -fg */
@@ -242,19 +242,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struc
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->S.active, "Syntax error: Must specify -S option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.sectors <= 0, "Syntax error -N option: Must specify a positive number of sectors\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_nearneighbor (void *V_API, int mode, void *args) {
@@ -325,12 +325,12 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	/* To allow data points falling outside -R but within the search radius we extend the data domain in all directions */
 	
 	x_left = Grid->header->wesn[XLO];	x_right = Grid->header->wesn[XHI];	/* This is what -R says */
-	if (!GMT_is_geographic (GMT, GMT_IN) || !GMT_grd_is_global (GMT, Grid->header)) {
+	if (!gmt_M_is_geographic (GMT, GMT_IN) || !gmt_M_grd_is_global (GMT, Grid->header)) {
 		x_left  -= max_d_col * Grid->header->inc[GMT_X];	/* OK to extend x-domain since not a periodic geographic grid */
 		x_right += max_d_col * Grid->header->inc[GMT_X];
 	}
 	y_top = Grid->header->wesn[YHI] + d_row * Grid->header->inc[GMT_Y];	y_bottom = Grid->header->wesn[YLO] - d_row * Grid->header->inc[GMT_Y];
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
 		if (y_bottom < -90.0) y_bottom = -90.0;
 		if (y_top > 90.0) y_top = 90.0;
 	}
@@ -351,16 +351,16 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		n_read++;
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 		
 		if (GMT_is_dnan (in[GMT_Z])) continue;					/* Skip if z = NaN */
-		if (GMT_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
+		if (gmt_M_y_is_outside (GMT, in[GMT_Y], y_bottom, y_top)) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], x_left, x_right)) continue;	/* Outside x-range (or longitude) */
 
 		/* Data record to process */
@@ -374,8 +374,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 
 		/* Find row/col indices of the node closest to this data point.  Note: These may be negative */
 
-		col_0 = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		row_0 = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+		col_0 = (int)gmt_M_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+		row_0 = (int)gmt_M_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 
 		/* Loop over all nodes within radius of this node */
 
@@ -397,7 +397,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 				distance = gmt_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
 
 				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
-				kk = GMT_IJ0 (Grid->header, rowu, colu);	/* No padding used for gridnode array */
+				kk = gmt_M_ij0 (Grid->header, rowu, colu);	/* No padding used for gridnode array */
 				dx = in[GMT_X] - x0[colu];	dy = in[GMT_Y] - y0[rowu];
 
 				/* Check for wrap-around in x or y.  This should only occur if the
@@ -439,7 +439,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 			size_t old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			point = gmt_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
-			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
+			gmt_M_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
 		}
 	} while (true);
 
@@ -459,8 +459,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
 	ij0 = 0;
-	GMT_row_loop (GMT, Grid, row) {
-		GMT_col_loop (GMT, Grid, row, col, ij) {
+	gmt_M_row_loop (GMT, Grid, row) {
+		gmt_M_col_loop (GMT, Grid, row, col, ij) {
 			if (!grid_node[ij0]) {	/* No nearest neighbors, set to empty and goto next node */
 				n_none++;
 				Grid->data[ij] = (float)Ctrl->E.value;
@@ -504,7 +504,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char line[GMT_BUFSIZ];
 		sprintf (line, "%s)\n", GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were assigned an average value\n", n_set);

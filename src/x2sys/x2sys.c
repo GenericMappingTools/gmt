@@ -218,7 +218,7 @@ void x2sys_set_home (struct GMT_CTRL *GMT) {
 }
 
 void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path) {
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	sprintf (path, "%s/%s", X2SYS_HOME, fname);
 }
 
@@ -250,7 +250,7 @@ int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode) {
 }
 
 int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp) {
-	GMT_UNUSED(GMT); GMT_UNUSED(fname);
+	gmt_M_unused(GMT); gmt_M_unused(fname);
 	if (fclose (fp)) return (X2SYS_FCLOSE_ERR);
 	return (X2SYS_NOERROR);
 }
@@ -309,7 +309,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 		X->dist_flag = 2;	/* Creat circle distances */
 		MGD77_Init (GMT, &M);	/* Initialize MGD77 Machinery */
 	}
-	else if (!strcmp (fname, "gmt") && GMT_compat_check (GMT, 4)) {
+	else if (!strcmp (fname, "gmt") && gmt_M_compat_check (GMT, 4)) {
 		X->read_file = &x2sys_read_gmtfile;
 		X->geographic = true;
 		X->geodetic = GMT_IS_0_TO_P360_RANGE;
@@ -416,7 +416,7 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 
 unsigned int x2sys_record_length (struct GMT_CTRL *GMT, struct X2SYS_INFO *s) {
 	unsigned int i, rec_length = 0;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	for (i = 0; i < s->n_fields; i++) {
 		switch (s->info[i].intype) {
@@ -445,7 +445,7 @@ unsigned int x2sys_record_length (struct GMT_CTRL *GMT, struct X2SYS_INFO *s) {
 unsigned int x2sys_n_data_cols (struct GMT_CTRL *GMT, struct X2SYS_INFO *s) {
 	unsigned int i, n = 0;
 	int is;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	for (i = is = 0; i < s->n_out_columns; i++, is++) {	/* Loop over all possible fields in this data set */
 		if (is == s->x_col) continue;
@@ -471,7 +471,7 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 
 	strncpy (s->fflags, string, GMT_BUFSIZ);
 	strncpy (line, string, GMT_BUFSIZ-1);	/* Make copy for later use */
-	GMT_memset (s->use_column, s->n_fields, bool);
+	gmt_M_memset (s->use_column, s->n_fields, bool);
 
 	while ((gmt_strtok (line, ",", &pos, p))) {
 		j = 0;
@@ -743,7 +743,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	p->n_rows = n_records;
-	GMT_memset (p->name, 32, char);
+	gmt_M_memset (p->name, 32, char);
 
 	if (fread (p->name, sizeof (char), 10U, fp) != 10U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read agency from %s\n", path);
@@ -793,7 +793,7 @@ int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, str
 	double **z = NULL, dvals[MGD77_N_DATA_EXTENDED];
 	struct MGD77_HEADER H;
 	struct MGD77_CONTROL M;
-	GMT_UNUSED(G);
+	gmt_M_unused(G);
 
 	MGD77_Init (GMT, &M);	/* Initialize MGD77 Machinery */
 
@@ -853,7 +853,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 	double **z = NULL;
 	struct MGD77_DATASET *S = NULL;
 	struct MGD77_CONTROL M;
-	GMT_UNUSED(G);
+	gmt_M_unused(G);
 
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	M.format  = MGD77_FORMAT_CDF;		/* Set input file's format to netCDF */
@@ -910,7 +910,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 	char path[GMT_BUFSIZ] = {""};
 	double **z = NULL, *in = NULL;
 	FILE *fp = NULL;
-	GMT_UNUSED(G);
+	gmt_M_unused(G);
 
   	if (x2sys_get_data_path (GMT, path, fname, s->suffix)) return (GMT_GRDIO_FILE_NOT_FOUND);
 	strcat (path, "?");	/* Set all the required fields */
@@ -1051,8 +1051,8 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 
 	x2sys_set_home (GMT);
 
-	GMT_memset (B, 1, struct X2SYS_BIX);
-	GMT_memset (unit, 4, char);
+	gmt_M_memset (B, 1, struct X2SYS_BIX);
+	gmt_M_memset (unit, 4, char);
 	B->inc[GMT_X] = B->inc[GMT_Y] = 1.0;
 	B->wesn[XLO] = 0.0;	B->wesn[XHI] = 360.0;	B->wesn[YLO] = -90.0;	B->wesn[YHI] = +90.0;
 	B->time_gap = B->dist_gap = dist = DBL_MAX;	/* Default is no data gap */
@@ -1074,21 +1074,21 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 				case 'R':	/* Must be smart enough to deal with any command-line -R setting also given by user */
 					if (GMT->common.R.active) {	/* Have already parsed a command line setting */
 						parsed_command_R = true;	GMT->common.R.active = false;	/* Set to false so 2nd parse will work */
-						GMT_memcpy (save_R_wesn, GMT->common.R.wesn, 4, double);	/* Save command-line -R values */
+						gmt_M_memcpy (save_R_wesn, GMT->common.R.wesn, 4, double);	/* Save command-line -R values */
 					}
 					if (gmt_parse_common_options (GMT, "R", 'R', &p[2])) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						x2sys_err_pass (GMT, x2sys_fclose (GMT, tag_file, fp), tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
-					GMT_memcpy (B->wesn, GMT->common.R.wesn, 4, double);
-					if (parsed_command_R) GMT_memcpy (GMT->common.R.wesn, save_R_wesn, 4, double);	/* Restore command-line -R values */
+					gmt_M_memcpy (B->wesn, GMT->common.R.wesn, 4, double);
+					if (parsed_command_R) gmt_M_memcpy (GMT->common.R.wesn, save_R_wesn, 4, double);	/* Restore command-line -R values */
 					GMT->common.R.active = parsed_command_R;	/* Only true if command-line -R was parsed, not this tag file */
 					break;
 
 				case 'M':	/* GMT4 Backwards compatibility */
 				case 'm':
-					if (GMT_compat_check (GMT, 4))
+					if (gmt_M_compat_check (GMT, 4))
 						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Segment headers are automatically identified.\n", p[1]);
 					else {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad arg in x2sys_set_system! (%s)\n", p);
@@ -1235,7 +1235,7 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 		}
 		s->geographic = true;
 		s->geodetic = geodetic;	/* Override setting */
-		if (GMT_360_RANGE (B->wesn[XHI], B->wesn[XLO]))
+		if (gmt_M_360_range (B->wesn[XHI], B->wesn[XLO]))
 			B->periodic = true;
 	}
 	if (n_errors) {	/* No good */
@@ -1320,7 +1320,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 				size_t old_n_alloc = n_alloc;
 				while (id >= n_alloc) n_alloc += GMT_CHUNK;
 				B->head = gmt_memory (GMT, B->head, n_alloc, struct X2SYS_BIX_TRACK_INFO);
-				GMT_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set content of new space to NULL */
+				gmt_M_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set content of new space to NULL */
 			}
 			B->head[id].track_id = id;
 			B->head[id].flag = flag;
@@ -1431,7 +1431,7 @@ void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *S) {
 	n_x2sys_paths = 0;
 
 	if ((fp = fopen (file, "r")) == NULL) {
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: path file %s for %s files not found\n", file, S->TAG);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(Will only look in current directory for such files)\n");
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "(mgd77[+] also looks in MGD77_HOME and mgg looks in GMT_SHAREDIR/mgg)\n");
@@ -1463,7 +1463,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 	size_t L_suffix, L_track;
 	bool add_suffix;
 	char geo_path[GMT_BUFSIZ] = {""};
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "x2sys_get_data_path: Given track %s and suffix %s\n", track, suffix);
 	/* Check if we need to append suffix */
@@ -1523,7 +1523,7 @@ int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, ch
 const char *x2sys_strerror (struct GMT_CTRL *GMT, int err) {
 /* Returns the error string for a given error code "err"
    Passes "err" on to nc_strerror if the error code is not one we defined */
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	switch (err) {
 		case X2SYS_FCLOSE_ERR:
 			return "Error from fclose";
@@ -1747,7 +1747,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 			size_t old_n_alloc = n_alloc_p;
 			n_alloc_p <<= 1;
 			P = gmt_memory (GMT, P, n_alloc_p, struct X2SYS_COE_PAIR);
-			GMT_memset (&(P[old_n_alloc]), n_alloc_p - old_n_alloc, struct X2SYS_COE_PAIR);	/* Set to NULL/0 */
+			gmt_M_memset (&(P[old_n_alloc]), n_alloc_p - old_n_alloc, struct X2SYS_COE_PAIR);	/* Set to NULL/0 */
 		}
 		n_alloc_x = GMT_SMALL_CHUNK;
 		P[p].COE = gmt_memory (GMT, NULL, n_alloc_x, struct X2SYS_COE);
@@ -1808,7 +1808,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 				size_t old_n_alloc = n_alloc_x;
 				n_alloc_x <<= 1;
 				P[p].COE = gmt_memory (GMT, P[p].COE, n_alloc_x, struct X2SYS_COE);
-				GMT_memset (&(P[p].COE[old_n_alloc]), n_alloc_x - old_n_alloc, struct X2SYS_COE);	/* Set to NULL/0 */
+				gmt_M_memset (&(P[p].COE[old_n_alloc]), n_alloc_x - old_n_alloc, struct X2SYS_COE);	/* Set to NULL/0 */
 			}
 		}
 		more = (t != NULL);
@@ -1851,7 +1851,7 @@ int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned in
 	if (!list) return (-1);	/* Null pointer passed */
 	for (i = 0; i < n; i++) if (!strcmp (name, list[i])) return (i);
 	return (-1);
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 }
 
 int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***filelist, bool *cmdline) {
@@ -1907,7 +1907,7 @@ unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, 
 	/* Used in x2sys_get_corrtable */
 	unsigned int i, j, k, n_aux;
 	int this_aux;
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
 	for (i = k = n_aux = 0; i < n_items; i++) {
 		for (j = 0, this_aux = MGD77_NOT_SET; j < N_GENERIC_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;

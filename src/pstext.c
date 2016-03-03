@@ -147,8 +147,8 @@ void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Dealloc
 void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
 	double offset[2];
 
-	GMT_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
-	GMT_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 	if (T->space_flag) {	/* Meant % of fontsize */
 		offset[0] = 0.01 * T->x_space * T->font.size / PSL_POINTS_PER_INCH;
 		offset[1] = 0.01 * T->y_space * T->font.size / PSL_POINTS_PER_INCH;
@@ -188,7 +188,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 }
 
 void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
-	GMT_memset (T, 1, struct PSTEXT_INFO);
+	gmt_M_memset (T, 1, struct PSTEXT_INFO);
 	if (C->T.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cannot have non-rectangular text box if clearance (-C) is zero.\n");
 		C->T.mode = 'o';
@@ -386,8 +386,8 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 					for (j = 0; txt_a[j]; j++) if (txt_a[j] == '%') txt_a[j] = '\0';	/* Remove % signs before processing values */
 					for (j = 0; k == 2 && txt_b[j]; j++) if (txt_b[j] == '%') txt_b[j] = '\0';
-					Ctrl->C.dx = (Ctrl->C.percent) ? atof (txt_a) : GMT_to_inch (GMT, txt_a);
-					Ctrl->C.dy = (k == 2) ? ((Ctrl->C.percent) ? atof (txt_b) : GMT_to_inch (GMT, txt_b)) : Ctrl->C.dx;
+					Ctrl->C.dx = (Ctrl->C.percent) ? atof (txt_a) : gmt_M_to_inch (GMT, txt_a);
+					Ctrl->C.dy = (k == 2) ? ((Ctrl->C.percent) ? atof (txt_b) : gmt_M_to_inch (GMT, txt_b)) : Ctrl->C.dx;
 				}
 				break;
 			case 'D':
@@ -398,12 +398,12 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				for (j = k; opt->arg[j] && opt->arg[j] != 'v'; j++);
 				if (opt->arg[j] == 'v') {
 					Ctrl->D.line = true;
-					n_errors += GMT_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Syntax error -D option: Give pen after c\n");
+					n_errors += gmt_M_check_condition (GMT, opt->arg[j+1] && gmt_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Syntax error -D option: Give pen after c\n");
 					opt->arg[j] = 0;
 				}
 				j = sscanf (&opt->arg[k], "%[^/]/%s", txt_a, txt_b);
-				Ctrl->D.dx = GMT_to_inch (GMT, txt_a);
-				Ctrl->D.dy = (j == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->D.dx;
+				Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);
+				Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -489,7 +489,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				Ctrl->L.active = true;
 				break;
 			case 'm':
-				if (GMT_compat_check (GMT, 4)) /* Warn and pass through */
+				if (gmt_M_compat_check (GMT, 4)) /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -500,7 +500,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				Ctrl->N.active = true;
 				break;
 			case 'S':
-				if (GMT_compat_check (GMT, 4)) { /* Warn and pass through */
+				if (gmt_M_compat_check (GMT, 4)) { /* Warn and pass through */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
 					Ctrl->S.active = true;
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
@@ -519,7 +519,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 			case 'T':
 				Ctrl->T.active = true;
 				Ctrl->T.mode = opt->arg[0];
-				n_errors += GMT_check_condition (GMT, !strchr("oOcC", Ctrl->T.mode), "Syntax error -T option: must add o, O, c, or C\n");
+				n_errors += gmt_M_check_condition (GMT, !strchr("oOcC", Ctrl->T.mode), "Syntax error -T option: must add o, O, c, or C\n");
 				break;
 			case 'W':
 				Ctrl->W.active = true;
@@ -547,16 +547,16 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->T.mode && Ctrl->T.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Syntax error -Gc option: Cannot be used with -W.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Syntax error -Gc option: Cannot be used with -D...v<pen>.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Syntax error -M option: Cannot be used with -F...+l|h.\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->L.active && !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->T.mode && Ctrl->T.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Syntax error -Gc option: Cannot be used with -W.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Syntax error -Gc option: Cannot be used with -D...v<pen>.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Syntax error -M option: Cannot be used with -F...+l|h.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -582,7 +582,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		}
 	}
 	else if (Ctrl->F.R_justify) {
-		gmt_just_to_lonlat (GMT, Ctrl->F.R_justify, GMT_is_geographic (GMT, GMT_IN), &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
+		gmt_just_to_lonlat (GMT, Ctrl->F.R_justify, gmt_M_is_geographic (GMT, GMT_IN), &GMT->current.io.curr_rec[ix], &GMT->current.io.curr_rec[iy]);
 		nscan = 2;	/* Since x,y are implicit */
 		nscan += sscanf (record, "%[^\n]\n", buffer);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
@@ -607,7 +607,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 	return (nscan);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pstext (void *V_API, int mode, void *args) {
@@ -709,20 +709,20 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we have no more files */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Keep returning records until we have no more files */
-			if (GMT_REC_IS_ERROR (GMT)) {
+			if (gmt_M_rec_is_error (GMT)) {
 				Return (EXIT_FAILURE);
 			}
-			if (GMT_REC_IS_TABLE_HEADER (GMT)) {
+			if (gmt_M_rec_is_table_header (GMT)) {
 				continue;	/* Skip table headers */
 			}
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
 		/* Data record or segment header to process */
 
 		if (Ctrl->M.active) {	/* Paragraph mode */
-			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {
+			if (gmt_M_rec_is_segment_header (GMT)) {
 				line = GMT->current.io.segment_header;
 				if (line[0] == '\0') continue;	/* Can happen if reading from API memory */
 				skip_text_records = false;
@@ -737,14 +737,14 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 				pos = 0;
 
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, buffer, 1);
 				}
 				if (input_format_version == 4) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
 					T.block_justify = gmt_just_decode (GMT, just_key, PSL_NO_DEF);
-					T.line_spacing = GMT_to_inch (GMT, txt_a);
-					T.paragraph_width  = GMT_to_inch (GMT, txt_b);
+					T.line_spacing = gmt_M_to_inch (GMT, txt_a);
+					T.paragraph_width  = gmt_M_to_inch (GMT, txt_b);
 					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : gmt_just_decode (GMT, pjust_key, PSL_NONE);
 					sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by gmt_getfont */
 					T.font = Ctrl->F.font;
@@ -776,8 +776,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				if (in_txt) {	/* Get the remaining parameters */
 					nscan += sscanf (in_txt, "%s %s %s\n", txt_a, txt_b, pjust_key);
 					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : gmt_just_decode (GMT, pjust_key, PSL_NONE);
-					T.line_spacing = GMT_to_inch (GMT, txt_a);
-					T.paragraph_width  = GMT_to_inch (GMT, txt_b);
+					T.line_spacing = gmt_M_to_inch (GMT, txt_a);
+					T.paragraph_width  = gmt_M_to_inch (GMT, txt_b);
 				}
 				if (T.block_justify == -99) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
@@ -839,7 +839,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			n_read++;
 		}
 		else {	/* Plain style pstext input */
-			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) continue;	/* Skip segment headers */
+			if (gmt_M_rec_is_segment_header (GMT)) continue;	/* Skip segment headers */
 			if (gmt_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
 			strncpy (cp_line, line, GMT_BUFSIZ);	/* Make a copy because in_line may be pointer to a strdup-ed line that we cannot enlarge */
@@ -848,7 +848,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 			pos = 0;
 
-			if (GMT_compat_check (GMT, 4)) {
+			if (gmt_M_compat_check (GMT, 4)) {
 				if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, buffer, 0);
 			}
 			if (input_format_version == 4) {	/* Old-style GMT 4 records */
@@ -873,7 +873,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 						case 'f':
 							T.font = Ctrl->F.font;
 							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, T.font));
-							if (GMT_compat_check (GMT, 4)) {
+							if (gmt_M_compat_check (GMT, 4)) {
 								if (Ctrl->S.active) {
 									T.font.form |= 2;
 									T.font.pen = Ctrl->S.pen;

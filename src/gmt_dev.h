@@ -54,15 +54,15 @@ extern "C" {
 /* Note: GMT functions will sometimes have arguments that are unused by design, i.e., to ensure that
  * a family of functions have the same number and type of arguments so that pointers to these functions
  * can be passed, even though in some cases not all arguments are used.  These will result in compiler
- * warnings [-Wunused-variable]. To suppress those (and only those), we can define GMT_UNUSED as this:
+ * warnings [-Wunused-variable]. To suppress those (and only those), we can define gmt_M_unused as this:
  */
 
-#define GMT_UNUSED(x) (void)(x)
+#define gmt_M_unused(x) (void)(x)
 
-/* and then call GMT_UNUSED() on all such variables at the beginning of a routine. For example:
- * bool func (int x) { GMT_UNUSED(x); return(true); }
+/* and then call gmt_M_unused() on all such variables at the beginning of a routine. For example:
+ * bool func (int x) { gmt_M_unused(x); return(true); }
  * This should work for all compilers, GCC and others.
- * Just grep for GMT_UNUSED to see where these situations occur.
+ * Just grep for gmt_M_unused to see where these situations occur.
  */
 
 /* Because gcc does not support some features in clang AND due to bugs in os/base.h we must add these,

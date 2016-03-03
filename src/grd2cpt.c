@@ -238,10 +238,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 			case 'G':	/* truncate incoming CPT */
 				Ctrl->G.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += GMT_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high),
+				n_errors += gmt_M_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high),
 								"Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':	/* Reverse scale */
@@ -312,19 +312,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active,
 					"Syntax error: -W and -Z cannot be used simultaneously\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
 					"Syntax error -L option: min_limit must be less than max_limit.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0),
 					"Syntax error -S option: Bad arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 1  && Ctrl->S.n_levels == 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 1  && Ctrl->S.n_levels == 0,
 					"Syntax error -S option: Bad arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active),
 					"Syntax error -S option: Cannot be combined with -E nor -T option.\n");
-	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0),
 					"Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -341,7 +341,7 @@ GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, cha
 	return (GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grd2cpt (void *V_API, int mode, void *args) {
@@ -404,8 +404,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 
-	GMT_memset (wesn, 4, double);
-	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
+	gmt_M_memset (wesn, 4, double);
+	if (GMT->common.R.active) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
 
 	G = gmt_memory (GMT, NULL, n_alloc, struct GMT_GRID *);	/* Potentially an array of grids */
 	grdfile = gmt_memory (GMT, NULL, n_alloc, char *);	/* Potentially an array of gridfile names */
@@ -433,9 +433,9 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			size_t old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			G = gmt_memory (GMT, G, n_alloc, struct GMT_GRID *);
-			GMT_memset (&(G[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_GRID *);	/* Set to NULL */
+			gmt_M_memset (&(G[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_GRID *);	/* Set to NULL */
 			grdfile = gmt_memory (GMT, grdfile, n_alloc, char *);
-			GMT_memset (&(grdfile[old_n_alloc]), n_alloc - old_n_alloc, char *);	/* Set to NULL */
+			gmt_M_memset (&(grdfile[old_n_alloc]), n_alloc - old_n_alloc, char *);	/* Set to NULL */
 		}
 	}
 
@@ -456,7 +456,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		G[0]->header->z_min = Ctrl->L.min;
 		G[0]->header->z_max = Ctrl->L.max;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
-			GMT_grd_loop (GMT, G[k], row, col, ij) {
+			gmt_M_grd_loop (GMT, G[k], row, col, ij) {
 				if (GMT_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
@@ -476,7 +476,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Ctrl->L.min = G[0]->header->z_max;	/* This is just to double check G[k]->header->z_min, G[k]->header->z_max  */
 		Ctrl->L.max = G[0]->header->z_min;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
-			GMT_grd_loop (GMT, G[k], row, col, ij) {
+			gmt_M_grd_loop (GMT, G[k], row, col, ij) {
 				if (GMT_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
@@ -494,7 +494,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	mean /= ngood;
 	sd /= ngood;
 	sd = sqrt (sd - mean * mean);
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Mean and S.D. of data are %s %s\n",
 		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, mean, sd);
@@ -574,7 +574,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (j = 0; j < Ctrl->E.levels; j++) {
 		if (cdf_cpt[j].z <= G[0]->header->z_min)
 			cdf_cpt[j].f = 0.0;
@@ -583,7 +583,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		else {
 			nfound = 0;
 			for (k = 0; k < ngrd; k++) {	/* For each grid */
-				GMT_grd_loop (GMT, G[k], row, col, ij) {
+				gmt_M_grd_loop (GMT, G[k], row, col, ij) {
 					if (!GMT_is_fnan (G[k]->data[ij]) && G[k]->data[ij] <= cdf_cpt[j].z) nfound++;
 				}
 			}

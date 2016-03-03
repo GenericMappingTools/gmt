@@ -133,7 +133,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'L':	/* BCs */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
 					/* We turn on geographic coordinates if -Lg is given by faking -fg */
@@ -148,7 +148,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
 					Ctrl->I.active = true;
 					sscanf (opt->arg, "%d/%d", &ii, &jj);
@@ -175,16 +175,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct G
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, (n_files != 1), "Syntax error: Must specify a single input grid file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.r.active && Ctrl->T.active && !GMT->current.io.grd_info.active, 
+	n_errors += gmt_M_check_condition (GMT, (n_files != 1), "Syntax error: Must specify a single input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.r.active && Ctrl->T.active && !GMT->current.io.grd_info.active, 
 					"Syntax error: Only one of -r, -T may be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), 
 					"Syntax error -I: Must specify positive increments\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdsample (void *V_API, int mode, void *args) {
@@ -229,8 +229,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
-	GMT_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
+	gmt_M_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
+	gmt_M_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
 
 	if (Ctrl->T.active)
 		registration = !Gin->header->registration;
@@ -244,7 +244,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file by more than one y-increment!\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn[XLO]) shift += 360;
 			if (Gin->header->wesn[XLO] > wesn[XHI]) shift -= 360;
@@ -287,7 +287,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	lon = gmt_memory (GMT, NULL, Gout->header->nx, double);
 	for (col = 0; col < (int)Gout->header->nx; col++) {
-		lon[col] = GMT_grd_col_to_x (GMT, col, Gout->header);
+		lon[col] = gmt_M_grd_col_to_x (GMT, col, Gout->header);
 		if (!Gin->header->nxp)
 			/* Nothing */;
 		else if (lon[col] > Gin->header->wesn[XHI])
@@ -304,7 +304,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 #pragma omp parallel for private(row,col,lat,ij) shared(GMT,Gin,Gout,lon)
 #endif
 	for (row = 0; row < (int)Gout->header->ny; row++) {
-		lat = GMT_grd_row_to_y (GMT, row, Gout->header);
+		lat = gmt_M_grd_row_to_y (GMT, row, Gout->header);
 		if (!Gin->header->nyp)
 			/* Nothing */;
 		else if (lat > Gin->header->wesn[YHI])
@@ -312,7 +312,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		else if (lat < Gin->header->wesn[YLO])
 			lat += Gin->header->inc[GMT_Y] * Gin->header->nyp;
 		for (col = 0; col < (int)Gout->header->nx; col++) {
-			ij = GMT_IJP (Gout->header, row, col);
+			ij = gmt_M_ijp (Gout->header, row, col);
 			Gout->data[ij] = (float)gmt_bcr_get_z (GMT, Gin, lon[col], lat);
 			if (Gout->data[ij] < Gout->header->z_min) Gout->header->z_min = Gout->data[ij];
 			if (Gout->data[ij] > Gout->header->z_max) Gout->header->z_max = Gout->data[ij];

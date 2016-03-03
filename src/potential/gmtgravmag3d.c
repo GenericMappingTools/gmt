@@ -253,9 +253,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 			case 'M':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!GMT_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					if (!gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -325,25 +325,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += GMT_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
+	n_errors += gmt_M_check_condition(GMT, Ctrl->S.active && (Ctrl->S.radius <= 0.0 || GMT_is_dnan (Ctrl->S.radius)),
 	                                "Syntax error: Radius is NaN or negative\n");
-	n_errors += GMT_check_condition(GMT, !Ctrl->T.active, "Error: Option -T is mandatory\n");
-	n_errors += GMT_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Error: Must specify either -G or -F options\n");
-	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Error: Must specify -I option\n");
-	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
-	n_errors += GMT_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->T.active, "Error: Option -T is mandatory\n");
+	n_errors += gmt_M_check_condition(GMT, !Ctrl->G.active && !Ctrl->F.active, "Error: Must specify either -G or -F options\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->I.active, "Error: Must specify -I option\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !GMT->common.R.active, "Error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition(GMT, Ctrl->C.rho == 0.0 && !Ctrl->H.active && !Ctrl->T.m_var4 ,
 	                                "Error: Must specify either -Cdensity or -H<stuff>\n");
-	n_errors += GMT_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
-	j = GMT_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
-	if (GMT_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
+	n_errors += gmt_M_check_condition(GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	j = gmt_M_check_condition(GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
+	if (gmt_M_check_condition(GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
 		Ctrl->S.active = false;
 
-	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
+	/*n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
@@ -397,7 +397,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the gmtgravmag3d main code ----------------------------*/
 	
-	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = true;
+	if (gmt_M_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = true;
 
 	if (!Ctrl->box.is_geog)
 		Ctrl->box.d_to_m = 1;
@@ -610,7 +610,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && i > j*one_100) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && i > j*one_100) {
 			GMT_Message (API, GMT_TIME_NONE, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
 			j++;
 		}
@@ -628,7 +628,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			if (Ctrl->G.active) { /* grid */
 				for (row = 0; row < Gout->header->ny; row++) {
 					y_o = (Ctrl->box.is_geog) ? ((y[row]+lat_0) * Ctrl->box.d_to_m): y[row];
-					ij = GMT_IJP(Gout->header, row, 0);
+					ij = gmt_M_ijp(Gout->header, row, 0);
 					for (col = 0; col < Gout->header->nx; col++, ij++) {
 						x_o = (Ctrl->box.is_geog) ? ((x[col]-lon_0)*Ctrl->box.d_to_m * cos_vec[row]) : x[col];
 						if (Ctrl->S.active) {
@@ -950,7 +950,7 @@ GMT_LOCAL int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 GMT_LOCAL int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
-	GMT_UNUSED (bat);
+	gmt_M_unused (bat);
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 	x_a = triang[vert[i].a].x;	x_b = triang[vert[i].b].x;	x_c = triang[vert[i].c].x;
 	y_a = triang[vert[i].a].y;	y_b = triang[vert[i].b].y;	y_c = triang[vert[i].c].y;

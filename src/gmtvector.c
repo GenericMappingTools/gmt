@@ -257,14 +257,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct G
 		}
 	}
 
-	if ((Ctrl->T.mode == DO_ROT3D || Ctrl->T.mode == DO_POLE) && !GMT_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set for 3-D rots and pole ops */
+	if ((Ctrl->T.mode == DO_ROT3D || Ctrl->T.mode == DO_POLE) && !gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set for 3-D rots and pole ops */
 	
-	n_in = (Ctrl->C.active[GMT_IN] && GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;
+	n_in = (Ctrl->C.active[GMT_IN] && gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_in);
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_in);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !gmt_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -279,7 +279,7 @@ GMT_LOCAL unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double co
 	assert (n >= 2);
 	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
-		if (GMT_is_geographic (GMT, GMT_IN)) {
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {
 			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], gmt_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
 			n_errors += gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], gmt_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
 			if (geocentric) coord[GMT_Y] = gmt_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
@@ -349,15 +349,15 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	double *P[3], X[3], B[3], C[9];
 	struct GMT_DATASEGMENT *S = NULL;
 	
-	GMT_memset (M, 3, double);
-	n_components = (GMT_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
+	gmt_M_memset (M, 3, double);
+	n_components = (gmt_M_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
 	for (k = 0; k < n_components; k++) P[k] = gmt_memory (GMT, NULL, D->n_records, double);
 	for (tbl = n = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];
 			for (row = 0; row < S->n_rows; row++) {
 				if (!cartesian) {	/* Want to turn geographic or polar into Cartesian */
-					if (GMT_is_geographic (GMT, GMT_IN))
+					if (gmt_M_is_geographic (GMT, GMT_IN))
 						gmt_geo_to_cart (GMT, S->coord[GMT_Y][row], S->coord[GMT_X][row], X, true);	/* get x/y/z */
 					else
 						gmt_polar_to_cart (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], X, true);
@@ -371,11 +371,11 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	}
 	if (n > 0)
 		for (k = 0; k < n_components; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
-	GMT_memcpy (X, M, 3, double);
+	gmt_M_memcpy (X, M, 3, double);
 	
 	/* Compute covariance matrix */
 	
-	GMT_memset (C, 9, double);
+	gmt_M_memset (C, 9, double);
 	for (j = k = 0; j < n_components; j++) for (i = 0; i < n_components; i++, k++) {
 		for (p = 0; p < n; p++) C[k] += (P[j][p] - M[j]) * (P[i][p] - M[i]);
 		C[k] /= (n - 1.0);
@@ -392,14 +392,14 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	else { lon = X[GMT_X]; lat = X[GMT_Y]; }
 
 	/* Find the xy[z] point (B) of end of eigenvector 1: */
-	GMT_memset (B, 3, double);
+	gmt_M_memset (B, 3, double);
 	for (k = 0; k < n_components; k++) B[k] = X[k] + sqrt (lambda[0]) * V[k];
 	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);	/* Length of B */
 	for (k = 0; k < n_components; k++) B[k] /= L;	/* Normalize */
 	if (n_components == 3) {	/* Recover lon,lat */
 		gmt_cart_to_geo (GMT, &lat2, &lon2, B, true);
 		if (lon2 < 0.0) lon2 += 360.0;
-		GMT_set_delta_lon (lon, lon2, L);
+		gmt_M_set_delta_lon (lon, lon2, L);
 		scl = cosd (lat);	/* Local flat-Earth approximation */
 	}
 	else {
@@ -421,13 +421,13 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 
 GMT_LOCAL void gmt_make_rot2d_matrix (double angle, double R[3][3]) {
 	double s, c;
-	GMT_memset (R, 9, double);
+	gmt_M_memset (R, 9, double);
 	sincosd (angle, &s, &c);
 	R[0][0] = c;	R[0][1] = -s;
 	R[1][0] = s;	R[1][1] = c;
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtvector (void *V_API, int mode, void *args) {
@@ -463,9 +463,9 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
 	
-	GMT_memset (vector_1, 3, double);
-	GMT_memset (vector_2, 3, double);
-	GMT_memset (vector_3, 3, double);
+	gmt_M_memset (vector_1, 3, double);
+	gmt_M_memset (vector_2, 3, double);
+	gmt_M_memset (vector_3, 3, double);
 	if (Ctrl->T.mode == DO_ROT3D)	/* Spherical 3-D rotation */
 		gmt_make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D)	/* Cartesian 2-D rotation */
@@ -494,7 +494,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
+			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || gmt_M_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellipse parameters */
 			if (GMT_Destroy_Data (API, &Din) != GMT_OK) {
 				Return (API->error);
@@ -513,7 +513,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 			n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 		}
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-		n_components = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
+		n_components = (n == 3 || gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 		for (k = 0; k < n_components; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
 		single = true;
 	}
@@ -525,7 +525,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
-		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
+		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || gmt_M_is_geographic (GMT, GMT_IN))) ? 3 : 2;
 	}
 	
 	if (Ctrl->T.mode == DO_DOT) {
@@ -536,17 +536,17 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 		if (Din->n_columns == 1) n_out = 2;
 		if (Din->n_columns == 3) Ctrl->T.mode = DO_ROTVAR3D;	/* OK, it is 3D */
 	}
-	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
+	else if (Ctrl->C.active[GMT_OUT] || !gmt_M_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		gmt_set_cartesian (GMT, GMT_OUT);
 
 	Din->dim[GMT_COL] = n_out + add_cols;	/* State we want a different set of columns on output */
 	Dout = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC, Din);
-	GMT_memset (out, 3, double);
+	gmt_M_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */
 	
-	if (Ctrl->T.mode == DO_DOT) Ctrl->T.mode = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? DO_DOT3D : DO_DOT2D;
-	n_components = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
+	if (Ctrl->T.mode == DO_DOT) Ctrl->T.mode = (n == 3 || gmt_M_is_geographic (GMT, GMT_IN)) ? DO_DOT3D : DO_DOT2D;
+	n_components = (n == 3 || gmt_M_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 	if (Ctrl->T.mode == DO_ROTVAR2D) n_components = 1;	/* Override in case of 2-D Cartesian rotation angles on input */
 	convert = (!single && !Ctrl->C.active[GMT_IN] && !(Ctrl->T.mode == DO_ROTVAR2D || Ctrl->T.mode == DO_ROTVAR3D));
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
@@ -556,7 +556,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 			if (Sin->header) Sout->header = strdup (Sin->header);
 			for (row = 0; row < Sin->n_rows; row++) {
 				if (convert) {	/* Want to turn geographic or polar into Cartesian */
-					if (GMT_is_geographic (GMT, GMT_IN))
+					if (gmt_M_is_geographic (GMT, GMT_IN))
 						gmt_geo_to_cart (GMT, Sin->coord[GMT_Y][row], Sin->coord[GMT_X][row], vector_1, true);	/* get x/y/z */
 					else
 						gmt_polar_to_cart (GMT, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], vector_1, true);
@@ -605,7 +605,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 						get_azpole (GMT, vector_1, vector_3, Ctrl->T.par[0]);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
-						GMT_memcpy (vector_3, vector_1, n_components, double);
+						gmt_M_memcpy (vector_3, vector_1, n_components, double);
 						break;
 				}
 				if (Ctrl->C.active[GMT_OUT]) {	/* Report Cartesian output... */
@@ -615,10 +615,10 @@ int GMT_gmtvector (void *V_API, int mode, void *args) {
 						else if (n_out == 2)
 							gmt_normalize2v (GMT, vector_3);
 					}
-					GMT_memcpy (out, vector_3, n_out, double);
+					gmt_M_memcpy (out, vector_3, n_out, double);
 				}
 				else {	/* Want to turn Cartesian output into something else */
-					if (GMT_is_geographic (GMT, GMT_OUT)) {
+					if (gmt_M_is_geographic (GMT, GMT_OUT)) {
 						gmt_normalize3v (GMT, vector_3);	/* Must always normalize before calling gmt_cart_to_geo */
 						gmt_cart_to_geo (GMT, &(out[GMT_Y]), &(out[GMT_X]), vector_3, true);	/* Get lon/lat */
 						if (Ctrl->E.active) out[GMT_Y] = gmt_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_G2O + 1);	/* Convert to geodetic */

@@ -457,7 +457,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: -TT|t|d takes 5 arguments\n");
 					n_errors++;
 				}
-				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
+				Ctrl->T.marker[mrk].marker_size = gmt_M_to_inch (GMT, ms);
 				if (gmt_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					gmt_fill_syntax (GMT, 'T', " ");
@@ -486,19 +486,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > 0.0 && Ctrl->S.start > 0.0,
 	                                 "Syntax error: Cannot specify both start time AND start distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.stop < DBL_MAX && Ctrl->S.stop < DBL_MAX,
 	                                 "Syntax error: Cannot specify both stop time AND stop distance\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop,
 	                                 "Syntax error -S: Start distance exceeds stop distance!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop,
 	                                 "Syntax error -D: Start time exceeds stop time!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0,
 	                                 "Syntax error -Gd: Must specify a positive gap distance in km!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0,
 	                                 "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Region is not set\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Region is not set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -525,7 +525,7 @@ GMT_LOCAL double get_heading (struct GMT_CTRL *GMT, int rec, double *lon, double
 	else if (sum_x2 < GMT_CONV8_LIMIT)	/* Line is vertical */
 		angle = 90.0;
 	else
-		angle = (GMT_IS_ZERO (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
+		angle = (gmt_M_is_zero (sum_xy)) ? 90.0 : d_atan2d (sum_xy, sum_x2);
 	if (angle > 90.0)
 		angle -= 180;
 	else if (angle < -90.0)
@@ -557,7 +557,7 @@ GMT_LOCAL int bad_coordinates (double lon, double lat) {
 /* Break internal time into calendar and clock struct info  */
 EXTERN_MSC void gmtlib_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_GCAL *cal);
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77track (void *V_API, int mode, void *args) {
@@ -747,7 +747,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 							size_t old_n_alloc = n_alloc_c;
 							n_alloc_c <<= 1;
 							cruise_id = gmt_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
-							GMT_memset (&(cruise_id[old_n_alloc]), n_alloc_c - old_n_alloc,  struct MGD77TRACK_LEG_ANNOT);	/* Set to NULL/0 */
+							gmt_M_memset (&(cruise_id[old_n_alloc]), n_alloc_c - old_n_alloc,  struct MGD77TRACK_LEG_ANNOT);	/* Set to NULL/0 */
 						}
 					}
 					else

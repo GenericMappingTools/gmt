@@ -616,7 +616,7 @@ GMT_LOCAL void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, in
 	Ctrl->operation[Ctrl->n_op_count-1] = operation;
 	if (n_par) {
 		Ctrl->par = gmt_memory (GMT, Ctrl->par, Ctrl->n_par + n_par, double);
-		GMT_memcpy (&Ctrl->par[Ctrl->n_par], par, n_par, double);
+		gmt_M_memcpy (&Ctrl->par[Ctrl->n_par], par, n_par, double);
 		Ctrl->n_par += n_par;
 	}
 }
@@ -636,7 +636,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 	struct GMT_OPTION *opt = NULL, *ptr = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	if (GMT_compat_check (GMT, 4)) {
+	if (gmt_M_compat_check (GMT, 4)) {
 		char *mod = NULL;
 		if ((ptr = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
 			mod = ptr->arg; /* Gave old -L option */
@@ -646,14 +646,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 		}
 	}
 
-	GMT_memset (f_info, 1, struct F_INFO);
+	gmt_M_memset (f_info, 1, struct F_INFO);
 	for (j = 0; j < 3; j++) {
 		f_info->lc[j] = f_info->lp[j] = -1.0;		/* Set negative, below valid frequency range  */
 		f_info->hp[j] = f_info->hc[j] = DBL_MAX;	/* Set huge positive, above valid frequency range  */
 	}
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
-		GMT_memset (par, 5, double);
+		gmt_M_memset (par, 5, double);
 
 		switch (opt->option) {
 			case '<':	/* Input file (only 1 or 2 are accepted) */
@@ -672,20 +672,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 
 			case 'A':	/* Directional derivative */
 				Ctrl->A.active = true;
-				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
+				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
 						"Syntax error -A option: Cannot read azimuth\n");
 				add_operation (GMT, Ctrl, GRDFFT_AZIMUTHAL_DERIVATIVE, 1, par);
 				break;
 			case 'C':	/* Upward/downward continuation */
 				Ctrl->C.active = true;
-				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
+				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
 						"Syntax error -C option: Cannot read zlevel\n");
 				add_operation (GMT, Ctrl, GRDFFT_UP_DOWN_CONTINUE, 1, par);
 				break;
 			case 'D':	/* d/dz */
 				Ctrl->D.active = true;
 				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg)) : 1.0;
-				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
+				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
 			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical */
@@ -712,7 +712,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 					f_info->set_already = true;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);
 				}
-				n_errors += GMT_check_condition (GMT, parse_f_string (GMT, f_info, opt->arg), "Syntax error -F option");
+				n_errors += gmt_M_check_condition (GMT, parse_f_string (GMT, f_info, opt->arg), "Syntax error -F option");
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
@@ -721,26 +721,26 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 			case 'I':	/* Integrate */
 				Ctrl->I.active = true;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
-				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
+				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
 				break;
 			case 'L':	/* Leave trend alone */
-				if (GMT_compat_check (GMT, 4))
+				if (gmt_M_compat_check (GMT, 4))
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'M':	/* Geographic data */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!GMT_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					if (!gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
-				if (ptr && GMT_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
+				if (ptr && gmt_M_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
 					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, combined);
 				}
@@ -753,12 +753,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				Ctrl->S.scale = (opt->arg[0] == 'd' || opt->arg[0] == 'D') ? 1.0e6 : atof (opt->arg);
 				break;
 			case 'T':	/* Flexural isostasy */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
 					Ctrl->T.active = true;
 					n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 					for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
-					n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0,
+					n_errors += gmt_M_check_condition (GMT, n_scan != 5 || k > 0,
 						"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
 					add_operation (GMT, Ctrl, GRDFFT_ISOSTASY, 5, par);
 				}
@@ -776,24 +776,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				break;
 		}
 	}
-	if (GMT_compat_check (GMT, 4) && !Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
+	if (gmt_M_compat_check (GMT, 4) && !Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
 		Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, argument);
 	}
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
-	if (GMT_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
+	if (gmt_M_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_REMOVE_NOTHING;
 
-	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdfft (void *V_API, int mode, void *args) {
@@ -837,15 +837,15 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!GMT_grd_same_shape (GMT, Orig[0], Orig[1])) {
+		if (!gmt_M_grd_same_shape (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!GMT_grd_same_region (GMT, Orig[0], Orig[1])) {
+		if (!gmt_M_grd_same_region (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different regions\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!GMT_grd_same_inc (GMT, Orig[0], Orig[1])) {
+		if (!gmt_M_grd_same_inc (GMT, Orig[0], Orig[1])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different intervals\n");
 			Return (EXIT_FAILURE);
 		}
@@ -883,39 +883,39 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case GRDFFT_UP_DOWN_CONTINUE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_Message (API, GMT_TIME_NONE, "downward continuation...\n") : GMT_Message (API, GMT_TIME_NONE,  "upward continuation...\n"));
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_Message (API, GMT_TIME_NONE, "downward continuation...\n") : GMT_Message (API, GMT_TIME_NONE,  "upward continuation...\n"));
 				par_count += do_continuation (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_AZIMUTHAL_DERIVATIVE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "azimuthal derivative...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "azimuthal derivative...\n");
 				par_count += do_azimuthal_derivative (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_DIFFERENTIATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "differentiate...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "differentiate...\n");
 				par_count += do_differentiate (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_INTEGRATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "integrate...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "integrate...\n");
 				par_count += do_integrate (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_ISOSTASY:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "isostasy...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "isostasy...\n");
 				par_count += do_isostasy (Grid[0], Ctrl, &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_FILTER_COS:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "cosine filter...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "cosine filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
 			case GRDFFT_FILTER_EXP:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Gaussian filter...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Gaussian filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
 			case GRDFFT_FILTER_BW:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Butterworth filter...\n");
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Butterworth filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
 			case GRDFFT_SPECTRUM:	/* This operator writes a table to file (or stdout if -G is not used) */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s...\n", spec_msg[Ctrl->In.n_grids-1]);
+				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s...\n", spec_msg[Ctrl->In.n_grids-1]);
 				status = do_spectrum (GMT, Grid[0], Grid[1], &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, K);
 				if (status < 0) Return (status);
 				par_count += status;
@@ -926,7 +926,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->E.active) {	/* Since -E output is handled separately by do_spectrum itself */
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "inverse FFT...\n");
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "inverse FFT...\n");
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);

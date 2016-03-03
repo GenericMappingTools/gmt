@@ -216,7 +216,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						break;
 					case 's':	/* "simple" Lambertian case */
 						Ctrl->E.mode = 2;						
-						n_errors += GMT_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
+						n_errors += gmt_M_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
 						break;
 					case 'm':	/* Nice algorithm from an old program called manipRaster by Tierry Souriot */
 						Ctrl->E.mode = 4;
@@ -230,7 +230,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 						break;
 					default:
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
-						n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) < 2, "Syntax error -E option: Must give at least azimuth and elevation\n");
+						n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) < 2, "Syntax error -E option: Must give at least azimuth and elevation\n");
 						entry = pos = 0;
 						while (entry < 6 && (gmt_strtok (opt->arg, "/", &pos, ptr))) {
 							switch (entry) {
@@ -259,7 +259,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 					n_errors++;
 				break;
 			case 'L':	/* GMT4 BCs */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
 					/* We turn on geographic coordinates if -Lg is given by faking -fg */
@@ -275,9 +275,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 				break;
 
 			case 'M':	/* Geographic data */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-					if (!GMT_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+					if (!gmt_M_is_geographic (GMT, GMT_IN)) gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -310,13 +310,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error: Must specify -A, -D, or -E\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "Syntax error -N option: Normalization amplitude must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->D.active || Ctrl->E.active), "Syntax error: Must specify -A, -D, or -E\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->S.file, "Syntax error -S option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->S.active, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (n_opt_args && Ctrl->N.norm <= 0.0), "Syntax error -N option: Normalization amplitude must be > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;
@@ -325,7 +325,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdgradient (void *V_API, int mode, void *args) {
@@ -367,7 +367,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
-	GMT_memset (s, 3, double);
+	gmt_M_memset (s, 3, double);
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	
 	if (Ctrl->N.active && Ctrl->N.sigma  != 0.0) sigma_set  = true;
@@ -399,12 +399,12 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		s[2] = sind (Ctrl->E.elevation);
 	}
 
-	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	gmt_grd_init (GMT, Surf->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
@@ -416,7 +416,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	}
 	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, Surf, &Out);	/* true if input is a read-only array */
 	
-	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
 		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];
 	}
@@ -453,8 +453,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		x_factor = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
 	}
 	for (row = 0, ij0 = 0ULL; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
-		if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
-			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
+		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
+			lat = gmt_M_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = one / (2.0 * dx_grid);	/* Use previous value at the poles */
 			if (Ctrl->A.active) {
@@ -463,7 +463,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 			}
 		}
 		for (col = 0; col < Surf->header->nx; col++, ij0++) {
-			ij = GMT_IJP (Surf->header, row, col);	/* Index into padded grid */
+			ij = gmt_M_ijp (Surf->header, row, col);	/* Index into padded grid */
 			for (n = 0, bad = false; !bad && n < 4; n++) if (GMT_is_fnan (Surf->data[ij+p[n]])) bad = true;
 			if (bad) {	/* One of star corners = NaN; assign NaN answers and skip to next node */
 				index = (new_grid) ? ij : ij0;
@@ -534,29 +534,29 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	}
 
 	if (!new_grid)	{	/* We got away with using the input grid by ignoring the pad.  Now we must put the pad back in */
-		GMT_memset (Out->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad in */
+		gmt_M_memset (Out->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad in */
 		Out->header->mx = Out->header->nx;	Out->header->my = Out->header->ny;	/* Since there is no pad */
 		gmt_grd_pad_on (GMT, Out, GMT->current.io.pad);	/* Now reinstate the pad */
 	}
 
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Data is geographic */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Data is geographic */
 		double sum;
 		/* If the N or S poles are included then we only want a single estimate at these repeating points */
 		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
-			for (col = 0, ij = GMT_IJP (Out->header, 0, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
+			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
 			sum /= Out->header->nx;	/* Average gradient */
-			for (col = 0, ij = GMT_IJP (Out->header, 0, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
+			for (col = 0, ij = gmt_M_ijp (Out->header, 0, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
 		}
 		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
-			for (col = 0, ij = GMT_IJP (Out->header, Out->header->ny - 1, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
+			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->ny - 1, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
 			sum /= Out->header->nx;	/* Average gradient */
-			for (col = 0, ij = GMT_IJP (Out->header, Out->header->ny - 1, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
+			for (col = 0, ij = gmt_M_ijp (Out->header, Out->header->ny - 1, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
 		}
 	}
 	
 	if (Ctrl->E.active) {	/* data must be scaled to the [-1,1] interval, but we'll do it into [-.95, .95] to not get too bright */
 		scale = 1.0 / (r_max - r_min);
-		GMT_grd_loop (GMT, Out, row, col, ij) {
+		gmt_M_grd_loop (GMT, Out, row, col, ij) {
 			if (GMT_is_fnan (Out->data[ij])) continue;
 			Out->data[ij] = (float)((-1.0 + 2.0 * ((Out->data[ij] - r_min) * scale)) * 0.95);
 		}
@@ -575,14 +575,14 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 					denom = 1.0 / Ctrl->N.sigma;
 				else {
 					denom = 0.0;
-					GMT_grd_loop (GMT, Out, row, col, ij) {
+					gmt_M_grd_loop (GMT, Out, row, col, ij) {
 						if (!GMT_is_fnan (Out->data[ij])) denom += pow (Out->data[ij] - ave_gradient, 2.0);
 					}
 					denom = sqrt ((n_used - 1) / denom);
 					Ctrl->N.sigma = 1.0 / denom;
 				}
 				rpi = 2.0 * Ctrl->N.norm / M_PI;
-				GMT_grd_loop (GMT, Out, row, col, ij) {
+				gmt_M_grd_loop (GMT, Out, row, col, ij) {
 					if (!GMT_is_fnan (Out->data[ij])) Out->data[ij] = (float)(rpi * atan ((Out->data[ij] - ave_gradient) * denom));
 				}
 				Out->header->z_max = rpi * atan ((max_gradient - ave_gradient) * denom);
@@ -591,13 +591,13 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 			else if (Ctrl->N.mode == 2) {	/* Exp transformation */
 				if (!sigma_set) {
 					Ctrl->N.sigma = 0.0;
-					GMT_grd_loop (GMT, Out, row, col, ij) {
+					gmt_M_grd_loop (GMT, Out, row, col, ij) {
 						if (!GMT_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabsf (Out->data[ij]);
 					}
 					Ctrl->N.sigma = M_SQRT2 * Ctrl->N.sigma / n_used;
 				}
 				denom = M_SQRT2 / Ctrl->N.sigma;
-				GMT_grd_loop (GMT, Out, row, col, ij) {
+				gmt_M_grd_loop (GMT, Out, row, col, ij) {
 					if (GMT_is_fnan (Out->data[ij])) continue;
 					if (Out->data[ij] < ave_gradient) {
 						Out->data[ij] = (float)(-Ctrl->N.norm * (1.0 - exp ( (Out->data[ij] - ave_gradient) * denom)));
@@ -614,7 +614,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 					denom = Ctrl->N.norm / (max_gradient - ave_gradient);
 				else
 					denom = Ctrl->N.norm / (ave_gradient - min_gradient);
-				GMT_grd_loop (GMT, Out, row, col, ij) {
+				gmt_M_grd_loop (GMT, Out, row, col, ij) {
 					if (!GMT_is_fnan (Out->data[ij])) Out->data[ij] = (float)((Out->data[ij] - ave_gradient) * denom);
 				}
 				Out->header->z_max = (max_gradient - ave_gradient) * denom;

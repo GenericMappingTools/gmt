@@ -208,17 +208,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error: Must specify output grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !(Ctrl->D.mode == 'g' || Ctrl->D.mode == 'n'), "Syntax error -D option: Must append g or n\n");
-	n_errors += GMT_check_condition (GMT, strchr ("mgs", Ctrl->N.mode) == NULL, "Syntax error: -N Normalization must be one of m, g, or s\\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error: Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !(Ctrl->D.mode == 'g' || Ctrl->D.mode == 'n'), "Syntax error -D option: Must append g or n\n");
+	n_errors += gmt_M_check_condition (GMT, strchr ("mgs", Ctrl->N.mode) == NULL, "Syntax error: -N Normalization must be one of m, g, or s\\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 #define LM_index(L,M) ((L)*((L)+1)/2+(M))	/* Index into the packed P_LM array given L, M */
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_sph2grd (void *V_API, int mode, void *args) {
@@ -379,17 +379,17 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->nx);
 	k = 0;
-	GMT_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
-		lon = GMT_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
+	gmt_M_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
+		lon = gmt_M_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
 		for (M = 0; M <= L_max; M++, k++) sincosd (lon * M, &Sinmx[k], &Cosmx[k]);
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "Array sizes: n_PLM = %u, n_CS = %u n_CS_nx = %u\n", n_PLM, n_CS, n_CS_nx);
-	GMT_col_loop2 (GMT, Grid, col) {	/* Assign pointers for 2-D indexing */
+	gmt_M_col_loop2 (GMT, Grid, col) {	/* Assign pointers for 2-D indexing */
 		k = col * (L_max + 1);	/* Start 1-D array index in Cosmx/Sinmx for this longitude */
 		Cosm[col] = &Cosmx[k];	/* Cosm[col][M] has cos(M*lon) terms for all lon[col], fixed M <= L_max */
 		Sinm[col] = &Sinmx[k];	/* Sinm[col][M] has sin(M*lon) terms for all lon[col], fixed M <= L_max */
 	}
-	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
 		unsigned int kind = 0;
 		size_t n_bytes = sizeof (struct GMT_GRID);
 		double mem;
@@ -406,7 +406,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);
 	}
 	percent_inc = 100.0 / Grid->header->ny;	/* Percentage of whole grid represented by one row */
-	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	nx = (duplicate_col) ? Grid->header->nx - 1 : Grid->header->nx;
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
@@ -418,11 +418,11 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	 * the n_threads, split 10/n_treads into nearest integer.
 	 */
 	
-	GMT_row_loop (GMT, Grid, row) {					/* For each output latitude */
-		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
+	gmt_M_row_loop (GMT, Grid, row) {					/* For each output latitude */
+		lat = gmt_M_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
 		/* Compute all P_lm needed for this latitude at once via gmt_plm_bar_all */
 		gmt_plm_bar_all (GMT, L_sign * L_max, sind (lat), ortho, P_lm);	/* sind(lat) = cosine of colatitude */
-		if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give user feedback on progress every 10 percent */
+		if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give user feedback on progress every 10 percent */
 			percent += percent_inc;
 			if (percent > (double)next_10_percent) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished %3.3d %% of evaluation\n", next_10_percent);
@@ -442,14 +442,14 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 					sum += P_lm[kk] * (C[L][M] * Cosm[col][M] + S[L][M] * Sinm[col][M]);
 				}
 			}
-			node = GMT_IJP (Grid->header, row, col);
+			node = gmt_M_ijp (Grid->header, row, col);
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast as float */
 		}
 	}
 	if (duplicate_col) {	/* Just copy over what we found on the western boundary to the repeated eastern boundary */
 		uint64_t node_L, node_R;
-		GMT_row_loop (GMT, Grid, row) {	/* For each output latitude */
-			node_L = GMT_IJP (Grid->header, row, 0);	/* West */
+		gmt_M_row_loop (GMT, Grid, row) {	/* For each output latitude */
+			node_L = gmt_M_ijp (Grid->header, row, 0);	/* West */
 			node_R = node_L + Grid->header->nx - 1;		/* East */
 			Grid->data[node_R] = Grid->data[node_L];
 		}

@@ -58,7 +58,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 #define FMT_LABEL		4
 
 /* Need unsigned int BGR triplets */
-#define GMT_3u255(t) GMT_u255(t[2]),GMT_u255(t[1]),GMT_u255(t[0])
+#define GMT_3u255(t) gmt_M_u255(t[2]),gmt_M_u255(t[1]),gmt_M_u255(t[0])
 
 #define F_ID	0	/* Indices into arrays */
 #define N_ID	1
@@ -492,17 +492,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 		}
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Syntax error -D: Cannot open HTML description file %s\n", Ctrl->D.file);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Syntax error -D: Cannot open HTML description file %s\n", Ctrl->D.file);
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Syntax error: Cannot produce binary KML output\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error: -Ra without arguments only accepted for single table\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error: -S takes scales > 0.0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -N+ not valid for lines and polygons\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
-	n_errors += GMT_check_condition (GMT, (GMT->common.b.active[GMT_IN] || GMT->common.i.active) && (Ctrl->N.mode == GET_COL_LABEL || Ctrl->N.mode == GET_LABEL), "Syntax error: Cannot use -N- or -N+ when -b or -i are used.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Syntax error: Cannot produce binary KML output\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error: -Ra without arguments only accepted for single table\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error: -S takes scales > 0.0\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == GET_LABEL && Ctrl->F.mode >= LINE, "Syntax error: -N+ not valid for lines and polygons\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.pen.width < 1.0, "Syntax error: -W given pen width < 1 pixel.  Use integers and append p as unit.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option.\n");
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.b.active[GMT_IN] || GMT->common.i.active) && (Ctrl->N.mode == GET_COL_LABEL || Ctrl->N.mode == GET_LABEL), "Syntax error: Cannot use -N- or -N+ when -b or -i are used.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -549,7 +549,7 @@ GMT_LOCAL void ascii_output_three (struct GMTAPI_CTRL *API, double out[], int nt
 
 GMT_LOCAL void place_region_tag (struct GMTAPI_CTRL *API, double wesn[], double min[], double max[], int N) {
 	char text[GMT_LEN256] = {""};
-	if (GMT_360_RANGE (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
+	if (gmt_M_360_range (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
 	kml_print (API, N++, "<Region>\n");
 	kml_print (API, N++, "<LatLonAltBox>\n");
 	gmt_ascii_format_col (API->GMT, text, wesn[YHI], GMT_OUT, GMT_Y);
@@ -586,21 +586,21 @@ GMT_LOCAL void set_iconstyle (struct GMTAPI_CTRL *API, double *rgb, double scale
 	kml_print (API, --N, "</Icon>\n");
 	if (iconfile[0] != '-') {
 		kml_print (API, N, "<scale>%g</scale>\n", scale);
-		kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+		kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	}
 	kml_print (API, --N, "</IconStyle>\n");
 }
 
 GMT_LOCAL void set_linestyle (struct GMTAPI_CTRL *API, struct GMT_PEN *pen, double *rgb, int N) {
 	kml_print (API, N++, "<LineStyle>\n");
-	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	kml_print (API, N, "<width>%ld</width>\n", lrint (pen->width));
 	kml_print (API, --N, "</LineStyle>\n");
 }
 
 GMT_LOCAL void set_polystyle (struct GMTAPI_CTRL *API, double *rgb, int outline, int active, int N) {
 	kml_print (API, N++, "<PolyStyle>\n");
-	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", gmt_M_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	kml_print (API, N, "<fill>%d</fill>\n", !active);
 	kml_print (API, N, "<outline>%d</outline>\n", outline);
 	kml_print (API, --N, "</PolyStyle>\n");
@@ -610,15 +610,15 @@ GMT_LOCAL void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int 
 	/* Special version of gmt_get_rgb_lookup since no interpolation can take place */
 
 	if (index < 0) {	/* NaN, Foreground, Background */
-		GMT_rgb_copy (rgb, P->patch[index+3].rgb);
+		gmt_M_rgb_copy (rgb, P->patch[index+3].rgb);
 		P->skip = P->patch[index+3].skip;
 	}
 	else if (P->range[index].skip) {		/* Set to page color for now */
-		GMT_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
+		gmt_M_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
 		P->skip = true;
 	}
 	else {	/* Return low color */
-		GMT_memcpy (rgb, P->range[index].rgb_low, 4, double);
+		gmt_M_memcpy (rgb, P->range[index].rgb_low, 4, double);
 		P->skip = false;
 	}
 }
@@ -668,7 +668,7 @@ GMT_LOCAL bool crossed_dateline (double this_x, double last_x) {
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmt2kml (void *V_API, int mode, void *args) {
@@ -720,7 +720,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	gmt_set_geographic (GMT, GMT_IN);
 	gmt_set_geographic (GMT, GMT_OUT);
 	extra[0] = '\0';
-	GMT_memset (out, 5, double);	/* Set to zero */
+	gmt_M_memset (out, 5, double);	/* Set to zero */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 
 	if (Ctrl->C.active) {	/* Process CPT file */
@@ -779,7 +779,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	/* Set style for labels */
 	kml_print (API, N++, "<LabelStyle>\n");
 	kml_print (API, N, "<scale>%g</scale>\n", Ctrl->S.scale[N_ID]);
-	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
+	kml_print (API, N, "<color>%02x%02x%02x%02x</color>\n", gmt_M_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
 	kml_print (API, --N, "</LabelStyle>\n");
 	kml_print (API, --N, "</Style>\n");
 
@@ -913,7 +913,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					kml_print (API, N, "<name>%s</name>\n", label);
 				else
 					kml_print (API, N, "<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
-				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
+				if (gmt_M_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
 					act = (gmt_parse_segment_item (GMT, header, "-D", buffer) || gmt_parse_segment_item (GMT, header, "-T", buffer));
 				else
 					act = (gmt_parse_segment_item (GMT, header, "-T", buffer));
@@ -942,7 +942,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					do_description = true;
 					strcat (description, buffer);
 				}
-				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
+				if (gmt_M_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
 					act = (gmt_parse_segment_item (GMT, header, "-D", buffer) || gmt_parse_segment_item (GMT, header, "-T", buffer));
 				else
 					act = (gmt_parse_segment_item (GMT, header, "-T", buffer));

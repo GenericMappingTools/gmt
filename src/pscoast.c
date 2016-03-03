@@ -323,7 +323,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				n_errors += gmt_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
 				break;
 			case 'F':
-				if (GMT_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
+				if (gmt_M_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
 					if (strstr (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -F option for DCW is deprecated, use -E instead.\n");
 						Ctrl->E.active = true;
@@ -405,7 +405,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
 				break;
 			case 'm':
-				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
+				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
 				else {
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -540,39 +540,39 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->M.active) {	/* Need -R only */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	}
 	else if (!Ctrl->Q.active) {	/* Need -R -J */
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0,
+		n_errors += gmt_M_check_condition (GMT, Ctrl->W.pen[k].width < 0.0,
 		                                 "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
 	}
-	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping,
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping,
 	                                 "Syntax error: Cannot combine -C, -G, -S while clipping\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active),
 	                                 "Syntax error: Must choose between dumping and clipping/plotting\n");
-	n_errors += GMT_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] -
+	n_errors += gmt_M_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] -
 	                                 GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0,
 	                                 "-JE not implemented for global clipping - I quit\n");
-	n_errors += GMT_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active),
+	n_errors += gmt_M_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active),
 	                                 "Cannot do clipping AND draw coastlines, rivers, or borders\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active ||
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active ||
 	                                 Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active),
 	                                 "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1,
 	                                 "Syntax error -M: Must specify one of -E, -I, -N, and -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active),
 	                                 "Syntax error: -F is only allowed with -L and -T\n");
 
 	if (Ctrl->I.active) {	/* Generate list of desired river features in sorted order */
 		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
 			if (!Ctrl->I.use[k]) continue;
-			n_errors += GMT_check_condition (GMT, Ctrl->I.pen[k].width < 0.0,
+			n_errors += gmt_M_check_condition (GMT, Ctrl->I.pen[k].width < 0.0,
 			                                 "Syntax error -I option: Pen thickness cannot be negative\n");
 			Ctrl->I.list[Ctrl->I.n_rlevels++] = k;	/* Since goes from 0-10 */
 		}
@@ -581,7 +581,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT
 	if (Ctrl->N.active) {	/* Generate list of desired border features in sorted order */
 		for (k = Ctrl->N.n_blevels = 0; k < GSHHS_N_BLEVELS; k++) {
 			if (!Ctrl->N.use[k]) continue;
-			n_errors += GMT_check_condition (GMT, Ctrl->N.pen[k].width < 0.0,
+			n_errors += gmt_M_check_condition (GMT, Ctrl->N.pen[k].width < 0.0,
 			                                 "Syntax error -N option: Pen thickness cannot be negative\n");
 			Ctrl->N.list[Ctrl->N.n_blevels++] = k + 1;	/* Add one so we get range 1-3 */
 		}
@@ -633,7 +633,7 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 	}
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pscoast (void *V_API, int mode, void *args) {
@@ -725,7 +725,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 
-	if (!GMT_is_geographic (GMT, GMT_IN)) {
+	if (!gmt_M_is_geographic (GMT, GMT_IN)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: You must use a map projection or -Jx|X...d[/...d] for geographic data\n");
 		Return (EXIT_FAILURE);
 	}
@@ -825,7 +825,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	if (clipping) gmt_map_basemap (GMT);
 
-	if (GMT->current.proj.projection == GMT_AZ_EQDIST && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_180_RANGE (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
+	if (GMT->current.proj.projection == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
 		possibly_donut_hell = true;
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
@@ -869,11 +869,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 		level_to_be_painted[0] = level_to_be_painted[1] = (Ctrl->S.active) ? 0 : 1;
 	}
 
-	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0 && !GMT_IS_LINEAR (GMT)) greenwich = true;
+	if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0 && !gmt_M_is_linear (GMT)) greenwich = true;
 	if (need_coast_base && (360.0 - fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) ) < c.bsize) {
 		GMT->current.map.is_world = true;
 		if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER) GMT->current.map.is_world = false;
-		if (GMT_IS_AZIMUTHAL (GMT)) GMT->current.map.is_world = false;
+		if (gmt_M_is_azimuthal (GMT)) GMT->current.map.is_world = false;
 	}
 	if (GMT->current.map.is_world && greenwich)
 		edge = GMT->current.proj.central_meridian;

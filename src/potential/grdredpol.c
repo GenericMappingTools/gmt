@@ -1153,8 +1153,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E option overrides -C\n");
@@ -1164,7 +1164,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdredpol (void *V_API, int mode, void *args) {
@@ -1228,9 +1228,9 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	if (!GMT->common.R.active) 
-		GMT_memcpy (wesn_new, Gin->header->wesn, 4, double);
+		gmt_M_memcpy (wesn_new, Gin->header->wesn, 4, double);
 	else
-		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
+		gmt_M_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 
 	one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 	nx_new = urint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
@@ -1309,8 +1309,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	}
 
 	/* Generate vectors of lon & lats */
-	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = GMT_grd_col_to_x (GMT, col, Gin->header);
-	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = GMT_grd_row_to_y (GMT, row, Gin->header);
+	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = gmt_M_grd_col_to_x (GMT, col, Gin->header);
+	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = gmt_M_grd_row_to_y (GMT, row, Gin->header);
 
 	n_jlon = urint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
 	n_jlat = urint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
@@ -1381,7 +1381,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 					nu  = -sin(dip_m);
 				}
 			}
-			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE))
+			if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE))
 				GMT_Report (API, GMT_MSG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
 					    Ctrl->C.dec/D2R, Ctrl->C.dip/D2R, slonm, slatm);
 
@@ -1423,9 +1423,9 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 			}
 
 			/* Convolve filter with input data that is inside current window (plus what filter width imposes) */
-			GMT_row_loop (GMT, Gout,row) {
+			gmt_M_row_loop (GMT, Gout,row) {
 				if (ftlat[row] < slati || ftlat[row] > slatf) continue;		/* Current point outside WOI */
-				GMT_col_loop (GMT, Gout,row,col,ij) {
+				gmt_M_col_loop (GMT, Gout,row,col,ij) {
 					if (ftlon[col] < sloni || ftlon[col] > slonf) continue;	/* Current point outside WOI */
 					/* Compute dec and dip at corrent point */
 					if (!Ctrl->C.const_f) {		/* It means we need to get F (& M) vector parameters */
@@ -1470,7 +1470,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 						}
 					}
 					else
-						GMT_memcpy (fix, fxr, n_coef, double);
+						gmt_M_memcpy (fix, fxr, n_coef, double);
 
 					if (Ctrl->Z.active && !wrote_one && l == 0 && k == 0) {
 						for (jj = i2 = 0; i2 < Ctrl->F.ncoef_row; i2++)		/* Remember, filter is columnwise */
@@ -1493,7 +1493,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
 
 	gmt_free (GMT, cosphi);      gmt_free (GMT, sinphi);
 	gmt_free (GMT, cospsi);      gmt_free (GMT, sinpsi);

@@ -177,7 +177,7 @@ void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, str
 
 void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P) {
 	char word[2] = { '\0', '\0'}, EOL = '\n';
-	GMT_UNUSED(C);
+	gmt_M_unused(C);
 
 	/* Write all the individual MGD77 header parameters to stdout */
 
@@ -264,7 +264,7 @@ void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F) {
 	 * Here we simply ignore return values since many of these are presumably unknown attributes.
 	 * File is assumed to be in define mode. */
 
-	GMT_UNUSED(C);
+	gmt_M_unused(C);
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "Survey_Identifier_REVISED");
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "Format_Acronym_REVISED");
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "Data_Center_File_Number_REVISED");
@@ -452,7 +452,7 @@ void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct M
 	/* Assigns array of pointers to each idividual parameter */
 	int i;
 
-	GMT_UNUSED(C);
+	gmt_M_unused(C);
 	for (i = 0; i < 2; i++) H[0].ptr[i] = P[i]->Survey_Identifier;
 	for (i = 0; i < 2; i++) H[1].ptr[i] = P[i]->Format_Acronym;
 	for (i = 0; i < 2; i++) H[2].ptr[i] = P[i]->Data_Center_File_Number;

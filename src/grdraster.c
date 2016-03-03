@@ -78,7 +78,7 @@ GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	unsigned int i;
 	unsigned char tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
-		GMT_memcpy (&tempval, &buffer[i], 1, char);
+		gmt_M_memcpy (&tempval, &buffer[i], 1, char);
 		if (ras.nanset && tempval == ras.nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
@@ -114,7 +114,7 @@ GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	unsigned int i;
 	uint16_t tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
-		GMT_memcpy (&tempval, &buffer[i * sizeof(uint16_t)], 1, uint16_t);
+		gmt_M_memcpy (&tempval, &buffer[i * sizeof(uint16_t)], 1, uint16_t);
 		if (ras.swap_me)
 			tempval = bswap16 (tempval);
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -135,7 +135,7 @@ GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	int16_t tempval;
 	uint16_t *u = (uint16_t *)&tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		GMT_memcpy (&tempval, &buffer[i * sizeof(int16_t)], 1, int16_t);
+		gmt_M_memcpy (&tempval, &buffer[i * sizeof(int16_t)], 1, int16_t);
 		if (ras.swap_me)
 			*u = bswap16 (*u);
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -156,7 +156,7 @@ GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO
 	int32_t tempval;
 	uint32_t *u = (uint32_t *)&tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		GMT_memcpy (&tempval, &buffer[i * sizeof(int32_t)], 1, int32_t);
+		gmt_M_memcpy (&tempval, &buffer[i * sizeof(int32_t)], 1, int32_t);
 		if (ras.swap_me)
 			*u = bswap32 (*u);
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -512,7 +512,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 							break;
 						case 'H':
 						case 'h':	/* GMT4 LEVEL: Give header size for skipping */
-							if (GMT_compat_check (GMT, 4)) {
+							if (gmt_M_compat_check (GMT, 4)) {
 								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
 								rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
 							}
@@ -544,7 +544,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 							break;
 						case 'H':
 						case 'h':	/* GMT4 LEVEL: Give header size for skipping */
-							if (GMT_compat_check (GMT, 4)) {
+							if (gmt_M_compat_check (GMT, 4)) {
 								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
 								rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
 							}
@@ -577,9 +577,9 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 				rasinfo[nfound].h.ny = (unsigned int)((rasinfo[nfound].h.registration) ? j : j + 1);
 
 				if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
-					expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
+					expected_size = lrint ((ceil (gmt_M_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
 				else
-					expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
+					expected_size = (gmt_M_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 				if (gmt_getdatapath (GMT, rasinfo[nfound].h.remark, path, F_OK) || gmt_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path, F_OK)) {
 					strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160-1);
 					stat (path, &F);
@@ -716,18 +716,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 	/* Check that arguments were valid */
 	gmt_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error -I option: You must specify only one raster file ID.\n");
-	if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
-		n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error: You must select only one of -G or -T.\n");
-		n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error: You must select either -G or -T.\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Syntax error -I option: You must specify only one raster file ID.\n");
+	if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error: You must select only one of -G or -T.\n");
+		n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error: You must select either -G or -T.\n");
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_free (GMT, rasinfo); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdraster (void *V_API, int mode, void *args) {
@@ -836,11 +836,11 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		error++;
 	}
 	else {
-		GMT_memset (&myras, 1, struct GRDRASTER_INFO);
+		gmt_M_memset (&myras, 1, struct GRDRASTER_INFO);
 		myras = rasinfo[j];
 	}
 
-	if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
+	if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
 		if (!Ctrl->G.active) Ctrl->T.active = true;
 	}
 
@@ -851,7 +851,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
-	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
+	gmt_M_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
 	if (myras.geo) {
 		gmt_set_geographic (GMT, GMT_IN);
@@ -864,7 +864,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* Everything looks OK so far.  If (Ctrl->I.active) verify that it will work, else set it.  */
 	if (Ctrl->I.active) {
-		GMT_memcpy (Grid->header->inc, Ctrl->I.inc, 2, double);
+		gmt_M_memcpy (Grid->header->inc, Ctrl->I.inc, 2, double);
 		tol = 0.01 * myras.h.inc[GMT_X];
 		imult = urint (Grid->header->inc[GMT_X] / myras.h.inc[GMT_X]);
 		if (imult < 1 || fabs(Grid->header->inc[GMT_X] - imult * myras.h.inc[GMT_X]) > tol) error++;
@@ -877,7 +877,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		}
 	}
 	else {
-		GMT_memcpy (Grid->header->inc,  myras.h.inc, 2, double);
+		gmt_M_memcpy (Grid->header->inc,  myras.h.inc, 2, double);
 		imult = jmult = 1;
 	}
 
@@ -889,7 +889,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		Grid->header->wesn[YLO] = floor (GMT->common.R.wesn[YLO] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 		Grid->header->wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
 			int w, e, s, n, wm, em, sm, nm;
 
 			w = irint (floor (Grid->header->wesn[XLO]));	wm = irint ((Grid->header->wesn[XLO] - w) * 60.0);
@@ -960,10 +960,10 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
-	grdlatorigin = GMT_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
-	grdlonorigin = GMT_col_to_x (GMT, 0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-	raslatorigin = GMT_row_to_y (GMT, 0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.ny);
-	raslonorigin = GMT_col_to_x (GMT, 0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.nx);
+	grdlatorigin = gmt_M_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+	grdlonorigin = gmt_M_col_to_x (GMT, 0, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
+	raslatorigin = gmt_M_row_to_y (GMT, 0, myras.h.wesn[YLO], myras.h.wesn[YHI], myras.h.inc[GMT_Y], myras.h.xy_off, myras.h.ny);
+	raslonorigin = gmt_M_col_to_x (GMT, 0, myras.h.wesn[XLO], myras.h.wesn[XHI], myras.h.inc[GMT_X], myras.h.xy_off, myras.h.nx);
 	irasstart = irint ((grdlonorigin - raslonorigin) / myras.h.inc[GMT_X]);
 	jrasstart = irint ((raslatorigin - grdlatorigin) / myras.h.inc[GMT_Y]);
 	if (myras.nglobal) while (irasstart < 0) irasstart += myras.nglobal;
@@ -974,7 +974,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		unsigned int col;
 		Grid->data = gmt_memory_aligned (GMT, NULL, Grid->header->nx, float);
 		x = gmt_memory (GMT, NULL, Grid->header->nx, double);
-		for (col = 0; col < Grid->header->nx; col++) x[col] = GMT_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
+		for (col = 0; col < Grid->header->nx; col++) x[col] = gmt_M_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
@@ -1012,15 +1012,15 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	if (myras.swap_me) GMT_Report (API, GMT_MSG_VERBOSE, "Data from %s will be byte-swapped\n", myras.h.remark);
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
-		if ( (GMT_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
+		if ( (gmt_M_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
 			gmt_free (GMT, ubuffer);
 			gmt_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
 		}
 		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
-			y = GMT_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
-			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, row, 0);	/* Either we just have one row (with no padding) or we have a padded grid */
+			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+			ij = (Ctrl->T.active) ? 0 : gmt_M_ijp (Grid->header, row, 0);	/* Either we just have one row (with no padding) or we have a padded grid */
 			if (jras < 0 || (jras2 = jras) > myras.h.ny) {
 				/* This entire row is outside the raster */
 				for (col = 0; col < Grid->header->nx; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
@@ -1060,8 +1060,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		firstread = true;
 		n_expected = myras.h.nx;
 		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
-			y = GMT_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
-			ij = (Ctrl->T.active) ? 0 : GMT_IJP (Grid->header, row, 0);	/* Either we just have one row (no padding) or we have a padded grid */
+			y = gmt_M_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
+			ij = (Ctrl->T.active) ? 0 : gmt_M_ijp (Grid->header, row, 0);	/* Either we just have one row (no padding) or we have a padded grid */
 			if (jras < 0 || (jras2 = jras) > myras.h.ny) {
 				/* This entire row is outside the raster */
 				for (col = 0; col < Grid->header->nx; col++, ij++) Grid->data[ij] = GMT->session.f_NaN;
@@ -1083,7 +1083,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 					gmt_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
-				if ((GMT_fread (buffer, ksize, n_expected, fp)) != n_expected) {
+				if ((gmt_M_fread (buffer, ksize, n_expected, fp)) != n_expected) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR reading in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
 					gmt_free (GMT, buffer);

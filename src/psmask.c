@@ -124,9 +124,9 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 	more = true;
 	do {
 		/* Determine lower left corner of current 4-node box */
-		ij = GMT_IJP (h, j, i);
-		x0 = GMT_grd_col_to_x (GMT, i, h);
-		y0 = GMT_grd_row_to_y (GMT, j, h);
+		ij = gmt_M_ijp (h, j, i);
+		x0 = gmt_M_grd_col_to_x (GMT, i, h);
+		y0 = gmt_M_grd_row_to_y (GMT, j, h);
 		n_cuts = 0;
 		k0 = kk;
 
@@ -136,7 +136,7 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 
 			/* Skip edge that already have been used */
 
-			ij0 = GMT_IJ0 (h, j + info->j_off[k], i + info->i_off[k]);
+			ij0 = gmt_M_ij0 (h, j + info->j_off[k], i + info->i_off[k]);
 			edge_word = ij0 / 32 + info->k_off[k] * info->offset;
 			edge_bit = ij0 % 32;
 			if (edge[edge_word] & info->bit[edge_bit]) continue;	/* Already used */
@@ -179,7 +179,7 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 		}
 		if (n_cuts == 0) {	/* Close interior contour and return  [Will add 1 or 2 points] */
 			/* if (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X]) == 0.0) */	/* On side 1 or 3 */
-			if (GMT_IS_ZERO (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X])))	/* On side 1 or 3 */
+			if (gmt_M_is_zero (fmod ((*xx[0] - inc2[GMT_X]), h->inc[GMT_X])))	/* On side 1 or 3 */
 				/* first_k = ((*xx[0] - x0) == 0.0) ? 3 : 1; */
 				first_k = doubleAlmostEqualZero (*xx[0], x0) ? 3 : 1;
 			else 	/* On side 0 or 2 */
@@ -219,7 +219,7 @@ GMT_LOCAL uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO
 			n++;
 		}
 		if (more) {	/* Mark this edge as used */
-			ij0 = GMT_IJ0 (h, j + info->j_off[kk], i + info->i_off[kk]);
+			ij0 = gmt_M_ij0 (h, j + info->j_off[kk], i + info->i_off[kk]);
 			edge_word = ij0 / 32 + info->k_off[kk] * info->offset;
 			edge_bit = ij0 % 32;
 			edge[edge_word] |= info->bit[edge_bit];
@@ -268,13 +268,13 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 
 	if (side == 4) {
 		for (j = j0; go_on && j < h->ny; j++) {
-			ij = GMT_IJP (h, j, i0);
+			ij = gmt_M_ijp (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {	/* nx-1 since the last bin starts at nx-2 and ends at nx-1 */
 				edge_word = ij / 32 + info->offset;
 				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
-					*x[0] = GMT_grd_col_to_x (GMT, i, h);
-					*y[0] = GMT_grd_row_to_y (GMT, j, h) + 0.5 * h->inc[GMT_Y];
+					*x[0] = gmt_M_grd_col_to_x (GMT, i, h);
+					*y[0] = gmt_M_grd_row_to_y (GMT, j, h) + 0.5 * h->inc[GMT_Y];
 					edge[edge_word] |= info->bit[edge_bit];
 					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 3, max);
 					go_on = false;
@@ -292,13 +292,13 @@ GMT_LOCAL uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info
 	}
 	if (n == 0 && side == 5) {	/* Look at horizontal interior gridlines */
 		for (j = j0; go_on && j < h->ny; j++) {
-			ij = GMT_IJP (h, j, i0);
+			ij = gmt_M_ijp (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
 				edge_word = ij / 32;
 				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
-					*x[0] = GMT_grd_col_to_x (GMT, i, h) + 0.5 * h->inc[GMT_X];
-					*y[0] = GMT_grd_row_to_y (GMT, j, h);
+					*x[0] = gmt_M_grd_col_to_x (GMT, i, h) + 0.5 * h->inc[GMT_X];
+					*y[0] = gmt_M_grd_row_to_y (GMT, j, h);
 					edge[edge_word] |= info->bit[edge_bit];
 					n = trace_clip_contours (GMT, info, grd, edge, h, inc2, x, y, i, j, 2, max);
 					go_on = false;
@@ -345,10 +345,10 @@ GMT_LOCAL void orient_contours (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h,
 
 	i = lrint (floor (0.5 * (fx[0] + fx[1])));
 	j = lrint (ceil  (0.5 * (fy[0] + fy[1])));
-	ij_ll = GMT_IJP (h, j, i);     /* lower left corner  */
-	ij_lr = GMT_IJP (h, j, i+1);   /* lower right corner */
-	ij_ul = GMT_IJP (h, j-1, i);   /* upper left corner  */
-	ij_ur = GMT_IJP (h, j-1, i+1); /* upper right corner */
+	ij_ll = gmt_M_ijp (h, j, i);     /* lower left corner  */
+	ij_lr = gmt_M_ijp (h, j, i+1);   /* lower right corner */
+	ij_ul = gmt_M_ijp (h, j-1, i);   /* upper left corner  */
+	ij_ur = gmt_M_ijp (h, j-1, i+1); /* upper right corner */
 
 	for (k = 0; k < 2; k++) {	/* Determine which edge the contour points lie on (0-3) */
 		/* We KNOW that for each k, either x[k] or y[k] lies EXACTLY on a gridline.  This is used
@@ -496,7 +496,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 			case 'D':	/* Dump the polygons to files */
 				Ctrl->D.active = true;
 
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					for (n_plus = -1, k = 0; opt->arg[k]; k++) {
 						if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
 							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
@@ -574,27 +574,27 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (Ctrl->C.active) {
-		n_errors += GMT_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Syntax error: Cannot specify -B option in -C mode\n");
+		n_errors += gmt_M_check_condition (GMT, GMT->common.B.active[0] || GMT->common.B.active[1], "Syntax error: Cannot specify -B option in -C mode\n");
 	}
 	else {
-		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-		n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
-		n_errors += GMT_check_condition (GMT, !Ctrl->I.active, "Syntax error: Must specify -I option\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->T.active && !GMT_IS_RECT_GRATICULE(GMT), "Syntax error -T option: Only available with Linear, Mercator, or basic cylindrical projections\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.fill.rgb[0] >= 0 || Ctrl->G.fill.use_pattern), "Syntax error -T option: Must also specify a tile fill with -G\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increments\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error: -D cannot be used with -T\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.file == NULL, "Syntax error: -L requires an output gridfile name\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
+		n_errors += gmt_M_check_condition (GMT, !Ctrl->I.active, "Syntax error: Must specify -I option\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !gmt_M_is_rect_graticule(GMT), "Syntax error -T option: Only available with Linear, Mercator, or basic cylindrical projections\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.fill.rgb[0] >= 0 || Ctrl->G.fill.use_pattern), "Syntax error -T option: Must also specify a tile fill with -G\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increments\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->T.active, "Syntax error: -D cannot be used with -T\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.file == NULL, "Syntax error: -L requires an output gridfile name\n");
 		n_errors += gmt_check_binary_io (GMT, 2);
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psmask (void *V_API, int mode, void *args) {
@@ -684,8 +684,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Clipping off!\n");
 	}
 	else {	/* Start new clip_path */
-		GMT_memset (inc2, 2, double);
-		GMT_memset (&info, 1, struct PSMASK_INFO);
+		gmt_M_memset (inc2, 2, double);
+		gmt_M_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = true;
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
@@ -705,7 +705,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
 		gmt_set_pad (GMT, 0U);		/* Change default pad to 0 only */
-		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
+		gmt_M_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		gmt_set_grddim (GMT, Grid->header);	/* Recompute dimensions of array */
 		/* We allocate a 1-byte array separately instead of the 4-byte float array that GMT_Create_Data would have given us */
 		grd = gmt_memory (GMT, NULL, Grid->header->size, char);	/* Only need char array to store 0 and 1 */
@@ -739,15 +739,15 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 		do {	/* Keep returning records until we reach EOF */
 			n_read++;
 			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+				if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 
-			if (GMT_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
+			if (gmt_M_y_is_outside (GMT, in[GMT_Y], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 			if (gmt_x_is_outside (GMT, &in[GMT_X], Grid->header->wesn[XLO], Grid->header->wesn[XHI])) continue;	/* Outside x-range (or longitude) */
 
 			/* Data record to process */
@@ -757,13 +757,13 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			if (gmt_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;			/* Outside grid node range */
 
 			if (node_only) {
-				ij = GMT_IJP (Grid->header, row, col);
+				ij = gmt_M_ijp (Grid->header, row, col);
 				grd[ij] = 1;
 			}
 			else {	/* Set coordinate of this node */
 
-				x0 = GMT_grd_col_to_x (GMT, col, Grid->header);
-				y0 = GMT_grd_row_to_y (GMT, row, Grid->header);
+				x0 = gmt_M_grd_col_to_x (GMT, col, Grid->header);
+				y0 = gmt_M_grd_row_to_y (GMT, row, Grid->header);
 
 				/* Set this and all nodes within radius distance to 1 */
 
@@ -775,7 +775,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 						if (ii >= Grid->header->nx) continue;
 						distance = gmt_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
-						ij = GMT_IJP (Grid->header, jj, ii);
+						ij = gmt_M_ijp (Grid->header, jj, ii);
 						grd[ij] = 1;
 					}
 				}
@@ -845,7 +845,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					if (n_seg == n_seg_alloc) {
 						size_t n_old_alloc = n_seg_alloc;
 						D->table[0]->segment = gmt_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
-						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
+						gmt_M_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[0]->segment[n_seg++] = S;
 					D->table[0]->n_segments++;	D->n_segments++;
@@ -882,7 +882,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 			for (row = 0; row < Grid->header->ny; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
 				y_top = grd_y0[row] + inc2[GMT_Y];
-				ij = GMT_IJP (Grid->header, row, 0);
+				ij = gmt_M_ijp (Grid->header, row, 0);
 				for (col = 0; col < Grid->header->nx; col++, ij++) {
 					if (grd[ij] == 0) continue;
 

@@ -198,17 +198,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify one or more input files\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0, "Syntax error -T: Must specify a positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I: Must specify a positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "Syntax error -M: Not compatible with -I or -T\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "Syntax error: Only one of -I -T can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Syntax error: Must specify one or more input files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0, "Syntax error -T: Must specify a positive increment\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I: Must specify a positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->M.active, "Syntax error -M: Not compatible with -I or -T\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->I.active || Ctrl->T.active) && Ctrl->L.active, "Syntax error -L: Not compatible with -I or -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->I.active, "Syntax error: Only one of -I -T can be specified\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
@@ -258,7 +258,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 	/* OK, done parsing, now process all input grids in a loop */
 	
 	sep = GMT->current.setting.io_col_separator;
-	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	global_xmin = global_ymin = global_zmin = DBL_MAX;
 	global_xmax = global_ymax = global_zmax = -DBL_MAX;
 	if (Ctrl->C.active) {
@@ -293,7 +293,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
-		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
+		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
@@ -320,7 +320,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
 			ij_min = ij_max = n = 0;
-			GMT_grd_loop (GMT, G, row, col, ij) {
+			gmt_M_grd_loop (GMT, G, row, col, ij) {
 				if (GMT_is_fnan (G->data[ij])) continue;
 				if (G->data[ij] < z_min) {
 					z_min = G->data[ij];	ij_min = ij;
@@ -338,14 +338,14 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 			n_nan = G->header->nm - n;
 			if (n) {	/* Meaning at least one non-NaN node was found */
-				col = (unsigned int)GMT_col (G->header, ij_min);
-				row = (unsigned int)GMT_row (G->header, ij_min);
-				x_min = GMT_grd_col_to_x (GMT, col, G->header);
-				y_min = GMT_grd_row_to_y (GMT, row, G->header);
-				col = (unsigned int)GMT_col (G->header, ij_max);
-				row = (unsigned int)GMT_row (G->header, ij_max);
-				x_max = GMT_grd_col_to_x (GMT, col, G->header);
-				y_max = GMT_grd_row_to_y (GMT, row, G->header);
+				col = (unsigned int)gmt_M_col (G->header, ij_min);
+				row = (unsigned int)gmt_M_row (G->header, ij_min);
+				x_min = gmt_M_grd_col_to_x (GMT, col, G->header);
+				y_min = gmt_M_grd_row_to_y (GMT, row, G->header);
+				col = (unsigned int)gmt_M_col (G->header, ij_max);
+				row = (unsigned int)gmt_M_row (G->header, ij_max);
+				x_max = gmt_M_grd_col_to_x (GMT, col, G->header);
+				y_max = gmt_M_grd_row_to_y (GMT, row, G->header);
 			}
 			else	/* Not a single valid node */
 				x_min = x_max = y_min = y_max = GMT->session.d_NaN;
@@ -377,8 +377,8 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			mean = (n > 0) ? mean : GMT->session.d_NaN;
 		}
 
-		if (GMT_is_geographic (GMT, GMT_IN)) {
-			if (GMT_grd_is_global(GMT, G->header) || (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] <= 0.0))
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {
+			if (gmt_M_grd_is_global(GMT, G->header) || (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] <= 0.0))
 				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
@@ -422,7 +422,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		} else if (Ctrl->C.active && !Ctrl->I.active) {
 			if (API->mode) {	/* External interface, return as data with no leading text */
 				/* w e s n z0 z1 dx dy nx ny [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan] */
-				GMT_memcpy (out, G->header->wesn, 4, double);	/* Place the w/e/s/n limits */
+				gmt_M_memcpy (out, G->header->wesn, 4, double);	/* Place the w/e/s/n limits */
 				out[ZLO]   = G->header->z_min;		out[ZHI]   = G->header->z_max;
 				out[ZHI+1] = G->header->inc[GMT_X];	out[ZHI+2] = G->header->inc[GMT_Y];
 				out[ZHI+3] = G->header->nx;		out[ZHI+4] = G->header->ny;
@@ -484,7 +484,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			sprintf (record, "%s: Command: %s", G->header->name, G->header->command);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			sprintf (record, "%s: Remark: %s", G->header->name, G->header->remark);		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			if (G->header->registration == GMT_GRID_NODE_REG || G->header->registration == GMT_GRID_PIXEL_REG)
-				sprintf (record, "%s: %s node registration used [%s]", G->header->name, type[G->header->registration], gtype[GMT_is_geographic (GMT, GMT_IN)]);
+				sprintf (record, "%s: %s node registration used [%s]", G->header->name, type[G->header->registration], gtype[gmt_M_is_geographic (GMT, GMT_IN)]);
 			else
 				sprintf (record, "%s: Unknown registration! Probably not a GMT grid", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
@@ -642,7 +642,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");
@@ -697,7 +697,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we dont get outside valid bounds */
 			if (global_ymin < -90.0) {
 				global_ymin = -90.0;
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Using -I caused south to become < -90.  Reset to -90.\n");

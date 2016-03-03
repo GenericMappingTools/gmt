@@ -122,7 +122,7 @@ struct X2SYS_SOLVE_CTRL {
  */
 
 GMT_LOCAL double basis_constant (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a constant c*f = c*1 : == 1 */
-	GMT_UNUSED(P); GMT_UNUSED(which); GMT_UNUSED(row);
+	gmt_M_unused(P); gmt_M_unused(which); gmt_M_unused(row);
 	return (1.0);	/* which, row are not used here */
 }
 
@@ -151,7 +151,7 @@ GMT_LOCAL double basis_sin2h (double **P, unsigned int which, uint64_t row) {	/*
 }
 
 GMT_LOCAL double basis_siny2 (double **P, unsigned int which, uint64_t row) {	/* Basis function f for a dependence on sin^2(y)  c*f = c*sin^2(y) : sin^2(y) */
-	GMT_UNUSED(which);
+	gmt_M_unused(which);
 	return (pow (sind(P[COL_YY][row]), 2.0));	/* which not used since y is common to both tracks */
 }
 
@@ -282,10 +282,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode < 0, "Syntax error -E: Choose among c, d, g, h, s and t\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode < 0, "Syntax error -E: Choose among c, d, g, h, s and t\n");
 #ifdef SAVEFORLATER
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode == F_IS_DRIFT_T && !Ctrl->I.file, "Syntax error -Ed: Solution requires -I<tracklist>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.mode == F_IS_DRIFT_T && !Ctrl->I.file, "Syntax error -Ed: Solution requires -I<tracklist>\n");
 #endif
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -335,7 +335,7 @@ GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char **
 }
 #endif
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
@@ -406,7 +406,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_memset (active_col, N_COE_PARS, bool); /* Initialize array */
+	gmt_M_memset (active_col, N_COE_PARS, bool); /* Initialize array */
 
 	active_col[COL_COE] = true;	/* Always used */
 	switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
@@ -450,7 +450,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 	/* Allocate memory for COE data */
 
-	GMT_memset (data, N_COE_PARS, double *);
+	gmt_M_memset (data, N_COE_PARS, double *);
 	for (i = n_active = 0; i < N_COE_PARS; i++) {
 		if (active_col[i]) {
 			data[i] = gmt_memory (GMT, NULL, n_alloc, double);
@@ -740,7 +740,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		/* Below, cluster[] array will use counting from 1 to n_constraints, but later we reset to run from 0 instead */
 		while ((p = next_unused_track (cluster, n_tracks)) < n_tracks) {	/* Still more clusters to form */
 			n_constraints++;		/* Increment number of constraints, this will happen at least once */
-			GMT_memset (member, n_tracks, uint64_t);	/* Cluster starts off with no members */
+			gmt_M_memset (member, n_tracks, uint64_t);	/* Cluster starts off with no members */
 			member[0] = p;			/* This is the first member of this cluster */
 			cluster[p] = n_constraints;	/* So we set this cluster number right away */
 			n_in_cluster = 1;		/* It is the first member of this cluster so far */
@@ -765,7 +765,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		gmt_free (GMT, C);
 		gmt_free (GMT, used);
 
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			if (n_constraints > 1) {	/* Report on the clusters */
 				GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tracks are grouped into %" PRIu64 " independent clusters:\n", n, n_constraints);
 				for (k = 0; k < n_constraints; k++) {
@@ -888,7 +888,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		(GMT->common.b.active[GMT_IN]) ? sprintf (line, "%" PRIu64, p) : sprintf (line, "%s", trk_list[p]);
 		strcat (line, "\t");
 		strcat (line, Ctrl->C.col);
-		GMT_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
+		gmt_M_memset (var, N_BASIS, double);	/* Reset all parameters to zero */
 		for (r = 0; r < R[p]; r++) var[r] = a[col_off[p]+r];	/* Just get the first R(p) items; the rest are set to 0 */
 		switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 			case F_IS_CONSTANT:

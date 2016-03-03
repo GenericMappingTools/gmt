@@ -239,8 +239,8 @@ GMT_LOCAL int process_one (struct GMT_CTRL *GMT, char *record, struct GRDTRACK_C
 		else
 			return (0);
 		Ctrl->G.type[ng] = 1;
-		n_errors += GMT_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.mode[ng] < 0 || Ctrl->G.mode[ng] > 3, "Syntax error -G: mode must be in 0-3 range\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->G.lat[ng] < 0.0, "Syntax error -G: max latitude should be positive\n");
 		if (n_errors) return (0);
 	}
 	else {	/* Regular grid file */
@@ -351,7 +351,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 						for (seg = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 							for (row = 0; n_errors == 0 && row < Tin->table[0]->segment[seg]->n_rows; row++) {
 								record = Tin->table[0]->segment[seg]->record[row];
-								GMT_memset (file, GMT_BUFSIZ, char);
+								gmt_M_memset (file, GMT_BUFSIZ, char);
 								if (sscanf (record, "%s", file) != 1) {
 									GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Could not extract file namke from entry: %s\n", record);
 									n_errors++;
@@ -373,7 +373,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				Ctrl->G.active = true;
 				break;
 			case 'L':	/* GMT4 Sets BCs */
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					if (opt->arg[0]) {
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 						strncpy (GMT->common.n.BC, opt->arg, 4U);
@@ -391,7 +391,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 				Ctrl->N.active = true;
 				break;
 			case 'S':
-				if (opt->arg[0] == 0 && GMT_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
+				if (opt->arg[0] == 0 && gmt_M_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
 					GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -S deprecated. Use -sa instead.\n");
 					GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE;
 					break;
@@ -450,14 +450,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 		}
 	}
 	Ctrl->G.n_grids = ng;
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] || Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]), "Syntax error -S: Must specify at least one modifier.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0), "Syntax error -T: Only one non-img input grid can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] || Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]), "Syntax error -S: Must specify at least one modifier.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !(Ctrl->G.n_grids == 1 && Ctrl->G.type[0] == 0), "Syntax error -T: Only one non-img input grid can be specified\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -471,7 +471,7 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 
 	/* step is given in either Cartesian units or, for geographic, in the prevailing unit (m, km) */
 
-	*mode = (GMT_is_geographic (GMT, GMT_IN)) ? GMT_GREATCIRCLE : 0;	/* Great circle or Cartesian */
+	*mode = (gmt_M_is_geographic (GMT, GMT_IN)) ? GMT_GREATCIRCLE : 0;	/* Great circle or Cartesian */
 	*unit = 0;	/* Initially not set */
 	while (!error && (gmt_strtok (args, ",", &pos, p))) {	/* Split on each line since separated by commas */
 		k = s = 0;	len = (unsigned int)strlen (p);
@@ -481,8 +481,8 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 		}
 		if (s == 0) continue;	/* No modifier with unit specification; go to next line */
 		/* Here we are processing +i, +l, or +r, all of which take a distance with optional unit */
-		GMT_memset (l_unit, 3, char);		/* Clean register */
-		GMT_memset (l_mode, 3, unsigned int);	/* Clean register */
+		gmt_M_memset (l_unit, 3, char);		/* Clean register */
+		gmt_M_memset (l_mode, 3, unsigned int);	/* Clean register */
 		strcpy (modifiers, &p[s]);
 		pos2 = 0;
 		if (modifiers[2] == '+') modifiers[2] = '@';	/* Flag for + in increment which means geodesic mode [to avoid being screwed by gmt_strtok on +] */
@@ -526,8 +526,8 @@ GMT_LOCAL unsigned int get_dist_units (struct GMT_CTRL *GMT, char *args, char *u
 		if (this_mode)	/* Got a mode other than Cartesian */
 			*mode = this_mode;
 	}
-	if (*unit == 0) *unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
-	if (strchr (GMT_LEN_UNITS, *unit) && !GMT_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
+	if (*unit == 0) *unit = (gmt_M_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';	/* Default is km or Cartesian if nothing is specified */
+	if (strchr (GMT_LEN_UNITS, *unit) && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Want geographic distance unit but -fg or -J not set */
 		gmt_parse_common_options (GMT, "f", 'f', "g");
 		if (*mode == 0) *mode = GMT_GREATCIRCLE;	/* Default to great circle distances if no other mode was implied */
 	}
@@ -596,7 +596,7 @@ GMT_LOCAL unsigned int scan_grd_row (struct GMT_CTRL *GMT, int64_t row, int64_t 
 	if (l_col < 0) l_col = 0;	/* Start inside grid */
 	if (r_col >= h->nx) r_col = h->nx - 1;	/* End inside grid */
 	for (col = l_col; col <= r_col; col++) {	/* Search along this row */
-		node = GMT_IJP (h, row, col);
+		node = gmt_M_ijp (h, row, col);
 		if (GMT_is_fnan (S->C->G->data[node])) continue;	/* A NaN node */
 		r = gmt_distance (GMT, S->x0, S->y0, S->x[col], S->y[row]);
 		if (r > S->max_radius) continue;	/* Basically not close enough */
@@ -620,7 +620,7 @@ GMT_LOCAL unsigned int scan_grd_col (struct GMT_CTRL *GMT, int64_t col, int64_t 
 	if (t_row < 0) t_row = 0;	/* Start inside grid */
 	if (b_row >= h->ny) b_row = h->ny - 1;	/* End inside grid */
 	for (row = t_row; row <= b_row; row++) {	/* Search along this column */
-		node = GMT_IJP (h, row, col);
+		node = gmt_M_ijp (h, row, col);
 		if (GMT_is_fnan (S->C->G->data[node])) continue;	/* A NaN node */
 		r = gmt_distance (GMT, S->x0, S->y0, S->x[col], S->y[row]);
 		if (r > S->max_radius) continue;	/* Basically not close enough */
@@ -658,8 +658,8 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 
 	/* We know we are inside the grid when this is called */
 
-	col0 = GMT_grd_x_to_col (GMT, x, S->C->G->header);		/* Closest col to x in input grid */
-	row0 = GMT_grd_y_to_row (GMT, y, S->C->G->header);		/* Closest row to y in input grid */
+	col0 = gmt_M_grd_x_to_col (GMT, x, S->C->G->header);		/* Closest col to x in input grid */
+	row0 = gmt_M_grd_y_to_row (GMT, y, S->C->G->header);		/* Closest row to y in input grid */
 	S->x0 = x;	S->y0 = y;	/* This is our original point */
 	S->radius = DBL_MAX;		/* Initialize to mean no node found */
 	do {	/* Keep spiraling (via expanding squares) until done or found something */
@@ -682,7 +682,7 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 		done = ((T + B + L + R) == 8U);	/* Now completely outside grid on all sides */
 		found = (T == 1 || B == 1 || L == 1 || R == 1);	/* Found a non-NaN and its distance from node */
 	} while (!done && !found);
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must check along the row0 line in case there are closer nodes */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must check along the row0 line in case there are closer nodes */
 		int64_t C, d_col, col = (col0 == 0) ? 1 : col0 - 1;	/* Nearest neighbor in the same row */
 		double dx = gmt_distance (GMT, S->x0, S->y0, S->x[col], S->y0);	/* Distance between x-nodes at current row in chosen units */
 		if (found) /* Use smallest radius so far as max distance for searching along this row */
@@ -699,7 +699,7 @@ GMT_LOCAL unsigned int gmt_grdspiral_search (struct GMT_CTRL *GMT, struct GMT_ZS
 	return (found) ? 1 : 0;
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdtrack (void *V_API, int mode, void *args) {
@@ -746,8 +746,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 
-	GMT_memset (wesn, 4, double);
-	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
+	gmt_M_memset (wesn, 4, double);
+	if (GMT->common.R.active) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
 	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	GC = gmt_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
@@ -761,7 +761,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 			if (GMT->common.R.active) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, GC[g].G->header), "");		/* Subset requested; make sure wesn matches header spacing */
 
-			if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
+			if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
 			if (!gmt_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
@@ -774,7 +774,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 
-			GMT_memcpy (GMT->common.R.wesn, wesn, 4, double);
+			gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);
 
 		}
 		else {	/* Sandwell/Smith Mercator grids */
@@ -805,7 +805,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		gmt_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
-		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
 			if (!GMT->current.map.dist[GMT_MAP_DIST].arc) Ctrl->E.step *= GMT->current.proj.DIST_M_PR_DEG;	/* Convert from degrees to meters or from min/secs to degrees */
 			Ctrl->E.step *= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Scale to chosen unit */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Default sampling interval in -E is %g %c (may be overridden by -E modifiers).\n", Ctrl->E.step, Ctrl->E.unit);
@@ -822,14 +822,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 
 	value = gmt_memory (GMT, NULL, Ctrl->G.n_grids, double);
-	xy_mode = (img_conv_needed) ? 2 : (GMT_is_geographic (GMT, GMT_IN) ? 1 : 0);
+	xy_mode = (img_conv_needed) ? 2 : (gmt_M_is_geographic (GMT, GMT_IN) ? 1 : 0);
 
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
 		uint64_t tbl, col, row, seg, n_cols = Ctrl->G.n_grids;
 		struct GMT_DATASET *Dtmp = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
-		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
+		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
@@ -939,7 +939,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				}
 				if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) dev = gmt_memory (GMT, NULL, Dout->table[tbl]->n_segments, double);	/* Ned temp array for these methods */
 				for (row = 0; row < n_rows; row++) {	/* For each row to stack across all segments, per data grid */
-					GMT_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
+					gmt_M_memset (stacked_n, Ctrl->G.n_grids, uint64_t);	/* Reset counts for new stack */
 					for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) {	/* Collect sampled values across all profiles for same row into temp array */
 							if (GMT_is_dnan (T->segment[seg]->coord[col][row])) continue;	/* Must skip any NaN entries in any profile */
@@ -1023,7 +1023,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		for (seg = 0; seg < Din->table[0]->n_segments; seg++) {	/* For each segment to resample */
 			Sin  = Din->table[0]->segment[seg];	/* Shorthand */
 			Sout = Dout->table[0]->segment[seg];	/* Shorthand */
-			for (col = 0; col < Din->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
+			for (col = 0; col < Din->n_columns; col++) gmt_M_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
 				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, xy_mode, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
 				if (status < 0) some_outside = true;
@@ -1067,7 +1067,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		GMT_memset (line, GMT_BUFSIZ, char);
+		gmt_M_memset (line, GMT_BUFSIZ, char);
 		if (Ctrl->Z.active) {
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z all columns */
 			n_out = Ctrl->G.n_grids;
@@ -1088,13 +1088,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+				if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
 					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 					continue;
 				}
-				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
+				if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
 					if (API->mode && n_out == 0) {	/* Need to set output columns now */
 						n_out = n_fields + Ctrl->G.n_grids;	/* Get new # of output cols */
 						if (Ctrl->T.mode == 2) n_out += 3;
@@ -1103,7 +1103,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					continue;
 				}
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 
@@ -1122,7 +1122,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->T.active && status == 0) {	/* Found a NaN; need to search for nearest non-NaN node */
 				if (gmt_grdspiral_search (GMT, Ctrl->T.S, in[GMT_X], in[GMT_Y])) {	/* Did find a valid node */
-					uint64_t ij = GMT_IJP (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
+					uint64_t ij = gmt_M_ijp (GC[0].G->header, Ctrl->T.S->row, Ctrl->T.S->col);
 					value[0] = GC[0].G->data[ij];
 					if (Ctrl->T.mode == 1) {	/* Replace input coordinate with node coordinate */
 						in[ix] = Ctrl->T.S->x[Ctrl->T.S->col];

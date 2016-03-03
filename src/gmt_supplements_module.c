@@ -27,7 +27,7 @@
 #include "gmt.h"
 #include "gmt_supplements_module.h"
 #include <string.h>
-#define GMT_UNUSED(x) (void)(x)
+#define gmt_M_unused(x) (void)(x)
 
 /* Sorted array with information for all GMT supplements modules */
 
@@ -111,7 +111,7 @@ void gmt_supplements_module_show_all (void *V_API) {
 /* Produce single list on stdout of all GMT supplements module names for gmt --show-modules */
 void gmt_supplements_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
-	GMT_UNUSED(V_API);
+	gmt_M_unused(V_API);
 	while (g_supplements_module[module_id].name != NULL) {
 		printf ("%s\n", g_supplements_module[module_id].name);
 		++module_id;
@@ -121,7 +121,7 @@ void gmt_supplements_module_list_all (void *V_API) {
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_supplements_module_info (void *API, char *candidate) {
 	int module_id = 0;
-	GMT_UNUSED(API);
+	gmt_M_unused(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_supplements_module[module_id].name != NULL &&

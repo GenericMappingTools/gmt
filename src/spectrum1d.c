@@ -256,7 +256,7 @@ GMT_LOCAL int compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, 
 			x_varp *= (C->dt/C->n_spec);
 		}
 
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			C->y_pow = (C->y_given) ? C->y_variance/y_varp : 0.0;
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "Window %d from %d to %d\n", w, t_start, t_stop);
 			sprintf(format, "X var: %s  X pow: %s  ratio: %s  Y var: %s  Y pow: %s  ratio: %s\n",
@@ -593,7 +593,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 			case 'C':
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;	/* Stay with the default order of output */
-				GMT_memset (Ctrl->C.col, SPECTRUM1D_N_OUTPUT_CHOICES, char);	/* Reset and read options */
+				gmt_M_memset (Ctrl->C.col, SPECTRUM1D_N_OUTPUT_CHOICES, char);	/* Reset and read options */
 				for (j = 0; opt->arg[j]; j++) {
 					if (j < SPECTRUM1D_N_OUTPUT_CHOICES) {
 						Ctrl->C.col[j] = opt->arg[j];
@@ -621,7 +621,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 				Ctrl->N.active = true;
 				if (opt->arg[0]) {
 					if (opt->arg[0] == '+') {	/* Obsolete syntax */
-						if (GMT_compat_check (GMT, 5)) {
+						if (gmt_M_compat_check (GMT, 5)) {
 							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Modifier -N+<file> is deprecated; use -N in the future to save to stdout.\n");
 							if (n_files++ == 0) Ctrl->Out.file = strdup (&opt->arg[1]);
 						}
@@ -641,7 +641,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 			case 'S':
 				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -S option: segment size must be positive\n");
+				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Syntax error -S option: segment size must be positive\n");
 				Ctrl->S.size = sval;
 				while (window_test < Ctrl->S.size) {
 					window_test += window_test;
@@ -660,16 +660,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
-	n_errors += GMT_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
+	n_errors += gmt_M_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
-	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Syntax error: Cannot use both -T and -N as no output would be produced\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Syntax error: Cannot use both -T and -N as no output would be produced\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_spectrum1d (void *V_API, int mode, void *args) {
@@ -707,7 +707,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the spectrum1d main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	GMT_memset (&C, 1, struct SPECTRUM1D_INFO);
+	gmt_M_memset (&C, 1, struct SPECTRUM1D_INFO);
 	
 	C.dt = Ctrl->D.inc;
 	C.y_given = Ctrl->C.active;

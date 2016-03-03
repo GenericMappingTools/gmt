@@ -18,7 +18,7 @@
 
 /*!
  * \file gmt_internals.h
- * \brief All lower-level functions just needed within the dev library.
+ * \brief All lower-level functions and macros just needed within the dev library.
  * These are not available via gmt_dev.h.
  */
 
@@ -36,7 +36,7 @@
 #	include <fftw3.h>
 #endif
 
-enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
+/* LOCAL FUNCTIONS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
 
 /*--------------------------------------------------------------------
  *			GMT XINGS STRUCTURE DEFINITION
@@ -150,5 +150,36 @@ EXTERN_MSC unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT
 EXTERN_MSC void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image);
 EXTERN_MSC struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned int mode);
 #endif
+
+/* LOCAL MACROS USED BY GMT_*.C ONLY - NOT PART OF GMT_DEV.H DISTRIBUTION */
+
+/* Definition for an error trap */
+#ifdef DEBUG
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
+#else
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
+#endif
+
+/*! gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
+
+#define gmt_grd_get_size(h) ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my)
+
+/* Determine if current binary table has header */
+#define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)
+
+/*! Checking of h,m,s */
+
+#define GMT_hms_is_bad(h,m,s) ((h) < 0 || (h) > 23 || (m) < 0 || (m) > 59 || (s) < 0.0 || (s) >= 61.0)
+
+/*! Force component to be in 0 <= s <= 255 range */
+#define GMT_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
+
+#define GMT_axis_is_geo(C,axis) (C->current.io.col_type[GMT_IN][axis] & GMT_IS_GEO)
+
+#define GMT_IS_PERSPECTIVE(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
+#define GMT_POLE_IS_POINT(C) ((C->current.proj.projection == GMT_OBLIQUE_MERC || C->current.proj.projection == GMT_OBLIQUE_MERC_POLE) || (C->current.proj.projection >= GMT_LAMBERT && C->current.proj.projection <= GMT_VANGRINTEN))
+#define GMT_is_grdmapproject(C) (!strncmp (C->init.module_name, "grdproject", 10U) || !strncmp (C->init.module_name, "mapproject", 10U))
+
+#define GMT_uneven_interval(unit) ((unit == 'o' || unit == 'O' || unit == 'k' || unit == 'K' || unit == 'R' || unit == 'r' || unit == 'D' || unit == 'd') ? true : false)	/* true for uneven units */
 
 #endif /* _GMT_INTERNALS_H */

@@ -191,7 +191,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 				if (opt->arg[0]) {	/* Also gave location */
 					Ctrl->I.position = true;
 					if (opt->arg[0] != '+') {		/* Then it must be a location */
-						n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
+						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
 					                                     "Syntax error: Expected -I[<lon>/<lat>]\n");
 					}
 					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
@@ -272,15 +272,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Syntax error: -N requires -Gc\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Syntax error: Can only select one terminator when using -Gc\n");
-	n_errors += GMT_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Syntax error: Cannot combine -T and -I\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->G.clip, "Syntax error: -N requires -Gc\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.clip && Ctrl->T.n_terminators > 1, "Syntax error: Can only select one terminator when using -Gc\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 0, "Syntax error: No input files allowed\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.active + Ctrl->I.active) > 1, "Syntax error: Cannot combine -T and -I\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL int solar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun) {

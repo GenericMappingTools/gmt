@@ -307,7 +307,7 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Plot all the symbols */
 		return (GMT->parent->error);
 	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */
-	if (GMT_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
+	if (gmt_M_is_verbose (GMT, GMT_MSG_DEBUG)) {	/* Leave the symbol def and txt files in the temp directory */
 		char tmp_file2[GMT_LEN64] = {""};
 		bool was = GMT->current.setting.io_header[GMT_OUT];	/* Save current setting */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Temporary symbol file for decorated lines saved: %s\n", tmp_file);
@@ -546,8 +546,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				else {
-					Ctrl->D.dx = GMT_to_inch (GMT, txt_a);
-					Ctrl->D.dy = (j == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->D.dx;
+					Ctrl->D.dx = gmt_M_to_inch (GMT, txt_a);
+					Ctrl->D.dy = (j == 2) ? gmt_M_to_inch (GMT, txt_b) : Ctrl->D.dx;
 					Ctrl->D.active = true;
 				}
 				break;
@@ -580,7 +580,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 							j0 = 0;
 							while (txt_a[j0] && txt_a[j0] != '/') j0++;
 							txt_a[j0] = 0;
-							Ctrl->E.size = GMT_to_inch (GMT, txt_a);
+							Ctrl->E.size = gmt_M_to_inch (GMT, txt_a);
 							while (opt->arg[j] && opt->arg[j] != '/') j++;
 							j--;
 							break;
@@ -684,21 +684,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 
 	/* Check that the options selected are mutually consistent */
 
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, true), "Syntax error -S option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (S->symbol == GMT_SYMBOL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == GMT_SYMBOL_MARC \
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && gmt_parse_symbol_option (GMT, Ctrl->S.arg, S, 0, true), "Syntax error -S option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (S->symbol == GMT_SYMBOL_VECTOR || S->symbol == GMT_SYMBOL_GEOVECTOR || S->symbol == GMT_SYMBOL_MARC \
 		|| S->symbol == GMT_SYMBOL_ELLIPSE || S->symbol == GMT_SYMBOL_FRONT || S->symbol == GMT_SYMBOL_QUOTED_LINE || S->symbol == GMT_SYMBOL_DECORATED_LINE || S->symbol == GMT_SYMBOL_ROTRECT), "Syntax error -E option: Incompatible with -Se, -Sf, -Sj, -Sm|M, -Sq, -Sv|V, -S=\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Syntax error: -E option +|-<pen> requires the -C option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->W.mode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.b.active[GMT_IN] && S->symbol == GMT_SYMBOL_NOT_SET, "Syntax error: Binary input data cannot have symbol information\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode && !Ctrl->C.active, "Syntax error: -E option +|-<pen> requires the -C option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.mode && !Ctrl->C.active, "Syntax error: -W option +|-<pen> requires the -C option\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->W.mode + Ctrl->E.mode) == 3, "Syntax error: Conflicting -E and -W options regarding -C option application\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.anchor && !Ctrl->G.active && !Ctrl->L.outline, "Syntax error: -L<modifiers> must include +p<pen> if -G not given\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_psxy (void *V_API, int mode, void *args) {
@@ -748,7 +748,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 	/* Initialize GMT_SYMBOL structure */
 
-	GMT_memset (&S, 1, struct GMT_SYMBOL);
+	gmt_M_memset (&S, 1, struct GMT_SYMBOL);
 	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
@@ -868,7 +868,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	/* Change default step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (Ctrl->A.active) Ctrl->A.step = Ctrl->A.step / GMT->current.proj.scale[GMT_X] / GMT->current.proj.M_PR_DEG;
 #endif
-	if ((GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
+	if ((gmt_M_is_conical(GMT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))) {	/* Must turn clipping on for 360-range conical */
 		/* Special case of 360-range conical (which is periodic but do not touch at w=e) so we must clip to ensure nothing is plotted in the gap between west and east border */
 		clip_set = true;
 	}
@@ -916,9 +916,9 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		double xpos[2], width = 0.0;
 
 		/* Determine if we need to worry about repeating periodic symbols */
-		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && GMT_is_geographic (GMT, GMT_IN)) {
+		if ((Ctrl->N.mode == PSXY_CLIP_REPEAT || Ctrl->N.mode == PSXY_NO_CLIP_REPEAT) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_is_geographic (GMT, GMT_IN)) {
 			/* Only do this for projection where west and east are split into two separate repeating boundaries */
-			periodic = (GMT_IS_CYLINDRICAL (GMT) || GMT_IS_MISC (GMT));
+			periodic = (gmt_M_is_cylindrical (GMT) || gmt_M_is_misc (GMT));
 		}
 		n_times = (periodic) ? 2 : 1;	/* For periodic boundaries we plot each symbol twice to allow for periodic clipping */
 
@@ -944,14 +944,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 		if ((S.symbol == GMT_SYMBOL_ELLIPSE || S.symbol == GMT_SYMBOL_ROTRECT) && S.n_required <= 1) p_in = in2;
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Skip table headers */
+				if (gmt_M_rec_is_table_header (GMT)) {	/* Skip table headers */
 					continue;
 				}
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
-				else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Parse segment headers */
+				else if (gmt_M_rec_is_segment_header (GMT)) {			/* Parse segment headers */
 					PSL_comment (PSL, "Segment header: %s\n", GMT->current.io.segment_header);
 					change = gmt_parse_segment_header (GMT, GMT->current.io.segment_header, P, &fill_active, &current_fill, default_fill, &outline_active, &current_pen, default_pen, default_outline, NULL);
 					if (Ctrl->I.active) {
@@ -1054,8 +1054,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			if (Ctrl->E.active) {
-				if (Ctrl->E.mode) GMT_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
-				if (Ctrl->E.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
+				if (Ctrl->E.mode & 1) gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 				gmt_setpen (GMT, &Ctrl->E.pen);
 				if (error_x) {
 					if (error_type[GMT_X] < EBAR_WHISKER)
@@ -1072,10 +1072,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 
 			if (Ctrl->W.mode) {
-				GMT_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
+				gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 				current_pen = Ctrl->W.pen;
 			}
-			if (Ctrl->W.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
+			if (Ctrl->W.mode & 1) gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 
 			if (geovector) {
 				if (get_rgb) S.v.fill = current_fill;
@@ -1198,7 +1198,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[2] = p_in[ex3];
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					}
-					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
+					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
 						gmt_flip_angle_d (GMT, &dim[0]);
 						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
@@ -1253,7 +1253,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						
 					if (!S.convert_angles)	/* Use direction as given */
 						direction = d;
-					else if (!GMT_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
+					else if (!gmt_M_is_geographic (GMT, GMT_IN))	/* Cartesian angle; change to azimuth */
 						direction = 90.0 - d;
 					else	/* Convert geo azimuth to map direction */
 						direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
@@ -1281,14 +1281,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						sincosd (direction, &s, &c);
 						x_2 = xpos[item] + length * c;
 						y_2 = plot_y + length * s;
-						justify = GMT_vec_justify (S.v.status);	/* Return justification as 0-2 */
+						justify = gmt_M_vec_justify (S.v.status);	/* Return justification as 0-2 */
 						if (justify) {	/* Meant to center the vector at center (1) or tip (2) */
 							dx = justify * 0.5 * (x_2 - xpos[item]);	dy = justify * 0.5 * (y_2 - plot_y);
 							xpos[item] -= dx;		plot_y -= dy;
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
-					if (S.v.parsed_v4 && GMT_compat_check (GMT, 4)) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
+					if (S.v.parsed_v4 && gmt_M_compat_check (GMT, 4)) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
 						/* But have to improvise as far as outline|fill goes... */
 						if (outline_active) S.v.status |= PSL_VEC_OUTLINE;	/* Choosing to draw head outline */
 						if (fill_active) S.v.status |= PSL_VEC_FILL;		/* Choosing to fill head */
@@ -1354,7 +1354,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[1] = in[ex1+S.read_size];
 						dim[2] = in[ex2+S.read_size];
 					}
-					else if (!GMT_is_geographic (GMT, GMT_IN)) {
+					else if (!gmt_M_is_geographic (GMT, GMT_IN)) {
 						/* Note that the direction of the arc gets swapped when converting from azimuth */
 						dim[2] = 90.0 - in[ex1+S.read_size];
 						dim[1] = 90.0 - in[ex2+S.read_size];
@@ -1430,7 +1430,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
-				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
+				if (polygon && gmt_M_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
 				if (!polygon && gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
 				
@@ -1534,8 +1534,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							/* Get temp array of length n_section since gmt_hold_contour may change length */
 							n_alloc = 0;
 							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
-							GMT_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
-							GMT_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
+							gmt_M_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
+							gmt_M_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
 							gmt_hold_contour (GMT, &xxx, &yyy, n_section, 0.0, "N/A", 'A', S.G.label_angle, false, false, &S.G);
 							k0 = k1;	/* Goto start of next section */
 							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
@@ -1569,8 +1569,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							/* Get temp array of length n_section since gmt_decorated_line may change length */
 							n_alloc = 0;
 							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
-							GMT_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
-							GMT_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
+							gmt_M_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
+							gmt_M_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
 							gmt_decorated_line (GMT, &xxx, &yyy, n_section, &S.D, Decorate, seg_out);
 							k0 = k1;	/* Goto start of next section */
 							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
@@ -1588,7 +1588,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
-							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
 							for (k = 0; k < L->n_rows; k++)
 								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[GMT_Y][k] - fabs (L->coord[2][k]);
 							/* Then go in negative x direction and build rest of envelope */
@@ -1605,7 +1605,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, end, 2);	/* Init or reallocate tmp vectors */
 							/* First go in positive x direction and build part of envelope */
-							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], L->n_rows, double);
 							for (k = 0; k < L->n_rows; k++)
 								GMT->hidden.mem_coord[GMT_Y][k] = L->coord[2][k];
 							/* Then go in negative x direction and build rest of envelope */
@@ -1623,8 +1623,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							end = L->n_rows;
 							gmt_prep_tmp_arrays (GMT, end+3, 2);	/* Init or reallocate tmp vectors */
 							/* First copy the given line segment */
-							GMT_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
-							GMT_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_X], L->coord[GMT_X], end, double);
+							gmt_M_memcpy (GMT->hidden.mem_coord[GMT_Y], L->coord[GMT_Y], end, double);
 							/* Now add 2 anchor points and explicitly close by repeating 1st point */
 							switch (Ctrl->L.mode) {
 								case XHI:	off = 1;	/* To select the x max entry */

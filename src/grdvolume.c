@@ -354,7 +354,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 				if (opt->arg[0] == 'r') {
 					Ctrl->C.reverse = true;
 					n = sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->C.low, &Ctrl->C.high);
-					n_errors += GMT_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high,
+					n_errors += gmt_M_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high,
 							"Syntax error -C option: high must exceed low\n");
 					/* Now apply the trick that makes this option work. Swap and change signs of low/high */
 					Ctrl->C.inc   = Ctrl->C.low;	/* Use inc as the buble sort tmp variable */
@@ -366,7 +366,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 				else {
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->C.low, &Ctrl->C.high, &Ctrl->C.inc);
 					if (n == 3) {
-						n_errors += GMT_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0,
+						n_errors += gmt_M_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0,
 								"Syntax error -C option: high must exceed low and delta must be positive\n");
 					}
 					else
@@ -398,7 +398,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1,
+				n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1,
 						"Syntax error option -Z: Must specify <fact> and optionally <shift>\n");
 				break;
 
@@ -408,24 +408,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.reverse && !(n == 1 || n == 3),
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->C.reverse && !(n == 1 || n == 3),
 			"Syntax error option -C: Must specify 1 or 3 arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.reverse && n != 2,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.reverse && n != 2,
 			"Syntax error option -C: Must specify 2 arguments\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)),
 			"Syntax error option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && GMT_is_dnan (Ctrl->L.value),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT_is_dnan (Ctrl->L.value),
 			"Syntax error option -L: Must specify base\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
 			"Syntax error option -T: Must also specify -Clow/high/delta\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->C.active && doubleAlmostEqualZero (Ctrl->C.high, Ctrl->C.low),
 			"Syntax error option -T: Must specify -Clow/high/delta\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdvolume (void *V_API, int mode, void *args) {
@@ -471,8 +471,8 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 	
-	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
-	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
+	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);
@@ -537,7 +537,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 			dv = da = 0.0;	/* Reset these for each row */
 
-			for (col = 0, ij = GMT_IJP (Work->header, row, 0); col < (Work->header->nx-1); col++, ij++) {
+			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < (Work->header->nx-1); col++, ij++) {
 
 				/* Find if a contour goes through this bin */
 
@@ -606,7 +606,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	if (!Ctrl->C.active) {	/* Since no contours we can use columns with bilinear tops to get the volume */
 		for (row = 0; row < Work->header->ny; row++) {
 			dv = da = 0.0;
-			for (col = 0, ij = GMT_IJP (Work->header, row, 0); col < Work->header->nx; col++, ij++) {
+			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < Work->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Work->data[ij])) continue;
 
 				/* Half the leftmost and rightmost cell */

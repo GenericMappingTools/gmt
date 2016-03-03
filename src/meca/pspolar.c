@@ -272,9 +272,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 						n = 0;
 						while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++;	/* Why all this if it stops at first '/'? */
 						txt[n] = 0;
-						Ctrl->S2.size = GMT_to_inch (GMT, txt);
+						Ctrl->S2.size = gmt_M_to_inch (GMT, txt);
 						if (strchr (&opt->arg[1], 'V')) {
-							if (GMT_compat_check (GMT, 4) && (strchr (&txt[n+1], '/') && !strchr (&txt[n+1], '+'))) {	/* Old-style args */
+							if (gmt_M_compat_check (GMT, 4) && (strchr (&txt[n+1], '/') && !strchr (&txt[n+1], '+'))) {	/* Old-style args */
 								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -QsV<v_width>/<h_length>/<h_width>/<shape>; use -QsV<vecpar> instead.\n");
 								Ctrl->S2.vector = true;
 								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* Vector bit no sizes. Using defaults */
@@ -288,14 +288,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 								}
 								else {
 									sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
-									Ctrl->S2.width = GMT_to_inch (GMT, txt);
-									Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
-									Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
+									Ctrl->S2.width = gmt_M_to_inch (GMT, txt);
+									Ctrl->S2.length = gmt_M_to_inch (GMT, txt_b);
+									Ctrl->S2.head = gmt_M_to_inch (GMT, txt_c);
 									Ctrl->S2.vector_shape = atof(txt_d);
 								}
 							}
 							else {
-								char symbol = (GMT_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
+								char symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 								strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_LEN64-1);	/* But if -QsV...G|L things will screw here, no? */ 
 								if (txt[0] == '+') {	/* No size (use default), just attributes */
 									n_errors += gmt_parse_vector (GMT, symbol, &txt[1], &Ctrl->S2.S);
@@ -303,7 +303,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 								else {	/* Size, plus possible attributes */
 									n = sscanf (txt, "%[^+]%s", txt_a, txt_b);	/* txt_a should be symbols size with any +<modifiers> in txt_b */
 									if (n == 1) txt_b[0] = 0;	/* No modifiers present, set txt_b to empty */
-									Ctrl->S2.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
+									Ctrl->S2.S.size_x = gmt_M_to_inch (GMT, txt_a);	/* Length of vector */
 									n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->S2.S);
 								}
 								/* NOTE, THIS IS NOT GOING TO WORK BECAUSE VEC PARAMS ARE NOW IN Ctrl->S2.S  WHICH IS NOT USED BELOW
@@ -326,14 +326,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 				break;
 			case 'M':	/* Focal sphere size */
 				Ctrl->M.active = true;
-				Ctrl->M.ech = GMT_to_inch (GMT, opt->arg);
+				Ctrl->M.ech = gmt_M_to_inch (GMT, opt->arg);
 				break;
 			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
 				Ctrl->S.type = opt->arg[0];
-				Ctrl->S.size = GMT_to_inch (GMT, &opt->arg[1]);
+				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				Ctrl->S.active = true;
 				switch (Ctrl->S.type) {
 					case 'a':
@@ -388,14 +388,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error: -M must specify a size\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error: -D, -M, -S must be set together\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->M.ech <= 0.0, "Syntax error: -M must specify a size\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active + Ctrl->M.active + Ctrl->S.active < 3, "Syntax error: -D, -M, -S must be set together\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pspolar (void *V_API, int mode, void *args) {
@@ -432,7 +432,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pspolar main code ----------------------------*/
 
-	GMT_memset (col, GMT_LEN64*4, char);
+	gmt_M_memset (col, GMT_LEN64*4, char);
 	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
@@ -476,11 +476,11 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
+			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 				break;
 		}
 
@@ -580,7 +580,7 @@ int GMT_pspolar (void *V_API, int mode, void *args) {
 			sincosd (azS, &si, &co);
 			if (Ctrl->S2.vector) {
 				double dim[PSL_MAX_DIMS];
-				GMT_memset (dim, PSL_MAX_DIMS, double);
+				gmt_M_memset (dim, PSL_MAX_DIMS, double);
 				dim[0] = plot_x + Ctrl->S2.size*si; dim[1] = plot_y + Ctrl->S2.size*co;
 				dim[2] = Ctrl->S2.width; dim[3] = Ctrl->S2.length; dim[4] = Ctrl->S2.head;
 				dim[5] = GMT->current.setting.map_vector_shape; dim[6] = GMT_VEC_END | GMT_VEC_FILL;

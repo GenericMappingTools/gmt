@@ -309,7 +309,7 @@ GMT_LOCAL int got_default_answer (char *line, char *answer) {
 	int i, k, len;
 	
 	len = (int)strlen (line) - 1;
-	GMT_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
+	gmt_M_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
 	if (line[len] == ']') {	/* Got a default answer for this item */
 		for (k = i = len; i && line[i] != '['; i--);
 		strncpy (answer, &line[i+1], (size_t)(k - i - 1));
@@ -450,7 +450,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 			case 'N':	/* Set distance units */
 				Ctrl->N.active = true;
 				Ctrl->N.code[0] = opt->arg[0];
-				if (Ctrl->N.code[0] == 'm' && GMT_compat_check (GMT, 4)) {
+				if (Ctrl->N.code[0] == 'm' && gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					Ctrl->N.code[0] = 'M';
 				}
@@ -461,7 +461,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 				break;
 				
 			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				if (GMT_compat_check (GMT, 4))
+				if (gmt_M_compat_check (GMT, 4))
 					n_errors += gmtinit_backwards_SQ_parsing (GMT, 'Q', opt->arg);
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -477,22 +477,22 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
 	strings = (c_nc_type == NC_CHAR);				/* true if our new column contains strings */
 	
-	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
-	n_errors += GMT_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error: Only one -A option can be specified\n");
-	n_errors += GMT_check_condition (GMT, !got_grid && GMT->common.n.interpolant != BCR_BICUBIC, "Syntax error -n: Requires -Ag|i\n");
+	n_errors += gmt_M_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
+	n_errors += gmt_M_check_condition (GMT, got_table && Ctrl->A.mode == MODE_c, "Syntax error: Only one -A option can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, !got_grid && GMT->common.n.interpolant != BCR_BICUBIC, "Syntax error -n: Requires -Ag|i\n");
 	if (!(Ctrl->D.active || Ctrl->A.mode == MODE_e)) {
-		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN,
+		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_abbrev) > MGD77_COL_ABBREV_LEN,
 		                                 "Syntax error: Column abbreviation too long - %d characters is maximum!\n", MGD77_COL_ABBREV_LEN);
-		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN,
+		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_name) > MGD77_COL_NAME_LEN,
 		                                 "Syntax error: Column name too long - %d characters is maximum!\n", MGD77_COL_NAME_LEN);
-		n_errors += GMT_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN,
+		n_errors += gmt_M_check_condition (GMT, strlen (Ctrl->I.c_comment) > MGD77_COL_COMMENT_LEN,
 		                                 "Syntax error: Column comment too long - %d characters is maximum!\n", MGD77_COL_COMMENT_LEN);
 	}
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_mgd77manage (void *V_API, int mode, void *args) {
@@ -607,8 +607,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
 		double wesn[4];
-		GMT_memset (wesn, 4, double);
-		if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
+		gmt_M_memset (wesn, 4, double);
+		if (GMT->common.R.active) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
 			Return (API->error);
 		}
@@ -616,8 +616,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
 		double wesn[4];
-		GMT_memset (wesn, 4, double);
-		if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
+		gmt_M_memset (wesn, 4, double);
+		if (GMT->common.R.active) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
 		if ((G = gmt_create_grid (GMT)) == NULL) Return (API->error);
 		gmt_read_img (GMT, Ctrl->A.file, G, wesn, Ctrl->A.parameters[IMG_SCALE], urint(Ctrl->A.parameters[IMG_MODE]),
 		              Ctrl->A.parameters[IMG_LAT], true);
@@ -677,9 +677,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		
 		if (ok_to_read) in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 
-		while (ok_to_read && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
+		while (ok_to_read && !gmt_M_rec_is_eof (GMT)) {	/* Not yet EOF */
 
-			while (GMT_REC_IS_SEGMENT_HEADER (GMT) && !GMT_REC_IS_EOF(GMT)) {
+			while (gmt_M_rec_is_segment_header (GMT) && !gmt_M_rec_is_eof(GMT)) {
 				in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 			}
 			if ((GMT->current.io.status & GMT_IO_EOF)) continue;	/* At EOF */
@@ -989,9 +989,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					colvalue[rec] = gmt_bcr_get_z (GMT, G, x, y);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
-					col = (unsigned int)GMT_grd_x_to_col (GMT, x, G->header);
-					row = (unsigned int)GMT_grd_y_to_row (GMT, y, G->header);
-					colvalue[rec] = G->data[GMT_IJP(G->header,row,col)];
+					col = (unsigned int)gmt_M_grd_x_to_col (GMT, x, G->header);
+					row = (unsigned int)gmt_M_grd_y_to_row (GMT, y, G->header);
+					colvalue[rec] = G->data[gmt_M_ijp(G->header,row,col)];
 				}
 				n_sampled++;
 			}
@@ -1030,7 +1030,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
-				GMT_memcpy (colvalue, y, D->H.n_records, double);
+				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
 				gmt_free (GMT, y);
 			}
 			else if (strings && n < D->H.n_records) {	/* Only update the exact matching records */
@@ -1066,7 +1066,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						n_sampled++;
 					}
 				}
-				GMT_memcpy (colvalue, y, D->H.n_records, double);
+				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
 				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
 				gmt_free (GMT, y);
@@ -1192,7 +1192,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			
 			/* OK, here we believe the E77 file contains the correct information for this cruise. Rewind and start from top */
 			
-			GMT_rewind (fp_e);
+			gmt_M_rewind (fp_e);
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U));	/* Read until we get to Header record section */
 			
 			flags = gmt_memory (GMT, NULL, D->H.n_records, unsigned int);
@@ -1224,7 +1224,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				if (Ctrl->A.e77_skip_mode[type]) continue;
 				if (!Ctrl->A.e77_skip_mode[type] && YorN == 'N') continue;
 				if (kind == 'W') {	/* Output the warning (if Y) and goto next line*/
-					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?')))
+					if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?')))
 						GMT_Message (API, GMT_TIME_NONE, "%s: Warning: %s\n", list[argno], line);
 					continue;
 				}
@@ -1439,14 +1439,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (n_E77_flags) {	/* Add flags to netCDF file */
 				if (old_flags) {	/* Flag variable exists already - simply replace existing flags with the new ones */
 					if (D->flags[0])	/* Was allocated and read */
-						GMT_memcpy (D->flags[0], flags, D->H.n_records, int);
+						gmt_M_memcpy (D->flags[0], flags, D->H.n_records, int);
 					else	/* Was not allcoated */
 						D->flags[0] = flags;
 				}
 				else {	/* We need to define the flags for the first time */
 					dims[0] = In.nc_recid;
 					MGD77_nc_status (GMT, nc_def_var (In.nc_id, "MGD77_flags", NC_INT, 1, dims, &cdf_var_id));	/* Define an array variable */
-					GMT_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
+					gmt_M_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
 					strcpy (answer, "MGD77 flags (ON = Bad, OFF = Good) derived from E77 errata");
 					MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, cdf_var_id, "comment", strlen (answer), answer));
 					D->flags[0] = flags;
@@ -1463,7 +1463,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				GMT_Message (API, GMT_TIME_NONE, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
 				start[0] = 0;
 				count[0] = D->H.n_records;
-				GMT_memset (D->flags[0], D->H.n_records, int);	/* Reset all flags to 0 (GOOD) */
+				gmt_M_memset (D->flags[0], D->H.n_records, int);	/* Reset all flags to 0 (GOOD) */
 				MGD77_nc_status (GMT, nc_put_vara_int (In.nc_id, cdf_var_id, start, count, (int *)D->flags[0]));
 			}
 			

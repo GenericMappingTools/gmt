@@ -261,15 +261,15 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GM
 
 	gmt_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active || !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_segy2grd (void *V_API, int mode, void *args) {
@@ -503,14 +503,14 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 			if (!(x0 < GMT->common.R.wesn[XLO] || x0 > GMT->common.R.wesn[XHI])) {	/* inside x-range */
 				/* find horizontal grid pos of this trace */
-				ii = (unsigned int)GMT_grd_x_to_col (GMT, x0, Grid->header);
+				ii = (unsigned int)gmt_M_grd_x_to_col (GMT, x0, Grid->header);
 				if (ii == Grid->header->nx) ii--, n_confused++;
 				for (isamp = 0; isamp< n_samp; ++isamp) {
 					yval = isamp*Ctrl->Q.value[Y_ID];
 					if (!(yval < GMT->common.R.wesn[YLO] || yval > GMT->common.R.wesn[YHI])) {	/* inside y-range */
-						jj = (unsigned int)GMT_grd_y_to_row (GMT, yval, Grid->header);
+						jj = (unsigned int)gmt_M_grd_y_to_row (GMT, yval, Grid->header);
 						if (jj == Grid->header->ny) jj--, n_confused++;
-						ij = GMT_IJ0 (Grid->header, jj, ii);
+						ij = gmt_M_ij0 (Grid->header, jj, ii);
 						Grid->data[ij] += data[isamp];	/* Add up incase we must average */
 						flag[ij]++;
 						n_used++;
@@ -541,7 +541,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_Message (API, GMT_TIME_NONE, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to ",
 				n_read, n_used, n_filled, n_empty);

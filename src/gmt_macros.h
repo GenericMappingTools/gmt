@@ -35,7 +35,7 @@
  *			GMT MACROS DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#define GMT_compat_check(C,version) (C->current.setting.compatibility <= version)	/* true if this section should be processed with backwards compatibility to given version */
+#define gmt_M_compat_check(C,version) (C->current.setting.compatibility <= version)	/* true if this section should be processed with backwards compatibility to given version */
 
 #ifndef MIN
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))	/* min and max value macros */
@@ -46,10 +46,6 @@
 #ifndef MOD			/* Knuth-style modulo function (remainder after floored division) */
 #define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
 #endif
-
-/*! Checking of h,m,s */
-
-#define GMT_hms_is_bad(h,m,s) ((h) < 0 || (h) > 23 || (m) < 0 || (m) > 59 || (s) < 0.0 || (s) >= 61.0)
 
 /*! Safe math macros that check arguments */
 
@@ -102,60 +98,57 @@
 #define float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
 /*! Macro to ensure proper value and sign of a change in longitude from lon1 to lon2 */
-#define GMT_set_delta_lon(lon1,lon2,delta) {delta = lon2 - lon1; if (fabs (delta) > 180.0) delta = copysign (360.0 - fabs (delta), -delta);}
+#define gmt_M_set_delta_lon(lon1,lon2,delta) {delta = lon2 - lon1; if (fabs (delta) > 180.0) delta = copysign (360.0 - fabs (delta), -delta);}
 
 /*! Macro to simplify call to memcpy when duplicating values and memset when zeroing out */
-#define GMT_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
-#define GMT_memset(array,n,type) memset(array, 0, (n)*sizeof(type))
+#define gmt_M_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
+#define gmt_M_memset(array,n,type) memset(array, 0, (n)*sizeof(type))
 /*! Macro to set all items in an array to the given value */
-#define GMT_setnval(array,n,value) {uint64_t k; for (k = 0; k < (uint64_t)n; k++) array[k] = value;}
+#define gmt_M_setnval(array,n,value) {uint64_t k; for (k = 0; k < (uint64_t)n; k++) array[k] = value;}
 /*! Macro to simplify assignment of one 3-vector to another */
-#define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
+#define gmt_M_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
 
 /*! Macros for printing a tic/toc elapsed time message*/
-#define GMT_tic(C) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_RESET,"");}
-#define GMT_toc(C,...) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
+#define gmt_M_tic(C) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_RESET,"");}
+#define gmt_M_toc(C,...) {if (C->current.setting.verbose >= GMT_MSG_TICTOC) GMT_Message(C->parent,GMT_TIME_ELAPSED, \
 		"(%s) | %s\n", C->init.module_name, __VA_ARGS__);}
 
 /* COLOR MACROS */
 
 /*! Copy two RGB[T] arrays (a = b) */
-#define GMT_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
+#define gmt_M_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 
 /*! To compare is two colors are ~ the same */
-#define GMT_eq(a,b) (fabs((a)-(b)) < GMT_CONV4_LIMIT)
-#define GMT_same_rgb(a,b) (GMT_eq(a[0],b[0]) && GMT_eq(a[1],b[1]) && GMT_eq(a[2],b[2]) && GMT_eq(a[3],b[3]))
+#define gmt_M_eq(a,b) (fabs((a)-(b)) < GMT_CONV4_LIMIT)
+#define gmt_M_same_rgb(a,b) (gmt_M_eq(a[0],b[0]) && gmt_M_eq(a[1],b[1]) && gmt_M_eq(a[2],b[2]) && gmt_M_eq(a[3],b[3]))
 
 /*! Macros for conversion of RGB in 0-1 range to 0-255 range */
-#define GMT_s255(s) ((s) * 255.0)
-#define GMT_t255(t) GMT_q(GMT_s255(t[0])),GMT_q(GMT_s255(t[1])),GMT_q(GMT_s255(t[2]))
-#define GMT_u255(s) ((unsigned char)rint(GMT_s255(s)))
+#define gmt_M_s255(s) ((s) * 255.0)
+#define gmt_M_t255(t) gmt_M_q(gmt_M_s255(t[0])),gmt_M_q(gmt_M_s255(t[1])),gmt_M_q(gmt_M_s255(t[2]))
+#define gmt_M_u255(s) ((unsigned char)rint(gmt_M_s255(s)))
 
 /*! Macros for conversion of RGB in 0-255 range to 0-1 range */
-#define GMT_is255(s) ((s) / 255.0)
-#define GMT_it255(t) GMT_is255(t[0]),GMT_is255(t[1]),GMT_is255(t[2])
+#define gmt_M_is255(s) ((s) / 255.0)
+//#define gmt_M_it255(t) gmt_M_is255(t[0]),gmt_M_is255(t[1]),gmt_M_is255(t[2])
 
 /*! Macro to avoid small numbers in color codes */
-#define GMT_q(s) ((s) < 1e-5 ? 0.0 : (s))
+#define gmt_M_q(s) ((s) < 1e-5 ? 0.0 : (s))
 
 /*! How B/W TV's convert RGB to Gray */
-#define GMT_YIQ(rgb) (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2])
+#define gmt_M_yiq(rgb) (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2])
 
 /*! Determine if a RGB combination is grayshade */
-#define GMT_is_gray(rgb) (GMT_eq(rgb[0],rgb[1]) && GMT_eq(rgb[1],rgb[2]))
+#define gmt_M_is_gray(rgb) (gmt_M_eq(rgb[0],rgb[1]) && gmt_M_eq(rgb[1],rgb[2]))
 
 /*! Determine if a RGB combination is in fact B/W */
-#define GMT_is_bw(rgb) (GMT_is_gray(rgb) && (GMT_eq(rgb[0],0.0) || GMT_eq(rgb[0],1.0)))
-
-/*! Force component to be in 0 <= s <= 255 range */
-#define GMT_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
+#define gmt_M_is_bw(rgb) (gmt_M_is_gray(rgb) && (gmt_M_eq(rgb[0],0.0) || gmt_M_eq(rgb[0],1.0)))
 
 /*! Macros to do conversion to inches with PROJ_LENGTH_UNIT as default */
 
-#define GMT_to_inch(GMT,value) gmt_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
-#define GMT_to_points(GMT,value) gmt_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
+#define gmt_M_to_inch(GMT,value) gmt_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_INCH)
+#define gmt_M_to_points(GMT,value) gmt_convert_units (GMT, value, GMT->current.setting.proj_length_unit, GMT_PT)
 
 /*! Determine default justification for box item */
-#define GMT_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? gmt_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)
+#define gmt_M_just_default(GMT,refpoint,just) (refpoint->mode == GMT_REFPOINT_JUST_FLIP ? gmt_flip_justify(GMT,refpoint->justify) : refpoint->mode == GMT_REFPOINT_JUST ? refpoint->justify : just)
 
 #endif  /* _GMT_MACROS_H */

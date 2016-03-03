@@ -121,13 +121,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *Ctrl, struct GM
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error: Must specify two input files\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file[0] || !Ctrl->In.file[1], "Syntax error: Must specify two input files\n");
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 /* True if grid is a COARDS/CF netCDF file */
@@ -205,7 +205,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 
 	common_y = (fabs (A->header->wesn[YLO] - B->header->wesn[YLO]) < y_noise && fabs (A->header->wesn[YHI] - B->header->wesn[YHI]) < y_noise);
 	
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
+	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must be careful in determining a match since grids may differ by +/-360 in x */
 		double del;
 		if (common_y) {	/* A and B are side-by-side, may differ by +-360 +- 1 pixel width */
 			del = A->header->wesn[XLO] - B->header->wesn[XHI];	/* Test if B left of A */
@@ -241,7 +241,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		}
 	}
 
-	GMT_memcpy (C->header->wesn, A->header->wesn, 4, double);	/* Output region is set as the same as A... */
+	gmt_M_memcpy (C->header->wesn, A->header->wesn, 4, double);	/* Output region is set as the same as A... */
 	if (common_y) {
 
 		C->header->ny = A->header->ny;
@@ -320,14 +320,14 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 		Return (EXIT_FAILURE);
 	}
-	if (GMT_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Take out 360 */
 		C->header->wesn[XLO] -= 360.0;
 		C->header->wesn[XHI] -= 360.0;
 	}
 
 	/* Now we can do it  */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "%%s\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, "File\tW\tE\tS\tN\tdx\tdy\tnx\tny\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);
@@ -359,7 +359,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[YHI]--;
 				else if (way == 10)
 					GMT->current.io.pad[YHI]++;
-				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
@@ -375,7 +375,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[YLO]--;
 				else if (way == 10)
 					GMT->current.io.pad[YLO]++;
-				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
@@ -391,7 +391,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[YLO]--;
 				else if (way == 21)
 					GMT->current.io.pad[YLO]++;
-				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
@@ -412,7 +412,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[YHI]--;
 				else if (way == 21)
 					GMT->current.io.pad[YHI]++;
-				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
@@ -436,7 +436,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[XLO]--;
 				else if (way == 32)
 					GMT->current.io.pad[XLO]++;
-				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
@@ -452,7 +452,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[XHI]--;
 				else if (way == 32)
 					GMT->current.io.pad[XHI]++;
-				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */
@@ -471,7 +471,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[XHI]--;
 				else if (way == 43)
 					GMT->current.io.pad[XHI]++;
-				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[0], A) == NULL) {  /* Get data from A */
@@ -493,7 +493,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args) {
 					GMT->current.io.pad[XLO]--;
 				else if (way == 43)
 					GMT->current.io.pad[XLO]++;
-				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
+				gmt_M_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file[1], B) == NULL) {  /* Get data from B */

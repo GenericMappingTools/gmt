@@ -142,12 +142,12 @@ enum GMT_enum_vecattr {
 
 /* Make sure the next three macros are in sync with any changes to GMT_enum_vecattr above! */
 
-#define GMT_vec_justify(status) ((status>>6)&3)			/* Return justification as 0-3 */
-#define GMT_vec_head(status) ((status)&3)			/* Return head selection as 0-3 */
-#define GMT_vec_side(status,head) (((status>>(2+2*head))&3) ? 2*((status>>(2+2*head))&3)-3 : 0)	/* Return side selection for this head as 0,-1,+1 */
+#define gmt_M_vec_justify(status) ((status>>6)&3)			/* Return justification as 0-3 */
+#define gmt_M_vec_head(status) ((status)&3)			/* Return head selection as 0-3 */
+#define gmt_M_vec_side(status,head) (((status>>(2+2*head))&3) ? 2*((status>>(2+2*head))&3)-3 : 0)	/* Return side selection for this head as 0,-1,+1 */
 
-#define GMT_vec_outline(status) ((status&GMT_VEC_OUTLINE) || (status&GMT_VEC_OUTLINE2))	/* Return true if outline is currently selected */
-#define GMT_vec_fill(status) ((status&GMT_VEC_FILL) || (status&GMT_VEC_FILL2))		/* Return true if fill is currently selected */
+#define gmt_M_vec_outline(status) ((status&GMT_VEC_OUTLINE) || (status&GMT_VEC_OUTLINE2))	/* Return true if outline is currently selected */
+#define gmt_M_vec_fill(status) ((status&GMT_VEC_FILL) || (status&GMT_VEC_FILL2))		/* Return true if fill is currently selected */
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */

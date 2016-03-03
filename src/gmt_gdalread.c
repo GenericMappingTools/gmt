@@ -35,7 +35,7 @@
 GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBands, unsigned int n_col) {
 	unsigned int n = 0, i, start, stop, pos = 0;
 	char p[GMT_BUFSIZ];
-	GMT_UNUSED(GMT);
+	gmt_M_unused(GMT);
 
 	while ((gmt_strtok (txt, ",", &pos, p))) {
 		if (strchr (p, '-'))
@@ -659,7 +659,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	GDALDriverH	hDriver;
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
-	GMT_memset (anSrcWin, 4, int);
+	gmt_M_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
 		int nc_ind, n_commas = 0, n_dash = 0;

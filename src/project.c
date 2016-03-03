@@ -142,7 +142,7 @@ GMT_LOCAL double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, 
 	gmt_normalize3v (GMT, x);
 	gmt_cross3v (GMT, x, p, c);
 	gmt_normalize3v (GMT, c);
-	if (!generate) GMT_memcpy (c, x, 3, double);
+	if (!generate) gmt_M_memcpy (c, x, 3, double);
 	if (!c_given) gmt_cart_to_geo (GMT, clat, clon, c, true);	/* return the adjusted center  */
 	cp = gmt_dot3v (GMT, p, c);
 	sin_lat_to_pole = d_sqrt (1.0 - cp * cp);
@@ -423,7 +423,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'D':
-				if (GMT_compat_check (GMT, 4)) {
+				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
 					if (opt->arg[0] == 'g') GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 					if (opt->arg[0] == 'd') GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
@@ -480,7 +480,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				if (opt->arg[0] == 'W' || opt->arg[0] == 'w')
 					Ctrl->L.constrain = true;
 				else {
-					n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error: Expected -L[w | <min>/<max>]\n");
+					n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2, "Syntax error: Expected -L[w | <min>/<max>]\n");
 				}
 				break;
 			case 'N': /* Handled above but still in argv */
@@ -506,7 +506,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2,
+				n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->W.min, &Ctrl->W.max) != 2,
 				                                 "Syntax error: Expected -W<min>/<max>\n");
 				break;
 
@@ -516,25 +516,25 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max,
 	                                 "Syntax error -L option: w_min must be < w_max\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max,
 	                                 "Syntax error -W option: w_min must be < w_max\n");
-	n_errors += GMT_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1,
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1,
 	                                 "Syntax error: Specify only one of -A, -E, and -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y),
 	                                 "Syntax error -E option: Second point must differ from origin!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !Ctrl->E.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !Ctrl->E.active,
 	                                 "Syntax error -G option: Must also specify -Lmin/max or use -E instead\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->F.active,
 	                                 "Syntax error -G option: -F not allowed [Defaults to rsp]\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->G.inc <= 0.0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->G.inc <= 0.0,
 	                                 "Syntax error -G option: Must specify a positive increment\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.constrain && !Ctrl->E.active,
 	                                 "Syntax error -L option: Must specify -Lmin/max or use -E instead\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (GMT_is_geographic (GMT, GMT_IN) || GMT_is_geographic (GMT, GMT_OUT)),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && (gmt_M_is_geographic (GMT, GMT_IN) || gmt_M_is_geographic (GMT, GMT_OUT)),
 	                                 "Syntax error -N option: Cannot be used with -fg\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->G.mode,
 	                                 "Syntax error -N option: Cannot be used with -G<dist>/<colat>\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
 
@@ -607,7 +607,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 		for (rec = 0; rec < P->n_used; rec++) {
 			for (col = k = 0; col < P->n_outputs; col++) {
 				if (P->output_choice[col] == -1) {	/* Copy over all z columns */
-					GMT_memcpy (&out[k], p_data[rec].z, P->n_z, double);
+					gmt_M_memcpy (&out[k], p_data[rec].z, P->n_z, double);
 					k += P->n_z;
 				}
 				else
@@ -620,7 +620,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 	return (0);
 }
 
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_project (void *V_API, int mode, void *args) {
@@ -660,13 +660,13 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the project main code ----------------------------*/
 
-	GMT_memset (&P, 1, struct PROJECT_INFO);
-	GMT_memset (a, 3, double);
-	GMT_memset (b, 3, double);
-	GMT_memset (x, 3, double);
-	GMT_memset (xt, 3, double);
-	GMT_memset (center, 3, double);
-	GMT_memset (e, 9, double);
+	gmt_M_memset (&P, 1, struct PROJECT_INFO);
+	gmt_M_memset (a, 3, double);
+	gmt_M_memset (b, 3, double);
+	gmt_M_memset (x, 3, double);
+	gmt_M_memset (xt, 3, double);
+	gmt_M_memset (center, 3, double);
+	gmt_M_memset (e, 9, double);
 	P.first = true;
 	if (Ctrl->N.active) {	/* Must undo an optional -fg that was set before */
 		gmt_set_cartesian (GMT, GMT_IN);
@@ -792,7 +792,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 				} while (!done);
 				gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the new pole */
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
-				GMT_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
+				gmt_M_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
 				sin_lat_to_pole = s;
 				gmt_cross3v (GMT, P.pole, a, x);
 				gmt_normalize3v (GMT, x);
@@ -843,7 +843,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				p_data = gmt_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
-				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
+				gmt_M_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		}
 		p_data[P.n_used].a[2] = Ctrl->L.max;
@@ -945,13 +945,13 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
+				if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+				if (gmt_M_rec_is_table_header (GMT)) {	/* Echo table headers */
 					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 					continue;
 				}
-				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
+				if (gmt_M_rec_is_segment_header (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
 						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, pure_ascii, &P)) != 0) Return (error);
 						n_total_used += P.n_used;
@@ -960,7 +960,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					continue;
 				}
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
+				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
 			}
 
@@ -1007,7 +1007,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 				}
 				else {
 					p_data[P.n_used].z = gmt_memory (GMT, NULL, P.n_z, double);
-					GMT_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
+					gmt_M_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
 				}
 			}
 			P.n_used++;
@@ -1015,7 +1015,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				p_data = gmt_memory (GMT, p_data, n_alloc, struct PROJECT_DATA);
-				GMT_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
+				gmt_M_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		} while (true);
 
