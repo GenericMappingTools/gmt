@@ -558,11 +558,11 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	}
 
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced\n");
 		Return (EXIT_SUCCESS);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_Report (API, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced\n");
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->D.active && Ctrl->D.width == 0.0 && !is_integer) {
