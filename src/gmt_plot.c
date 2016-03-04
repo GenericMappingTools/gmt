@@ -4852,18 +4852,16 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	struct GMT_FONT font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	struct PSL_CTRL *PSL= GMT->PSL;
 
-#ifdef PS_MACRO
-	/* PS_MACRO stuff is on hold, awaiting more testing */
 	if (symbol->PS) {	/* Special Encapsulated PostScript-only symbol */
 		//int c;
 		double off = 0.5*size[0], fy = (symbol->PS_BB[3] - symbol->PS_BB[2]) / (symbol->PS_BB[1] - symbol->PS_BB[0]);
 		if (symbol->PS & 1) {	/* First time we must dump the PS code definition */
-			double sc;
+			double scl;
 			PSL_comment (PSL, "Start of symbol %s\n", symbol->name);
 			PSL_command (PSL, "/Sk_%s {\nPSL_eps_begin\n", symbol->name);
-			/* We use the symbols bounding box and scale its width to 1 inch since PS uses inches */
-			sc = (symbol->PS_BB[1] - symbol->PS_BB[0]) / 72.0;
-			PSL_command (PSL, "%.8f dup scale\n", sc);
+			/* We use the symbol's bounding box and scale its width to 1 inch since PSL uses inches */
+			scl = (symbol->PS_BB[1] - symbol->PS_BB[0]) / 72.0;
+			PSL_command (PSL, "%.8f dup scale\n", scl);
 			if ((symbol->PS & 4) == 0)	/* non-GMT5-produced EPS macro - scale points to GMT's unit */
 				PSL_command (PSL, "1200 72 div dup scale\n");
 			PSL_command (PSL, "%%%%BeginDocument: %s.eps\n", symbol->name);
@@ -4880,7 +4878,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 		PSL_command (PSL, "Sk_%s U\n", symbol->name);
 		return (GMT_OK);
 	}
-#endif
+
 	/* Regular macro symbol */
 
 	type = symbol->type;	/* Link to top level head info */

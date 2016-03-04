@@ -3663,22 +3663,19 @@ GMT_LOCAL int support_gnomonic_adjust (struct GMT_CTRL *GMT, double angle, doubl
 
 /*! . */
 GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
-	unsigned int k, nc = 0, nv, error = 0, var_symbol = 0;
+	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0;
 	int last;
 	size_t length;
-	bool do_fill, do_pen, first = true;
+	bool do_fill, do_pen, first = true, got_BB[2] = {false, false};
 	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_LEN64], OP[8] = {""}, right[GMT_LEN64] = {""};
 	char arg[3][GMT_LEN64] = {"", "", ""}, *fill_p = NULL, *pen_p = NULL, *c = NULL;
+	char *BB_string[2] = {"%%HiResBoundingBox:", "%%BoundingBox:"};
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
-#ifdef PS_MACRO
 	bool got_EPS = false;
 	struct stat buf;
-#endif
 
-	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
-	 * extended macro language works well and can handle most situations. PW 10/11/10 */
 	length = strlen (in_name);
 	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
 		strncpy (name, in_name, length-4);
@@ -3686,7 +3683,6 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		strcpy (name, in_name);
 
 	if (!gmt_getsharepath (GMT, "custom", name, ".def", file, R_OK)) {	/* No *.def file found */
-#ifdef PS_MACRO
 		/* See if we got EPS macro */
 		if (length > 4 && !strcmp (&in_name[length-4], ".eps"))	/* User gave trailing .eps extension (not needed) - just chop */
 			strncpy (name, in_name, length-4);
@@ -3705,7 +3701,6 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find either custom symbol or EPS macro %s\n", name);
 	}
 	else {
-#endif
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Found custom symbol %s\n", file);
 	}
 
@@ -3717,28 +3712,27 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	head = gmt_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
 	strncpy (head->name, basename (name), GMT_LEN64-1);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
-#ifdef PS_MACRO
 		if (got_EPS) {	/* Working on an EPS symbol, just append the text as is */
-			bool got_BB = false;
 			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
 				head->PS_macro = gmt_memory (GMT, NULL, (size_t)buf.st_size, char);
 				head->PS = 1;	/* Flag to indicate we already allocated memory */
 			}
-			if (!got_BB && (strstr (buffer,"%%BoundingBox:"))) {
-				char c1[16] = {""}, c2[16] = {""}, c3[16] = {""}, c4[16] = {""};
-				sscanf (&buffer[14], "%s %s %s %s", c1, c2, c3, c4);
-				head->PS_BB[0] = atof (c1);		head->PS_BB[2] = atof (c2);
-				head->PS_BB[1] = atof (c3);		head->PS_BB[3] = atof (c4);
-				got_BB = true;
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches\n",
-					name, (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72);
-				continue;
+			for (bb = 0; bb < 2; bb++) {	/* Check for both flavors of BoundingBox unless found */
+				if (!got_BB[bb] && (strstr (buffer, BB_string[bb]))) {
+					char c1[GMT_STR16] = {""}, c2[GMT_STR16] = {""}, c3[GMT_STR16] = {""}, c4[GMT_STR16] = {""};
+					sscanf (&buffer[strlen(BB_string[bb])], "%s %s %s %s", c1, c2, c3, c4);
+					head->PS_BB[0] = atof (c1);	head->PS_BB[2] = atof (c2);
+					head->PS_BB[1] = atof (c3);	head->PS_BB[3] = atof (c4);
+					got_BB[bb] = true;
+					if (bb == 0) got_BB[1] = true;	/* If we find Highres BB then we dont need to look for lowres BB */
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches [%s]\n",
+						name, (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72, &BB_string[bb][2]);
+				}
 			}
 			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
 			strcat (head->PS_macro, buffer);
 			continue;
 		}
-#endif
 		gmt_chop (buffer);	/* Get rid of \n \r */
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
@@ -4023,12 +4017,10 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		previous = s;
 	}
 	fclose (fp);
-#ifdef PS_MACRO
 	if (head->PS && strstr (head->PS_macro, "%%Creator: GMT")) {	/* Check if a GMT EPS or not */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "EPS symbol %s is a GMT-produced macro\n", head->name);
 		head->PS |= 4;	/* So we know to scale the EPS by 1200/72 or not in gmt_plot.c */
 	}
-#endif
 	*S = head;
 	return (GMT_NOERROR);
 }
