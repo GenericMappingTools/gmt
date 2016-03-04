@@ -3719,9 +3719,18 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 #ifdef PS_MACRO
 		if (got_EPS) {	/* Working on an EPS symbol, just append the text as is */
+			bool got_BB = false;
 			if (head->PS == 0) {	/* Allocate memory for the EPS symbol */
 				head->PS_macro = gmt_memory (GMT, NULL, (size_t)buf.st_size, char);
 				head->PS = 1;	/* Flag to indicate we already allocated memory */
+			}
+			if (!got_BB && (strstr (buffer,"%%BoundingBox:"))) {
+				char c1[16] = {""}, c2[16] = {""}, c3[16] = {""}, c4[16] = {""};
+				sscanf (&buffer[14], "%s %s %s %s", c1, c2, c3, c4);
+				head->PS_BB[0] = atof (c1);		head->PS_BB[2] = atof (c2);
+				head->PS_BB[1] = atof (c3);		head->PS_BB[3] = atof (c4);
+				got_BB = true;
+				continue;
 			}
 			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */
 			strcat (head->PS_macro, buffer);
