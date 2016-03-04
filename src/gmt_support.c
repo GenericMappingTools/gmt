@@ -3730,6 +3730,8 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				head->PS_BB[0] = atof (c1);		head->PS_BB[2] = atof (c2);
 				head->PS_BB[1] = atof (c3);		head->PS_BB[3] = atof (c4);
 				got_BB = true;
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Custom EPS symbol %s has width %g and height %g inches\n",
+					name, (head->PS_BB[1] - head->PS_BB[0]) / 72, (head->PS_BB[3] - head->PS_BB[2]) / 72);
 				continue;
 			}
 			if (buffer[0] == '%' && (buffer[1] == '%' || buffer[1] == '!')) continue;	/* Skip comments */

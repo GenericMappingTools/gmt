@@ -4856,16 +4856,14 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	/* PS_MACRO stuff is on hold, awaiting more testing */
 	if (symbol->PS) {	/* Special Encapsulated PostScript-only symbol */
 		//int c;
-		double off = 0.5*size[0];
+		double off = 0.5*size[0], fy = (symbol->PS_BB[3] - symbol->PS_BB[2]) / (symbol->PS_BB[1] - symbol->PS_BB[0]);
 		if (symbol->PS & 1) {	/* First time we must dump the PS code definition */
-			char   s[32] = {""};
 			double sc;
 			PSL_comment (PSL, "Start of symbol %s\n", symbol->name);
 			PSL_command (PSL, "/Sk_%s {\nPSL_eps_begin\n", symbol->name);
-			sc = (symbol->PS_BB[1] - symbol->PS_BB[0]) / 72;
-			sprintf(s, "%.8f dup scale\n", sc);
-			PSL_command (PSL, s);	/*  */
-			//PSL_command (PSL, "2.54 dup scale\n");	/* Increase size from 1x1 cm to 1x1 inch since PS uses inches */
+			/* We use the symbols bounding box and scale its width to 1 inch since PS uses inches */
+			sc = (symbol->PS_BB[1] - symbol->PS_BB[0]) / 72.0;
+			PSL_command (PSL, "%.8f dup scale\n", sc);
 			if ((symbol->PS & 4) == 0)	/* non-GMT5-produced EPS macro - scale points to GMT's unit */
 				PSL_command (PSL, "1200 72 div dup scale\n");
 			PSL_command (PSL, "%%%%BeginDocument: %s.eps\n", symbol->name);
@@ -4876,7 +4874,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			symbol->PS++;	/* Flag now says we have dumped the PS code */
 		}
 		PSL_command (PSL, "V ");
-		PSL_setorigin (PSL, x0-off, y0-off, 0.0, PSL_FWD);
+		PSL_setorigin (PSL, x0-off, y0-fy*off, 0.0, PSL_FWD);
 		//for (c = (int)symbol->n_required; c >= 0; c--) PSL_command (PSL, "%g ", size[c]);
 		PSL_command (PSL, "%g dup scale ", size[0]);
 		PSL_command (PSL, "Sk_%s U\n", symbol->name);
