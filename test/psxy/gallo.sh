@@ -11,4 +11,5 @@ cat << EOF > chicks.txt
 EOF
 psxy -Skgallo -R-45/0/0/45 -JX15c/0 -B5 -BWSen -P -K chicks.txt > $ps
 awk '{printf "%s %s %s %g%s\n", $1, $2, $3, substr($3,1,1)*'"$scale"', substr($3,2,1)}' chicks.txt > r.txt
-psxy -R -J -O r.txt -Sr -W1p,blue >> $ps
+psxy -R -J -O -K r.txt -Sr -W1p,blue >> $ps
+psxy -R -J -O chicks.txt -Sc0.1i -Gyellow -Wthin >> $ps
