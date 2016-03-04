@@ -11889,7 +11889,7 @@ unsigned int * gmt_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 /* THese three functions are used by grdmath and gmtmath only */
 
 /*! . */
-int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M) {
+int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M) {
 	/* Load in any gmt/grdmath macros.  These records are of the format
 	 * MACRO = ARG1 ARG2 ... ARGN [ : comments on what they do]
 	 * The comments, if present, must be preceded by :<space> to distinguish
@@ -11898,7 +11898,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M) {
 	unsigned int n = 0, k = 0, pos = 0;
 	size_t n_alloc = 0;
 	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, item[GMT_LEN64] = {""}, args[GMT_BUFSIZ] = {""}, *c = NULL;
-	struct MATH_MACRO *macro = NULL;
+	struct GMT_MATH_MACRO *macro = NULL;
 	FILE *fp = NULL;
 
 	if (!gmtlib_getuserpath (GMT, mtype, line)) return (0);
@@ -11915,7 +11915,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M) {
 			c[0] = '\0';		/* Chop off the comments */
 		gmt_strstrip (line, true);	/* Remove leading and trailing whitespace */
 		sscanf (line, "%s = %[^\n]", name, args);	/* Get name and everything else */
-		if (n == n_alloc) macro = gmt_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct MATH_MACRO);
+		if (n == n_alloc) macro = gmt_memory (GMT, macro, n_alloc += GMT_TINY_CHUNK, struct GMT_MATH_MACRO);
 		macro[n].name = strdup (name);
 		pos = 0;
 		while (gmt_strtok (args, " \t", &pos, item)) macro[n].n_arg++;		/* Count the arguments */
@@ -11925,14 +11925,14 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M) {
 		n++;
 	}
 	fclose (fp);
-	if (n < n_alloc) macro = gmt_memory (GMT, macro, n, struct MATH_MACRO);
+	if (n < n_alloc) macro = gmt_memory (GMT, macro, n, struct GMT_MATH_MACRO);
 
 	*M = macro;
 	return (n);
 }
 
 /*! . */
-int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M) {
+int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M) {
 	/* See if the arg matches the name of a macro; return its ID or -1 */
 
 	unsigned int n;
@@ -11945,7 +11945,7 @@ int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M) {
 }
 
 /*! . */
-void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M) {
+void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M) {
 	/* Free space allocated for macros */
 
 	unsigned int n, k;
@@ -11964,7 +11964,7 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile) {
 	unsigned int n_macros, kk;
 	int k;
-	struct MATH_MACRO *M = NULL;
+	struct GMT_MATH_MACRO *M = NULL;
 	struct GMT_OPTION *opt = NULL, *ptr = NULL, *list = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

@@ -37,8 +37,8 @@
  * GMT TYPE DEFINITIONS
  *--------------------------------------------------------------------*/
 
-/*! Definition of MATH_MACRO used by grdmath and gmtmath */
-struct MATH_MACRO {
+/*! Definition of GMT_MATH_MACRO used by grdmath and gmtmath */
+struct GMT_MATH_MACRO {
 	unsigned int n_arg;	/* How many commands this macro represents */
 	char *name;	/* The macro name */
 	char **arg;	/* List of those commands */
