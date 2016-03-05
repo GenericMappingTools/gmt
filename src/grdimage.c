@@ -50,8 +50,9 @@ struct GRDIMAGE_CTRL {
 		bool active;
 		bool mode;	/* Use info of -R option to reference image */
 	} D;
-	struct GRDIMG_A {	/* -A to write a GDAL file */
+	struct GRDIMG_A {	/* -A to write a GDAL file or return image to API */
 		bool active;
+		bool return_image;
 		char *file;
 		char *driver;
 	} A;
@@ -190,15 +191,19 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
 				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
-				n = (int)strlen(Ctrl->A.file) - 1;
-				while (Ctrl->A.file[n] != '=' && n > 0) n--;
-				if (n == 0) {
-					GMT_Report (API, GMT_MSG_NORMAL, "ERROR: missing driver name in option -A.\n");
-					n_errors++;
-				}
-				else {
-					Ctrl->A.file[n] = '\0';		/* Strip =driver from file name */
-					Ctrl->A.driver = strdup(&Ctrl->A.file[n+1]);
+				if (gmt_M_file_is_memory (Ctrl->A.file))	/* External call to return just the image */
+					Ctrl->A.return_image = true;
+				else {	/* Must give file and GDAL driver */
+					n = (int)strlen(Ctrl->A.file) - 1;
+					while (Ctrl->A.file[n] != '=' && n > 0) n--;
+					if (n == 0) {
+						GMT_Report (API, GMT_MSG_NORMAL, "ERROR: missing driver name in option -A.\n");
+						n_errors++;
+					}
+					else {
+						Ctrl->A.file[n] = '\0';		/* Strip =driver from file name */
+						Ctrl->A.driver = strdup(&Ctrl->A.file[n+1]);
+					}
 				}
 				break;
 #endif
