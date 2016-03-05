@@ -4860,7 +4860,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			PSL_comment (PSL, "Start of symbol %s\n", symbol->name);
 			PSL_command (PSL, "/Sk_%s {\nPSL_eps_begin\n", symbol->name);
 			/* We use the symbol's bounding box and scale its width to 1 inch since PSL uses inches */
-			scl = (symbol->PS_BB[1] - symbol->PS_BB[0]) / 72.0;
+			scl = 72.0 / (symbol->PS_BB[1] - symbol->PS_BB[0]);
 			PSL_command (PSL, "%.8f dup scale\n", scl);
 			if ((symbol->PS & 4) == 0)	/* non-GMT5-produced EPS macro - scale points to GMT's unit */
 				PSL_command (PSL, "1200 72 div dup scale\n");
