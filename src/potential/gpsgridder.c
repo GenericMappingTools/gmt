@@ -42,6 +42,11 @@ struct GPSGRIDDER_CTRL {
 		double value;
 		char *file;
 	} C;
+	struct F {	/* -F<fudgefactor> or -Fa<mindist> */
+		bool active;
+		unsigned int mode;
+		double fudge;
+	} F;
 	struct G {	/* -G<output_grdfile_template_or_tablefile> */
 		bool active;
 		char *file;
@@ -98,6 +103,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->S.nu = 0.25;	/* Poisson's ratio */
+	C->F.fudge = 1.0e-2;	/* Default fudge scale for r_min */
 	return (C);
 }
 
@@ -114,7 +120,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gpsgridder [<table>] -G<outfile>[%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|v]<cut>[/<file>]] [-L] [-N<nodes>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>] [-C[n|v]<cut>[/<file>]] [-Fd|f<value>] [-L] [-N<nodes>] [-S<nu>] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[w]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]%s[%s]\n\n",
 		GMT_bi_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
@@ -139,6 +145,11 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <cut> eigenvalues [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <cut> %% of data variance [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Fudging factor to avoid Green-function singularities.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Fd<del_radius> will add <del_radius> to all distances between nodes and points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Ff<factor> will add <r_min>*<factor> to all distances between nodes and points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       where <r_min> is the shortest inter-point distance found.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       [Default is -Ff0.01].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify a regular set of output locations.  Give equidistant increment for each dimension.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -R for specifying the output domain.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");
@@ -194,6 +205,21 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct 
 				}
 				else
 					Ctrl->C.value = atof (&opt->arg[k]);
+				break;
+			case 'F':	/* Fudge factor  */
+				Ctrl->F.active = true;
+				if (opt->arg[0] == 'd') {	/* Specify the delta radius in user units */
+					Ctrl->F.mode = 1;
+					Ctrl->F.fudge = atof (&opt->arg[1]);
+				}
+				else if (opt->arg[0] == 'f') {	/* Specify factor used with r_min to set delta radius */
+					Ctrl->F.mode = 2;
+					Ctrl->F.fudge = atof (&opt->arg[1]);
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Usage error: -Fd<delta_radius> or -Ff<factor>\n");
+					n_errors++;
+				}
 				break;
 			case 'G':	/* Output file name or grid template */
 				Ctrl->G.active = true;
@@ -638,7 +664,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	/* Initialize the Greens function machinery */
 	
 	par[0] = 0.5 * (2.0 * (1.0 - Ctrl->S.nu)/(1.0 + Ctrl->S.nu) + 1.0);	/* half of 2*epsilon + 1 */
-	par[1] = 1e-2 * r_min;		/* Small fudge factor to avoid singularity for r = 0 */
+	if (Ctrl->F.mode == 1)
+		par[1] = Ctrl->F.fudge;			/* Small fudge radius to avoid singularity for r = 0 */
+	else
+		par[1] = Ctrl->F.fudge * r_min;		/* Small fudge factor*r_min to avoid singularity for r = 0 */
 	
 	/* Remove mean (or LS plane) from data (we will add it back later) */
 

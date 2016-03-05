@@ -18,6 +18,7 @@ Synopsis
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-C|\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ]
+[ |-F|\ [**d**\ \|\ **f**]\ *fudge*\ ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
 [ |-S|\ *nu* ]
@@ -86,6 +87,16 @@ Optional Arguments
     Alternatively, use **-Cn** to select the *cut* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
+
+.. _-F:
+
+|-F|\ [**d**\ \|\ **f**]\ *fudge*\
+    The Green's functions are proportional to terms like 1/r^ and log(r)
+    and thus blow up for r == 0.  To prevent that we offer two schemes:
+    **-Fd**\ *del_radius* lets you add a constant offset to all radii
+    and must be specified in the user units.  Alternatively, use
+    **-Ff**\ *factor* which will compute *del_radius* from the product
+    of the shortest inter-point distance and $factor* [0.01].
 
 .. _-I:
 
