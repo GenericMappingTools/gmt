@@ -329,7 +329,7 @@ GMT_LOCAL int proj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, d
 	Y = R*x/Kp;
 	S = (y/Kp-D)*cphi1 + (B-H/Kp)*sphi1;
 
-	if (GMT_is_dnan(Kp) || GMT_is_dnan(X) || GMT_is_dnan(Y) || GMT_is_dnan(S)) set_exit++;
+	if (gmt_M_is_dnan(Kp) || gmt_M_is_dnan(X) || gmt_M_is_dnan(Y) || gmt_M_is_dnan(S)) set_exit++;
 
 	if (set_exit == 1) {
 		gmt_message (GMT, "\n");
@@ -356,7 +356,7 @@ GMT_LOCAL int proj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, d
 
 	if (h == 0) {
 		phi = atan(S/sqrt(one_m_e2*(1.0 - e2 - S*S)));
-		/* if (GMT_is_dnan(phi)) set_exit++; */
+		/* if (gmt_M_is_dnan(phi)) set_exit++; */
 	}
 	else {
 		double t1, t2;
@@ -369,7 +369,7 @@ GMT_LOCAL int proj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, d
 		t1 = (1.0/sqrt(1.0 - e2*sphi*sphi) + h/R);
 		E = t1 * t1 - e2*sphi*sphi*(1.0/(1.0 - e2*sphi*sphi) - t2);
 
-		if (GMT_is_dnan(E)) set_exit++;
+		if (gmt_M_is_dnan(E)) set_exit++;
 
 		if (set_exit == 1) gmt_message (GMT, "proj_genper_tolatlong - 3\n");
 		if (GMT->current.proj.g_debug > 1 || set_exit) {
@@ -395,7 +395,7 @@ GMT_LOCAL int proj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, d
 			t1 = (1.0/sqrt(1.0 - e2*sphi*sphi) + h/R);
 			E = t1 * t1 - e2*sphi*sphi*(1.0/(1.0 - e2*sphi*sphi) - t2);
 
-			if (GMT_is_dnan(Kp) || GMT_is_dnan(X) || GMT_is_dnan(Y) || GMT_is_dnan(S) || GMT_is_dnan(phi) || GMT_is_dnan(E)) set_exit++;
+			if (gmt_M_is_dnan(Kp) || gmt_M_is_dnan(X) || gmt_M_is_dnan(Y) || gmt_M_is_dnan(S) || gmt_M_is_dnan(phi) || gmt_M_is_dnan(E)) set_exit++;
 			if (set_exit == 1) gmt_message (GMT, "proj_genper_tolatlong - 4 \n");
 			if (set_exit || GMT->current.proj.g_debug > 1) {
 				gmt_message (GMT, "\niter %d\n", niter);
@@ -1386,7 +1386,7 @@ void gmt_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 
 	proj_genper_to_xtyt (GMT, angle, x, y, GMT->current.proj.g_yoffset, xt, yt);
 
-	if (GMT_is_dnan(*yt) || GMT_is_dnan(*xt)) {
+	if (gmt_M_is_dnan(*yt) || gmt_M_is_dnan(*xt)) {
 		gmt_message (GMT, "genper: yt or xt nan\n");
 		gmt_message (GMT, "genper: lon %6.3f lat %6.3f\n", lon, lat);
 		gmt_message (GMT, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);

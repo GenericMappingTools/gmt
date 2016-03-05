@@ -95,7 +95,7 @@ GMT_LOCAL int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MINMAX_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct MINMAX_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct MINMAX_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.col = UINT_MAX;	/* Meaning not set */
@@ -104,7 +104,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -280,7 +280,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_free (GMT, xyzmin); gmt_free (GMT, xyzmax); gmt_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, xyzmin); gmt_M_free (GMT, xyzmax); gmt_M_free (GMT, Q); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	bool got_stuff = false, first_data_record, give_r_string = false;
@@ -329,13 +329,13 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 	if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must check that output format won't mess things up by printing west > east */
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
-			GMT_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
+			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n",
 			            GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
-			GMT_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
+			gmt_M_err_fail (GMT, gmtlib_geo_C_format (GMT), "");
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n",
 			            GMT->current.setting.format_geo_out);
 		}
@@ -557,7 +557,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			ncol = gmt_get_cols (GMT, GMT_IN);
 			if (Ctrl->E.active) {
 				if (Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
-				if (GMT->common.b.active[GMT_IN]) dchosen = gmt_memory (GMT, NULL, ncol, double);
+				if (GMT->common.b.active[GMT_IN]) dchosen = gmt_M_memory (GMT, NULL, ncol, double);
 			}
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
@@ -578,8 +578,8 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			/* Now we know number of columns, so allocate memory */
 
 			Q = gmt_quad_init (GMT, ncol);
-			xyzmin = gmt_memory (GMT, NULL, ncol, double);
-			xyzmax = gmt_memory (GMT, NULL, ncol, double);
+			xyzmin = gmt_M_memory (GMT, NULL, ncol, double);
+			xyzmax = gmt_M_memory (GMT, NULL, ncol, double);
 
 			for (col = 0; col < ncol; col++) {	/* Initialize */
 				xyzmin[col] = DBL_MAX;
@@ -594,7 +594,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		/* Process all columns and update the corresponding minmax arrays */
 
 		if (Ctrl->E.active) {		/* See if this record should become the chosen one  */
-			if (!GMT_is_dnan (in[Ctrl->E.col])) {		/* But skip NaNs */
+			if (!gmt_M_is_dnan (in[Ctrl->E.col])) {		/* But skip NaNs */
 				value = (work_on_abs_value) ? fabs (in[Ctrl->E.col]) : in[Ctrl->E.col];
 				if (Ctrl->E.mode == -1 && value < e_min) {	/* Lower than previous low */
 					e_min = value;
@@ -614,7 +614,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		}
 		else {	/* Update min/max values for each column */
 			for (col = 0; col < ncol; col++) {
-				if (GMT_is_dnan (in[col])) continue;	/* We always skip NaNs */
+				if (gmt_M_is_dnan (in[col])) continue;	/* We always skip NaNs */
 				if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Longitude requires more work */
 					/* We must keep separate min/max for both Dateline and Greenwich conventions */
 					gmt_quad_add (GMT, &Q[col], in[col]);
@@ -657,7 +657,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, GMT_MAX_COLUMNS, int);
 	}
 	if (Ctrl->E.active && GMT->common.b.active[GMT_IN])
-		gmt_free (GMT, dchosen);
+		gmt_M_free (GMT, dchosen);
 
 	Return (GMT_OK);
 }

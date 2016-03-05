@@ -53,7 +53,7 @@ struct GRD2XYZ_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2XYZ_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -67,7 +67,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -286,7 +286,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", G->header->name);
 
 		if (gmt_M_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
-			GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
+			gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
@@ -294,7 +294,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 		n_total += G->header->nm;
 
-		GMT_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg);
+		gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
@@ -309,7 +309,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				ij_gmt = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
 				d_value = G->data[ij_gmt];
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
-				if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (d_value))	/* Grid node is NaN and -d was set, so change to nan-proxy */
+				if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (d_value))	/* Grid node is NaN and -d was set, so change to nan-proxy */
 					d_value = GMT->common.d.nan_proxy[GMT_OUT];
 				else if (gmt_z_input_is_nan_proxy (GMT, GMT_Z, d_value))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
 					d_value = GMT->session.d_NaN;
@@ -330,7 +330,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				Return (EXIT_FAILURE);
 			}
 			n_alloc = G->header->nx * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
-			record = gmt_memory (GMT, NULL, G->header->nx, char);
+			record = gmt_M_memory (GMT, NULL, G->header->nx, char);
 			
 			sprintf (record, "ncols %d\nnrows %d", G->header->nx, G->header->ny);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
@@ -363,7 +363,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			gmt_M_row_loop (GMT, G, row) {	/* Scanlines, starting in the north (ymax) */
 				rec_len = 0;
 				gmt_M_col_loop (GMT, G, row, col, ij) {
-					if (GMT_is_fnan (G->data[ij]))
+					if (gmt_M_is_fnan (G->data[ij]))
 						sprintf (item, "%ld", lrint (Ctrl->E.nodata));
 					else if (Ctrl->E.floating)
 						sprintf (item, GMT->current.setting.format_float_out, G->data[ij]);
@@ -372,7 +372,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					len = strlen (item);
 					if ((rec_len + len + 1) >= n_alloc) {	/* Must get more memory */
 						n_alloc <<= 1;
-						record = gmt_memory (GMT, record, G->header->nx, char);
+						record = gmt_M_memory (GMT, record, G->header->nx, char);
 					}
 					strcat (record, item);
 					rec_len += len;
@@ -380,7 +380,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				}
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a whole y line */
 			}
-			gmt_free (GMT, record);
+			gmt_M_free (GMT, record);
 		}
 		else {	/* Regular x,y,z[,w] output */
 			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_OK) {	/* Establishes data output */
@@ -425,14 +425,14 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				if (Ctrl->C.mode == 2) {	/* Write index, z */
 					out[GMT_X] = (double)gmt_M_ij0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
-					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */
+					if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Y] = GMT->common.d.nan_proxy[GMT_OUT];
 					else if (gmt_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Y]))
 						out[GMT_Y] = GMT->session.d_NaN;
 				}
 				else {
 					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
-					if (GMT->common.d.active[GMT_OUT] && GMT_is_dnan (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
+					if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Z] = GMT->common.d.nan_proxy[GMT_OUT];
 					else if (gmt_z_input_is_nan_proxy (GMT, GMT_Z, out[GMT_Z]))
 						out[GMT_Z] = GMT->session.d_NaN;
@@ -440,8 +440,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
 				if (write_error != 0) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
-			gmt_free (GMT, x);
-			gmt_free (GMT, y);
+			gmt_M_free (GMT, x);
+			gmt_M_free (GMT, y);
 		}
 	}
 

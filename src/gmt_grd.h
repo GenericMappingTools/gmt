@@ -48,11 +48,11 @@ enum GMT_enum_grdtype {	/* Used in gmt_grdio.c and gmt_nc.c */
 };
 
 /*! Grid layout for complex grids */
-enum GMT_enum_grdlayout {	/* Needed by some modules */
+enum gmt_enum_grdlayout {	/* Needed by some modules */
 	GMT_GRID_IS_SERIAL = 0,		/* Grid is RRRRRR...[IIIIII...] */
 	GMT_GRID_IS_INTERLEAVED = 1};	/* Grid is RIRIRIRI... - required layout for FFT */
 
-enum GMT_enum_grid_nans {	/* Flags to tell if a grid has NaNs */
+enum gmt_enum_grid_nans {	/* Flags to tell if a grid has NaNs */
 	GMT_GRID_NOT_CHECKED = 0,
 	GMT_GRID_NO_NANS = 1,
 	GMT_GRID_HAS_NANS = 2};
@@ -84,7 +84,7 @@ enum Netcdf_chunksize {	/* Used in gmt_grdio.c and gmt_nc.c */
 /* The array wesn in the header has a name that indicates the order (west, east, south, north).
  * However, to avoid using confusing indices 0-5 we define very brief constants
  * XLO, XHI, YLO, YHI, ZLO, ZHI that should be used instead: */
-enum GMT_enum_wesnIDs {
+enum gmt_enum_wesnids {
 	XLO = 0, /* Index for west or xmin value */
 	XHI,     /* Index for east or xmax value */
 	YLO,     /* Index for south or ymin value */
@@ -95,14 +95,14 @@ enum GMT_enum_wesnIDs {
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
  * one source of typos and errors, and since macros are done at compilation time there is no
- * overhead.  Note: gmt_x_to_col does not need nx but we included it for symmetry reasons.
- * gmt_y_to_row must first compute j', the number of rows in the increasing y-direction (to
+ * overhead.  Note: gmt_M_x_to_col does not need nx but we included it for symmetry reasons.
+ * gmt_M_y_to_row must first compute j', the number of rows in the increasing y-direction (to
  * match the sense of truncation used for x) then we revert to row number increasing down
  * by flipping: j = ny - 1 - j'.
  * Note that input col, row _may_ be negative, hence we do the cast to (int) here. */
 
-#define gmt_x_to_col(x,x0,dx,off,nx) (irint((((x) - (x0)) / (dx)) - (off)))
-#define gmt_y_to_row(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
+#define gmt_M_x_to_col(x,x0,dx,off,nx) (irint((((x) - (x0)) / (dx)) - (off)))
+#define gmt_M_y_to_row(y,y0,dy,off,ny) ((ny) - 1 - irint(((((y) - (y0)) / (dy)) - (off))))
 #define gmt_M_col_to_x(C,col,x0,x1,dx,off,nx) (((int)(col) == (int)((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
 #define gmt_M_row_to_y(C,row,y0,y1,dy,off,ny) (((int)(row) == (int)((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
 
@@ -110,8 +110,8 @@ enum GMT_enum_wesnIDs {
 
 #define gmt_M_grd_col_to_x(C,col,h) gmt_M_col_to_x(C,col,h->wesn[XLO],h->wesn[XHI],h->inc[GMT_X],h->xy_off,h->nx)
 #define gmt_M_grd_row_to_y(C,row,h) gmt_M_row_to_y(C,row,h->wesn[YLO],h->wesn[YHI],h->inc[GMT_Y],h->xy_off,h->ny)
-#define gmt_M_grd_x_to_col(C,x,h) gmt_x_to_col(x,h->wesn[XLO],h->inc[GMT_X],h->xy_off,h->nx)
-#define gmt_M_grd_y_to_row(C,y,h) gmt_y_to_row(y,h->wesn[YLO],h->inc[GMT_Y],h->xy_off,h->ny)
+#define gmt_M_grd_x_to_col(C,x,h) gmt_M_x_to_col(x,h->wesn[XLO],h->inc[GMT_X],h->xy_off,h->nx)
+#define gmt_M_grd_y_to_row(C,y,h) gmt_M_y_to_row(y,h->wesn[YLO],h->inc[GMT_Y],h->xy_off,h->ny)
 
 /*! These macros calculate the number of nodes in x or y for the increment dx, dy */
 
@@ -125,13 +125,13 @@ enum GMT_enum_wesnIDs {
 
 /*! The follow macros gets the full length or rows and columns when padding is considered (i.e., mx and my) */
 
-#define gmt_grd_get_nxpad(h,pad) ((h->nx) + pad[XLO] + pad[XHI])
-#define gmt_grd_get_nypad(h,pad) ((h->ny) + pad[YLO] + pad[YHI])
+#define gmt_M_grd_get_nxpad(h,pad) ((h->nx) + pad[XLO] + pad[XHI])
+#define gmt_M_grd_get_nypad(h,pad) ((h->ny) + pad[YLO] + pad[YHI])
 
 /*! 64-bit-safe macros to return the number of points in the grid given its dimensions */
 
 #define gmt_M_get_nm(C,nx,ny) (((uint64_t)(nx)) * ((uint64_t)(ny)))
-#define gmt_grd_get_nm(h) (((uint64_t)(h->nx)) * ((uint64_t)(h->ny)))
+#define gmt_M_grd_get_nm(h) (((uint64_t)(h->nx)) * ((uint64_t)(h->ny)))
 
 /*! gmt_M_grd_setpad copies the given pad into the header */
 
@@ -183,7 +183,7 @@ enum GMT_enum_wesnIDs {
 /*! GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
 #define gmt_M_grd_same_shape(C,G1,G2) (G1->header->nx == G2->header->nx && G1->header->ny == G2->header->ny && G1->header->registration == G2->header->registration)
 /*! gmt_M_y_is_outside is true if y is outside the given range */
-#define gmt_M_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
+#define gmt_M_y_is_outside(C,y,bottom,top) ((gmt_M_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
 /*! gmt_M_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */
 #define gmt_M_grd_is_global(C,h) (h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT || h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
 

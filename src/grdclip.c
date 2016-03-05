@@ -75,7 +75,7 @@ struct GRDCLIP_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCLIP_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 			
@@ -84,10 +84,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C->S.class);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C->S.class);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -186,7 +186,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 					Ctrl->S.mode |= GRDCLIP_BETWEEN;
 					if (n_class == Ctrl->S.n_class) {	/* Need more memory */
 						n_alloc <<= 2;
-						Ctrl->S.class = gmt_memory (GMT, Ctrl->S.class, n_alloc, struct GRDCLIP_RECLASSIFY);
+						Ctrl->S.class = gmt_M_memory (GMT, Ctrl->S.class, n_alloc, struct GRDCLIP_RECLASSIFY);
 					}
 					if (n_to_expect == 3) {
 						n = sscanf (&opt->arg[1], "%f/%f/%s", &Ctrl->S.class[n_class].low, &Ctrl->S.class[n_class].high, txt);
@@ -227,7 +227,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 	}
 	if (Ctrl->S.mode & GRDCLIP_BETWEEN) {	/* Reallocate, sort and check that no classes overlap */
 		unsigned int k;
-		Ctrl->S.class = gmt_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
+		Ctrl->S.class = gmt_M_memory (GMT, Ctrl->S.class, n_class, struct GRDCLIP_RECLASSIFY);
 		Ctrl->S.n_class = n_class;
 		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
 		for (k = 1; k < Ctrl->S.n_class; k++) {
@@ -235,7 +235,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d overlaps with case %d\n", k, k-1);
 				n_errors++;
 			}
-			if (!Ctrl->S.class[k].replace && (GMT_is_fnan (Ctrl->S.class[k].low) || GMT_is_fnan (Ctrl->S.class[k-1].high))) {
+			if (!Ctrl->S.class[k].replace && (gmt_M_is_fnan (Ctrl->S.class[k].low) || gmt_M_is_fnan (Ctrl->S.class[k-1].high))) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d contains NaN as high or low value\n", k);
 				n_errors++;
 			}
@@ -302,7 +302,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, G->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);	/* Get subset */
 	}
@@ -321,7 +321,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->S.mode & GRDCLIP_BETWEEN) {	/* Reclassifications */
 			for (k = 0, go = true; go && k < Ctrl->S.n_class; k++) {
-				if ((Ctrl->S.class[k].replace && GMT_is_fnan (Ctrl->S.class[k].low) && GMT_is_fnan (G->data[ij])) || \
+				if ((Ctrl->S.class[k].replace && gmt_M_is_fnan (Ctrl->S.class[k].low) && gmt_M_is_fnan (G->data[ij])) || \
 				   (G->data[ij] >= Ctrl->S.class[k].low && G->data[ij] <= Ctrl->S.class[k].high)) {
 					Out->data[ij] = Ctrl->S.class[k].between;
 					Ctrl->S.class[k].n_between++;

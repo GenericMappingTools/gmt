@@ -75,7 +75,7 @@ struct GRDINFO_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDINFO_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -84,7 +84,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -294,7 +294,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		subset = gmt_M_is_subset (GMT, G->header, wesn);	/* Subset requested */
-		if (subset) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
+		if (subset) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
 
@@ -321,7 +321,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 			mean = median = sum2 = 0.0;
 			ij_min = ij_max = n = 0;
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
-				if (GMT_is_fnan (G->data[ij])) continue;
+				if (gmt_M_is_fnan (G->data[ij])) continue;
 				if (G->data[ij] < z_min) {
 					z_min = G->data[ij];	ij_min = ij;
 				}
@@ -722,7 +722,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->C.active && !Ctrl->T.active && projStr) {		/* Print the referencing info */
 		GMT_Put_Record (API, GMT_WRITE_TEXT, projStr);
-		gmt_str_free (projStr);
+		gmt_M_str_free (projStr);
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */

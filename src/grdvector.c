@@ -82,7 +82,7 @@ struct GRDVECTOR_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVECTOR_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDVECTOR_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDVECTOR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
@@ -93,10 +93,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file[GMT_IN]);	
-	gmt_str_free (C->In.file[GMT_OUT]);	
-	gmt_str_free (C->C.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file[GMT_IN]);	
+	gmt_M_str_free (C->In.file[GMT_OUT]);	
+	gmt_M_str_free (C->C.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -181,7 +181,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Vary symbol color with z */
 				Ctrl->C.active = true;
-				gmt_str_free (Ctrl->C.file);
+				gmt_M_str_free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
@@ -368,7 +368,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 
 	if (!GMT->common.R.active) gmt_M_memcpy (GMT->common.R.wesn, Grid[0]->header->wesn, 4, double);
 
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	/* Determine the wesn to be used to read the grid file */
 
@@ -491,7 +491,7 @@ int GMT_grdvector (void *V_API, int mode, void *args) {
 		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
 
 			ij = gmt_M_ijp (Grid[0]->header, row, col);
-			if (GMT_is_fnan (Grid[0]->data[ij]) || GMT_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
+			if (gmt_M_is_fnan (Grid[0]->data[ij]) || gmt_M_is_fnan (Grid[1]->data[ij])) continue;	/* Cannot plot NaN-vectors */
 			x = gmt_M_grd_col_to_x (GMT, col, Grid[0]->header);	/* Longitude OR x OR theta [or azimuth] */
 			if (!Ctrl->N.active) {	/* Throw out vectors whose node is outside */
 				gmt_map_outside (GMT, x, y);

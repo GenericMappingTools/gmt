@@ -52,14 +52,14 @@ struct GMTSET_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSET_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GMTSET_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTSET_CTRL);
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->G.file);
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

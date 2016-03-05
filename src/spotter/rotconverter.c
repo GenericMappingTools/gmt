@@ -107,7 +107,7 @@ struct ROTCONVERTER_CTRL {	/* All control options for this program (except commo
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ROTCONVERTER_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct ROTCONVERTER_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct ROTCONVERTER_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -118,7 +118,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -301,12 +301,12 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			case '0': case '1': case '2': case '3': case '4': case '5': 
 			case '6': case '7': case '8': case '9': case '.':
 				sprintf (record, "-%c%s", opt->option, opt->arg);
-				gmt_str_free (opt->arg);
+				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (record);
 				opt->option = GMT_OPT_INFILE;
 				break;
 			case GMT_OPT_SYNOPSIS:
-				gmt_str_free (opt->arg);
+				gmt_M_str_free (opt->arg);
 				opt->arg = strdup ("-");
 				opt->option = GMT_OPT_INFILE;
 				confusion = true;	/* Since we don't know if just a single - was given */
@@ -383,7 +383,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		if (first) {	/* First time loading a rotation model */
 			if (online_rot) {
 				n_a = 1;
-				a = gmt_memory (GMT, NULL, 1, struct EULER);
+				a = gmt_M_memory (GMT, NULL, 1, struct EULER);
 				a[0].lon = lon;	a[0].lat = lat;
 				a[0].t_start = t0;	a[0].t_stop = t1;
 				a[0].duration = t0 - t1;
@@ -405,7 +405,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		else {			/* For additional times, load a second model and add/subtract them */
 			if (online_rot) {
 				n_b = 1;
-				b = gmt_memory (GMT, NULL, 1, struct EULER);
+				b = gmt_M_memory (GMT, NULL, 1, struct EULER);
 				b[0].lon = lon;	b[0].lat = lat;
 				b[0].t_start = t0;	b[0].t_stop = t1;
 				b[0].duration = t0 - t1;
@@ -416,8 +416,8 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 				n_b = spotter_init (GMT, opt->arg, &b, false, true, false, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
 			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);		/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
-			gmt_free (GMT, a);
-			gmt_free (GMT, b);
+			gmt_M_free (GMT, a);
+			gmt_M_free (GMT, b);
 			a = p;
 			n_a = n_p;
 		}
@@ -429,15 +429,15 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 	if (Ctrl->G.active) n_out = 6;
 	
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
-		gmt_free (GMT, a);
+		gmt_M_free (GMT, a);
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-		gmt_free (GMT, a);
+		gmt_M_free (GMT, a);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-		gmt_free (GMT, a);
+		gmt_M_free (GMT, a);
 		Return (API->error);
 	}
 
@@ -495,7 +495,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}
 	
-	gmt_free (GMT, a);
+	gmt_M_free (GMT, a);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {		/* Disables further data output */
 		Return (API->error);

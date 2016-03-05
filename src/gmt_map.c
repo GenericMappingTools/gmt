@@ -372,7 +372,7 @@ GMT_LOCAL void map_cyl_validate_clon (struct GMT_CTRL *GMT, unsigned int mode) {
 	 * mode == 0: <clon> should be reset based on w/e mid-point
 	 * mode == 1: -J<clon> is firm so w/e is centered on <c.lon>
 	 */
-	if (GMT_is_dnan (GMT->current.proj.pars[0]))
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0]))
 		GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);	/* Not set at all, set to middle lon */
 	else if (GMT->current.map.is_world && (GMT->current.proj.pars[0] == GMT->common.R.wesn[XLO] || GMT->current.proj.pars[0] == GMT->common.R.wesn[XHI])) {
 		/* Reset central meridian since cannot be 360 away from one of the boundaries since that gives xmin == xmax below */
@@ -1474,7 +1474,7 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
-	gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
+	gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
 	/* Get Cartesian map coordinates */
 
@@ -1499,22 +1499,22 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		for (i = 1; i < n; i++) {	/* For each line segment */
 			np = clipper[side] (xtmp[in][i-1], ytmp[in][i-1], xtmp[in][i], ytmp[in][i], xx, yy, border[side], inside[side], outside[side], &cross);	/* Returns 0, 1, or 2 points */
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+				if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
 			}
 		}
 		if (polygon && gmt_polygon_is_open (GMT, xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
 	}
 
-	gmt_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
-	gmt_free (GMT, ytmp[1]);
+	gmt_M_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
+	gmt_M_free (GMT, ytmp[1]);
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
 		n_alloc = m;
-		gmt_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
+		gmt_M_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
 		*x = xtmp[0];
 		*y = ytmp[0];
 #ifdef DEBUG
@@ -1526,8 +1526,8 @@ GMT_LOCAL uint64_t map_rect_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 #endif
 	}
 	else {	/* Nothing survived the clipping - free the output arrays */
-		gmt_free (GMT, xtmp[0]);
-		gmt_free (GMT, ytmp[0]);
+		gmt_M_free (GMT, xtmp[0]);
+		gmt_M_free (GMT, ytmp[0]);
 	}
 
 	return (m);
@@ -1702,7 +1702,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
-	gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
+	gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], n_get, &n_alloc, double);
 
 	/* Make copy of lon/lat coordinates */
 
@@ -1711,8 +1711,8 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 	/* Preallocate space for crossing information */
 
-	x_index = gmt_malloc (GMT, NULL, GMT_TINY_CHUNK, &n_x_alloc, uint64_t);
-	x_type = gmt_malloc (GMT, NULL,  GMT_TINY_CHUNK, &n_t_alloc, char);
+	x_index = gmt_M_malloc (GMT, NULL, GMT_TINY_CHUNK, &n_x_alloc, uint64_t);
+	x_type = gmt_M_malloc (GMT, NULL,  GMT_TINY_CHUNK, &n_t_alloc, char);
 
 #ifdef DEBUG
 	if (dump) {
@@ -1730,7 +1730,7 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 		uint_swap (in, out);	/* Swap what is input and output for clipping against this border */
 		if (side%2 && periodic) {	/* No clipping can take place on w or e border; just copy all and go to next side */
 			m = n;
-			if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 			gmt_M_memcpy (xtmp[out], xtmp[in], m, double);
 			gmt_M_memcpy (ytmp[out], ytmp[in], m, double);
 			continue;
@@ -1755,17 +1755,17 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 				x_index[n_cross] = m;		/* Index of intersection point (which will be copied from xx[0], yy[0] below) */
 				x_type[n_cross] = (char)cross;	/* -1 going out, +1 going in */
 				if (++n_cross == n_x_alloc) {
-					x_index = gmt_malloc (GMT, x_index, n_cross, &n_x_alloc, uint64_t);
-					x_type = gmt_malloc (GMT, x_type,  n_cross, &n_t_alloc, char);
+					x_index = gmt_M_malloc (GMT, x_index, n_cross, &n_x_alloc, uint64_t);
+					x_type = gmt_M_malloc (GMT, x_type,  n_cross, &n_t_alloc, char);
 				}
 			}
 			for (j = 0; j < np; j++) {	/* Add the np returned points to the new clipped polygon path */
-				if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+				if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 				xtmp[out][m] = xx[j]; ytmp[out][m] = yy[j]; m++;
 			}
 		}
 		if (polygon && gmt_polygon_is_open (GMT, xtmp[out], ytmp[out], m)) {	/* Do we need to explicitly close this clipped polygon? */
-			if (m == n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
+			if (m == n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], m, &n_alloc, double);
 			xtmp[out][m] = xtmp[out][0];	ytmp[out][m] = ytmp[out][0];	m++;	/* Yes. */
 		}
 		if (polygon && curved && n_cross) {	/* Must resample between crossing points */
@@ -1779,14 +1779,14 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 
 			/* First copy the current polygon */
 
-			gmt_malloc2 (GMT, x_cpy, y_cpy, m, &np, double);
+			gmt_M_malloc2 (GMT, x_cpy, y_cpy, m, &np, double);
 			gmt_M_memcpy (x_cpy, xtmp[out], m, double);
 			gmt_M_memcpy (y_cpy, ytmp[out], m, double);
 
 			for (p = np = 0; p < n_cross; p++) {	/* Process each crossing point */
 				if (last_index < x_index[p]) {	/* Copy over segment from were we left off to this crossing point */
 					add = x_index[p] - last_index;
-					if ((new_n = (np+add)) >= n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+					if ((new_n = (np+add)) >= n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
 					gmt_M_memcpy (&xtmp[out][np], &x_cpy[last_index], add, double);
 					gmt_M_memcpy (&ytmp[out][np], &y_cpy[last_index], add, double);
 					np += add;
@@ -1803,34 +1803,34 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 							stop_lon -= 360.0;
 					}
 					add = gmtlib_map_path (GMT, start_lon, y_cpy[x_index[p]], stop_lon, y_cpy[x_index[p_next]], &x_add, &y_add);
-					if ((new_n = (np+add)) >= n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+					if ((new_n = (np+add)) >= n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
 					gmt_M_memcpy (&xtmp[out][np], x_add, add, double);
 					gmt_M_memcpy (&ytmp[out][np], y_add, add, double);
-					if (add) { gmt_free (GMT, x_add);	gmt_free (GMT, y_add); }
+					if (add) { gmt_M_free (GMT, x_add);	gmt_M_free (GMT, y_add); }
 					np += add;
 					last_index = x_index[p_next];
 				}
 			}
 			if (x_index[0] > 0) {	/* First point was clean inside, must add last connection */
 				add = m - last_index;
-				if ((new_n = (np+add)) >= n_alloc) gmt_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
+				if ((new_n = (np+add)) >= n_alloc) gmt_M_malloc4 (GMT, xtmp[0], ytmp[0], xtmp[1], ytmp[1], new_n, &n_alloc, double);
 				gmt_M_memcpy (&xtmp[out][np], &x_cpy[last_index], add, double);
 				gmt_M_memcpy (&ytmp[out][np], &y_cpy[last_index], add, double);
 				np += add;
 			}
 			m = np;	/* New total of points */
-			gmt_free (GMT, x_cpy);	gmt_free (GMT, y_cpy);
+			gmt_M_free (GMT, x_cpy);	gmt_M_free (GMT, y_cpy);
 		}
 	}
 
-	gmt_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
-	gmt_free (GMT, ytmp[1]);
-	gmt_free (GMT, x_index);	/* Free the pairs of arrays that holds the crossing info */
-	gmt_free (GMT, x_type);
+	gmt_M_free (GMT, xtmp[1]);	/* Free the pairs of arrays that holds the last input array */
+	gmt_M_free (GMT, ytmp[1]);
+	gmt_M_free (GMT, x_index);	/* Free the pairs of arrays that holds the crossing info */
+	gmt_M_free (GMT, x_type);
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
 		n_alloc = m;
-		gmt_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
+		gmt_M_malloc2 (GMT, xtmp[0], ytmp[0], 0U, &n_alloc, double);
 		/* Convert to map coordinates */
 		for (i = 0; i < m; i++) gmt_geo_to_xy (GMT, xtmp[0][i], ytmp[0][i], &xtmp[0][i], &ytmp[0][i]);
 
@@ -1845,8 +1845,8 @@ GMT_LOCAL uint64_t map_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat
 #endif
 	}
 	else {	/* Nothing survived the clipping - free the output arrays */
-		gmt_free (GMT, xtmp[0]);
-		gmt_free (GMT, ytmp[0]);
+		gmt_M_free (GMT, xtmp[0]);
+		gmt_M_free (GMT, ytmp[0]);
 	}
 
 	return (m);
@@ -1870,7 +1870,7 @@ GMT_LOCAL uint64_t map_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, 
 	da = d_az / (n_arc - 1);	/* Reset da to get exact steps */
 	if (n_arc <= 2) return (0);	/* Arc is too short to have intermediate points */
 	n_arc -= 2;	/* We do not include the end points since these are the crossing points handled in the calling function */
-	gmt_malloc2 (GMT, xx, yy, n_arc, NULL, double);
+	gmt_M_malloc2 (GMT, xx, yy, n_arc, NULL, double);
 	for (k = 1; k <= n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
 		sincosd (az1 + k * da, &yr, &xr);
 		pt = (this_way) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
@@ -1913,7 +1913,7 @@ GMT_LOCAL uint64_t map_radial_clip (struct GMT_CTRL *GMT, double *lon, double *l
 	if (np == 0) return (0);
 
 	if (!gmt_map_outside (GMT, lon[0], lat[0])) {
-		gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+		gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 		gmt_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
 		n++;
 	}
@@ -1922,7 +1922,7 @@ GMT_LOCAL uint64_t map_radial_clip (struct GMT_CTRL *GMT, double *lon, double *l
 		this_side = gmt_map_outside (GMT, lon[i], lat[i]);
 		if (map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides)) {
 			if (this_side) {	/* Crossing boundary and leaving circle: Add exit point to the path */
-				if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+				if (n == n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			}
 			end_x[nx] = xc[0] - GMT->current.proj.r;	end_y[nx] = yc[0] - GMT->current.proj.r;
@@ -1939,40 +1939,40 @@ GMT_LOCAL uint64_t map_radial_clip (struct GMT_CTRL *GMT, double *lon, double *l
 				 * inside the polygon.  This would require that gmt_inonout_sphpol be called.
 				 */
 				if ((n_arc = map_radial_boundary_arc (GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
-					if ((n + n_arc) >= n_alloc) gmt_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
+					if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 					gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 					gmt_M_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
 					n += n_arc;	/* Number of arc points added (end points are done separately) */
-					gmt_free (GMT, xarc);	gmt_free (GMT,  yarc);
+					gmt_M_free (GMT, xarc);	gmt_M_free (GMT,  yarc);
 				}
 				add_boundary = false;
 				nx -= 2;	/* Done with those two crossings */
 			}
 			if (!this_side) {	/* Crossing boundary and entering circle: Add entry point to the path */
-				if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+				if (n == n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			}
 		}
 		gmt_geo_to_xy (GMT, lon[i], lat[i], &xr, &yr);
 		if (!this_side) {	/* Only add points actually inside the map to the path */
-			if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+			if (n == n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 			xx[n] = xr;	yy[n] = yr;	n++;
 		}
 	}
 
 	if (nx == 2) {	/* Must close polygon by adding boundary arc */
 		if ((n_arc = map_radial_boundary_arc (GMT, this_side, end_x, end_y, &xarc, &yarc)) > 0) {
-			if ((n + n_arc) >= n_alloc) gmt_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
+			if ((n + n_arc) >= n_alloc) gmt_M_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 			gmt_M_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 			gmt_M_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
 			n += n_arc;	/* Number of arc points added (end points are done separately) */
-			gmt_free (GMT, xarc);	gmt_free (GMT,  yarc);
+			gmt_M_free (GMT, xarc);	gmt_M_free (GMT,  yarc);
 		}
-		if (n == n_alloc) gmt_malloc2 (GMT, xx, yy, n, &n_alloc, double);
+		if (n == n_alloc) gmt_M_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 		xx[n] = xx[0];	yy[n] = yy[0];	n++;	/* Close the polygon */
 	}
 	n_alloc = n;
-	gmt_malloc2 (GMT, xx, yy, 0U, &n_alloc, double);
+	gmt_M_malloc2 (GMT, xx, yy, 0U, &n_alloc, double);
 	*x = xx;
 	*y = yy;
 #ifdef DEBUG
@@ -4059,7 +4059,7 @@ GMT_LOCAL bool map_init_mollweide (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4115,7 +4115,7 @@ GMT_LOCAL bool map_init_hammer (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4169,7 +4169,7 @@ GMT_LOCAL bool map_init_grinten (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4224,7 +4224,7 @@ GMT_LOCAL bool map_init_winkel (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4276,7 +4276,7 @@ GMT_LOCAL bool map_init_eckert4 (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4329,7 +4329,7 @@ GMT_LOCAL bool map_init_eckert6 (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4381,7 +4381,7 @@ GMT_LOCAL bool map_init_robinson (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.units_pr_degree) GMT->current.proj.pars[1] /= GMT->current.proj.M_PR_DEG;
@@ -4434,7 +4434,7 @@ GMT_LOCAL bool map_init_sinusoidal (struct GMT_CTRL *GMT) {
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	if (GMT->current.proj.GMT_convert_latitudes) gmtlib_scale_eqrad (GMT);
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if (GMT->current.proj.pars[0] < 0.0) GMT->current.proj.pars[0] += 360.0;
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
@@ -4489,7 +4489,7 @@ GMT_LOCAL bool map_init_cassini (struct GMT_CTRL *GMT) {
 	bool too_big;
 	double xmin, xmax, ymin, ymax;
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
 		GMT_exit (GMT, EXIT_FAILURE); return false;
@@ -4656,7 +4656,7 @@ GMT_LOCAL bool map_init_polyconic (struct GMT_CTRL *GMT) {
 
 	map_set_spherical (GMT, true);	/* PW: Force spherical for now */
 
-	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if (gmt_M_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
 	GMT->current.map.is_world = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 	if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
@@ -4717,7 +4717,7 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 	dx = (xmax - xmin) / GMT->current.map.n_lon_nodes;
 	dy = (ymax - ymin) / GMT->current.map.n_lat_nodes;
 	/* Need temp array to hold all the longitudes we compute */
-	lon = gmt_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double);
+	lon = gmt_M_memory (GMT, NULL, 2 * (GMT->current.map.n_lon_nodes + GMT->current.map.n_lat_nodes + 2), double);
 	w = s = DBL_MAX;	e = n = -DBL_MAX;
 	for (i = k = 0; i <= GMT->current.map.n_lon_nodes; i++) {
 		x = (i == GMT->current.map.n_lon_nodes) ? xmax : xmin + i * dx;
@@ -4734,15 +4734,15 @@ GMT_LOCAL void map_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, 
 		if (lat < s) s = lat;	if (lat > n) n = lat;
 	}
 	gmtlib_get_lon_minmax (GMT, lon, k, &w, &e);	/* Determine lon-range by robust quandrant check */
-	gmt_free (GMT, lon);
+	gmt_M_free (GMT, lon);
 
 	/* Then check if one or both poles are inside map; then the above wont be correct */
 
 	if (GMT->current.proj.projection == GMT_AZ_EQDIST) {	/* Must be careful since if a pole equals an antipode we get NaNs as coordinates */
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, -90.0, &x, &y);
-		if (GMT_is_dnan (x) && GMT_is_dnan (y)) test_pole[0] = false;
+		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[0] = false;
 		gmt_geo_to_xy (GMT, GMT->current.proj.central_meridian, +90.0, &x, &y);
-		if (GMT_is_dnan (x) && GMT_is_dnan (y)) test_pole[1] = false;
+		if (gmt_M_is_dnan (x) && gmt_M_is_dnan (y)) test_pole[1] = false;
 	}
 	if (test_pole[0] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
 	if (test_pole[1] && !gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
@@ -6043,7 +6043,7 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 		out += (abs (GMT->current.map.this_x_status) == 2 || abs (GMT->current.map.this_y_status) == 2);
 	}
 	if (out == 0) {		/* All points are inside map boundary; no clipping required */
-		gmt_malloc2 (GMT, xx, yy, np, NULL, double);
+		gmt_M_malloc2 (GMT, xx, yy, np, NULL, double);
 		for (i = 0; i < np; i++) gmt_geo_to_xy (GMT, lon[i], lat[i], &xx[i], &yy[i]);
 		*x = xx;	*y = yy;	n = np;
 	}
@@ -6065,8 +6065,8 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				if (!ok) {
 					/* Polygon does NOT contain the region and we delete it */
 					n = 0;
-					gmt_free (GMT, *x);
-					gmt_free (GMT, *y);
+					gmt_M_free (GMT, *x);
+					gmt_M_free (GMT, *y);
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
 			}
@@ -6074,8 +6074,8 @@ uint64_t gmt_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
 				   This results in a rectangular closed polygon after the clipping. */
 				n = 0;
-				gmt_free (GMT, *x);
-				gmt_free (GMT, *y);
+				gmt_M_free (GMT, *x);
+				gmt_M_free (GMT, *y);
 			}
 		}
 	}
@@ -6099,13 +6099,13 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
-	L = gmt_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
+	L = gmt_M_memory (GMT, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
 
 	for (row = 0; row < S->n_rows; row++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
 		if (S->n_rows == 0) continue;	/* Nothing! */
-		L[side] = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+		L[side] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 		gmt_alloc_segment (GMT, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
 		m = 0;		/* Start with nuthin' */
@@ -6412,7 +6412,7 @@ double gmt_z_to_zz (struct GMT_CTRL *GMT, double z) {
 /*! . */
 bool gmt_geo_to_xy (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Converts lon/lat to x/y using the current projection */
-	if (GMT_is_dnan (lon) || GMT_is_dnan (lat)) {(*x) = (*y) = GMT->session.d_NaN; return true;}	/* Quick and safe way to ensure NaN-input results in NaNs */
+	if (gmt_M_is_dnan (lon) || gmt_M_is_dnan (lat)) {(*x) = (*y) = GMT->session.d_NaN; return true;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	(*GMT->current.proj.fwd) (GMT, lon, lat, x, y);
 	(*x) = (*x) * GMT->current.proj.scale[GMT_X] + GMT->current.proj.origin[GMT_X];
 	(*y) = (*y) * GMT->current.proj.scale[GMT_Y] + GMT->current.proj.origin[GMT_Y];
@@ -6422,7 +6422,7 @@ bool gmt_geo_to_xy (struct GMT_CTRL *GMT, double lon, double lat, double *x, dou
 /*! . */
 bool gmt_geo_to_xy_noshift (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y) {
 	/* Converts lon/lat to x/y using the current projection but applies no shift */
-	if (GMT_is_dnan (lon) || GMT_is_dnan (lat)) {(*x) = (*y) = GMT->session.d_NaN; return true;}	/* Quick and safe way to ensure NaN-input results in NaNs */
+	if (gmt_M_is_dnan (lon) || gmt_M_is_dnan (lat)) {(*x) = (*y) = GMT->session.d_NaN; return true;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	(*GMT->current.proj.fwd) (GMT, lon, lat, x, y);
 	return false;
 }
@@ -6431,7 +6431,7 @@ bool gmt_geo_to_xy_noshift (struct GMT_CTRL *GMT, double lon, double lat, double
 void gmt_xy_to_geo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Converts x/y to lon/lat using the current projection */
 
-	if (GMT_is_dnan (x) || GMT_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
+	if (gmt_M_is_dnan (x) || gmt_M_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	x = (x - GMT->current.proj.origin[GMT_X]) * GMT->current.proj.i_scale[GMT_X];
 	y = (y - GMT->current.proj.origin[GMT_Y]) * GMT->current.proj.i_scale[GMT_Y];
 
@@ -6442,7 +6442,7 @@ void gmt_xy_to_geo (struct GMT_CTRL *GMT, double *lon, double *lat, double x, do
 void gmt_xy_to_geo_noshift (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y) {
 	/* Converts x/y to lon/lat using the current projection but applies no shift */
 
-	if (GMT_is_dnan (x) || GMT_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
+	if (gmt_M_is_dnan (x) || gmt_M_is_dnan (y)) {(*lon) = (*lat) = GMT->session.d_NaN; return;}	/* Quick and safe way to ensure NaN-input results in NaNs */
 	(*GMT->current.proj.inv) (GMT, lon, lat, x, y);
 }
 
@@ -6768,9 +6768,9 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	for (n_seg = 0, i = 1; i < *nn; i++) {
 		if ((l_or_r = map_jump_x (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
-				pos = gmt_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
+				pos = gmt_M_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
 				n_alloc = n_seg;
-				way = gmt_malloc (GMT, way, n_seg, &n_alloc, char);
+				way = gmt_M_malloc (GMT, way, n_seg, &n_alloc, char);
 			}
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
 			way[n_seg] = (char)l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */
@@ -6786,8 +6786,8 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 	n = *nn;				/* Original line count */
 	if (add_crossings) n += 2 * n_seg;	/* Must add 2 crossing points per jump */
 	n_alloc = 0;
-	gmt_malloc2 (GMT, x, y, n, &n_alloc, double);
-	split = gmt_memory (GMT, NULL, n_seg+2, uint64_t);
+	gmt_M_malloc2 (GMT, x, y, n, &n_alloc, double);
+	split = gmt_M_memory (GMT, NULL, n_seg+2, uint64_t);
 	split[0] = n_seg;
 
 	x[0] = xin[0];	y[0] = yin[0];
@@ -6811,10 +6811,10 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 
 	/* Time to return the pointers to new data */
 
-	gmt_free (GMT, pos);
-	gmt_free (GMT, way);
-	gmt_free (GMT, xin);
-	gmt_free (GMT, yin);
+	gmt_M_free (GMT, pos);
+	gmt_M_free (GMT, way);
+	gmt_M_free (GMT, xin);
+	gmt_M_free (GMT, yin);
 	*xx = x;
 	*yy = y;
 	*nn = j;
@@ -6845,7 +6845,7 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 	/* Close graticule from point 0 through point 4 */
 
 	if (gmt_M_is_rect_graticule(GMT)) {	/* Simple rectangle in this projection */
-		gmt_malloc2 (GMT, xx, yy, 5U, NULL, double);
+		gmt_M_malloc2 (GMT, xx, yy, 5U, NULL, double);
 		xx[0] = xx[4] = px0;	xx[1] = px1;	xx[2] = px2;	xx[3] = px3;
 		yy[0] = yy[1] = yy[4] = s;	yy[2] = yy[3] = n;
 		np = 5U;
@@ -6858,7 +6858,7 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 		/* SOUTH BORDER */
 
 		if (gmt_M_is_geographic (GMT, GMT_IN) && s == -90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
-			gmt_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
+			gmt_M_malloc2 (GMT, xx, yy, 1U, &n_alloc, double);
 			xx[0] = px1;	yy[0] = -90.0;
 		}
 		else
@@ -6869,40 +6869,40 @@ uint64_t gmt_graticule_path (struct GMT_CTRL *GMT, double **x, double **y, int d
 
 		add = gmtlib_lonpath (GMT, px1, s, n, &xtmp, &ytmp);	/* east (or west if dir == -1) */
 		k = n_alloc + add;
-		gmt_malloc2 (GMT, xx, yy, k, &n_alloc, double);
+		gmt_M_malloc2 (GMT, xx, yy, k, &n_alloc, double);
 		gmt_M_memcpy (&xx[np], xtmp, add, double);
 		gmt_M_memcpy (&yy[np], ytmp, add, double);
 		np += add;
-		gmt_free (GMT, xtmp);	gmt_free (GMT, ytmp);
+		gmt_M_free (GMT, xtmp);	gmt_M_free (GMT, ytmp);
 
 		/* NORTH BORDER */
 
 		if (gmt_M_is_geographic (GMT, GMT_IN) && n == 90.0 && GMT_POLE_IS_POINT(GMT)) {	/* No path, just a point */
 			add = 0;
-			gmt_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
+			gmt_M_malloc2 (GMT, xtmp, ytmp, 1U, &add, double);
 			xtmp[0] = px3;	ytmp[0] = +90.0;
 		}
 		else
 			add = gmtlib_latpath (GMT, n, px2, px3, &xtmp, &ytmp);	/* North */
 
 		k = n_alloc + add;
-		gmt_malloc2 (GMT, xx, yy, k, &n_alloc, double);
+		gmt_M_malloc2 (GMT, xx, yy, k, &n_alloc, double);
 		gmt_M_memcpy (&xx[np], xtmp, add, double);
 		gmt_M_memcpy (&yy[np], ytmp, add, double);
 		np += add;
-		gmt_free (GMT, xtmp);	gmt_free (GMT, ytmp);
+		gmt_M_free (GMT, xtmp);	gmt_M_free (GMT, ytmp);
 
 		/* WEST (OR EAST) BORDER */
 
 		add = gmtlib_lonpath (GMT, px3, n, s, &xtmp, &ytmp);	/* west */
 		k = n_alloc + add;
-		gmt_malloc2 (GMT, xx, yy, k, &n_alloc, double);
+		gmt_M_malloc2 (GMT, xx, yy, k, &n_alloc, double);
 		gmt_M_memcpy (&xx[np], xtmp, add, double);
 		gmt_M_memcpy (&yy[np], ytmp, add, double);
 		np += add;
 		n_alloc = np;
-		gmt_free (GMT, xtmp);	gmt_free (GMT, ytmp);
-		gmt_malloc2 (GMT, xx, yy, 0, &n_alloc, double);
+		gmt_M_free (GMT, xtmp);	gmt_M_free (GMT, ytmp);
+		gmt_M_malloc2 (GMT, xx, yy, 0, &n_alloc, double);
 	}
 
 	if (check && gmt_M_x_is_lon (GMT, GMT_IN)) {
@@ -6937,7 +6937,7 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
 	if (GMT->current.map.meridian_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
-		gmt_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
+		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlon[0] = tlon[1] = lon;
 		tlat[0] = lat1;	tlat[1] = lat2;
 		*x = tlon;
@@ -6946,7 +6946,7 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	}
 
 	if (GMT->current.map.meridian_straight) {	/* Easy, just a straight line connect via quarter-points */
-		gmt_malloc2 (GMT, tlon, tlat, 5, &n_alloc, double);
+		gmt_M_malloc2 (GMT, tlon, tlat, 5, &n_alloc, double);
 		tlon[0] = tlon[1] = tlon[2] = tlon[3] = tlon[4] = lon;
 		dlat = lat2 - lat1;
 		tlat[0] = lat1;	tlat[1] = lat1 + 0.25 * dlat;	tlat[2] = lat1 + 0.5 * dlat;
@@ -6966,7 +6966,7 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	pos = (dlat0 > 0.0);
 
 	k = n_alloc;	n_alloc = 0;
-	gmt_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
+	gmt_M_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
 
 	tlon[0] = lon;
 	tlat[0] = lat1;
@@ -6975,8 +6975,8 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 		n++;
 		if (n == n_alloc-1) {
 			n_alloc += GMT_SMALL_CHUNK;
-			tlon = gmt_memory (GMT, tlon, n_alloc, double);
-			tlat = gmt_memory (GMT, tlat, n_alloc, double);
+			tlon = gmt_M_memory (GMT, tlon, n_alloc, double);
+			tlat = gmt_M_memory (GMT, tlat, n_alloc, double);
 		}
 		n_try = 0;
 		keep_trying = true;
@@ -7006,8 +7006,8 @@ uint64_t gmtlib_lonpath (struct GMT_CTRL *GMT, double lon, double lat1, double l
 	n++;
 
 	if (n != n_alloc) {
-		tlon = gmt_memory (GMT, tlon, n, double);
-		tlat = gmt_memory (GMT, tlat, n, double);
+		tlon = gmt_M_memory (GMT, tlon, n, double);
+		tlat = gmt_M_memory (GMT, tlat, n, double);
 	}
 
 	*x = tlon;	*y = tlat;
@@ -7023,14 +7023,14 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
 	if (GMT->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
-		gmt_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
+		gmt_M_malloc2 (GMT, tlon, tlat, 2U, NULL, double);
 		tlat[0] = tlat[1] = lat;
 		tlon[0] = lon1;	tlon[1] = lon2;
 		*x = tlon;	*y = tlat;
 		return (2ULL);
 	}
 	if (GMT->current.map.parallel_straight) {	/* Easy, just a straight line connection via quarter points */
-		gmt_malloc2 (GMT, tlon, tlat, 5U, NULL, double);
+		gmt_M_malloc2 (GMT, tlon, tlat, 5U, NULL, double);
 		tlat[0] = tlat[1] = tlat[2] = tlat[3] = tlat[4] = lat;
 		dlon = lon2 - lon1;
 		tlon[0] = lon1;	tlon[1] = lon1 + 0.25 * dlon;	tlon[2] = lon1 + 0.5 * dlon;
@@ -7047,13 +7047,13 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	pos = (dlon0 > 0.0);
 
 	k = n_alloc;	n_alloc = 0;
-	gmt_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
+	gmt_M_malloc2 (GMT, tlon, tlat, k, &n_alloc, double);
 	tlon[0] = lon1;	tlat[0] = lat;
 	gmt_geo_to_xy (GMT, tlon[0], tlat[0], &x0, &y0);
 	n = 0;
 	while ((pos && (tlon[n] < lon2)) || (!pos && (tlon[n] > lon2))) {
 		n++;
-		if (n == n_alloc) gmt_malloc2 (GMT, tlon, tlat, n, &n_alloc, double);
+		if (n == n_alloc) gmt_M_malloc2 (GMT, tlon, tlat, n, &n_alloc, double);
 		n_try = 0;
 		keep_trying = true;
 		dlon = dlon0;
@@ -7080,7 +7080,7 @@ uint64_t gmtlib_latpath (struct GMT_CTRL *GMT, double lat, double lon1, double l
 	tlat[n] = lat;
 	n++;
 	n_alloc = n;
-	gmt_malloc2 (GMT, tlon, tlat, 0, &n_alloc, double);
+	gmt_M_malloc2 (GMT, tlon, tlat, 0, &n_alloc, double);
 
 	*x = tlon;	*y = tlat;
 	return (n);
@@ -7109,8 +7109,8 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 	for (j = 1; j < n; j++) {
 		gmt_geo_to_xy (GMT, lon[j], lat[j], &this_x, &this_y);
 		inside = !gmt_map_outside (GMT, lon[j], lat[j]);
-		if (GMT_is_dnan (lon[j]) || GMT_is_dnan (lat[j])) continue;	/* Skip NaN point now */
-		if (GMT_is_dnan (lon[j-1]) || GMT_is_dnan (lat[j-1])) {		/* Point after NaN needs a move */
+		if (gmt_M_is_dnan (lon[j]) || gmt_M_is_dnan (lat[j])) continue;	/* Skip NaN point now */
+		if (gmt_M_is_dnan (lon[j-1]) || gmt_M_is_dnan (lat[j-1])) {		/* Point after NaN needs a move */
 			GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;
 			GMT->current.plot.pen[np++] = PSL_MOVE;
 			if (np == GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
@@ -7156,7 +7156,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		if (n_sections == 2) k = j;	/* Start of 2nd section */
 	}
 	if (n_sections == 2 && doubleAlmostEqualZero (GMT->current.plot.x[0], GMT->current.plot.x[np-1]) && doubleAlmostEqualZero (GMT->current.plot.y[0], GMT->current.plot.y[np-1])) {
-		double *tmp = gmt_memory (GMT, NULL, np, double);
+		double *tmp = gmt_M_memory (GMT, NULL, np, double);
 		/* Shuffle x-array safely */
 		gmt_M_memcpy (tmp, &GMT->current.plot.x[k], np-k, double);
 		gmt_M_memcpy (&tmp[np-k], GMT->current.plot.x, k, double);
@@ -7168,7 +7168,7 @@ uint64_t gmt_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		/* Change PSL_MOVE to PSL_DRAW at start of 2nd section */
 		GMT->current.plot.pen[k] = PSL_DRAW;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_geo_to_xy_line: Clipping in two separate abutting lines that were joined into a single line\n");
-		gmt_free (GMT, tmp);
+		gmt_M_free (GMT, tmp);
 	}
 
 	return (np);
@@ -7183,7 +7183,7 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 	char *flag = NULL;
 
 	if (n < 3) return (n);	/* Nothing to do */
-	flag = gmt_memory (GMT, NULL, n, char);
+	flag = gmt_M_memory (GMT, NULL, n, char);
 
 	dx = x[1] - x[0];
 	old_slope = (doubleAlmostEqualZero (x[1], x[0])) ? copysign (HALF_DBL_MAX, y[1] - y[0]) : (y[1] - y[0]) / dx;
@@ -7205,7 +7205,7 @@ uint64_t gmt_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 			j++;
 		}
 	}
-	gmt_free (GMT, flag);
+	gmt_M_free (GMT, flag);
 
 	return (j);
 }
@@ -7255,7 +7255,7 @@ int gmt_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 		inc[0], inc[1], nx, ny, dpi, offset);
 
 	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
+	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);			/* Assign default pad */
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 
@@ -7310,10 +7310,10 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = gmt_memory (GMT, NULL, I->header->nx, double);
-		y_in_proj  = gmt_memory (GMT, NULL, I->header->ny, double);
-		x_out_proj = gmt_memory (GMT, NULL, O->header->nx, double);
-		y_out_proj = gmt_memory (GMT, NULL, O->header->ny, double);
+		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->nx, double);
+		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->ny, double);
+		x_out_proj = gmt_M_memory (GMT, NULL, O->header->nx, double);
+		y_out_proj = gmt_M_memory (GMT, NULL, O->header->ny, double);
 		if (inverse) {
 			gmt_M_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			gmt_M_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -7326,7 +7326,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 			gmt_M_row_loop  (GMT, O, row_out) gmt_xy_to_geo (GMT, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
 			gmt_M_col_loop2 (GMT, O, col_out) {	/* Here we must also align longitudes properly */
 				gmt_xy_to_geo (GMT, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
-				if (gmt_M_x_is_lon (GMT, GMT_IN) && !GMT_is_dnan (x_out_proj[col_out])) {
+				if (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_M_is_dnan (x_out_proj[col_out])) {
 					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_CONV4_LIMIT) x_out_proj[col_out] += 360.0;
 					while (x_out_proj[col_out] > I->header->wesn[XHI] + GMT_CONV4_LIMIT) x_out_proj[col_out] -= 360.0;
 				}
@@ -7341,7 +7341,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 	O->header->z_min = FLT_MAX; O->header->z_max = -FLT_MAX;	/* Min/max for out */
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int nx = O->header->nx, ny = O->header->ny;
-		nz = gmt_memory (GMT, NULL, O->header->size, short int);
+		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -7369,7 +7369,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 					O->data[ij_out] += I->data[ij_in];	/* Add up the z-sum inside this rect... */
 					nz[ij_out]++;				/* ..and how many points there were */
 				}
-				if (GMT_is_fnan (O->data[ij_out])) continue;
+				if (gmt_M_is_fnan (O->data[ij_out])) continue;
 				if (O->data[ij_out] < O->header->z_min) O->header->z_min = O->data[ij_out];
 				if (O->data[ij_out] > O->header->z_max) O->header->z_max = O->data[ij_out];
 			}
@@ -7391,7 +7391,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 				/* On 17-Sep-2007 the slack of GMT_CONV4_LIMIT was added to allow for round-off
 				   errors in the grid limits. */
-				if (gmt_M_x_is_lon (GMT, GMT_IN) && !GMT_is_dnan (x_proj)) {
+				if (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_M_is_dnan (x_proj)) {
 					while (x_proj < I->header->wesn[XLO] - GMT_CONV4_LIMIT) x_proj += 360.0;
 					while (x_proj > I->header->wesn[XHI] + GMT_CONV4_LIMIT) x_proj -= 360.0;
 				}
@@ -7403,7 +7403,7 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 			if (!GMT->common.n.antialias || nz[ij_out] < 2)	/* Just use the interpolated value */
 				O->data[ij_out] = (float)z_int;
-			else if (GMT_is_dnan (z_int))		/* Take the average of what we accumulated */
+			else if (gmt_M_is_dnan (z_int))		/* Take the average of what we accumulated */
 				O->data[ij_out] /= nz[ij_out];		/* Plain average */
 			else {						/* Weighted average between blockmean'ed and interpolated values */
 				inv_nz = 1.0 / nz[ij_out];
@@ -7431,17 +7431,17 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Time to clean up our mess */
 
-	gmt_free (GMT, x_in);
-	gmt_free (GMT, y_in);
-	gmt_free (GMT, x_out);
-	gmt_free (GMT, y_out);
+	gmt_M_free (GMT, x_in);
+	gmt_M_free (GMT, y_in);
+	gmt_M_free (GMT, x_out);
+	gmt_M_free (GMT, y_out);
 	if (gmt_M_is_rect_graticule(GMT)) {
-		gmt_free (GMT, x_in_proj);
-		gmt_free (GMT, y_in_proj);
-		gmt_free (GMT, x_out_proj);
-		gmt_free (GMT, y_out_proj);
+		gmt_M_free (GMT, x_in_proj);
+		gmt_M_free (GMT, y_in_proj);
+		gmt_M_free (GMT, x_out_proj);
+		gmt_M_free (GMT, y_out_proj);
 	}
-	if (GMT->common.n.antialias) gmt_free (GMT, nz);
+	if (GMT->common.n.antialias) gmt_M_free (GMT, nz);
 
 	return (GMT_NOERROR);
 }
@@ -7491,10 +7491,10 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 	y_out = gmt_grd_coord (GMT, O->header, GMT_Y);
 
 	if (gmt_M_is_rect_graticule (GMT)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
-		x_in_proj  = gmt_memory (GMT, NULL, I->header->nx, double);
-		y_in_proj  = gmt_memory (GMT, NULL, I->header->ny, double);
-		x_out_proj = gmt_memory (GMT, NULL, O->header->nx, double);
-		y_out_proj = gmt_memory (GMT, NULL, O->header->ny, double);
+		x_in_proj  = gmt_M_memory (GMT, NULL, I->header->nx, double);
+		y_in_proj  = gmt_M_memory (GMT, NULL, I->header->ny, double);
+		x_out_proj = gmt_M_memory (GMT, NULL, O->header->nx, double);
+		y_out_proj = gmt_M_memory (GMT, NULL, O->header->ny, double);
 		if (inverse) {
 			gmt_M_row_loop  (GMT, I, row_in)  gmt_xy_to_geo (GMT, &x_proj, &y_in_proj[row_in], I->header->wesn[XLO], y_in[row_in]);
 			gmt_M_col_loop2 (GMT, I, col_in)  gmt_xy_to_geo (GMT, &x_in_proj[col_in], &y_proj, x_in[col_in], I->header->wesn[YLO]);
@@ -7507,7 +7507,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 			gmt_M_row_loop  (GMT, O, row_out) gmt_xy_to_geo (GMT, &x_proj, &y_out_proj[row_out], I->header->wesn[YLO], y_out[row_out]);
 			gmt_M_col_loop2 (GMT, O, col_out) {	/* Here we must also align longitudes properly */
 				gmt_xy_to_geo (GMT, &x_out_proj[col_out], &y_proj, x_out[col_out], I->header->wesn[YLO]);
-				if (gmt_M_x_is_lon (GMT, GMT_IN) && !GMT_is_dnan (x_out_proj[col_out])) {
+				if (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_M_is_dnan (x_out_proj[col_out])) {
 					while (x_out_proj[col_out] < I->header->wesn[XLO] - GMT_CONV4_LIMIT) x_out_proj[col_out] += 360.0;
 					while (x_out_proj[col_out] > I->header->wesn[XHI] + GMT_CONV4_LIMIT) x_out_proj[col_out] -= 360.0;
 				}
@@ -7523,7 +7523,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	if (GMT->common.n.antialias) {	/* Blockaverage repeat pixels, at least the first ~32767 of them... */
 		int nx = O->header->nx, ny = O->header->ny;
-		nz = gmt_memory (GMT, NULL, O->header->size, short int);
+		nz = gmt_M_memory (GMT, NULL, O->header->size, short int);
 		gmt_M_row_loop (GMT, I, row_in) {	/* Loop over the input grid row coordinates */
 			if (gmt_M_is_rect_graticule (GMT)) y_proj = y_in_proj[row_in];
 			gmt_M_col_loop (GMT, I, row_in, col_in, ij_in) {	/* Loop over the input grid col coordinates */
@@ -7573,7 +7573,7 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 				/* On 17-Sep-2007 the slack of GMT_CONV4_LIMIT was added to allow for round-off
 				   errors in the grid limits. */
-				if (gmt_M_x_is_lon (GMT, GMT_IN) && !GMT_is_dnan (x_proj)) {
+				if (gmt_M_x_is_lon (GMT, GMT_IN) && !gmt_M_is_dnan (x_proj)) {
 					while (x_proj < I->header->wesn[XLO] - GMT_CONV4_LIMIT) x_proj += 360.0;
 					while (x_proj > I->header->wesn[XHI] + GMT_CONV4_LIMIT) x_proj -= 360.0;
 				}
@@ -7598,17 +7598,17 @@ int gmt_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 	/* Time to clean up our mess */
 
-	gmt_free (GMT, x_in);
-	gmt_free (GMT, y_in);
-	gmt_free (GMT, x_out);
-	gmt_free (GMT, y_out);
+	gmt_M_free (GMT, x_in);
+	gmt_M_free (GMT, y_in);
+	gmt_M_free (GMT, x_out);
+	gmt_M_free (GMT, y_out);
 	if (gmt_M_is_rect_graticule(GMT)) {
-		gmt_free (GMT, x_in_proj);
-		gmt_free (GMT, y_in_proj);
-		gmt_free (GMT, x_out_proj);
-		gmt_free (GMT, y_out_proj);
+		gmt_M_free (GMT, x_in_proj);
+		gmt_M_free (GMT, y_in_proj);
+		gmt_M_free (GMT, x_out_proj);
+		gmt_M_free (GMT, y_out_proj);
 	}
-	if (GMT->common.n.antialias) gmt_free (GMT, nz);
+	if (GMT->common.n.antialias) gmt_M_free (GMT, nz);
 
 	return (GMT_NOERROR);
 }
@@ -7729,8 +7729,8 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 		}
 	}
 
-	work_x = gmt_memory (GMT, NULL, np, double);
-	work_y = gmt_memory (GMT, NULL, np, double);
+	work_x = gmt_M_memory (GMT, NULL, np, double);
+	work_y = gmt_M_memory (GMT, NULL, np, double);
 
 	if (GMT->common.R.oblique) {
 		work_x[0] = work_x[3] = GMT->current.proj.rect[XLO];	work_y[0] = work_y[1] = GMT->current.proj.rect[YLO];
@@ -8203,10 +8203,10 @@ double * gmt_dist_array (struct GMT_CTRL *GMT, double x[], double y[], uint64_t 
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 
 	if (n == 0) return (NULL);
-	d = gmt_memory (GMT, NULL, n, double);
-	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
+	d = gmt_M_memory (GMT, NULL, n, double);
+	if (gmt_M_is_dnan (x[0]) || gmt_M_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
 	for (this_p = 1, prev = 0; this_p < n; this_p++) {
-		xy_not_NaN = !(GMT_is_dnan (x[this_p]) || GMT_is_dnan (y[this_p]));
+		xy_not_NaN = !(gmt_M_is_dnan (x[this_p]) || gmt_M_is_dnan (y[this_p]));
 		if (xy_not_NaN) {	/* safe to calculate inc */
 			inc = gmt_distance (GMT, x[this_p], y[this_p], x[prev], y[prev]);
 			if (cumulative) {
@@ -8239,10 +8239,10 @@ double * gmt_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_
 	if (dist_flag < 0 || dist_flag > 3) return (NULL);
 
 	do_scale = (scale != 1.0);
-	d = gmt_memory (GMT, NULL, n, double);
-	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
+	d = gmt_M_memory (GMT, NULL, n, double);
+	if (gmt_M_is_dnan (x[0]) || gmt_M_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
 	for (this_p = 1, prev = 0; this_p < n; this_p++) {
-		xy_not_NaN = !(GMT_is_dnan (x[this_p]) || GMT_is_dnan (y[this_p]));
+		xy_not_NaN = !(gmt_M_is_dnan (x[this_p]) || gmt_M_is_dnan (y[this_p]));
 		if (xy_not_NaN) {	/* safe to calculate inc */
 			switch (dist_flag) {
 
@@ -8288,7 +8288,7 @@ unsigned int gmtlib_map_latcross (struct GMT_CTRL *GMT, double lat, double west,
 	struct GMT_XINGS *X = NULL;
 
 
-	X = gmt_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
+	X = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
 
 	lon_old = west - 2.0 * GMT_CONV4_LIMIT;
 	gmt_map_outside (GMT, lon_old, lat);
@@ -8321,7 +8321,7 @@ unsigned int gmtlib_map_latcross (struct GMT_CTRL *GMT, double lat, double west,
 			nc++;
 			if (nc == n_alloc) {
 				n_alloc <<= 1;
-				X = gmt_memory (GMT, X, n_alloc, struct GMT_XINGS);
+				X = gmt_M_memory (GMT, X, n_alloc, struct GMT_XINGS);
 			}
 			go = false;
 		}
@@ -8330,11 +8330,11 @@ unsigned int gmtlib_map_latcross (struct GMT_CTRL *GMT, double lat, double west,
 	}
 
 	if (nc > 0) {
-		X = gmt_memory (GMT, X, nc, struct GMT_XINGS);
+		X = gmt_M_memory (GMT, X, nc, struct GMT_XINGS);
 		*xings = X;
 	}
 	else
-		gmt_free (GMT, X);
+		gmt_M_free (GMT, X);
 
 	return (nc);
 }
@@ -8347,7 +8347,7 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 	double lat, lat_old, this_x, this_y, last_x, last_y, xlon[2], xlat[2], gap;
 	struct GMT_XINGS *X = NULL;
 
-	X = gmt_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
+	X = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_XINGS);
 
 	lat_old = ((south - (2.0 * GMT_CONV4_LIMIT)) >= -90.0) ? south - 2.0 * GMT_CONV4_LIMIT : south;	/* Outside */
 	if ((north + 2.0 * GMT_CONV4_LIMIT) <= 90.0) north += 2.0 * GMT_CONV4_LIMIT;
@@ -8380,7 +8380,7 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 			nc++;
 			if (nc == n_alloc) {
 				n_alloc <<= 1;
-				X = gmt_memory (GMT, X, n_alloc, struct GMT_XINGS);
+				X = gmt_M_memory (GMT, X, n_alloc, struct GMT_XINGS);
 			}
 			go = false;
 		}
@@ -8389,11 +8389,11 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 	}
 
 	if (nc > 0) {
-		X = gmt_memory (GMT, X, nc, struct GMT_XINGS);
+		X = gmt_M_memory (GMT, X, nc, struct GMT_XINGS);
 		*xings = X;
 	}
 	else
-		gmt_free (GMT, X);
+		gmt_M_free (GMT, X);
 
 	return (nc);
 }
@@ -8751,7 +8751,7 @@ struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, double plon,
 	struct GMT_DATASEGMENT *S = NULL;
 	if (m < 2) return NULL;
 	
-	S = gmt_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
+	S = gmt_M_memory (GMT, NULL, 1U, struct GMT_DATASEGMENT);		/* The output segment */
 	if (gmt_alloc_segment (GMT, S, m+4, 2, true)) return NULL;	/* Allocate array space (+ 4 extra) */
 
 	plat = gmt_lat_swap (GMT, plat, GMT_LATSWAP_G2O);	/* Convert to geocentric coordinates */

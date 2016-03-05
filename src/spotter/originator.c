@@ -179,7 +179,7 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct ORIGINATOR_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct ORIGINATOR_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct ORIGINATOR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -192,9 +192,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->E.file);	
-	gmt_str_free (C->F.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->E.file);	
+	gmt_M_str_free (C->F.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int comp_hs (const void *p1, const void *p2) {
@@ -406,7 +406,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);
 
-	hotspot = gmt_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
+	hotspot = gmt_M_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 	for (spot = 0; spot < n_hotspots; spot++) {
 		hotspot[spot].h = &orig_hotspot[spot];	/* Point to the original hotspot structures */
 		hotspot[spot].np_dist = 1.0e100;
@@ -438,7 +438,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 	
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);
 
-	hot = gmt_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
+	hot = gmt_M_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 
 	sprintf (fmt1, "%s%s%s%s%s%s%s%s%%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, 
 		GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator,
@@ -493,7 +493,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			in[3] = Ctrl->Q.r_fix;
 			in[4] = Ctrl->Q.t_fix;
 		}
-		if (GMT_is_dnan (in[4]))	/* Age is NaN, assign upper value */
+		if (gmt_M_is_dnan (in[4]))	/* Age is NaN, assign upper value */
 			t_smt = Ctrl->N.t_upper;
 		else {			/* Assign given value, truncate if necessary */
 			t_smt = in[4];
@@ -659,7 +659,7 @@ int GMT_originator (void *V_API, int mode, void *args) {
 			}
 		}
 
-		gmt_free (GMT, c);
+		gmt_M_free (GMT, c);
 		smt++;
 	} while (true);
 	
@@ -672,10 +672,10 @@ int GMT_originator (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\n", smt);
 
-	gmt_free (GMT, hotspot);
-	gmt_free (GMT, orig_hotspot);
-	gmt_free (GMT, hot);
-	gmt_free (GMT, p);
+	gmt_M_free (GMT, hotspot);
+	gmt_M_free (GMT, orig_hotspot);
+	gmt_M_free (GMT, hot);
+	gmt_M_free (GMT, p);
 
 	Return (GMT_OK);
 }

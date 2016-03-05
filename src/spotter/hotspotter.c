@@ -168,7 +168,7 @@ struct HOTSPOTTER_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct HOTSPOTTER_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct HOTSPOTTER_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct HOTSPOTTER_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -179,10 +179,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->E.file);	
-	gmt_str_free (C->G.file);	
-	gmt_str_free (C->S.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->E.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_str_free (C->S.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -408,8 +408,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	xpos = gmt_grd_coord (GMT, G_rad->header, GMT_X);
 	ypos = gmt_grd_coord (GMT, G_rad->header, GMT_Y);
 
-	latfactor  = gmt_memory (GMT, NULL, G->header->ny, double);
-	ilatfactor = gmt_memory (GMT, NULL, G->header->ny, double);
+	latfactor  = gmt_M_memory (GMT, NULL, G->header->ny, double);
+	ilatfactor = gmt_M_memory (GMT, NULL, G->header->ny, double);
 
 	for (row = 0; row < G->header->ny; row++) {
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
@@ -418,7 +418,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Allocate T/F array */
 
-	processed_node = gmt_memory (GMT, NULL, G->header->size, char);
+	processed_node = gmt_M_memory (GMT, NULL, G->header->size, char);
 
 	/* Start to read input data */
 
@@ -440,7 +440,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 	
 		/* STEP 1: Read information about a single seamount from input record */
 
-		if (GMT_is_dnan (in[4]))	/* Age is NaN, assign value */
+		if (gmt_M_is_dnan (in[4]))	/* Age is NaN, assign value */
 			t_smt = Ctrl->N.t_upper;
 		else {			/* Assign given value, truncate if necessary */
 			t_smt = in[4];
@@ -533,7 +533,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 			}
 		}
 
-		gmt_free (GMT, c);	/* Free the flowline vector */
+		gmt_M_free (GMT, c);	/* Free the flowline vector */
 
 		n_smts++;	/* Go to next seamount */
 
@@ -556,7 +556,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 		G->header->z_min = +DBL_MAX;
 		G->header->z_max = -DBL_MAX;
 		gmt_M_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
-			if (GMT_is_fnan (G->data[node])) continue;
+			if (gmt_M_is_fnan (G->data[node])) continue;
 			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
 			if (G->data[node] > G->header->z_max) G->header->z_max = G->data[node];
 		}
@@ -575,12 +575,12 @@ int GMT_hotspotter (void *V_API, int mode, void *args) {
 
 	/* Clean up memory */
 
-	gmt_free (GMT, processed_node);
-	gmt_free (GMT, latfactor);
-	gmt_free (GMT, ilatfactor);
-	gmt_free (GMT, xpos);
-	gmt_free (GMT, ypos);
-	gmt_free (GMT, p);
+	gmt_M_free (GMT, processed_node);
+	gmt_M_free (GMT, latfactor);
+	gmt_M_free (GMT, ilatfactor);
+	gmt_M_free (GMT, xpos);
+	gmt_M_free (GMT, ypos);
+	gmt_M_free (GMT, p);
 	if (GMT_Destroy_Data (API, &G_rad) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}

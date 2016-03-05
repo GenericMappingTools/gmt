@@ -39,7 +39,7 @@
 
 #include "netcdf.h"
 
-enum GMT_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
+enum gmt_enum_gshhs {GSHHS_MAX_DELTA = 65535,	/* Largest value to store in a unsigned short, used as largest dx or dy in bin  */
 	GSHHS_MAX_LEVEL			= 4,	/* Highest hierarchical level of coastlines */
 	GSHHS_N_BLEVELS			= 3,	/* Number of levels for borders */
 	GSHHS_N_RLEVELS			= 11,	/* Number of levels for rivers */

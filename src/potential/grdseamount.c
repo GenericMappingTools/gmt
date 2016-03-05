@@ -129,7 +129,7 @@ EXTERN_MSC void gmt_modeltime_name (struct GMT_CTRL *GMT, char *file, char *form
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDSEAMOUNT_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDSEAMOUNT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDSEAMOUNT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.value[GMT_IN] = GMT->session.f_NaN;
@@ -144,10 +144,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->G.file);	
-	gmt_str_free (C->M.file);	
-	gmt_free (GMT, C->T.time);
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_str_free (C->M.file);	
+	gmt_M_free (GMT, C->T.time);
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -586,10 +586,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		d_mode = 0, unit = 'X';	/* Select Cartesian distances */
 	}
 	gmt_init_distaz (GMT, unit, d_mode, GMT_MAP_DIST);
-	V = gmt_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	V_sum = gmt_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	h_sum = gmt_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
-	h = gmt_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	V = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	V_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	h_sum = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
+	h = gmt_M_memory (GMT, NULL, D->n_records, double);	/* Allocate volume array */
 	if (build_mode == SHAPE_GAUS) {
 		noise = exp (-4.5);		/* Normalized height of a unit Gaussian at basal radius; we must subtract this to truly get 0 at r = rbase */
 		h_scl = 1.0 / (1.0 - noise);	/* Compensation scale to make the peak amplitude = 1 given our adjustment for noise above */
@@ -670,7 +670,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		gmt_free (GMT, V);
+		gmt_M_free (GMT, V);
 		Return (GMT_OK);
 	}
 				
@@ -687,7 +687,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Set the background level to %g\r", Ctrl->Z.value);
 		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = (float)Ctrl->Z.value;
 	}
-	data = gmt_memory (GMT, NULL, Grid->header->size, float);	/* tmp */
+	data = gmt_M_memory (GMT, NULL, Grid->header->size, float);	/* tmp */
 
 	for (t = t_use = 0; t < Ctrl->T.n_times; t++) {	/* For each time step (or just once) */
 
@@ -809,7 +809,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 					if (!(Ctrl->A.active || amplitude > 0.0)) continue;	/* No contribution from this seamount */
 
 					/* Initialize local search machinery, i.e., what is the range of rows and cols we need to search */
-					gmt_free (GMT, d_col);
+					gmt_M_free (GMT, d_col);
 					d_col = gmt_prep_nodesearch (GMT, Grid, r_km, d_mode, &d_row, &max_d_col);
 		
 					for (srow = srow_0 - (int)d_row; srow <= (srow_0 + (int)d_row); srow++) {
@@ -930,12 +930,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 
 	//for (ij = 0; ij < n_smts; ij++) fprintf (stderr, "Smt %d: V = %g Stacked V = %g h = %g Stacked h = %g\n", (int)ij, V[ij], V_sum[ij], h[ij], h_sum[ij]);
-	gmt_free (GMT, d_col);
-	gmt_free (GMT, V);
-	gmt_free (GMT, h);
-	gmt_free (GMT, V_sum);
-	gmt_free (GMT, h_sum);
-	gmt_free (GMT, data);
+	gmt_M_free (GMT, d_col);
+	gmt_M_free (GMT, V);
+	gmt_M_free (GMT, h);
+	gmt_M_free (GMT, V_sum);
+	gmt_M_free (GMT, h_sum);
+	gmt_M_free (GMT, data);
 	
 	Return (GMT_OK);
 }

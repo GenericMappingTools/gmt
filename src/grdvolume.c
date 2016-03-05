@@ -259,7 +259,7 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 
 	/* Calculate curvatures */
 
-	c = gmt_memory (GMT, NULL, n, double);
+	c = gmt_M_memory (GMT, NULL, n, double);
 
 	for (i = 1; i < (n-1); i++) c[i] = y[i+1] - 2.0 * y[i] + y[i-1];
 	c[0] = c[1];
@@ -267,15 +267,15 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 
 	/* Apply 3-point median filter to curvatures to mitigate noisy values */
 
-	f = gmt_memory (GMT, NULL, n, double);
+	f = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 1; i < (n-1); i++) f[i] = median3 (&c[i-1]);
 
 	/* Find maximum negative filtered curvature */
 
 	for (i = im = 1; i < (n-1); i++) if (f[i] < f[im]) im = i;
 
-	gmt_free (GMT, c);
-	gmt_free (GMT, f);
+	gmt_M_free (GMT, c);
+	gmt_M_free (GMT, f);
 
 	return (im);
 }
@@ -283,7 +283,7 @@ GMT_LOCAL int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, u
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDVOLUME_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.value = GMT->session.d_NaN;
@@ -293,8 +293,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -415,7 +415,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct G
 			"Syntax error option -C: Must specify 2 arguments\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.active && !(strchr (GMT_LEN_UNITS2, Ctrl->S.unit)),
 			"Syntax error option -S: Must append one of %s\n", GMT_LEN_UNITS2_DISPLAY);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT_is_dnan (Ctrl->L.value),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && gmt_M_is_dnan (Ctrl->L.value),
 			"Syntax error option -L: Must specify base\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->C.active,
 			"Syntax error option -T: Must also specify -Clow/high/delta\n");
@@ -494,9 +494,9 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 	n_contours = (Ctrl->C.active) ? urint ((Ctrl->C.high - Ctrl->C.low) / Ctrl->C.inc) + 1U : 1U;
 
-	height = gmt_memory (GMT, NULL, n_contours, double);
-	vol    = gmt_memory (GMT, NULL, n_contours, double);
-	area   = gmt_memory (GMT, NULL, n_contours, double);
+	height = gmt_M_memory (GMT, NULL, n_contours, double);
+	vol    = gmt_M_memory (GMT, NULL, n_contours, double);
+	area   = gmt_M_memory (GMT, NULL, n_contours, double);
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
@@ -543,7 +543,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 
 				for (k = neg = pos = 0, bad = false; !bad && k < 4; k++) {
 					(Work->data[ij+ij_inc[k]] <= (float)small) ? neg++ : pos++;
-					if (GMT_is_fnan (Work->data[ij+ij_inc[k]])) bad = true;
+					if (gmt_M_is_fnan (Work->data[ij+ij_inc[k]])) bad = true;
 				}
 
 				if (bad || neg == 4) continue;	/* Contour not crossing, go to next bin */
@@ -607,7 +607,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		for (row = 0; row < Work->header->ny; row++) {
 			dv = da = 0.0;
 			for (col = 0, ij = gmt_M_ijp (Work->header, row, 0); col < Work->header->nx; col++, ij++) {
-				if (GMT_is_fnan (Work->data[ij])) continue;
+				if (gmt_M_is_fnan (Work->data[ij])) continue;
 
 				/* Half the leftmost and rightmost cell */
 				if (Work->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == Work->header->nx-1)) {
@@ -675,9 +675,9 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_free (GMT, area);
-	gmt_free (GMT, vol);
-	gmt_free (GMT, height);
+	gmt_M_free (GMT, area);
+	gmt_M_free (GMT, vol);
+	gmt_M_free (GMT, height);
 
 	Return (EXIT_SUCCESS);
 }

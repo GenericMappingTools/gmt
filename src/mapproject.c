@@ -116,7 +116,7 @@ struct MAPPROJECT_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MAPPROJECT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct MAPPROJECT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct MAPPROJECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -132,8 +132,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->L.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->L.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -528,7 +528,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode) Return (EXIT_SUCCESS);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (Ctrl->D.active) GMT_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
+	if (Ctrl->D.active) gmt_M_err_fail (GMT, gmt_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) gmt_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {
 		way = gmt_M_is_geographic (GMT, GMT_IN) ? 2 + Ctrl->A.geodesic : 0;
@@ -591,7 +591,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 		}
 	}
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
 	if (Ctrl->W.active) {	/* Print map dimensions and exit */
 		double w_out[2] = {0.0, 0.0};
@@ -782,7 +782,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 	gmt_set_cols (GMT, GMT_OUT, gmt_get_cols (GMT, GMT_IN));
 
 	n = n_read_in_seg = 0;
-	out = gmt_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
+	out = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, double);
 	coord = (proj_type == GMT_GEO2CART) ? &out : &in;	/* Using projected or original coordinates */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -1128,7 +1128,7 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 		if (Ctrl->S.active && n != n_read) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
 
-	gmt_free (GMT, out);
+	gmt_M_free (GMT, out);
 
 	Return (GMT_OK);
 }

@@ -109,7 +109,7 @@ enum Talwani2d_fields {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TALWANI2D_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct TALWANI2D_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct TALWANI2D_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -118,9 +118,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->Out.file);
-	gmt_str_free (C->N.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->Out.file);
+	gmt_M_str_free (C->N.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI2D_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -608,7 +608,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	/* Set up cake slice array and pointers */
 	
 	n_alloc1 = GMT_CHUNK;
-	body = gmt_memory (GMT, NULL, n_alloc1, struct BODY2D);
+	body = gmt_M_memory (GMT, NULL, n_alloc1, struct BODY2D);
 	n_bodies = 0;
 	/* Read polygon information from multiple segment file */
 	GMT_Report (API, GMT_MSG_VERBOSE, "All x-values are assumed to be given in %s\n", uname[Ctrl->M.active[TALWANI2D_HOR]]);
@@ -628,8 +628,8 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 						x[n] = x[0];	z[n] = z[0];
 						n++;
 					}
-					x = gmt_memory (GMT, x, n, double);
-					z = gmt_memory (GMT, z, n, double);
+					x = gmt_M_memory (GMT, x, n, double);
+					z = gmt_M_memory (GMT, z, n, double);
 					body[n_bodies].rho = rho;
 					body[n_bodies].x = x;
 					body[n_bodies].z = z;
@@ -648,12 +648,12 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				if (Ctrl->D.active) rho = Ctrl->D.rho;
 				/* Allocate array for this body */
 				n_alloc = GMT_CHUNK;
-				x = gmt_memory (GMT, NULL, n_alloc, double);
-				z = gmt_memory (GMT, NULL, n_alloc, double);
+				x = gmt_M_memory (GMT, NULL, n_alloc, double);
+				z = gmt_M_memory (GMT, NULL, n_alloc, double);
 				n = 0;
 				if (n_bodies == n_alloc1) {
 					n_alloc1 <<= 1;
-					body = gmt_memory (GMT, body, n_alloc1, struct BODY2D);
+					body = gmt_M_memory (GMT, body, n_alloc1, struct BODY2D);
 				}
 				continue;
 			}
@@ -671,8 +671,8 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			n++;
 			if (n == n_alloc) {
 				n_alloc += GMT_CHUNK;
-				x = gmt_memory (GMT, x, n_alloc, double);
-				z = gmt_memory (GMT, z, n_alloc, double);
+				x = gmt_M_memory (GMT, x, n_alloc, double);
+				z = gmt_M_memory (GMT, z, n_alloc, double);
 			}
 		}
 	} while (true);
@@ -683,7 +683,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	
 	/* Finish allocation */
 	
-	body = gmt_memory (GMT, body, n_bodies, struct BODY2D);
+	body = gmt_M_memory (GMT, body, n_bodies, struct BODY2D);
 	
 	if (n_duplicate) GMT_Report (API, GMT_MSG_VERBOSE, "Ignored %u duplicate vertices\n", n_duplicate);
 	
@@ -732,10 +732,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	/* Clean up memory */
 	
  	for (k = 0; k < n_bodies; k++) {
-		gmt_free (GMT, body[k].x);
-		gmt_free (GMT, body[k].z);
+		gmt_M_free (GMT, body[k].x);
+		gmt_M_free (GMT, body[k].z);
 	}
-	gmt_free (GMT, body);
+	gmt_M_free (GMT, body);
 
 	Return (EXIT_SUCCESS);
 }

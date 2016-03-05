@@ -530,15 +530,15 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			size_t len;
 			char *pch;
 			GMT_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
-			gmt_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			pch = gmt_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
+			gmt_M_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
+			pch = gmt_M_memory(GMT, NULL, len+1, char);           /* and allocate the needed space */
 			GMT_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
 			header->ProjRefWKT = strdup(pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
-			gmt_free (GMT, pch);
+			gmt_M_free (GMT, pch);
 		}
 
 		/* Create enough memory to store the x- and y-coordinate values */
-		xy = gmt_memory (GMT, NULL, MAX(header->nx,header->ny), double);
+		xy = gmt_M_memory (GMT, NULL, MAX(header->nx,header->ny), double);
 
 		/* Get information about x variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[0]], header->x_units);
@@ -559,7 +559,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			header->registration = GMT_GRID_NODE_REG;
 		}
 		header->inc[GMT_X] = gmt_M_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
-		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
 
 		/* Get information about y variable */
 		gmtnc_get_units (GMT, ncid, ids[header->xy_dim[1]], header->y_units);
@@ -580,9 +580,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		else
 			header->row_order = k_nc_start_south;
 		header->inc[GMT_Y] = gmt_M_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
-		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
-		gmt_free (GMT, xy);
+		gmt_M_free (GMT, xy);
 
 		/* Get information about z variable */
 		gmtnc_get_units (GMT, ncid, z_id, header->z_units);
@@ -712,8 +712,8 @@ L100:
 #endif
 
 		/* Avoid NaN increments */
-		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
-		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
 		/* Define x variable */
 		gmtnc_put_units (ncid, ids[header->xy_dim[0]], header->x_units);
@@ -776,7 +776,7 @@ L100:
 			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
 		}
 		GMT_err_trap (nc_enddef (ncid));
-		xy = gmt_memory (GMT, NULL,  MAX (header->nx,header->ny), double);
+		xy = gmt_M_memory (GMT, NULL,  MAX (header->nx,header->ny), double);
 		for (col = 0; col < header->nx; col++) xy[col] = gmt_M_grd_col_to_x (GMT, col, header);
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
 		if (header->row_order == k_nc_start_south) {
@@ -786,7 +786,7 @@ L100:
 			for (row = 0; row < header->ny; row++) xy[row] = (double) gmt_M_row_to_y (GMT, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[1]], xy));
-		gmt_free (GMT, xy);
+		gmt_M_free (GMT, xy);
 	}
 
 	/* Close NetCDF file, unless job == 'W' */
@@ -828,7 +828,7 @@ GMT_LOCAL void gmtnc_right_shift_grid (void *gridp, const unsigned n_cols, const
 			memcpy (grid + (row * n_cols + n_cols - n_shift_abs) * cell_size, tmp, n_shift_abs * cell_size);
 		}
 	}
-	gmt_str_free (tmp);
+	gmt_M_str_free (tmp);
 }
 
 /* Fill padding by replicating the border cells or wrapping around a
@@ -1078,7 +1078,7 @@ GMT_LOCAL int gmtnc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 			return (GMT_GRDIO_DOMAIN_VIOLATION);	/* Calling program goofed... */
 
 		/* Make sure w,e,s,n are proper multiples of x_inc,y_inc away from x_min,y_min */
-		GMT_err_pass (GMT, gmt_adjust_loose_wesn (GMT, wesn, header), header->name);
+		gmt_M_err_pass (GMT, gmt_adjust_loose_wesn (GMT, wesn, header), header->name);
 
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
 		if ( is_global ) {	/* Deal with wrapping issues */
@@ -1253,7 +1253,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	else if (GMT->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	GMT_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
+	gmt_M_err_fail (GMT, gmtnc_grd_prep_io (GMT, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
 
 	/* Set stride and offset if complex */
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -1423,8 +1423,8 @@ int gmt_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			do_round = false;
 	}
 
-	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	gmt_free (GMT, actual_col);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	gmt_M_free (GMT, actual_col);
 
 	/* Adjust header */
 	gmt_M_memcpy (header->wesn, wesn, 4, double);

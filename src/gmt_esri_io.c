@@ -152,7 +152,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 	header->wesn[XHI] = header->wesn[XLO] + (header->nx - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YLO] = header->wesn[YHI] - (header->ny - 1 + header->registration) * header->inc[GMT_Y];
 
-	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), header->name);
+	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), header->name);
 
 	return (GMT_NOERROR);
 }
@@ -287,7 +287,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	header->wesn[XHI] = header->wesn[XLO] + (header->nx - 1 + header->registration) * header->inc[GMT_X];
 	header->wesn[YHI] = header->wesn[YLO] + (header->ny - 1 + header->registration) * header->inc[GMT_Y];
 
-	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), header->name);
+	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, header, 1), header->name);
 
 	if (fpBAK) {		/* Case of Arc/Info binary file with a separate header file. We still have things to do. */
 		char tmp[16];
@@ -335,7 +335,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			/* The file extension had less than 3 chars, which means that 1) it's not an esri file.
 			   2) would corrupt the heap with the later strcat (file, ".hdr");
 			      On Win this would later cause a crash upon freeing 'file' */
-			gmt_str_free (file);
+			gmt_M_str_free (file);
 			return (-1);
 		}
 		if (isupper ((unsigned char) header->name[name_len - 1]))
@@ -359,11 +359,11 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				header->flags[1] = '2';	/* Flag to let us know the file type */
 			}
 			else {	/* Cannot do anything with this data */
-				gmt_str_free (file);
+				gmt_M_str_free (file);
 				return (-1);
 			}
 
-			gmt_str_free (file);
+			gmt_M_str_free (file);
 		}
 		else {
 			/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem
@@ -396,7 +396,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 			}
 			else {
 				/* Cannot do anything with this data */
-				gmt_str_free (file);
+				gmt_M_str_free (file);
 				return (-1);	/* Not this kind of file */
 			}
 		}
@@ -470,7 +470,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
 	
-	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
@@ -479,9 +479,9 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	n_expected = header->nx;
 
 	if (nBits == 32)		/* Either an ASCII file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
-		tmp = gmt_memory (GMT, NULL, n_expected, float);
+		tmp = gmt_M_memory (GMT, NULL, n_expected, float);
 	else
-		tmp16 = gmt_memory (GMT, NULL, n_expected, int16_t);
+		tmp16 = gmt_M_memory (GMT, NULL, n_expected, int16_t);
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
@@ -529,7 +529,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			}
 		}
 
-		if (nBits == 16) gmt_free (GMT, tmp16);
+		if (nBits == 16) gmt_M_free (GMT, tmp16);
 	}
 	else {		/* ASCII */
 		n_left = header->nm;
@@ -550,7 +550,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					for (ii = 0; ii < width_in; ii++) {
 						kk = ij + ii;
 						grid[kk] = (check && tmp[actual_col[ii]] == header->nan_value) ? GMT->session.f_NaN : tmp[actual_col[ii]];
-						if (GMT_is_fnan (grid[kk])) {
+						if (gmt_M_is_fnan (grid[kk])) {
 							header->has_NaNs = GMT_GRID_HAS_NANS;
 							continue;
 						}
@@ -567,8 +567,8 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	}
 
 	gmt_fclose (GMT, fp);
-	gmt_free (GMT, actual_col);
-	gmt_free (GMT, tmp);
+	gmt_M_free (GMT, actual_col);
+	gmt_M_free (GMT, tmp);
 
 	if (n_left) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
@@ -599,7 +599,7 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	else
 		esri_write_info (GMT, fp, header);
 
-	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
@@ -618,7 +618,7 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		for (i = 0; i < width_out; i++) {
 			if (i == last) c[0] = '\n';
 			kk = ij+actual_col[i];
-			if (GMT_is_fnan (grid[kk]))
+			if (gmt_M_is_fnan (grid[kk]))
 				sprintf (item, "%ld%c", lrintf (header->nan_value), c[0]);
 			else if (floating) {
 				sprintf (item, GMT->current.setting.format_float_out, grid[kk]);
@@ -630,7 +630,7 @@ int gmt_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 	}
 
-	gmt_free (GMT, actual_col);
+	gmt_M_free (GMT, actual_col);
 	gmt_fclose (GMT, fp);
 
 	return (GMT_NOERROR);

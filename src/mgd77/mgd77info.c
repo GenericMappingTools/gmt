@@ -66,7 +66,7 @@ struct MGD77INFO_CTRL {	/* All control options for this program (except common a
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77INFO_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct MGD77INFO_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct MGD77INFO_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -77,7 +77,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -442,8 +442,8 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		for (rec = 0; rec < D->H.n_records; rec++) {		/* While able to read a data record */
 		
 			/* Get min and max time */
-			if (t_col >= 0 && !GMT_is_dnan(dvalue[t_col][rec])) {
-				if (GMT_is_dnan(tmin) && GMT_is_dnan(tmax)) tmin = tmax = dvalue[t_col][rec];
+			if (t_col >= 0 && !gmt_M_is_dnan(dvalue[t_col][rec])) {
+				if (gmt_M_is_dnan(tmin) && gmt_M_is_dnan(tmax)) tmin = tmax = dvalue[t_col][rec];
 				this_time = dvalue[t_col][rec];
 				tmin = MIN (this_time, tmin);
 				tmax = MAX (this_time, tmax);
@@ -481,7 +481,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 					if (strncmp (&tvalue[k][rec*length], ALL_NINES, length)) counter[k]++;
 				}
 				else
-					if (!GMT_is_dnan (dvalue[k][rec])) counter[k]++;
+					if (!gmt_M_is_dnan (dvalue[k][rec])) counter[k]++;
 			}
 		}
 
@@ -516,7 +516,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 		if (xmin > xmax) xmin -= 360.0;
 		if (xmin < 0.0 && xmax < 0.0) xmin += 360.0, xmax += 360.0;
 
-		if (GMT_is_dnan(tmin) || GMT_is_dnan(tmax)) {
+		if (gmt_M_is_dnan(tmin) || gmt_M_is_dnan(tmax)) {
 			int yy[2], mm[2], dd[2];
 			GMT_Report (API, GMT_MSG_VERBOSE, "warning: cruise %s no time records.\n", M.NGDC_id);
 			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
@@ -538,7 +538,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args) {
 			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], xmax, GMT_X);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymin, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], ymax, GMT_Y);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-			if (!GMT_is_dnan(tmin) && !GMT_is_dnan(tmax)) {
+			if (!gmt_M_is_dnan(tmin) && !gmt_M_is_dnan(tmax)) {
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmin, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], tmax, GMT_Z);	fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);						
 			} else {

@@ -190,7 +190,7 @@ void threaded_function (struct THREAD_STRUCT *t);
 void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFILTER_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDFILTER_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.mode = GRDFILTER_NOTSET;	
@@ -201,11 +201,11 @@ void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_grdfilter_Ctrl (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->F.file);	
-	gmt_str_free (C->G.file);	
-	gmt_str_free (C->A.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->F.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_str_free (C->A.file);	
+	gmt_M_free (GMT, C);	
 }
 
 /* -----------------------------------------------------------------------------------*/
@@ -742,8 +742,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
-	col_origin = gmt_memory (GMT, NULL, Gout->header->nx, int);
-	if (!fast_way) x_shift = gmt_memory (GMT, NULL, Gout->header->nx, double);
+	col_origin = gmt_M_memory (GMT, NULL, Gout->header->nx, int);
+	if (!fast_way) x_shift = gmt_M_memory (GMT, NULL, Gout->header->nx, double);
 
 	if (fast_way && Gin->header->registration == one_or_zero) {	/* multiple of grid spacings but one is pix, other is grid so adjust for 1/2 cell */
 		x_fix = 0.5 * Gin->header->inc[GMT_X];
@@ -853,13 +853,13 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		}
 	}
 	visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
-	F.x = gmt_memory (GMT, NULL, F.x_half_width+1, double);
-	F.y = gmt_memory (GMT, NULL, F.y_half_width+1, double);
-	if (visit_check) F.visit = gmt_memory (GMT, NULL, Gin->header->nx, char);
+	F.x = gmt_M_memory (GMT, NULL, F.x_half_width+1, double);
+	F.y = gmt_M_memory (GMT, NULL, F.y_half_width+1, double);
+	if (visit_check) F.visit = gmt_M_memory (GMT, NULL, Gin->header->nx, char);
 	for (ii = 0; ii <= F.x_half_width; ii++) F.x[ii] = ii * F.dx;
 	for (jj = 0; jj <= F.y_half_width; jj++) F.y[jj] = jj * F.dy;
 	
-	weight = gmt_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
+	weight = gmt_M_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
 	
 	if (Ctrl->F.custom) {	/* Read convolution grid from file */
 		ij_wt = 0;	wt_sum = 0.0;
@@ -941,10 +941,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 #ifdef HAVE_GLIB_GTHREAD
 	if (Ctrl->z.n_threads > 1)
-		threads = gmt_memory (GMT, NULL, Ctrl->z.n_threads, GThread *);
+		threads = gmt_M_memory (GMT, NULL, Ctrl->z.n_threads, GThread *);
 #endif
 
-	threadArg = gmt_memory (GMT, NULL, Ctrl->z.n_threads, struct THREAD_STRUCT);
+	threadArg = gmt_M_memory (GMT, NULL, Ctrl->z.n_threads, struct THREAD_STRUCT);
 
 	for (i = 0; i < Ctrl->z.n_threads; i++) {
 		threadArg[i].GMT        = GMT;
@@ -990,20 +990,20 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->z.n_threads > 1)
-		gmt_free (GMT, threads);
+		gmt_M_free (GMT, threads);
 #endif
 
-	gmt_free (GMT, threadArg);
+	gmt_M_free (GMT, threadArg);
 
 	gmt_M_toc(GMT,"");		/* Print total run time, but only if -Vt was set */
 
-	gmt_free (GMT, weight);
-	gmt_free (GMT, F.x);
-	gmt_free (GMT, F.y);
-	if (visit_check) gmt_free (GMT, F.visit);
+	gmt_M_free (GMT, weight);
+	gmt_M_free (GMT, F.x);
+	gmt_M_free (GMT, F.y);
+	if (visit_check) gmt_M_free (GMT, F.visit);
 
-	gmt_free (GMT, col_origin);
-	if (!fast_way) gmt_free (GMT, x_shift);
+	gmt_M_free (GMT, col_origin);
+	if (!fast_way) gmt_M_free (GMT, x_shift);
 	if (GMT_Destroy_Data (API, &A) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free A\n");
 	}
@@ -1128,9 +1128,9 @@ void threaded_function (struct THREAD_STRUCT *t) {
 
 	if (slow) {
 		if (slower)		/* Spherical (weighted) median/modes requires even more work */
-			work_data = gmt_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
+			work_data = gmt_M_memory (GMT, NULL, F.nx*F.ny, struct GMT_OBSERVATION);
 		else
-			work_array = gmt_memory (GMT, NULL, F.nx*F.ny, double);
+			work_array = gmt_M_memory (GMT, NULL, F.nx*F.ny, double);
 	}
 
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
@@ -1170,7 +1170,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 			if (Ctrl->A.active && col_out != Ctrl->A.COL) continue;	/* Not at our selected column for testing */
 #endif
 			ij_out = gmt_M_ijp (Gout->header, row_out, col_out);	/* Node of current output point */
-			if (Ctrl->N.mode == NAN_REPLACE && GMT_is_fnan (Gin->data[ij_out])) {
+			if (Ctrl->N.mode == NAN_REPLACE && gmt_M_is_fnan (Gin->data[ij_out])) {
 				/* [Here we know ij_out == ij_in]. Since output will be NaN we bypass the filter loop */
 				Gout->data[ij_out] = GMT->session.f_NaN;
 				n_nan++;
@@ -1204,7 +1204,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 					if (weight[ij_wt] <= 0.0 && get_weight_sum) continue;	/* Negative weight [and not operator] means we are outside the filter circle */
 
 					ij_in = gmt_M_ijp (Gin->header, row_in, col_in);	/* Finally, the current input data point inside the filter */
-					if (GMT_is_fnan (Gin->data[ij_in])) {		/* Oops, found a rotten apple, skip */
+					if (gmt_M_is_fnan (Gin->data[ij_in])) {		/* Oops, found a rotten apple, skip */
 						if (Ctrl->N.mode == NAN_PRESERVE) go_on = false;	/* -Np means no NaNs are allowed */
 						continue;
 					}
@@ -1294,7 +1294,7 @@ void threaded_function (struct THREAD_STRUCT *t) {
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing output line %d\n", row_out);
 
 	if (slow) {
-		if (slower) gmt_free (GMT, work_data);
-		else gmt_free (GMT, work_array);
+		if (slower) gmt_M_free (GMT, work_data);
+		else gmt_M_free (GMT, work_array);
 	}
 }

@@ -84,25 +84,25 @@ struct X2SYS_INIT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_INIT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct X2SYS_INIT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_INIT_CTRL);
 
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.TAG);
-	gmt_str_free (C->C.string);
-	gmt_str_free (C->D.file);
-	gmt_str_free (C->E.string);
-	gmt_str_free (C->G.string);
-	gmt_str_free (C->I.string);
-	gmt_str_free (C->m.string);
-	gmt_str_free (C->N.string[0]);
-	gmt_str_free (C->N.string[1]);
-	gmt_str_free (C->W.string[0]);
-	gmt_str_free (C->W.string[1]);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.TAG);
+	gmt_M_str_free (C->C.string);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->E.string);
+	gmt_M_str_free (C->G.string);
+	gmt_M_str_free (C->I.string);
+	gmt_M_str_free (C->m.string);
+	gmt_M_str_free (C->N.string[0]);
+	gmt_M_str_free (C->N.string[1]);
+	gmt_M_str_free (C->W.string[0]);
+	gmt_M_str_free (C->W.string[1]);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -475,7 +475,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
 
-	gmt_free (GMT, X2SYS_HOME);
+	gmt_M_free (GMT, X2SYS_HOME);
 
 	Return (GMT_OK);
 }

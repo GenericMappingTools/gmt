@@ -127,11 +127,11 @@ static inline char* __source_line_func (const char* src_line, const char* func) 
 
 /* Convenience functions to gmt_err_func */
 #ifdef DEBUG
-#	define GMT_err_pass(C,err,file) gmt_err_func(C,err,false,file,__SOURCE_LINE_FUNC)
-#	define GMT_err_fail(C,err,file) gmt_err_func(C,err,true,file,__SOURCE_LINE_FUNC)
+#	define gmt_M_err_pass(C,err,file) gmt_err_func(C,err,false,file,__SOURCE_LINE_FUNC)
+#	define gmt_M_err_fail(C,err,file) gmt_err_func(C,err,true,file,__SOURCE_LINE_FUNC)
 #else
-#	define GMT_err_pass(C,err,file) gmt_err_func(C,err,false,file,__func__)
-#	define GMT_err_fail(C,err,file) gmt_err_func(C,err,true,file,__func__)
+#	define gmt_M_err_pass(C,err,file) gmt_err_func(C,err,false,file,__func__)
+#	define gmt_M_err_fail(C,err,file) gmt_err_func(C,err,true,file,__func__)
 #endif
 
 #endif /* GMT_ERROR_H */

@@ -350,7 +350,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 				break;
 		}
 
-		if (GMT_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
+		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
 
 		/* Clean data record to process */
@@ -372,7 +372,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 		node = gmt_M_ijp (Grid->header, row, col);	/* Bin node */
 
-		if (n_pitched == n_alloc) data = gmt_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
+		if (n_pitched == n_alloc) data = gmt_M_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].ij = node;
 		data[n_pitched].src_id = (Ctrl->E.mode & BLK_DO_SRC_ID) ? (uint64_t)lrint (in[sid_col]) : n_read;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
@@ -402,13 +402,13 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	if (n_pitched < n_alloc) {
 		n_alloc = n_pitched;
-		data = gmt_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
+		data = gmt_M_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
 	}
 
 	/* Ready to go. */
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-		gmt_free (GMT, data);
+		gmt_M_free (GMT, data);
 		Return (API->error);
 	}
 
@@ -429,7 +429,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
 		if (do_extra) {
-			if (nz == nz_alloc) z_tmp = gmt_malloc (GMT, z_tmp, nz, &nz_alloc, double);
+			if (nz == nz_alloc) z_tmp = gmt_M_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
 		}
@@ -437,7 +437,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].ij == data[first_in_cell].ij)) {
 			weight += data[first_in_new_cell].a[BLK_W];
 			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
-				if (nz == nz_alloc) z_tmp = gmt_malloc (GMT, z_tmp, nz, &nz_alloc, double);
+				if (nz == nz_alloc) z_tmp = gmt_M_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz++] = data[first_in_new_cell].a[BLK_Z];
 			}
 			first_in_new_cell++;
@@ -476,8 +476,8 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 		first_in_cell = first_in_new_cell;
 	}
 
-	gmt_free (GMT, data);
-	if (do_extra) gmt_free (GMT, z_tmp);
+	gmt_M_free (GMT, data);
+	if (do_extra) gmt_M_free (GMT, z_tmp);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
@@ -487,7 +487,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	if (emode) {
-		gmt_str_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
+		gmt_M_str_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
 		GMT->current.io.o_format[i_col] = old_format;		/* Restore previous format */
 	}
 

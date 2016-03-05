@@ -1678,7 +1678,7 @@ double gmt_mean_and_std (struct GMT_CTRL *GMT, double *x, uint64_t n, double *st
 	uint64_t k, m = 0;
 	double dx, mean = 0.0, sum2 = 0.0;
 	for (k = 0; k < n; k++) {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
-		if (GMT_is_dnan (x[k])) continue;
+		if (gmt_M_is_dnan (x[k])) continue;
 		m++;
 		dx = x[k] - mean;
 		mean += dx / m;
@@ -1996,15 +1996,15 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 		*scale = GMT->session.d_NaN;
 		return;
 	}
-	dev = gmt_memory (GMT, NULL, n, double);
+	dev = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_DOUBLE);
-	for (i = n; i > 1 && GMT_is_dnan (dev[i-1]); i--);
+	for (i = n; i > 1 && gmt_M_is_dnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
 		med = GMT->session.d_NaN;
-	gmt_free (GMT, dev);
+	gmt_M_free (GMT, dev);
 	*scale = 1.4826 * med;
 }
 
@@ -2017,15 +2017,15 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 		*scale = GMT->session.d_NaN;
 		return;
 	}
-	dev = gmt_memory (GMT, NULL, n, double);
+	dev = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_FLOAT);
-	for (i = n; i > 1 && GMT_is_fnan (dev[i-1]); i--);
+	for (i = n; i > 1 && gmt_M_is_fnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
 		med = GMT->session.d_NaN;
-	gmt_free (GMT, dev);
+	gmt_M_free (GMT, dev);
 	*scale = 1.4826 * med;
 }
 
@@ -2061,8 +2061,8 @@ int gmt_chebyshev (struct GMT_CTRL *GMT, double x, int n, double *t) {
 
 	double x2, a, b;
 
-	if (n < 0) GMT_err_pass (GMT, GMT_CHEBYSHEV_NEG_ORDER, "");
-	if (fabs (x) > 1.0) GMT_err_pass (GMT, GMT_CHEBYSHEV_BAD_DOMAIN, "");
+	if (n < 0) gmt_M_err_pass (GMT, GMT_CHEBYSHEV_NEG_ORDER, "");
+	if (fabs (x) > 1.0) gmt_M_err_pass (GMT, GMT_CHEBYSHEV_BAD_DOMAIN, "");
 
 	switch (n) {	/* Testing the order of the polynomial */
 		case 0:
@@ -2102,7 +2102,7 @@ double gmt_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, un
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined correlation */
 	if (mode == 0) {
 		for (i = n_use = 0; i < n; i++) {
-			if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
+			if (gmt_M_is_dnan (x[i]) || gmt_M_is_dnan (y[i])) continue;
 			xmean += x[i];
 			ymean += y[i];
 			n_use++;
@@ -2114,7 +2114,7 @@ double gmt_corrcoeff (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, un
 
 	vx = vy = vxy = 0.0;
 	for (i = n_use = 0; i < n; i++) {
-		if (GMT_is_dnan (x[i]) || GMT_is_dnan (y[i])) continue;
+		if (gmt_M_is_dnan (x[i]) || gmt_M_is_dnan (y[i])) continue;
 		dx = x[i] - xmean;
 		dy = y[i] - ymean;
 		vx += dx * dx;
@@ -2137,7 +2137,7 @@ double gmt_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, un
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined correlation */
 	if (mode == 0) {
 		for (i = n_use = 0; i < n; i++) {
-			if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
+			if (gmt_M_is_fnan (x[i]) || gmt_M_is_fnan (y[i])) continue;
 			xmean += (double)x[i];
 			ymean += (double)y[i];
 			n_use++;
@@ -2149,7 +2149,7 @@ double gmt_corrcoeff_f (struct GMT_CTRL *GMT, float *x, float *y, uint64_t n, un
 
 	vx = vy = vxy = 0.0;
 	for (i = n_use = 0; i < n; i++) {
-		if (GMT_is_fnan (x[i]) || GMT_is_fnan (y[i])) continue;
+		if (gmt_M_is_fnan (x[i]) || gmt_M_is_fnan (y[i])) continue;
 		dx = (double)x[i] - xmean;
 		dy = (double)y[i] - ymean;
 		vx += dx * dx;
@@ -2170,7 +2170,7 @@ double gmt_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n) {
 
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
 	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
-	while (n > 1 && GMT_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
+	while (n > 1 && gmt_M_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (n < 1) return (GMT->session.d_NaN);		/* Need at least 1 point to do something */
 	if (q == 100.0) return (x[n-1]);		/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
@@ -2192,7 +2192,7 @@ double gmt_quantile_f (struct GMT_CTRL *GMT, float *x, double q, uint64_t n) {
 
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
 	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
-	while (n > 1 && GMT_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
+	while (n > 1 && gmt_M_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
 	if (n < 1) return (GMT->session.d_NaN);		/* Need at least 1 point to do something */
 	if (q == 100.0) return ((double)x[n-1]);	/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;

@@ -122,7 +122,7 @@ EXTERN_MSC double gmtlib_half_map_width (struct GMT_CTRL *GMT, double y);
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSXY_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSXY_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -135,10 +135,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->C.file);
-	gmt_str_free (C->S.arg);
-	gmt_freepen (GMT, &C->W.pen);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->S.arg);
+	gmt_M_freepen (GMT, &C->W.pen);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x[], double error_width2, int line, int kind) {
@@ -149,12 +149,12 @@ GMT_LOCAL void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	tip1 = tip2 = (error_width2 > 0.0);
 	gmt_geo_to_xy (GMT, x - fabs (delta_x[first]),  y, &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x + fabs (delta_x[second]), y, &x_2, &y_2);
-	if (GMT_is_dnan (x_1)) {
+	if (gmt_M_is_dnan (x_1)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X error bar exceeded domain near line %d. Set to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
 		tip1 = false;
 	}
-	if (GMT_is_dnan (x_2)) {
+	if (gmt_M_is_dnan (x_2)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X error bar exceeded domain near line %d. Set to x_max\n", line);
 		x_2 = GMT->current.proj.rect[XHI];
 		tip2 = false;
@@ -172,12 +172,12 @@ GMT_LOCAL void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doub
 	tip1 = tip2 = (error_width2 > 0.0);
 	gmt_geo_to_xy (GMT, x, y - fabs (delta_y[first]),  &x_1, &y_1);
 	gmt_geo_to_xy (GMT, x, y + fabs (delta_y[second]), &x_2, &y_2);
-	if (GMT_is_dnan (y_1)) {
+	if (gmt_M_is_dnan (y_1)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y error bar exceeded domain near line %d. Set to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
 		tip1 = false;
 	}
-	if (GMT_is_dnan (y_2)) {
+	if (gmt_M_is_dnan (y_2)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y error bar exceeded domain near line %d. Set to y_max\n", line);
 		y_2 = GMT->current.proj.rect[YHI];
 		tip2 = false;
@@ -194,7 +194,7 @@ GMT_LOCAL void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		gmt_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
-		if (GMT_is_dnan (xx[i])) {
+		if (gmt_M_is_dnan (xx[i])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: X %d %% hinge exceeded domain near line %d\n", q[i], line);
 			xx[i] = (i < 2) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
 		}
@@ -237,7 +237,7 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		gmt_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
-		if (GMT_is_dnan (yy[i])) {
+		if (gmt_M_is_dnan (yy[i])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Y %d %% hinge exceeded domain near line %d\n", q[i], line);
 			yy[i] = (i < 2) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
 		}
@@ -531,7 +531,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Vary symbol color with z */
 				if (opt->arg[0]) {
-					gmt_str_free (Ctrl->C.file);
+					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 					Ctrl->C.active = true;
 				}
@@ -838,7 +838,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	error += gmt_check_binary_io (GMT, n_needed);
 	GMT_Report (API, GMT_MSG_DEBUG, "Operation will require %d input columns [n_cols_start = %d]\n", n_needed, n_cols_start);
 
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if (S.u_set) {	/* When -Sc<unit> is given we temporarily reset the system unit to these units so conversions will work */
 		save_u = GMT->current.setting.proj_length_unit;
 		GMT->current.setting.proj_length_unit = S.u;
@@ -1044,11 +1044,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if (gmt_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
-			if (GMT_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
+			if (gmt_M_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Data point with x = NaN near line %d\n", n_total_read);
 				continue;
 			}
-			if (GMT_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
+			if (gmt_M_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
@@ -1160,18 +1160,18 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				case GMT_SYMBOL_RNDRECT:
 					dim[2] = in[ex3];
-					if (GMT_is_dnan (dim[2])) {
+					if (gmt_M_is_dnan (dim[2])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle corner radius = NaN near line %d\n", n_total_read);
 						continue;
 					}
 				case GMT_SYMBOL_RECT:
 					dim[0] = in[ex1];
-					if (GMT_is_dnan (dim[0])) {
+					if (gmt_M_is_dnan (dim[0])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle width = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					dim[1] = in[ex2];
-					if (GMT_is_dnan (dim[1])) {
+					if (gmt_M_is_dnan (dim[1])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Rounded rectangle height = NaN near line %d\n", n_total_read);
 						continue;
 					}
@@ -1179,15 +1179,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					break;
 				case GMT_SYMBOL_ROTRECT:
 				case GMT_SYMBOL_ELLIPSE:
-					if (GMT_is_dnan (p_in[ex1])) {
+					if (gmt_M_is_dnan (p_in[ex1])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (GMT_is_dnan (p_in[ex2])) {
+					if (gmt_M_is_dnan (p_in[ex2])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle width or major axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (GMT_is_dnan (p_in[ex3])) {
+					if (gmt_M_is_dnan (p_in[ex3])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Ellipse/Rectangle height or minor axis = NaN near line %d\n", n_total_read);
 						continue;
 					}
@@ -1242,7 +1242,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						length = hypot (in[ex1+S.read_size], in[ex2+S.read_size]) * S.v.comp_scale;
 					else
 						length = in[ex2+S.read_size];
-					if (GMT_is_dnan (length)) {
+					if (gmt_M_is_dnan (length)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
@@ -1258,13 +1258,13 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					else	/* Convert geo azimuth to map direction */
 						direction = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, d);
 
-					if (GMT_is_dnan (direction)) {
+					if (gmt_M_is_dnan (direction)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Vector direction = NaN near line %d\n", n_total_read);
 						continue;
 					}
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						gmt_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
-						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
+						if (gmt_M_is_dnan (x_2) || gmt_M_is_dnan (y_2)) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
@@ -1311,11 +1311,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					if (GMT_is_dnan (in[ex1+S.read_size])) {
+					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Geovector azimuth = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (GMT_is_dnan (in[ex2+S.read_size])) {
+					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Geovector length = NaN near line %d\n", n_total_read);
 						continue;
 					}
@@ -1329,7 +1329,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					dim[1] = in[ex2+S.read_size];
 					dim[2] = in[ex3+S.read_size];
 					length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
-					if (GMT_is_dnan (length)) {
+					if (gmt_M_is_dnan (length)) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Math angle arc length = NaN near line %d\n", n_total_read);
 						continue;
 					}
@@ -1342,11 +1342,11 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 					break;
 				case GMT_SYMBOL_WEDGE:
-					if (GMT_is_dnan (in[ex1+S.read_size])) {
+					if (gmt_M_is_dnan (in[ex1+S.read_size])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Wedge start angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
-					if (GMT_is_dnan (in[ex2+S.read_size])) {
+					if (gmt_M_is_dnan (in[ex2+S.read_size])) {
 						GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Wedge stop angle = NaN near line %d\n", n_total_read);
 						continue;
 					}
@@ -1500,7 +1500,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					size_t n_alloc;
 					L->n_rows++;
 					n_alloc = L->n_rows;
-					gmt_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
+					gmt_M_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
 					L->coord[GMT_X][L->n_rows-1] = L->coord[GMT_X][0];
 					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
 				}
@@ -1533,12 +1533,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							/* Make a copy of this section's coordinates */
 							/* Get temp array of length n_section since gmt_hold_contour may change length */
 							n_alloc = 0;
-							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
+							gmt_M_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
 							gmt_M_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
 							gmt_M_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
 							gmt_hold_contour (GMT, &xxx, &yyy, n_section, 0.0, "N/A", 'A', S.G.label_angle, false, false, &S.G);
 							k0 = k1;	/* Goto start of next section */
-							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
+							gmt_M_free (GMT, xxx);	gmt_M_free (GMT, yyy);
 						}
 					}
 					else {	/* Just one line, which may even be closed */
@@ -1568,12 +1568,12 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 							/* Make a copy of this section's coordinates */
 							/* Get temp array of length n_section since gmt_decorated_line may change length */
 							n_alloc = 0;
-							gmt_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
+							gmt_M_malloc2 (GMT, xxx, yyy, n_section, &n_alloc, double);
 							gmt_M_memcpy (xxx, &GMT->current.plot.x[k0], n_section, double);
 							gmt_M_memcpy (yyy, &GMT->current.plot.y[k0], n_section, double);
 							gmt_decorated_line (GMT, &xxx, &yyy, n_section, &S.D, Decorate, seg_out);
 							k0 = k1;	/* Goto start of next section */
-							gmt_free (GMT, xxx);	gmt_free (GMT, yyy);
+							gmt_M_free (GMT, xxx);	gmt_M_free (GMT, yyy);
 						}
 					}
 					else	/* Just one line, which may even be closed */
@@ -1672,7 +1672,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.f.f_pen == 0) gmt_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}
 				if (duplicate)	/* Free duplicate segment */
-					gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+					gmt_M_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {

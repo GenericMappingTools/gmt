@@ -94,7 +94,7 @@ struct GMTCONVERT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTCONVERT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GMTCONVERT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTCONVERT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.max = ULONG_MAX;	/* Max records possible in one segment */
@@ -104,11 +104,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->Out.file);	
-	gmt_str_free (C->D.name);	
-	if (C->S.active) gmt_free_text_selection (GMT, &C->S.select);	
-	if (C->Q.active) gmt_free_int_selection (GMT, &C->Q.select);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->Out.file);	
+	gmt_M_str_free (C->D.name);	
+	if (C->S.active) gmt_M_free_text_selection (GMT, &C->S.select);	
+	if (C->Q.active) gmt_M_free_int_selection (GMT, &C->Q.select);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -455,7 +455,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	
 	n_horizontal_tbls = (Ctrl->A.active) ? D[GMT_IN]->n_tables : 1;	/* Only with pasting do we go horizontally */
 	n_vertical_tbls   = (Ctrl->A.active) ? 1 : D[GMT_IN]->n_tables;	/* Only for concatenation do we go vertically */
-	val = gmt_memory (GMT, NULL, n_cols_in, double);
+	val = gmt_M_memory (GMT, NULL, n_cols_in, double);
 	
 	for (tbl_ver = 0; tbl_ver < n_vertical_tbls; tbl_ver++) {	/* Number of tables to place vertically */
 		D[GMT_OUT]->table[tbl_ver]->n_records = 0;	/* Reset record count per table since we may return fewer than the original */
@@ -504,7 +504,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		}
 		D[GMT_OUT]->table[tbl_ver]->id = tbl_ver;
 	}
-	gmt_free (GMT, val);
+	gmt_M_free (GMT, val);
 
 	if (Ctrl->I.active) {	/* Must reverse the order of tables, segments and/or records */
 		uint64_t tbl1, tbl2, row1, row2, seg1, seg2;
@@ -543,7 +543,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args) {
 	/* Now ready for output */
 
 	if (Ctrl->D.active) {	/* Set composite name and io-mode */
-		gmt_str_free (Ctrl->Out.file);
+		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->D.name);
 		D[GMT_OUT]->io_mode = Ctrl->D.mode;
 	}

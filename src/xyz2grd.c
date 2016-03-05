@@ -72,7 +72,7 @@ struct XYZ2GRD_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZ2GRD_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->Z.type = 'a';
@@ -82,11 +82,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->D.information);	
-	gmt_str_free (C->G.file);	
-	gmt_str_free (C->S.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->D.information);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_str_free (C->S.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -477,12 +477,12 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		Grid->header->wesn[XHI] = Grid->header->wesn[XLO] + (Grid->header->nx - 1 + Grid->header->registration) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[YHI] = Grid->header->wesn[YLO] + (Grid->header->ny - 1 + Grid->header->registration) * Grid->header->inc[GMT_Y];
 		gmt_set_grddim (GMT, Grid->header);
-		GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+		gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 		n_left = Grid->header->nm;
 
-		Grid->data = gmt_memory_aligned (GMT, NULL, Grid->header->nm, float);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nm, float);
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
 		if (fscanf (fp, "%s", line) != 1) {
@@ -548,10 +548,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
-	GMT_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
+	gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
 	gmt_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && GMT_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
+	if (Ctrl->Z.active && GMT->common.d.active[GMT_IN] && gmt_M_is_fnan (no_data_f)) GMT->common.d.active[GMT_IN] = false;	/* No point testing since nan_proxy is NaN... */
 
 	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
@@ -564,22 +564,22 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 	}
 	else {
 		zcol = GMT_Z;
-		flag = gmt_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
+		flag = gmt_M_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
 		gmt_M_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
 		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, n_req)) != GMT_OK) {
-		gmt_free (GMT, flag);
+		gmt_M_free (GMT, flag);
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
-		gmt_free (GMT, flag);
+		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
-		gmt_free (GMT, flag);
+		gmt_M_free (GMT, flag);
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
 
@@ -744,7 +744,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args) {
 				n_stuffed++;
 			}
 		}
-		gmt_free (GMT, flag);
+		gmt_M_free (GMT, flag);
 		
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			char line[GMT_BUFSIZ], e_value[GMT_LEN32];

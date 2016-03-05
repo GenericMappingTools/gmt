@@ -59,7 +59,7 @@ struct BINCROSS {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_BINLIST_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct X2SYS_BINLIST_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_BINLIST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -68,8 +68,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->T.TAG);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->T.TAG);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -149,7 +149,7 @@ GMT_LOCAL int outside (double x, double y, struct X2SYS_BIX *B, int geo) {
 GMT_LOCAL unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s) {
 	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
-		if (GMT_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
+		if (gmt_M_is_dnan (data[i][j])) continue;	/* NaN, so no data here */
 		flag |= bit;
 	}
 	return (flag);
@@ -248,7 +248,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		gmt_parse_common_options (GMT, "J", 'J', proj);
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		gmt_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
 		gmt_geo_to_xy (GMT, B.wesn[XHI], B.wesn[YHI], &B.wesn[XHI], &B.wesn[YHI]);
 		y_max = B.wesn[YHI];
@@ -259,22 +259,22 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	jump_180 = irint (180.0 / B.inc[GMT_X]);
 	jump_360 = irint (360.0 / B.inc[GMT_X]);
 
-	X = gmt_memory (GMT, NULL, nx_alloc, struct BINCROSS);
+	X = gmt_M_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	
 	if (Ctrl->D.active) {
 		gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST);
-		dist_bin = gmt_memory (GMT, NULL, B.nm_bin, double);
+		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-		gmt_free (GMT, X);
-		if (Ctrl->D.active) gmt_free (GMT, dist_bin);
+		gmt_M_free (GMT, X);
+		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
-		gmt_free (GMT, X);
-		if (Ctrl->D.active) gmt_free (GMT, dist_bin);
+		gmt_M_free (GMT, X);
+		if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (API->error);
 	}
@@ -300,7 +300,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
 			gmt_M_memset (dist_bin, B.nm_bin, double);
-			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_index = UINT_MAX;
@@ -325,7 +325,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			if (row > 0) { /* Can check for gaps starting with 1st to 2nd point */
 				gap = false;
 				if (s->t_col >= 0) {	/* There is a time column in the data*/
-					if (GMT_is_dnan (data[s->t_col][row])&& (dist_km[row] - dist_km[row-1]) > B.dist_gap) /* but time = NaN, so test for gaps based on distance */
+					if (gmt_M_is_dnan (data[s->t_col][row])&& (dist_km[row] - dist_km[row-1]) > B.dist_gap) /* but time = NaN, so test for gaps based on distance */
 						gap = true;
 			   		else if ((data[s->t_col][row] - data[s->t_col][row-1]) > B.time_gap)	/* We have a time data gap so we skip this interval */
 						gap = true;
@@ -377,7 +377,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					nx++;
 					if (nx == nx_alloc) {
 						nx_alloc <<= 1;
-						X = gmt_memory (GMT, X, nx_alloc, struct BINCROSS);
+						X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
 				}
 				for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
@@ -394,7 +394,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					nx++;
 					if (nx == nx_alloc) {
 						nx_alloc <<= 1;
-						X = gmt_memory (GMT, X, nx_alloc, struct BINCROSS);
+						X = gmt_M_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
 				}
 				
@@ -445,17 +445,17 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 
-		if (Ctrl->D.active) gmt_free (GMT, dist_km);
+		if (Ctrl->D.active) gmt_M_free (GMT, dist_km);
 	}
 	
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	gmt_free (GMT, X);
+	gmt_M_free (GMT, X);
 	x2sys_end (GMT, s);
-	gmt_free (GMT, B.binflag);
-	if (Ctrl->D.active) gmt_free (GMT, dist_bin);
+	gmt_M_free (GMT, B.binflag);
+	if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
 	x2sys_free_list (GMT, trk_name, n_tracks);
 
 	Return (GMT_OK);

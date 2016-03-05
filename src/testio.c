@@ -89,10 +89,10 @@ int main () {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
-	gmt_free_vector (API->GMT, &Vo, true);
+	gmt_M_free_vector (API->GMT, &Vo, true);
 	
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
-	gmt_M_grd_loop (API->GMT, G, xrow, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
+	gmt_M_grd_loop (API->GMT, G, xrow, col, ij) if (!gmt_M_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
 	if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G\n");
@@ -115,13 +115,13 @@ int main () {
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
-	gmt_free_vector (API->GMT, &Vi, false);
+	gmt_M_free_vector (API->GMT, &Vi, false);
 	for (row = 0; row < Vo->n_rows; row++) {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
-	gmt_free_vector (API->GMT, &Vo, true);
-	gmt_free_vector (API->GMT, &Vi, false);
+	gmt_M_free_vector (API->GMT, &Vo, true);
+	gmt_M_free_vector (API->GMT, &Vi, false);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);

@@ -182,7 +182,7 @@ GMT_LOCAL void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSWIGGLE_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->T.pen = C->W.pen = GMT->current.setting.map_default_pen;
@@ -194,8 +194,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->S.label);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->S.label);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -375,9 +375,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GM
 
 GMT_LOCAL void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **yy, double **zz) {
 	(*n_alloc) <<= 1;
-	*xx = gmt_memory (GMT, *xx, *n_alloc, double);
-	*yy = gmt_memory (GMT, *yy, *n_alloc, double);
-	*zz = gmt_memory (GMT, *zz, *n_alloc, double);
+	*xx = gmt_M_memory (GMT, *xx, *n_alloc, double);
+	*yy = gmt_M_memory (GMT, *yy, *n_alloc, double);
+	*zz = gmt_M_memory (GMT, *zz, *n_alloc, double);
 }
 
 int GMT_pswiggle (void *V_API, int mode, void *args) {
@@ -419,7 +419,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
@@ -452,9 +452,9 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	/* Allocate memory */
 
-	xx  = gmt_memory (GMT, NULL, n_alloc, double);
-	yy  = gmt_memory (GMT, NULL, n_alloc, double);
-	zz  = gmt_memory (GMT, NULL, n_alloc, double);
+	xx  = gmt_M_memory (GMT, NULL, n_alloc, double);
+	yy  = gmt_M_memory (GMT, NULL, n_alloc, double);
+	zz  = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
@@ -487,12 +487,12 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 			for (row = j = 1; row < T->segment[seg]->n_rows; row++) {	/* Convert to inches/cm and get distance increments */
 				gmt_geo_to_xy (GMT, lon[row], lat[row], &x_2, &y_2);
 
-				if (j > 0 && GMT_is_dnan (z[row])) {	/* Data gap, plot what we have */
+				if (j > 0 && gmt_M_is_dnan (z[row])) {	/* Data gap, plot what we have */
 					negative = zz[j-1] < 0.0;
 					plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 					j = 0;
 				}
-				else if (!GMT_is_dnan (z[row-1]) && (z[row]*z[row-1] < 0.0 || z[row] == 0.0)) {	/* Crossed 0, add new point and plot */
+				else if (!gmt_M_is_dnan (z[row-1]) && (z[row]*z[row-1] < 0.0 || z[row] == 0.0)) {	/* Crossed 0, add new point and plot */
 					dz = z[row] - z[row-1];
 					xx[j] = (dz == 0.0) ? xx[j-1] : xx[j-1] + fabs (z[row-1] / dz) * (x_2 - xx[j-1]);
 					yy[j] = (dz == 0.0) ? yy[j-1] : yy[j-1] + fabs (z[row-1] / dz) * (y_2 - yy[j-1]);
@@ -508,7 +508,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 				xx[j] = x_2;
 				yy[j] = y_2;
 				zz[j] = z[row];
-				if (!GMT_is_dnan (z[row])) j++;
+				if (!gmt_M_is_dnan (z[row])) j++;
 				if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 			}
 	
@@ -527,9 +527,9 @@ int GMT_pswiggle (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	gmt_free (GMT, xx);
-	gmt_free (GMT, yy);
-	gmt_free (GMT, zz);
+	gmt_M_free (GMT, xx);
+	gmt_M_free (GMT, yy);
+	gmt_M_free (GMT, zz);
 
 	Return (GMT_OK);
 }

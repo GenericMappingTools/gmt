@@ -96,7 +96,7 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSROSE_CTRL *C = NULL;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSROSE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSROSE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
@@ -111,12 +111,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->C.file);
-	gmt_str_free (C->L.w);
-	gmt_str_free (C->L.e);
-	gmt_str_free (C->L.s);
-	gmt_str_free (C->L.n);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->L.w);
+	gmt_M_str_free (C->L.e);
+	gmt_M_str_free (C->L.s);
+	gmt_M_str_free (C->L.n);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -208,7 +208,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 				break;
 			case 'C':	/* Read mode file and plot mean directions */
 				Ctrl->C.active = true;
-				gmt_str_free (Ctrl->C.file);
+				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Center the bins */
@@ -430,11 +430,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	/* Allocate arrays */
 	
-	sum = gmt_memory (GMT, NULL, n_bins, double);
-	xx = gmt_memory (GMT, NULL, n_bins+2, double);
-	yy = gmt_memory (GMT, NULL, n_bins+2, double);
-	azimuth = gmt_memory (GMT, NULL, n_alloc, double);
-	length = gmt_memory (GMT, NULL, n_alloc, double);
+	sum = gmt_M_memory (GMT, NULL, n_bins, double);
+	xx = gmt_M_memory (GMT, NULL, n_bins+2, double);
+	yy = gmt_M_memory (GMT, NULL, n_bins+2, double);
+	azimuth = gmt_M_memory (GMT, NULL, n_alloc, double);
+	length = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -488,8 +488,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		n++;
 		if (n == n_alloc) {	/* Get more memory */
 			n_alloc <<= 1;
-			azimuth = gmt_memory (GMT, azimuth, n_alloc, double);
-			length = gmt_memory (GMT, length, n_alloc, double);
+			azimuth = gmt_M_memory (GMT, azimuth, n_alloc, double);
+			length = gmt_M_memory (GMT, length, n_alloc, double);
 		}
 	} while (true);
 
@@ -546,11 +546,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
 		if (Ctrl->I.active) {
-			gmt_free (GMT, sum);
-			gmt_free (GMT, xx);
-			gmt_free (GMT, yy);
-			gmt_free (GMT, azimuth);
-			gmt_free (GMT, length);
+			gmt_M_free (GMT, sum);
+			gmt_M_free (GMT, xx);
+			gmt_M_free (GMT, yy);
+			gmt_M_free (GMT, azimuth);
+			gmt_M_free (GMT, length);
 			Return (EXIT_SUCCESS);
 		}
 	}
@@ -576,7 +576,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	GMT->common.R.active = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (GMT->current.map.frame.paint) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
 		GMT->current.map.frame.paint = false;	/* Turn off so gmt_plotinit wont fill */
@@ -685,8 +685,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
 			find_mean = true;
 			n_modes = 1;
-			mode_direction = gmt_memory (GMT, NULL, 1, double);
-			mode_length = gmt_memory (GMT, NULL, 1, double);
+			mode_direction = gmt_M_memory (GMT, NULL, 1, double);
+			mode_length = gmt_M_memory (GMT, NULL, 1, double);
 			mode_direction[0] = mean_theta;
 			mode_length[0] = mean_radius;
 		}
@@ -770,9 +770,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		if (half_only) {
 			char text[GMT_LEN64] = {""};
 			if (!Ctrl->L.active) {	/* Use default labels */
-				gmt_str_free (Ctrl->L.w);
-				gmt_str_free (Ctrl->L.e);
-				gmt_str_free (Ctrl->L.n);
+				gmt_M_str_free (Ctrl->L.w);
+				gmt_M_str_free (Ctrl->L.e);
+				gmt_M_str_free (Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {
 					if (half_only == 1) {
 						sprintf (Ctrl->L.w, "90%s", GMT->current.language.cardinal_name[2][0]);
@@ -845,15 +845,15 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	PSL_setorigin (PSL, -x_origin, -y_origin, 0.0, PSL_INV);
 	gmt_plotend (GMT);
 
-	gmt_free (GMT, sum);
-	gmt_free (GMT, xx);
-	gmt_free (GMT, yy);
-	gmt_free (GMT, azimuth);
-	gmt_free (GMT, length);
+	gmt_M_free (GMT, sum);
+	gmt_M_free (GMT, xx);
+	gmt_M_free (GMT, yy);
+	gmt_M_free (GMT, azimuth);
+	gmt_M_free (GMT, length);
 	if (Ctrl->C.active) {
 		if (find_mean) {
-			gmt_free (GMT, mode_length);
-			gmt_free (GMT, mode_direction);
+			gmt_M_free (GMT, mode_length);
+			gmt_M_free (GMT, mode_direction);
 		}
 	}
 

@@ -247,7 +247,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 	/* Truncate the pathname of grdraster.info to just the directory name */
 
 	n_alloc = GMT_SMALL_CHUNK;
-	rasinfo = gmt_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
+	rasinfo = gmt_M_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
 
 	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
 		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
@@ -600,7 +600,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 
 				if (nfound == n_alloc) {
 					n_alloc <<= 1;
-					rasinfo = gmt_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
+					rasinfo = gmt_M_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
 				}
 			}
 		}
@@ -609,7 +609,7 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 	if (!nfound)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No valid records or no existing grid files found in grdraster.info\n");
 	else
-		rasinfo = gmt_memory (GMT, rasinfo, nfound, struct GRDRASTER_INFO);
+		rasinfo = gmt_M_memory (GMT, rasinfo, nfound, struct GRDRASTER_INFO);
 
 	*ras = rasinfo;
 	return (nfound);
@@ -618,17 +618,17 @@ GMT_LOCAL int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, c
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDRASTER_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDRASTER_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDRASTER_CTRL);
 
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->G.file);
-	gmt_str_free (C->T.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->T.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -652,7 +652,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	GMT_Message (API, GMT_TIME_NONE, "grdraster default binary byte order is Little-endian.\n");
 #endif
-	gmt_free (API->GMT, rasinfo);
+	gmt_M_free (API->GMT, rasinfo);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -728,7 +728,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_free (GMT, rasinfo); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_M_free (GMT, rasinfo); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdraster (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
@@ -882,7 +882,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->common.R.oblique && GMT->current.proj.projection != GMT_NO_PROJ) {
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 		Grid->header->wesn[XLO] = floor (GMT->common.R.wesn[XLO] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
 		Grid->header->wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / Grid->header->inc[GMT_X]) * Grid->header->inc[GMT_X];
@@ -957,7 +957,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	Grid->header->z_min = DBL_MAX;
 	Grid->header->z_max = -DBL_MAX;
 	gmt_set_grddim (GMT, Grid->header);
-	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 	myras.h.xy_off = 0.5 * myras.h.registration;
 
 	grdlatorigin = gmt_M_row_to_y (GMT, 0, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
@@ -972,8 +972,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
 		unsigned int col;
-		Grid->data = gmt_memory_aligned (GMT, NULL, Grid->header->nx, float);
-		x = gmt_memory (GMT, NULL, Grid->header->nx, double);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->nx, float);
+		x = gmt_M_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) x[col] = gmt_M_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
@@ -985,17 +985,17 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	} else {	/* Need an entire (padded) grid */
-		Grid->data = gmt_memory_aligned (GMT, NULL, Grid->header->size, float);
+		Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, float);
 	}
 
 	ksize = get_byte_size (GMT, myras.type);
 	if (ksize == 0) {	/* Bits; Need to read the whole thing */
 		nmask = lrint (ceil (myras.h.nx * myras.h.ny * 0.125));
-		ubuffer = gmt_memory (GMT, NULL, nmask, unsigned char);
+		ubuffer = gmt_M_memory (GMT, NULL, nmask, unsigned char);
 	}
 	else {	/* Need to read by rows, and convert each row to float */
-		buffer = gmt_memory (GMT, NULL, ksize * myras.h.nx, char);
-		floatrasrow = gmt_memory (GMT, NULL, myras.h.nx, float);
+		buffer = gmt_M_memory (GMT, NULL, ksize * myras.h.nx, char);
+		floatrasrow = gmt_M_memory (GMT, NULL, myras.h.nx, float);
 	}
 
 	/* Now open file and do it */
@@ -1014,7 +1014,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
 		if ( (gmt_M_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
-			gmt_free (GMT, ubuffer);
+			gmt_M_free (GMT, ubuffer);
 			gmt_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
 		}
@@ -1054,7 +1054,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_free (GMT, ubuffer);
+		gmt_M_free (GMT, ubuffer);
 	}
 	else {
 		firstread = true;
@@ -1080,13 +1080,13 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				if (jseek && fseek (fp, (off_t)jseek * (off_t)ksize * (off_t)myras.h.nx, SEEK_CUR) ) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR seeking in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
-					gmt_free (GMT, buffer);
+					gmt_M_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
 				if ((gmt_M_fread (buffer, ksize, n_expected, fp)) != n_expected) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR reading in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
-					gmt_free (GMT, buffer);
+					gmt_M_free (GMT, buffer);
 					Return (EXIT_FAILURE);
 				}
 #ifdef DEBUG
@@ -1133,8 +1133,8 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_free (GMT, buffer);
-		gmt_free (GMT, floatrasrow);
+		gmt_M_free (GMT, buffer);
+		gmt_M_free (GMT, floatrasrow);
 	}
 	gmt_fclose (GMT, fp);
 
@@ -1147,7 +1147,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		gmt_free (GMT, x);
+		gmt_M_free (GMT, x);
 	}
 	else {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);

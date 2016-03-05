@@ -129,7 +129,7 @@ enum gmtflexure_bc {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTFLEXURE_CTRL *C = NULL;
 
-	C = gmt_memory (GMT, NULL, 1, struct GMTFLEXURE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTFLEXURE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.E = YOUNGS_MODULUS;
@@ -140,11 +140,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->Out.file);
-	gmt_str_free (C->E.file);
-	gmt_str_free (C->Q.file);
-	gmt_str_free (C->T.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->Out.file);
+	gmt_M_str_free (C->E.file);
+	gmt_M_str_free (C->Q.file);
+	gmt_M_str_free (C->T.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -365,9 +365,9 @@ GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, doub
 		return (1);
 	}
 
-	l = gmt_memory (GMT, NULL, n * 5, double);
-	u = gmt_memory (GMT, NULL, n * 5, double);
-	z = gmt_memory (GMT, NULL, n, double);
+	l = gmt_M_memory (GMT, NULL, n * 5, double);
+	u = gmt_M_memory (GMT, NULL, n * 5, double);
+	z = gmt_M_memory (GMT, NULL, n, double);
 
 	/* Find largest element in coefficient matrix */
 
@@ -444,9 +444,9 @@ GMT_LOCAL int lu_solver (struct GMT_CTRL *GMT, double *a, int n, double *x, doub
 	for (i = n-3, off3 = i*3; i >= 0; i--, off3 -= 3)
 		x[i] = (z[i] - x[i+1] * u[off3+1] - x[i+2] * u[off3+2]) / u[off3];
 
-	gmt_free (GMT, u);
-	gmt_free (GMT, l);
-	gmt_free (GMT, z);
+	gmt_M_free (GMT, u);
+	gmt_M_free (GMT, l);
+	gmt_M_free (GMT, z);
 
 	return (0);
 }
@@ -489,7 +489,7 @@ GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 
 	/* Must allocate memory */
 
-	work = gmt_memory (GMT, NULL, 5 * n, double);
+	work = gmt_M_memory (GMT, NULL, 5 * n, double);
 
 	dx_4 = pow (dx, 4.0);
 	stress *= (dx * dx);
@@ -643,7 +643,7 @@ GMT_LOCAL int flx1d (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 
 	off = 5 * n;
 	error = lu_solver (GMT, work, n, w, p);
-	gmt_free (GMT, work);
+	gmt_M_free (GMT, work);
 	if (error == 1) {
 		fprintf (stderr, "flx1d: error=1 returned from lu_solver!\n");
 		return (error);
@@ -700,9 +700,9 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 
 	/* Allocate memory for load and restore force */
 
-	k = gmt_memory (GMT, NULL, n, double);
-	w_old = gmt_memory (GMT, NULL, n, double);
-	load = gmt_memory (GMT, NULL, n, double);
+	k = gmt_M_memory (GMT, NULL, n, double);
+	w_old = gmt_M_memory (GMT, NULL, n, double);
+	load = gmt_M_memory (GMT, NULL, n, double);
 
 	/* Initialize restoring force */
 
@@ -749,9 +749,9 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 		diff = max_dw;
 	}
 
-	gmt_free (GMT, k);
-	gmt_free (GMT, load);
-	gmt_free (GMT, w_old);
+	gmt_M_free (GMT, k);
+	gmt_M_free (GMT, load);
+	gmt_M_free (GMT, w_old);
 
 	return (error);
 }
@@ -798,8 +798,8 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
 
 	/* Must allocate memory */
 
-	work = gmt_memory (GMT, NULL, 5 * n, double);
-	squeeze = gmt_memory (GMT, NULL, n, double);
+	work = gmt_M_memory (GMT, NULL, 5 * n, double);
+	squeeze = gmt_M_memory (GMT, NULL, n, double);
 
 	dx_4 = pow (dx, 4.0);
 	stress *= (dx * dx);
@@ -959,8 +959,8 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
 
 	off = 5 * n;
 	error = lu_solver (GMT, work, n, w, p);
-	gmt_free (GMT, work);
-	gmt_free (GMT, squeeze);
+	gmt_M_free (GMT, work);
+	gmt_M_free (GMT, squeeze);
 	if (error == 1) {
 		fprintf (stderr, "flx1d: error=1 returned from lu_solver!\n");
 		return (error);
@@ -999,7 +999,7 @@ GMT_LOCAL int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
-	work = gmt_memory (GMT, NULL, n * 5, double);
+	work = gmt_M_memory (GMT, NULL, n * 5, double);
 	dx_4 = pow (dx, 4.0);
 	restore *= dx_4;
 
@@ -1065,7 +1065,7 @@ GMT_LOCAL int flxr (struct GMT_CTRL *GMT, double *w, double *d, double *p, int n
 	/* Solve for w */
 	off = 5*n;
 	error = lu_solver (GMT, work, n, w, p);
-	gmt_free (GMT, work);
+	gmt_M_free (GMT, work);
 	if (error == 1) {
 		fprintf(stderr, "flxr: error=1 returned from lu_solver!\n");
 		return (error);
@@ -1077,7 +1077,7 @@ GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 	int i, row, off, error;
 	double dx_4, r2m1, r2p1, rp1, rm1, r4 = 0.0, r, *work = NULL;
 
-	work = gmt_memory (GMT, NULL, n * 5, double);
+	work = gmt_M_memory (GMT, NULL, n * 5, double);
 	dx_4 = pow (dx, 4.0);
 
 	for (i = 0; i < n; i++) p[i] *= dx_4;
@@ -1142,7 +1142,7 @@ GMT_LOCAL int flxr2 (struct GMT_CTRL *GMT, double *w, double *d, double *p, int 
 	/* Solve for w */
 	off = 5*n;
 	error = lu_solver (GMT, work, n, w, p);
-	gmt_free (GMT, work);
+	gmt_M_free (GMT, work);
 	if (error == 1) {
 		fprintf(stderr, "flxr2: error=1 returned from lu_solver!\n");
 		return (error);
@@ -1157,9 +1157,9 @@ GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[],
 
 	/* Allocate memory for load and restore force */
 
-	k = gmt_memory (GMT, NULL, n, double);
-	w_old = gmt_memory (GMT, NULL, n, double);
-	load = gmt_memory (GMT, NULL, n, double);
+	k = gmt_M_memory (GMT, NULL, n, double);
+	w_old = gmt_M_memory (GMT, NULL, n, double);
+	load = gmt_M_memory (GMT, NULL, n, double);
 
 	/* Initialize restoring force */
 
@@ -1213,9 +1213,9 @@ GMT_LOCAL int flxrk (struct GMT_CTRL *GMT, double w[], double  d[], double  p[],
 		diff = max_dw;
 	}
 
-	gmt_free (GMT, k);
-	gmt_free (GMT, load);
-	gmt_free (GMT, w_old);
+	gmt_M_free (GMT, k);
+	gmt_M_free (GMT, load);
+	gmt_M_free (GMT, w_old);
 
 	return (error);
 }
@@ -1455,7 +1455,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_free_dataset (GMT, &W);
+	gmt_M_free_dataset (GMT, &W);
 
 	Return (EXIT_SUCCESS);
 }

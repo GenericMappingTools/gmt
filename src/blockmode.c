@@ -187,7 +187,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	 * This function sets up quantities needed as we loop over the
 	 * spatial bins */
 
-	struct BIN_MODE_INFO *B = gmt_memory (GMT, NULL, 1, struct BIN_MODE_INFO);
+	struct BIN_MODE_INFO *B = gmt_M_memory (GMT, NULL, 1, struct BIN_MODE_INFO);
 	char *mode = "lah";
 
 	if (is_integer) {	/* Special consideration for integers */
@@ -214,7 +214,7 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	B->min = irint (floor ((d[0].a[k]   * B->i_width) + B->i_offset));
 	B->max = irint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
 	B->n_bins = B->max - B->min + 1;
-	B->count = gmt_memory (GMT, NULL, B->n_bins, double);
+	B->count = gmt_M_memory (GMT, NULL, B->n_bins, double);
 	B->mode_choice = (mode_choice == BLOCKMODE_DEF) ? BLOCKMODE_AVE : mode_choice;
 
 	return (B);
@@ -504,7 +504,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 				break;
 		}
 
-		if (GMT_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
+		if (gmt_M_is_dnan (in[GMT_Z])) 		/* Skip if z = NaN */
 			continue;
 
 		/* Data record to process */
@@ -531,7 +531,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 		node = gmt_M_ijp (Grid->header, row, col);		/* Bin node */
 
-		if (n_pitched == n_alloc) data = gmt_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
+		if (n_pitched == n_alloc) data = gmt_M_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].ij = node;
 		data[n_pitched].src_id = (Ctrl->E.mode & BLK_DO_SRC_ID) ? (uint64_t)lrint (in[sid_col]) : n_read;
 		if (mode_xy) {	/* Need to store (x,y) so we can compute modal location later */
@@ -564,7 +564,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	}
 	if (n_pitched < n_alloc) {
 		n_alloc = n_pitched;
-		data = gmt_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
+		data = gmt_M_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
 	}
 
 	/* Ready to go. */
@@ -595,7 +595,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	while (first_in_cell < n_pitched) {
 		weight = data[first_in_cell].a[BLK_W];
 		if (do_extra) {
-			if (nz == nz_alloc) z_tmp = gmt_malloc (GMT, z_tmp, nz, &nz_alloc, double);
+			if (nz == nz_alloc) z_tmp = gmt_M_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 			z_tmp[0] = data[first_in_cell].a[BLK_Z];
 			nz = 1;
 		}
@@ -617,7 +617,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 				out[GMT_Y] += data[first_in_new_cell].a[GMT_Y];
 			}
 			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
-				if (nz == nz_alloc) z_tmp = gmt_malloc (GMT, z_tmp, nz, &nz_alloc, double);
+				if (nz == nz_alloc) z_tmp = gmt_M_malloc (GMT, z_tmp, nz, &nz_alloc, double);
 				z_tmp[nz] = data[first_in_new_cell].a[BLK_Z];
 				nz++;
 			}
@@ -724,16 +724,16 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	gmt_free (GMT, data);
-	if (do_extra) gmt_free (GMT, z_tmp);
+	gmt_M_free (GMT, data);
+	if (do_extra) gmt_M_free (GMT, z_tmp);
 
 	if (emode) {
-		gmt_str_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
+		gmt_M_str_free (GMT->current.io.o_format[i_col]);	/* Free the temporary integer format */
 		GMT->current.io.o_format[i_col] = old_format;		/* Restore previous format */
 	}
 	if (Ctrl->D.active) {	/* Free histogram binning machinery */
-		gmt_free (GMT, B->count);
-		gmt_free (GMT, B);
+		gmt_M_free (GMT, B->count);
+		gmt_M_free (GMT, B);
 	}
 
 	Return (GMT_OK);

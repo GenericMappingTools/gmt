@@ -45,7 +45,7 @@ struct GRDCONVERT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCONVERT_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDCONVERT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDCONVERT_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -54,9 +54,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->IO.file[GMT_IN]);	
-	gmt_str_free (C->IO.file[GMT_OUT]);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->IO.file[GMT_IN]);	
+	gmt_M_str_free (C->IO.file[GMT_OUT]);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -177,13 +177,13 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	if ((Grid = gmt_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
 	gmt_grd_init (GMT, Grid->header, options, false);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
-	GMT_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
+	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
 	type[0] = Grid->header->type;
 	strncpy (fname[0], Grid->header->name, GMT_BUFSIZ);
-	GMT_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
+	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
 	type[1] = Grid->header->type;
 	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
-	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
+	gmt_M_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
 
 	if (type[1] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */

@@ -453,9 +453,9 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 			z_at_node = C->data[k].z + (float) (C->r_z_scale * C->grid * (C->plane_c1 * dx + C->plane_c2 * dy));
 	 			if (C->constrained) {	/* Must use ij_v2 since constrained grids are in standard scanline format */
 					ij_v2 = gmt_M_ijp (C->Grid->header, C->ny - block_j * C->grid - 1, block_i * C->grid);
-					if (C->set_low  && !GMT_is_fnan (C->Low->data[ij_v2]) && z_at_node < C->Low->data[ij_v2])
+					if (C->set_low  && !gmt_M_is_fnan (C->Low->data[ij_v2]) && z_at_node < C->Low->data[ij_v2])
 						z_at_node = C->Low->data[ij_v2];
-					else if (C->set_high && !GMT_is_fnan (C->High->data[ij_v2]) && z_at_node > C->High->data[ij_v2])
+					else if (C->set_high && !gmt_M_is_fnan (C->High->data[ij_v2]) && z_at_node > C->High->data[ij_v2])
 						z_at_node = C->High->data[ij_v2];
 	 			}
 	 			u[iu_index] = z_at_node;
@@ -569,7 +569,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing input table data\n");
-	C->data = gmt_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
+	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
@@ -602,7 +602,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 		/* Data record to process */
 	
-		if (GMT_is_dnan (in[GMT_Z])) continue;
+		if (gmt_M_is_dnan (in[GMT_Z])) continue;
 		if (gmt_M_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (gmt_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
 		if (C->periodic && (h->wesn[XHI]-in[GMT_X] < half_dx)) {	/* Push all values to the western nodes */
@@ -625,7 +625,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		C->z_mean += in[GMT_Z];
 		if (k == C->n_alloc) {
 			C->n_alloc <<= 1;
-			C->data = gmt_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
+			C->data = gmt_M_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
 		if (C->periodic && i == 0) {	/* Replicate information to eastern boundary */
 			i = C->block_nx - 1;
@@ -639,7 +639,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 			C->z_mean += in[GMT_Z];
 			if (k == C->n_alloc) {
 				C->n_alloc <<= 1;
-				C->data = gmt_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
+				C->data = gmt_M_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 			}
 			n_dup++;
 		}
@@ -666,7 +666,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
 		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
 	}
-	C->data = gmt_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
+	C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
 	if (C->set_low == 1)
 		C->low_limit = C->data[kmin].z;
@@ -710,7 +710,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 				yy = (double)(C->Grid->header->ny - j - 1);
 				for (i = 0; i < C->Grid->header->nx; i++) {
 					ij = gmt_M_ijp (C->Grid->header, j, i);
-					if (GMT_is_fnan (C->Low->data[ij])) continue;
+					if (gmt_M_is_fnan (C->Low->data[ij])) continue;
 					C->Low->data[ij] -= (float)(C->plane_c0 + C->plane_c1 * i + C->plane_c2 * yy);
 					C->Low->data[ij] *= (float)C->r_z_scale;
 				}
@@ -736,7 +736,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 				yy = (double)(C->ny - j - 1);
 				for (i = 0; i < C->Grid->header->nx; i++) {
 					ij = gmt_M_ijp (C->Grid->header, j, i);
-					if (GMT_is_fnan (C->High->data[ij])) continue;
+					if (gmt_M_is_fnan (C->High->data[ij])) continue;
 					C->High->data[ij] -= (float)(C->plane_c0 + C->plane_c1 * i + C->plane_c2 * yy);
 					C->High->data[ij] *= (float)C->r_z_scale;
 				}
@@ -758,7 +758,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
-	v2 = gmt_memory_aligned (GMT, NULL, C->Grid->header->size, float);
+	v2 = gmt_M_memory_aligned (GMT, NULL, C->Grid->header->size, float);
 	index = C->ij_sw_corner;
 	if (GMT->common.r.active) {	/* Pixel registration request. Reset limits to the original extents */
 		gmt_M_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
@@ -772,8 +772,8 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		for (j = 0; j < C->ny; j++) {
 			k = gmt_M_ijp (C->Grid->header, j, i);
 			v2[k] = u[index + C->ny - j - 1];
-			if (C->set_low  && !GMT_is_fnan (C->Low->data[k])  && v2[k] < C->Low->data[k]) v2[k]  = C->Low->data[k];
-			if (C->set_high && !GMT_is_fnan (C->High->data[k]) && v2[k] > C->High->data[k]) v2[k] = C->High->data[k];
+			if (C->set_low  && !gmt_M_is_fnan (C->Low->data[k])  && v2[k] < C->Low->data[k]) v2[k]  = C->Low->data[k];
+			if (C->set_high && !gmt_M_is_fnan (C->High->data[k]) && v2[k] > C->High->data[k]) v2[k] = C->High->data[k];
 		}
 	}
 	if (C->periodic) {	/* Ensure periodicity of E-W boundaries */
@@ -782,7 +782,7 @@ GMT_LOCAL int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 			v2[k] = v2[k+C->nx-1] = (float)(0.5 * (v2[k] + v2[k+C->nx-1]));	/* Set these to the same as their average */
 		}
 	}
-	gmt_free_aligned (GMT, C->Grid->data);	/* Free original column-oriented grid */
+	gmt_M_free_aligned (GMT, C->Grid->data);	/* Free original column-oriented grid */
 	C->Grid->data = v2;			/* Hook in new scanline-oriented grid */
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK) {
 		return (GMT->parent->error);
@@ -998,9 +998,9 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 
 				if (C->constrained) {	/* Must check limits.  Note lower/upper grids are in standard scanline format and need ij_v2! */
 					ij_v2 = gmt_M_ijp (C->Grid->header, C->ny - j - 1, i);
-					if (C->set_low && !GMT_is_fnan (C->Low->data[ij_v2]) && sum_ij < C->Low->data[ij_v2])
+					if (C->set_low && !gmt_M_is_fnan (C->Low->data[ij_v2]) && sum_ij < C->Low->data[ij_v2])
 						sum_ij = C->Low->data[ij_v2];
-					else if (C->set_high && !GMT_is_fnan (C->High->data[ij_v2]) && sum_ij > C->High->data[ij_v2])
+					else if (C->set_high && !gmt_M_is_fnan (C->High->data[ij_v2]) && sum_ij > C->High->data[ij_v2])
 						sum_ij = C->High->data[ij_v2];
 				}
 
@@ -1266,7 +1266,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
 		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
-		C->data = gmt_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
+		C->data = gmt_M_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Check that previous processing steps write results with enough decimals.\n");
@@ -1343,7 +1343,7 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 				region, sug[i].nx, sug[i].ny, sug[i].factor);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: After completion you can recover the desired region via gmt grdcut\n");
-		gmt_free (GMT, sug);
+		gmt_M_free (GMT, sug);
 		GMT->current.io.geo.range = save_range;
 	}
 	else
@@ -1388,9 +1388,9 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	x = gmt_memory (GMT, NULL, n_alloc, double);
-	y = gmt_memory (GMT, NULL, n_alloc, double);
-	z = gmt_memory (GMT, NULL, n_alloc, double);
+	x = gmt_M_memory (GMT, NULL, n_alloc, double);
+	y = gmt_M_memory (GMT, NULL, n_alloc, double);
+	z = gmt_M_memory (GMT, NULL, n_alloc, double);
 
 	r_dx = 1.0 / C->grid_xinc; 
 	r_dy = 1.0 / C->grid_yinc; 
@@ -1404,9 +1404,9 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 			if (n_alloc >= this_end) {
 				n_alloc += MAX (GMT_CHUNK, n_int);
-				x = gmt_memory (GMT, x, n_alloc, double);
-				y = gmt_memory (GMT, x, n_alloc, double);
-				z = gmt_memory (GMT, x, n_alloc, double);
+				x = gmt_M_memory (GMT, x, n_alloc, double);
+				y = gmt_M_memory (GMT, x, n_alloc, double);
+				z = gmt_M_memory (GMT, x, n_alloc, double);
 			}
 
 			dx /= (floor((double)n_int) - 1);
@@ -1430,7 +1430,7 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	/* Now add the interpolated breakline to the C structure */
 
 	k = C->npoints;
-	C->data = gmt_memory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
+	C->data = gmt_M_memory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
 	C->z_mean *= k;		/* It was already computed, reset it to sum */
 	if (C->set_low == 1)
 		zmin = C->low_limit;
@@ -1439,7 +1439,7 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 
 	for (n = 0; n < n_tot; n++) {
 
-		if (GMT_is_dnan (z[n])) continue;
+		if (gmt_M_is_dnan (z[n])) continue;
 
 		scol = irint (floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5));
 		if (scol < 0 || scol >= C->block_nx) continue;
@@ -1457,7 +1457,7 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	}
 
 	if (k != (C->npoints + n_tot))		/* We had some NaNs */
-		C->data = gmt_memory (GMT, C->data, k, struct SURFACE_DATA);
+		C->data = gmt_M_memory (GMT, C->data, k, struct SURFACE_DATA);
 
 	C->npoints = k;
 	C->z_mean /= k;
@@ -1467,15 +1467,15 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	if (C->set_high == 1)
 		C->high_limit = C->data[kmax].z;
 
-	gmt_free (GMT, x);
-	gmt_free (GMT, y);
-	gmt_free (GMT, z);
+	gmt_M_free (GMT, x);
+	gmt_M_free (GMT, y);
+	gmt_M_free (GMT, z);
 }
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SURFACE_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct SURFACE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct SURFACE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.value = SURFACE_MAX_ITERATIONS;
@@ -1487,11 +1487,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->G.file);	
-	gmt_str_free (C->D.file);	
-	gmt_str_free (C->L.low);	
-	gmt_str_free (C->L.high);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_str_free (C->D.file);	
+	gmt_M_str_free (C->L.low);	
+	gmt_M_str_free (C->L.high);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1808,7 +1808,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_OK) Return (API->error);
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
-		gmt_free (GMT, C.data);
+		gmt_M_free (GMT, C.data);
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL,
 			0, 0, C.Grid) == NULL) Return (API->error);	/* Don't bother with padding since no BCs will be applied */
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
@@ -1835,8 +1835,8 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	/* Allocate more space  */
 
-	C.briggs = gmt_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
-	C.iu = gmt_memory (GMT, NULL, C.mxmy, char);
+	C.briggs = gmt_M_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
+	C.iu = gmt_M_memory (GMT, NULL, C.mxmy, char);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
@@ -1865,9 +1865,9 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	replace_planar_trend (&C);
 
-	gmt_free (GMT, C.data);
-	gmt_free (GMT, C.briggs);
-	gmt_free (GMT, C.iu);
+	gmt_M_free (GMT, C.data);
+	gmt_M_free (GMT, C.briggs);
+	gmt_M_free (GMT, C.iu);
 	if ((C.set_low  > 0 && C.set_low < 3) && GMT_Destroy_Data (API, &C.Low) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free C.Low\n");
 	}

@@ -69,16 +69,16 @@ struct GSHHG_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GSHHG_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GSHHG_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GSHHG_CTRL);
 
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->Out.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->Out.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -271,17 +271,17 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	}
 	sprintf (header, "# Data extracted from GSHHG file %s", Ctrl->In.file);
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
-		X->table[0]->header = gmt_memory (GMT, NULL, 1, char *);
+		X->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
 		X->table[0]->header[0] = strdup (header);
 		X->table[0]->n_headers = 1;
 		TX = X->table[0]->segment[0];	/* There is only one output table with one segment */
 	}
 	else {
-		D->table[0]->header = gmt_memory (GMT, NULL, 1, char *);
+		D->table[0]->header = gmt_M_memory (GMT, NULL, 1, char *);
 		D->table[0]->header[0] = strdup (header);
 		D->table[0]->n_headers = 1;
 		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
-		D->table[0]->segment = gmt_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
+		D->table[0]->segment = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
 	n_read = fread (&h, sizeof (struct GSHHG_HEADER), 1U, fp);
@@ -329,7 +329,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		if (Ctrl->L.active) {	/* Want a text set of headers back */
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				n_alloc <<= 2;
-				TX->record = gmt_memory (GMT, TX->record, n_alloc, char *);
+				TX->record = gmt_M_memory (GMT, TX->record, n_alloc, char *);
 			}
 		}
 		else {
@@ -338,7 +338,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
-				T = gmt_memory (GMT, T, n_alloc, struct GMT_DATASEGMENT *);
+				T = gmt_M_memory (GMT, T, n_alloc, struct GMT_DATASEGMENT *);
 				gmt_M_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 			}
 		}
@@ -364,7 +364,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */
-			T[seg_no] = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+			T[seg_no] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			T[seg_no]->header = strdup (header);
 			if (h.id == 0)	/* Special longitude range for Eurasia since it crosses Greenwich and Dateline */
 				T[seg_no]->range = GMT_IS_M180_TO_P270_RANGE;
@@ -396,7 +396,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
-			TX->record = gmt_memory (GMT, TX->record, seg_no, char *);
+			TX->record = gmt_M_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
 		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {
@@ -405,7 +405,7 @@ int GMT_gshhg (void *V_API, int mode, void *args) {
 	}
 	else {
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
-			D->table[0]->segment = gmt_memory (GMT, D->table[0]->segment, seg_no, struct GMT_DATASEGMENT *);
+			D->table[0]->segment = gmt_M_memory (GMT, D->table[0]->segment, seg_no, struct GMT_DATASEGMENT *);
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;

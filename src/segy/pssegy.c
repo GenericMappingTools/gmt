@@ -111,7 +111,7 @@ struct PSSEGY_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSEGY_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSSEGY_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -124,9 +124,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->T.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->T.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -513,7 +513,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 
 	if (Ctrl->T.active) { /* must read in file of desired trace locations */
-		tracelist = gmt_memory (GMT, NULL, GMT_CHUNK, double);
+		tracelist = gmt_M_memory (GMT, NULL, GMT_CHUNK, double);
 		n_tracelist = GMT_CHUNK;
 		ix = 0;
 		while ((fscanf (fpt, "%lf", &test)) != EOF) {
@@ -521,7 +521,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 			ix++;
 			if (ix == n_tracelist) {	/* need more memory in array */
 				n_tracelist += GMT_CHUNK;
-				tracelist = gmt_memory (GMT, tracelist, n_tracelist, double);
+				tracelist = gmt_M_memory (GMT, tracelist, n_tracelist, double);
 			}
 		}
 		n_tracelist = (int)ix;
@@ -529,7 +529,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	}
 
 	/* set up map projection and PS plotting */
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -594,7 +594,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	bitmap = gmt_memory (GMT, NULL, nm, unsigned char);
+	bitmap = gmt_M_memory (GMT, NULL, nm, unsigned char);
 
 	ix = 0;
 	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
@@ -681,8 +681,8 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "trace %d plotting at %f \n", ix+1, x0);
 			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
 		}
-		gmt_str_free (data);
-		gmt_str_free (header);
+		gmt_M_str_free (data);
+		gmt_M_str_free (header);
 		ix++;
 	}
 
@@ -697,8 +697,8 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
 
-	gmt_free (GMT, bitmap);
-	if (Ctrl->T.active) gmt_free (GMT, tracelist);
+	gmt_M_free (GMT, bitmap);
+	if (Ctrl->T.active) gmt_M_free (GMT, tracelist);
 
 	Return (EXIT_SUCCESS);
 }

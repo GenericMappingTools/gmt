@@ -119,7 +119,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77TRACK_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct MGD77TRACK_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct MGD77TRACK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -146,7 +146,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl) {
@@ -551,7 +551,7 @@ GMT_LOCAL void annot_legname (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double
 }
 
 GMT_LOCAL int bad_coordinates (double lon, double lat) {
-	return (GMT_is_dnan (lon) || GMT_is_dnan (lat));
+	return (gmt_M_is_dnan (lon) || gmt_M_is_dnan (lat));
 }
 
 /* Break internal time into calendar and clock struct info  */
@@ -630,7 +630,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 		
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -640,7 +640,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	both = (Ctrl->L.info.annot_int_time && Ctrl->L.info.annot_int_dist);
 	
-	if (Ctrl->N.active) cruise_id = gmt_memory (GMT, NULL, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
+	if (Ctrl->N.active) cruise_id = gmt_M_memory (GMT, NULL, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
 
 	MGD77_Select_Columns (GMT, "time,lon,lat", &M, MGD77_SET_ALLEXACT);	/* This sets up which columns to read */
 
@@ -676,7 +676,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		lon = (double*)D->values[1];
 		lat = (double*)D->values[2];
 		if ((track_dist = gmt_dist_array_2(GMT, lon, lat, D->H.n_records, 1.0, dist_flag)) == NULL)		/* Work internally in meters */
-			GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+			gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 		for (rec = 0; rec < D->H.n_records && bad_coordinates (lon[rec], lat[rec]) && track_time[rec] <
 		     Ctrl->D.start && track_dist[rec] < Ctrl->S.start; rec++);	/* Find first record of interest */
 		first_rec = rec;
@@ -746,7 +746,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 						if (n_id == n_alloc_c) {
 							size_t old_n_alloc = n_alloc_c;
 							n_alloc_c <<= 1;
-							cruise_id = gmt_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
+							cruise_id = gmt_M_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
 							gmt_M_memset (&(cruise_id[old_n_alloc]), n_alloc_c - old_n_alloc,  struct MGD77TRACK_LEG_ANNOT);	/* Set to NULL/0 */
 						}
 					}
@@ -855,7 +855,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 			}
 		}
 		MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File */
-		gmt_free (GMT, track_dist);
+		gmt_M_free (GMT, track_dist);
 		n_cruises++;
 	}
 		
@@ -870,7 +870,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		for (id = 0; id < n_id; id++)
 			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat,
 			               cruise_id[id].angle, cruise_id[id].text, size);
-		gmt_free (GMT, cruise_id);
+		gmt_M_free (GMT, cruise_id);
 	}
 
 	gmt_plane_perspective (GMT, -1, 0.0);

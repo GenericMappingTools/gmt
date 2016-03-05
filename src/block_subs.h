@@ -180,7 +180,7 @@ struct BLK_DATA {
 GMT_LOCAL void *NEW_BLK (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 #if defined(BLOCKMODE)	/* Only used by blockmode */
@@ -195,8 +195,8 @@ GMT_LOCAL void *NEW_BLK (struct GMT_CTRL *GMT) {
 /*! Deallocate control structure */
 GMT_LOCAL void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	if (!C) return;
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 #if !defined(BLOCKMEAN)	/* Not used by blockmean */

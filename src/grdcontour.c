@@ -127,7 +127,7 @@ struct SAVE {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCONTOUR_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDCONTOUR_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDCONTOUR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -147,12 +147,12 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->C.file);
-	gmt_str_free (C->D.file);
-	gmt_str_free (C->T.txt[0]);
-	gmt_str_free (C->T.txt[1]);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->T.txt[0]);
+	gmt_M_str_free (C->T.txt[1]);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -330,13 +330,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 				if (gmt_M_file_is_memory (opt->arg)) {	/* Passed a memory reference from a module */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = true;
-					gmt_str_free (Ctrl->C.file);
+					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
-					gmt_str_free (Ctrl->C.file);
+					gmt_M_str_free (Ctrl->C.file);
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else if (opt->arg[0] == '+')
@@ -470,7 +470,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct 
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active,
 	                                 "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 &&
-			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont),
+			gmt_M_is_dnan (Ctrl->C.single_cont) && gmt_M_is_dnan (Ctrl->A.single_cont),
 	                     "Syntax error -C option: Must specify contour interval, file name with levels, or CPT file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.low > Ctrl->L.high, "Syntax error -L option: lower limit > upper!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
@@ -617,12 +617,12 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 
 		np = (int)gmt_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
 
-		s = gmt_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
+		s = gmt_M_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
 		n_ticks = irint (floor (s[np-1] / tick_gap));
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
 			save[pol].do_it = false;
-			gmt_free (GMT, s);	gmt_free (GMT, xp);	gmt_free (GMT, yp);
+			gmt_M_free (GMT, s);	gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
 			continue;
 		}
 
@@ -655,7 +655,7 @@ GMT_LOCAL void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *P
 				j++;
 			}
 		}
-		gmt_free (GMT, s);	gmt_free (GMT, xp);	gmt_free (GMT, yp);
+		gmt_M_free (GMT, s);	gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
 	}
 
 	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
@@ -937,8 +937,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
 		n_tmp = 0;
-		gmt_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
-		gmt_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
+		gmt_M_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+		gmt_M_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 		for (i = c = 0; i < P->n_colors; i++) {
 			if (P->range[i].skip) continue;
 			contour[c] = P->range[i].z_low;
@@ -998,8 +998,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
-				gmt_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
-				gmt_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
+				gmt_M_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+				gmt_M_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			got = sscanf (record, "%lf %c %lf", &contour[n_contours], &cont_type[n_contours], &tmp);
 			if (cont_type[n_contours] == '\0') cont_type[n_contours] = 'C';
@@ -1012,16 +1012,16 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (!GMT_is_dnan (Ctrl->C.single_cont) || !GMT_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only  */
+	else if (!gmt_M_is_dnan (Ctrl->C.single_cont) || !gmt_M_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only  */
 		n_contours = 0;
 		n_tmp = 0;
-		gmt_malloc2 (GMT, contour, cont_angle, 2, &n_tmp, double);		/* Allocate 2, even if we only have 1 */
-		gmt_malloc2 (GMT, cont_type, cont_do_tick, 2, &n_alloc, char);
-		if (!GMT_is_dnan (Ctrl->C.single_cont)) {
+		gmt_M_malloc2 (GMT, contour, cont_angle, 2, &n_tmp, double);		/* Allocate 2, even if we only have 1 */
+		gmt_M_malloc2 (GMT, cont_type, cont_do_tick, 2, &n_alloc, char);
+		if (!gmt_M_is_dnan (Ctrl->C.single_cont)) {
 			cont_type[n_contours] = 'C';
 			contour[n_contours++] = Ctrl->C.single_cont;
 		}
-		if (!GMT_is_dnan (Ctrl->A.single_cont)) {
+		if (!gmt_M_is_dnan (Ctrl->A.single_cont)) {
 			cont_type[n_contours] = 'A';
 			contour[n_contours] = Ctrl->A.single_cont;
 			cont_do_tick[n_contours] = Ctrl->T.active ? 1 : 0;
@@ -1038,8 +1038,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		for (c = irint (min/Ctrl->C.interval), n_contours = 0; c <= irint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
-				gmt_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
-				gmt_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
+				gmt_M_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
+				gmt_M_malloc2 (GMT, cont_type, cont_do_tick, n_contours, &n_alloc, char);
 			}
 			contour[n_contours] = c * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (contour[n_contours] - aval) > GMT_CONV4_LIMIT) aval += Ctrl->A.interval;
@@ -1064,10 +1064,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 			gmt_plane_perspective (GMT, -1, 0.0);
 			gmt_plotend (GMT);
 		}
-		gmt_free (GMT, contour);
-		gmt_free (GMT, cont_type);
-		gmt_free (GMT, cont_angle);
-		gmt_free (GMT, cont_do_tick);
+		gmt_M_free (GMT, contour);
+		gmt_M_free (GMT, cont_type);
+		gmt_M_free (GMT, cont_angle);
+		gmt_M_free (GMT, cont_do_tick);
 		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}
@@ -1085,13 +1085,13 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	else
 		small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 	n_alloc = n_tmp = n_contours;
-	gmt_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
-	gmt_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
+	gmt_M_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
+	gmt_M_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
 
 	gmt_grd_minmax (GMT, G, xyz);
 	if (gmt_contlabel_prep (GMT, &Ctrl->contour, xyz)) {	/* Prep for crossing lines, if any */
-		gmt_free (GMT, contour);		gmt_free (GMT, cont_type);
-		gmt_free (GMT, cont_angle);		gmt_free (GMT, cont_do_tick);
+		gmt_M_free (GMT, contour);		gmt_M_free (GMT, cont_type);
+		gmt_M_free (GMT, cont_angle);		gmt_M_free (GMT, cont_do_tick);
 		Return (EXIT_FAILURE);
 	}
 
@@ -1102,7 +1102,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 
  	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
 	n_edges = G->header->ny * (urint (ceil (G->header->nx / 16.0)));
-	edge = gmt_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
+	edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
 		uint64_t dim[4] = {0, 0, 0, 3};
@@ -1139,8 +1139,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		}
 		dim[GMT_TBL] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
-		n_seg_alloc = gmt_memory (GMT, NULL, n_tables, size_t);
-		n_seg = gmt_memory (GMT, NULL, n_tables, uint64_t);
+		n_seg_alloc = gmt_M_memory (GMT, NULL, n_tables, size_t);
+		n_seg = gmt_M_memory (GMT, NULL, n_tables, uint64_t);
 	}
 
 	if (make_plot) {
@@ -1193,7 +1193,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t old_n_alloc = n_seg_alloc[tbl];
-						D->table[tbl]->segment = gmt_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+						D->table[tbl]->segment = gmt_M_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
 						gmt_M_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
@@ -1208,11 +1208,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 				if (make_plot && cont_do_tick[c] && is_closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
 					int extra;
-					if (n_save == n_save_alloc) save = gmt_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
+					if (n_save == n_save_alloc) save = gmt_M_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 					extra = (abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
 					n_alloc = 0;
 					gmt_M_memset (&save[n_save], 1, struct SAVE);
-					gmt_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
+					gmt_M_malloc2 (GMT, save[n_save].x, save[n_save].y, n + extra, &n_alloc, double);
 					gmt_M_memcpy (save[n_save].x, x, n, double);
 					gmt_M_memcpy (save[n_save].y, y, n, double);
 					gmt_M_memcpy (&save[n_save].pen, &Ctrl->W.pen[id], 1, struct GMT_PEN);
@@ -1240,12 +1240,12 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 					else
 						cont_label[0] = '\0';
 					gmt_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed == cont_is_closed, true, &Ctrl->contour);
-					gmt_free (GMT, xp);
-					gmt_free (GMT, yp);
+					gmt_M_free (GMT, xp);
+					gmt_M_free (GMT, yp);
 				}
 			}
-			gmt_free (GMT, x);
-			gmt_free (GMT, y);
+			gmt_M_free (GMT, x);
+			gmt_M_free (GMT, y);
 		}
 	}
 
@@ -1254,15 +1254,15 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
-		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = gmt_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
+		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = gmt_M_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
-		gmt_free (GMT, n_seg_alloc);
-		gmt_free (GMT, n_seg);
+		gmt_M_free (GMT, n_seg_alloc);
+		gmt_M_free (GMT, n_seg);
 	}
 
 	if (data_is_time) {	/* Undo earlier swapparoo */
@@ -1281,14 +1281,14 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (make_plot) PSL_setdash (PSL, NULL, 0.0);
 
 	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
-		save = gmt_memory (GMT, save, n_save, struct SAVE);
+		save = gmt_M_memory (GMT, save, n_save, struct SAVE);
 
 		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.dim[GMT_X], Ctrl->T.dim[GMT_Y], Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode, Ctrl->contour.fp);
 		for (i = 0; i < n_save; i++) {
-			gmt_free (GMT, save[i].x);
-			gmt_free (GMT, save[i].y);
+			gmt_M_free (GMT, save[i].x);
+			gmt_M_free (GMT, save[i].y);
 		}
-		gmt_free (GMT, save);
+		gmt_M_free (GMT, save);
 	}
 
 	if (make_plot) {
@@ -1316,11 +1316,11 @@ int GMT_grdcontour (void *V_API, int mode, void *args) {
 	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_orig\n");
 	}
-	gmt_free (GMT, edge);
-	gmt_free (GMT, contour);
-	gmt_free (GMT, cont_type);
-	gmt_free (GMT, cont_angle);
-	gmt_free (GMT, cont_do_tick);
+	gmt_M_free (GMT, edge);
+	gmt_M_free (GMT, contour);
+	gmt_M_free (GMT, cont_type);
+	gmt_M_free (GMT, cont_angle);
+	gmt_M_free (GMT, cont_do_tick);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

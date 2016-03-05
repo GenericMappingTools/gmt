@@ -63,7 +63,7 @@ EXTERN_MSC double map_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c
 /*! Linear projections tagged 0-99 */
 #define gmt_M_is_linear(C) (C->current.proj.projection / 100 == 0)
 
-enum GMT_enum_annot {GMT_LINEAR = 0,
+enum gmt_enum_annot {GMT_LINEAR = 0,
 	GMT_LOG10,	/* These numbers are only used for GMT->current.proj.xyz_projection[3], */
 	GMT_POW,	/* while GMT->current.proj.projection = 0 */
 	GMT_TIME,
@@ -75,7 +75,7 @@ enum GMT_enum_annot {GMT_LINEAR = 0,
 /*! Cylindrical projections tagged 100-199 */
 #define gmt_M_is_cylindrical(C) (C->current.proj.projection / 100 == 1)
 
-enum GMT_enum_cyl {GMT_MERCATOR = 100,
+enum gmt_enum_cyl {GMT_MERCATOR = 100,
 	GMT_CYL_EQ,
 	GMT_CYL_EQDIST,
 	GMT_CYL_STEREO,
@@ -89,14 +89,14 @@ enum GMT_enum_cyl {GMT_MERCATOR = 100,
 /*! Conic projections tagged 200-299 */
 #define gmt_M_is_conical(C) (C->current.proj.projection / 100 == 2)
 
-enum GMT_enum_conic {GMT_ALBERS = 200,
+enum gmt_enum_conic {GMT_ALBERS = 200,
 	GMT_ECONIC,
 	GMT_POLYCONIC,
 	GMT_LAMBERT = 250};
 
 /* Azimuthal projections tagged 300-399 */
 #define gmt_M_is_azimuthal(C) (C->current.proj.projection / 100 == 3)
-enum GMT_enum_azim {GMT_STEREO = 300,
+enum gmt_enum_azim {GMT_STEREO = 300,
 	GMT_LAMB_AZ_EQ,
 	GMT_ORTHO,
 	GMT_AZ_EQDIST,
@@ -106,7 +106,7 @@ enum GMT_enum_azim {GMT_STEREO = 300,
 
 /* Misc projections tagged 400-499 */
 #define gmt_M_is_misc(C) (C->current.proj.projection / 100 == 4)
-enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
+enum gmt_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_HAMMER,
 	GMT_SINUSOIDAL,
 	GMT_VANGRINTEN,
@@ -116,7 +116,7 @@ enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_WINKEL};
 
 /*! The various GMT measurement units */
-enum GMT_enum_units {GMT_IS_METER = 0,
+enum gmt_enum_units {GMT_IS_METER = 0,
 	GMT_IS_KM,
 	GMT_IS_MILE,
 	GMT_IS_NAUTICAL_MILE,
@@ -248,7 +248,7 @@ struct GMT_PROJ {
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS lat_swap_vals;
 
-	enum GMT_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
+	enum gmt_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
 	char unit_name[GMT_N_UNITS][GMT_LEN16];	/* Names of the various distance units */
 	double m_per_unit[GMT_N_UNITS];	/* Meters in various units.  Use to scale units to meters */
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */

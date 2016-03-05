@@ -142,7 +142,7 @@ struct GMT2KML_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMT2KML_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GMT2KML_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMT2KML_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -164,19 +164,19 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->C.file);
-	gmt_str_free (C->D.file);
-	gmt_str_free (C->I.file);
-	gmt_str_free (C->N.fmt);
-	gmt_str_free (C->T.title);
-	gmt_str_free (C->T.folder);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->N.fmt);
+	gmt_M_str_free (C->T.title);
+	gmt_M_str_free (C->T.folder);
 	if (C->L.active) {
 		unsigned int col;
-		for (col = 0; col < C->L.n_cols; col++) gmt_str_free (C->L.name[col]);
-		gmt_free (GMT, C->L.name);
+		for (col = 0; col < C->L.n_cols; col++) gmt_M_str_free (C->L.name[col]);
+		gmt_M_free (GMT, C->L.name);
 	}
-	gmt_free (GMT, C);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -311,12 +311,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'C':	/* Color table */
 				Ctrl->C.active = true;
-				gmt_str_free (Ctrl->C.file);
+				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
 				Ctrl->D.active = true;
-				gmt_str_free (Ctrl->D.file);
+				gmt_M_str_free (Ctrl->D.file);
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Extrude feature down to the ground*/
@@ -375,7 +375,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Custom icon */
 	 			Ctrl->I.active = true;
-				gmt_str_free (Ctrl->I.file);
+				gmt_M_str_free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])
@@ -386,7 +386,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
  				Ctrl->L.active = true;
 				pos = Ctrl->L.n_cols = 0;
 				while ((gmt_strtok (opt->arg, ",", &pos, p))) {
-					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = gmt_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
+					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = gmt_M_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
 					Ctrl->L.name[Ctrl->L.n_cols++] = strdup (p);
 				}
 				break;
@@ -638,12 +638,12 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
 				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], gmt_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
-					gmt_free (GMT, Q);
+					gmt_M_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
 				if (gmt_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], gmt_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
-					gmt_free (GMT, Q);
+					gmt_M_free (GMT, Q);
 					return (EXIT_FAILURE);
 				}
 				gmt_quad_add (GMT, Q, x);
@@ -655,7 +655,7 @@ GMT_LOCAL int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, doub
 	way = gmt_quad_finalize (GMT, Q);
 	wesn[XLO] = Q->min[way];	wesn[XHI] = Q->max[way];
 	wesn[YLO] = y_min;		wesn[YHI] = y_max;
-	gmt_free (GMT, Q);
+	gmt_M_free (GMT, Q);
 	return (GMT_NOERROR);
 }
 
@@ -1027,7 +1027,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						}
 					}
 				}
-				if (Ctrl->F.mode < LINE && GMT_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
+				if (Ctrl->F.mode < LINE && gmt_M_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
 
 				pos = 0;
 				if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
@@ -1070,11 +1070,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->F.mode == SPAN) {
 						kml_print (API, N++, "<TimeSpan>\n");
-						if (!GMT_is_dnan (out[t1_col])) {
+						if (!gmt_M_is_dnan (out[t1_col])) {
 							gmt_ascii_format_col (GMT, text, out[t1_col], GMT_OUT, t1_col);
 							kml_print (API, N, "<begin>%s</begin>\n", text);
 						}
-						if (!GMT_is_dnan (out[t2_col])) {
+						if (!gmt_M_is_dnan (out[t2_col])) {
 							gmt_ascii_format_col (GMT, text, out[t2_col], GMT_OUT, t2_col);
 							kml_print (API, N, "<end>%s</end>\n", text);
 						}
@@ -1096,7 +1096,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args) {
 					kml_print (API, --N, "</Placemark>\n");
 				}
 				else {	/* For lines and polygons we just output the coordinates */
-					if (GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
+					if (gmt_M_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
 					ascii_output_three (API, out, N);
 					if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
 						/* GE cannot handle polygons crossing the dateline; warn for now */

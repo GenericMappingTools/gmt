@@ -71,7 +71,7 @@ struct GRDCUT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDCUT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDCUT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDCUT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -83,9 +83,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -203,13 +203,13 @@ GMT_LOCAL unsigned int count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID *G, uns
 	gmt_M_memset (count, 4, unsigned int);	/* Reset count */
 	*side = 0;
 	/* South count: */
-	for (col = col0, node = gmt_M_ijp (G->header, row1, col); col <= col1; col++, node++) if (GMT_is_fnan (G->data[node])) count[0]++;
+	for (col = col0, node = gmt_M_ijp (G->header, row1, col); col <= col1; col++, node++) if (gmt_M_is_fnan (G->data[node])) count[0]++;
 	/* East count: */
-	for (row = row0, node = gmt_M_ijp (G->header, row, col1); row <= row1; row++, node += G->header->mx) if (GMT_is_fnan (G->data[node])) count[1]++;
+	for (row = row0, node = gmt_M_ijp (G->header, row, col1); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[1]++;
 	/* North count: */
-	for (col = col0, node = gmt_M_ijp (G->header, row0, col); col <= col1; col++, node++) if (GMT_is_fnan (G->data[node])) count[2]++;
+	for (col = col0, node = gmt_M_ijp (G->header, row0, col); col <= col1; col++, node++) if (gmt_M_is_fnan (G->data[node])) count[2]++;
 	/* West count: */
-	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (GMT_is_fnan (G->data[node])) count[3]++;
+	for (row = row0, node = gmt_M_ijp (G->header, row, col0); row <= row1; row++, node += G->header->mx) if (gmt_M_is_fnan (G->data[node])) count[3]++;
 	for (k = 0; k < 4; k++) {	/* TIme to sum up and determine side with most NaNs */
 		sum += count[k];
 		if (k && count[k] > count[*side]) *side = k;
@@ -295,7 +295,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		/* Here NaNs have either been skipped by inward search, or will be ignored (NAN_IS_IGNORED) or will beconsider to be within range (NAN_IS_INRANGE) */
 		for (row = row0, go = true; go && row <= row1; row++) {	/* Scan from ymax towards ymin */
 			for (col = col0, node = gmt_M_ijp (G->header, row, 0); go && col <= col1; col++, node++) {
-				if (GMT_is_fnan (G->data[node])) {
+				if (gmt_M_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
 				}
 				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
@@ -309,7 +309,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		for (row = row1, go = true; go && row > row0; row--) {	/* Scan from ymin towards ymax */
 			for (col = col0, node = gmt_M_ijp (G->header, row, 0); go && col <= col1; col++, node++) {
-				if (GMT_is_fnan (G->data[node])) {
+				if (gmt_M_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
 				}
 				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
@@ -319,7 +319,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		for (col = col0, go = true; go && col <= col1; col++) {	/* Scan from xmin towards xmax */
 			for (row = row0, node = gmt_M_ijp (G->header, row0, col); go && row <= row1; row++, node += G->header->mx) {
-				if (GMT_is_fnan (G->data[node])) {
+				if (gmt_M_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
 				}
 				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
@@ -329,7 +329,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		for (col = col1, go = true; go && col >= col0; col--) {	/* Scan from xmax towards xmin */
 			for (row = row0, node = gmt_M_ijp (G->header, row0, col); go && row <= row1; row++, node += G->header->mx) {
-				if (GMT_is_fnan (G->data[node])) {
+				if (gmt_M_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INRANGE) go = false;	/* Must stop since this NaN value defines the inner box */
 				}
 				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
@@ -347,7 +347,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - row1) * G->header->inc[GMT_Y];
 			wesn_new[YHI] = G->header->wesn[YHI] - row0 * G->header->inc[GMT_Y];
 		}
-		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
+		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
 		add_mode = GMT_IO_RESET;	/* Pass this to allow reading the data again. */
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
@@ -484,7 +484,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (test_header.wesn, wesn_new, 4, double);
 	gmt_M_memcpy (test_header.inc, G->header->inc, 2, double);
-	GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
+	gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, &test_header, 1), Ctrl->G.file);
 
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 
@@ -576,7 +576,7 @@ int GMT_grdcut (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		gmt_free (GMT, grd_lon);	
+		gmt_M_free (GMT, grd_lon);	
 		GMT_Report (API, GMT_MSG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
 	}
 	

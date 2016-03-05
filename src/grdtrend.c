@@ -117,7 +117,7 @@ struct GRDTREND_CTRL {	/* All control options for this program (except common ar
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDTREND_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDTREND_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDTREND_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -126,11 +126,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->D.file);
-	gmt_str_free (C->T.file);
-	gmt_str_free (C->W.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->T.file);
+	gmt_M_str_free (C->W.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -340,7 +340,7 @@ GMT_LOCAL double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct
 	gmt_M_unused(GMT);
 
 	gmt_M_grd_loop (GMT, R, row, col, ij) {
-		if (GMT_is_fnan (R->data[ij])) continue;
+		if (gmt_M_is_fnan (R->data[ij])) continue;
 		tmp = R->data[ij];
 		if (scale != 1.0) tmp /= scale;
 		tmp *= tmp;
@@ -357,7 +357,7 @@ GMT_LOCAL double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R
 	float r, mad, scale;
 
 	gmt_M_grd_loop (GMT, R, row, col, ij) {
-		if (GMT_is_fnan (R->data[ij])) continue;
+		if (gmt_M_is_fnan (R->data[ij])) continue;
 		W->data[j++] = fabsf (R->data[ij]);
 	}
 
@@ -374,7 +374,7 @@ GMT_LOCAL double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R
 
 	gmt_M_memset (W->data, W->header->size, float);	/* Wipe W clean */
 	gmt_M_grd_loop (GMT, R, row, col, ij) {
-		if (GMT_is_fnan (R->data[ij])) {
+		if (gmt_M_is_fnan (R->data[ij])) {
 			W->data[ij] = R->data[ij];
 			continue;
 		}
@@ -433,7 +433,7 @@ GMT_LOCAL void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, doubl
 		load_pstuff (pstuff, n_model, xval[0], yval[row], 0, 1);
 		gmt_M_col_loop (GMT, G, row, col, ij) {
 
-			if (GMT_is_fnan (G->data[ij]))continue;
+			if (gmt_M_is_fnan (G->data[ij]))continue;
 
 			n_used++;
 			load_pstuff (pstuff, n_model, xval[col], yval[row], 1, 0);
@@ -525,14 +525,14 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, G->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
 	/* Check for NaNs (we include the pad for simplicity)  */
 	ij = 0;
-	while (trivial && ij < G->header->size) if (GMT_is_fnan (G->data[ij++])) trivial = false;
+	while (trivial && ij < G->header->size) if (gmt_M_is_fnan (G->data[ij++])) trivial = false;
 
 	/* Allocate other required arrays */
 
@@ -540,12 +540,12 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		if ((R = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
 	}
-	xval = gmt_memory (GMT, NULL, G->header->nx, double);
-	yval = gmt_memory (GMT, NULL, G->header->ny, double);
-	gtg = gmt_memory (GMT, NULL, Ctrl->N.value*Ctrl->N.value, double);
-	gtd = gmt_memory (GMT, NULL, Ctrl->N.value, double);
-	old = gmt_memory (GMT, NULL, Ctrl->N.value, double);
-	pstuff = gmt_memory (GMT, NULL, Ctrl->N.value, double);
+	xval = gmt_M_memory (GMT, NULL, G->header->nx, double);
+	yval = gmt_M_memory (GMT, NULL, G->header->ny, double);
+	gtg = gmt_M_memory (GMT, NULL, Ctrl->N.value*Ctrl->N.value, double);
+	gtd = gmt_M_memory (GMT, NULL, Ctrl->N.value, double);
+	old = gmt_M_memory (GMT, NULL, Ctrl->N.value, double);
+	pstuff = gmt_M_memory (GMT, NULL, Ctrl->N.value, double);
 	pstuff[0] = 1.0; /* This is P0(x) = 1, which is not altered in this program. */
 
 	/* If a weight array is needed, get one */
@@ -668,12 +668,12 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* That's all, folks!  */
 
 
-	gmt_free (GMT, pstuff);
-	gmt_free (GMT, gtd);
-	gmt_free (GMT, gtg);
-	gmt_free (GMT, old);
-	gmt_free (GMT, yval);
-	gmt_free (GMT, xval);
+	gmt_M_free (GMT, pstuff);
+	gmt_M_free (GMT, gtd);
+	gmt_M_free (GMT, gtg);
+	gmt_M_free (GMT, old);
+	gmt_M_free (GMT, yval);
+	gmt_M_free (GMT, xval);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

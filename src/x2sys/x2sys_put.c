@@ -61,7 +61,7 @@ struct X2SYS_PUT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_PUT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct X2SYS_PUT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_PUT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -70,9 +70,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->T.TAG);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->T.TAG);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -162,10 +162,10 @@ GMT_LOCAL int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, s
 		/* Ok, found it. Remove it from this bin's list by moving pointer and freeing the memory */
 		skip_track = track->next_track;			/* Get pointer to item to be removed */
 		track->next_track = skip_track->next_track;	/* Bypass this item in the link */
-		gmt_free (GMT, skip_track);			/* Remove memory associated with the track we removed */
+		gmt_M_free (GMT, skip_track);			/* Remove memory associated with the track we removed */
 		B->base[bin].n_tracks--;			/* One less entry for this bin */
 		if (!track->next_track) B->base[bin].last_track = track;			/* Update the last track in case we just removed it */
-		if (B->base[bin].n_tracks == 0) gmt_free (GMT, B->base[bin].first_track);	/* OK, that was the only track in this bin, apparently */
+		if (B->base[bin].n_tracks == 0) gmt_M_free (GMT, B->base[bin].first_track);	/* OK, that was the only track in this bin, apparently */
 	}
 	return (track_id);	/* Return the track id we passed in */
 }

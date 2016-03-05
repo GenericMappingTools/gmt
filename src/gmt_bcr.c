@@ -85,7 +85,7 @@ GMT_LOCAL unsigned int bcr_reject (struct GMT_GRID_HEADER *h, double *xx, double
 
 	/* First check that xx,yy are not Nan - if so return NaN */
 
-	if (GMT_is_dnan (*xx) || GMT_is_dnan (*yy)) return (2);
+	if (gmt_M_is_dnan (*xx) || gmt_M_is_dnan (*yy)) return (2);
 
 	/* First check if the xx and yy are within the grid.
 	   16-Sep-2007: Added some slack (GMT_CONV4_LIMIT) here to avoid setting to NaN points
@@ -293,7 +293,7 @@ double gmt_bcr_get_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, doubl
 			/* assure that index is inside bounds of the array G->data: */
 			node = ij + i;
 			assert (node < G->header->size);
-			if (!GMT_is_fnan (G->data[node])) {
+			if (!gmt_M_is_fnan (G->data[node])) {
 				w = wx[i] * wy[j];
 				retval += G->data[node] * w;
 				wsum += w;

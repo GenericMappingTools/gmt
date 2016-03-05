@@ -51,7 +51,7 @@ GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_MERGE_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct X2SYS_MERGE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_MERGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -60,9 +60,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->A.file);
-	gmt_str_free (C->M.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->A.file);
+	gmt_M_str_free (C->M.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -170,13 +170,13 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 	}
 
 	n_alloc = GMT_CHUNK;
-	map_base_start = gmt_memory (GMT, NULL, n_alloc, uint64_t);
-	map_base_end =   gmt_memory (GMT, NULL, n_alloc, uint64_t);
-	pairs_base =     gmt_memory (GMT, NULL, n_alloc, char *);
+	map_base_start = gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
+	map_base_end =   gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
+	pairs_base =     gmt_M_memory (GMT, NULL, n_alloc, char *);
 
-	map_merge_start = gmt_memory (GMT, NULL, n_alloc, uint64_t);
-	map_merge_end =   gmt_memory (GMT, NULL, n_alloc, uint64_t);
-	pairs_merge =     gmt_memory (GMT, NULL, n_alloc, char *);
+	map_merge_start = gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
+	map_merge_end =   gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
+	pairs_merge =     gmt_M_memory (GMT, NULL, n_alloc, char *);
 
 	/* Read in the main COEs dbase and store the pair track names */
 	n_base = 0;		k = 1;
@@ -184,14 +184,14 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 		if (line[0] == '>') {
 			map_base_start[n_base] = k;
 			if (n_base) map_base_end[n_base-1] = k - 1;
-			pairs_base[n_base] = gmt_memory (GMT, NULL, 24, char);
+			pairs_base[n_base] = gmt_M_memory (GMT, NULL, 24, char);
 			strncpy(pairs_base[n_base], &line[2], 19);
 			n_base++;
 			if (n_base == n_alloc) {
 				n_alloc <<= 1;
-				map_base_start = gmt_memory (GMT, map_base_start, n_alloc, uint64_t);
-				map_base_end =   gmt_memory (GMT, map_base_end, n_alloc, uint64_t);
-				pairs_base =     gmt_memory (GMT, pairs_base, n_alloc, char *);
+				map_base_start = gmt_M_memory (GMT, map_base_start, n_alloc, uint64_t);
+				map_base_end =   gmt_M_memory (GMT, map_base_end, n_alloc, uint64_t);
+				pairs_base =     gmt_M_memory (GMT, pairs_base, n_alloc, char *);
 			}
 		}
 
@@ -207,14 +207,14 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args) {
 		if (line[0] == '>') {
 			map_merge_start[n_merge] = k;
 			if (n_merge) map_merge_end[n_merge-1] = k - 1;
-			pairs_merge[n_merge] = gmt_memory (GMT, NULL, 24, char);
+			pairs_merge[n_merge] = gmt_M_memory (GMT, NULL, 24, char);
 			strncpy(pairs_merge[n_merge], &line[2], 19);
 			n_merge++;
 			if (n_merge == n_alloc) {
 				n_alloc <<= 1;
-				map_merge_start = gmt_memory (GMT, map_merge_start, n_alloc, uint64_t);
-				map_merge_end   = gmt_memory (GMT, map_merge_end, n_alloc, uint64_t);
-				pairs_merge     = gmt_memory (GMT, pairs_merge, n_alloc, char *);
+				map_merge_start = gmt_M_memory (GMT, map_merge_start, n_alloc, uint64_t);
+				map_merge_end   = gmt_M_memory (GMT, map_merge_end, n_alloc, uint64_t);
+				pairs_merge     = gmt_M_memory (GMT, pairs_merge, n_alloc, char *);
 			}
 		}
 
@@ -317,10 +317,10 @@ GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_
                           uint64_t *map_merge_start, uint64_t *map_merge_end, uint64_t n_base, uint64_t n_merge) {
 	uint64_t i;
 
-	for (i = 0; i < n_base; i++)  gmt_free (GMT, pairs_base[i]);
-	for (i = 0; i < n_merge; i++) gmt_free (GMT, pairs_merge[i]);
-	gmt_free (GMT, map_base_start);
-	gmt_free (GMT, map_base_end);
-	gmt_free (GMT, map_merge_start);
-	gmt_free (GMT, map_merge_end);
+	for (i = 0; i < n_base; i++)  gmt_M_free (GMT, pairs_base[i]);
+	for (i = 0; i < n_merge; i++) gmt_M_free (GMT, pairs_merge[i]);
+	gmt_M_free (GMT, map_base_start);
+	gmt_M_free (GMT, map_base_end);
+	gmt_M_free (GMT, map_merge_start);
+	gmt_M_free (GMT, map_merge_end);
 }

@@ -132,7 +132,7 @@ struct F_INFO {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFFT_CTRL *C = NULL;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDFFT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDFFT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -142,13 +142,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C->operation);
-	gmt_free (GMT, C->par);
-	gmt_str_free (C->In.file[GMT_IN]);
-	gmt_str_free (C->In.file[GMT_OUT]);
-	gmt_str_free (C->G.file);
-	gmt_free (GMT, C->N.info);
-	gmt_free (GMT, C);
+	gmt_M_free (GMT, C->operation);
+	gmt_M_free (GMT, C->par);
+	gmt_M_str_free (C->In.file[GMT_IN]);
+	gmt_M_str_free (C->In.file[GMT_OUT]);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C->N.info);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WAVENUMBER *K) {
@@ -344,13 +344,13 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	}
 
 	/* Get arrays for summing stuff */
-	X_pow = gmt_memory (GMT, NULL, nk, double );
-	nused = gmt_memory (GMT, NULL, nk, uint64_t);
+	X_pow = gmt_M_memory (GMT, NULL, nk, double );
+	nused = gmt_M_memory (GMT, NULL, nk, uint64_t);
 	if (GridY) {	/* For cross-spectral estimates */
 		Y = GridY->data;	/* Shorthand for Y data */
-		Y_pow     = gmt_memory (GMT, NULL, nk, double);
-		co_spec   = gmt_memory (GMT, NULL, nk, double);
-		quad_spec = gmt_memory (GMT, NULL, nk, double);
+		Y_pow     = gmt_M_memory (GMT, NULL, nk, double);
+		co_spec   = gmt_M_memory (GMT, NULL, nk, double);
+		quad_spec = gmt_M_memory (GMT, NULL, nk, double);
 	}
 
 	/* Loop over it all, summing and storing, checking range for r */
@@ -450,12 +450,12 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	gmt_free (GMT, X_pow);
-	gmt_free (GMT, nused);
+	gmt_M_free (GMT, X_pow);
+	gmt_M_free (GMT, nused);
 	if (GridY) {
-		gmt_free (GMT, Y_pow);
-		gmt_free (GMT, co_spec);
-		gmt_free (GMT, quad_spec);
+		gmt_M_free (GMT, Y_pow);
+		gmt_M_free (GMT, co_spec);
+		gmt_M_free (GMT, quad_spec);
 	}
 
 	return (1);	/* Number of parameters used */
@@ -612,10 +612,10 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 
 GMT_LOCAL void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par) {
 	Ctrl->n_op_count++;
-	Ctrl->operation = gmt_memory (GMT, Ctrl->operation, Ctrl->n_op_count, int);
+	Ctrl->operation = gmt_M_memory (GMT, Ctrl->operation, Ctrl->n_op_count, int);
 	Ctrl->operation[Ctrl->n_op_count-1] = operation;
 	if (n_par) {
-		Ctrl->par = gmt_memory (GMT, Ctrl->par, Ctrl->n_par + n_par, double);
+		Ctrl->par = gmt_M_memory (GMT, Ctrl->par, Ctrl->n_par + n_par, double);
 		gmt_M_memcpy (&Ctrl->par[Ctrl->n_par], par, n_par, double);
 		Ctrl->n_par += n_par;
 	}

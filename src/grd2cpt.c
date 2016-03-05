@@ -116,7 +116,7 @@ struct GRD2CPT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2CPT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRD2CPT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRD2CPT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
@@ -125,10 +125,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->Out.file);
-	gmt_str_free (C->C.file);
-	gmt_str_free (C->S.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->Out.file);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->S.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -241,7 +241,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT
 				n_errors += gmt_M_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high),
+				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
 								"Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':	/* Reverse scale */
@@ -334,7 +334,7 @@ GMT_LOCAL int free_them_grids (struct GMTAPI_CTRL *API, struct GMT_GRID **G, cha
 	/* Free what we are pointing to */
 	uint64_t k;
 	for (k = 0; k < n; k++) {
-		gmt_str_free (grdfile[k]);
+		gmt_M_str_free (grdfile[k]);
 		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK)
 			return (API->error);
 	}
@@ -407,24 +407,24 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Subset */
 
-	G = gmt_memory (GMT, NULL, n_alloc, struct GMT_GRID *);	/* Potentially an array of grids */
-	grdfile = gmt_memory (GMT, NULL, n_alloc, char *);	/* Potentially an array of gridfile names */
+	G = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_GRID *);	/* Potentially an array of grids */
+	grdfile = gmt_M_memory (GMT, NULL, n_alloc, char *);	/* Potentially an array of gridfile names */
 
 	for (opt = options, k = 0; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
 		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, opt->arg, NULL)) == NULL) {
 			error = free_them_grids (API, G, grdfile, k);
-			gmt_free (GMT, G);
-			gmt_free (GMT, grdfile);
+			gmt_M_free (GMT, G);
+			gmt_M_free (GMT, grdfile);
 			Return ((error) ? error : API->error);
 		}
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Grids do not have the same domain!\n");
 			error = free_them_grids (API, G, grdfile, k);
-			gmt_free (GMT, G);
-			gmt_free (GMT, grdfile);
+			gmt_M_free (GMT, G);
+			gmt_M_free (GMT, grdfile);
 			Return ((error) ? error : API->error);
 		}
 
@@ -432,17 +432,17 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		if (k == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
-			G = gmt_memory (GMT, G, n_alloc, struct GMT_GRID *);
+			G = gmt_M_memory (GMT, G, n_alloc, struct GMT_GRID *);
 			gmt_M_memset (&(G[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_GRID *);	/* Set to NULL */
-			grdfile = gmt_memory (GMT, grdfile, n_alloc, char *);
+			grdfile = gmt_M_memory (GMT, grdfile, n_alloc, char *);
 			gmt_M_memset (&(grdfile[old_n_alloc]), n_alloc - old_n_alloc, char *);	/* Set to NULL */
 		}
 	}
 
 	ngrd = k;
 	if (ngrd < n_alloc) {
-		G = gmt_memory (GMT, G, ngrd, struct GMT_GRID *);
-		grdfile = gmt_memory (GMT, grdfile, ngrd, char *);
+		G = gmt_M_memory (GMT, G, ngrd, struct GMT_GRID *);
+		grdfile = gmt_M_memory (GMT, grdfile, ngrd, char *);
 	}
 
 	nxyg = G[0]->header->nm * ngrd;
@@ -457,7 +457,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		G[0]->header->z_max = Ctrl->L.max;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
 			gmt_M_grd_loop (GMT, G[k], row, col, ij) {
-				if (GMT_is_fnan (G[k]->data[ij]))
+				if (gmt_M_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
 					if (G[k]->data[ij] < Ctrl->L.min || G[k]->data[ij] > Ctrl->L.max) {
@@ -477,7 +477,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Ctrl->L.max = G[0]->header->z_min;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
 			gmt_M_grd_loop (GMT, G[k], row, col, ij) {
-				if (GMT_is_fnan (G[k]->data[ij]))
+				if (gmt_M_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
 					if (G[k]->data[ij] < Ctrl->L.min) Ctrl->L.min = G[k]->data[ij];
@@ -507,7 +507,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
 		Ctrl->E.levels += urint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
 		if (G[0]->header->z_max > Ctrl->S.high) Ctrl->E.levels++;
-		cdf_cpt = gmt_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		if (G[0]->header->z_min < Ctrl->S.low) {
 			cdf_cpt[0].z = G[0]->header->z_min;
 			cdf_cpt[1].z = Ctrl->S.low;
@@ -548,14 +548,14 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		range *= (1.0 + GMT_CONV8_LIMIT);	/* To ensure the max grid values do not exceed the CPT limit due to round-off issues */
 		start -= fabs (start) * GMT_CONV8_LIMIT;	/* To ensure the start of cpt is less than min value due to roundoff  */
 		Ctrl->S.inc = range / (double)(Ctrl->E.levels - 1);
-		cdf_cpt = gmt_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->S.inc;
 	}
 
 	else {	/* This is completely ad-hoc.  It chooses z based on equidistant steps [of 0.1 unless -Sn set] for a Gaussian CDF:  */
 		double z_inc = 1.0 / (Ctrl->E.levels - 1);		/* Increment between selected points [0.1] */
 		double zcrit_tail = gmt_zcrit (GMT, 1.0 - z_inc);	/* Get the +/- z-value containing bulk of distribution, with z_inc in each tail */
-		cdf_cpt = gmt_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
+		cdf_cpt = gmt_M_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		if ((mean - zcrit_tail*sd) <= G[0]->header->z_min || (mean + zcrit_tail*sd) >= G[0]->header->z_max) {
 			/* Adjust mean/std so that our critical locations are still inside the min/max of the data */
 			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
@@ -584,7 +584,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 			nfound = 0;
 			for (k = 0; k < ngrd; k++) {	/* For each grid */
 				gmt_M_grd_loop (GMT, G[k], row, col, ij) {
-					if (!GMT_is_fnan (G[k]->data[ij]) && G[k]->data[ij] <= cdf_cpt[j].z) nfound++;
+					if (!gmt_M_is_fnan (G[k]->data[ij]) && G[k]->data[ij] <= cdf_cpt[j].z) nfound++;
 				}
 			}
 			cdf_cpt[j].f = (double)(nfound-1)/(double)(ngood-1);
@@ -594,7 +594,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 
 	/* Now the cdf function has been found.  We now resample the chosen CPT file  */
 
-	z = gmt_memory (GMT, NULL, Ctrl->E.levels, double);
+	z = gmt_M_memory (GMT, NULL, Ctrl->E.levels, double);
 	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;
 	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
 
@@ -613,11 +613,11 @@ int GMT_grd2cpt (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_free (GMT, cdf_cpt);
-	gmt_free (GMT, z);
+	gmt_M_free (GMT, cdf_cpt);
+	gmt_M_free (GMT, z);
 	error = free_them_grids (API, G, grdfile, ngrd);
-	gmt_free (GMT, G);
-	gmt_free (GMT, grdfile);
+	gmt_M_free (GMT, G);
+	gmt_M_free (GMT, grdfile);
 
 	Return ((error) ? error : EXIT_SUCCESS);
 }

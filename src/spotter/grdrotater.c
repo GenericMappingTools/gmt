@@ -72,20 +72,20 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDROTATER_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
 
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->D.file);	
-	gmt_str_free (C->E.rot.file);	
-	gmt_str_free (C->F.file);	
-	gmt_str_free (C->G.file);	
-	gmt_str_free (C->T.value);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->D.file);	
+	gmt_M_str_free (C->E.rot.file);	
+	gmt_M_str_free (C->F.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_str_free (C->T.value);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -200,7 +200,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 					}
 					/* Single table, build t array */
 					Ctrl->T.n_times = (unsigned int)T->n_records;
-					Ctrl->T.value = gmt_memory (GMT, NULL, Ctrl->T.n_times, double);
+					Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 					for (seg = t = 0; seg < T->table[0]->n_segments; seg++) {
 						S = T->table[0]->segment[seg];	/* Shorthand to current segment */
 						for (row = 0; row < S->n_rows; seg++, t++)
@@ -233,14 +233,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 						}
 						else {
 							Ctrl->T.n_times = lrint ((max - min) / inc) + 1;
-							Ctrl->T.value = gmt_memory (GMT, NULL, Ctrl->T.n_times, double);
+							Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 							for (t = 0; t < Ctrl->T.n_times; t++) Ctrl->T.value[t] = (t == (Ctrl->T.n_times-1)) ? max: min + t * inc;
 						}
 					}
 				}
 				else {	/* Got a single time */
 					Ctrl->T.n_times = 1;
-					Ctrl->T.value = gmt_memory (GMT, NULL, Ctrl->T.n_times, double);
+					Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 					Ctrl->T.value[0] = atof (txt_a);
 				}
 				break;
@@ -284,15 +284,15 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	/* Add south border w->e */
 	if (h->wesn[YLO] == -90.0) {	/* If at the S pole we just add it twice for end longitudes */
 		add = 2;
-		S->coord[GMT_X] = gmt_memory (GMT, NULL, add, double);
-		S->coord[GMT_Y] = gmt_memory (GMT, NULL, add, double);
+		S->coord[GMT_X] = gmt_M_memory (GMT, NULL, add, double);
+		S->coord[GMT_Y] = gmt_M_memory (GMT, NULL, add, double);
 		S->coord[GMT_X][0] = h->wesn[XLO];	S->coord[GMT_X][1] = h->wesn[XHI];
 		S->coord[GMT_Y][0] = S->coord[GMT_Y][1] = h->wesn[YLO];
 	}
 	else {				/* Loop along south border from west to east */
 		add = h->nx - !h->registration;
-		S->coord[GMT_X] = gmt_memory (GMT, NULL, add, double);
-		S->coord[GMT_Y] = gmt_memory (GMT, NULL, add, double);
+		S->coord[GMT_X] = gmt_M_memory (GMT, NULL, add, double);
+		S->coord[GMT_Y] = gmt_M_memory (GMT, NULL, add, double);
 		for (col = 0; col < add; col++) {
 			S->coord[GMT_X][col] = gmt_M_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
 			S->coord[GMT_Y][col] = h->wesn[YLO];
@@ -301,8 +301,8 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	np += add;
 	/* Add east border s->n */
 	add = h->ny - !h->registration;
-	S->coord[GMT_X] = gmt_memory (GMT, S->coord[GMT_X], add + np, double);
-	S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np, double);
+	S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np, double);
+	S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np, double);
 	for (row = 0; row < add; row++) {	/* Loop along east border from south to north */
 		S->coord[GMT_X][np+row] = h->wesn[XHI];
 		S->coord[GMT_Y][np+row] = gmt_M_row_to_y (GMT, h->ny - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
@@ -311,15 +311,15 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	/* Add north border e->w */
 	if (h->wesn[YHI] == 90.0) {	/* If at the N pole we just add it twice for end longitudes */
 		add = 2;
-		S->coord[GMT_X] = gmt_memory (GMT, S->coord[GMT_X], add + np, double);
-		S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np, double);
+		S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np, double);
+		S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np, double);
 		S->coord[GMT_X][np] = h->wesn[XHI];	S->coord[GMT_X][np+1] = h->wesn[XLO];
 		S->coord[GMT_Y][np] = S->coord[GMT_Y][np+1] = h->wesn[YHI];
 	}
 	else {			/* Loop along north border from east to west */
 		add = h->nx - !h->registration;
-		S->coord[GMT_X] = gmt_memory (GMT, S->coord[GMT_X], add + np, double);
-		S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np, double);
+		S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np, double);
+		S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np, double);
 		for (col = 0; col < add; col++) {
 			S->coord[GMT_X][np+col] = gmt_M_col_to_x (GMT, h->nx - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
 			S->coord[GMT_Y][np+col] = h->wesn[YHI];
@@ -328,8 +328,8 @@ GMT_LOCAL struct GMT_DATASET *get_grid_path (struct GMT_CTRL *GMT, struct GMT_GR
 	np += add;
 	/* Add west border n->s */
 	add = h->ny - !h->registration;
-	S->coord[GMT_X] = gmt_memory (GMT, S->coord[GMT_X], add + np + 1, double);
-	S->coord[GMT_Y] = gmt_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
+	S->coord[GMT_X] = gmt_M_memory (GMT, S->coord[GMT_X], add + np + 1, double);
+	S->coord[GMT_Y] = gmt_M_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
 	for (row = 0; row < add; row++) {	/* Loop along west border from north to south */
 		S->coord[GMT_X][np+row] = h->wesn[XLO];
 		S->coord[GMT_Y][np+row] = gmt_M_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
@@ -454,10 +454,10 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, create a rotation table with one entry */
 		Ctrl->T.n_times = n_stages = 1;
-		p = gmt_memory (GMT, NULL, n_stages, struct EULER);
+		p = gmt_M_memory (GMT, NULL, n_stages, struct EULER);
 		p[0].lon = Ctrl->E.rot.lon; p[0].lat = Ctrl->E.rot.lat; p[0].omega = Ctrl->E.rot.w;
-		if (GMT_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
-			Ctrl->T.value = gmt_memory (GMT, NULL, Ctrl->T.n_times, double);
+		if (gmt_M_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
+			Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 			Ctrl->T.value[0] = p[0].t_start = 1.0;
 		}
 		spotter_setrot (GMT, &(p[0]));
@@ -471,7 +471,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 	if (!Ctrl->T.active && !Ctrl->E.rot.single) {	/* Gave no time to go with the rotations, use rotation times */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No reconstruction times specified; using %d reconstruction times from rotation table\n", n_stages);
 		Ctrl->T.n_times = n_stages;
-		Ctrl->T.value = gmt_memory (GMT, NULL, Ctrl->T.n_times, double);
+		Ctrl->T.value = gmt_M_memory (GMT, NULL, Ctrl->T.n_times, double);
 		for (t = 0; t < Ctrl->T.n_times; t++) Ctrl->T.value[t] = p[t].t_start;
 	}
 
@@ -537,7 +537,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 				sprintf (txt, "-Z%g", Ctrl->T.value[t]);
 				for (seg = 0; seg < polr->n_segments; seg++) {
 					Sr = polr->segment[seg];	/* Shorthand for current rotated segment */
-					gmt_str_free (Sr->header);
+					gmt_M_str_free (Sr->header);
 					Sr->header = strdup (txt);
 				}
 			}
@@ -570,7 +570,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		/* Precalculate node coordinates in both degrees and radians */
 		grd_x = gmt_grd_coord (GMT, G_rot->header, GMT_X);
 		grd_y = gmt_grd_coord (GMT, G_rot->header, GMT_Y);
-		grd_yc = gmt_memory (GMT, NULL, G_rot->header->ny, double);
+		grd_yc = gmt_M_memory (GMT, NULL, G_rot->header->ny, double);
 		for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = gmt_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 		/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
@@ -615,7 +615,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 					for (col = start_col; col <= stop_col; col++) {
 						if (col >= G_rot->header->nx) continue;
 						ij_rot = gmt_M_ijp (G_rot->header, row, col);
-						if (!GMT_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
+						if (!gmt_M_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
 						if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside input polygon */
 						gmt_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 						gmt_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
@@ -658,21 +658,21 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		if (G_rot && GMT_Destroy_Data (API, &G_rot) != GMT_OK)
 			Return (API->error);
 
-		gmt_free (GMT, grd_x);
-		gmt_free (GMT, grd_y);
-		gmt_free (GMT, grd_yc);
+		gmt_M_free (GMT, grd_x);
+		gmt_M_free (GMT, grd_y);
+		gmt_M_free (GMT, grd_yc);
 	} /* End of loop over reconstruction times */
 
-	gmt_free (GMT, p);
+	gmt_M_free (GMT, p);
 
 	if (Ctrl->S.active) {
 		if (Ctrl->F.active && GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		else if (not_global)
-			gmt_free_dataset (GMT, &D);
+			gmt_M_free_dataset (GMT, &D);
 	}
-	gmt_free (GMT, Ctrl->T.value);
+	gmt_M_free (GMT, Ctrl->T.value);
 	if (D && GMT_Destroy_Data (API, &D) != GMT_OK)
 		Return (API->error);
 	if (Dr && GMT_Destroy_Data (API, &Dr) != GMT_OK)

@@ -84,7 +84,7 @@ struct GRDROTATER_CTRL {	/* All control options for this program (except common 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDROTATER_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -93,11 +93,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->E.rot.file);	
-	gmt_str_free (C->F.file);	
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->E.rot.file);	
+	gmt_M_str_free (C->F.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -253,7 +253,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct 
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {gmt_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {gmt_M_free (GMT, p); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	unsigned int col, row, inside, stage, n_stages, registration, k;
@@ -327,9 +327,9 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.rot.single) {	/* Got a single rotation, no time, create a rotation table with one entry */
 		n_stages = 1;
-		p = gmt_memory (GMT, NULL, n_stages, struct EULER);
+		p = gmt_M_memory (GMT, NULL, n_stages, struct EULER);
 		p[0].lon = Ctrl->E.rot.lon; p[0].lat = Ctrl->E.rot.lat; p[0].omega = Ctrl->E.rot.w;
-		if (GMT_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
+		if (gmt_M_is_dnan (Ctrl->E.rot.age)) {	/* No age, use fake age = 1 everywhere */
 			Ctrl->T.active = true;
 			Ctrl->T.value = p[0].t_start = 1.0;
 		}
@@ -351,14 +351,14 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->G.active) {	/* Need one or more output grids */
-		G_mod = gmt_memory (GMT, NULL, Ctrl->S.n_items, struct GMT_GRID *);
+		G_mod = gmt_M_memory (GMT, NULL, Ctrl->S.n_items, struct GMT_GRID *);
 		for (k = 0; k < Ctrl->S.n_items; k++) {
 			if ((G_mod[k] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
 				registration, GMT_NOTSET, NULL)) == NULL) {	/* Free previous grids and bail */
 					unsigned int kk;
 					for (kk = 0; kk < k; kk++)
 						(void)GMT_Destroy_Data (API, &G_mod[kk]);
-					gmt_free (GMT, G_mod);
+					gmt_M_free (GMT, G_mod);
 					Return (API->error);
 			}
 
@@ -397,12 +397,12 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
-		out = gmt_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
+		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	}
 
-	grd_x  = gmt_memory (GMT, NULL, G->header->nx, double);
-	grd_y  = gmt_memory (GMT, NULL, G->header->ny, double);
-	grd_yc = gmt_memory (GMT, NULL, G->header->ny, double);
+	grd_x  = gmt_M_memory (GMT, NULL, G->header->nx, double);
+	grd_y  = gmt_M_memory (GMT, NULL, G->header->ny, double);
+	grd_yc = gmt_M_memory (GMT, NULL, G->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
 	for (row = 0; row < G->header->ny; row++) {
 		grd_y[row]  = gmt_M_grd_row_to_y (GMT, row, G->header);
@@ -430,7 +430,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 			age = Ctrl->T.value;
 		else {
 			age = G_age->data[node];
-			if (GMT_is_dnan (age)) skip = true, n_NaN++;		/* No crustal age  */
+			if (gmt_M_is_dnan (age)) skip = true, n_NaN++;		/* No crustal age  */
 			else if (age > Ctrl->N.t_upper) skip = true, n_old++;	/* Outside of model range */
 		}
 		if (skip) {
@@ -527,18 +527,18 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		gmt_free (GMT, G_mod);
+		gmt_M_free (GMT, G_mod);
 	}
 	else {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		gmt_free (GMT, out);
+		gmt_M_free (GMT, out);
 	}
 
-	gmt_free (GMT, grd_x);
-	gmt_free (GMT, grd_y);
-	gmt_free (GMT, grd_yc);
+	gmt_M_free (GMT, grd_x);
+	gmt_M_free (GMT, grd_y);
+	gmt_M_free (GMT, grd_yc);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 

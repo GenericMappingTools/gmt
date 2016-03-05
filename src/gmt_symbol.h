@@ -46,7 +46,7 @@
 #define GMT_FRAME_GAP		2.0	/* In points */
 #define GMT_FRAME_RADIUS	6.0	/* In points */
 
-enum GMT_enum_panel {
+enum gmt_enum_panel {
 	GMT_PANEL_INNER		= 1,
 	GMT_PANEL_ROUNDED	= 2,
 	GMT_PANEL_SHADOW	= 4,

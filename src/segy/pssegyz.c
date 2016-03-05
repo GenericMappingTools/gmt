@@ -116,7 +116,7 @@ struct PSSEGYZ_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSEGYZ_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSSEGYZ_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSSEGYZ_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -129,9 +129,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->T.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->T.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -629,7 +629,7 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 	}
 
 	/* set up map projection and PS plotting */
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	/* In this program we DO NOT want to call gmt_plane_perspective since that is already in the SEGV projection
 	 * Per Tim Henstock, Nov, 2015.
@@ -695,7 +695,7 @@ use a few of these*/
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
-	bitmap = gmt_memory (GMT, NULL, nm, unsigned char);
+	bitmap = gmt_M_memory (GMT, NULL, nm, unsigned char);
 
 	ix = 0;
 	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
@@ -805,8 +805,8 @@ use a few of these*/
 		}
 
 		if (!Ctrl->Z.active || scale) segyz_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, y0, n_samp, Ctrl->F.active, Ctrl->I.active, Ctrl->W.active, toffset, Ctrl->D.value[GMT_X], Ctrl->D.value[GMT_Y], Ctrl->Q.value[I_ID], bitmap, bm_nx, bm_ny);
-		gmt_str_free (data);
-		gmt_str_free (header);
+		gmt_M_str_free (data);
+		gmt_M_str_free (header);
 		ix++;
 	}
 
@@ -819,7 +819,7 @@ use a few of these*/
 
 	gmt_plotend (GMT);
 
-	gmt_free (GMT, bitmap);
+	gmt_M_free (GMT, bitmap);
 
 	Return (EXIT_SUCCESS);
 }

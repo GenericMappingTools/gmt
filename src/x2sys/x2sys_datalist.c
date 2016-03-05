@@ -71,7 +71,7 @@ struct X2SYS_ADJUST {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct X2SYS_DATALIST_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct X2SYS_DATALIST_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct X2SYS_DATALIST_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -80,11 +80,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->F.flags);
-	gmt_str_free (C->I.file);
-	gmt_str_free (C->L.file);
-	gmt_str_free (C->T.TAG);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->F.flags);
+	gmt_M_str_free (C->I.file);
+	gmt_M_str_free (C->L.file);
+	gmt_M_str_free (C->T.TAG);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -190,9 +190,9 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
 	if ((fp = gmt_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
 	
-	adj = gmt_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
-	adj->d = gmt_memory (GMT, NULL, n_alloc, double);
-	adj->c = gmt_memory (GMT, NULL, n_alloc, double);
+	adj = gmt_M_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
+	adj->d = gmt_M_memory (GMT, NULL, n_alloc, double);
+	adj->c = gmt_M_memory (GMT, NULL, n_alloc, double);
 	for (k = 0; k < 2; k++) uint_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
 	while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		adj->d[n] = in[0];
@@ -200,13 +200,13 @@ GMT_LOCAL bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TA
 		n++;
 		if (n == n_alloc) {
 			n_alloc <<= 1;
-			adj->d = gmt_memory (GMT, adj->d, n_alloc, double);
-			adj->c = gmt_memory (GMT, adj->c, n_alloc, double);
+			adj->d = gmt_M_memory (GMT, adj->d, n_alloc, double);
+			adj->c = gmt_M_memory (GMT, adj->c, n_alloc, double);
 		}
 	}
 	gmt_fclose (GMT, fp);
-	adj->d = gmt_memory (GMT, adj->d, n, double);
-	adj->c = gmt_memory (GMT, adj->c, n, double);
+	adj->d = gmt_M_memory (GMT, adj->d, n, double);
+	adj->c = gmt_M_memory (GMT, adj->c, n, double);
 	adj->n = n;
 	*A = adj;
 	for (k = 0; k < 2; k++) uint_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
@@ -296,7 +296,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[XLO] += 360.0;
 			GMT->common.R.wesn[XHI] += 360.0;
 		}
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
@@ -429,11 +429,11 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 	
-	out = gmt_memory (GMT, NULL, s->n_fields, double);
+	out = gmt_M_memory (GMT, NULL, s->n_fields, double);
 
 	if (Ctrl->A.active) {	/* Allocate an along-track adjustment table */
-		A = gmt_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
-		adj_col = gmt_memory (GMT, NULL, s->n_out_columns, bool);
+		A = gmt_M_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
+		adj_col = gmt_M_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	if (Ctrl->E.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Enable segment headers */
 	
@@ -469,7 +469,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 					if (this_col == s->t_col) continue;
 					if (this_col == s->x_col) continue;
 					if (this_col == s->y_col) continue;
-					if (GMT_is_dnan (data[ocol][row])) bad++;
+					if (gmt_M_is_dnan (data[ocol][row])) bad++;
 				}
 				if (bad == n_data_col_out) continue;	/* Yep, just NaNs here */
 			}
@@ -486,7 +486,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			}
 			if (auxlist[MGD77_AUX_SP].requested) {	/* Need speed to be computed from track coordinates and time */
 				dt = (row == 0) ? data[tpos][1] - data[tpos][0] : data[tpos][row] - data[tpos][row-1];
-				aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / (dt * t_scale);
+				aux_dvalue[MGD77_AUX_SP] = (gmt_M_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / (dt * t_scale);
 			}
 			for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Load output record one column at the time */
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, row) : 0.0;
@@ -505,7 +505,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 					if (s->info[s->out_order[ocol]].format[0] == '-')
 						gmt_ascii_format_col (GMT, text, out[ocol], GMT_OUT, ocol);
 					else {
-						if (GMT_is_dnan (out[ocol]))
+						if (gmt_M_is_dnan (out[ocol]))
 							sprintf (text, "NaN");
 						else
 							sprintf (text, s->info[s->out_order[ocol]].format, out[ocol]);
@@ -523,9 +523,9 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		/* Free memory allocated for the current data set */
 		x2sys_free_data (GMT, data, s->n_out_columns, &p);
 		for (ocol = 0; ocol < s->n_out_columns; ocol++) if (Ctrl->A.active && adj_col[ocol]) {
-			gmt_free (GMT, A[ocol]->d);
-			gmt_free (GMT, A[ocol]->c);
-			gmt_free (GMT, A[ocol]);
+			gmt_M_free (GMT, A[ocol]->d);
+			gmt_M_free (GMT, A[ocol]->c);
+			gmt_M_free (GMT, A[ocol]);
 		}
 	}
 
@@ -538,10 +538,10 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
 
 	x2sys_end (GMT, s);
-	gmt_free (GMT, out);
+	gmt_M_free (GMT, out);
 	if (Ctrl->A.active) {
-		gmt_free (GMT, A);
-		gmt_free (GMT, adj_col);
+		gmt_M_free (GMT, A);
+		gmt_M_free (GMT, adj_col);
 	}
 	x2sys_free_list (GMT, trk_name, n_tracks);
 	if (Ctrl->I.active) x2sys_free_list (GMT, ignore, n_ignore);

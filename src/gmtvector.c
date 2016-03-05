@@ -88,7 +88,7 @@ struct GMTVECTOR_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTVECTOR_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GMTVECTOR_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTVECTOR_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->A.conf = 0.95;	/* 95% conf level */
@@ -97,11 +97,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.arg);	
-	gmt_str_free (C->Out.file);	
-	gmt_str_free (C->A.arg);	
-	gmt_str_free (C->S.arg);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.arg);	
+	gmt_M_str_free (C->Out.file);	
+	gmt_M_str_free (C->A.arg);	
+	gmt_M_str_free (C->S.arg);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -351,7 +351,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 	
 	gmt_M_memset (M, 3, double);
 	n_components = (gmt_M_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
-	for (k = 0; k < n_components; k++) P[k] = gmt_memory (GMT, NULL, D->n_records, double);
+	for (k = 0; k < n_components; k++) P[k] = gmt_M_memory (GMT, NULL, D->n_records, double);
 	for (tbl = n = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];
@@ -380,7 +380,7 @@ GMT_LOCAL void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool ca
 		for (p = 0; p < n; p++) C[k] += (P[j][p] - M[j]) * (P[i][p] - M[i]);
 		C[k] /= (n - 1.0);
 	}
-	for (k = 0; k < n_components; k++) gmt_free (GMT, P[k]);
+	for (k = 0; k < n_components; k++) gmt_M_free (GMT, P[k]);
 
 	if (gmt_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");

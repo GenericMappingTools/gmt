@@ -66,7 +66,7 @@ struct GRD2RGB_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRD2RGB_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRD2RGB_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRD2RGB_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -78,10 +78,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->C.file);	
-	gmt_str_free (C->G.name);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->C.file);	
+	gmt_M_str_free (C->G.name);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byte_per_pixel, int nx, int ny, unsigned char **P) {
@@ -107,14 +107,14 @@ GMT_LOCAL int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *heade
 	nm = (size_t)nx * (size_t)ny * (size_t)byte_per_pixel;
 	header->length = (int)nm;
 
-	buffer = gmt_memory (GMT, NULL, nm, unsigned char);
+	buffer = gmt_M_memory (GMT, NULL, nm, unsigned char);
 	if (gmt_M_fread (buffer, 1U, nm, fp) != nm) {
 		if (byte_per_pixel == 3)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 32-bit rasterfile!\n");
 		gmt_fclose (GMT, fp);
-		gmt_free (GMT, buffer);
+		gmt_M_free (GMT, buffer);
 		return (EXIT_FAILURE);
 	}
 
@@ -149,10 +149,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 
 	n_pix = (unsigned int) (img_size / byte_per_pixel);
 
-	buffer  = gmt_memory (GMT, NULL, img_size, unsigned char);
-	datac   = gmt_memory (GMT, NULL, 2*n_pix, float);
-	work    = gmt_memory (GMT, NULL, 2*n_pix, float);
-	img_pow = gmt_memory (GMT, NULL, n_pix/2, float);
+	buffer  = gmt_M_memory (GMT, NULL, img_size, unsigned char);
+	datac   = gmt_M_memory (GMT, NULL, 2*n_pix, float);
+	work    = gmt_M_memory (GMT, NULL, 2*n_pix, float);
+	img_pow = gmt_M_memory (GMT, NULL, n_pix/2, float);
 	gmt_M_memset (work, 2*n_pix, float);
 
 	if (gmt_M_fread (buffer, 1U, img_size, fp) != img_size) {
@@ -160,10 +160,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 32-bit rasterfile!\n");
-		gmt_free (GMT, buffer);
-		gmt_free (GMT, datac);
-		gmt_free (GMT, work);
-		gmt_free (GMT, img_pow);
+		gmt_M_free (GMT, buffer);
+		gmt_M_free (GMT, datac);
+		gmt_M_free (GMT, work);
+		gmt_M_free (GMT, img_pow);
 		return (EXIT_FAILURE);
 	}
 	gmt_fclose (GMT, fp);
@@ -230,10 +230,10 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 		return (EXIT_FAILURE);
 	}
 
-	gmt_free (GMT, buffer);
-	gmt_free (GMT, datac);
-	gmt_free (GMT, work);
-	gmt_free (GMT, img_pow);
+	gmt_M_free (GMT, buffer);
+	gmt_M_free (GMT, datac);
+	gmt_M_free (GMT, work);
+	gmt_M_free (GMT, img_pow);
 
 	return (EXIT_SUCCESS);
 }
@@ -304,7 +304,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT
 				Ctrl->C.active = true;
 				break;
 			case 'G':	/* Output file template */
-				gmt_str_free (Ctrl->G.name);	
+				gmt_M_str_free (Ctrl->G.name);	
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */
@@ -443,7 +443,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Out) != GMT_OK) {
 				Return (API->error);
 			}
-			gmt_str_free (grdfile);
+			gmt_M_str_free (grdfile);
 		}
 		if (GMT_Destroy_Data (API, &P) != GMT_OK) {
 			Return (API->error);
@@ -536,10 +536,10 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Grid) != GMT_OK) {
 				Return (API->error);
 			}
-			gmt_str_free (grdfile);
+			gmt_M_str_free (grdfile);
 		}
 		if (Ctrl->W.active)
-			gmt_free (GMT, picture);
+			gmt_M_free (GMT, picture);
 		else
 			PSL_free (picture);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {

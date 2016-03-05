@@ -68,7 +68,7 @@ struct GRDMASK_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDMASK_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.mask[GMT_INSIDE] = 1.0;	/* Default inside value */
@@ -77,8 +77,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -300,11 +300,11 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
-			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_OUTSIDE]);
+			(gmt_M_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_OUTSIDE]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
-			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_INSIDE]);
+			(gmt_M_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_INSIDE]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
-			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_ONEDGE]);
+			(gmt_M_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
 
@@ -341,9 +341,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL)
 		error = API->error;
 	if (Ctrl->S.active && error) {
-		gmt_free (GMT, d_col);
-		gmt_free (GMT, grd_x0);
-		gmt_free (GMT, grd_y0);
+		gmt_M_free (GMT, d_col);
+		gmt_M_free (GMT, grd_x0);
+		gmt_M_free (GMT, grd_y0);
 		Return (error);
 	}
 	gmt_skip_xy_duplicates (GMT, false);	/* Reset */
@@ -386,7 +386,7 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
 					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
-						gmt_free (GMT, d_col);
+						gmt_M_free (GMT, d_col);
 						d_col = gmt_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
 						last_radius = radius;
 					}
@@ -474,9 +474,9 @@ int GMT_grdmask (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->S.active) {
-		gmt_free (GMT, d_col);
-		gmt_free (GMT, grd_x0);
-		gmt_free (GMT, grd_y0);
+		gmt_M_free (GMT, d_col);
+		gmt_M_free (GMT, grd_x0);
+		gmt_M_free (GMT, grd_y0);
 	}
 
 	Return (GMT_OK);

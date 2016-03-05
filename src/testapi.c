@@ -50,7 +50,7 @@ struct TESTAPI_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct TESTAPI_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct TESTAPI_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct TESTAPI_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -59,7 +59,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -220,7 +220,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			uint64_t dim[3] = {1, 9, 2};
 			if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			M->dim = 9;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
-			fdata = gmt_memory (GMT, NULL, M->size, float);
+			fdata = gmt_M_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < (uint64_t)M->n_rows; k++) {
 				fdata[2*k] = (float)k;	fdata[2*k+1] = (float)k*10;
 			}
@@ -231,7 +231,7 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 			if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			M->dim = 6;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			M->range[XLO] = 0.0;	M->range[XHI] = 5.0;	M->range[YLO] = 0.0;	M->range[YHI] = 5.0;	M->range[4] = 0.0;	M->range[5] = 25.0;
-			fdata = gmt_memory (GMT, NULL, M->size, float);
+			fdata = gmt_M_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->size; k++) fdata[k] = (float)((int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows));
 		}
 		M->data.f4 = fdata;
@@ -239,8 +239,8 @@ int GMT_testapi (void *V_API, int mode, void *args) {
 	else if (Ctrl->I.via == GMT_VIA_VECTOR) {	/* We will use vectors in memory as data source */
 		uint64_t dim[2] = {2, 9};
 		if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-		fdata = gmt_memory (GMT, NULL, V->n_rows, float);
-		ddata = gmt_memory (GMT, NULL, V->n_rows, double);
+		fdata = gmt_M_memory (GMT, NULL, V->n_rows, float);
+		ddata = gmt_M_memory (GMT, NULL, V->n_rows, double);
 		for (k = 0; k < V->n_rows; k++) {
 			fdata[k] = (float)k;	ddata[k] = k*10.0;
 		}

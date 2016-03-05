@@ -76,7 +76,7 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDLANDMASK_CTRL *C;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -91,8 +91,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -295,33 +295,33 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.mode) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in water will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
+			(gmt_M_is_dnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
+			(gmt_M_is_dnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
 		}
 		else {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in the oceans will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
+			(gmt_M_is_dnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
+			(gmt_M_is_dnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in lakes will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
+			(gmt_M_is_dnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in islands will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[3])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[3]);
+			(gmt_M_is_dnan (Ctrl->N.mask[3])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[3]);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in ponds will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[4])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[4]);
+			(gmt_M_is_dnan (Ctrl->N.mask[4])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[4]);
 		}
 	}
 
 	gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection so the shore machinery will work */
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, Grid->header->wesn), "")) Return (GMT_PROJECTION_ERROR);
 	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	wrap = GMT->current.map.is_world = gmt_M_grd_is_global (GMT, Grid->header);
 	/* Using -Jx1d means output is Cartesian but we want to force geographic */
 	gmt_set_geographic (GMT, GMT_OUT);
 	/* All data nodes are thus initialized to 0 */
-	x = gmt_memory (GMT, NULL, Grid->header->nx, double);
-	y = gmt_memory (GMT, NULL, Grid->header->ny, double);
+	x = gmt_M_memory (GMT, NULL, Grid->header->nx, double);
+	y = gmt_M_memory (GMT, NULL, Grid->header->ny, double);
 
 	nx1 = Grid->header->nx - 1;	ny1 = Grid->header->ny - 1;
 
@@ -402,8 +402,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				}
 			}
 
-			gmt_free_shore_polygons (GMT, p, np_new);
-			gmt_free (GMT, p);
+			gmt_M_free_shore_polygons (GMT, p, np_new);
+			gmt_M_free (GMT, p);
 		}
 
 		if (!used_polygons) {	/* Lack of polygons or clipping etc resulted in no polygons after all, must deal with background */
@@ -452,12 +452,12 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			}
 		}
 
-		gmt_free_shore (GMT, &c);
+		gmt_M_free_shore (GMT, &c);
 	}
 
 	gmt_shore_cleanup (GMT, &c);
-	gmt_free (GMT, x);
-	gmt_free (GMT, y);
+	gmt_M_free (GMT, x);
+	gmt_M_free (GMT, y);
 
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {	/* Turn levels into mask values */
 		k = urint (Grid->data[ij]);

@@ -154,9 +154,9 @@ double atanh (double x) {
 	This should be used only if there isn't a better library routine available.
 	WHFS 30 March 2000  */
 
-	if (GMT_is_dnan (x)) return (x);
+	if (gmt_M_is_dnan (x)) return (x);
 	if (fabs (x) >= 1.0) {
-		GMT_make_dnan (x);
+		gmt_M_make_dnan (x);
 		return (x);
 	}
 
@@ -308,8 +308,8 @@ double hypot (double x, double y) {
 
 	double a, b, c, d, r, s, t;
 
-	if (GMT_is_dnan (x)) return (x);
-	if (GMT_is_dnan (y)) return (y);
+	if (gmt_M_is_dnan (x)) return (x);
+	if (gmt_M_is_dnan (y)) return (y);
 
 	/* A complete implementation of IEEE exceptional values
 	would also return +Inf if either x or y is +/- Inf  */
@@ -475,9 +475,9 @@ double log1p (double x) {
 
 	double u;
 
-	if (GMT_is_dnan (x)) return (x);
+	if (gmt_M_is_dnan (x)) return (x);
 	if (x <= -1.0) {
-		GMT_make_dnan (u);
+		gmt_M_make_dnan (u);
 		return (u);
 	}
 

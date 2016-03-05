@@ -122,7 +122,7 @@ struct PSTEXT_INFO {
 void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSTEXT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSTEXT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSTEXT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -140,8 +140,8 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->F.text);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->F.text);
+	gmt_M_free (GMT, C);
 }
 
 void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
@@ -669,7 +669,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
-	if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
 
@@ -700,10 +700,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.mode) {	/* Need arrays to keep all the information until we lay it down in PSL */
 		n_alloc = 0;
-		gmt_malloc3 (GMT, c_angle, c_x, c_y, GMT_SMALL_CHUNK, &n_alloc, double);
-		c_txt = gmt_memory (GMT, NULL, n_alloc, char *);
-		c_just = gmt_memory (GMT, NULL, n_alloc, int);
-		c_font = gmt_memory (GMT, NULL, n_alloc, struct GMT_FONT);
+		gmt_M_malloc3 (GMT, c_angle, c_x, c_y, GMT_SMALL_CHUNK, &n_alloc, double);
+		c_txt = gmt_M_memory (GMT, NULL, n_alloc, char *);
+		c_just = gmt_M_memory (GMT, NULL, n_alloc, int);
+		c_font = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
 	token_separator = (Ctrl->F.read_font) ? PSTEXT_TOKEN_SEPARATORS : GMT_TOKEN_SEPARATORS;	/* Cannot use commas if fonts are to be read */
 
@@ -818,7 +818,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					n_add = 1;
 					while ((length + n_add) > txt_alloc) {
 						txt_alloc += GMT_BUFSIZ;
-						paragraph = gmt_memory (GMT, paragraph, txt_alloc, char);
+						paragraph = gmt_M_memory (GMT, paragraph, txt_alloc, char);
 					}
 					strcat (paragraph, "\r");
 				}
@@ -827,7 +827,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					n_add = (int)strlen (line) + 1;
 					while ((length + n_add) > txt_alloc) {
 						txt_alloc += GMT_BUFSIZ;
-						paragraph = gmt_memory (GMT, paragraph, txt_alloc, char);
+						paragraph = gmt_M_memory (GMT, paragraph, txt_alloc, char);
 					}
 					if (length) strcat (paragraph, " ");
 					strcat (paragraph, line);
@@ -976,10 +976,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			fmode = gmt_setfont (GMT, &T.font);
 			if (Ctrl->G.mode) {
 				if (m <= n_alloc) {
-					gmt_malloc3 (GMT, c_angle, c_x, c_y, m, &n_alloc, double);
-					c_just = gmt_memory (GMT, c_just, n_alloc, int);
-					c_txt = gmt_memory (GMT, c_txt, n_alloc, char *);
-					c_font = gmt_memory (GMT, c_font, n_alloc, struct GMT_FONT);
+					gmt_M_malloc3 (GMT, c_angle, c_x, c_y, m, &n_alloc, double);
+					c_just = gmt_M_memory (GMT, c_just, n_alloc, int);
+					c_txt = gmt_M_memory (GMT, c_txt, n_alloc, char *);
+					c_font = gmt_M_memory (GMT, c_font, n_alloc, struct GMT_FONT);
 				}
 				c_angle[m] = T.paragraph_angle;
 				c_txt[m] = strdup (curr_txt);
@@ -1006,7 +1006,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			GMT_putwords (GMT, PSL, plot_x, plot_y, paragraph, &T);
 			n_paragraphs++;
 		}
-	 	gmt_free (GMT, paragraph);
+	 	gmt_M_free (GMT, paragraph);
 	}
 	if (Ctrl->G.mode && m) {
 		int n_labels = m, form = (T.boxflag & 4) ? PSL_TXT_ROUND : 0;	/* PSL_TXT_ROUND = Rounded rectangle */
@@ -1025,7 +1025,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			offset[0] = T.x_space;
 			offset[1] = T.y_space;
 		}
-		fonts = gmt_memory (GMT, NULL, m, char *);
+		fonts = gmt_M_memory (GMT, NULL, m, char *);
 		for (kk = 0; kk < m; kk++) {
 			PSL_setfont (PSL, c_font[kk].id);
 			//psl_encodefont (PSL, PSL->current.font_no);
@@ -1037,16 +1037,16 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		/* Turn clipping ON after [optionally] displaying the text */
 		PSL_plottextline (PSL, NULL, NULL, NULL, 1, c_x, c_y, c_txt, c_angle, &n_labels, T.font.size, T.block_justify, offset, form);
 		for (kk = 0; kk < m; kk++) {
-			gmt_str_free (c_txt[kk]);
-			gmt_str_free (fonts[kk]);
+			gmt_M_str_free (c_txt[kk]);
+			gmt_M_str_free (fonts[kk]);
 		}
-		gmt_free (GMT, c_angle);
-		gmt_free (GMT, c_x);
-		gmt_free (GMT, c_y);
-		gmt_free (GMT, c_txt);
-		gmt_free (GMT, c_just);
-		gmt_free (GMT, c_font);
-		gmt_free (GMT, fonts);
+		gmt_M_free (GMT, c_angle);
+		gmt_M_free (GMT, c_x);
+		gmt_M_free (GMT, c_y);
+		gmt_M_free (GMT, c_txt);
+		gmt_M_free (GMT, c_just);
+		gmt_M_free (GMT, c_font);
+		gmt_M_free (GMT, fonts);
 	}
 	else if (clip_set)
 		gmt_map_clip_off (GMT);

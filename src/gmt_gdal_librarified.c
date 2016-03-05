@@ -63,7 +63,7 @@ char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
 	char **args = NULL;
-	args = gmt_memory (GMT, NULL, n_alloc, char *);
+	args = gmt_M_memory (GMT, NULL, n_alloc, char *);
 	/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 	 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 	 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
@@ -89,13 +89,13 @@ char **breakMe(struct GMT_CTRL *GMT, char *in) {
 
 		if (n_args == n_alloc) {
 			n_alloc += GMT_SMALL_CHUNK;
-			args = gmt_memory(GMT, args, n_alloc, char *);
+			args = gmt_M_memory(GMT, args, n_alloc, char *);
 		}
 	}
 	for (k = 0; txt_in[k]; k++)	/* Restore input string to prestine condition */
 		if (txt_in[k] == ASCII_GS) txt_in[k] = '\t';
 		else if (txt_in[k] == ASCII_US) txt_in[k] = ' ';	/* Replace spaces and tabs masked above */
 	args[n_args] = NULL;	/* Close the list with a NULL */
-	gmt_str_free (txt_in);
+	gmt_M_str_free (txt_in);
 	return args;
 }

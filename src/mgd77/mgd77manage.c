@@ -106,7 +106,7 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77MANAGE_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct MGD77MANAGE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct MGD77MANAGE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -121,9 +121,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->A.file);	
-	gmt_str_free (C->D.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->A.file);	
+	gmt_M_str_free (C->D.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -653,25 +653,25 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		n = (two_cols) ? -1 : 0;
 		n_alloc = GMT_CHUNK;
 		n_expected_fields = (GMT->common.b.ncol[GMT_IN]) ? GMT->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
-		colvalue = gmt_memory (GMT, NULL, n_alloc, double);
+		colvalue = gmt_M_memory (GMT, NULL, n_alloc, double);
 		if (two_cols) {	/* Got an abscissae column as well (dnt: d = dist, n = rec number, t = time) */
-			coldnt = gmt_memory (GMT, NULL, n_alloc, double);
+			coldnt = gmt_M_memory (GMT, NULL, n_alloc, double);
 			GMT->current.io.col_type[GMT_IN][GMT_X] = Ctrl->A.kind;
 		}
 		if (strings && !two_cols) {	/* Must read strings directly from file since GMT->current.io.input would barf */
 			ok_to_read = false;
-			tmp_string = gmt_memory (GMT, NULL, n_alloc, char *);
+			tmp_string = gmt_M_memory (GMT, NULL, n_alloc, char *);
 			while (gmt_fgets (GMT, word, GMT_BUFSIZ, fp)) {
 				if (word[0] == '#') continue;
 				width = (int)strlen (word);
-				tmp_string[n] = gmt_memory (GMT, NULL, width + 1, char);
+				tmp_string[n] = gmt_M_memory (GMT, NULL, width + 1, char);
 				strcpy (tmp_string[n], word);
 				if (width > LEN) LEN = (signed char)width;
 				n++;
 			}
 		}
 		else if (strings) {		/* Pretend to read one column and get the text string form the text record */
-			tmp_string = gmt_memory (GMT, NULL, n_alloc, char *);
+			tmp_string = gmt_M_memory (GMT, NULL, n_alloc, char *);
 			n_expected_fields = 1;
 		}
 		
@@ -689,16 +689,16 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				            n_fields, n_expected_fields, n);
 				MGD77_Path_Free (GMT, n_paths, list);
 				MGD77_end (GMT, &In);
-				gmt_free (GMT, colvalue);
-				if (two_cols) gmt_free (GMT, coldnt);
-				if (strings) gmt_free (GMT, tmp_string);
+				gmt_M_free (GMT, colvalue);
+				if (two_cols) gmt_M_free (GMT, coldnt);
+				if (strings) gmt_M_free (GMT, tmp_string);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 
 			if (strings) {	/* number in col1, string in col2 */
 				coldnt[n]   = in[0];
 				sscanf (GMT->current.io.current_record, "%*s %s", word);
-				tmp_string[n] = gmt_memory (GMT, NULL, strlen(word) + 1, char);
+				tmp_string[n] = gmt_M_memory (GMT, NULL, strlen(word) + 1, char);
 				strcpy (tmp_string[n], word);
 			}
 			else if (two_cols) {
@@ -721,18 +721,18 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (n == n_alloc) {
 				n_alloc <<= 1;
 				if (strings)
-					tmp_string = gmt_memory (GMT, tmp_string, n_alloc, char *);
+					tmp_string = gmt_M_memory (GMT, tmp_string, n_alloc, char *);
 				else
-					colvalue = gmt_memory (GMT, colvalue, n_alloc, double);
-				if (two_cols) coldnt = gmt_memory (GMT, coldnt, n_alloc, double);
+					colvalue = gmt_M_memory (GMT, colvalue, n_alloc, double);
+				if (two_cols) coldnt = gmt_M_memory (GMT, coldnt, n_alloc, double);
 			}
 
 			in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 		}
 		gmt_fclose (GMT, fp);
 		if (two_cols && n_ave) { colvalue[n] = sum_z / n_ave; coldnt[n++] = last_dnt;}
-		if (!strings) colvalue = gmt_memory (GMT, colvalue, n, double);
-		if (two_cols) coldnt = gmt_memory (GMT, coldnt, n, double);
+		if (!strings) colvalue = gmt_M_memory (GMT, colvalue, n, double);
+		if (two_cols) coldnt = gmt_M_memory (GMT, coldnt, n, double);
 	}
 	
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
@@ -809,7 +809,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				In.n_out_columns--;
 				for (col = k; col < In.n_out_columns; col++) {	/* Move remaining columns over */
 					D->values[col] = D->values[col+1];
-					gmt_str_free (In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
+					gmt_M_str_free (In.desired_column[col]);	/* Need to free and realloc because next var name might be longer */
 					In.desired_column[col] = strdup(In.desired_column[col+1]);
 					In.order[col].set = In.order[col+1].set;
 					In.order[col].item = In.order[col+1].item;
@@ -837,7 +837,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
 			history[k++] = '\n';	history[k] = '\0';				/* Add LF at end of line */
 			k += (int)strlen (D->H.history);
-			D->H.history = gmt_memory (GMT, D->H.history, k+1, char);
+			D->H.history = gmt_M_memory (GMT, D->H.history, k+1, char);
 			strcat (D->H.history, history);		/* MGD77_Write_FILE_cdf will use this to create the history attribute, thus preserving earlier history */
 
 			if (MGD77_Write_File (GMT, In.path, &In, D)) {	/* Create the new, slimmer file */
@@ -880,7 +880,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			xvar = D->values[ix];
 			yvar = D->values[iy];
 			tvar = D->values[it];
-			colvalue = gmt_memory (GMT, NULL, D->H.n_records, double);
+			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
 				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
@@ -907,7 +907,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			}
 			xvar = D->values[ix];
 			yvar = D->values[iy];
-			colvalue = gmt_memory (GMT, NULL, D->H.n_records, double);
+			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_Theoretical_Gravity (GMT, xvar[rec], yvar[rec], GF_version);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n",
@@ -924,7 +924,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			xvar = D->values[ix];
 			yvar = D->values[iy];
 			tvar = D->values[it];
-			colvalue = gmt_memory (GMT, NULL, D->H.n_records, double);
+			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_carter_correction (GMT, xvar[rec], yvar[rec], 1000.0 * tvar[rec], &Carter);
 			GMT_Report (API, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
@@ -944,7 +944,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			yvar = D->values[iy];
 			tvar = D->values[it];
 			mvar = D->values[im];
-			colvalue = gmt_memory (GMT, NULL, D->H.n_records, double);
+			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
 				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
@@ -964,7 +964,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 
 			xvar = D->values[ix];
 			yvar = D->values[iy];
-			colvalue = gmt_memory (GMT, NULL, D->H.n_records, double);
+			colvalue = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
 				colvalue[rec] = GMT->session.d_NaN;	/* In case we are outside grid */
@@ -1009,14 +1009,14 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			int ix, iy, it;
 			double *x = NULL, *y = NULL, *d = NULL;
 			size_t LEN_size = LEN;
-			colvalue = gmt_memory (GMT, colvalue, D->H.n_records, double);
+			colvalue = gmt_M_memory (GMT, colvalue, D->H.n_records, double);
 			if (Ctrl->A.mode == MODE_d) {	/* Must create distances in user's units */
 				if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				if ((iy = skip_if_missing (GMT, "lat", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 				x = D->values[ix];
 				y = D->values[iy];
 				if ((d = gmt_dist_array_2 (GMT, x, y, D->H.n_records, dist_scale, Ctrl->C.mode)) == NULL)
-					GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
+					gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");
 				x = d;
 			}
 			else if (Ctrl->A.mode == MODE_t) {	/* Time */
@@ -1024,17 +1024,17 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				x = D->values[it];
 			}
 			if (Ctrl->A.interpolate) {	/* Using given table to interpolate the values at all mgd77 records */
-				y = gmt_memory (GMT, NULL, D->H.n_records, double);
+				y = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 				result = gmt_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
 				if (result != 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error from gmt_intpol near row %d!\n", result+1);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
-				gmt_free (GMT, y);
+				gmt_M_free (GMT, y);
 			}
 			else if (strings && n < D->H.n_records) {	/* Only update the exact matching records */
-				text = gmt_memory (GMT, NULL, D->H.n_records * LEN_size, char);
+				text = gmt_M_memory (GMT, NULL, D->H.n_records * LEN_size, char);
 				for (rec = jrec = n_sampled = 0; rec < D->H.n_records && jrec < n; rec++) {
 					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
 					strncpy (&text[rec*LEN_size], not_given, LEN_size);	/* In case we have no data at this time */
@@ -1044,19 +1044,19 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 						n_sampled++;
 					}
 				}
-				gmt_free (GMT, tmp_string);
+				gmt_M_free (GMT, tmp_string);
 				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
 			}
 			else if (strings) {	/* One to one match */
-				text = gmt_memory (GMT, NULL, D->H.n_records * LEN_size, char);
+				text = gmt_M_memory (GMT, NULL, D->H.n_records * LEN_size, char);
 				for (rec = 0; rec < n; rec++) strncpy (&text[rec*LEN_size], tmp_string[rec], LEN_size);
-				gmt_free (GMT, tmp_string);
+				gmt_M_free (GMT, tmp_string);
 				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
 			}
 			else {	/* Only update the exact matching records */
-				y = gmt_memory (GMT, NULL, D->H.n_records, double);
+				y = gmt_M_memory (GMT, NULL, D->H.n_records, double);
 				for (rec = jrec = n_sampled = 0; rec < D->H.n_records && jrec < n; rec++) {
 					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
 					y[rec] = GMT->session.d_NaN;	/* In case we have no data at this time */
@@ -1069,9 +1069,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				gmt_M_memcpy (colvalue, y, D->H.n_records, double);
 				GMT_Report (API, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n",
 				            n_sampled, D->H.n_records, list[argno]);
-				gmt_free (GMT, y);
+				gmt_M_free (GMT, y);
 			}
-			if (Ctrl->A.mode == MODE_d) gmt_free (GMT, d);
+			if (Ctrl->A.mode == MODE_d) gmt_M_free (GMT, d);
 		}
 		else if (Ctrl->A.mode == MODE_e)
 		{
@@ -1195,7 +1195,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			gmt_M_rewind (fp_e);
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U));	/* Read until we get to Header record section */
 			
-			flags = gmt_memory (GMT, NULL, D->H.n_records, unsigned int);
+			flags = gmt_M_memory (GMT, NULL, D->H.n_records, unsigned int);
 			n_E77_flags = n_E77_headers = n_E77_scales = n_E77_offsets = n_E77_recalcs = 0;
 
 			MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
@@ -1328,7 +1328,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 				has_time = false;
 			else {	/* See if we really have time or if they are all NaN */
 				tvar = D->values[it];
-				for (rec = 0, has_time = false; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = true;
+				for (rec = 0, has_time = false; !has_time && rec < D->H.n_records; rec++) if (!gmt_M_is_dnan (tvar[rec])) has_time = true;
 			}
 			while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %" SCNu64 " %s", &YorN, ID, timestamp, &rec, code);
@@ -1430,7 +1430,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			         ctime(&now), In.user, n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_E77_flags);
 			for (i = 0; E77[i]; i++) if (E77[i] == '\n') E77[i] = ' ';	/* Remove the \n returned by ctime() */
 			length = strlen (E77);
-			D->H.E77 = gmt_memory (GMT, D->H.E77, length + 1, char);
+			D->H.E77 = gmt_M_memory (GMT, D->H.E77, length + 1, char);
 			strcpy (D->H.E77, E77);
 			MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "E77", length, D->H.E77));
 		
@@ -1567,7 +1567,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
 		history[k++] = '\n';	history[k] = '\0';    /* Add LF at end of line */
 		k += (int)(strlen (D->H.history) + 1);             /* +1 because the '\0' of 'history' that is also copied by strcat */
-		D->H.history = gmt_memory (GMT, D->H.history, k, char);
+		D->H.history = gmt_M_memory (GMT, D->H.history, k, char);
 		strcat (D->H.history, history);
 		MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "history", strlen (D->H.history), D->H.history));
 		
@@ -1588,11 +1588,11 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 			if (LEN)
 				MGD77_nc_status (GMT, nc_put_vara_schar (In.nc_id, cdf_var_id, start, count, (signed char *)text));
 			else if (transform) {
-				xtmp = gmt_memory (GMT, NULL, count[0], double);
+				xtmp = gmt_M_memory (GMT, NULL, count[0], double);
 				n_bad = MGD77_do_scale_offset_before_write (GMT, xtmp, colvalue, D->H.n_records, Ctrl->A.parameters[COL_SCALE],
 				                                            Ctrl->A.parameters[COL_OFFSET], c_nc_type);
 				MGD77_nc_status (GMT, nc_put_vara_double (In.nc_id, cdf_var_id, start, count, xtmp));
-				gmt_free (GMT, xtmp);
+				gmt_M_free (GMT, xtmp);
 			}
 			else 
 				MGD77_nc_status (GMT, nc_put_vara_double (In.nc_id, cdf_var_id, start, count, colvalue));
@@ -1609,8 +1609,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Data column %s added to %s\n", Ctrl->I.c_abbrev, list[argno]);
 	}
 
-	gmt_free (GMT, colvalue);
-	if (two_cols) gmt_free (GMT, coldnt);
+	gmt_M_free (GMT, colvalue);
+	if (two_cols) gmt_M_free (GMT, coldnt);
 
 	if (Ctrl->D.active)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Removed %d data columns from %d MGD77 files\n", n_delete, n_changed);
@@ -1623,6 +1623,6 @@ int GMT_mgd77manage (void *V_API, int mode, void *args) {
 	MGD77_end (GMT, &In);
 	gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
-	gmt_free (GMT, tmp_string);		/* A Coverity issue pointed out that 'tmp_string' could not had been freed yet */
+	gmt_M_free (GMT, tmp_string);		/* A Coverity issue pointed out that 'tmp_string' could not had been freed yet */
 	Return (GMT_OK);
 }

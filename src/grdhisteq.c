@@ -72,7 +72,7 @@ struct	CELL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDHISTEQ_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.value = 16;
@@ -81,10 +81,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);	
-	gmt_str_free (C->D.file);	
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->In.file);	
+	gmt_M_str_free (C->D.file);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -211,7 +211,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
 	
-	cell = gmt_memory (GMT, NULL, n_cells, struct CELL);
+	cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
 
 	/* Sort the data and find the division points */
 
@@ -224,7 +224,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	gmt_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT);
 	
 	nxy = Grid->header->nm;
-	while (nxy > 0 && GMT_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
+	while (nxy > 0 && gmt_M_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
 
 	last_cell = n_cells / 2;
 	n_cells_m1 = n_cells - 1;
@@ -260,14 +260,14 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	}
 	
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
-		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
+		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (gmt_M_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
 	}
 
 	gmt_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
-	gmt_free (GMT, cell);
+	gmt_M_free (GMT, cell);
 	return (0);
 }
 
@@ -290,11 +290,11 @@ GMT_LOCAL int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, d
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
 
-	indexed_data = gmt_memory (GMT, NULL, Grid->header->nm, struct INDEXED_DATA);
+	indexed_data = gmt_M_memory (GMT, NULL, Grid->header->nm, struct INDEXED_DATA);
 
 	nxy = Grid->header->nm;
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) {
-		if (GMT_is_fnan (Grid->data[ij])) {	/* Put NaNs in the back */
+		if (gmt_M_is_fnan (Grid->data[ij])) {	/* Put NaNs in the back */
 			nxy--;
 			indexed_data[nxy].i = ij;
 			indexed_data[nxy].x = Grid->data[ij];
@@ -326,7 +326,7 @@ GMT_LOCAL int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, d
 	i = 0;
 	gmt_M_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */
 
-	gmt_free (GMT, indexed_data);
+	gmt_M_free (GMT, indexed_data);
 	return (0);
 }
 
@@ -367,7 +367,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (gmt_M_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
+	if (gmt_M_is_subset (GMT, Grid->header, wesn)) gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}

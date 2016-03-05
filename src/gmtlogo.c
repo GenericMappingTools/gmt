@@ -61,15 +61,15 @@ struct GMTLOGO_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTLOGO_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTLOGO_CTRL);
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTLOGO_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free_refpoint (GMT, &C->D.refpoint);
-	gmt_free (GMT, C->F.panel);
-	gmt_free (GMT, C);
+	gmt_M_free_refpoint (GMT, &C->D.refpoint);
+	gmt_M_free (GMT, C->F.panel);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -206,12 +206,12 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 		PSL = gmt_plotinit (GMT, options);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust to BL corner */
 		PSL = gmt_plotinit (GMT, options);
@@ -220,7 +220,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.width;	wesn[YHI] = Ctrl->D.refpoint->y + 0.5 * Ctrl->D.width;
 		GMT->common.R.active = GMT->common.J.active = true;
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 
 	PSL_command (PSL, "V\n");	/* Ensure the entire gmtlogo output after initialization is between gsave/grestore */

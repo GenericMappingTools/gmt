@@ -75,7 +75,7 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SPH2GRD_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct SPH2GRD_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct SPH2GRD_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.hc = C->F.hp = DBL_MAX;	/* No high-cutting is the default */
@@ -88,8 +88,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->G.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->G.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -311,8 +311,8 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	}
 	
 	/* Allocate C[L][M] and S[L][M] arrays to simplify accessing the coefficients in the big loop */
-	gmt_malloc2 (GMT, C, S, L_max + 1, NULL, double *);
-	for (L = 0; L <= L_max; L++) gmt_malloc2 (GMT, C[L], S[L], L_max + 1, NULL, double);
+	gmt_M_malloc2 (GMT, C, S, L_max + 1, NULL, double *);
+	for (L = 0; L <= L_max; L++) gmt_M_malloc2 (GMT, C[L], S[L], L_max + 1, NULL, double);
 
 	/* Place the coefficients into the C and S arrays and apply filtering, if selected */
 
@@ -369,9 +369,9 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	n_PLM = LM_index (L_max + 1, L_max + 1);	/* Number of P_lm terms needed */
 	n_CS = L_max + 1;				/* Number of Cos,Sin terms needed for each longitude */
 	n_CS_nx = n_CS * Grid->header->nx;		/* Number of Cos,Sin terms needed for all longitudes */
-	P_lm  = gmt_memory (GMT, NULL, n_PLM, double);
-	gmt_malloc2 (GMT, Cosmx, Sinmx, n_CS_nx, NULL, double);
-	gmt_malloc2 (GMT, Cosm,  Sinm,  Grid->header->nx, NULL, double *);
+	P_lm  = gmt_M_memory (GMT, NULL, n_PLM, double);
+	gmt_M_malloc2 (GMT, Cosmx, Sinmx, n_CS_nx, NULL, double);
+	gmt_M_malloc2 (GMT, Cosm,  Sinm,  Grid->header->nx, NULL, double *);
 	
 	/* Evaluate longitude terms once and for all to avoid doing it repeatedly in the big loop.
 	 * We compute a matrix with rows representing order M and columns representing longitude.
@@ -464,17 +464,17 @@ int GMT_sph2grd (void *V_API, int mode, void *args) {
 	
 	/* Clear up by freeing memory */
 	
-	gmt_free (GMT, P_lm);
-	gmt_free (GMT, Cosm);
-	gmt_free (GMT, Sinm);
-	gmt_free (GMT, Cosmx);
-	gmt_free (GMT, Sinmx);
+	gmt_M_free (GMT, P_lm);
+	gmt_M_free (GMT, Cosm);
+	gmt_M_free (GMT, Sinm);
+	gmt_M_free (GMT, Cosmx);
+	gmt_M_free (GMT, Sinmx);
 	for (L = 0; L <= L_max; L++) {
-		gmt_free (GMT, C[L]);
-		gmt_free (GMT, S[L]);
+		gmt_M_free (GMT, C[L]);
+		gmt_M_free (GMT, S[L]);
 	}
-	gmt_free (GMT, C);
-	gmt_free (GMT, S);
+	gmt_M_free (GMT, C);
+	gmt_M_free (GMT, S);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Completed\n");
 	Return ((error) ? error : EXIT_SUCCESS);

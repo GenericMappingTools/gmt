@@ -253,7 +253,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
@@ -286,7 +286,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + (((j_gmt - first_row) + pad[YHI]) * width_out + col - first_col) + pad[XLO];
 				grid[ij] = (z[j][i] == 0.0) ? GMT->session.f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
-				if (GMT_is_fnan (grid[ij])) {
+				if (gmt_M_is_fnan (grid[ij])) {
 					header->has_NaNs = GMT_GRID_HAS_NANS;
 					continue;
 				}
@@ -300,7 +300,7 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			datablockcol++;
 		}
 	}
-	gmt_free (GMT, k);
+	gmt_M_free (GMT, k);
 
 	header->nx = width_in;	header->ny = height_in;
 	gmt_M_memcpy (header->wesn, wesn, 4, double);
@@ -343,7 +343,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	else if ((fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
-	GMT_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	gmt_M_err_pass (GMT, gmt_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 	(void)gmtlib_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
@@ -359,7 +359,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		ij = imag_offset + j2 * width_in;
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			kk = ij + i2;
-			if (GMT_is_fnan (grid[kk]))	/* in AGC, NaN <--> 0.0 */
+			if (gmt_M_is_fnan (grid[kk]))	/* in AGC, NaN <--> 0.0 */
 				grid[ij] = 0.0f;
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -405,7 +405,7 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			datablockcol++;
 		}
 	}
-	gmt_free (GMT, k);
+	gmt_M_free (GMT, k);
 
 	gmt_fclose (GMT, fp);
 

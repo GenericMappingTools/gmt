@@ -65,15 +65,15 @@ struct GMTSIMPLIFY_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTSIMPLIFY_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GMTSIMPLIFY_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GMTSIMPLIFY_CTRL);
 	
 	return (C);
 }
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->Out.file);	
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->Out.file);	
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -175,8 +175,8 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 
 	/* more complex case. initialise stack */
 
-	sig_start = gmt_memory (GMT, NULL, n_source, uint64_t);
-	sig_end   = gmt_memory (GMT, NULL, n_source, uint64_t);
+	sig_start = gmt_M_memory (GMT, NULL, n_source, uint64_t);
+	sig_end   = gmt_M_memory (GMT, NULL, n_source, uint64_t);
 
 	/* All calculations uses the original units, either Cartesian or FlatEarth */
 	/* The tolerance (band) must be in the same units as the data */
@@ -265,8 +265,8 @@ GMT_LOCAL uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[]
 	index[n_dest] = n_source-1;
 	n_dest++;
 
-	gmt_free (GMT, sig_start);
-	gmt_free (GMT, sig_end);
+	gmt_M_free (GMT, sig_start);
+	gmt_M_free (GMT, sig_end);
 
 	return (n_dest);
 }
@@ -363,16 +363,16 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 	
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 		n_in_tbl = 0;
-		D[GMT_OUT]->table[tbl]->segment = gmt_memory (GMT, NULL, D[GMT_IN]->table[tbl]->n_segments, struct GMT_DATASEGMENT *);	/* Inital (and max) allocation of segments */
+		D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, NULL, D[GMT_IN]->table[tbl]->n_segments, struct GMT_DATASEGMENT *);	/* Inital (and max) allocation of segments */
 		for (seg_in = seg_out = 0; seg_in < D[GMT_IN]->table[tbl]->n_segments; seg_in++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg_in];
 			/* If input segment is a closed polygon then the simplified segment must have at least 4 points, else 3 is enough */
 			poly = (!gmt_polygon_is_open (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows));
-			index = gmt_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
+			index = gmt_M_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 			skip = ((poly && np_out < 4) || (np_out == 2 && S[GMT_IN]->coord[GMT_X][index[0]] == S[GMT_IN]->coord[GMT_X][index[1]] && S[GMT_IN]->coord[GMT_Y][index[0]] == S[GMT_IN]->coord[GMT_Y][index[1]]));
 			if (!skip) {	/* Must allocate output */
-				D[GMT_OUT]->table[tbl]->segment[seg_out] = gmt_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
+				D[GMT_OUT]->table[tbl]->segment[seg_out] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
 				S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg_out];
 				gmt_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_IN]->n_columns, true);	/* Allocate exact space needed */
 				for (row = 0; row < np_out; row++)
@@ -387,10 +387,10 @@ int GMT_gmtsimplify (void *V_API, int mode, void *args) {
 			}
 			else
 				n_saved = 0;
-			if (np_out) gmt_free (GMT, index);	/* No longer needed */
+			if (np_out) gmt_M_free (GMT, index);	/* No longer needed */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, n_saved);
 		}
-		if (seg_out < D[GMT_IN]->table[tbl]->n_segments) D[GMT_OUT]->table[tbl]->segment = gmt_memory (GMT, D[GMT_OUT]->table[tbl]->segment, seg_out, struct GMT_DATASEGMENT *);	/* Reduce allocation to # of segments */
+		if (seg_out < D[GMT_IN]->table[tbl]->n_segments) D[GMT_OUT]->table[tbl]->segment = gmt_M_memory (GMT, D[GMT_OUT]->table[tbl]->segment, seg_out, struct GMT_DATASEGMENT *);	/* Reduce allocation to # of segments */
 		D[GMT_OUT]->table[tbl]->n_segments = seg_out;	/* Update segment count */
 		D[GMT_OUT]->table[tbl]->n_records = n_in_tbl;	/* Update table count */
 		D[GMT_OUT]->n_records += n_in_tbl;		/* Update dataset count of total records*/

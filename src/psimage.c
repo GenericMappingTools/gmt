@@ -70,7 +70,7 @@ struct PSIMAGE_CTRL {
 GMT_LOCAL void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSIMAGE_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
@@ -80,10 +80,10 @@ GMT_LOCAL void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initia
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_free_refpoint (GMT, &C->D.refpoint);
-	gmt_free (GMT, C->F.panel);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_free_refpoint (GMT, &C->D.refpoint);
+	gmt_M_free (GMT, C->F.panel);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -320,7 +320,7 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if
 	return (0);	/* Neither */
 }
 
-#define Return(code) {gmt_free (GMT, table); return (code);}
+#define Return(code) {gmt_M_free (GMT, table); return (code);}
 
 GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
@@ -328,7 +328,7 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 	bool trans = false;
 	unsigned char *table = NULL;
 
-	table = gmt_memory (GMT, NULL, 256*256*256, unsigned char);	/* Get table all initialized to zero */
+	table = gmt_M_memory (GMT, NULL, 256*256*256, unsigned char);	/* Get table all initialized to zero */
 
 	/* Check off all the non-transparent colors, store the transparent one */
 	*r = *g = *b = 0;
@@ -444,7 +444,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 			if (!Ctrl->G.active) has_trans = find_unique_color (GMT, colormap, n, &r, &g, &b);
 
 			/* Expand 8-bit indexed image to 24-bit image */
-			I->data = gmt_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
+			I->data = gmt_M_memory (GMT, I->data, 3 * I->header->nm, unsigned char);
 			n = (int)(3 * I->header->nm - 1);
 			for (j = (int)I->header->nm - 1; j >= 0; j--) {
 				k = 4 * I->data[j] + 3;
@@ -509,7 +509,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		PS_transparent = -1;
 		j = header.depth / 8;
 		n = j * (header.width * header.height + 1);
-		buffer = gmt_memory (GMT, NULL, n, unsigned char);
+		buffer = gmt_M_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)rint(255 * Ctrl->G.t_rgb[i]);
 		gmt_M_memcpy (&(buffer[j]), picture, n - j, unsigned char);
 #ifdef HAVE_GDAL
@@ -538,16 +538,16 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
-				gmt_free (GMT, picture);
+				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
-				gmt_free (GMT, picture);
+				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_RUNTIME_ERROR);
@@ -555,9 +555,9 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
 			if (free_GMT)
-				gmt_free (GMT, picture);
+				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_PROJECTION_ERROR);
@@ -566,7 +566,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, Ctrl->D.dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 			if (free_GMT)
-				gmt_free (GMT, picture);
+				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_RUNTIME_ERROR);
@@ -579,9 +579,9 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 		wesn[XHI] = Ctrl->D.refpoint->x + Ctrl->D.nx * Ctrl->D.dim[GMT_X];
 		wesn[YHI] = Ctrl->D.refpoint->y + Ctrl->D.ny * Ctrl->D.dim[GMT_Y];
 		GMT->common.R.active = GMT->common.J.active = true;
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
 			if (free_GMT)
-				gmt_free (GMT, picture);
+				gmt_M_free (GMT, picture);
 			else if (known || did_gray)
 				PSL_free (picture);
 			Return (GMT_PROJECTION_ERROR);
@@ -626,7 +626,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #endif
 	if (free_GMT) {
-		gmt_free (GMT, picture);
+		gmt_M_free (GMT, picture);
 	}
 	else if (known || did_gray)
 		PSL_free (picture);

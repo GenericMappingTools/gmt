@@ -182,7 +182,7 @@ bool TEST = false;	/* Global variable used for undocumented testing [under -DDEB
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GREENSPLINE_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct GREENSPLINE_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->S.mode = SANDWELL_1987_2D;
@@ -194,13 +194,13 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->A.file);
-	gmt_str_free (C->C.file);
-	gmt_str_free (C->G.file);
-	gmt_str_free (C->N.file);
-	gmt_str_free (C->T.file);
-	gmt_str_free (C->S.arg);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->A.file);
+	gmt_M_str_free (C->C.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_str_free (C->N.file);
+	gmt_M_str_free (C->T.file);
+	gmt_M_str_free (C->S.arg);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -825,10 +825,10 @@ GMT_LOCAL void series_prepare (struct GMT_CTRL *GMT, double p, unsigned int L, s
 	unsigned int l;
 	double pp, t1, t2;
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Precalculate max %u terms for Legendre summation\n", L+1);
-	Lz->A = gmt_memory (GMT, NULL, L+1, double);
-	Lz->B = gmt_memory (GMT, NULL, L+1, double);
-	Lz->C = gmt_memory (GMT, NULL, L+1, double);
-	if (Lg) Lg->A = gmt_memory (GMT, NULL, L+1, double);
+	Lz->A = gmt_M_memory (GMT, NULL, L+1, double);
+	Lz->B = gmt_M_memory (GMT, NULL, L+1, double);
+	Lz->C = gmt_M_memory (GMT, NULL, L+1, double);
+	if (Lg) Lg->A = gmt_M_memory (GMT, NULL, L+1, double);
 	pp = p * p;
 	for (l = 1; l <= L; l++) {
 		t1 = l + 1.0;
@@ -853,14 +853,14 @@ GMT_LOCAL void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lp
 	 * mode = 0 means Lz and mode = 1 means Lg; the latter has no B & C arrays */
 	struct GREENSPLINE_LOOKUP *L = *Lptr;
 	if (L == NULL) return;	/* Nothing to free */
-	gmt_free (GMT, L->y);
-	gmt_free (GMT, L->c);
-	gmt_free (GMT, L->A);
+	gmt_M_free (GMT, L->y);
+	gmt_M_free (GMT, L->c);
+	gmt_M_free (GMT, L->A);
 	if (mode == 0) {	/* Only Lz has A,B,C while Lg borrows B,C */
-		gmt_free (GMT, L->B);
-		gmt_free (GMT, L->C);
+		gmt_M_free (GMT, L->B);
+		gmt_M_free (GMT, L->C);
 	}
-	gmt_free (GMT, L);
+	gmt_M_free (GMT, L);
 	*Lptr = NULL;
 }
 
@@ -995,7 +995,7 @@ GMT_LOCAL void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double p
 	/* Set up cubic spline interpolation given the precomputed x,y values of the function */
 	gmt_M_unused(GMT);
 	gmt_M_unused(par);
-	L->c = gmt_memory (GMT, NULL, 3*L->n, double);
+	L->c = gmt_M_memory (GMT, NULL, 3*L->n, double);
 	gmtlib_cspline (GMT, x, L->y, L->n, L->c);
 }
 
@@ -1011,10 +1011,10 @@ GMT_LOCAL void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], 
 #endif
 	nx = lrint (par[7]);
 	Lz->n = nx;
-	x = gmt_memory (GMT, NULL, nx, double);
-	Lz->y = gmt_memory (GMT, NULL, nx, double);
+	x = gmt_M_memory (GMT, NULL, nx, double);
+	Lz->y = gmt_M_memory (GMT, NULL, nx, double);
 	if (Lg) {
-		Lg->y = gmt_memory (GMT, NULL, nx, double);
+		Lg->y = gmt_M_memory (GMT, NULL, nx, double);
 		Lg->n = nx;
 	}
 	for (i = 0; i < nx; i++) {
@@ -1034,7 +1034,7 @@ GMT_LOCAL void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], 
 		if (x[0] == -1.0) Lg->y[0] = 2.0*Lg->y[1] - Lg->y[2];	/* Linear interpolation from 2 nearest nodes */
 		spline2d_Wessel_Becker_splineinit (GMT, par, x, Lg);
 	}
-	gmt_free (GMT, x);	/* Done with x array */
+	gmt_M_free (GMT, x);	/* Done with x array */
 }
 
 /*----------------------  THREE DIMENSIONS ---------------------- */
@@ -1419,10 +1419,10 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
-	X = gmt_memory (GMT, NULL, n_alloc, double *);
+	X = gmt_M_memory (GMT, NULL, n_alloc, double *);
 	n_cols = (Ctrl->W.active) ? dimension + 1 : dimension;	/* So X[k][dimension] holds the weight if -W is active */
-	for (k = 0; k < n_alloc; k++) X[k] = gmt_memory (GMT, NULL, n_cols, double);
-	obs = gmt_memory (GMT, NULL, n_alloc, double);
+	for (k = 0; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
+	obs = gmt_M_memory (GMT, NULL, n_alloc, double);
 	check_longitude = (dimension == 2 && (Ctrl->D.mode == 1 || Ctrl->D.mode == 2));
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read input data and check for data constraint duplicates\n");
@@ -1475,9 +1475,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (n == n_alloc) {	/* Get more memory */
 			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
-			X = gmt_memory (GMT, X, n_alloc, double *);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = gmt_memory (GMT, X[k], n_cols, double);
-			obs = gmt_memory (GMT, obs, n_alloc, double);
+			X = gmt_M_memory (GMT, X, n_alloc, double *);
+			for (k = old_n_alloc; k < n_alloc; k++) X[k] = gmt_M_memory (GMT, X[k], n_cols, double);
+			obs = gmt_M_memory (GMT, obs, n_alloc, double);
 		}
 	} while (true);
 
@@ -1485,9 +1485,9 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	for (k = n; k < n_alloc; k++) gmt_free (GMT, X[k]);	/* Remove what was not used */
-	X = gmt_memory (GMT, X, n, double *);
-	obs = gmt_memory (GMT, obs, n, double);
+	for (k = n; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove what was not used */
+	X = gmt_M_memory (GMT, X, n, double *);
+	obs = gmt_M_memory (GMT, obs, n, double);
 	nm = n;
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n);
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
@@ -1504,11 +1504,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		S = Din->table[0];	/* Can only be one table */
 		m = S->n_records;	/* Total number of gradient constraints */
 		nm += m;		/* New total of linear equations to solve */
-		X = gmt_memory (GMT, X, nm, double *);
-		for (k = n; k < nm; k++) X[k] = gmt_memory (GMT, NULL, n_cols, double);
-		obs = gmt_memory (GMT, obs, nm, double);
-		D = gmt_memory (GMT, NULL, m, double *);
-		for (k = 0; k < m; k++) D[k] = gmt_memory (GMT, NULL, n_cols, double);
+		X = gmt_M_memory (GMT, X, nm, double *);
+		for (k = n; k < nm; k++) X[k] = gmt_M_memory (GMT, NULL, n_cols, double);
+		obs = gmt_M_memory (GMT, obs, nm, double);
+		D = gmt_M_memory (GMT, NULL, m, double *);
+		for (k = 0; k < m; k++) D[k] = gmt_M_memory (GMT, NULL, n_cols, double);
 		n_skip = n_read = 0;
 		for (seg = k = 0, p = n; seg < S->n_segments; seg++) {
 			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
@@ -1617,12 +1617,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " data constraint duplicates with different observation values\n", n_duplicates);
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
-			for (p = 0; p < nm; p++) gmt_free (GMT, X[p]);
-			gmt_free (GMT, X);
-			gmt_free (GMT, obs);
+			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+			gmt_M_free (GMT, X);
+			gmt_M_free (GMT, obs);
 			if (m) {
-				for (p = 0; p < m; p++) gmt_free (GMT, D[p]);
-				gmt_free (GMT, D);
+				for (p = 0; p < m; p++) gmt_M_free (GMT, D[p]);
+				gmt_M_free (GMT, D);
 			}
 			Return (GMT_DATA_READ_ERROR);
 		}
@@ -1661,7 +1661,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 		(void)gmt_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
 		n_ok = Grid->header->nm;
-		gmt_M_grd_loop (GMT, Grid, row, col, ij) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
+		gmt_M_grd_loop (GMT, Grid, row, col, ij) if (gmt_M_is_fnan (Grid->data[ij])) n_ok--;
 		Z.nz = 1;
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
@@ -1690,14 +1690,14 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				Grid->header->wesn[YLO] = Ctrl->R3.range[2];	Grid->header->wesn[YHI] = Ctrl->R3.range[3];
 				Grid->header->inc[GMT_Y] = Ctrl->I.inc[GMT_Y];
 				gmt_RI_prepare (GMT, Grid->header);	/* Ensure -R -I consistency and set nx, ny */
-				GMT_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
+				gmt_M_err_fail (GMT, gmt_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 				gmt_set_grddim (GMT, Grid->header);
 				/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];
 				Z.nz = gmt_M_get_n (GMT, Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
 				n_ok = Grid->header->nm * Z.nz;
-				Grid->data = gmt_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
+				Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
 			}
 			else	/* Just 1-D */
 				n_ok = Grid->header->nx = gmt_M_grd_get_nx (GMT, Grid->header);
@@ -1779,12 +1779,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0]));	/* The p value */
 			par[1] = Ctrl->S.value[2];	/* The truncation error */
 			par[2] = -log (2.0) + (par[0]*par[0] - 1.0) / (par[0]*par[0]);	/* Precalculate the constant for the l = 0 term here */
-			Lz = gmt_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
+			Lz = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 #ifdef DEBUG
-			if (TEST) Lg = gmt_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
+			if (TEST) Lg = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 			else
 #endif
-			if (Ctrl->A.active) Lg = gmt_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
+			if (Ctrl->A.active) Lg = gmt_M_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 			L_Max = get_max_L (GMT, par[0], par[1]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "New scheme p = %g, err = %g, L_Max = %u\n", par[0], par[1], L_Max);
 			series_prepare (GMT, par[0], L_Max, Lz, Lg);
@@ -1811,8 +1811,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
 		dump_green (GMT, G, dGdr, par, x0, x1, 10001, Lz, Lg);
-		gmt_free_grid (GMT, &Grid, dimension == 2);
-		for (p = 0; p < nm; p++) gmt_free (GMT, X[p]);
+		gmt_M_free_grid (GMT, &Grid, dimension == 2);
+		for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 		free_lookup (GMT, &Lz, 0);
 		free_lookup (GMT, &Lg, 1);
 		Return (0);
@@ -1829,7 +1829,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	unit = 0;
 	while (mem > 1024.0 && unit < 2) { mem /= 1024.0; unit++; }	/* Select next unit */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Square matrix requires %.1f %s\n", mem, mem_unit[unit]);
-	A = gmt_memory (GMT, NULL, nm * nm, double);
+	A = gmt_M_memory (GMT, NULL, nm * nm, double);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
@@ -1880,12 +1880,12 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Note: SVD solution without LAPACK will be very very slow.\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "We strongly recommend you install LAPACK and recompile GMT.\n");
 #endif
-		v = gmt_memory (GMT, NULL, nm * nm, double);
-		s = gmt_memory (GMT, NULL, nm, double);
+		v = gmt_M_memory (GMT, NULL, nm * nm, double);
+		s = gmt_M_memory (GMT, NULL, nm, double);
 		if ((error = gmt_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
-			double *eig = gmt_memory (GMT, NULL, nm, double);
+			double *eig = gmt_M_memory (GMT, NULL, nm, double);
 			uint64_t e_dim[4] = {1, 1, nm, 2};
 			struct GMT_DATASET *E = NULL;
 			gmt_M_memcpy (eig, s, nm, double);
@@ -1908,29 +1908,29 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
 			else
 				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
-			gmt_free (GMT, eig);
+			gmt_M_free (GMT, eig);
 
 			if (Ctrl->C.value < 0.0) {	/* We are done */
-				for (p = 0; p < nm; p++) gmt_free (GMT, X[p]);
-				gmt_free (GMT, X);
-				gmt_free (GMT, s);
-				gmt_free (GMT, v);
-				gmt_free (GMT, A);
-				gmt_free (GMT, obs);
-				if (dimension == 2) gmt_free_grid (GMT, &Grid, true);
+				for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+				gmt_M_free (GMT, X);
+				gmt_M_free (GMT, s);
+				gmt_M_free (GMT, v);
+				gmt_M_free (GMT, A);
+				gmt_M_free (GMT, obs);
+				if (dimension == 2) gmt_M_free_grid (GMT, &Grid, true);
 				Return (EXIT_SUCCESS);
 			}
 		}
-		b = gmt_memory (GMT, NULL, nm, double);
+		b = gmt_M_memory (GMT, NULL, nm, double);
 		gmt_M_memcpy (b, obs, nm, double);
 		limit = Ctrl->C.value;
 		n_use = gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
 
-		gmt_free (GMT, s);
-		gmt_free (GMT, v);
-		gmt_free (GMT, b);
+		gmt_M_free (GMT, s);
+		gmt_M_free (GMT, v);
+		gmt_M_free (GMT, b);
 	}
 	else {				/* Gauss-Jordan elimination */
 		int error;
@@ -1952,7 +1952,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	for (p = 0; p < nm; p++) fprintf (fp, "%g\n", alpha[p]);
 	fclose (fp);
 #endif
-	gmt_free (GMT, A);
+	gmt_M_free (GMT, A);
 
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
@@ -2041,7 +2041,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				for (col = 0; col < Grid->header->nx; col++) {	/* This loop is always active for 1,2,3D */
 					ij = gmt_M_ijp (Grid->header, row, col) + nz_off;
-					if (dimension == 2 && GMT_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
+					if (dimension == 2 && gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 					V[GMT_X] = xp[col];
 					/* Here, V holds the current output coordinates */
 					for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {
@@ -2091,22 +2091,22 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
-			gmt_free_grid (GMT, &Grid, dimension > 1);
+			gmt_M_free_grid (GMT, &Grid, dimension > 1);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		gmt_free (GMT, xp);
-		if (dimension > 1) gmt_free (GMT, yp);
+		gmt_M_free (GMT, xp);
+		if (dimension > 1) gmt_M_free (GMT, yp);
 	}
 
 	/* Clean up */
 
-	for (p = 0; p < nm; p++) gmt_free (GMT, X[p]);
-	gmt_free (GMT, X);
-	gmt_free (GMT, obs);
+	for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+	gmt_M_free (GMT, X);
+	gmt_M_free (GMT, obs);
 	if (m) {
-		for (p = 0; p < m; p++) gmt_free (GMT, D[p]);
-		gmt_free (GMT, D);
+		for (p = 0; p < m; p++) gmt_M_free (GMT, D[p]);
+		gmt_M_free (GMT, D);
 	}
 	free_lookup (GMT, &Lz, 0);
 	free_lookup (GMT, &Lg, 1);

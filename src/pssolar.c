@@ -89,7 +89,7 @@ struct PSSOLAR_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSOLAR_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct PSSOLAR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->T.radius[0] = 90.833;		/* (for example if -I only) Sun radius (16' + 34.5' from the light refraction effect) */
@@ -98,7 +98,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_free (GMT, C);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL void parse_date_tz(char *date_tz, char **date, int *TZ) {
@@ -426,7 +426,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the pssolar main code ----------------------------*/
 
-	Sun = gmt_memory (GMT, NULL, 1, struct SUN_PARAMS);
+	Sun = gmt_M_memory (GMT, NULL, 1, struct SUN_PARAMS);
 
 	if (Ctrl->I.active) {
 		solar_params (Ctrl, Sun);
@@ -496,7 +496,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				out[GMT_X] = S->coord[GMT_X][j];	out[GMT_Y] = S->coord[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
-			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
@@ -506,7 +506,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
 		
-		if (GMT_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
@@ -529,8 +529,8 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				}
 				PSL_beginclipping (PSL, lon, lat, n_pts, GMT->session.no_rgb, 2 + first);
 				if (must_free) {
-					gmt_free (GMT, lon);
-					gmt_free (GMT, lat);
+					gmt_M_free (GMT, lon);
+					gmt_M_free (GMT, lat);
 				}
 			}
 			else {
@@ -540,7 +540,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 					gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				gmt_geo_polygons (GMT, S);
 			}
-			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
 		gmt_map_basemap (GMT);
@@ -548,7 +548,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		gmt_plotend (GMT);
 	}
 
-	gmt_free (GMT, Sun);
+	gmt_M_free (GMT, Sun);
 
 	Return (GMT_OK);
 }

@@ -55,7 +55,7 @@ struct KML2GMT_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct KML2GMT_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct KML2GMT_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct KML2GMT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -64,8 +64,8 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {

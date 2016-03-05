@@ -58,11 +58,11 @@ EXTERN_MSC void gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct 
 GMT_LOCAL double median (struct GMT_CTRL *GMT, double *x, unsigned int n) {
 	double *sorted = NULL, med;
 
-	sorted = gmt_memory (GMT, NULL, n, double);
+	sorted = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_memcpy (sorted, x, n, double);
 	gmt_sort_array (GMT, sorted, n, GMT_DOUBLE);
 	med = (n%2) ? sorted[n/2] : 0.5*(sorted[(n-1)/2]+sorted[n/2]);
-	gmt_free (GMT, sorted);
+	gmt_M_free (GMT, sorted);
 	return med;
 }
 
@@ -78,12 +78,12 @@ GMT_LOCAL void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, doubl
 	double da, *slp = NULL, *icept = NULL, *z = NULL, *sq_misfit = NULL, *angle = NULL, *e = NULL, emin = DBL_MAX, d;
 	unsigned int i, j = 0;
 
-	slp = gmt_memory (GMT, NULL, n_angle, double);
-	icept = gmt_memory (GMT, NULL, n_angle, double);
-	angle = gmt_memory (GMT, NULL, n_angle, double);
-	e = gmt_memory (GMT, NULL, n_angle, double);
-	z = gmt_memory (GMT, NULL, nvalues, double);
-	sq_misfit = gmt_memory (GMT, NULL, nvalues, double);
+	slp = gmt_M_memory (GMT, NULL, n_angle, double);
+	icept = gmt_M_memory (GMT, NULL, n_angle, double);
+	angle = gmt_M_memory (GMT, NULL, n_angle, double);
+	e = gmt_M_memory (GMT, NULL, n_angle, double);
+	z = gmt_M_memory (GMT, NULL, nvalues, double);
+	sq_misfit = gmt_M_memory (GMT, NULL, nvalues, double);
 
 	for (i=0; i < 4; i++)
 		stats[i] = 0;
@@ -118,12 +118,12 @@ GMT_LOCAL void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, doubl
 	stats[MGD77_RLS_ICEPT] = icept[j];
 	stats[MGD77_RLS_STD] = e[j];
 
-	gmt_free (GMT, slp);
-	gmt_free (GMT, icept);
-	gmt_free (GMT, angle);
-	gmt_free (GMT, e);
-	gmt_free (GMT, z);
-	gmt_free (GMT, sq_misfit);
+	gmt_M_free (GMT, slp);
+	gmt_M_free (GMT, icept);
+	gmt_M_free (GMT, angle);
+	gmt_M_free (GMT, e);
+	gmt_M_free (GMT, z);
+	gmt_M_free (GMT, sq_misfit);
 }
 
 GMT_LOCAL void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col) {
@@ -202,8 +202,8 @@ GMT_LOCAL void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned
 	s_0 = 1.4826 * (1.0 + 5.0 / nvalues) * sqrt (stats[MGD77_RLS_STD]);
 	threshold = 2.5 * s_0;
 
-	xx = gmt_memory (GMT, NULL, nvalues, double);
-	yy = gmt_memory (GMT, NULL, nvalues, double);
+	xx = gmt_M_memory (GMT, NULL, nvalues, double);
+	yy = gmt_M_memory (GMT, NULL, nvalues, double);
 	for (i = n = 0; i < nvalues; i++) {
 		y_hat = stats[MGD77_RLS_SLOPE] * x[i] + stats[MGD77_RLS_ICEPT];
 		res = y[i] - y_hat;
@@ -226,8 +226,8 @@ GMT_LOCAL void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned
 	else
 		stats[MGD77_RLS_SIG] = GMT->session.d_NaN;
 
-	gmt_free (GMT, xx);
-	gmt_free (GMT, yy);
+	gmt_M_free (GMT, xx);
+	gmt_M_free (GMT, yy);
 }
 
 /* Read Grid Header (from Smith & Wessel grdtrack.c) */
@@ -315,9 +315,9 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 
 	/* Create a 2-D bin table */
 	n = urint ((max - min)/delta) + 1;
-	bin2d = gmt_memory (GMT, NULL, n, int *);
+	bin2d = gmt_M_memory (GMT, NULL, n, int *);
 	for (j = 0; j < n; j++)
-		bin2d[j] = gmt_memory (GMT, NULL, n, int);
+		bin2d[j] = gmt_M_memory (GMT, NULL, n, int);
 
 	/* Then loop over all the ship, cruise pairs */
 	*extreme=0;
@@ -339,8 +339,8 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 		}
 	}
 
-	dorig = gmt_memory (GMT, NULL, npts, double);
-	dnew = gmt_memory (GMT, NULL, npts, double);
+	dorig = gmt_M_memory (GMT, NULL, npts, double);
+	dnew = gmt_M_memory (GMT, NULL, npts, double);
 
 	for (ship_bin = k = 0; ship_bin < n; ship_bin ++) {
 		for (grid_bin = 0; grid_bin < n; grid_bin ++) {
@@ -359,8 +359,8 @@ GMT_LOCAL int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, uns
 	*dec_orig = dorig;
 	*dec_new = dnew;
 
-	for (j = 0; j < n; j++)	gmt_free (GMT, bin2d[j]);
-	gmt_free (GMT, bin2d);
+	for (j = 0; j < n; j++)	gmt_M_free (GMT, bin2d[j]);
+	gmt_M_free (GMT, bin2d);
 	return npts;
 }
 
@@ -1096,8 +1096,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	}
 
 	if (n_grids) {
-		MaxDiff = gmt_memory (GMT, NULL, n_grids, double);
-		iMaxDiff = gmt_memory (GMT, NULL, n_grids, int);
+		MaxDiff = gmt_M_memory (GMT, NULL, n_grids, double);
+		iMaxDiff = gmt_M_memory (GMT, NULL, n_grids, int);
 	}
 
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
@@ -1126,7 +1126,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 		/* Allocate memory for data records */
 		n_alloc = GMT_CHUNK;
-		D = gmt_memory (GMT, NULL, n_alloc, struct MGD77_DATA_RECORD);
+		D = gmt_M_memory (GMT, NULL, n_alloc, struct MGD77_DATA_RECORD);
 
 		/* READ DATA RECORDS */
 		gotTime = false;
@@ -1136,9 +1136,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			/* Increase memory allocation if necessary */
 			if ((size_t)nvalues == n_alloc - 1) {
 				n_alloc <<= 1;
-				D = gmt_memory (GMT, D, n_alloc, struct MGD77_DATA_RECORD);
+				D = gmt_M_memory (GMT, D, n_alloc, struct MGD77_DATA_RECORD);
 			}
-			if (GMT_is_dnan(D[nvalues].time)) n_nan++;
+			if (gmt_M_is_dnan(D[nvalues].time)) n_nan++;
 			M.bit_pattern[0] |= D[nvalues].bit_pattern;
 			D[nvalues].keep_nav = true;
 			nvalues++;
@@ -1147,7 +1147,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		/* Scale and DC adjust if selected */
 		if (adjustData) {
 			for (i=0;i<MGD77_N_NUMBER_FIELDS;i++) {
-				if (!GMT_is_dnan(adjustScale[i]) || !GMT_is_dnan(adjustDC[i])) {
+				if (!gmt_M_is_dnan(adjustScale[i]) || !gmt_M_is_dnan(adjustDC[i])) {
 					for (k=0; k<nvalues;k++)
 						D[k].number[i] = D[k].number[i] * adjustScale[i] + adjustDC[i];
 					sprintf (text, GMT->current.setting.format_float_out, adjustScale[i]);
@@ -1211,11 +1211,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		timeErrorStart = noTimeStart = distanceErrorStart = -1;
 		noTimeCount = timeErrorCount = distanceErrorCount = bccCode = 0;
 		n_nan = n_wrap = 0;
-		offsetArea = gmt_memory (GMT, NULL, n_grids, double);
-		offsetStart = gmt_memory (GMT, NULL, n_grids, int);
-		offsetLength = gmt_memory (GMT, NULL, n_grids, double);
-		offsetSign = gmt_memory (GMT, NULL, n_grids, bool);
-		prevOffsetSign = gmt_memory (GMT, NULL, n_grids, bool);
+		offsetArea = gmt_M_memory (GMT, NULL, n_grids, double);
+		offsetStart = gmt_M_memory (GMT, NULL, n_grids, int);
+		offsetLength = gmt_M_memory (GMT, NULL, n_grids, double);
+		offsetSign = gmt_M_memory (GMT, NULL, n_grids, bool);
+		prevOffsetSign = gmt_M_memory (GMT, NULL, n_grids, bool);
 		range = range2 = date = n_days = 0.0;
 		wrapsum = 0.0;
 		prevFlag = false;
@@ -1240,7 +1240,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		}
 
 		/* Allocate memory for error array */
-		E = gmt_memory (GMT, E, nvalues, struct MGD77_ERROR);
+		E = gmt_M_memory (GMT, E, nvalues, struct MGD77_ERROR);
 		gmt_M_memset (E, nvalues, struct MGD77_ERROR);
 
 		/* RECURSIVELY CHECK FOR BAD NAVIGATION
@@ -1251,7 +1251,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Checking for bad navigation\n");
 
 			for (curr = 0; curr < nvalues; curr++) {
-				if (GMT_is_dnan(D[curr].time)) {
+				if (gmt_M_is_dnan(D[curr].time)) {
 					if (noTimeStart == -1)
 						noTimeStart = (int)curr;
 					noTimeCount++;
@@ -1388,22 +1388,22 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			}
 		}
 		/* Allocate memory for distance array */
-		distance = gmt_memory (GMT, NULL, nvalues, double);
+		distance = gmt_M_memory (GMT, NULL, nvalues, double);
 		distance[0] = 0;
 
 		/* Setup output array */
-		out = gmt_memory (GMT, NULL, nvalues, double *);
+		out = gmt_M_memory (GMT, NULL, nvalues, double *);
 
 		/* PROCESS GRID FILES */
 		if (n_grids > 0) {
 
 			/* Allocate memory for 2D arrays */
-			G = gmt_memory (GMT, NULL, n_grids, double *);	/* grid z values */
-			diff = gmt_memory (GMT, NULL, n_grids, double *);	/* cruise-grid differences */
+			G = gmt_M_memory (GMT, NULL, n_grids, double *);	/* grid z values */
+			diff = gmt_M_memory (GMT, NULL, n_grids, double *);	/* cruise-grid differences */
 
 			for (i = 0; i < n_grids; i++) {
 
-				G[i] = gmt_memory (GMT, NULL, nvalues, double);
+				G[i] = gmt_M_memory (GMT, NULL, nvalues, double);
 
 				this_grid[i].g_pts = 0;
 				/* Skip if cruise lacks data field */
@@ -1443,7 +1443,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				/* Count NaNs */
 				this_grid[i].n_nan = 0;
 				for (k = 0; k < nvalues; k++) {
-					if (GMT_is_dnan(D[k].number[this_grid[i].col]) || GMT_is_dnan(G[i][k])) {
+					if (gmt_M_is_dnan(D[k].number[this_grid[i].col]) || gmt_M_is_dnan(G[i][k])) {
 						this_grid[i].n_nan++;
 					}
 				}
@@ -1457,7 +1457,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				}
 
 				/* Allocate memory for ship/grid difference array */
-				diff[i] = gmt_memory (GMT, NULL, nvalues, double);
+				diff[i] = gmt_M_memory (GMT, NULL, nvalues, double);
 				for (k = 0; k < nvalues; k++)
 					/* Compute cruise - grid differences */
 					diff[i][k] = D[k].number[this_grid[i].col] - G[i][k];
@@ -1496,12 +1496,12 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			for (i = 0; i < n_grids; i++) {
 				if (do_regression && strcmp (this_grid[i].abbrev, "nav")) {
 					/* Allocate memory for NaN-free arrays */
-					ship_val = gmt_memory (GMT, NULL, (nvalues - this_grid[i].n_nan), double);
-					grid_val = gmt_memory (GMT, NULL, (nvalues - this_grid[i].n_nan), double);
+					ship_val = gmt_M_memory (GMT, NULL, (nvalues - this_grid[i].n_nan), double);
+					grid_val = gmt_M_memory (GMT, NULL, (nvalues - this_grid[i].n_nan), double);
 
 					/* Store grid/cruise pairs in NaN-free arrays */
 					for (ju = k = 0; ju < nvalues; ju++) {
-						if (GMT_is_dnan(D[ju].number[this_grid[i].col]) || GMT_is_dnan(G[i][ju])) continue;
+						if (gmt_M_is_dnan(D[ju].number[this_grid[i].col]) || gmt_M_is_dnan(G[i][ju])) continue;
 						ship_val[k] = D[ju].number[this_grid[i].col];
 						grid_val[k] = G[i][ju];
 						k++;
@@ -1550,8 +1550,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 								}
 							}
-							gmt_free (GMT, decimated_orig);
-							gmt_free (GMT, decimated_new);
+							gmt_M_free (GMT, decimated_orig);
+							gmt_M_free (GMT, decimated_new);
 						}
 
 						/* Make gmtdef formatted array of rls statistics */
@@ -1581,7 +1581,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							E77_HDR_RLS,fstats[MGD77_RLS_SLOPE],fstats[MGD77_RLS_ICEPT],fstats[MGD77_RLS_RMS],fstats[MGD77_RLS_CORR],(int)stats[MGD77_RLS_SIG],(int)decimated);
 
 						/* Analyze regression slope if significant */
-						if (stats[MGD77_RLS_SIG] == 1.0 && (GMT_is_dnan(adjustScale[this_grid[i].col]) || adjustScale[this_grid[i].col] == 1.0)) {
+						if (stats[MGD77_RLS_SIG] == 1.0 && (gmt_M_is_dnan(adjustScale[this_grid[i].col]) || adjustScale[this_grid[i].col] == 1.0)) {
 
 							/* Get error range for regression slope */
 							range = (tcrit * stats[MGD77_RLS_STD]) / sqrt(stats[MGD77_RLS_SXX]);	/* Draper 1.4.8 */
@@ -1651,11 +1651,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						}
 
 						/* Check regression intercept */
-						if (stats[MGD77_RLS_SIG] == 1.0 && (GMT_is_dnan(adjustDC[this_grid[i].col]) || adjustDC[this_grid[i].col] == 0.0)) {
+						if (stats[MGD77_RLS_SIG] == 1.0 && (gmt_M_is_dnan(adjustDC[this_grid[i].col]) || adjustDC[this_grid[i].col] == 0.0)) {
 							range = tcrit * stats[MGD77_RLS_STD] * sqrt(stats[MGD77_RLS_SUMX2]/(npts*stats[MGD77_RLS_SXX]));	/* Draper 1.4.11 */
 							if (this_grid[i].col != MGD77_DEPTH && (range <= stats[MGD77_RLS_ICEPT] || -1.0*range >= stats[MGD77_RLS_ICEPT])) {
 								if (!strcmp(display,"E77")) {
-									if (!GMT_is_dnan(adjustDC[this_grid[i].col])) {
+									if (!gmt_M_is_dnan(adjustDC[this_grid[i].col])) {
 										if (adjustDC[this_grid[i].col] == 0)
 											fprintf (fpout, "%c-%c-%s-%s-%.02d: Regression offset %s different from 0.\n",E77_APPLY,E77_WARN,\
 											list[argno],this_grid[i].abbrev,E77_HDR_DCSHIFT,fstats[MGD77_RLS_ICEPT]);
@@ -1698,7 +1698,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 						/* Check if rls grid comparison coefficients are outside percent limits */
 						if (stats[MGD77_RLS_SIG] == 1.0 && !adjustData) {
-							if (!GMT_is_dnan(percent_limit)) {
+							if (!gmt_M_is_dnan(percent_limit)) {
 								if (this_grid[i].col == MGD77_DEPTH) {
 									/* Check depth rls slope (two sided test) */
 									for (j = 0; depth_v_grid[j].cd < percent_limit/200.0 && j < RLS_N_DEPTH_ROWS-2; j++);
@@ -1798,8 +1798,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						list[argno],this_grid[i].abbrev, k);
 					}
 					/* Free up regression array memory */
-					gmt_free (GMT, ship_val);
-					gmt_free (GMT, grid_val);
+					gmt_M_free (GMT, ship_val);
+					gmt_M_free (GMT, grid_val);
 				}
 			}
 		}
@@ -1809,18 +1809,18 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			/* CHECK FAA REFERENCE MODEL */
 			for (m=0; m < (unsigned int)(1+((M.bit_pattern[0] & (1 << MGD77_EOT))>0)); m++) { /* If cruise stores eot then run regression twice */
 				n_alloc = GMT_CHUNK;
-				new_anom = gmt_memory (GMT, NULL, n_alloc, double);
-				old_anom = gmt_memory (GMT, NULL, n_alloc, double);
+				new_anom = gmt_M_memory (GMT, NULL, n_alloc, double);
+				old_anom = gmt_M_memory (GMT, NULL, n_alloc, double);
 				for (i = n = 0; i < nvalues; i++) {
-					if (GMT_is_dnan(D[i].number[MGD77_GOBS]) || GMT_is_dnan(D[i].number[MGD77_FAA])) continue;
+					if (gmt_M_is_dnan(D[i].number[MGD77_GOBS]) || gmt_M_is_dnan(D[i].number[MGD77_FAA])) continue;
 					/* Increase memory allocation if necessary */
 					if ((size_t)n == (n_alloc - 1)) {
 						n_alloc <<= 1;
-						new_anom = gmt_memory (GMT, new_anom, n_alloc, double);
-						old_anom = gmt_memory (GMT, old_anom, n_alloc, double);
+						new_anom = gmt_M_memory (GMT, new_anom, n_alloc, double);
+						old_anom = gmt_M_memory (GMT, old_anom, n_alloc, double);
 					}
 					new_anom[n] = D[i].number[MGD77_GOBS] - MGD77_Theoretical_Gravity (GMT, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], 4);
-					if (m == 1 && !GMT_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
+					if (m == 1 && !gmt_M_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
 					old_anom[n] = D[i].number[MGD77_FAA];
 					n++;
 				}
@@ -1919,9 +1919,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			for (m=MGD77_IGF_1980; m>=MGD77_IGF_1930; m--) { /* Skip Heiskanen 1924 */
 				if (m==MGD77_IGF_1967) continue; /* Skip IGF 1967 (can't distinguish between it and IGF 1980 */
 				for (i = n = 0; i < nvalues; i++) {
-					if (GMT_is_dnan(D[i].number[MGD77_GOBS]) || GMT_is_dnan(D[i].number[MGD77_FAA])) continue;
+					if (gmt_M_is_dnan(D[i].number[MGD77_GOBS]) || gmt_M_is_dnan(D[i].number[MGD77_FAA])) continue;
 					new_anom[n] = D[i].number[MGD77_GOBS] - MGD77_Theoretical_Gravity (GMT, (int)D[i].number[MGD77_LONGITUDE], (int)D[i].number[MGD77_LATITUDE], (int)m);
-					if (stats[MGD77_RLS_CORR] > lastCorr && !GMT_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
+					if (stats[MGD77_RLS_CORR] > lastCorr && !gmt_M_is_dnan(D[i].number[MGD77_EOT])) new_anom[n] += D[i].number[MGD77_EOT];
 					old_anom[n] = D[i].number[MGD77_FAA];
 					n++;
 				}
@@ -1934,8 +1934,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 						mgd77snifferdefs[MGD77_FAA].delta, &decimated_new, &decimated_orig, &extreme, "nfaa");
 					}
 					regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
-					gmt_free (GMT, decimated_orig);
-					gmt_free (GMT, decimated_new);
+					gmt_M_free (GMT, decimated_orig);
+					gmt_M_free (GMT, decimated_new);
 				} else
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
 				if (stats[MGD77_RLS_CORR] > stats2[MGD77_RLS_CORR]) {
@@ -1956,11 +1956,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 				}
 			}
-			gmt_free (GMT, new_anom);
-			gmt_free (GMT, old_anom);
+			gmt_M_free (GMT, new_anom);
+			gmt_M_free (GMT, old_anom);
 
 			/* Check if rls coefficients are outside percent limits */
-			if (!GMT_is_dnan(percent_limit)) {
+			if (!gmt_M_is_dnan(percent_limit)) {
 				/* check faa v newfaa rls slope */
 				for (j = 0; faa_v_newfaa[j].cd < percent_limit/200.0 && j < RLS_N_NEWFAA_ROWS-2; j++);
 				for (k = RLS_N_NEWFAA_ROWS-1; 1-percent_limit/200.0 < faa_v_newfaa[k].cd && k > 1; k--);
@@ -2016,23 +2016,23 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		if (do_regression && ((M.bit_pattern[0] & (1 << MGD77_MTF1)) || (M.bit_pattern[0] & (1 << MGD77_MTF2))) &&  M.bit_pattern[0] & (1 << MGD77_MAG)) {
 			if (M.bit_pattern[0] & (1 << MGD77_MTF2)) mtf1 = false;
 			n_alloc = GMT_CHUNK;
-			new_anom = gmt_memory (GMT, NULL, n_alloc, double);
-			old_anom = gmt_memory (GMT, NULL, n_alloc, double);
+			new_anom = gmt_M_memory (GMT, NULL, n_alloc, double);
+			old_anom = gmt_M_memory (GMT, NULL, n_alloc, double);
 			for (i = n = 0; i < nvalues; i++) {
-				if (GMT_is_dnan(D[i].number[MGD77_MTF2-(int)mtf1]) || GMT_is_dnan(D[i].number[MGD77_MAG])) continue;
+				if (gmt_M_is_dnan(D[i].number[MGD77_MTF2-(int)mtf1]) || gmt_M_is_dnan(D[i].number[MGD77_MAG])) continue;
 				/* Increase memory allocation if necessary */
 				if ((size_t)n == (n_alloc - 1)) {
 					n_alloc <<= 1;
-					new_anom = gmt_memory (GMT, new_anom, n_alloc, double);
-					old_anom = gmt_memory (GMT, old_anom, n_alloc, double);
+					new_anom = gmt_M_memory (GMT, new_anom, n_alloc, double);
+					old_anom = gmt_M_memory (GMT, old_anom, n_alloc, double);
 				}
 				MGD77_gcal_from_dt (GMT, &M, D[i].time, &cal);	/* No adjust for TZ; this is GMT UTC time */
 				n_days = (gmtlib_is_gleap (cal.year)) ? 366.0 : 365.0;	/* Number of days in this year */
 				/* Get date as decimal year */
 				date = cal.year + cal.day_y / n_days + (cal.hour * GMT_HR2SEC_I + cal.min * GMT_MIN2SEC_I + cal.sec) * GMT_SEC2DAY;
 				MGD77_igrf10syn (GMT, 0, date, 1, 0.0, D[i].number[MGD77_LONGITUDE], D[i].number[MGD77_LATITUDE], IGRF);
-				if (GMT_is_dnan(new_anom[n] = D[i].number[MGD77_MTF2-(int)mtf1] - IGRF[MGD77_IGRF_F])) continue;
-				if (!GMT_is_dnan(D[i].number[MGD77_DIUR]))
+				if (gmt_M_is_dnan(new_anom[n] = D[i].number[MGD77_MTF2-(int)mtf1] - IGRF[MGD77_IGRF_F])) continue;
+				if (!gmt_M_is_dnan(D[i].number[MGD77_DIUR]))
 					new_anom[n] += D[i].number[MGD77_DIUR];
 				old_anom[n] = D[i].number[MGD77_MAG];
 				n++;
@@ -2078,8 +2078,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							tcrit = gmt_tcrit (GMT, 0.975, (double)npts - 2.0);
 						}
 					}
-					gmt_free (GMT, decimated_orig);
-					gmt_free (GMT, decimated_new);
+					gmt_M_free (GMT, decimated_orig);
+					gmt_M_free (GMT, decimated_new);
 				}
 				/* Make gmtdef formatted array of rls statistics */
 				for (k=0; k<MGD77_N_STATS; k++) sprintf (fstats[k],GMT->current.setting.format_float_out,stats[k]);
@@ -2117,11 +2117,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				sprintf (buffer, "%s (mag) unable to recompute anomalies\n",list[argno]);
 				gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 			}
-			gmt_free (GMT, new_anom);
-			gmt_free (GMT, old_anom);
+			gmt_M_free (GMT, new_anom);
+			gmt_M_free (GMT, old_anom);
 
 			/* Check if rls coefficients are outside percent limits */
-			if (!GMT_is_dnan(percent_limit)) {
+			if (!gmt_M_is_dnan(percent_limit)) {
 				/* check mag v newmag rls slope */
 				for (j = 0; mag_v_newmag[j].cd < percent_limit/200.0 && j < RLS_N_NEWMAG_ROWS-2; j++);
 				for (k = RLS_N_NEWMAG_ROWS-1; 1-percent_limit/200.0 < mag_v_newmag[k].cd && k > 1; k--);
@@ -2193,7 +2193,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			}
 
 			/* Initialize output array for this record */
-			out[curr] = gmt_memory (GMT, NULL, n_out_columns, double);
+			out[curr] = gmt_M_memory (GMT, NULL, n_out_columns, double);
 			for (i = 0; i < n_out_columns; i++) out[curr][i] = MGD77_NaN;
 
 			/* Store lat, lon, along-track distance, and distance from coast in output array */
@@ -2317,13 +2317,13 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							}
 							break;
 						case (MGD77_DAY):	/* Separate case since # of days in a month varies */
-							if (!GMT_is_dnan (D[curr].number[i])) {
+							if (!gmt_M_is_dnan (D[curr].number[i])) {
 								if ((E[curr].flags[E77_VALUE] & (1 << MGD77_YEAR)) || (E[curr].flags[E77_VALUE] & (1 << MGD77_MONTH)))
 									last_day = irint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
 								else
 									last_day = (int)gmtlib_gmonth_length (irint(D[curr].number[MGD77_YEAR]), irint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
 
-								if (GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
+								if (gmt_M_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
 									E[curr].flags[E77_VALUE] |= (1 << i);
 									if (warn[VALUE_WARN]) {
 										sprintf (text, GMT->current.setting.format_float_out, D[curr].number[i]);
@@ -2334,7 +2334,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							}
 							break;
 						case (MGD77_LONGITUDE): /* Handle longitudes in 180-360 range */
-							if (!GMT_is_dnan (D[curr].number[i]) && D[curr].number[i] > mgd77snifferdefs[i].maxValue && D[curr].number[i] <= 360.0) {
+							if (!gmt_M_is_dnan (D[curr].number[i]) && D[curr].number[i] > mgd77snifferdefs[i].maxValue && D[curr].number[i] <= 360.0) {
 								if (warn[VALUE_WARN]) {
 									sprintf (text, GMT->current.setting.format_float_out, D[curr].number[i]);
 									sprintf (buffer, "%s - %s adjusted %s to +/- 180\n", placeStr, mgd77defs[i].abbrev, text);
@@ -2344,7 +2344,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							}
 						default:
 							/* Verify that measurements are within range */
-							if (!GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue ||\
+							if (!gmt_M_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue ||\
 							D[curr].number[i] > mgd77snifferdefs[i].maxValue)) {
 								E[curr].flags[E77_VALUE] |= (1 << i);
 								if (warn[VALUE_WARN]) {
@@ -2353,7 +2353,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 									gmt_M_fputs (buffer, GMT->session.std[GMT_OUT]);
 								}
 							}
-							if ((i == MGD77_LATITUDE || i == MGD77_LONGITUDE) && GMT_is_dnan(D[curr].number[i])) {
+							if ((i == MGD77_LATITUDE || i == MGD77_LONGITUDE) && gmt_M_is_dnan(D[curr].number[i])) {
 								E[curr].flags[E77_NAV] |= NAV_UNDEF;
 								if (warn[VALUE_WARN]) {
 									sprintf (buffer, "%s - %s cannot be nine-filled\n", placeStr, mgd77defs[i].abbrev);
@@ -2361,7 +2361,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								}
 							}
 							/* Record sign of current value */
-							if ((1 << i) & (MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS) && !GMT_is_dnan(D[curr].number[i])) {
+							if ((1 << i) & (MGD77_GEOPHYSICAL_BITS + MGD77_CORRECTION_BITS) && !gmt_M_is_dnan(D[curr].number[i])) {
 								if (D[curr].number[i] < 0)
 									MGD77_sign_bit[i] |= (MGD77_NEG_BIT);
 								else if (D[curr].number[i] > 0)
@@ -2378,11 +2378,11 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			if (curr > 0) {
 
 				/* Check dt */
-				if (!GMT_is_dnan(D[curr].time) && !GMT_is_dnan(D[curr-1].time))
+				if (!gmt_M_is_dnan(D[curr].time) && !gmt_M_is_dnan(D[curr-1].time))
 					dt = D[curr].time-E[curr].utc_offset - D[curr-1].time-E[curr-1].utc_offset;
 				else	/* Time not specified */
 					dt = MGD77_NaN;
-				if (!GMT_is_dnan(dt) && dt <= 0) { /* Non-increasing time */
+				if (!gmt_M_is_dnan(dt) && dt <= 0) { /* Non-increasing time */
 					if (dt == 0) {
 						if (warn[TIME_WARN]) {
 							sprintf (text, GMT->current.setting.format_float_out, dt);
@@ -2408,7 +2408,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 #ifdef HISTOGRAM_MODE
 				/* Use this to print excessive slopes to stderr for
 				tracking winning cruises when running histogram scripts */
-				if (!GMT_is_dnan(speed) && fabs(speed) > max_speed) {
+				if (!gmt_M_is_dnan(speed) && fabs(speed) > max_speed) {
 					E[curr].flags[E77_NAV] |= NAV_HISPD;
 					GMT_Report (API, GMT_MSG_NORMAL, "%s - Excessive speed %f %s\n",placeStr, speed, speed_units);
 				}
@@ -2417,7 +2417,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				/* Store speed in the output array */
 				nout = 0;
 				if (!strcmp(display,"SLOPES") && (D[curr].keep_nav || report_raw)) {
-					if (!GMT_is_dnan(speed))
+					if (!gmt_M_is_dnan(speed))
 						out[curr][nout] = speed;
 					nout++;
 				}
@@ -2429,14 +2429,14 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 					if (M.bit_pattern[0] & (1 << i) & MGD77_FLOAT_BITS) {
 
 						/* Compute the difference between current and previous value */
-						if (GMT_is_dnan(D[curr].number[i])) {
+						if (gmt_M_is_dnan(D[curr].number[i])) {
 							gradient = MGD77_NaN;
 							dvalue = MGD77_NaN;
 						}
 						else {
 							/* Search backward to find a non-empty record for the same field. */
 							/* Hope it doesn't have to search too far */
-							for (j = 1; GMT_is_dnan(D[curr-j].number[i]) && curr-j > 0; j++)
+							for (j = 1; gmt_M_is_dnan(D[curr-j].number[i]) && curr-j > 0; j++)
 								if (j > MGD77_MAX_SEARCH) break;
 							dvalue = D[curr].number[i]-D[curr-j].number[i];
 							lastLat = D[curr-j].number[MGD77_LATITUDE];
@@ -2451,7 +2451,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								dvalue = MGD77_NaN;
 
 							/* Check for PDR wrap around */
-							if (i == MGD77_TWT && (M.bit_pattern[0] & (1 << i)) && !GMT_is_dnan(dvalue) && fabs(dvalue) > 4.0) {
+							if (i == MGD77_TWT && (M.bit_pattern[0] & (1 << i)) && !gmt_M_is_dnan(dvalue) && fabs(dvalue) > 4.0) {
 								wrapsum += fabs(dvalue);
 								n_wrap++;
 							}
@@ -2459,7 +2459,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							/* Compute gradient */
 							if (!strcmp(derivative,"SPACE")) {
 								if (ds >= MGD77_NAV_PRECISION_KM && \
-								   ((!GMT_is_dnan(speed) && speed >= min_speed) || (GMT_is_dnan(speed) && ds >= MGD77_MIN_DS)))
+								   ((!gmt_M_is_dnan(speed) && speed >= min_speed) || (gmt_M_is_dnan(speed) && ds >= MGD77_MIN_DS)))
 									gradient = dvalue / ds;
 								else
 									gradient = MGD77_NaN;
@@ -2502,7 +2502,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							out[curr][nout++] = gradient;
 						if (!strcmp(display,"DFDS") && (D[curr].keep_nav || report_raw)) {
 							out[curr][nout++] = fabs(dvalue);
-							if (GMT_is_dnan(dvalue))
+							if (gmt_M_is_dnan(dvalue))
 								out[curr][nout++] = MGD77_NaN;
 							else {
 								if (!strcmp(derivative,"TIME"))
@@ -2546,7 +2546,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							   stays the same */
 							/* Search backward to find a non-empty record for the same field. */
 							/* Hope it doesn't have to search too far */
-							for (j = 1; GMT_is_dnan(D[curr-j].number[this_grid[i].col]) && curr-j > 0; j++)
+							for (j = 1; gmt_M_is_dnan(D[curr-j].number[this_grid[i].col]) && curr-j > 0; j++)
 								if (j > MGD77_MAX_SEARCH) break;
 							lastLat = D[curr-j].number[MGD77_LATITUDE];
 							lastLon = D[curr-j].number[MGD77_LONGITUDE];
@@ -2556,7 +2556,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							dt = D[curr].time-E[curr].utc_offset - D[curr-j].time-E[curr-j].utc_offset;
 
 							/* Calculate area of this offset */
-							if (!GMT_is_dnan(diff[i][curr])) {
+							if (!gmt_M_is_dnan(diff[i][curr])) {
 								thisArea = 0.5 * (diff[i][curr] + diff[i][curr-j]) * ds;
 								prevOffsetSign[i] = offsetSign[i];
 								offsetSign[i] = thisArea > 0;
@@ -2569,7 +2569,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 							/* 1. Lose GPS - time stays consistent but ds gets huge - max ds test */
 							/* 2. Ship stops logging and moves to another region then logs again - max dt test */
 							/* 3. No recorded time - use max ds test */
-							if (!GMT_is_dnan(thisArea) && offsetSign[i] == prevOffsetSign[i] && \
+							if (!gmt_M_is_dnan(thisArea) && offsetSign[i] == prevOffsetSign[i] && \
 							   (ds < maxGap || maxGap == 0)) {
 								offsetArea[i] += thisArea;
 								offsetLength[i] += ds;
@@ -2614,15 +2614,15 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				if (M.bit_pattern[0] & (1 << i) & MGD77_FLOAT_BITS) {
 
 					/* Compute the difference between current and previous value */
-					if (!GMT_is_dnan(D[curr].number[i])) {
+					if (!gmt_M_is_dnan(D[curr].number[i])) {
 
 						/* Check for lower precision */
 						if (curr > 0) {
-							for (j = 1; GMT_is_dnan(D[curr-j].number[i]) && curr-j > 0; j++)
+							for (j = 1; gmt_M_is_dnan(D[curr-j].number[i]) && curr-j > 0; j++)
 								if (j > MGD77_MAX_SEARCH) break;
 							dvalue = D[curr].number[i]-D[curr-j].number[i];
 
-							if (!GMT_is_dnan(dvalue) && dvalue != 0) {
+							if (!gmt_M_is_dnan(dvalue) && dvalue != 0) {
 								if (fmod(dvalue,1.0) != 0.0 && (lowPrecision & (1 << i)))
 									lowPrecision -= (1 << i);
 								if (fmod(dvalue,5.0) != 0.0 && (lowPrecision5 & (1 << i)))
@@ -2719,7 +2719,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 			}
 		}
 #endif
-		/*if (display && display != "E77") gmt_free (GMT, out[curr]);*/
+		/*if (display && display != "E77") gmt_M_free (GMT, out[curr]);*/
 
 		/* Test for PDR wrap */
 		if (n_wrap > 0) {
@@ -2971,31 +2971,31 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		}
 		/* Clean-up after finishing this cruise */
 		MGD77_Close_File (GMT, &M);
-		gmt_free (GMT, D);
-/*		gmt_free (GMT, offsetArea);
-		gmt_free (GMT, offsetStart);
-		gmt_free (GMT, offsetLength);
-		gmt_free (GMT, offsetSign);
-		gmt_free (GMT, prevOffsetSign);*/
-		gmt_free (GMT, distance);
-		gmt_free (GMT, out);
+		gmt_M_free (GMT, D);
+/*		gmt_M_free (GMT, offsetArea);
+		gmt_M_free (GMT, offsetStart);
+		gmt_M_free (GMT, offsetLength);
+		gmt_M_free (GMT, offsetSign);
+		gmt_M_free (GMT, prevOffsetSign);*/
+		gmt_M_free (GMT, distance);
+		gmt_M_free (GMT, out);
 		MGD77_Free_Header_Record (GMT, &Out, &H);
 		if (n_grids > 0) {
 			for (i = 0; i < n_grids; i++) {
-				gmt_free (GMT, G[i]);
-				gmt_free (GMT, diff[i]);
+				gmt_M_free (GMT, G[i]);
+				gmt_M_free (GMT, diff[i]);
 			}
-			gmt_free (GMT, G);
-			gmt_free (GMT, diff);
+			gmt_M_free (GMT, G);
+			gmt_M_free (GMT, diff);
 		}
 		if (!strcmp(display,"E77"))
 			fclose (fpout);
 	}
-	gmt_free (GMT, E);
+	gmt_M_free (GMT, E);
 	/* De-allocate grid memory */
 	if (n_grids > 0) {
-		gmt_free (GMT, MaxDiff);
-		gmt_free (GMT, iMaxDiff);
+		gmt_M_free (GMT, MaxDiff);
+		gmt_M_free (GMT, iMaxDiff);
 	}
 
 	MGD77_Path_Free (GMT, n_paths, list);

@@ -135,7 +135,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct MGD77LIST_CTRL *C = NULL;
 	
-	C = gmt_memory (GMT, NULL, 1, struct MGD77LIST_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct MGD77LIST_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -155,9 +155,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->F.flags);
-	gmt_str_free (C->L.file);
-	gmt_free (GMT, C);	
+	gmt_M_str_free (C->F.flags);
+	gmt_M_str_free (C->L.file);
+	gmt_M_free (GMT, C);	
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -840,12 +840,12 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxillary columns are requested (if any) */
 	if (Ctrl->L.active) {
 		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxillary columns are needed by -L */
-		for (kk = 0; kk < n_items; kk++) gmt_free (GMT, item_names[kk]);
-		if (n_items) gmt_free (GMT, item_names);
+		for (kk = 0; kk < n_items; kk++) gmt_M_free (GMT, item_names[kk]);
+		if (n_items) gmt_M_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
 	}
-	aux_tvalue[MGD77_AUX_ID] = gmt_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
-	aux_tvalue[MGD77_AUX_DA] = gmt_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_ID] = gmt_M_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_DA] = gmt_M_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 	
 	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the
@@ -1002,7 +1002,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				MGD77_Free_Dataset (GMT, &D);
 				Return (EXIT_FAILURE);
 			}
-			if (!string_output) out = gmt_memory (GMT, NULL, n_out_columns, double);
+			if (!string_output) out = gmt_M_memory (GMT, NULL, n_out_columns, double);
 
 		}
 		
@@ -1127,11 +1127,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			if (Ctrl->A.cable_adjust && rec == 0) {
 			/* For the cable correction we need to know ALL cumulative distances. So compute them now. */
 				uint64_t rec_;
-				cumdist = gmt_memory(GMT, NULL, D->H.n_records, double);
-				mtf_bak = gmt_memory(GMT, NULL, D->H.n_records, double);       /* We need a copy */
-				mtf_int = gmt_memory(GMT, NULL, D->H.n_records, double);       /* And another to store reinterped mtf1 */
-				cumdist_off = gmt_memory(GMT, NULL, D->H.n_records, double);   /* To put positions where mag was really measured */
-				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][0]) || GMT_is_dnan (dvalue[y_col][0]));
+				cumdist = gmt_M_memory(GMT, NULL, D->H.n_records, double);
+				mtf_bak = gmt_M_memory(GMT, NULL, D->H.n_records, double);       /* We need a copy */
+				mtf_int = gmt_M_memory(GMT, NULL, D->H.n_records, double);       /* And another to store reinterped mtf1 */
+				cumdist_off = gmt_M_memory(GMT, NULL, D->H.n_records, double);   /* To put positions where mag was really measured */
+				lonlat_not_NaN = !( gmt_M_is_dnan (dvalue[x_col][0]) || gmt_M_is_dnan (dvalue[y_col][0]));
 				prevrec = 0;
 				mtf_bak[0] = dvalue[m1_col][0];
 				for (rec_ = 1; rec_ < D->H.n_records; rec_++) {	/* Very bad luck if first rec has NaNs in coords */
@@ -1146,7 +1146,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			}
 
 			if (need_distances) {
-				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][rec]) || GMT_is_dnan (dvalue[y_col][rec]));
+				lonlat_not_NaN = !( gmt_M_is_dnan (dvalue[x_col][rec]) || gmt_M_is_dnan (dvalue[y_col][rec]));
 				if (rec == 0) {	/* Azimuth at 1st point set to azimuth of 2nd point since there is no previous point */
 					if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = gmt_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], true);
 					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous azimuth but none is avaiable yet */
@@ -1179,11 +1179,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				if (auxlist[MGD77_AUX_SP].requested) {
 					if (rec == 0 || prevrec == UINTMAX_MAX) {	/* Initialize various counters */
 						dt = dvalue[t_col][1] - dvalue[t_col][0];
-						aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds0 / dt;
+						aux_dvalue[MGD77_AUX_SP] = (gmt_M_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds0 / dt;
 					}
 					else {		/* Need a previous point to calculate speed */
 						dt = dvalue[t_col][rec] - dvalue[t_col][prevrec];
-						aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
+						aux_dvalue[MGD77_AUX_SP] = (gmt_M_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
 					}
 				}
 				if (lonlat_not_NaN) prevrec = rec;	/* This was a record with OK lon,lat; make it the previous point for distance calculations */
@@ -1195,7 +1195,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		
 			if (Ctrl->G.active && (rec < Ctrl->G.start || rec > Ctrl->G.stop)) continue;
 			if (Ctrl->S.active && (cumulative_dist < Ctrl->S.start || cumulative_dist >= Ctrl->S.stop)) continue;
-			if (Ctrl->D.mode && GMT_is_dnan (dvalue[t_col][rec])) continue;
+			if (Ctrl->D.mode && gmt_M_is_dnan (dvalue[t_col][rec])) continue;
 			if (this_limit_on_time && (dvalue[t_col][rec] < Ctrl->D.start || dvalue[t_col][rec] >= Ctrl->D.stop)) continue;
 			if (GMT->common.R.active) {	/* Check is lat/lon is outside specified area */
 				if (dvalue[y_col][rec] < GMT->common.R.wesn[YLO] || dvalue[y_col][rec] > GMT->common.R.wesn[YHI]) continue;
@@ -1257,16 +1257,16 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					aux_dvalue[MGD77_AUX_CT] = GMT->session.d_NaN;
 					if (Ctrl->A.code[ADJ_CT] & 1)	/* Try uncorr. depth - obs. depth */
 						aux_dvalue[MGD77_AUX_CT] = dvalue[twt_col][rec] * Ctrl->A.sound_speed - dvalue[z_col][rec];	/* Factor of 2 dealt with earlier */
-					if (Ctrl->A.code[ADJ_CT] & 2 && GMT_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - Carter depth */
+					if (Ctrl->A.code[ADJ_CT] & 2 && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - Carter depth */
 						MGD77_carter_depth_from_xytwt (GMT, dvalue[x_col][rec], dvalue[y_col][rec], 1000.0 * dvalue[twt_col][rec], &Carter, &z);
 						aux_dvalue[MGD77_AUX_CT] = dvalue[twt_col][rec] * i_sound_speed - z;
 					}
-					if (Ctrl->A.code[ADJ_CT] & 4 && GMT_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - inferred Carter depth */
+					if (Ctrl->A.code[ADJ_CT] & 4 && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try uncorr. depth - inferred Carter depth */
 						twt = dvalue[z_col][rec] * i_sound_speed;	/* Factor of 2 dealt with earlier */
 						MGD77_carter_depth_from_xytwt (GMT, dvalue[x_col][rec], dvalue[y_col][rec], twt, &Carter, &z);
 						aux_dvalue[MGD77_AUX_CT] = dvalue[z_col][rec] - z;
 					}
-					if (Ctrl->A.code[ADJ_CT] & 8 && GMT_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try inferred uncorr. depth - obs. depth */
+					if (Ctrl->A.code[ADJ_CT] & 8 && gmt_M_is_dnan (aux_dvalue[MGD77_AUX_CT])) {	/* Try inferred uncorr. depth - obs. depth */
 						MGD77_carter_twt_from_xydepth (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[z_col][rec], &Carter, &twt);
 						z = twt * Ctrl->A.sound_speed;
 						aux_dvalue[MGD77_AUX_CT] = z - dvalue[z_col][rec];
@@ -1286,11 +1286,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				z = GMT->session.d_NaN;
 				if (Ctrl->A.code[ADJ_DP] & 1)	/* Try obs. depth */
 					z = dvalue[z_col][rec];
-				if (Ctrl->A.code[ADJ_DP] & 2 && GMT_is_dnan (z))	/* Try uncorr. depth */
+				if (Ctrl->A.code[ADJ_DP] & 2 && gmt_M_is_dnan (z))	/* Try uncorr. depth */
 					z = dvalue[twt_col][rec] * i_sound_speed;
-				if (Ctrl->A.code[ADJ_DP] & 4 && GMT_is_dnan (z)) {	/* Try Carter depth */
+				if (Ctrl->A.code[ADJ_DP] & 4 && gmt_M_is_dnan (z)) {	/* Try Carter depth */
 					twt = dvalue[twt_col][rec];
-					if (!GMT_is_dnan (twt)) {	/* OK, valid twt */
+					if (!gmt_M_is_dnan (twt)) {	/* OK, valid twt */
 						if (has_prev_twt) {	/* OK, may look at change in twt */
 							d_twt = twt - prev_twt;
 							if (fabs (d_twt) > TWT_PDR_WRAP_TRIGGER) {
@@ -1305,7 +1305,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					twt += twt_pdrwrap_corr;
 					MGD77_carter_depth_from_xytwt (GMT, dvalue[x_col][rec], dvalue[y_col][rec], 1000.0 * twt, &Carter, &z);
 				}
-				if (Ctrl->A.force || !GMT_is_dnan(dvalue[z_col][rec])) dvalue[z_col][rec] = z;
+				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[z_col][rec])) dvalue[z_col][rec] = z;
 			}
 			
 			/* --------------------------------------------------------------------------------------------------- */
@@ -1315,13 +1315,13 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				g = GMT->session.d_NaN;
 				if (Ctrl->A.code[ADJ_GR] & 1)	/* Try faa */
 					g = dvalue[f_col][rec];
-				if (Ctrl->A.code[ADJ_GR] & 2 && GMT_is_dnan (g))	/* Try gobs - ngrav */
+				if (Ctrl->A.code[ADJ_GR] & 2 && gmt_M_is_dnan (g))	/* Try gobs - ngrav */
 					g = dvalue[g_col][rec] - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
-				if (Ctrl->A.code[ADJ_GR] & 4 && GMT_is_dnan (g))	/* Try gobs + eot - ngrav */
+				if (Ctrl->A.code[ADJ_GR] & 4 && gmt_M_is_dnan (g))	/* Try gobs + eot - ngrav */
 					g = dvalue[g_col][rec] + dvalue[e_col][rec] - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
-				if (Ctrl->A.code[ADJ_GR] & 8 && GMT_is_dnan (g))	/* Try gobs + pred_eot - ngrav */
+				if (Ctrl->A.code[ADJ_GR] & 8 && gmt_M_is_dnan (g))	/* Try gobs + pred_eot - ngrav */
 					g = dvalue[g_col][rec] + MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]) - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
-				if (Ctrl->A.force || !GMT_is_dnan(dvalue[f_col][rec])) dvalue[f_col][rec] = g;
+				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[f_col][rec])) dvalue[f_col][rec] = g;
 			}
 			
 			/* --------------------------------------------------------------------------------------------------- */
@@ -1331,7 +1331,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 				m = GMT->session.d_NaN;
 				if (Ctrl->A.code[ADJ_MG] & 1)	/* Try mag */
 					m = dvalue[m_col][rec];
-				if (Ctrl->A.code[ADJ_MG] & 2 && GMT_is_dnan (m)) {	/* Try mtf 1st - igrf */
+				if (Ctrl->A.code[ADJ_MG] & 2 && gmt_M_is_dnan (m)) {	/* Try mtf 1st - igrf */
 					if (need_date) {	/* Did not get computed already */
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = false;
@@ -1340,7 +1340,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					k = (i == 2) ? m2_col : m1_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}
-				if (Ctrl->A.code[ADJ_MG] & 4 && GMT_is_dnan (m)) {	/* Try mtf 2nd - igrf */
+				if (Ctrl->A.code[ADJ_MG] & 4 && gmt_M_is_dnan (m)) {	/* Try mtf 2nd - igrf */
 					if (need_date) {	/* Did not get computed already */
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = false;
@@ -1349,7 +1349,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 					k = (i == 2) ? m1_col : m2_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}
-				if (Ctrl->A.force || !GMT_is_dnan(dvalue[m_col][rec])) dvalue[m_col][rec] = m;
+				if (Ctrl->A.force || !gmt_M_is_dnan(dvalue[m_col][rec])) dvalue[m_col][rec] = m;
 			}
 
 			/* --------------------------------------------------------------------------------------------------- */
@@ -1388,7 +1388,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						for (k_off = 0; k_off < D->H.n_records; k_off++) {
 							cumdist_off[k_off] = cumdist[k_off] + Ctrl->A.sensor_offset;
-							if (clean && GMT_is_dnan (mtf_bak[k_off])) clean = false;
+							if (clean && gmt_M_is_dnan (mtf_bak[k_off])) clean = false;
 						}
 
 						/* --------------- Atack the NaNs problem -----------------*/
@@ -1396,14 +1396,14 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 							gmt_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, GMT->current.setting.interpolant);
 						else {
 							/* Need to allocate these auxiliary vectors */
-							ind = gmt_memory(GMT, NULL, D->H.n_records, int);
-							cumdist_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
-							cumdist_off_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
-							mtf_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
-							mtf_int_cl = gmt_memory(GMT, NULL, D->H.n_records, double);
+							ind = gmt_M_memory(GMT, NULL, D->H.n_records, int);
+							cumdist_cl = gmt_M_memory(GMT, NULL, D->H.n_records, double);
+							cumdist_off_cl = gmt_M_memory(GMT, NULL, D->H.n_records, double);
+							mtf_cl = gmt_M_memory(GMT, NULL, D->H.n_records, double);
+							mtf_int_cl = gmt_M_memory(GMT, NULL, D->H.n_records, double);
 
 							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
-								ind[k_off] = !GMT_is_dnan (mtf_bak[k_off]);  /* Find indices of valid values */
+								ind[k_off] = !gmt_M_is_dnan (mtf_bak[k_off]);  /* Find indices of valid values */
 								if (ind[k_off]) {
 									cumdist_cl[n] = cumdist[k_off];          /* Copy valid values into a contiguous vec */
 									cumdist_off_cl[n] = cumdist_off[k_off];
@@ -1422,9 +1422,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 						dvalue[m1_col][rec] = mtf_int[rec];
 						/* We can free these right now because they won't be used anymore for this file */
-						gmt_free (GMT, ind);
-						gmt_free (GMT, cumdist_cl);         gmt_free (GMT, cumdist_off_cl);
-						gmt_free (GMT, mtf_cl);             gmt_free (GMT, mtf_int_cl);
+						gmt_M_free (GMT, ind);
+						gmt_M_free (GMT, cumdist_cl);         gmt_M_free (GMT, cumdist_off_cl);
+						gmt_M_free (GMT, mtf_cl);             gmt_M_free (GMT, mtf_int_cl);
 						first_time_on_sensor_offset = false;
 					}
 					else                               /* All other times, just pull out current val of interped mtf1 */
@@ -1504,18 +1504,18 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 
 		if (cumdist) {
-			gmt_free (GMT, cumdist_off);	/* Free and reset for eventual reuse */
-			gmt_free (GMT, cumdist);	/* Free and reset for eventual reuse */
-			gmt_free (GMT, mtf_bak);	/* Free and reset for eventual reuse */
-			gmt_free (GMT, mtf_int);	/* Free and reset for eventual reuse */
+			gmt_M_free (GMT, cumdist_off);	/* Free and reset for eventual reuse */
+			gmt_M_free (GMT, cumdist);	/* Free and reset for eventual reuse */
+			gmt_M_free (GMT, mtf_bak);	/* Free and reset for eventual reuse */
+			gmt_M_free (GMT, mtf_int);	/* Free and reset for eventual reuse */
 		}
 		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;
 	}
 	
-	if (!string_output) gmt_free (GMT, out);
-	gmt_free (GMT, aux_tvalue[MGD77_AUX_ID]);
-	gmt_free (GMT, aux_tvalue[MGD77_AUX_DA]);
+	if (!string_output) gmt_M_free (GMT, out);
+	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_ID]);
+	gmt_M_free (GMT, aux_tvalue[MGD77_AUX_DA]);
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
 	

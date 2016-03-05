@@ -96,7 +96,7 @@ struct SEGY2GRD_CTRL {
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct SEGY2GRD_CTRL *C;
 
-	C = gmt_memory (GMT, NULL, 1, struct SEGY2GRD_CTRL);
+	C = gmt_M_memory (GMT, NULL, 1, struct SEGY2GRD_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
@@ -110,10 +110,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_str_free (C->In.file);
-	gmt_str_free (C->D.text);
-	gmt_str_free (C->G.file);
-	gmt_free (GMT, C);
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->D.text);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level) {
@@ -328,7 +328,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
-	flag = gmt_memory (GMT, NULL, Grid->header->size, unsigned int);
+	flag = gmt_M_memory (GMT, NULL, Grid->header->size, unsigned int);
 
 	gmt_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
@@ -437,8 +437,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 
-			gmt_str_free (data);
-			gmt_str_free (header);
+			gmt_M_str_free (data);
+			gmt_M_str_free (header);
 			ix++;
 		}
 	}
@@ -517,8 +517,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			gmt_str_free (data);
-			gmt_str_free (header);
+			gmt_M_str_free (data);
+			gmt_M_str_free (header);
 			ix++;
 		}
 
@@ -545,14 +545,14 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 			GMT_Message (API, GMT_TIME_NONE, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to ",
 				n_read, n_used, n_filled, n_empty);
-			(GMT_is_dnan (Ctrl->N.d_value)) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.d_value);
+			(gmt_M_is_dnan (Ctrl->N.d_value)) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.d_value);
 			if (n_bad) GMT_Message (API, GMT_TIME_NONE, "%d records unreadable\n", n_bad);
 			if (n_stuffed) GMT_Message (API, GMT_TIME_NONE, "Warning - %d nodes had multiple entries that were averaged\n", n_stuffed);
 			if (n_confused) GMT_Message (API, GMT_TIME_NONE, "Warning - %d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 		}
 	}
 	if (fpi != stdin) fclose (fpi);
-	gmt_free (GMT, flag);
+	gmt_M_free (GMT, flag);
 
 	gmt_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);

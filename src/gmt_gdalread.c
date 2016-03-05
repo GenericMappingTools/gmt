@@ -413,7 +413,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* Get some metadata for each band. */
 	/* ------------------------------------------------------------------------- */
 
-	Ctrl->band_field_names = gmt_memory(GMT, NULL, raster_count, struct GDAL_BAND_FNAMES);
+	Ctrl->band_field_names = gmt_M_memory(GMT, NULL, raster_count, struct GDAL_BAND_FNAMES);
 
 	/* ==================================================================== */
 	/*      Loop over bands.                                                */
@@ -493,7 +493,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		&& (hTable = GDALGetRasterColorTable(hBand)) != NULL) {
 
 		Ctrl->nIndexedColors = GDALGetColorEntryCount(hTable);
-		Ctrl->ColorMap = gmt_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
+		Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
 		for (i = 0, j = 0; i < Ctrl->nIndexedColors; i++) {
 			GDALGetColorEntryAsRGB(hTable, i, &sEntry);
 			Ctrl->ColorMap[j++] = sEntry.c1;
@@ -545,7 +545,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	 * Record Geographical corners (if they exist)
 	 * -------------------------------------------------------------------------------------- */
 	if (!got_R) {
-		if (!GMT_is_dnan(xy_geo[0][0])) {
+		if (!gmt_M_is_dnan(xy_geo[0][0])) {
 			Ctrl->GEOGCorners.LL[0] = xy_geo[0][0]; Ctrl->GEOGCorners.LL[1] = xy_geo[0][1];
 			Ctrl->GEOGCorners.UL[0] = xy_geo[1][0]; Ctrl->GEOGCorners.UL[1] = xy_geo[1][1];
 			Ctrl->GEOGCorners.UR[0] = xy_geo[2][0]; Ctrl->GEOGCorners.UR[1] = xy_geo[2][1];
@@ -674,7 +674,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else		/* Hmm, this else case is never reached */
 			nn = atoi(prhs->B.bands);
-		whichBands = gmt_memory (GMT, NULL, nn, int);
+		whichBands = gmt_M_memory (GMT, NULL, nn, int);
 		nReqBands = gdal_decode_columns (GMT, prhs->B.bands, whichBands, nn);
 	}
 	else if (prhs->f_ptr.active) {
@@ -682,7 +682,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		   first band. This avoids, for example, allocate and read all 3 bands in a RGB image and send
 		   back a full 3 band array to GMT_gdal_read_grd that will only keep the first band. */
 		nReqBands = 1;
-		whichBands = gmt_memory (GMT, NULL, 1, int);
+		whichBands = gmt_M_memory (GMT, NULL, 1, int);
 		whichBands[0] = 1;
 		Ctrl->Float.active = true;		/* Signals that output will be in the float array, no matter input type */
 	}
@@ -889,7 +889,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (prhs->c_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->UInt8.data = prhs->c_ptr.grd;
 			else
-				Ctrl->UInt8.data = gmt_memory (GMT, NULL, n_alloc, uint8_t); /* aka unsigned char */
+				Ctrl->UInt8.data = gmt_M_memory (GMT, NULL, n_alloc, uint8_t); /* aka unsigned char */
 
 			if (do_BIP) {
 				if (nBands == 4)	/* Assume fourth band holds the alpha channel */
@@ -904,25 +904,25 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else
-				Ctrl->Int16.data = gmt_memory (GMT, NULL, n_alloc, int16_t);
+				Ctrl->Int16.data = gmt_M_memory (GMT, NULL, n_alloc, int16_t);
 			break;
 		case GDT_UInt16:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else
-				Ctrl->UInt16.data = gmt_memory (GMT, NULL, n_alloc, uint16_t);
+				Ctrl->UInt16.data = gmt_M_memory (GMT, NULL, n_alloc, uint16_t);
 			break;
 		case GDT_Int32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else
-				Ctrl->Int32.data = gmt_memory (GMT, NULL, n_alloc, int32_t);
+				Ctrl->Int32.data = gmt_M_memory (GMT, NULL, n_alloc, int32_t);
 			break;
 		case GDT_UInt32:
 			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else
-				Ctrl->UInt32.data = gmt_memory (GMT, NULL, n_alloc, uint32_t);
+				Ctrl->UInt32.data = gmt_M_memory (GMT, NULL, n_alloc, uint32_t);
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
@@ -930,9 +930,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else {
 				if (!complex_mode)
-					Ctrl->Float.data = gmt_memory (GMT, NULL, n_alloc, float);
+					Ctrl->Float.data = gmt_M_memory (GMT, NULL, n_alloc, float);
 				else
-					Ctrl->Float.data = gmt_memory (GMT, NULL, 2 * n_alloc, float);
+					Ctrl->Float.data = gmt_M_memory (GMT, NULL, 2 * n_alloc, float);
 			}
 			break;
 		default:
@@ -954,9 +954,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	else
 		nX = nXSize,	nY = nYSize;
 
-	rowVec = gmt_memory(GMT, NULL, nY, int);
+	rowVec = gmt_M_memory(GMT, NULL, nY, int);
 	for (m = 0; m < nY; m++) rowVec[m] = m * nX;
-	colVec = gmt_memory(GMT, NULL, nX+pad_w+pad_e, int);	/* For now this will be used only to select BIP ordering */
+	colVec = gmt_M_memory(GMT, NULL, nX+pad_w+pad_e, int);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
 	for (i = 0; i < nBands; i++) {
@@ -1155,10 +1155,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 	}
 
-	gmt_free (GMT, rowVec);
-	gmt_str_free (tmp);
-	gmt_free (GMT, whichBands);
-	gmt_free (GMT, colVec);
+	gmt_M_free (GMT, rowVec);
+	gmt_M_str_free (tmp);
+	gmt_M_free (GMT, whichBands);
+	gmt_M_free (GMT, colVec);
 
 	GDALClose(hDataset);
 
