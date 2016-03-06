@@ -12,6 +12,11 @@
  * This means they are all exported in the shared library.  We have thus
  * added the "static" keyword before all the function declarations other
  * than triangulate, which is the only one we are using from GMT.
+ * Likewise we extended the #ifndef CDT_ONLY and #ifndef REDUCED pragmas
+ * to the internal functions that are used only when those switches are
+ * actually defined.
+ *
+ * GMT Team, March 2016.
  *
  * Declaration of type LONG:
  */
@@ -1376,6 +1381,8 @@ static int minus1mod3[3] = {2, 0, 1};
 /*                                                                           */
 /*****************************************************************************/
 
+#ifndef CDT_ONLY
+
 #ifdef EXTERNAL_TEST
 
 static int triunsuitable();
@@ -1420,6 +1427,8 @@ REAL area;                                      /* The area of the triangle. */
 }
 
 #endif /* not EXTERNAL_TEST */
+
+#endif /* not CDT_ONLY */
 
 /**                                                                         **/
 /**                                                                         **/
@@ -4492,6 +4501,8 @@ struct mesh *m;
 /*                                                                           */
 /*****************************************************************************/
 
+#ifndef CDT_ONLY
+
 #ifdef ANSI_DECLARATORS
 static void vertexdealloc(struct mesh *m, vertex dyingvertex)
 #else /* not ANSI_DECLARATORS */
@@ -4506,6 +4517,8 @@ vertex dyingvertex;
   setvertextype(dyingvertex, DEADVERTEX);
   pooldealloc(&m->vertices, (VOID *) dyingvertex);
 }
+
+#endif /* not CDT_ONLY */
 
 /*****************************************************************************/
 /*                                                                           */
@@ -5989,6 +6002,8 @@ vertex pd;
 /*                                                                           */
 /*****************************************************************************/
 
+#ifndef REDUCED
+
 #ifdef ANSI_DECLARATORS
 static REAL orient3dadapt(vertex pa, vertex pb, vertex pc, vertex pd,
                    REAL aheight, REAL bheight, REAL cheight, REAL dheight,
@@ -6459,7 +6474,7 @@ REAL dheight;
   adxbdy = adx * bdy;
   bdxady = bdx * ady;
 
-  det = adheight * (bdxcdy - cdxbdy) 
+  det = adheight * (bdxcdy - cdxbdy)
       + bdheight * (cdxady - adxcdy)
       + cdheight * (adxbdy - bdxady);
 
@@ -6479,6 +6494,8 @@ REAL dheight;
                        permanent);
 }
 
+#endif /* not REDUCED */
+
 /*****************************************************************************/
 /*                                                                           */
 /*  nonregular()   Return a positive value if the point pd is incompatible   */
@@ -6496,6 +6513,8 @@ REAL dheight;
 /*  directly.  If neither switch is used, the incircle test is applied.      */
 /*                                                                           */
 /*****************************************************************************/
+
+#ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
 static REAL nonregular(struct mesh *m, struct behavior *b,
@@ -6523,6 +6542,8 @@ vertex pd;
     return orient3d(m, b, pa, pb, pc, pd, pa[2], pb[2], pc[2], pd[2]);
   }
 }
+
+#endif /* not REDUCED */
 
 /*****************************************************************************/
 /*                                                                           */
@@ -8068,6 +8089,8 @@ struct otri *flipedge;                    /* Handle for the triangle abc. */
 /*                                                                           */
 /*****************************************************************************/
 
+#ifndef CDT_ONLY
+
 #ifdef ANSI_DECLARATORS
 static void unflip(struct mesh *m, struct behavior *b, struct otri *flipedge)
 #else /* not ANSI_DECLARATORS */
@@ -8169,6 +8192,8 @@ struct otri *flipedge;                    /* Handle for the triangle abc. */
     printtriangle(m, b, &top);
   }
 }
+
+#endif /* not CDT_ONLY */
 
 /*****************************************************************************/
 /*                                                                           */
@@ -8874,6 +8899,8 @@ int triflaws;
 /*                                                                           */
 /*****************************************************************************/
 
+#ifndef CDT_ONLY
+
 #ifdef ANSI_DECLARATORS
 static void triangulatepolygon(struct mesh *m, struct behavior *b,
                         struct otri *firstedge, struct otri *lastedge,
@@ -8956,6 +8983,8 @@ int triflaws;
   /* Return the base triangle. */
   otricopy(besttri, *lastedge);
 }
+
+#endif /* not CDT_ONLY */
 
 /*****************************************************************************/
 /*                                                                           */
@@ -11500,7 +11529,7 @@ FILE *polyfile;
       for (j = 0; j < 2; j++) {
         if ((end[j] < b->firstnumber) ||
             (end[j] >= b->firstnumber + m->invertices)) {
-          printf("Error:  Segment %ld has an invalid vertex index.\n", 
+          printf("Error:  Segment %ld has an invalid vertex index.\n",
                  segmentnumber);
           triexit(1);
         }
@@ -13133,7 +13162,7 @@ int regions;
         } else {
           printf("Spreading regional attributes.\n");
         }
-      } else { 
+      } else {
         printf("Spreading regional area constraints.\n");
       }
     }
