@@ -119,7 +119,7 @@
 #define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
-EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
+EXTERN_MSC void gmt_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
 EXTERN_MSC void gmt_fft_initialization (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
 EXTERN_MSC void api_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
@@ -4937,7 +4937,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	GMT->current.proj.z_project.plane = -1;	/* Initialize no perspective projection */
 	GMT->current.proj.z_project.level = 0.0;
 	for (i = 0; i < 4; i++) GMT->current.proj.edge[i] = true;
-	GMT_grdio_init (GMT);
+	gmt_grdio_init (GMT);
 	gmt_set_pad (GMT, pad); /* Sets default number of rows/cols for boundary padding in this session */
 	GMT->current.proj.f_horizon = 90.0;
 	GMT->current.proj.proj4 = gmt_M_memory (GMT, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
@@ -7184,9 +7184,10 @@ int gmt_get_V (char arg) {
 	}
 	return mode;
 }
-EXTERN_MSC int GMT_get_V (char arg);		/* For bckward compatibility in MEX for 5.2 */
+
+EXTERN_MSC int GMT_get_V (char arg);		/* For backward compatibility in MEX for 5.2 */
 int GMT_get_V (char arg) {
-	return gmt_get_V(arg);
+	return gmt_get_V (arg);
 }
 
 /*! . */

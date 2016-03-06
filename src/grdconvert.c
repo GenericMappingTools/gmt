@@ -61,7 +61,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *C) {	/* 
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	int i;
-	char **grdformats = GMT_grdformats_sorted (API->GMT);
+	char **grdformats = gmt_grdformats_sorted (API->GMT);
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);

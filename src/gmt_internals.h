@@ -85,7 +85,7 @@ EXTERN_MSC int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, 
 EXTERN_MSC void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC int gmtlib_getrgb_index (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
-EXTERN_MSC size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value);
+EXTERN_MSC size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value);
 EXTERN_MSC void gmtlib_init_ellipsoid (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_init_geodesic (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmtlib_io_init (struct GMT_CTRL *GMT);			/* Initialize pointers */

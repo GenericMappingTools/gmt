@@ -19,43 +19,7 @@
 #define ASCII_GS	29	/* ASCII code for group separator (temporarily replacing tabs) */
 #define ASCII_US	31	/* ASCII code for unit separator (temporarily replacing spaces in quoted text) */
 
-char **breakMe(struct GMT_CTRL *GMT, char *in);
-
-EXTERN_MSC int GMT_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts);
-int GMT_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
-	char	*info = NULL, **args;
-	int error = 0;
-	GDALDatasetH	hDataset;
-	GDALInfoOptions *psOptions;
-
-	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: GMT_gdal_librarified failed to extract a Sub-region\n");
-		return (-1);
-	}
-
-	/* Open gdal - */
-
-	GDALAllRegister();
-
-	hDataset = GDALOpen(gdal_filename, GA_ReadOnly);
-
-	if (hDataset == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
-		return (-1);
-	}
-
-	args = breakMe(GMT, opts);
-	psOptions = GDALInfoOptionsNew(args, NULL); 
-	info = GDALInfo(hDataset, psOptions);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDAL Info\n\n%s\n", info);
-
-	GDALInfoOptionsFree(psOptions);
-	GDALClose(hDataset);
-	GDALDestroyDriverManager();
-	return 0;
-}
-
-char **breakMe(struct GMT_CTRL *GMT, char *in) {
+GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	/* Breake a string "-aa -bb -cc dd" into tokens "-aa" "-bb" "-cc dd" */
 	/* Based on GMT_Create_Options() */
 	unsigned int pos = 0, n_args = 0, k;
@@ -98,4 +62,38 @@ char **breakMe(struct GMT_CTRL *GMT, char *in) {
 	args[n_args] = NULL;	/* Close the list with a NULL */
 	gmt_M_str_free (txt_in);
 	return args;
+}
+
+// EXTERN_MSC int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts);
+GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
+	char	*info = NULL, **args;
+	int error = 0;
+	GDALDatasetH	hDataset;
+	GDALInfoOptions *psOptions;
+
+	if (error) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: grid_gdal_librarified failed to extract a Sub-region\n");
+		return (-1);
+	}
+
+	/* Open gdal - */
+
+	GDALAllRegister();
+
+	hDataset = GDALOpen(gdal_filename, GA_ReadOnly);
+
+	if (hDataset == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+		return (-1);
+	}
+
+	args = breakMe(GMT, opts);
+	psOptions = GDALInfoOptionsNew(args, NULL); 
+	info = GDALInfo(hDataset, psOptions);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDAL Info\n\n%s\n", info);
+
+	GDALInfoOptionsFree(psOptions);
+	GDALClose(hDataset);
+	GDALDestroyDriverManager();
+	return 0;
 }

@@ -150,7 +150,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
+EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 int GMT_gmtread (void *V_API, int mode, void *args) {
 	int error = 0;
@@ -177,6 +177,6 @@ int GMT_gmtread (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the gmtread main code ----------------------------*/
 
-	error = GMT_copy (API, Ctrl->T.mode, GMT_IN, Ctrl->IO.file[GMT_IN], Ctrl->IO.file[GMT_OUT]);
+	error = gmt_copy (API, Ctrl->T.mode, GMT_IN, Ctrl->IO.file[GMT_IN], Ctrl->IO.file[GMT_OUT]);
 	Return (error);
 }

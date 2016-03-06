@@ -285,7 +285,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 #if defined(HAVE_GDAL) && (GDAL_VERSION_MAJOR >= 2) && (GDAL_VERSION_MINOR >= 1)
 	if (Ctrl->G.active)
-		GMT_gdal_librarified(GMT, opt->arg, Ctrl->G.opts);
+		grid_gdal_librarified (GMT, opt->arg, Ctrl->G.opts);
 #endif
 
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */

@@ -45,7 +45,7 @@
  *  gmt_grd_set_units       :
  *  gmt_grd_pad_status      :
  *  gmtlib_get_grdtype         :
- *  GMT_grd_data_size       :
+ *  gmt_grd_data_size       :
  *  gmt_grd_set_ij_inc      :
  *  gmt_grd_format_decoder  :
  *  gmt_grd_prep_io         :
@@ -93,9 +93,9 @@ struct GRD_PAD {	/* Local structure */
 
 /* These functions live in other files and are extern'ed in here */
 EXTERN_MSC int gmt_is_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-EXTERN_MSC int GMT_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-EXTERN_MSC int GMT_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
-EXTERN_MSC int GMT_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmt_is_native_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmt_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
+EXTERN_MSC int gmt_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
@@ -910,15 +910,15 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED)
 			return (val);
 		/* Then check for native binary GMT grid */
-		if ((choice = GMT_is_native_grid (GMT, header)) == GMT_NOERROR)
+		if ((choice = gmt_is_native_grid (GMT, header)) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		else if (choice == GMT_GRDIO_NONUNIQUE_FORMAT)
 			return (GMT_GRDIO_NONUNIQUE_FORMAT);
 		/* Next check for Sun raster grid */
-		if (GMT_is_ras_grid (GMT, header) == GMT_NOERROR)
+		if (gmt_is_ras_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		/* Then check for Golden Software surfer grid */
-		if (GMT_is_srf_grid (GMT, header) == GMT_NOERROR)
+		if (gmt_is_srf_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
 		/* Then check for NGDC GRD98 grid */
 		if (gmt_is_mgg2_grid (GMT, header) == GMT_NOERROR)
@@ -1227,7 +1227,7 @@ int gmt_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 	return (err);
 }
 
-size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value) {
+size_t gmt_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value) {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
 	switch (GMT->session.grdformat[format][1]) {

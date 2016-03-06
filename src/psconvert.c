@@ -742,7 +742,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 	}
 }
 
-EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
+EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
@@ -966,7 +966,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		*out_file = '\0'; /* truncate string */
 		if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
 			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
-			if (GMT_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
+			if (gmt_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s.  Skipping.\n", ps_file, ps_names[k]);
 				continue;
 			}

@@ -55,6 +55,6 @@ struct rasterfile {
 #define RMT_NONE	0		/* maplength is expected to be 0 */
 #define RMT_EQUAL_RGB	1		/* red[maplength/3], green[], blue[] follow */
 
-EXTERN_MSC char **GMT_grdformats_sorted (struct GMT_CTRL *Ctrl);
+EXTERN_MSC char **gmt_grdformats_sorted (struct GMT_CTRL *Ctrl);
 
 #endif /* GMT_CUSTOMIO_H */

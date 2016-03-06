@@ -453,6 +453,55 @@ struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {
 /*! p_func_size_t is used as a pointer to functions that returns a size_t dimension */
 typedef size_t (*p_func_size_t) (uint64_t row, uint64_t col, size_t dim);
 
+#ifdef DEBUG
+/*! Can be used to display API->object info wherever it is called as part of a debug operation */
+GMT_LOCAL void api_list_objects (struct GMTAPI_CTRL *API, char *txt) {
+	unsigned int item, ext;
+	struct GMTAPI_DATA_OBJECT *S;
+	char message[GMT_BUFSIZ], O, M;
+	//if (API->deep_debug == false) return;
+	if (!gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) return;
+	sprintf (message, "==> %d API Objects at end of %s\n", API->n_objects, txt);
+	GMT_Message (API, GMT_TIME_NONE, message);
+	if (API->n_objects == 0) return;
+	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
+	sprintf (message, "K.. ID RESOURCE.... DATA........ FAMILY.... DIR... S O M L\n");
+	GMT_Message (API, GMT_TIME_NONE, message);
+	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
+	for (item = 0; item < API->n_objects; item++) {
+		if ((S = API->object[item]) == NULL) continue;
+		O = (S->no_longer_owner) ? 'N' : 'Y';
+		M = (S->messenger) ? 'Y' : 'N';
+		ext = (S->alloc_mode == GMT_ALLOC_EXTERNALLY) ? '*' : ' ';
+		sprintf (message, "%c%2d %2d %12" PRIxS " %12" PRIxS " %10s %6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
+			GMT_family[S->family], GMT_direction[S->direction], S->status, O, M, S->alloc_level);
+		GMT_Message (API, GMT_TIME_NONE, message);
+	}
+	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
+}
+
+/*! Mostlyl for debugging */
+GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj) {
+	/* This is mostly for debugging and may go away or remain under DEBUG */
+	GMT_Report (API, GMT_MSG_DEBUG, "Set_Object for family: %d\n", obj->family);
+	switch (obj->family) {
+		case GMT_IS_GRID:	obj->G = obj->data; break;
+		case GMT_IS_DATASET:	obj->D = obj->data; break;
+		case GMT_IS_TEXTSET:	obj->T = obj->data; break;
+		case GMT_IS_CPT:	obj->C = obj->data; break;
+		case GMT_IS_PS:		obj->P = obj->data; break;
+		case GMT_IS_MATRIX:	obj->M = obj->data; break;
+		case GMT_IS_VECTOR:	obj->V = obj->data; break;
+		case GMT_IS_COORD:	break;	/* No worries */
+#ifdef HAVE_GDAL
+		case GMT_IS_IMAGE:	obj->I = obj->data; break;
+#endif
+		case GMT_N_FAMILIES:	break;
+	}
+}
+
+#endif
+
 /*! . */
 GMT_LOCAL char *api_lib_tag (char *name) {
 	/* Pull out the tag from a name like <tag>[.extension] */
@@ -631,7 +680,7 @@ GMT_LOCAL void api_free_sharedlibs (struct GMTAPI_CTRL *API) {
 /* The basic gmtread|write module meat; used by external APIs only, such as the GMT/MATLAB API */
 
 /*! Duplicate ifile on ofile.  Calling program is responsible to ensure correct args are passed */
-int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile) {
+int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile) {
 	double *wesn = NULL;	/* For grid and image subsets */
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TEXTSET *T = NULL;
@@ -1371,7 +1420,7 @@ GMT_LOCAL int api_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G
 		alloc = (fmt[1] != 'f');	/* Only need to allocate the v_row array if grid is not float */
 	}
 
-	R->size = GMT_grd_data_size (GMT, G->header->type, &G->header->nan_value);
+	R->size = gmt_grd_data_size (GMT, G->header->type, &G->header->nan_value);
 	R->check = !isnan (G->header->nan_value);
 	R->open = true;
 
@@ -4253,56 +4302,6 @@ void api_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 		gmt_fclose (GMT, R->fp);
 	gmt_M_free (GMT, G->extra);
 }
-
-#ifdef DEBUG
-/*! Can be used to display API->object info wherever it is called as part of a debug operation */
-void api_list_objects (struct GMTAPI_CTRL *API, char *txt) {
-	unsigned int item, ext;
-	struct GMTAPI_DATA_OBJECT *S;
-	char message[GMT_BUFSIZ], O, M;
-	//if (API->deep_debug == false) return;
-	if (!gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) return;
-	sprintf (message, "==> %d API Objects at end of %s\n", API->n_objects, txt);
-	GMT_Message (API, GMT_TIME_NONE, message);
-	if (API->n_objects == 0) return;
-	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
-	sprintf (message, "K.. ID RESOURCE.... DATA........ FAMILY.... DIR... S O M L\n");
-	GMT_Message (API, GMT_TIME_NONE, message);
-	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
-	for (item = 0; item < API->n_objects; item++) {
-		if ((S = API->object[item]) == NULL) continue;
-		O = (S->no_longer_owner) ? 'N' : 'Y';
-		M = (S->messenger) ? 'Y' : 'N';
-		ext = (S->alloc_mode == GMT_ALLOC_EXTERNALLY) ? '*' : ' ';
-		sprintf (message, "%c%2d %2d %12" PRIxS " %12" PRIxS " %10s %6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
-			GMT_family[S->family], GMT_direction[S->direction], S->status, O, M, S->alloc_level);
-		GMT_Message (API, GMT_TIME_NONE, message);
-	}
-	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
-}
-
-/*! Mostlyl for debugging */
-void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj) {
-	/* This is mostly for debugging and may go away or remain under DEBUG */
-	GMT_Report (API, GMT_MSG_DEBUG, "Set_Object for family: %d\n", obj->family);
-	switch (obj->family) {
-		case GMT_IS_GRID:	obj->G = obj->data; break;
-		case GMT_IS_DATASET:	obj->D = obj->data; break;
-		case GMT_IS_TEXTSET:	obj->T = obj->data; break;
-		case GMT_IS_CPT:	obj->C = obj->data; break;
-		case GMT_IS_PS:		obj->P = obj->data; break;
-		case GMT_IS_MATRIX:	obj->M = obj->data; break;
-		case GMT_IS_VECTOR:	obj->V = obj->data; break;
-		case GMT_IS_COORD:	break;	/* No worries */
-#ifdef HAVE_GDAL
-		case GMT_IS_IMAGE:	obj->I = obj->data; break;
-#endif
-		case GMT_N_FAMILIES:	break;
-	}
-}
-
-#endif
-
 
 /*========================================================================================================
  *          HERE ARE THE PUBLIC GMT API UTILITY FUNCTIONS, WITH THEIR FORTRAN BINDINGS
@@ -8340,6 +8339,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 }
 
 #if 0
+/* Currently not used in mex or Julia ? */
 EXTERN_MSC void GMT_set_mem_layout (struct GMTAPI_CTRL *API, char mem_layout[]);
 void GMT_set_mem_layout(struct GMTAPI_CTRL *API, char mem_layout[]) {
 	int i;
@@ -8357,10 +8357,12 @@ char *GMT_Duplicate_String (void *API, const char* string) {
 	return strdup (string);
 }
 
+/* Help functions specific to the Julia/GMT API */
+
 EXTERN_MSC int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off);
 int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size_t off) {
 	/* This is a magic backdoor to change static members of API structures that had to be declared as
-	   immutables types in Julia and therefore impossible to change from there.
+	   immutables types in Julia and therefore impossible to change from within Julia.
 	   *ptr  -> structure pointer whose member identified by the offset 'off' is to be changed.
 	   *what -> pointer to the new value of the struct member that will be changed.
 	   *type -> string with the type description, using the Julia types names. e.g. 'UInt32' or 'Float64'
@@ -8388,7 +8390,7 @@ int GMT_blind_change_struct(void *V_API, void *ptr, void *what, char *type, size
 	else if (!strcmp(type, "Int8"))
 		*(char *)((char *)ptr + off) = *(char *)what;
 	else {
-		GMT_Report(V_API, GMT_MSG_NORMAL, "Backdoor: Type (%s) not accepted. Possibly a pointer to something.\n", type);
+		GMT_Report(V_API, GMT_MSG_NORMAL, "GMT/Julia Backdoor: Type (%s) not accepted. Possibly a pointer to something.\n", type);
 		return_error (V_API, GMT_NOT_A_VALID_PARAMETER);
 	}
 	return 0;

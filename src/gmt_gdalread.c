@@ -680,7 +680,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	else if (prhs->f_ptr.active) {
 		/* Here we are going to read to a grid so if no band info was provided, default to read only the
 		   first band. This avoids, for example, allocate and read all 3 bands in a RGB image and send
-		   back a full 3 band array to GMT_gdal_read_grd that will only keep the first band. */
+		   back a full 3 band array to gmt_gdal_read_grd that will only keep the first band. */
 		nReqBands = 1;
 		whichBands = gmt_M_memory (GMT, NULL, 1, int);
 		whichBands[0] = 1;

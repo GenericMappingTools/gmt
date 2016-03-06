@@ -217,7 +217,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		   but the issue is that the test is done on the MEM declared size, whilst we are
 		   actually using a larger array, and the dimensions passed to GDALRasterIO refer
 		   to it. The trick was to offset the initial position of the 'data' array in 
-		   GMT_gdal_write_grd and adapt the line stride here (last GDALRasterIO argument).
+		   gmt_gdal_write_grd and adapt the line stride here (last GDALRasterIO argument).
 		   Thanks to Even Roualt, see: 
 		   osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
 		hBand = GDALGetRasterBand(hDstDS, i+1); 
@@ -241,7 +241,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0);
 				}
 				else
-					/* Here 'data' was converted to uchar in gmt_customio.c/GMT_gdal_write_grd */
+					/* Here 'data' was converted to uchar in gmt_customio.c/gmt_gdal_write_grd */
 					GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0);
 				break;
 			case GDT_UInt16:

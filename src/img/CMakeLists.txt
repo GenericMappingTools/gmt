@@ -20,11 +20,10 @@
 #
 
 # source files
-set (SUPPL_LIB_SRCS gmt_imgsubs.h gmt_imgsubs.c)
 set (SUPPL_PROGS_SRCS img2grd.c)
 
 # lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
+set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 
 # create build targets
 string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")

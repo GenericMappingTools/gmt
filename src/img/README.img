@@ -4,6 +4,11 @@ Maintained by: W H F Smith
 Distributed under the GNU Lesser Public License; see file
 LICENSE.TXT in main GMT directory.
 
+==> CHANGES IN GMT 5.3.0 <==
+
+Eliminate gmt_imgsubs.[ch] as individual files so that we can
+let those functions be local only and not exported to the API.
+
 ==> CHANGES IN GMT 5 <==
 
 img2mercgrd and img2mgrd are now a single C module (and executable).

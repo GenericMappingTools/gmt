@@ -77,7 +77,7 @@
 #define NC_CACHE_PREEMPTION 0.75f
 
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job);
-int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
 static int nc_libvers[] = {-1, -1, -1, -1}; /* holds the version of the netCDF library */
 
@@ -1249,7 +1249,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 
 	/* Check type: is file in old NetCDF format or not at all? */
 	if (GMT->session.grdformat[header->type][0] == 'c')
-		return (GMT_cdf_read_grd (GMT, header, grid, wesn, pad, complex_mode));
+		return (gmt_cdf_read_grd (GMT, header, grid, wesn, pad, complex_mode));
 	else if (GMT->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
