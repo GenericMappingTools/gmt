@@ -32,96 +32,96 @@
 
 #define I_DIM(x, y) (((x) > (y)) ? (x) - (y) : 0)
 
-void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear);
-void ydtomjdx(int yearad, int dayofyear, int * mjd, int *month, int *dayofmonth, int *daysinmonth);
-double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr);
-double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int idom, int *idim, 
+static void ymdtomjd(int yearad, int month, int dayofmonth, int *mjd, int *dayofyear);
+static void ydtomjdx(int yearad, int dayofyear, int * mjd, int *month, int *dayofmonth, int *daysinmonth);
+static double intdst(int mjdl, int mjdh, int mjdy, int msec, double *dstx, int *cerr);
+static double intf107(int iyrl, int imol, int iyrh, int imoh, int iyr, int imon, int idom, int *idim, 
 	int msec, double *f107x, int *cerr);
-double getmut2(double thenmp, double phinmp, int iyear, int iday, int msec);
-void sun2(int iyr, int iday, double secs, double *gst, double *slong, double *srasn, double *sdec);
-void rmerge_(double *rmrg, double *rmlt);
-void tsearad(int full, int ks, int kr, int ns, int ng, double f, double *t, double *e, double *g);
-void tseardr(int full, int ks, int kr, int ns, int ng, double f, double *t, double *e, double *g);
-void mseason(int ks, int ns, int ng, double d, double *t, double *e, double *g);
-void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g);
-void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z);
-void jtbelow(int pmin, int pmax, int nmax, int mmax, double r, double rref, int nz, double *z);
-void jtabove(int pmin, int pmax, int nmax, int mmax, double r, double rref, int nz, double *z);
-void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, int nz, double *z);
-void mstream(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double faor, double *d, double *z);
-void jpoloid(int pmin, int pmax, int nmax, int mmax, double r, double rm, int nd, int nz, double *t, double *d, double *z);
-void blsgen(int nc, int nd, int ni, double *b, double *c, double *dldc);
-void getgmf(int nder, int ns, double *ep, double *tm, double *b, double *c, double *g, int *h, int *o, double *p);
-void dbspln_(int *l, double *t, int *n, int * d__, int *k, double *x, double *b, double *w);
-void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *g, double *t);
-void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe, int mmni,
+static double getmut2(double thenmp, double phinmp, int iyear, int iday, int msec);
+static void sun2(int iyr, int iday, double secs, double *gst, double *slong, double *srasn, double *sdec);
+static void rmerge_(double *rmrg, double *rmlt);
+static void tsearad(int full, int ks, int kr, int ns, int ng, double f, double *t, double *e, double *g);
+static void tseardr(int full, int ks, int kr, int ns, int ng, double f, double *t, double *e, double *g);
+static void mseason(int ks, int ns, int ng, double d, double *t, double *e, double *g);
+static void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g);
+static void mpotent(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double *d, double *z);
+static void jtbelow(int pmin, int pmax, int nmax, int mmax, double r, double rref, int nz, double *z);
+static void jtabove(int pmin, int pmax, int nmax, int mmax, double r, double rref, int nz, double *z);
+static void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, int nz, double *z);
+static void mstream(int nmax, int mmax, int nd, int nz, double cphi, double sphi, double faor, double *d, double *z);
+static void jpoloid(int pmin, int pmax, int nmax, int mmax, double r, double rm, int nd, int nz, double *t, double *d, double *z);
+static void blsgen(int nc, int nd, int ni, double *b, double *c, double *dldc);
+static void getgmf(int nder, int ns, double *ep, double *tm, double *b, double *c, double *g, int *h, int *o, double *p);
+static void dbspln_(int *l, double *t, int *n, int * d__, int *k, double *x, double *b, double *w);
+static void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *g, double *t);
+static void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe, int mmni,
 	int mmne, int grad, int ctyp, int dtyp, int ityp, int etyp, double ep, double re, 
 	double rp, double rm, double tm, double clat, double elon, double h, double dst, double dstt, 
 	double *rse, int *nc, int *na, double *ro, double *theta, int *atyp, int *dsti, int *bori, int *bkni, 
 	double *bkpi, int *tdgi, int *dste, int *bore, int *bkne, double *bkpe, int *tdge, double *a, 
 	double *b, double *c, double *p, double *r, double *t, int *u, double *w, double *dsdc, 
 	double *dldc, double *dlda, int *cerr);
-void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, int *nmxi, int *
+static void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, int *nmxi, int *
 	nmne, int *nmxe, int *mmni, int *mmxi, int *mmne, int *mmxe, int *nmax, int *mmin, int *mmax, int *
 	ns, int *nsi, int *nse, int *nc, int *nci, int *nce, int *na, int *np, int *ii, int *ie, int *
 	atyp, int *dsti, int *bori, int *bkni, int *tdgi, int *dste, int *bore, int *bkne, int *tdge, int *u, int *cerr);
-void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h, double *re, 
+static void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *h, double *re, 
 	double *rp, double *rm, double *ro, int *nsi, int *nc, int *nci, int *np, int *ii, int *ie, int *
 	nmni, int *nmxi, int *nmne, int *nmxe, int *nmax, int *mmni, int *mmxi, int *mmne, int *mmxe, int *
 	mmin, int *mmax, double *theta, double *p, double *r, double *t, int *u, double *w, double *dldc, int *cerr);
-void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe);
-void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r);
-void srecur_(int *grad, int *nmax, int *mmin, int *mmax, int *ksm2, int *ktm2, int *npall, int *
+static void geocen(int ctyp, double re, double rp, double rm, double h, double clat, double *r, double *theta, double *sinthe, double *costhe);
+static void schmit_(int *grad, int *rgen, int *nmax, int *mmin, int *mmax, double *sinthe, double *costhe, double *p, double *r);
+static void srecur_(int *grad, int *nmax, int *mmin, int *mmax, int *ksm2, int *ktm2, int *npall, int *
 	nad1, int *nad2, int *nad3, int *nad4, int *nad5, int *nad6, int *nad7, int *nad8, double *r);
-void trigmp(int mmax, double phi, double *t);
-void tdc(int grad, int nc, double clat, double theta, double *dldc, double *r);
-void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *nci, double *ta,
+static void trigmp(int mmax, double phi, double *t);
+static void tdc(int grad, int nc, double clat, double theta, double *dldc, double *r);
+static void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *nci, double *ta,
 	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi, 
 	int *dste, int *bore, int *bkne, double *bkpe, int *tdge, int *u, double *w, double *dsdc, int *cerr);
-void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsdt, double *dsdc);
-void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int *cerr);
-void sbspln_(double *ta, double *tb, int *n, int *k, double *bkpo, double *dtdb, double *dsdc, int *cerr);
-void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr);
-void dstorm(int nc, int ns, double *dst, double *dstt, int *dstm, int *u, double *dsdc);
-void fdldc(int grad, int nc, double *dsdc, double *dldc);
-void blgen(int grad, int nc, double *b, double *c, double *dldc);
-void bngen_(double *b);
-void tec(int grad, int k, int nc, double *theta, double *phi, double *b, double *dldc, double *r);
-void tse(int grad, int k, int nc, double *rse, double *b, double *dldc, double *r);
-void tms(int grad, int k, int nc, int na, int ia, double *a, double *b, double *dldc, double *dlda, double *r);
-void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seuly, double *ceuly, 
+static void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsdt, double *dsdc);
+static void bsplyn(int nc, int ns, double *ta, double *tb, int *bord, int *bkno, double *bkpo, int *u, double *dtdb, double *dsdc, int *cerr);
+static void sbspln_(double *ta, double *tb, int *n, int *k, double *bkpo, double *dtdb, double *dsdc, int *cerr);
+static void tbspln_(double *t, int *n, int *k, double *bkpo, double *dtdb, int *cerr);
+static void dstorm(int nc, int ns, double *dst, double *dstt, int *dstm, int *u, double *dsdc);
+static void fdldc(int grad, int nc, double *dsdc, double *dldc);
+static void blgen(int grad, int nc, double *b, double *c, double *dldc);
+static void bngen_(double *b);
+static void tec(int grad, int k, int nc, double *theta, double *phi, double *b, double *dldc, double *r);
+static void tse(int grad, int k, int nc, double *rse, double *b, double *dldc, double *r);
+static void tms(int grad, int k, int nc, int na, int ia, double *a, double *b, double *dldc, double *dlda, double *r);
+static void fdldeu_(int *k, int *na, int *ia, double *seulx, double *ceulx, double *seuly, double *ceuly, 
 	double *seulz, double *ceulz, double *r, double *b, double *dlda);
-void tnm_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, double *dldc, double *dlda, double *r);
-void fdldno_(int *k, int *na, int *ia, double *schix, double *cchix, double *schiy, double *cchiy, 
+static void tnm_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, double *dldc, double *dlda, double *r);
+static void fdldno_(int *k, int *na, int *ia, double *schix, double *cchix, double *schiy, double *cchiy, 
 	double *schiz, double *cchiz, double *r, double *b, double *dlda);
-void fdldsl_(int *k, int *na, int *ia, double *b, double *dlda);
-void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, double *dldc, double *dlda, double *r);
-void tbi_(int *k, int *na, int *ia, double *a, double *b, double *dlda);
-void fdldbi_(int *k, int *na, int *ia, double *dlda);
-void ltrans(int n, int m, double *q, double *r, double *s);
-void ltranv(int rfac, int n, int m, double *r, double *v);
-int nshx(int nmax, int nmin, int mmax, int mmin);
-int nlpx(int nmax, int mmax, int mmin);
-int i8ssum(int abeg, int alen, int *a);
-void i8vset(int abeg, int alen, int s, int *a);
-void i8vadd(int abeg, int bbeg, int cbeg, int vlen, int *a, int *b, int *c);
-void i8vadds(int abeg, int bbeg, int vlen, int s, int *a, int *b);
-void i8vcum(int abas, int abeg, int alen, int *a);
-void i8vdel(int abas, int abeg, int alen, int *a);
-void r8vset(int abeg, int alen, double s, double *a);
-double r8sdot(int abeg, int bbeg, int vlen, double *a, double *b);
-double r8ssum_(int *abeg, int *alen, double *a);
-void r8slt(int abeg, int alen, double s, double *a, int *j);
-void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c);
-void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c);
-void r8vscale(int abeg, int alen, double s, double *a);
-void r8vscats(int qbeg, int qlen, double s, int *q, double *a);
-void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b);
-void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c);
-void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b);
-double d_mod(double x, double y);
-double pow_di(double ap, int bp);
-int i_dnnt(double x);
+static void fdldsl_(int *k, int *na, int *ia, double *b, double *dlda);
+static void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, double *dldc, double *dlda, double *r);
+static void tbi_(int *k, int *na, int *ia, double *a, double *b, double *dlda);
+static void fdldbi_(int *k, int *na, int *ia, double *dlda);
+static void ltrans(int n, int m, double *q, double *r, double *s);
+static void ltranv(int rfac, int n, int m, double *r, double *v);
+static int nshx(int nmax, int nmin, int mmax, int mmin);
+static int nlpx(int nmax, int mmax, int mmin);
+static int i8ssum(int abeg, int alen, int *a);
+static void i8vset(int abeg, int alen, int s, int *a);
+static void i8vadd(int abeg, int bbeg, int cbeg, int vlen, int *a, int *b, int *c);
+static void i8vadds(int abeg, int bbeg, int vlen, int s, int *a, int *b);
+static void i8vcum(int abas, int abeg, int alen, int *a);
+static void i8vdel(int abas, int abeg, int alen, int *a);
+static void r8vset(int abeg, int alen, double s, double *a);
+static double r8sdot(int abeg, int bbeg, int vlen, double *a, double *b);
+static double r8ssum_(int *abeg, int *alen, double *a);
+static void r8slt(int abeg, int alen, double s, double *a, int *j);
+static void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c);
+static void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c);
+static void r8vscale(int abeg, int alen, double s, double *a);
+static void r8vscats(int qbeg, int qlen, double s, int *q, double *a);
+static void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b);
+static void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c);
+static void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b);
+static double d_mod(double x, double y);
+static double pow_di(double ap, int bp);
+static int i_dnnt(double x);
 static void clear_mem (double *mut, double *gpsq, double *gssq, double *gpmg, double *gsmg, double *hysq, double *epsq, double *essq,
 	double *ecto, double *hyto, double *hq, double *ht, double *bkpo, double *ws, double *gamf, double *epmg,
 	double *esmg, double *hymg, double *f107x, double *pleg, double *rcur, double *gcto_or, double *gcto_mg);
@@ -1676,7 +1676,7 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
     }
 }
 
-void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe, int mmni,
+static void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe, int mmni,
 	int mmne, int grad, int ctyp, int dtyp, int ityp, int etyp, double ep, double re, 
 	double rp, double rm, double tm, double clat, double elon, double h, double dst, double dstt, 
 	double *rse, int *nc, int *na, double *ro, double *theta, int *atyp, int *dsti, int *bori, int *bkni, 

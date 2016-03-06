@@ -21,10 +21,10 @@
 #include "segy.h"
 #include "segyreel.h"
 
-uint32_t samp_rd (SEGYHEAD *hdr);
-int get_segy_reelhd (FILE *fileptr, char *reelhead);
-int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead);
-SEGYHEAD *get_segy_header (FILE *file_ptr);
-float *get_segy_data (FILE *file_ptr, SEGYHEAD *head_ptr);
+uint32_t segy_samp_rd (SEGYHEAD *hdr);
+int segy_get_reelhd (FILE *fileptr, char *reelhead);
+int segy_get_binhd (FILE *fileptr, SEGYREEL *binhead);
+SEGYHEAD *segy_get_header (FILE *file_ptr);
+float *segy_get_data (FILE *file_ptr, SEGYHEAD *head_ptr);
 
 #endif /* SEGY_IO_H */

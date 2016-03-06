@@ -25,9 +25,9 @@
  * 	gmt_make_module_src.sh supplements
  */
 #include "gmt.h"
+#define GMT_UNUSED(x) (void)(x)
 #include "gmt_supplements_module.h"
 #include <string.h>
-#define gmt_M_unused(x) (void)(x)
 
 /* Sorted array with information for all GMT supplements modules */
 
@@ -39,7 +39,7 @@ struct Gmt_moduleinfo {
 	const char *keys;             /* Program option info for external APIs */
 };
 
-struct Gmt_moduleinfo g_supplements_module[] = {
+static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"gshhg", "gshhg", "Extract data tables from binary GSHHS or WDBII data files", ">D},>TL"},
 	{"img2grd", "img", "Extract a subset from an img file in Mercator or Geographic format", "<G{,GG},RG-"},
 	{"pscoupe", "meca", "Plot cross-sections of focal mechanisms", "<T{,>X},RG-"},
@@ -111,7 +111,7 @@ void gmt_supplements_module_show_all (void *V_API) {
 /* Produce single list on stdout of all GMT supplements module names for gmt --show-modules */
 void gmt_supplements_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
-	gmt_M_unused(V_API);
+	GMT_UNUSED(V_API);
 	while (g_supplements_module[module_id].name != NULL) {
 		printf ("%s\n", g_supplements_module[module_id].name);
 		++module_id;
@@ -121,7 +121,7 @@ void gmt_supplements_module_list_all (void *V_API) {
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_supplements_module_info (void *API, char *candidate) {
 	int module_id = 0;
-	gmt_M_unused(API);
+	GMT_UNUSED(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_supplements_module[module_id].name != NULL &&

@@ -116,7 +116,8 @@ void spotter_matrix_to_pole (struct GMT_CTRL *GMT, double T[3][3], double *plon,
 	}
 }
 
-void make_rot0_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double R[3][3], double E[]) {
+#if 0	/* Currently unused */
+GMT_LOCAL void make_rot0_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double R[3][3], double E[]) {
 	/* Based on Cox and Hart, 1986 */
 	/* This starts setting up the matrix without knowing the angle of rotation
 	 * Call set_rot_angle with R, E, and omega to complete the matrix
@@ -139,8 +140,9 @@ void make_rot0_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double R[
 	R[2][1] = E[1] * E[2];
 	R[2][2] = E[2] * E[2];
 }
+#endif
 
-void reverse_rotation_order (struct EULER *p, unsigned int n) {
+GMT_LOCAL void reverse_rotation_order (struct EULER *p, unsigned int n) {
 	/* Simply reverses the array from 1:n to n:1 */
 	unsigned int i, j;
 	struct EULER p_tmp;
@@ -155,7 +157,7 @@ void reverse_rotation_order (struct EULER *p, unsigned int n) {
 	}
 }
 
-void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], unsigned int n, unsigned int stages, bool convert) {
+GMT_LOCAL void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[], unsigned int n, unsigned int stages, bool convert) {
 	/* Reload the EULER structure from the lon, lat, w arrays.
 	 * stages is true if we are loading stage rotations (false is finite poles).
 	 * convert is true if we must change angles to rates or vice versa */
@@ -175,14 +177,14 @@ void xyw_to_struct_euler (struct EULER *p, double lon[], double lat[], double w[
 	}
 }
 
-void set_I_matrix (double R[3][3]) {
+GMT_LOCAL void set_I_matrix (double R[3][3]) {
 	/* Simply sets R to I, the identity matrix */
 
 	gmt_M_memset (R, 9, double);
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
-bool must_do_track (int sideA[], int sideB[]) {
+GMT_LOCAL bool must_do_track (int sideA[], int sideB[]) {
 	int dx, dy;
 	/* First check if any of the two points are inside the box */
 	if (sideA[0] == 0 && sideA[1] == 0) return (true);
@@ -195,7 +197,7 @@ bool must_do_track (int sideA[], int sideB[]) {
 	return (false);
 }
 
-void set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
+GMT_LOCAL void set_inout_sides (double x, double y, double wesn[], int sideXY[2]) {
 	/* Given the rectangular region in wesn, return -1, 0, +1 for
 	 * x and y if the point is left/below (-1) in (0), or right/above (+1).
 	 * 
@@ -235,7 +237,7 @@ void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[])
 	for (k = 1; k < 7; k++) K[k] *= (e->k_hat / e->g);
 }
 
-void record_to_covar (struct EULER *e, double K[]) {
+GMT_LOCAL void record_to_covar (struct EULER *e, double K[]) {
 	/* Translates the 9 values read from plate motion file [k_hat a b c d e f g df]
 	 * into the Euler covariance matrix */
 	
@@ -1784,7 +1786,7 @@ void spotter_tangentplane (struct GMT_CTRL *GMT, double lon, double lat, double 
 	spotter_matrix_mult (GMT, Rlat, Rlon, R);			/* R converts between (x,y,z) and( tx, ty, tz) coordinates in tangent plane */
 }
 
-bool on_the_ellipse (double xyz[3], double L[3], double c) {
+GMT_LOCAL bool on_the_ellipse (double xyz[3], double L[3], double c) {
 	unsigned int i;
 	double sum;
 	sum = c * c;

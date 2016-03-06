@@ -651,7 +651,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			if (meca.NP1.rake > 180.0) meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.magms = atof (col[5+new_fmt]);
 			meca.moment.exponent = 0;
-			define_second_plane (meca.NP1, &meca.NP2);
+			meca_define_second_plane (meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
 			meca.NP1.str = atof (col[2+new_fmt]);
@@ -662,7 +662,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			fault = atof (col[5+new_fmt]);
 			meca.magms = atof (col[6+new_fmt]);
 			meca.moment.exponent = 0;
-			meca.NP2.dip = computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
+			meca.NP2.dip = meca_computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 			if (meca.NP2.dip == 1000.0) {
 				not_defined = true;
 				transparence_old = Ctrl->T.active;
@@ -673,8 +673,8 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
 			}
 			else
-				meca.NP1.rake = computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
-			meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
+				meca.NP1.rake = meca_computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
+			meca.NP2.rake = meca_computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
 			T.val = atof (col[2+new_fmt]);
@@ -704,7 +704,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			N.val /= meca.moment.mant;
 			P.val /= meca.moment.mant;
 
-			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc (T, P, &meca.NP1, &meca.NP2);
+			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
 			for (i = 2+new_fmt, n = 0; i < 8+new_fmt; i++, n++) mt.f[n] = atof (col[i]);
@@ -720,9 +720,9 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			/* normalization by M0 */
 			for(i=0;i<=5;i++) mt.f[i] /= meca.moment.mant;
 
-			moment2axe (GMT, mt, &T, &N, &P);
+			meca_moment2axe (GMT, mt, &T, &N, &P);
 
-			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc (T, P, &meca.NP1, &meca.NP2);
+			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
 
 		/* Common to all input types ... */
@@ -754,36 +754,36 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		moment.mant = meca.moment.mant;
 		moment.exponent = meca.moment.exponent;
-		size = (computed_mw(moment, meca.magms) / 5.0) * Ctrl->S.scale;
+		size = (meca_computed_mw(moment, meca.magms) / 5.0) * Ctrl->S.scale;
 
-		get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
+		meca_get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
 		delaz = atan2d(t12,t11);
 
 		if ((Ctrl->S.readmode == READ_AXIS || Ctrl->S.readmode == READ_TENSOR) && Ctrl->S.plotmode != PLOT_DC) {
 
-			T.str = zero_360(T.str + delaz);
-			N.str = zero_360(N.str + delaz);
-			P.str = zero_360(P.str + delaz);
+			T.str = meca_zero_360(T.str + delaz);
+			N.str = meca_zero_360(N.str + delaz);
+			P.str = meca_zero_360(P.str + delaz);
 
 			gmt_setpen (GMT, &Ctrl->L.pen);
 			if (fabs (N.val) < EPSIL && fabs (T.val + P.val) < EPSIL) {
-				axe2dc (T, P, &meca.NP1, &meca.NP2);
-				ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
+				meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
+				meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 			}
 			else
-				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.plotmode == PLOT_TRACE, n_rec);
+				meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.plotmode == PLOT_TRACE, n_rec);
 		}
 
 		if (Ctrl->Z2.active) {
 			gmt_setpen (GMT, &Ctrl->Z2.pen);
-			ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
+			meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
 		}
 
 		if (Ctrl->T.active) {
-			meca.NP1.str = zero_360(meca.NP1.str + delaz);
-			meca.NP2.str = zero_360(meca.NP2.str + delaz);
+			meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
+			meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
 			gmt_setpen (GMT, &Ctrl->T.pen);
-			ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
+			meca_ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
 			if (not_defined) {
 				not_defined = false;
 				Ctrl->T.active = transparence_old;
@@ -791,10 +791,10 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.plotmode == PLOT_DC) {
-			meca.NP1.str = zero_360(meca.NP1.str + delaz);
-			meca.NP2.str = zero_360(meca.NP2.str + delaz);
+			meca.NP1.str = meca_zero_360(meca.NP1.str + delaz);
+			meca.NP2.str = meca_zero_360(meca.NP2.str + delaz);
 			gmt_setpen (GMT, &Ctrl->L.pen);
-			ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
+			meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 		}
 
 		if (!Ctrl->S.no_label) {
@@ -807,8 +807,8 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->A2.active) {
-			if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) dc2axe (meca, &T, &N, &P);
-			axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
+			if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
+			meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 			gmt_setpen (GMT, &Ctrl->P2.pen);
 			gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
 			PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);

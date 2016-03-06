@@ -207,7 +207,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
+GMT_LOCAL int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ structure on distance */
         if ( ((struct COE_ADJUST *)point_1)->d < ((struct COE_ADJUST *)point_2)->d)
                 return(-1);
         else if ( ((struct COE_ADJUST *)point_1)->d > ((struct COE_ADJUST *)point_2)->d)

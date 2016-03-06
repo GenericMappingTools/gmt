@@ -36,7 +36,7 @@ struct MGD77_AGENCY {
 	char name[80];
 };
 
-struct MGD77_AGENCY MGD77_agency[MGD77_N_AGENCIES] = {
+static struct MGD77_AGENCY MGD77_agency[MGD77_N_AGENCIES] = {
 EOF
 cat $$.1 >> mgd77_codes.h
 cat << EOF >> mgd77_codes.h
@@ -48,7 +48,7 @@ struct MGD77_VESSEL {
 	char name[80];
 };
 
-struct MGD77_VESSEL MGD77_vessel[MGD77_N_VESSELS] = {
+static struct MGD77_VESSEL MGD77_vessel[MGD77_N_VESSELS] = {
 EOF
 cat $$.2 >> mgd77_codes.h
 echo "};"  >> mgd77_codes.h

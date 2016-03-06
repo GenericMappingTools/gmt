@@ -2190,20 +2190,20 @@ GMT_LOCAL int gmtinit_set_env (struct GMT_CTRL *GMT) {
 
 	/* Note: gmtinit_set_env cannot use GMT_Report because the verbose level is not yet set */
 
-	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL && GMT_verify_sharedir_version (this_c))	/* GMT5_SHAREDIR was set */
+	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL && gmt_verify_sharedir_version (this_c))	/* GMT5_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
-	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL && GMT_verify_sharedir_version (this_c)) /* GMT_SHAREDIR was set */
+	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL && gmt_verify_sharedir_version (this_c)) /* GMT_SHAREDIR was set */
 		GMT->session.SHAREDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
-	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_DIR_DEBUG) )
+	else if ( running_in_bindir_src && gmt_verify_sharedir_version (GMT_SHARE_DIR_DEBUG) )
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
 		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR_DEBUG);
 #endif
-	else if (GMT_verify_sharedir_version (GMT_SHARE_DIR))		/* Found in hardcoded GMT_SHARE_DIR */
+	else if (gmt_verify_sharedir_version (GMT_SHARE_DIR))		/* Found in hardcoded GMT_SHARE_DIR */
 		GMT->session.SHAREDIR = strdup (GMT_SHARE_DIR);
 	else {
 		/* SHAREDIR still not found, make a smart guess based on runpath: */
-		if (GMT_guess_sharedir (path, GMT->init.runtime_bindir))
+		if (gmt_guess_sharedir (path, GMT->init.runtime_bindir))
 			GMT->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
@@ -4897,7 +4897,7 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	if (strlen (path) > 4 && !strncmp (&path[strlen(path)-4], "/bin", 4U))
 		strncpy (&path[strlen(path)-3], "lib", 3U);
 #else
-	GMT_runtime_libdir (path);
+	gmt_runtime_libdir (path);
 #endif
 	GMT->init.runtime_libdir = strdup (path);
 

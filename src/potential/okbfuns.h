@@ -41,11 +41,11 @@ struct LOC_OR {
 
 struct MAG_PARAM {
 	double	rim[3];
-} *mag_param;
+} *okabe_mag_param;
 
 struct MAG_VAR {		/* Used when only the modulus of magnetization varies */
 	double	rk[3];
-} *mag_var;
+} *okabe_mag_var;
 
 EXTERN_MSC double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, bool is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *bd_vert, unsigned int km, unsigned int pm, struct LOC_OR *loc_or);

@@ -198,12 +198,12 @@ GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm,
 	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
 	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
 
-	mag_fac = s_phi * (mag_param[pm].rim[0] * c_tet + mag_param[pm].rim[1] * s_tet) +
-				   mag_param[pm].rim[2] * c_phi;
+	mag_fac = s_phi * (okabe_mag_param[pm].rim[0] * c_tet + okabe_mag_param[pm].rim[1] * s_tet) +
+				   okabe_mag_param[pm].rim[2] * c_phi;
 
 	if (fabs(mag_fac) < FLT_EPSILON) return 0.0;
 
-	kx = mag_var[km].rk[0];	ky = mag_var[km].rk[1];	kz = mag_var[km].rk[2];
+	kx = okabe_mag_var[km].rk[0];	ky = okabe_mag_var[km].rk[1];	kz = okabe_mag_var[km].rk[2];
 	v = kx * c_tet + ky * s_tet;
 	mx = v * c_phi - kz * s_phi;	my = ky * c_tet - kx * s_tet;
 	mz = v * s_phi + kz * c_phi;

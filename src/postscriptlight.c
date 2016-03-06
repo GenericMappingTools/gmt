@@ -261,7 +261,7 @@ typedef struct {
 /* These are used when the PDF pdfmark extension for transparency is used. */
 
 #define N_PDF_TRANSPARENCY_MODES	16
-const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
+static const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
 	"Color", "ColorBurn", "ColorDodge", "Darken",
 	"Difference", "Exclusion", "HardLight", "Hue",
 	"Lighten", "Luminosity", "Multiply", "Normal",

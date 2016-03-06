@@ -117,7 +117,7 @@ struct GRDOKB_CTRL {
 struct THREAD_STRUCT {
 	unsigned int row, r_start, r_stop, n_pts, thread_num;
 	double *x_grd, *x_grd_geo, *y_grd, *y_grd_geo, *x_obs, *y_obs, *cos_vec, *g;
-	struct MAG_VAR *mag_var;
+	struct MAG_VAR *okabe_mag_var;
 	struct LOC_OR *loc_or;
 	struct BODY_DESC *body_desc;
 	struct BODY_VERTS *body_verts;
@@ -140,7 +140,7 @@ GMT_LOCAL int grdgravmag3d_body_desc_prism(struct GMT_CTRL *GMT, struct GRDOKB_C
 	struct BODY_VERTS **body_verts, unsigned int face);
 GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
 	struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_grd_geo, double *y_grd_geo,
-	double *x_obs, double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
+	double *x_obs, double *y_obs, double *cos_vec, struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts);
 GMT_LOCAL  double mprism (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double mag, bool is_grav,
 	struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, unsigned int km, unsigned int i_comp, struct LOC_OR *loc_or);
@@ -466,7 +466,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	struct  GMT_OPTION *options = NULL;
 	struct  GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	mag_var = NULL, mag_param = NULL;
+	okabe_mag_var = NULL, okabe_mag_param = NULL;
 	body_desc.n_v = NULL, body_desc.ind = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -815,18 +815,18 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->H.active) { /* 1e2 is a factor to obtain nT from magnetization in A/m */
-		mag_param = gmt_M_memory (GMT, NULL, 1, struct MAG_PARAM);
-		mag_param[0].rim[0] = 1e2 * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
-		mag_param[0].rim[1] = 1e2 * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
-		mag_param[0].rim[2] = 1e2 * sin(Ctrl->H.t_dip*D2R);
+		okabe_mag_param = gmt_M_memory (GMT, NULL, 1, struct MAG_PARAM);
+		okabe_mag_param[0].rim[0] = 1e2 * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
+		okabe_mag_param[0].rim[1] = 1e2 * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
+		okabe_mag_param[0].rim[2] = 1e2 * sin(Ctrl->H.t_dip*D2R);
 		cc_t = cos(Ctrl->H.m_dip*D2R) * cos((Ctrl->H.m_dec - 90.)*D2R);
 		cs_t = cos(Ctrl->H.m_dip*D2R) * sin((Ctrl->H.m_dec - 90.)*D2R);
 		s_t  = sin(Ctrl->H.m_dip*D2R);
 		/* Case of constant magnetization */
-		mag_var = gmt_M_memory (GMT, NULL, 1, struct MAG_VAR);
-		mag_var[0].rk[0] = Ctrl->H.m_int * cc_t;
-		mag_var[0].rk[1] = Ctrl->H.m_int * cs_t;
-		mag_var[0].rk[2] = Ctrl->H.m_int * s_t;
+		okabe_mag_var = gmt_M_memory (GMT, NULL, 1, struct MAG_VAR);
+		okabe_mag_var[0].rk[0] = Ctrl->H.m_int * cc_t;
+		okabe_mag_var[0].rk[1] = Ctrl->H.m_int * cs_t;
+		okabe_mag_var[0].rk[2] = Ctrl->H.m_int * s_t;
 	}
 
 	/* Decompose a paralelogram into two triangular prisms */
@@ -884,7 +884,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {               /* grid output */
 		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-		                       mag_var, loc_or, &body_desc, body_verts);
+		                       okabe_mag_var, loc_or, &body_desc, body_verts);
 
 		if (Ctrl->H.pirtt) goto L1;                            /* Uggly, I know but the 2-grids case is not Bhattacharya implemented */
 
@@ -908,19 +908,19 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			else {      /* A Constant thickness layer */
 				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] += (float)Ctrl->E.thickness;	/* Shift by thickness */
 				grdgravmag3d_calc_surf(GMT, Ctrl, GridA, Gout, GridS, NULL, 0, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-				                       mag_var, loc_or, &body_desc, body_verts);
+				                       okabe_mag_var, loc_or, &body_desc, body_verts);
 				for (ij = 0; ij < Gout->header->size; ij++) GridA->data[ij] -= (float)Ctrl->E.thickness;	/* Remove because grid may be used outside GMT */
 			}
 		}
 		else {          /* "two_grids". One at the top and the other at the base */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangles */
 			grdgravmag3d_calc_surf(GMT, Ctrl, GridB, Gout, GridS, NULL, 0, x_grd2, y_grd2, x_grd_geo, y_grd_geo, x_obs, y_obs,
-			                       cos_vec2, mag_var, loc_or, &body_desc, body_verts);
+			                       cos_vec2, okabe_mag_var, loc_or, &body_desc, body_verts);
 		}
 	}
 	else {              /* polyline output */
 		grdgravmag3d_calc_surf(GMT, Ctrl, GridA, GridS, NULL, g, ndata, x_grd, y_grd, x_grd_geo, y_grd_geo, x_obs, y_obs, cos_vec,
-		                       mag_var, loc_or, &body_desc, body_verts);
+		                       okabe_mag_var, loc_or, &body_desc, body_verts);
 
 		if (Ctrl->H.pirtt) goto L1;     /* Uggly,I know but the 2-grids case is not Bhattacharya implemented */
 
@@ -943,7 +943,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		else {                          /* "two_grids". One at the top and the other at the base */
 			grdgravmag3d_body_desc_tri(GMT, Ctrl, &body_desc, &body_verts, clockwise_type[1]);		/* Set CW or CCW of top triangles */
 			grdgravmag3d_calc_surf(GMT, Ctrl, GridB, NULL, GridS, g, ndata, x_grd2, y_grd2, x_grd_geo, y_grd_geo, x_obs, y_obs,
-			                        cos_vec2, mag_var, loc_or, &body_desc, body_verts);
+			                        cos_vec2, okabe_mag_var, loc_or, &body_desc, body_verts);
 		}
 	}
 	/*---------------------------------------------------------------------------------------------*/
@@ -999,8 +999,8 @@ L1:
 	gmt_M_free (GMT, body_desc.n_v);
 	gmt_M_free (GMT, body_desc.ind);
 	gmt_M_free (GMT, body_verts);
-	gmt_M_free (GMT, mag_param);
-	gmt_M_free (GMT, mag_var);
+	gmt_M_free (GMT, okabe_mag_param);
+	gmt_M_free (GMT, okabe_mag_var);
 	if (Ctrl->H.do_igrf) {
 		gmt_M_free (GMT, x_grd_geo);		gmt_M_free (GMT, y_grd_geo);
 	}
@@ -1298,7 +1298,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf_ (struct THREAD_STRUCT *t) {
 /* -----------------------------------------------------------------------------------*/
 GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid, struct GMT_GRID *Gout,
 		struct GMT_GRID *Gsource, double *g, unsigned int n_pts, double *x_grd, double *y_grd, double *x_grd_geo, double *y_grd_geo,
-		double *x_obs, double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
+		double *x_obs, double *y_obs, double *cos_vec, struct MAG_VAR *okabe_mag_var, struct LOC_OR *loc_or,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts) {
 
 	/* Send g = NULL for grid computations (e.g. -G) or Gout = NULL otherwise (-F).
@@ -1326,7 +1326,7 @@ GMT_LOCAL void grdgravmag3d_calc_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL 
 		threadArg[i].Gsource    = Gsource;
    		threadArg[i].body_verts = body_verts;
    		threadArg[i].body_desc  = body_desc;
-   		threadArg[i].mag_var    = mag_var;
+   		threadArg[i].okabe_mag_var    = okabe_mag_var;
    		threadArg[i].loc_or     = loc_or;
    		threadArg[i].x_grd      = x_grd;
    		threadArg[i].x_grd_geo  = x_grd_geo;

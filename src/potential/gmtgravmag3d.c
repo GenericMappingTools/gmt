@@ -93,33 +93,33 @@ struct XYZOKB_CTRL {
 	} box;
 };
 
-struct TRIANG {
+static struct TRIANG {
 	double  x, y, z;
 } *triang;
 
-struct  VERT {
+static struct  VERT {
 	unsigned int  a, b, c;
 } *vert;
 
-struct  TRI_CENTER {
+static struct  TRI_CENTER {
 	double  x, y, z;
 } *t_center;
 
-struct RAW {
+static struct RAW {
 	double  t1[3], t2[3], t3[3];
 } *raw_mesh;
 
-struct MAG_VAR2 {
+static struct MAG_VAR2 {
 	double	m, m_dip;
-} *mag_var2;
+} *okabe_mag_var2;
 
-struct MAG_VAR3 {
+static struct MAG_VAR3 {
 	double	m, m_dec, m_dip;
-} *mag_var3;
+} *okabe_mag_var3;
 
-struct MAG_VAR4 {
+static struct MAG_VAR4 {
 	double	t_dec, t_dip, m, m_dec, m_dip;
-} *mag_var4;
+} *okabe_mag_var4;
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct XYZOKB_CTRL *C;
@@ -372,8 +372,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	struct	GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
-	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;
+	triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, okabe_mag_param = NULL;
+	okabe_mag_var = NULL, okabe_mag_var2 = NULL, okabe_mag_var3 = NULL, okabe_mag_var4 = NULL;
 	body_desc.n_v = NULL, body_desc.ind = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -540,60 +540,60 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		cs_t = cos(Ctrl->H.m_dip*D2R)*sin((Ctrl->H.m_dec - 90.)*D2R);
 		s_t = sin(Ctrl->H.m_dip*D2R);
 		if (!Ctrl->T.m_var4) {		/* In all the other cases the field parameters are constatnt */
-			mag_param = gmt_M_memory (GMT, NULL, 1, struct MAG_PARAM);
-			mag_param[0].rim[0] = 1e2*cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
-			mag_param[0].rim[1] = 1e2*cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
-			mag_param[0].rim[2] = 1e2*sin(Ctrl->H.t_dip*D2R);
+			okabe_mag_param = gmt_M_memory (GMT, NULL, 1, struct MAG_PARAM);
+			okabe_mag_param[0].rim[0] = 1e2*cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
+			okabe_mag_param[0].rim[1] = 1e2*cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
+			okabe_mag_param[0].rim[2] = 1e2*sin(Ctrl->H.t_dip*D2R);
 		}
 		if (!Ctrl->T.m_var) { /* Case of constant magnetization */
-			mag_var = gmt_M_memory (GMT, NULL, 1, struct MAG_VAR);
-			mag_var[0].rk[0] = Ctrl->H.m_int * cc_t;
-			mag_var[0].rk[1] = Ctrl->H.m_int * cs_t;
-			mag_var[0].rk[2] = Ctrl->H.m_int * s_t;
+			okabe_mag_var = gmt_M_memory (GMT, NULL, 1, struct MAG_VAR);
+			okabe_mag_var[0].rk[0] = Ctrl->H.m_int * cc_t;
+			okabe_mag_var[0].rk[1] = Ctrl->H.m_int * cs_t;
+			okabe_mag_var[0].rk[2] = Ctrl->H.m_int * s_t;
 		}
 		else { /* The triangles have a non-constant magnetization */
-			mag_var = gmt_M_memory (GMT, NULL, n_triang, struct MAG_VAR);
+			okabe_mag_var = gmt_M_memory (GMT, NULL, n_triang, struct MAG_VAR);
 			if (Ctrl->T.m_var1) {		/* Only the mag intensity changes. Mag dec & dip are constant */
 				for (i = 0; i < n_triang; i++) {
 					t_mag = (Ctrl->box.mag_int[vert[i].a] + Ctrl->box.mag_int[vert[i].b] + Ctrl->box.mag_int[vert[i].c])/3.;
-					mag_var[i].rk[0] = t_mag * cc_t;
-					mag_var[i].rk[1] = t_mag * cs_t;
-					mag_var[i].rk[2] = t_mag * s_t;
+					okabe_mag_var[i].rk[0] = t_mag * cc_t;
+					okabe_mag_var[i].rk[1] = t_mag * cs_t;
+					okabe_mag_var[i].rk[2] = t_mag * s_t;
 				}
 			}
 			else if (Ctrl->T.m_var2) {	/* Both mag intensity & dip varies. Dec is Zero (axial dipole) */
 				for (i = 0; i < n_triang; i++) {
-					t_mag = (mag_var2[vert[i].a].m + mag_var2[vert[i].b].m + mag_var2[vert[i].c].m)/3.;
-					Ctrl->H.t_dip = (mag_var2[vert[i].a].m_dip + mag_var2[vert[i].b].m_dip + mag_var2[vert[i].c].m_dip)/3.;
-					mag_var[i].rk[0] = 0.;
-					mag_var[i].rk[1] = -t_mag * cos(Ctrl->H.t_dip*D2R);
-					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
+					t_mag = (okabe_mag_var2[vert[i].a].m + okabe_mag_var2[vert[i].b].m + okabe_mag_var2[vert[i].c].m)/3.;
+					Ctrl->H.t_dip = (okabe_mag_var2[vert[i].a].m_dip + okabe_mag_var2[vert[i].b].m_dip + okabe_mag_var2[vert[i].c].m_dip)/3.;
+					okabe_mag_var[i].rk[0] = 0.;
+					okabe_mag_var[i].rk[1] = -t_mag * cos(Ctrl->H.t_dip*D2R);
+					okabe_mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
 				}
 			}
 			else if (Ctrl->T.m_var3) { 	/* Both mag intensity, mag_dec & mag_dip varies. */
 				for (i = 0; i < n_triang; i++) {
-					t_mag = (mag_var3[vert[i].a].m + mag_var3[vert[i].b].m + mag_var3[vert[i].c].m)/3.;
-					Ctrl->H.t_dec = (mag_var3[vert[i].a].m_dec + mag_var3[vert[i].b].m_dec + mag_var3[vert[i].c].m_dec)/3.;
-					Ctrl->H.t_dip = (mag_var3[vert[i].a].m_dip + mag_var3[vert[i].b].m_dip + mag_var3[vert[i].c].m_dip)/3.;
-					mag_var[i].rk[0] = t_mag * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90)*D2R);
-					mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R);
-					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
+					t_mag = (okabe_mag_var3[vert[i].a].m + okabe_mag_var3[vert[i].b].m + okabe_mag_var3[vert[i].c].m)/3.;
+					Ctrl->H.t_dec = (okabe_mag_var3[vert[i].a].m_dec + okabe_mag_var3[vert[i].b].m_dec + okabe_mag_var3[vert[i].c].m_dec)/3.;
+					Ctrl->H.t_dip = (okabe_mag_var3[vert[i].a].m_dip + okabe_mag_var3[vert[i].b].m_dip + okabe_mag_var3[vert[i].c].m_dip)/3.;
+					okabe_mag_var[i].rk[0] = t_mag * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90)*D2R);
+					okabe_mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R);
+					okabe_mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
 				}
 			}
 			else {			/* Everything varies. */
-				mag_param = gmt_M_memory (GMT, NULL, n_triang, struct MAG_PARAM);
+				okabe_mag_param = gmt_M_memory (GMT, NULL, n_triang, struct MAG_PARAM);
 				for (i = 0; i < n_triang; i++) {
-					Ctrl->H.t_dec = (mag_var4[vert[i].a].t_dec + mag_var4[vert[i].b].t_dec + mag_var4[vert[i].c].t_dec)/3.;
-					Ctrl->H.t_dip = (mag_var4[vert[i].a].t_dip + mag_var4[vert[i].b].t_dip + mag_var4[vert[i].c].t_dip)/3.;
-					mag_param[i].rim[0] = 1e2*cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
-					mag_param[i].rim[1] = 1e2*cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
-					mag_param[i].rim[2] = 1e2*sin(Ctrl->H.t_dip*D2R);
-					t_mag = (mag_var4[vert[i].a].m + mag_var4[vert[i].b].m + mag_var4[vert[i].c].m)/3.;
-					Ctrl->H.t_dec = (mag_var4[vert[i].a].m_dec + mag_var4[vert[i].b].m_dec + mag_var4[vert[i].c].m_dec)/3.;
-					Ctrl->H.t_dip = (mag_var4[vert[i].a].m_dip + mag_var4[vert[i].b].m_dip + mag_var4[vert[i].c].m_dip)/3.;
-					mag_var[i].rk[0] = t_mag * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90)*D2R);
-					mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R);
-					mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
+					Ctrl->H.t_dec = (okabe_mag_var4[vert[i].a].t_dec + okabe_mag_var4[vert[i].b].t_dec + okabe_mag_var4[vert[i].c].t_dec)/3.;
+					Ctrl->H.t_dip = (okabe_mag_var4[vert[i].a].t_dip + okabe_mag_var4[vert[i].b].t_dip + okabe_mag_var4[vert[i].c].t_dip)/3.;
+					okabe_mag_param[i].rim[0] = 1e2*cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90.)*D2R);
+					okabe_mag_param[i].rim[1] = 1e2*cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90.)*D2R);
+					okabe_mag_param[i].rim[2] = 1e2*sin(Ctrl->H.t_dip*D2R);
+					t_mag = (okabe_mag_var4[vert[i].a].m + okabe_mag_var4[vert[i].b].m + okabe_mag_var4[vert[i].c].m)/3.;
+					Ctrl->H.t_dec = (okabe_mag_var4[vert[i].a].m_dec + okabe_mag_var4[vert[i].b].m_dec + okabe_mag_var4[vert[i].c].m_dec)/3.;
+					Ctrl->H.t_dip = (okabe_mag_var4[vert[i].a].m_dip + okabe_mag_var4[vert[i].b].m_dip + okabe_mag_var4[vert[i].c].m_dip)/3.;
+					okabe_mag_var[i].rk[0] = t_mag * cos(Ctrl->H.t_dip*D2R) * cos((Ctrl->H.t_dec - 90)*D2R);
+					okabe_mag_var[i].rk[1] = t_mag * cos(Ctrl->H.t_dip*D2R) * sin((Ctrl->H.t_dec - 90)*D2R);
+					okabe_mag_var[i].rk[2] = t_mag * sin(Ctrl->H.t_dip*D2R);
 				}
 			}
 		}
@@ -618,7 +618,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		pm = (int)((Ctrl->T.m_var4) ? i : 0);	/* When al 5 paremeters (F, Mag) may be variable (undocumented) */
 
 		/* Don't waste time with zero mag triangles */
-		if (Ctrl->H.active && Ctrl->T.m_var && mag_var[i].rk[0] == 0 && mag_var[i].rk[1] == 0 && mag_var[i].rk[2] == 0)
+		if (Ctrl->H.active && Ctrl->T.m_var && okabe_mag_var[i].rk[0] == 0 && okabe_mag_var[i].rk[1] == 0 && okabe_mag_var[i].rk[2] == 0)
 			continue;
 		if (Ctrl->T.triangulate)
 			z_th = facet_triangulate (Ctrl, body_verts, i, bat);
@@ -709,17 +709,17 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, raw_mesh);
 	gmt_M_free (GMT, t_center);
 	gmt_M_free (GMT, vert);
-	gmt_M_free (GMT, mag_param);
-	gmt_M_free (GMT, mag_var);
+	gmt_M_free (GMT, okabe_mag_param);
+	gmt_M_free (GMT, okabe_mag_var);
 	gmt_M_free (GMT, body_desc.n_v);
 	gmt_M_free (GMT, body_desc.ind);
 	gmt_M_free (GMT, loc_or);
 	gmt_M_free (GMT, body_verts);
 	gmt_M_free (GMT, cos_vec);
 	if (Ctrl->T.m_var1) gmt_M_free (GMT, Ctrl->box.mag_int);
-	if (Ctrl->T.m_var2) gmt_M_free (GMT, mag_var2);
-	if (Ctrl->T.m_var3) gmt_M_free (GMT, mag_var3);
-	gmt_M_free (GMT, mag_var4);
+	if (Ctrl->T.m_var2) gmt_M_free (GMT, okabe_mag_var2);
+	if (Ctrl->T.m_var3) gmt_M_free (GMT, okabe_mag_var3);
+	gmt_M_free (GMT, okabe_mag_var4);
 
 	Return (GMT_OK);
 }
@@ -744,11 +744,11 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 	if (Ctrl->T.m_var1)
         	Ctrl->box.mag_int = gmt_M_memory (GMT, NULL, n_alloc, double);
 	else if (Ctrl->T.m_var2)
-        	mag_var2 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR2);
+        	okabe_mag_var2 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR2);
 	else if (Ctrl->T.m_var3)
-        	mag_var3 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR3);
+        	okabe_mag_var3 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR3);
 	else if (Ctrl->T.m_var4)
-        	mag_var4 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
+        	okabe_mag_var4 = gmt_M_memory (GMT, NULL, n_alloc, struct MAG_VAR4);
 	
 	if (Ctrl->box.is_geog) {	/* take a first read just to compute the central longitude */
 		while (fgets (line, GMT_LEN256, fp)) {
@@ -789,11 +789,11 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 			if (Ctrl->T.m_var1)
 				Ctrl->box.mag_int = gmt_M_memory (GMT, Ctrl->box.mag_int, n_alloc, double);
 			else if (Ctrl->T.m_var2)
-				mag_var2 = gmt_M_memory (GMT, mag_var2, n_alloc, struct MAG_VAR2);
+				okabe_mag_var2 = gmt_M_memory (GMT, okabe_mag_var2, n_alloc, struct MAG_VAR2);
 			else if (Ctrl->T.m_var3)
-				mag_var3 = gmt_M_memory (GMT, mag_var3, n_alloc, struct MAG_VAR3);
+				okabe_mag_var3 = gmt_M_memory (GMT, okabe_mag_var3, n_alloc, struct MAG_VAR3);
 			else
-				mag_var4 = gmt_M_memory (GMT, mag_var4, n_alloc, struct MAG_VAR4);
+				okabe_mag_var4 = gmt_M_memory (GMT, okabe_mag_var4, n_alloc, struct MAG_VAR4);
 		}
 		triang[ndata_xyz].x = (Ctrl->box.is_geog) ? (in[0] - *lon_0) * Ctrl->box.d_to_m * cos(in[1]*D2R) : in[0];
 		triang[ndata_xyz].y = (Ctrl->box.is_geog) ? -(in[1] - *lat_0) * Ctrl->box.d_to_m : -in[1]; /* - because y must be positive 'south'*/
@@ -801,20 +801,20 @@ GMT_LOCAL int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fn
 		if (Ctrl->T.m_var1)
 			Ctrl->box.mag_int[ndata_xyz] = in[3];
 		else if (Ctrl->T.m_var2) {
-			mag_var2[ndata_xyz].m = in[3];
-			mag_var2[ndata_xyz].m_dip = in[4];
+			okabe_mag_var2[ndata_xyz].m = in[3];
+			okabe_mag_var2[ndata_xyz].m_dip = in[4];
 		}
 		else if (Ctrl->T.m_var3) {
-			mag_var3[ndata_xyz].m = in[3];
-			mag_var3[ndata_xyz].m_dec = in[4];
-			mag_var3[ndata_xyz].m_dip = in[5];
+			okabe_mag_var3[ndata_xyz].m = in[3];
+			okabe_mag_var3[ndata_xyz].m_dec = in[4];
+			okabe_mag_var3[ndata_xyz].m_dip = in[5];
 		}
 		else if (Ctrl->T.m_var4) {
-			mag_var4[ndata_xyz].t_dec = in[3];
-			mag_var4[ndata_xyz].t_dip = in[4];
-			mag_var4[ndata_xyz].m = in[5];
-			mag_var4[ndata_xyz].m_dec = in[6];
-			mag_var4[ndata_xyz].m_dip = in[7];
+			okabe_mag_var4[ndata_xyz].t_dec = in[3];
+			okabe_mag_var4[ndata_xyz].t_dip = in[4];
+			okabe_mag_var4[ndata_xyz].m = in[5];
+			okabe_mag_var4[ndata_xyz].m_dec = in[6];
+			okabe_mag_var4[ndata_xyz].m_dip = in[7];
 		}
 		ndata_xyz++;
 	}

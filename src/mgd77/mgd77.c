@@ -38,17 +38,17 @@ struct MGD77_MAG_RF {
 
 /* Various global variables used inside mgd77.c */
 
-struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
+static struct MGD77_MAG_RF mgd77rf[MGD77_N_MAG_RF] = {
 #include "mgd77magref.h"
 };
 
 double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 int MGD77_pos[MGD77_N_DATA_EXTENDED];	/* Used to translate the positions 0-27 into MGD77_TIME, MGD77_LONGITUDE, etc */
-struct MGD77_LIMITS {
+static struct MGD77_LIMITS {
 	double limit[2];	/* Upper and lower range */
 } mgd77_range[MGD77_N_DATA_EXTENDED];
 
-struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
+static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
 #include "mgd77defaults.h"
 };
 
@@ -61,7 +61,7 @@ struct MGD77_cdf {
 	char *comment;		/* Comments regarding this data */
 };
 
-struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
+static struct MGD77_cdf mgd77cdf[MGD77_N_DATA_EXTENDED] = {
 /*  0 DRT */	{ NC_BYTE,	1,	1.0,	0.0, "", "Normally 5" },
 /*  1 TZ */	{ NC_BYTE,	1,	1.0,	0.0, "hours", "-13 to +12 inclusive" },
 /*  2 YEAR */	{ NC_BYTE,	1,	1.0,	0.0, "year", "Year of the survey" },
@@ -4044,7 +4044,7 @@ void MGD77_Cruise_Explain (struct GMT_CTRL *GMT) {
 	gmt_message (GMT, "\t   [See the documentation for agency and vessel codes].\n");
 }
 
-int compare_L (const void *p1, const void *p2) {
+GMT_LOCAL int compare_L (const void *p1, const void *p2) {
 	/* Only used in MGD77_Path_Expand */
 	const char **a = (const char **) p1, **b = (const char **)p2;
 	return (strcmp (*a, *b));

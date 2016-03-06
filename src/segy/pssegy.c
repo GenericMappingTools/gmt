@@ -547,8 +547,8 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	nm = bm_nx * bm_ny;
 
 	/* read in reel headers from segy file */
-	if ((check = get_segy_reelhd (fpi, reelhead)) != true) Return (GMT_RUNTIME_ERROR);
-	if ((check = get_segy_binhd (fpi, &binhead)) != true) Return (GMT_RUNTIME_ERROR);
+	if ((check = segy_get_reelhd (fpi, reelhead)) != true) Return (GMT_RUNTIME_ERROR);
+	if ((check = segy_get_binhd (fpi, &binhead)) != true) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->A.active) {
 		/* this is a little-endian system, and we need to byte-swap ints in the header - we only
@@ -597,7 +597,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 	bitmap = gmt_M_memory (GMT, NULL, nm, unsigned char);
 
 	ix = 0;
-	while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
+	while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {
 		/* read traces one by one */
 		if (Ctrl->S.mode == PLOT_OFFSET) {
 			/* plot traces by offset, cdp, or input order */
@@ -651,10 +651,10 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "time shifted by %f\n", toffset);
 		}
 
-		data = get_segy_data (fpi, header); /* read a trace */
+		data = segy_get_data (fpi, header); /* read a trace */
 		/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 		or set to number in reel header */
-		if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
+		if ((n_samp = segy_samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 		if (Ctrl->A.active) {
 			/* need to swap the order of the bytes in the data even though assuming IEEE format */

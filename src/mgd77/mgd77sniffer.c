@@ -30,6 +30,9 @@
 #include "gmt_dev.h"
 #include "mgd77sniffer.h"
 #include "gmt_internals.h"
+static struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED] = {
+#include "mgd77defaults.h"
+};
 
 #define GMT_PROG_OPTIONS "-VRbdn" GMT_OPT("Q")
 

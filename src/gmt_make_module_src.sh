@@ -145,6 +145,7 @@ EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #include "gmt_dev.h"
+#define GMT_UNUSED(x) (void)(x)
 #ifndef BUILD_SHARED_LIBS
 #include "${FILE_GMT_MODULE_H}"
 #endif
@@ -153,9 +154,9 @@ EOF
 else
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #include "gmt.h"
+#define GMT_UNUSED(x) (void)(x)
 #include "gmt_supplements_module.h"
 #include <string.h>
-#define GMT_UNUSED(x) (void)(x)
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -184,7 +185,7 @@ EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 
-struct Gmt_moduleinfo g_${L_TAG}_module[] = {
+static struct Gmt_moduleinfo g_${L_TAG}_module[] = {
 #ifdef BUILD_SHARED_LIBS
 EOF
 
@@ -217,7 +218,7 @@ EOF
 else
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 
-struct Gmt_moduleinfo g_${L_TAG}_module[] = {
+static struct Gmt_moduleinfo g_${L_TAG}_module[] = {
 EOF
 
 # $1 = name, $2 = ${L_TAG}, $3 = tab, $4 = purpose, $5 = tab, $6 = keys

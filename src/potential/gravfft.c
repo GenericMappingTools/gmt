@@ -132,8 +132,7 @@ struct GRAVFFT_CTRL {
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
 #define	POISSONS_RATIO	0.25
 
-bool rem_mean = false;
-bool sphericity = false;
+static bool sphericity = false;
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRAVFFT_CTRL *C = NULL;
@@ -157,8 +156,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *C) {	/* Dea
 	gmt_M_free (GMT, C);
 }
 
-double	scale_out = 1.0;
-double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
+static double	scale_out = 1.0;
+static double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
 GMT_LOCAL void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K,
                 float *raised, uint64_t n, double rho);

@@ -12,15 +12,15 @@
 
 #include "segy_io.h"
 
-/************************ samp_rd() *******************************/
+/************************ segy_samp_rd() *******************************/
 /* Returns Number of Sample in SegyHead (hdr), false otherwise
  *
  * needed since the SEGY standard only allows 2^16 samples, which
  * is often exceeded in refraction experiments. */
 
-uint32_t samp_rd (SEGYHEAD *hdr) {
+uint32_t segy_samp_rd (SEGYHEAD *hdr) {
 	if (!hdr) {
-		printf("samp_rd: Received a NULL pointer\n");
+		printf("segy_samp_rd: Received a NULL pointer\n");
 		return (false);
 	}
 	if (hdr->sampleLength == 0xffff && hdr->num_samps > 0xffff)	/* buffer overflow */
@@ -29,10 +29,10 @@ uint32_t samp_rd (SEGYHEAD *hdr) {
 		return (hdr->sampleLength);
 }
 
-/************************ get_segy_reelhd() **************************/
+/************************ segy_get_reelhd() **************************/
 /* read (and discard!) EBCDIC text reel header */
 
-int get_segy_reelhd (FILE *fileptr, char *reelhead) {
+int segy_get_reelhd (FILE *fileptr, char *reelhead) {
 	if (fread (reelhead, 3200, 1, fileptr) != 1) {
 		fprintf(stderr,"Error reading SEGY reel header \n");
 		return false;
@@ -40,10 +40,10 @@ int get_segy_reelhd (FILE *fileptr, char *reelhead) {
 	return true;
 }
 
-/*********************** get_segy_binhd() ****************************/
+/*********************** segy_get_binhd() ****************************/
 /* read SEGY binary reel header */
 
-int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {
+int segy_get_binhd (FILE *fileptr, SEGYREEL *binhead) {
 	if (fread (binhead, 400, 1, fileptr) !=1) {
 		fprintf(stderr, "Error reading SEGY binary header \n");
 		return(false);
@@ -51,7 +51,7 @@ int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {
 	return (true);
 }
 
-/************************ get_segy_header() **************************/
+/************************ segy_get_header() **************************/
 /*
  * Returns a SEGY header structure given a file pointer. This SEGY header
  * structure is dynamically allocated using calloc and should be free()'d
@@ -63,7 +63,7 @@ int get_segy_binhd (FILE *fileptr, SEGYREEL *binhead) {
  * to stderr explaining the problem.
  */
 
-SEGYHEAD *get_segy_header(FILE *file_ptr) {
+SEGYHEAD *segy_get_header(FILE *file_ptr) {
 	SEGYHEAD *head_ptr;
 
 	/* get memory for SegyHead'er */
@@ -81,7 +81,7 @@ SEGYHEAD *get_segy_header(FILE *file_ptr) {
 	return (head_ptr);
 }
 
-/************************ get_segy_data()   **************************/
+/************************ segy_get_data()   **************************/
 /*
  * This SEGY data pointer is dynamically allocated using calloc and should be
  * free()'d when it's usefulness is over.
@@ -93,11 +93,11 @@ SEGYHEAD *get_segy_header(FILE *file_ptr) {
  * to stderr explaining the problem.
  */
 
-float *get_segy_data (FILE *file_ptr, SEGYHEAD *head_ptr) {
+float *segy_get_data (FILE *file_ptr, SEGYHEAD *head_ptr) {
 	float *data_ptr;
 	uint32_t num_samps;
 
-	num_samps = samp_rd(head_ptr);
+	num_samps = segy_samp_rd(head_ptr);
 
 	data_ptr = calloc(num_samps, sizeof(float));
 	if (data_ptr == NULL) {

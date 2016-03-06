@@ -180,7 +180,7 @@ GMT_LOCAL void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar
 	 *
 	 */
 
-	double xn, xe, xz, x1, x2, x3, zero_360();
+	double xn, xe, xz, x1, x2, x3, meca_zero_360();
 
 	xn = cosd (A.dip) * cosd (A.str);
 	xe = cosd (A.dip) * sind (A.str);
@@ -194,7 +194,7 @@ GMT_LOCAL void rot_axis (struct AXIS A, struct nodal_plane PREF, struct AXIS *Ar
 	Ar->str = atan2d (x2, x1);
 	if (Ar->dip < 0.0) {
 		Ar->dip += 180.0;
-		Ar->str = zero_360 ((Ar->str += 180.0));
+		Ar->str = meca_zero_360 ((Ar->str += 180.0));
 	}
 }
 
@@ -260,7 +260,7 @@ GMT_LOCAL void rot_nodal_plane (struct nodal_plane PLAN, struct nodal_plane PREF
 	sr = (sd * crd * cdfi - cd * srd);
 	PLANR->str = d_atan2d (sr, cr);
 	if (cdr < 0.)  PLANR->str += 180.0;
-	PLANR->str = zero_360 (PLANR->str);
+	PLANR->str = meca_zero_360 (PLANR->str);
 	PLANR->dip = acosd (fabs (cdr));
 	cr = cr * (sir * (cd * crd * cdfi + sd * srd) - cor * crd * sdfi) + sr * ( cor * cdfi + sir * cd * sdfi);
 	sr = (cor * srd * sdfi + sir * (sd * crd - cd * srd * cdfi));
@@ -283,7 +283,7 @@ GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 	if (fabs (meca.NP1.str - PREF.str) < EPSIL && fabs (meca.NP1.dip - PREF.dip) < EPSIL) {
 		mecar->NP1.str = 0.;
 		mecar->NP1.dip = 0.;
-		mecar->NP1.rake = zero_360 (270. - meca.NP1.rake);
+		mecar->NP1.rake = meca_zero_360 (270. - meca.NP1.rake);
 	}
 	else
 		rot_nodal_plane (meca.NP1, PREF, &mecar->NP1);
@@ -291,7 +291,7 @@ GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 	if (fabs (meca.NP2.str - PREF.str) < EPSIL && fabs (meca.NP2.dip - PREF.dip) < EPSIL) {
 		mecar->NP2.str = 0.;
 		mecar->NP2.dip = 0.;
-		mecar->NP2.rake = zero_360 (270. - meca.NP2.rake);
+		mecar->NP2.rake = meca_zero_360 (270. - meca.NP2.rake);
 	}
 	else
 		rot_nodal_plane (meca.NP2, PREF, &mecar->NP2);
@@ -299,7 +299,7 @@ GMT_LOCAL void rot_meca (st_me meca, struct nodal_plane PREF, st_me *mecar) {
 	if (cosd (mecar->NP2.dip) < EPSIL && fabs (mecar->NP1.rake - mecar->NP2.rake) < 90.0) {
 		mecar->NP1.str += 180.0;
 		mecar->NP1.rake += 180.0;
-		mecar->NP1.str = zero_360 (mecar->NP1.str);
+		mecar->NP1.str = meca_zero_360 (mecar->NP1.str);
 		if (mecar->NP1.rake > 180.0) mecar->NP1.rake -= 360.0;
 	}
 
@@ -972,7 +972,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 			meca.magms = atof (col[6]);
 			moment.mant = meca.magms;
 			moment.exponent = 0;
-			define_second_plane (meca.NP1, &meca.NP2);
+			meca_define_second_plane (meca.NP1, &meca.NP2);
 			rot_meca (meca, Ctrl->A.PREF, &mecar);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
@@ -984,7 +984,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 			moment.exponent = 0;
 			moment.mant = meca.magms;
-			meca.NP2.dip = computed_dip2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str);
+			meca.NP2.dip = meca_computed_dip2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 			if (meca.NP2.dip == 1000.0) {
 				not_defined = true;
 				transparence_old = Ctrl->T.active;
@@ -995,8 +995,8 @@ int GMT_pscoupe (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
 			}
 			else
-				meca.NP1.rake = computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
-			meca.NP2.rake = computed_rake2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
+				meca.NP1.rake = meca_computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
+			meca.NP2.rake = meca_computed_rake2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
 			rot_meca (meca, Ctrl->A.PREF, &mecar);
 
 		}
@@ -1039,7 +1039,7 @@ Definition of scalar moment.
 			Nr.e = N.e;
 			Pr.e = P.e;
 
-			if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) axe2dc (Tr, Pr, &meca.NP1, &meca.NP2);
+			if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) meca_axe2dc (Tr, Pr, &meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
 			for (i = 3; i < 9; i++) mt.f[i-3] = atof (col[i]);
@@ -1057,9 +1057,9 @@ Definition of scalar moment.
 			for (i = 0; i <= 5; i++) mt.f[i] /= moment.mant;
 
 			rot_tensor (mt, Ctrl->A.PREF, &mtr);
-			moment2axe (GMT, mtr, &T, &N, &P);
+			meca_moment2axe (GMT, mtr, &T, &N, &P);
 
-			if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) axe2dc (T, P, &meca.NP1, &meca.NP2);
+			if (Ctrl->S.plotmode == PLOT_DC || Ctrl->T.active) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
 
 		if (!Ctrl->S.symbol) {
@@ -1068,7 +1068,7 @@ Definition of scalar moment.
 				moment.exponent = 23;
 			}
 
-			size = (computed_mw (moment, meca.magms) / 5.0) * Ctrl->S.scale;
+			size = (meca_computed_mw (moment, meca.magms) / 5.0) * Ctrl->S.scale;
 
 			if (!Ctrl->Q.active) fprintf (pext, "%s\n", line);
 			if (Ctrl->S.readmode == READ_AXIS) {
@@ -1098,17 +1098,17 @@ Definition of scalar moment.
 
 			if (Ctrl->S.plotmode == PLOT_TENSOR) {
 				gmt_setpen (GMT, &Ctrl->L.pen);
-				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace, n_rec);
+				meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace, n_rec);
 			}
 
 			if (Ctrl->S.zerotrace) {
 				gmt_setpen (GMT, &Ctrl->W.pen);
-				ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
+				meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
 			}
 
 			if (Ctrl->T.active) {
 				gmt_setpen (GMT, &Ctrl->T.pen);
-				ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
+				meca_ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
 				if (not_defined) {
 					not_defined = false;
 					Ctrl->T.active = transparence_old;
@@ -1117,12 +1117,12 @@ Definition of scalar moment.
 			}
 			else if (Ctrl->S.plotmode == PLOT_DC) {
 				gmt_setpen (GMT, &Ctrl->L.pen);
-				ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
+				meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 			}
 
 			if (Ctrl->A2.active) {
-				if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) dc2axe (meca, &T, &N, &P);
-				axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
+				if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
+				meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 				gmt_setpen (GMT, &Ctrl->P2.pen);
 				gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
 				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);

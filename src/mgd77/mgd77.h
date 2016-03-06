@@ -577,7 +577,6 @@ EXTERN_MSC int MGD77_carter_get_zone (struct GMT_CTRL *GMT, int bin, struct MGD7
 
 /* Global variables used by MGD77 programs */
 
-EXTERN_MSC struct MGD77_RECORD_DEFAULTS mgd77defs[MGD77_N_DATA_EXTENDED];
 EXTERN_MSC double MGD77_NaN_val[7], MGD77_Low_val[7], MGD77_High_val[7];
 EXTERN_MSC char *MGD77_suffix[MGD77_N_FORMATS];
 EXTERN_MSC bool MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow opening of files in any format.  See MGD77_Ignore_Format() */

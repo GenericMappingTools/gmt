@@ -26,11 +26,11 @@
  *
  *  GMT_runtime_bindir           Get the directory that contains the main exe
  *                               at run-time, generic *NIX implementation
- *  GMT_runtime_bindir_osx       MacOSX implementation
+ *  gmt_runtime_bindir_osx       MacOSX implementation
  *  GMT_runtime_bindir_win32     Windows implementation
- *  GMT_runtime_libdir           Get the directory that contains the shared libs
- *  GMT_guess_sharedir           Determine GMT_SHAREDIR relative to current runtime location
- *  GMT_verify_sharedir_version  Verifies the correct version of the share directory
+ *  gmt_runtime_libdir           Get the directory that contains the shared libs
+ *  gmt_guess_sharedir           Determine GMT_SHAREDIR relative to current runtime location
+ *  gmt_verify_sharedir_version  Verifies the correct version of the share directory
  */
 
 /* CMake definitions: This must be first! */
@@ -71,7 +71,7 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 #if defined (__APPLE__)
 
 /* MacOSX implementation of GMT_runtime_bindir */
-char *GMT_runtime_bindir_osx (char *result) {
+char *gmt_runtime_bindir_osx (char *result) {
 	char *c;
 	char path[PATH_MAX+1];
 	uint32_t size = PATH_MAX;
@@ -223,12 +223,12 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 #endif /* defined (__APPLE__) */
 
 /* Get the directory that contains this shared library at run-time */
-char *GMT_runtime_libdir (char *result) {
+char *gmt_runtime_libdir (char *result) {
 #ifdef HAVE_DLADDR
 	char *p;
 	Dl_info info;
 
-	if ( dladdr (GMT_runtime_libdir, &info) && info.dli_fname[0] == '/') {
+	if ( dladdr (gmt_runtime_libdir, &info) && info.dli_fname[0] == '/') {
 		/* Resolve symlinks */
 		if (realpath (info.dli_fname, result) == NULL)
 			return NULL;
@@ -292,7 +292,7 @@ static char *sharedir_from_runtime_libdir (char *sharedir) {
 	char runtime_libdir[PATH_MAX+1];
 
 	/* Get runtime library dir */
-	if ( GMT_runtime_libdir(runtime_libdir) == NULL )
+	if ( gmt_runtime_libdir(runtime_libdir) == NULL )
 		return NULL;
 
 	/* Get string lengths */
@@ -323,7 +323,7 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 	if (runtime_bindir == NULL) {
 		/* Try to find runtime_bindir */
 #	if defined __APPLE__
-		runtime_bindir = GMT_runtime_bindir_osx (bindir);
+		runtime_bindir = gmt_runtime_bindir_osx (bindir);
 #	elif defined WIN32
 		runtime_bindir = GMT_runtime_bindir_win32 (bindir);
 #	endif
@@ -353,7 +353,7 @@ static char *sharedir_from_runtime_bindir (char *sharedir, const char *runtime_b
 	return sharedir;
 }
 
-char *GMT_guess_sharedir (char *sharedir, const char *runtime_bindir) {
+char *gmt_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 	/* 1. guess based on runtime_libdir */
 	if (sharedir_from_runtime_libdir (sharedir) == NULL) {
 		/* 2. guess based on runtime_bindir */
@@ -366,7 +366,7 @@ char *GMT_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 #endif
 
 	/* Test if the directory exists and is of correct version */
-	if ( GMT_verify_sharedir_version (sharedir) )
+	if ( gmt_verify_sharedir_version (sharedir) )
 		/* Return sharedir */
 		return sharedir;
 
@@ -374,7 +374,7 @@ char *GMT_guess_sharedir (char *sharedir, const char *runtime_bindir) {
 }
 
 /* Verifies the correct version of the share directory */
-int GMT_verify_sharedir_version (const char *dir) {
+int gmt_verify_sharedir_version (const char *dir) {
 	static char *required_version = GMT_PACKAGE_VERSION_WITH_SVN_REVISION;
 	char version_file[PATH_MAX+1];
 
@@ -385,7 +385,7 @@ int GMT_verify_sharedir_version (const char *dir) {
 #endif
 
 #ifdef DEBUG_RUNPATH
-	fprintf (stderr, "GMT_verify_sharedir_version: got dir '%s'.\n", dir);
+	fprintf (stderr, "gmt_verify_sharedir_version: got dir '%s'.\n", dir);
 #endif
 
 	/* If the directory exists */
@@ -394,7 +394,7 @@ int GMT_verify_sharedir_version (const char *dir) {
 		/* Check correct ver  sion */
 		if (gmt_match_string_in_file (version_file, required_version)) {
 #ifdef DEBUG_RUNPATH
-			fprintf (stderr, "GMT_verify_sharedir_version: found '%s' (%s).\n",
+			fprintf (stderr, "gmt_verify_sharedir_version: found '%s' (%s).\n",
 				version_file, required_version);
 #endif
 			return true;
@@ -405,7 +405,7 @@ int GMT_verify_sharedir_version (const char *dir) {
 			snprintf (version_file, PATH_MAX+1, "%s/VERSION.in", dir);
 			if (access (version_file, R_OK) == 0) {
 #ifdef DEBUG_RUNPATH
-				fprintf (stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
+				fprintf (stderr, "gmt_verify_sharedir_version: found '%s'.\n", version_file);
 #endif
 				return true;
 			}
@@ -414,7 +414,7 @@ int GMT_verify_sharedir_version (const char *dir) {
 				snprintf(version_file, PATH_MAX + 1, "%s/VERSION_all.txt", dir);
 				if (access(version_file, R_OK) == 0) {
 #ifdef DEBUG_RUNPATH
-					fprintf(stderr, "GMT_verify_sharedir_version: found '%s'.\n", version_file);
+					fprintf(stderr, "gmt_verify_sharedir_version: found '%s'.\n", version_file);
 #endif
 					return true;
 				}

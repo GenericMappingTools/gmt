@@ -111,20 +111,20 @@
 /* Global variables used by X2SYS functions */
 
 char *X2SYS_HOME;
-char *X2SYS_program;
+static char *X2SYS_program;
 
 struct MGD77_CONTROL M;
 
 #define MAX_DATA_PATHS 32
-char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
-unsigned int n_x2sys_paths = 0;	/* Number of these directories */
+static char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
+static unsigned int n_x2sys_paths = 0;	/* Number of these directories */
 
 /* Here are legacy functions for old GMT MGG supplement needed in x2sys */
 
-char *gmtmgg_path[10];  /* Max 10 directories for now */
-int n_gmtmgg_paths = 0; /* Number of these directories */
+static char *mgg_path[10];  /* Max 10 directories for now */
+static int n_mgg_paths = 0; /* Number of these directories */
 
-int gmtmggpath_func (char *leg_path, char *leg) {
+GMT_LOCAL int mggpath_func (char *leg_path, char *leg) {
 	int id;
 	char geo_path[GMT_BUFSIZ] = {""};
 
@@ -138,8 +138,8 @@ int gmtmggpath_func (char *leg_path, char *leg) {
 
 	/* Then look elsewhere */
 
-	for (id = 0; id < n_gmtmgg_paths; id++) {
-		sprintf (geo_path, "%s/%s.gmt", gmtmgg_path[id], leg);
+	for (id = 0; id < n_mgg_paths; id++) {
+		sprintf (geo_path, "%s/%s.gmt", mgg_path[id], leg);
 		if (!access (geo_path, R_OK)) {
 			strcpy (leg_path, geo_path);
 			return (0);
@@ -148,17 +148,17 @@ int gmtmggpath_func (char *leg_path, char *leg) {
 	return(1);
 }
 
-/* gmtmggpath_init reads the GMT_SHAREDIR/mgg/gmtfile_paths or ~/.gmt/gmtfile_paths file and gets all
+/* mggpath_init reads the GMT_SHAREDIR/mgg/gmtfile_paths or ~/.gmt/gmtfile_paths file and gets all
  * the gmtfile directories.
  */
 
-void gmtmggpath_init (struct GMT_CTRL *GMT) {
+GMT_LOCAL void mggpath_init (struct GMT_CTRL *GMT) {
 	char line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	gmt_getsharepath (GMT, "mgg", "gmtfile_paths", "", line, R_OK);
 
-	n_gmtmgg_paths = 0;
+	n_mgg_paths = 0;
 
 	if ((fp = fopen (line, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: path file %s for *.gmt files not found\n", line);
@@ -169,22 +169,22 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#') continue;	/* Comments */
 		if (line[0] == ' ' || line[0] == '\0') continue;	/* Blank line */
-		gmtmgg_path[n_gmtmgg_paths] = gmt_M_memory (GMT, NULL, strlen (line), char);
+		mgg_path[n_mgg_paths] = gmt_M_memory (GMT, NULL, strlen (line), char);
 		line[strlen (line)-1] = 0;
-		strcpy (gmtmgg_path[n_gmtmgg_paths], line);
-		n_gmtmgg_paths++;
+		strcpy (mgg_path[n_mgg_paths], line);
+		n_mgg_paths++;
 	}
 	fclose (fp);
 }
 
-void gmtmggpath_free (struct GMT_CTRL *GMT) {
+GMT_LOCAL void mggpath_free (struct GMT_CTRL *GMT) {
 	int k;
-	for (k = 0; k < n_gmtmgg_paths; k++)
-		gmt_M_free (GMT, gmtmgg_path[k]);
-	n_gmtmgg_paths = 0;
+	for (k = 0; k < n_mgg_paths; k++)
+		gmt_M_free (GMT, mgg_path[k]);
+	n_mgg_paths = 0;
 }
 
-int get_first_year (struct GMT_CTRL *GMT, double t) {
+GMT_LOCAL int get_first_year (struct GMT_CTRL *GMT, double t) {
 	/* obtain yyyy/mm/dd and return year */
 	int64_t rd;
 	double s;
@@ -409,7 +409,7 @@ void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X) {
 	gmt_M_str_free (X->TAG);	/* free since allocated by strdup */
 	x2sys_free_info (GMT, X);
 	for (id = 0; id < n_x2sys_paths; id++) gmt_M_free (GMT, x2sys_datadir[id]);
-	gmtmggpath_free (GMT);
+	mggpath_free (GMT);
 	
 	MGD77_end (GMT, &M);
 }
@@ -715,12 +715,12 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	else {
 		char name[82] = {""};
 		if (!(s->flags & 1)) {	/* Must init gmt file paths */
-			gmtmggpath_init (GMT);
+			mggpath_init (GMT);
 			s->flags |= 1;
 		}
 		strncpy (name, fname, 81U);
 		if (strstr (fname, ".gmt")) name[strlen(fname)-4] = 0;	/* Name includes .gmt suffix, remove it */
-	  	if (gmtmggpath_func (path, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
+	  	if (mggpath_func (path, name)) return (GMT_GRDIO_FILE_NOT_FOUND);
 
 	}
 	strcpy (s->path, path);
@@ -1903,7 +1903,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 }
 
 /* A very similar function (and with the same name -- but the '2') is also defined in MGD77list_func.c */
-unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
+GMT_LOCAL unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist) {
 	/* Used in x2sys_get_corrtable */
 	unsigned int i, j, k, n_aux;
 	int this_aux;

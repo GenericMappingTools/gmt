@@ -346,8 +346,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
-	if ((check = get_segy_reelhd (fpi, reelhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
-	if ((check = get_segy_binhd (fpi, &binhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
+	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
+	if ((check = segy_get_binhd (fpi, &binhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
 
 	if (swap_bytes) {
 		/* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
@@ -409,16 +409,16 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Warning, number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->nx;
 		}
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
+		while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {
 			if (swap_bytes) {
 /* need to permanently byte-swap number of samples in the trace header */
 				header->num_samps = bswap32 (header->num_samps);
 				header->sampleLength = bswap16 (header->sampleLength);
 			}
 
-			data = get_segy_data (fpi, header); /* read a trace */
+			data = segy_get_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace or set to number in reel header */
-			if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
+			if ((n_samp = segy_samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
 			if ((n_samp - ij0) > (uint64_t)Grid->header->ny) n_samp = Grid->header->ny + ij0;
@@ -445,7 +445,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 	else {
 		/* Get trace data and position by headers */
 		ix = 0;
-		while ((ix < Ctrl->M.value) && (header = get_segy_header (fpi)) != 0) {
+		while ((ix < Ctrl->M.value) && (header = segy_get_header (fpi)) != 0) {
 			/* read traces one by one */
 			if (Ctrl->S.mode == PLOT_OFFSET) {
 				/* plot traces by offset, cdp, or input order */
@@ -486,10 +486,10 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 				header->num_samps = bswap32 (header->num_samps);
 			}
 
-			data = get_segy_data (fpi, header); /* read a trace */
+			data = segy_get_data (fpi, header); /* read a trace */
 			/* get number of samples in _this_ trace (e.g. OMEGA has strange ideas about SEGY standard)
 			   or set to number in reel header */
-			if ((n_samp = samp_rd (header)) != 0) n_samp = Ctrl->L.value;
+			if ((n_samp = segy_samp_rd (header)) != 0) n_samp = Ctrl->L.value;
 
 			if (swap_bytes) {
 				/* need to swap the order of the bytes in the data even though assuming IEEE format */

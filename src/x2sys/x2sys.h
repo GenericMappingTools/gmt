@@ -220,7 +220,6 @@ struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of track
 
 /* Global variables used by x2sys functions */
 
-EXTERN_MSC char *X2SYS_program;
 EXTERN_MSC char *X2SYS_HOME;
 EXTERN_MSC double *x2sys_Y;
 EXTERN_MSC struct MGD77_CONTROL M;
