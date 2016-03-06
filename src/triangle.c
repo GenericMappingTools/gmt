@@ -1,5 +1,5 @@
 /* Preamble:
- * This is a slightly modified version of triangle.c that allows it to be
+ * (1) This is a slightly modified version of triangle.c that allows it to be
  * compiled on both Windows and Linux/OSX/Unix with 32- or 64-bits.  The
  * problem is the extensive use of "long" which is 4 bytes on Windows and
  * 8 bytes on the others. The effects of this problem started to manifest
@@ -7,6 +7,11 @@
  * Although not tested it is likely that MinGW64 binaries are affected too.
  *
  * GMT Team, June 2013.
+ *
+ * (2) While containing lots of local functions, none are declared static.
+ * This means they are all exported in the shared library.  We have thus
+ * added the "static" keyword before all the function declarations other
+ * than triangulate, which is the only one we are using from GMT.
  *
  * Declaration of type LONG:
  */
@@ -658,16 +663,16 @@ struct memorypool {
 
 /* Global constants.                                                         */
 
-REAL splitter;       /* Used to split REAL factors for exact multiplication. */
-REAL epsilon;                             /* Floating-point machine epsilon. */
-REAL resulterrbound;
-REAL ccwerrboundA, ccwerrboundB, ccwerrboundC;
-REAL iccerrboundA, iccerrboundB, iccerrboundC;
-REAL o3derrboundA, o3derrboundB, o3derrboundC;
+static REAL splitter;       /* Used to split REAL factors for exact multiplication. */
+static REAL epsilon;                             /* Floating-point machine epsilon. */
+static REAL resulterrbound;
+static REAL ccwerrboundA, ccwerrboundB, ccwerrboundC;
+static REAL iccerrboundA, iccerrboundB, iccerrboundC;
+static REAL o3derrboundA, o3derrboundB, o3derrboundC;
 
 /* Random number seed is not constant, but I've made it global anyway.       */
 
-unsigned LONG randomseed;                     /* Current random number seed. */
+static unsigned LONG randomseed;                     /* Current random number seed. */
 
 
 /* Mesh data structure.  Triangle operates on only one mesh, but the mesh    */
@@ -944,8 +949,8 @@ struct behavior {
 
 /* Fast lookup arrays to speed some of the mesh manipulation primitives.     */
 
-int plus1mod3[3] = {1, 2, 0};
-int minus1mod3[3] = {2, 0, 1};
+static int plus1mod3[3] = {1, 2, 0};
+static int minus1mod3[3] = {2, 0, 1};
 
 /********* Primitives for triangles                                  *********/
 /*                                                                           */
@@ -1373,14 +1378,14 @@ int minus1mod3[3] = {2, 0, 1};
 
 #ifdef EXTERNAL_TEST
 
-int triunsuitable();
+static int triunsuitable();
 
 #else /* not EXTERNAL_TEST */
 
 #ifdef ANSI_DECLARATORS
-int triunsuitable(vertex triorg, vertex tridest, vertex triapex, REAL area)
+static int triunsuitable(vertex triorg, vertex tridest, vertex triapex, REAL area)
 #else /* not ANSI_DECLARATORS */
-int triunsuitable(triorg, tridest, triapex, area)
+static int triunsuitable(triorg, tridest, triapex, area)
 vertex triorg;                              /* The triangle's origin vertex. */
 vertex tridest;                        /* The triangle's destination vertex. */
 vertex triapex;                               /* The triangle's apex vertex. */
@@ -1425,9 +1430,9 @@ REAL area;                                      /* The area of the triangle. */
 /**                                                                         **/
 
 #ifdef ANSI_DECLARATORS
-void triexit(int status)
+static void triexit(int status)
 #else /* not ANSI_DECLARATORS */
-void triexit(status)
+static void triexit(status)
 int status;
 #endif /* not ANSI_DECLARATORS */
 
@@ -1436,9 +1441,9 @@ int status;
 }
 
 #ifdef ANSI_DECLARATORS
-VOID *trimalloc(size_t size)
+static VOID *trimalloc(size_t size)
 #else /* not ANSI_DECLARATORS */
-VOID *trimalloc(size)
+static VOID *trimalloc(size)
 size_t size;
 #endif /* not ANSI_DECLARATORS */
 
@@ -1480,7 +1485,7 @@ VOID *memptr;
 
 #ifndef TRILIBRARY
 
-void syntax()
+static void syntax()
 {
 #ifdef CDT_ONLY
 #ifdef REDUCED
@@ -1560,7 +1565,7 @@ void syntax()
 
 #ifndef TRILIBRARY
 
-void info()
+static void info()
 {
   printf("Triangle\n");
   printf(
@@ -3281,7 +3286,7 @@ void info()
 /*                                                                           */
 /*****************************************************************************/
 
-void internalerror()
+static void internalerror()
 {
   printf("  Please report this bug to jrs@cs.berkeley.edu\n");
   printf("  Include the message above, your input data set, and the exact\n");
@@ -3297,9 +3302,9 @@ void internalerror()
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void parsecommandline(int argc, char **argv, struct behavior *b)
+static void parsecommandline(int argc, char **argv, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void parsecommandline(argc, argv, b)
+static void parsecommandline(argc, argv, b)
 int argc;
 char **argv;
 struct behavior *b;
@@ -3682,9 +3687,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void printtriangle(struct mesh *m, struct behavior *b, struct otri *t)
+static void printtriangle(struct mesh *m, struct behavior *b, struct otri *t)
 #else /* not ANSI_DECLARATORS */
-void printtriangle(m, b, t)
+static void printtriangle(m, b, t)
 struct mesh *m;
 struct behavior *b;
 struct otri *t;
@@ -3776,9 +3781,9 @@ struct otri *t;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void printsubseg(struct mesh *m, struct behavior *b, struct osub *s)
+static void printsubseg(struct mesh *m, struct behavior *b, struct osub *s)
 #else /* not ANSI_DECLARATORS */
-void printsubseg(m, b, s)
+static void printsubseg(m, b, s)
 struct mesh *m;
 struct behavior *b;
 struct osub *s;
@@ -3870,9 +3875,9 @@ struct osub *s;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void poolzero(struct memorypool *pool)
+static void poolzero(struct memorypool *pool)
 #else /* not ANSI_DECLARATORS */
-void poolzero(pool)
+static void poolzero(pool)
 struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
@@ -3904,9 +3909,9 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void poolrestart(struct memorypool *pool)
+static void poolrestart(struct memorypool *pool)
 #else /* not ANSI_DECLARATORS */
-void poolrestart(pool)
+static void poolrestart(pool)
 struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
@@ -3950,10 +3955,10 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void poolinit(struct memorypool *pool, size_t bytecount, size_t itemcount,
+static void poolinit(struct memorypool *pool, size_t bytecount, size_t itemcount,
               size_t firstitemcount, size_t alignment)
 #else /* not ANSI_DECLARATORS */
-void poolinit(pool, bytecount, itemcount, firstitemcount, alignment)
+static void poolinit(pool, bytecount, itemcount, firstitemcount, alignment)
 struct memorypool *pool;
 size_t bytecount;
 size_t itemcount;
@@ -3998,9 +4003,9 @@ size_t alignment;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void pooldeinit(struct memorypool *pool)
+static void pooldeinit(struct memorypool *pool)
 #else /* not ANSI_DECLARATORS */
-void pooldeinit(pool)
+static void pooldeinit(pool)
 struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4019,9 +4024,9 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-VOID *poolalloc(struct memorypool *pool)
+static VOID *poolalloc(struct memorypool *pool)
 #else /* not ANSI_DECLARATORS */
-VOID *poolalloc(pool)
+static VOID *poolalloc(pool)
 struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4082,9 +4087,9 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void pooldealloc(struct memorypool *pool, VOID *dyingitem)
+static void pooldealloc(struct memorypool *pool, VOID *dyingitem)
 #else /* not ANSI_DECLARATORS */
-void pooldealloc(pool, dyingitem)
+static void pooldealloc(pool, dyingitem)
 struct memorypool *pool;
 VOID *dyingitem;
 #endif /* not ANSI_DECLARATORS */
@@ -4105,9 +4110,9 @@ VOID *dyingitem;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void traversalinit(struct memorypool *pool)
+static void traversalinit(struct memorypool *pool)
 #else /* not ANSI_DECLARATORS */
-void traversalinit(pool)
+static void traversalinit(pool)
 struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4141,9 +4146,9 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-VOID *traverse(struct memorypool *pool)
+static VOID *traverse(struct memorypool *pool)
 #else /* not ANSI_DECLARATORS */
-VOID *traverse(pool)
+static VOID *traverse(pool)
 struct memorypool *pool;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4206,10 +4211,10 @@ struct memorypool *pool;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void dummyinit(struct mesh *m, struct behavior *b, int trianglebytes,
+static void dummyinit(struct mesh *m, struct behavior *b, int trianglebytes,
                int subsegbytes)
 #else /* not ANSI_DECLARATORS */
-void dummyinit(m, b, trianglebytes, subsegbytes)
+static void dummyinit(m, b, trianglebytes, subsegbytes)
 struct mesh *m;
 struct behavior *b;
 int trianglebytes;
@@ -4286,9 +4291,9 @@ int subsegbytes;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void initializevertexpool(struct mesh *m, struct behavior *b)
+static void initializevertexpool(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void initializevertexpool(m, b)
+static void initializevertexpool(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -4329,9 +4334,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void initializetrisubpools(struct mesh *m, struct behavior *b)
+static void initializetrisubpools(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void initializetrisubpools(m, b)
+static void initializetrisubpools(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -4396,9 +4401,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void triangledealloc(struct mesh *m, triangle *dyingtriangle)
+static void triangledealloc(struct mesh *m, triangle *dyingtriangle)
 #else /* not ANSI_DECLARATORS */
-void triangledealloc(m, dyingtriangle)
+static void triangledealloc(m, dyingtriangle)
 struct mesh *m;
 triangle *dyingtriangle;
 #endif /* not ANSI_DECLARATORS */
@@ -4417,9 +4422,9 @@ triangle *dyingtriangle;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-triangle *triangletraverse(struct mesh *m)
+static triangle *triangletraverse(struct mesh *m)
 #else /* not ANSI_DECLARATORS */
-triangle *triangletraverse(m)
+static triangle *triangletraverse(m)
 struct mesh *m;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4442,9 +4447,9 @@ struct mesh *m;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void subsegdealloc(struct mesh *m, subseg *dyingsubseg)
+static void subsegdealloc(struct mesh *m, subseg *dyingsubseg)
 #else /* not ANSI_DECLARATORS */
-void subsegdealloc(m, dyingsubseg)
+static void subsegdealloc(m, dyingsubseg)
 struct mesh *m;
 subseg *dyingsubseg;
 #endif /* not ANSI_DECLARATORS */
@@ -4463,9 +4468,9 @@ subseg *dyingsubseg;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-subseg *subsegtraverse(struct mesh *m)
+static subseg *subsegtraverse(struct mesh *m)
 #else /* not ANSI_DECLARATORS */
-subseg *subsegtraverse(m)
+static subseg *subsegtraverse(m)
 struct mesh *m;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4488,9 +4493,9 @@ struct mesh *m;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void vertexdealloc(struct mesh *m, vertex dyingvertex)
+static void vertexdealloc(struct mesh *m, vertex dyingvertex)
 #else /* not ANSI_DECLARATORS */
-void vertexdealloc(m, dyingvertex)
+static void vertexdealloc(m, dyingvertex)
 struct mesh *m;
 vertex dyingvertex;
 #endif /* not ANSI_DECLARATORS */
@@ -4509,9 +4514,9 @@ vertex dyingvertex;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-vertex vertextraverse(struct mesh *m)
+static vertex vertextraverse(struct mesh *m)
 #else /* not ANSI_DECLARATORS */
-vertex vertextraverse(m)
+static vertex vertextraverse(m)
 struct mesh *m;
 #endif /* not ANSI_DECLARATORS */
 
@@ -4537,9 +4542,9 @@ struct mesh *m;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void badsubsegdealloc(struct mesh *m, struct badsubseg *dyingseg)
+static void badsubsegdealloc(struct mesh *m, struct badsubseg *dyingseg)
 #else /* not ANSI_DECLARATORS */
-void badsubsegdealloc(m, dyingseg)
+static void badsubsegdealloc(m, dyingseg)
 struct mesh *m;
 struct badsubseg *dyingseg;
 #endif /* not ANSI_DECLARATORS */
@@ -4595,9 +4600,9 @@ struct mesh *m;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-vertex getvertex(struct mesh *m, struct behavior *b, unsigned int number)
+static vertex getvertex(struct mesh *m, struct behavior *b, unsigned int number)
 #else /* not ANSI_DECLARATORS */
-vertex getvertex(m, b, number)
+static vertex getvertex(m, b, number)
 struct mesh *m;
 struct behavior *b;
 unsigned int number;
@@ -4636,9 +4641,9 @@ unsigned int number;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void triangledeinit(struct mesh *m, struct behavior *b)
+static void triangledeinit(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void triangledeinit(m, b)
+static void triangledeinit(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -4677,9 +4682,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void maketriangle(struct mesh *m, struct behavior *b, struct otri *newotri)
+static void maketriangle(struct mesh *m, struct behavior *b, struct otri *newotri)
 #else /* not ANSI_DECLARATORS */
-void maketriangle(m, b, newotri)
+static void maketriangle(m, b, newotri)
 struct mesh *m;
 struct behavior *b;
 struct otri *newotri;
@@ -4721,9 +4726,9 @@ struct otri *newotri;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void makesubseg(struct mesh *m, struct osub *newsubseg)
+static void makesubseg(struct mesh *m, struct osub *newsubseg)
 #else /* not ANSI_DECLARATORS */
-void makesubseg(m, newsubseg)
+static void makesubseg(m, newsubseg)
 struct mesh *m;
 struct osub *newsubseg;
 #endif /* not ANSI_DECLARATORS */
@@ -4903,7 +4908,7 @@ struct osub *newsubseg;
 /*                                                                           */
 /*****************************************************************************/
 
-void exactinit()
+static void exactinit()
 {
   REAL half;
   REAL check, lastcheck;
@@ -4977,9 +4982,9 @@ void exactinit()
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h)
+static int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h)
 #else /* not ANSI_DECLARATORS */
-int fast_expansion_sum_zeroelim(elen, e, flen, f, h)  /* h cannot be e or f. */
+static int fast_expansion_sum_zeroelim(elen, e, flen, f, h)  /* h cannot be e or f. */
 int elen;
 REAL *e;
 int flen;
@@ -5071,9 +5076,9 @@ REAL *h;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-int scale_expansion_zeroelim(int elen, REAL *e, REAL b, REAL *h)
+static int scale_expansion_zeroelim(int elen, REAL *e, REAL b, REAL *h)
 #else /* not ANSI_DECLARATORS */
-int scale_expansion_zeroelim(elen, e, b, h)   /* e and h cannot be the same. */
+static int scale_expansion_zeroelim(elen, e, b, h)   /* e and h cannot be the same. */
 int elen;
 REAL *e;
 REAL b;
@@ -5127,9 +5132,9 @@ REAL *h;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-REAL estimate(int elen, REAL *e)
+static REAL estimate(int elen, REAL *e)
 #else /* not ANSI_DECLARATORS */
-REAL estimate(elen, e)
+static REAL estimate(elen, e)
 int elen;
 REAL *e;
 #endif /* not ANSI_DECLARATORS */
@@ -5166,9 +5171,9 @@ REAL *e;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-REAL counterclockwiseadapt(vertex pa, vertex pb, vertex pc, REAL detsum)
+static REAL counterclockwiseadapt(vertex pa, vertex pb, vertex pc, REAL detsum)
 #else /* not ANSI_DECLARATORS */
-REAL counterclockwiseadapt(pa, pb, pc, detsum)
+static REAL counterclockwiseadapt(pa, pb, pc, detsum)
 vertex pa;
 vertex pb;
 vertex pc;
@@ -5255,10 +5260,10 @@ REAL detsum;
 }
 
 #ifdef ANSI_DECLARATORS
-REAL counterclockwise(struct mesh *m, struct behavior *b,
+static REAL counterclockwise(struct mesh *m, struct behavior *b,
                       vertex pa, vertex pb, vertex pc)
 #else /* not ANSI_DECLARATORS */
-REAL counterclockwise(m, b, pa, pb, pc)
+static REAL counterclockwise(m, b, pa, pb, pc)
 struct mesh *m;
 struct behavior *b;
 vertex pa;
@@ -5324,9 +5329,9 @@ vertex pc;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-REAL incircleadapt(vertex pa, vertex pb, vertex pc, vertex pd, REAL permanent)
+static REAL incircleadapt(vertex pa, vertex pb, vertex pc, vertex pd, REAL permanent)
 #else /* not ANSI_DECLARATORS */
-REAL incircleadapt(pa, pb, pc, pd, permanent)
+static REAL incircleadapt(pa, pb, pc, pd, permanent)
 vertex pa;
 vertex pb;
 vertex pc;
@@ -5903,10 +5908,10 @@ REAL permanent;
 }
 
 #ifdef ANSI_DECLARATORS
-REAL incircle(struct mesh *m, struct behavior *b,
+static REAL incircle(struct mesh *m, struct behavior *b,
               vertex pa, vertex pb, vertex pc, vertex pd)
 #else /* not ANSI_DECLARATORS */
-REAL incircle(m, b, pa, pb, pc, pd)
+static REAL incircle(m, b, pa, pb, pc, pd)
 struct mesh *m;
 struct behavior *b;
 vertex pa;
@@ -5985,11 +5990,11 @@ vertex pd;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-REAL orient3dadapt(vertex pa, vertex pb, vertex pc, vertex pd,
+static REAL orient3dadapt(vertex pa, vertex pb, vertex pc, vertex pd,
                    REAL aheight, REAL bheight, REAL cheight, REAL dheight,
                    REAL permanent)
 #else /* not ANSI_DECLARATORS */
-REAL orient3dadapt(pa, pb, pc, pd,
+static REAL orient3dadapt(pa, pb, pc, pd,
                    aheight, bheight, cheight, dheight, permanent)
 vertex pa;
 vertex pb;
@@ -6410,11 +6415,11 @@ REAL permanent;
 }
 
 #ifdef ANSI_DECLARATORS
-REAL orient3d(struct mesh *m, struct behavior *b,
+static REAL orient3d(struct mesh *m, struct behavior *b,
               vertex pa, vertex pb, vertex pc, vertex pd,
               REAL aheight, REAL bheight, REAL cheight, REAL dheight)
 #else /* not ANSI_DECLARATORS */
-REAL orient3d(m, b, pa, pb, pc, pd, aheight, bheight, cheight, dheight)
+static REAL orient3d(m, b, pa, pb, pc, pd, aheight, bheight, cheight, dheight)
 struct mesh *m;
 struct behavior *b;
 vertex pa;
@@ -6493,10 +6498,10 @@ REAL dheight;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-REAL nonregular(struct mesh *m, struct behavior *b,
+static REAL nonregular(struct mesh *m, struct behavior *b,
                 vertex pa, vertex pb, vertex pc, vertex pd)
 #else /* not ANSI_DECLARATORS */
-REAL nonregular(m, b, pa, pb, pc, pd)
+static REAL nonregular(m, b, pa, pb, pc, pd)
 struct mesh *m;
 struct behavior *b;
 vertex pa;
@@ -6534,11 +6539,11 @@ vertex pd;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void findcircumcenter(struct mesh *m, struct behavior *b,
+static void findcircumcenter(struct mesh *m, struct behavior *b,
                       vertex torg, vertex tdest, vertex tapex,
                       vertex circumcenter, REAL *xi, REAL *eta, int offcenter)
 #else /* not ANSI_DECLARATORS */
-void findcircumcenter(m, b, torg, tdest, tapex, circumcenter, xi, eta,
+static void findcircumcenter(m, b, torg, tdest, tapex, circumcenter, xi, eta,
                       offcenter)
 struct mesh *m;
 struct behavior *b;
@@ -6648,9 +6653,9 @@ int offcenter;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void triangleinit(struct mesh *m)
+static void triangleinit(struct mesh *m)
 #else /* not ANSI_DECLARATORS */
-void triangleinit(m)
+static void triangleinit(m)
 struct mesh *m;
 #endif /* not ANSI_DECLARATORS */
 
@@ -6687,9 +6692,9 @@ struct mesh *m;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-unsigned LONG randomnation(unsigned int choices)
+static unsigned LONG randomnation(unsigned int choices)
 #else /* not ANSI_DECLARATORS */
-unsigned LONG randomnation(choices)
+static unsigned LONG randomnation(choices)
 unsigned int choices;
 #endif /* not ANSI_DECLARATORS */
 
@@ -6711,9 +6716,9 @@ unsigned int choices;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void checkmesh(struct mesh *m, struct behavior *b)
+static void checkmesh(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void checkmesh(m, b)
+static void checkmesh(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -6810,9 +6815,9 @@ struct behavior *b;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void checkdelaunay(struct mesh *m, struct behavior *b)
+static void checkdelaunay(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void checkdelaunay(m, b)
+static void checkdelaunay(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -6920,10 +6925,10 @@ struct behavior *b;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void enqueuebadtriang(struct mesh *m, struct behavior *b,
+static void enqueuebadtriang(struct mesh *m, struct behavior *b,
                       struct badtriang *badtri)
 #else /* not ANSI_DECLARATORS */
-void enqueuebadtriang(m, b, badtri)
+static void enqueuebadtriang(m, b, badtri)
 struct mesh *m;
 struct behavior *b;
 struct badtriang *badtri;
@@ -7026,10 +7031,10 @@ struct badtriang *badtri;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void enqueuebadtri(struct mesh *m, struct behavior *b, struct otri *enqtri,
+static void enqueuebadtri(struct mesh *m, struct behavior *b, struct otri *enqtri,
                    REAL minedge, vertex enqapex, vertex enqorg, vertex enqdest)
 #else /* not ANSI_DECLARATORS */
-void enqueuebadtri(m, b, enqtri, minedge, enqapex, enqorg, enqdest)
+static void enqueuebadtri(m, b, enqtri, minedge, enqapex, enqorg, enqdest)
 struct mesh *m;
 struct behavior *b;
 struct otri *enqtri;
@@ -7116,10 +7121,10 @@ struct mesh *m;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-int checkseg4encroach(struct mesh *m, struct behavior *b,
+static int checkseg4encroach(struct mesh *m, struct behavior *b,
                       struct osub *testsubseg)
 #else /* not ANSI_DECLARATORS */
-int checkseg4encroach(m, b, testsubseg)
+static int checkseg4encroach(m, b, testsubseg)
 struct mesh *m;
 struct behavior *b;
 struct osub *testsubseg;
@@ -7229,9 +7234,9 @@ struct osub *testsubseg;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void testtriangle(struct mesh *m, struct behavior *b, struct otri *testtri)
+static void testtriangle(struct mesh *m, struct behavior *b, struct otri *testtri)
 #else /* not ANSI_DECLARATORS */
-void testtriangle(m, b, testtri)
+static void testtriangle(m, b, testtri)
 struct mesh *m;
 struct behavior *b;
 struct otri *testtri;
@@ -7415,9 +7420,9 @@ struct otri *testtri;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void makevertexmap(struct mesh *m, struct behavior *b)
+static void makevertexmap(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void makevertexmap(m, b)
+static void makevertexmap(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -7510,11 +7515,11 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-enum locateresult preciselocate(struct mesh *m, struct behavior *b,
+static enum locateresult preciselocate(struct mesh *m, struct behavior *b,
                                 vertex searchpoint, struct otri *searchtri,
                                 int stopatsubsegment)
 #else /* not ANSI_DECLARATORS */
-enum locateresult preciselocate(m, b, searchpoint, searchtri, stopatsubsegment)
+static enum locateresult preciselocate(m, b, searchpoint, searchtri, stopatsubsegment)
 struct mesh *m;
 struct behavior *b;
 vertex searchpoint;
@@ -7654,10 +7659,10 @@ int stopatsubsegment;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-enum locateresult locate(struct mesh *m, struct behavior *b,
+static enum locateresult locate(struct mesh *m, struct behavior *b,
                          vertex searchpoint, struct otri *searchtri)
 #else /* not ANSI_DECLARATORS */
-enum locateresult locate(m, b, searchpoint, searchtri)
+static enum locateresult locate(m, b, searchpoint, searchtri)
 struct mesh *m;
 struct behavior *b;
 vertex searchpoint;
@@ -7825,10 +7830,10 @@ struct otri *searchtri;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void insertsubseg(struct mesh *m, struct behavior *b, struct otri *tri,
+static void insertsubseg(struct mesh *m, struct behavior *b, struct otri *tri,
                   int subsegmark)
 #else /* not ANSI_DECLARATORS */
-void insertsubseg(m, b, tri, subsegmark)
+static void insertsubseg(m, b, tri, subsegmark)
 struct mesh *m;
 struct behavior *b;
 struct otri *tri;             /* Edge at which to insert the new subsegment. */
@@ -7929,9 +7934,9 @@ int subsegmark;                            /* Marker for the new subsegment. */
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void flip(struct mesh *m, struct behavior *b, struct otri *flipedge)
+static void flip(struct mesh *m, struct behavior *b, struct otri *flipedge)
 #else /* not ANSI_DECLARATORS */
-void flip(m, b, flipedge)
+static void flip(m, b, flipedge)
 struct mesh *m;
 struct behavior *b;
 struct otri *flipedge;                    /* Handle for the triangle abc. */
@@ -8064,9 +8069,9 @@ struct otri *flipedge;                    /* Handle for the triangle abc. */
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void unflip(struct mesh *m, struct behavior *b, struct otri *flipedge)
+static void unflip(struct mesh *m, struct behavior *b, struct otri *flipedge)
 #else /* not ANSI_DECLARATORS */
-void unflip(m, b, flipedge)
+static void unflip(m, b, flipedge)
 struct mesh *m;
 struct behavior *b;
 struct otri *flipedge;                    /* Handle for the triangle abc. */
@@ -8213,12 +8218,12 @@ struct otri *flipedge;                    /* Handle for the triangle abc. */
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-enum insertvertexresult insertvertex(struct mesh *m, struct behavior *b,
+static enum insertvertexresult insertvertex(struct mesh *m, struct behavior *b,
                                      vertex newvertex, struct otri *searchtri,
                                      struct osub *splitseg,
                                      int segmentflaws, int triflaws)
 #else /* not ANSI_DECLARATORS */
-enum insertvertexresult insertvertex(m, b, newvertex, searchtri, splitseg,
+static enum insertvertexresult insertvertex(m, b, newvertex, searchtri, splitseg,
                                      segmentflaws, triflaws)
 struct mesh *m;
 struct behavior *b;
@@ -8870,11 +8875,11 @@ int triflaws;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void triangulatepolygon(struct mesh *m, struct behavior *b,
+static void triangulatepolygon(struct mesh *m, struct behavior *b,
                         struct otri *firstedge, struct otri *lastedge,
                         int edgecount, int doflip, int triflaws)
 #else /* not ANSI_DECLARATORS */
-void triangulatepolygon(m, b, firstedge, lastedge, edgecount, doflip, triflaws)
+static void triangulatepolygon(m, b, firstedge, lastedge, edgecount, doflip, triflaws)
 struct mesh *m;
 struct behavior *b;
 struct otri *firstedge;
@@ -8969,9 +8974,9 @@ int triflaws;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void deletevertex(struct mesh *m, struct behavior *b, struct otri *deltri)
+static void deletevertex(struct mesh *m, struct behavior *b, struct otri *deltri)
 #else /* not ANSI_DECLARATORS */
-void deletevertex(m, b, deltri)
+static void deletevertex(m, b, deltri)
 struct mesh *m;
 struct behavior *b;
 struct otri *deltri;
@@ -9072,9 +9077,9 @@ struct otri *deltri;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void undovertex(struct mesh *m, struct behavior *b)
+static void undovertex(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void undovertex(m, b)
+static void undovertex(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -9219,9 +9224,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void vertexsort(vertex *sortarray, int arraysize)
+static void vertexsort(vertex *sortarray, int arraysize)
 #else /* not ANSI_DECLARATORS */
-void vertexsort(sortarray, arraysize)
+static void vertexsort(sortarray, arraysize)
 vertex *sortarray;
 int arraysize;
 #endif /* not ANSI_DECLARATORS */
@@ -9293,9 +9298,9 @@ int arraysize;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void vertexmedian(vertex *sortarray, int arraysize, int median, int axis)
+static void vertexmedian(vertex *sortarray, int arraysize, int median, int axis)
 #else /* not ANSI_DECLARATORS */
-void vertexmedian(sortarray, arraysize, median, axis)
+static void vertexmedian(sortarray, arraysize, median, axis)
 vertex *sortarray;
 int arraysize;
 int median;
@@ -9371,9 +9376,9 @@ int axis;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void alternateaxes(vertex *sortarray, int arraysize, int axis)
+static void alternateaxes(vertex *sortarray, int arraysize, int axis)
 #else /* not ANSI_DECLARATORS */
-void alternateaxes(sortarray, arraysize, axis)
+static void alternateaxes(sortarray, arraysize, axis)
 vertex *sortarray;
 int arraysize;
 int axis;
@@ -9435,11 +9440,11 @@ int axis;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void mergehulls(struct mesh *m, struct behavior *b, struct otri *farleft,
+static void mergehulls(struct mesh *m, struct behavior *b, struct otri *farleft,
                 struct otri *innerleft, struct otri *innerright,
                 struct otri *farright, int axis)
 #else /* not ANSI_DECLARATORS */
-void mergehulls(m, b, farleft, innerleft, innerright, farright, axis)
+static void mergehulls(m, b, farleft, innerleft, innerright, farright, axis)
 struct mesh *m;
 struct behavior *b;
 struct otri *farleft;
@@ -9762,11 +9767,11 @@ int axis;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void divconqrecurse(struct mesh *m, struct behavior *b, vertex *sortarray,
+static void divconqrecurse(struct mesh *m, struct behavior *b, vertex *sortarray,
                     int vertices, int axis,
                     struct otri *farleft, struct otri *farright)
 #else /* not ANSI_DECLARATORS */
-void divconqrecurse(m, b, sortarray, vertices, axis, farleft, farright)
+static void divconqrecurse(m, b, sortarray, vertices, axis, farleft, farright)
 struct mesh *m;
 struct behavior *b;
 vertex *sortarray;
@@ -9926,9 +9931,9 @@ struct otri *farright;
 }
 
 #ifdef ANSI_DECLARATORS
-LONG removeghosts(struct mesh *m, struct behavior *b, struct otri *startghost)
+static LONG removeghosts(struct mesh *m, struct behavior *b, struct otri *startghost)
 #else /* not ANSI_DECLARATORS */
-LONG removeghosts(m, b, startghost)
+static LONG removeghosts(m, b, startghost)
 struct mesh *m;
 struct behavior *b;
 struct otri *startghost;
@@ -9989,9 +9994,9 @@ struct otri *startghost;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-LONG divconqdelaunay(struct mesh *m, struct behavior *b)
+static LONG divconqdelaunay(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-LONG divconqdelaunay(m, b)
+static LONG divconqdelaunay(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -10076,9 +10081,9 @@ struct behavior *b;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void boundingbox(struct mesh *m, struct behavior *b)
+static void boundingbox(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void boundingbox(m, b)
+static void boundingbox(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -10142,9 +10147,9 @@ struct behavior *b;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-LONG removebox(struct mesh *m, struct behavior *b)
+static LONG removebox(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-LONG removebox(m, b)
+static LONG removebox(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -10241,9 +10246,9 @@ struct behavior *b;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-LONG incrementaldelaunay(struct mesh *m, struct behavior *b)
+static LONG incrementaldelaunay(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-LONG incrementaldelaunay(m, b)
+static LONG incrementaldelaunay(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -10290,9 +10295,9 @@ struct behavior *b;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void eventheapinsert(struct event **heap, int heapsize, struct event *newevent)
+static void eventheapinsert(struct event **heap, int heapsize, struct event *newevent)
 #else /* not ANSI_DECLARATORS */
-void eventheapinsert(heap, heapsize, newevent)
+static void eventheapinsert(heap, heapsize, newevent)
 struct event **heap;
 int heapsize;
 struct event *newevent;
@@ -10331,9 +10336,9 @@ struct event *newevent;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void eventheapify(struct event **heap, int heapsize, int eventnum)
+static void eventheapify(struct event **heap, int heapsize, int eventnum)
 #else /* not ANSI_DECLARATORS */
-void eventheapify(heap, heapsize, eventnum)
+static void eventheapify(heap, heapsize, eventnum)
 struct event **heap;
 int heapsize;
 int eventnum;
@@ -10387,9 +10392,9 @@ int eventnum;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void eventheapdelete(struct event **heap, int heapsize, int eventnum)
+static void eventheapdelete(struct event **heap, int heapsize, int eventnum)
 #else /* not ANSI_DECLARATORS */
-void eventheapdelete(heap, heapsize, eventnum)
+static void eventheapdelete(heap, heapsize, eventnum)
 struct event **heap;
 int heapsize;
 int eventnum;
@@ -10430,10 +10435,10 @@ int eventnum;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void createeventheap(struct mesh *m, struct event ***eventheap,
+static void createeventheap(struct mesh *m, struct event ***eventheap,
                      struct event **events, struct event **freeevents)
 #else /* not ANSI_DECLARATORS */
-void createeventheap(m, eventheap, events, freeevents)
+static void createeventheap(m, eventheap, events, freeevents)
 struct mesh *m;
 struct event ***eventheap;
 struct event **events;
@@ -10469,9 +10474,9 @@ struct event **freeevents;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-int rightofhyperbola(struct mesh *m, struct otri *fronttri, vertex newsite)
+static int rightofhyperbola(struct mesh *m, struct otri *fronttri, vertex newsite)
 #else /* not ANSI_DECLARATORS */
-int rightofhyperbola(m, fronttri, newsite)
+static int rightofhyperbola(m, fronttri, newsite)
 struct mesh *m;
 struct otri *fronttri;
 vertex newsite;
@@ -10508,9 +10513,9 @@ vertex newsite;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-REAL circletop(struct mesh *m, vertex pa, vertex pb, vertex pc, REAL ccwabc)
+static REAL circletop(struct mesh *m, vertex pa, vertex pb, vertex pc, REAL ccwabc)
 #else /* not ANSI_DECLARATORS */
-REAL circletop(m, pa, pb, pc, ccwabc)
+static REAL circletop(m, pa, pb, pc, ccwabc)
 struct mesh *m;
 vertex pa;
 vertex pb;
@@ -10542,10 +10547,10 @@ REAL ccwabc;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-void check4deadevent(struct otri *checktri, struct event **freeevents,
+static void check4deadevent(struct otri *checktri, struct event **freeevents,
                      struct event **eventheap, int *heapsize)
 #else /* not ANSI_DECLARATORS */
-void check4deadevent(checktri, freeevents, eventheap, heapsize)
+static void check4deadevent(checktri, freeevents, eventheap, heapsize)
 struct otri *checktri;
 struct event **freeevents;
 struct event **eventheap;
@@ -10805,9 +10810,9 @@ int *farright;
 #ifndef REDUCED
 
 #ifdef ANSI_DECLARATORS
-LONG sweeplinedelaunay(struct mesh *m, struct behavior *b)
+static LONG sweeplinedelaunay(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-LONG sweeplinedelaunay(m, b)
+static LONG sweeplinedelaunay(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -11033,9 +11038,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-LONG delaunay(struct mesh *m, struct behavior *b)
+static LONG delaunay(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-LONG delaunay(m, b)
+static LONG delaunay(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -11110,12 +11115,12 @@ struct behavior *b;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-int reconstruct(struct mesh *m, struct behavior *b, int *trianglelist,
+static int reconstruct(struct mesh *m, struct behavior *b, int *trianglelist,
                 REAL *triangleattriblist, REAL *trianglearealist,
                 int elements, int corners, int attribs,
                 int *segmentlist,int *segmentmarkerlist, int numberofsegments)
 #else /* not ANSI_DECLARATORS */
-int reconstruct(m, b, trianglelist, triangleattriblist, trianglearealist,
+static int reconstruct(m, b, trianglelist, triangleattriblist, trianglearealist,
                 elements, corners, attribs, segmentlist, segmentmarkerlist,
                 numberofsegments)
 struct mesh *m;
@@ -11134,10 +11139,10 @@ int numberofsegments;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-LONG reconstruct(struct mesh *m, struct behavior *b, char *elefilename,
+static LONG reconstruct(struct mesh *m, struct behavior *b, char *elefilename,
                  char *areafilename, char *polyfilename, FILE *polyfile)
 #else /* not ANSI_DECLARATORS */
-LONG reconstruct(m, b, elefilename, areafilename, polyfilename, polyfile)
+static LONG reconstruct(m, b, elefilename, areafilename, polyfilename, polyfile)
 struct mesh *m;
 struct behavior *b;
 char *elefilename;
@@ -11610,11 +11615,11 @@ FILE *polyfile;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-enum finddirectionresult finddirection(struct mesh *m, struct behavior *b,
+static enum finddirectionresult finddirection(struct mesh *m, struct behavior *b,
                                        struct otri *searchtri,
                                        vertex searchpoint)
 #else /* not ANSI_DECLARATORS */
-enum finddirectionresult finddirection(m, b, searchtri, searchpoint)
+static enum finddirectionresult finddirection(m, b, searchtri, searchpoint)
 struct mesh *m;
 struct behavior *b;
 struct otri *searchtri;
@@ -11705,11 +11710,11 @@ vertex searchpoint;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void segmentintersection(struct mesh *m, struct behavior *b,
+static void segmentintersection(struct mesh *m, struct behavior *b,
                          struct otri *splittri, struct osub *splitsubseg,
                          vertex endpoint2)
 #else /* not ANSI_DECLARATORS */
-void segmentintersection(m, b, splittri, splitsubseg, endpoint2)
+static void segmentintersection(m, b, splittri, splitsubseg, endpoint2)
 struct mesh *m;
 struct behavior *b;
 struct otri *splittri;
@@ -11830,10 +11835,10 @@ vertex endpoint2;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-int scoutsegment(struct mesh *m, struct behavior *b, struct otri *searchtri,
+static int scoutsegment(struct mesh *m, struct behavior *b, struct otri *searchtri,
                  vertex endpoint2, int newmark)
 #else /* not ANSI_DECLARATORS */
-int scoutsegment(m, b, searchtri, endpoint2, newmark)
+static int scoutsegment(m, b, searchtri, endpoint2, newmark)
 struct mesh *m;
 struct behavior *b;
 struct otri *searchtri;
@@ -11914,10 +11919,10 @@ int newmark;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void conformingedge(struct mesh *m, struct behavior *b,
+static void conformingedge(struct mesh *m, struct behavior *b,
                     vertex endpoint1, vertex endpoint2, int newmark)
 #else /* not ANSI_DECLARATORS */
-void conformingedge(m, b, endpoint1, endpoint2, newmark)
+static void conformingedge(m, b, endpoint1, endpoint2, newmark)
 struct mesh *m;
 struct behavior *b;
 vertex endpoint1;
@@ -12044,10 +12049,10 @@ int newmark;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void delaunayfixup(struct mesh *m, struct behavior *b,
+static void delaunayfixup(struct mesh *m, struct behavior *b,
                    struct otri *fixuptri, int leftside)
 #else /* not ANSI_DECLARATORS */
-void delaunayfixup(m, b, fixuptri, leftside)
+static void delaunayfixup(m, b, fixuptri, leftside)
 struct mesh *m;
 struct behavior *b;
 struct otri *fixuptri;
@@ -12164,10 +12169,10 @@ int leftside;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void constrainededge(struct mesh *m, struct behavior *b,
+static void constrainededge(struct mesh *m, struct behavior *b,
                      struct otri *starttri, vertex endpoint2, int newmark)
 #else /* not ANSI_DECLARATORS */
-void constrainededge(m, b, starttri, endpoint2, newmark)
+static void constrainededge(m, b, starttri, endpoint2, newmark)
 struct mesh *m;
 struct behavior *b;
 struct otri *starttri;
@@ -12266,10 +12271,10 @@ int newmark;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void insertsegment(struct mesh *m, struct behavior *b,
+static void insertsegment(struct mesh *m, struct behavior *b,
                    vertex endpoint1, vertex endpoint2, int newmark)
 #else /* not ANSI_DECLARATORS */
-void insertsegment(m, b, endpoint1, endpoint2, newmark)
+static void insertsegment(m, b, endpoint1, endpoint2, newmark)
 struct mesh *m;
 struct behavior *b;
 vertex endpoint1;
@@ -12378,9 +12383,9 @@ int newmark;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void markhull(struct mesh *m, struct behavior *b)
+static void markhull(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void markhull(m, b)
+static void markhull(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -12424,10 +12429,10 @@ struct behavior *b;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void formskeleton(struct mesh *m, struct behavior *b, int *segmentlist,
+static void formskeleton(struct mesh *m, struct behavior *b, int *segmentlist,
                   int *segmentmarkerlist, int numberofsegments)
 #else /* not ANSI_DECLARATORS */
-void formskeleton(m, b, segmentlist, segmentmarkerlist, numberofsegments)
+static void formskeleton(m, b, segmentlist, segmentmarkerlist, numberofsegments)
 struct mesh *m;
 struct behavior *b;
 int *segmentlist;
@@ -12438,10 +12443,10 @@ int numberofsegments;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void formskeleton(struct mesh *m, struct behavior *b,
+static void formskeleton(struct mesh *m, struct behavior *b,
                   FILE *polyfile, char *polyfilename)
 #else /* not ANSI_DECLARATORS */
-void formskeleton(m, b, polyfile, polyfilename)
+static void formskeleton(m, b, polyfile, polyfilename)
 struct mesh *m;
 struct behavior *b;
 FILE *polyfile;
@@ -12591,9 +12596,9 @@ char *polyfilename;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void infecthull(struct mesh *m, struct behavior *b)
+static void infecthull(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void infecthull(m, b)
+static void infecthull(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -12673,9 +12678,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void plague(struct mesh *m, struct behavior *b)
+static void plague(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void plague(m, b)
+static void plague(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -12883,10 +12888,10 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void regionplague(struct mesh *m, struct behavior *b,
+static void regionplague(struct mesh *m, struct behavior *b,
                   REAL attribute, REAL area)
 #else /* not ANSI_DECLARATORS */
-void regionplague(m, b, attribute, area)
+static void regionplague(m, b, attribute, area)
 struct mesh *m;
 struct behavior *b;
 REAL attribute;
@@ -12996,10 +13001,10 @@ REAL area;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void carveholes(struct mesh *m, struct behavior *b, REAL *holelist, int holes,
+static void carveholes(struct mesh *m, struct behavior *b, REAL *holelist, int holes,
                 REAL *regionlist, int regions)
 #else /* not ANSI_DECLARATORS */
-void carveholes(m, b, holelist, holes, regionlist, regions)
+static void carveholes(m, b, holelist, holes, regionlist, regions)
 struct mesh *m;
 struct behavior *b;
 REAL *holelist;
@@ -13190,9 +13195,9 @@ int regions;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void tallyencs(struct mesh *m, struct behavior *b)
+static void tallyencs(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void tallyencs(m, b)
+static void tallyencs(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -13221,7 +13226,7 @@ struct behavior *b;
 
 #ifndef CDT_ONLY
 
-void precisionerror()
+static void precisionerror()
 {
   printf("Try increasing the area criterion and/or reducing the minimum\n");
   printf("  allowable angle so that tiny triangles are not created.\n");
@@ -13251,9 +13256,9 @@ void precisionerror()
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void splitencsegs(struct mesh *m, struct behavior *b, int triflaws)
+static void splitencsegs(struct mesh *m, struct behavior *b, int triflaws)
 #else /* not ANSI_DECLARATORS */
-void splitencsegs(m, b, triflaws)
+static void splitencsegs(m, b, triflaws)
 struct mesh *m;
 struct behavior *b;
 int triflaws;
@@ -13463,9 +13468,9 @@ int triflaws;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void tallyfaces(struct mesh *m, struct behavior *b)
+static void tallyfaces(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void tallyfaces(m, b)
+static void tallyfaces(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -13499,10 +13504,10 @@ struct behavior *b;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void splittriangle(struct mesh *m, struct behavior *b,
+static void splittriangle(struct mesh *m, struct behavior *b,
                    struct badtriang *badtri)
 #else /* not ANSI_DECLARATORS */
-void splittriangle(m, b, badtri)
+static void splittriangle(m, b, badtri)
 struct mesh *m;
 struct behavior *b;
 struct badtriang *badtri;
@@ -13628,9 +13633,9 @@ struct badtriang *badtri;
 #ifndef CDT_ONLY
 
 #ifdef ANSI_DECLARATORS
-void enforcequality(struct mesh *m, struct behavior *b)
+static void enforcequality(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void enforcequality(m, b)
+static void enforcequality(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -13727,9 +13732,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void highorder(struct mesh *m, struct behavior *b)
+static void highorder(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void highorder(m, b)
+static void highorder(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -13903,10 +13908,10 @@ char *string;
 #ifndef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void readnodes(struct mesh *m, struct behavior *b, char *nodefilename,
+static void readnodes(struct mesh *m, struct behavior *b, char *nodefilename,
                char *polyfilename, FILE **polyfile)
 #else /* not ANSI_DECLARATORS */
-void readnodes(m, b, nodefilename, polyfilename, polyfile)
+static void readnodes(m, b, nodefilename, polyfilename, polyfile)
 struct mesh *m;
 struct behavior *b;
 char *nodefilename;
@@ -14100,11 +14105,11 @@ FILE **polyfile;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void transfernodes(struct mesh *m, struct behavior *b, REAL *pointlist,
+static void transfernodes(struct mesh *m, struct behavior *b, REAL *pointlist,
                    REAL *pointattriblist, int *pointmarkerlist,
                    int numberofpoints, int numberofpointattribs)
 #else /* not ANSI_DECLARATORS */
-void transfernodes(m, b, pointlist, pointattriblist, pointmarkerlist,
+static void transfernodes(m, b, pointlist, pointattriblist, pointmarkerlist,
                    numberofpoints, numberofpointattribs)
 struct mesh *m;
 struct behavior *b;
@@ -14185,11 +14190,11 @@ int numberofpointattribs;
 #ifndef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void readholes(struct mesh *m, struct behavior *b,
+static void readholes(struct mesh *m, struct behavior *b,
                FILE *polyfile, char *polyfilename, REAL **hlist, int *holes,
                REAL **rlist, int *regions)
 #else /* not ANSI_DECLARATORS */
-void readholes(m, b, polyfile, polyfilename, hlist, holes, rlist, regions)
+static void readholes(m, b, polyfile, polyfilename, hlist, holes, rlist, regions)
 struct mesh *m;
 struct behavior *b;
 FILE *polyfile;
@@ -14304,9 +14309,9 @@ int *regions;
 #ifndef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void finishfile(FILE *outfile, int argc, char **argv)
+static void finishfile(FILE *outfile, int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void finishfile(outfile, argc, argv)
+static void finishfile(outfile, argc, argv)
 FILE *outfile;
 int argc;
 char **argv;
@@ -14338,10 +14343,10 @@ char **argv;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writenodes(struct mesh *m, struct behavior *b, REAL **pointlist,
+static void writenodes(struct mesh *m, struct behavior *b, REAL **pointlist,
                 REAL **pointattriblist, int **pointmarkerlist)
 #else /* not ANSI_DECLARATORS */
-void writenodes(m, b, pointlist, pointattriblist, pointmarkerlist)
+static void writenodes(m, b, pointlist, pointattriblist, pointmarkerlist)
 struct mesh *m;
 struct behavior *b;
 REAL **pointlist;
@@ -14352,10 +14357,10 @@ int **pointmarkerlist;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void writenodes(struct mesh *m, struct behavior *b, char *nodefilename,
+static void writenodes(struct mesh *m, struct behavior *b, char *nodefilename,
                 int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writenodes(m, b, nodefilename, argc, argv)
+static void writenodes(m, b, nodefilename, argc, argv)
 struct mesh *m;
 struct behavior *b;
 char *nodefilename;
@@ -14478,9 +14483,9 @@ char **argv;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void numbernodes(struct mesh *m, struct behavior *b)
+static void numbernodes(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void numbernodes(m, b)
+static void numbernodes(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -14510,10 +14515,10 @@ struct behavior *b;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writeelements(struct mesh *m, struct behavior *b,
+static void writeelements(struct mesh *m, struct behavior *b,
                    int **trianglelist, REAL **triangleattriblist)
 #else /* not ANSI_DECLARATORS */
-void writeelements(m, b, trianglelist, triangleattriblist)
+static void writeelements(m, b, trianglelist, triangleattriblist)
 struct mesh *m;
 struct behavior *b;
 int **trianglelist;
@@ -14523,10 +14528,10 @@ REAL **triangleattriblist;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void writeelements(struct mesh *m, struct behavior *b, char *elefilename,
+static void writeelements(struct mesh *m, struct behavior *b, char *elefilename,
                    int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writeelements(m, b, elefilename, argc, argv)
+static void writeelements(m, b, elefilename, argc, argv)
 struct mesh *m;
 struct behavior *b;
 char *elefilename;
@@ -14651,10 +14656,10 @@ char **argv;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writepoly(struct mesh *m, struct behavior *b,
+static void writepoly(struct mesh *m, struct behavior *b,
                int **segmentlist, int **segmentmarkerlist)
 #else /* not ANSI_DECLARATORS */
-void writepoly(m, b, segmentlist, segmentmarkerlist)
+static void writepoly(m, b, segmentlist, segmentmarkerlist)
 struct mesh *m;
 struct behavior *b;
 int **segmentlist;
@@ -14664,11 +14669,11 @@ int **segmentmarkerlist;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void writepoly(struct mesh *m, struct behavior *b, char *polyfilename,
+static void writepoly(struct mesh *m, struct behavior *b, char *polyfilename,
                REAL *holelist, int holes, REAL *regionlist, int regions,
                int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writepoly(m, b, polyfilename, holelist, holes, regionlist, regions,
+static void writepoly(m, b, polyfilename, holelist, holes, regionlist, regions,
                argc, argv)
 struct mesh *m;
 struct behavior *b;
@@ -14797,10 +14802,10 @@ char **argv;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writeedges(struct mesh *m, struct behavior *b,
+static void writeedges(struct mesh *m, struct behavior *b,
                 int **edgelist, int **edgemarkerlist)
 #else /* not ANSI_DECLARATORS */
-void writeedges(m, b, edgelist, edgemarkerlist)
+static void writeedges(m, b, edgelist, edgemarkerlist)
 struct mesh *m;
 struct behavior *b;
 int **edgelist;
@@ -14810,10 +14815,10 @@ int **edgemarkerlist;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void writeedges(struct mesh *m, struct behavior *b, char *edgefilename,
+static void writeedges(struct mesh *m, struct behavior *b, char *edgefilename,
                 int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writeedges(m, b, edgefilename, argc, argv)
+static void writeedges(m, b, edgefilename, argc, argv)
 struct mesh *m;
 struct behavior *b;
 char *edgefilename;
@@ -14951,11 +14956,11 @@ char **argv;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writevoronoi(struct mesh *m, struct behavior *b, REAL **vpointlist,
+static void writevoronoi(struct mesh *m, struct behavior *b, REAL **vpointlist,
                   REAL **vpointattriblist, int **vpointmarkerlist,
                   int **vedgelist, int **vedgemarkerlist, REAL **vnormlist)
 #else /* not ANSI_DECLARATORS */
-void writevoronoi(m, b, vpointlist, vpointattriblist, vpointmarkerlist,
+static void writevoronoi(m, b, vpointlist, vpointattriblist, vpointmarkerlist,
                   vedgelist, vedgemarkerlist, vnormlist)
 struct mesh *m;
 struct behavior *b;
@@ -14970,10 +14975,10 @@ REAL **vnormlist;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void writevoronoi(struct mesh *m, struct behavior *b, char *vnodefilename,
+static void writevoronoi(struct mesh *m, struct behavior *b, char *vnodefilename,
                   char *vedgefilename, int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writevoronoi(m, b, vnodefilename, vedgefilename, argc, argv)
+static void writevoronoi(m, b, vnodefilename, vedgefilename, argc, argv)
 struct mesh *m;
 struct behavior *b;
 char *vnodefilename;
@@ -15164,9 +15169,9 @@ char **argv;
 #ifdef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writeneighbors(struct mesh *m, struct behavior *b, int **neighborlist)
+static void writeneighbors(struct mesh *m, struct behavior *b, int **neighborlist)
 #else /* not ANSI_DECLARATORS */
-void writeneighbors(m, b, neighborlist)
+static void writeneighbors(m, b, neighborlist)
 struct mesh *m;
 struct behavior *b;
 int **neighborlist;
@@ -15175,10 +15180,10 @@ int **neighborlist;
 #else /* not TRILIBRARY */
 
 #ifdef ANSI_DECLARATORS
-void writeneighbors(struct mesh *m, struct behavior *b, char *neighborfilename,
+static void writeneighbors(struct mesh *m, struct behavior *b, char *neighborfilename,
                     int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writeneighbors(m, b, neighborfilename, argc, argv)
+static void writeneighbors(m, b, neighborfilename, argc, argv)
 struct mesh *m;
 struct behavior *b;
 char *neighborfilename;
@@ -15279,10 +15284,10 @@ char **argv;
 #ifndef TRILIBRARY
 
 #ifdef ANSI_DECLARATORS
-void writeoff(struct mesh *m, struct behavior *b, char *offfilename,
+static void writeoff(struct mesh *m, struct behavior *b, char *offfilename,
               int argc, char **argv)
 #else /* not ANSI_DECLARATORS */
-void writeoff(m, b, offfilename, argc, argv)
+static void writeoff(m, b, offfilename, argc, argv)
 struct mesh *m;
 struct behavior *b;
 char *offfilename;
@@ -15357,9 +15362,9 @@ char **argv;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void quality_statistics(struct mesh *m, struct behavior *b)
+static void quality_statistics(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void quality_statistics(m, b)
+static void quality_statistics(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */
@@ -15564,9 +15569,9 @@ struct behavior *b;
 /*****************************************************************************/
 
 #ifdef ANSI_DECLARATORS
-void statistics(struct mesh *m, struct behavior *b)
+static void statistics(struct mesh *m, struct behavior *b)
 #else /* not ANSI_DECLARATORS */
-void statistics(m, b)
+static void statistics(m, b)
 struct mesh *m;
 struct behavior *b;
 #endif /* not ANSI_DECLARATORS */

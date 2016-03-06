@@ -39,7 +39,7 @@
 
 #ifdef DEBUG
 /* For debuging -E; running this in debug and setting it to true will also output the number of estimates per radial k */
-bool show_n = false;
+static bool show_n = false;
 #endif
 
 struct GRDFFT_CTRL {

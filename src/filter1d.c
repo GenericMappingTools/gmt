@@ -156,7 +156,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	struct GMT_DATASET *Fin;	/* Pointer to table with custom weight coefficients (optional) */
 };
 
-void *New_filter1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct FILTER1D_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct FILTER1D_CTRL);
@@ -166,13 +166,13 @@ void *New_filter1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	return (C);
 }
 
-void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.file);
 	gmt_M_free (GMT, C);
 }
 
-int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
@@ -226,7 +226,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to filter1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
@@ -355,31 +355,31 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 
 /* Various functions which will be accessed via pointers depending on chosen filter */
 
-double boxcar_weight (double radius, double half_width) {
+GMT_LOCAL double boxcar_weight (double radius, double half_width) {
 	return ((radius > half_width) ? 0.0 : 1.0);
 }
 
-double cosine_weight_filter1d (double radius, double half_width) {
+GMT_LOCAL double cosine_weight_filter1d (double radius, double half_width) {
 	return ((radius > half_width) ? 0.0 : 1.0 + cos (radius * M_PI / half_width));
 }
 
-double gaussian_weight (double radius, double half_width) {
+GMT_LOCAL double gaussian_weight (double radius, double half_width) {
 	return ((radius > half_width) ? 0.0 : exp (-4.5 * radius * radius / (half_width * half_width)));
 }
 
-void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
+GMT_LOCAL void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i;
 
 	for (i = 0; i < F->n_cols; ++i) F->data[i] = gmt_M_memory (GMT, F->data[i], F->n_row_alloc, double);
 }
 
-void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
+GMT_LOCAL void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i;
 
 	for (i = 0; i < F->n_cols; ++i) F->work[i] = gmt_M_memory (GMT, F->work[i], F->n_work_alloc, double);
 }
 
-int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
+GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i, i1, i2;
 	bool normalize = false;
 	double t_0, t_1, time, w_sum;
@@ -472,7 +472,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	return (0);
 }
 
-int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t right) {
+GMT_LOCAL int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t right) {
 	uint64_t last_row, this_row;
 	bool lacking = false;
 	double last_t;
@@ -496,7 +496,7 @@ int lack_check (struct FILTER1D_INFO *F, uint64_t i_col, uint64_t left, uint64_t
 	return (lacking);
 }
 
-void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64_t j, uint64_t n, int both) {
+GMT_LOCAL void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64_t j, uint64_t n, int both) {
 	uint64_t i, n_smooth;
 	bool sort_me = true;
 	double low, high, last, temp;
@@ -527,7 +527,7 @@ void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, uint64
 	}
 }
 
-int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
+GMT_LOCAL int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	uint64_t i_row, left, right, n_l, n_r;
 	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
 	uint64_t iq, i_col, diff;
@@ -724,7 +724,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F) {
 	return (0);
 }
 
-int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
+GMT_LOCAL int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	F->n_this_col = gmt_M_memory (GMT, NULL, F->n_cols, uint64_t);
 	F->data = gmt_M_memory_aligned (GMT, NULL, F->n_cols, double *);
 
@@ -748,7 +748,7 @@ int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	return (0);
 }
 
-void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
+GMT_LOCAL void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i;
 	if (!F) return;
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {
@@ -771,7 +771,7 @@ void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	gmt_M_free (GMT, F->f_wt);
 }
 
-void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, uint64_t n_cols) {
+GMT_LOCAL void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, uint64_t n_cols) {
 	F->filter_width = Ctrl->F.width;
 	F->dt = Ctrl->D.inc;
 	F->equidist = !Ctrl->D.active;
@@ -792,8 +792,8 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 /* Must free allocated memory before returning */
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
-#define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code,...) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
+#define Return2(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_filter1d (void *V_API, int mode, void *args) {
 	uint64_t col, tbl, row, seg;
@@ -813,18 +813,18 @@ int GMT_filter1d (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_filter1d_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_filter1d_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_filter1d_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
-	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
-	if ((error = GMT_filter1d_parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");
+	Ctrl = New_Ctrl (GMT);		/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error, "Error parsing filter1d options\n");
 
 	/*---------------------------- This is the filter1d main code ----------------------------*/
 

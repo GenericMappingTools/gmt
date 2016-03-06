@@ -327,12 +327,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double model (double x, double *par) {
+GMT_LOCAL double model (double x, double *par) {
 	/* Evalute the model given the parameters in par */
 	return (par[GMTREGRESS_SLOPE] * x + par[GMTREGRESS_ICEPT]);
 }
 
-double gmt_sum (double *x, uint64_t n) {
+GMT_LOCAL double gmt_sum (double *x, uint64_t n) {
 	/* Return sum of values in the array x */
 	uint64_t k;
 	double S = 0.0;
@@ -340,7 +340,7 @@ double gmt_sum (double *x, uint64_t n) {
 	return (S);
 }
 
-double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int norm) {
+GMT_LOCAL double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int norm) {
 	/* Return the proper "average" intercept given the chosen norm */
 	unsigned int GMT_n_multiples = 0;
 	double intercept = 0.0, *ee = NULL;
@@ -366,7 +366,7 @@ double icept_basic (struct GMT_CTRL *GMT, double *e, uint64_t n, unsigned int no
 	return (intercept);	
 }
 
-double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, unsigned int norm) {
+GMT_LOCAL double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, unsigned int norm) {
 	/* Return the proper "weighted average" intercept given chosen norm */
 	double intercept = 0.0;
 	struct GMT_OBSERVATION *ee = NULL;
@@ -395,13 +395,13 @@ double icept_weighted (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, u
 	return (intercept);	
 }
 
-double intercept (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, bool weighted, unsigned int norm) {
+GMT_LOCAL double intercept (struct GMT_CTRL *GMT, double *e, double *W, uint64_t n, bool weighted, unsigned int norm) {
 	/* Return the weighted or unweighted intercept given chosen norm */
 	double a = (weighted) ? icept_weighted (GMT, e, W, n, norm) : icept_basic (GMT, e, n, norm);
 	return (a);
 }
 
-double get_scale_factor (unsigned int regression, double slope) {
+GMT_LOCAL double get_scale_factor (unsigned int regression, double slope) {
 	/* Scale that turns a y-misfit into another misfit measures given regression slope */
 	double f = 1.0;	/* To please gcc */
 	slope = fabs (slope);
@@ -414,7 +414,7 @@ double get_scale_factor (unsigned int regression, double slope) {
 	return (f);
 }
 
-double L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
+GMT_LOCAL double L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
 	/* Compute L1 misfit from y-residuals ey and weights W for regression x|y|o|r.
 	 * Since W contains squared weights and we use a linear sum we take sqrt(W) below */
 	uint64_t k;
@@ -425,7 +425,7 @@ double L1_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsig
 	return (f * E / (n-2));
 }
 
-double L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
+GMT_LOCAL double L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
 	/* Compute L2 misfit from y-residuals ey and weights W for regression x|y|o|r */
 	uint64_t k;
 	double f, E = 0.0;
@@ -435,7 +435,7 @@ double L2_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsig
 	return (f * f * E / (n-2));	/* f^2 since E was computed from squared misfits */
 }
 
-double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
+GMT_LOCAL double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsigned int regression, double slope) {
 	/* Compute LMS misfit from y-residuals ey and weights W for regression x|y|o|r */
 	uint64_t k;
 	double f, E, *ee = gmt_M_memory (GMT, NULL, n, double);
@@ -447,7 +447,7 @@ double LMS_misfit (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, unsi
 	return (f * f * E);	/* f^2 since E was computed from squared misfits */
 }
 
-double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par) {
+GMT_LOCAL double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par) {
 	/* L1 regression scale estimate is weighted median absolute residual */
 	uint64_t k;
 	double MAD;
@@ -464,7 +464,7 @@ double L1_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double
 	return (MAD);
 }
 
-double L2_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par) {
+GMT_LOCAL double L2_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par) {
 	/* LS scale estimate as weighted average residual */
 	double W_sum, scale;
 	gmt_M_unused(GMT); gmt_M_unused(ey);
@@ -473,7 +473,7 @@ double L2_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double
 	return (scale);
 }
 
-double LMS_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par) {
+GMT_LOCAL double LMS_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, double *par) {
 	/* LMS scale estimate as per Rousseuuw & Leroy [1987] */
 	double scale;
 	gmt_M_unused(GMT); gmt_M_unused(ey); gmt_M_unused(W);
@@ -481,13 +481,13 @@ double LMS_scale (struct GMT_CTRL *GMT, double *ey, double *W, uint64_t n, doubl
 	return (scale);
 }
 
-void gmt_prod (double *x, double *y, double *xy, uint64_t n) {
+GMT_LOCAL void eval_product (double *x, double *y, double *xy, uint64_t n) {
 	/* Compute new array xy[i] = x[i] * y[i] */
 	uint64_t k;
 	for (k = 0; k < n; k++) xy[k] = x[k] * y[k];
 }
 
-double gmt_sumprod2 (double *x, double *y, uint64_t n) {
+GMT_LOCAL double eval_sumprod2 (double *x, double *y, uint64_t n) {
 	/* Sum up the product of x * y */
 	uint64_t k;
 	double sum = 0.0;
@@ -495,7 +495,7 @@ double gmt_sumprod2 (double *x, double *y, uint64_t n) {
 	return (sum);
 }
 
-double gmt_sumprod3 (double *x, double *y, double *z, uint64_t n) {
+GMT_LOCAL double eval_sumprod3 (double *x, double *y, double *z, uint64_t n) {
 	/* Sum up the product of x * y * z */
 	uint64_t k;
 	double sum = 0.0;
@@ -503,19 +503,19 @@ double gmt_sumprod3 (double *x, double *y, double *z, uint64_t n) {
 	return (sum);
 }
 
-void gmt_add (double *x, double c, double *out, uint64_t n) {
+GMT_LOCAL void eval_add (double *x, double c, double *out, uint64_t n) {
 	/* Compute array out[i] = x[i] + c */
 	uint64_t k;
 	for (k = 0; k < n; k++) out[k] = x[k] + c;
 }
 
-void gmt_unitary (double *x, uint64_t n) {
+GMT_LOCAL void ones (double *x, uint64_t n) {
 	/* Set a unitary vector */
 	uint64_t k;
 	for (k = 0; k < n; k++) x[k] = 1.0;
 }
 
-double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta) {
+GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par, double *U, double *V, double *W, double *alpha, double *beta) {
 	/* Compute weighted X and Y means, return these via par, and calculate residuals U and V and weights W
 	 * (and alpha, beta if orthogonal).  If orthogonal regression we expect a preliminary estimate of the
 	 * slope to be present in par[GMTREGRESS_SLOPE].  Return weight sum S.  This function carries out many of
@@ -537,10 +537,10 @@ double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], u
 		}
 		/*  Step 4: Compute weighted X_mean, Y_mean, then U, V, and beta */
 		S = gmt_sum (W, n);					/* Get sum of weights */
-		par[GMTREGRESS_XMEAN] = gmt_sumprod2 (W, X, n) / S;	/* Compute weighted X_mean */
-		par[GMTREGRESS_YMEAN] = gmt_sumprod2 (W, Y, n) / S;	/* Compute weighted Y_mean */
-		gmt_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
-		gmt_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
+		par[GMTREGRESS_XMEAN] = eval_sumprod2 (W, X, n) / S;	/* Compute weighted X_mean */
+		par[GMTREGRESS_YMEAN] = eval_sumprod2 (W, Y, n) / S;	/* Compute weighted Y_mean */
+		eval_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
+		eval_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
 		if (beta) {	/* Compute beta (as alpha above) which is needed for weighted orthogonal regression */
 			for (i = 0; i < n; i++) {
 				if (w[GMT_Z]) corr_i = w[GMT_Z][i];
@@ -555,25 +555,25 @@ double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], u
 		double *pW = (w[GMT_X]) ? w[GMT_X] : w[GMT_Y];	/* Shorthand for the (squared) weights */
 		gmt_M_memcpy (W, pW, n, double);			/* Duplicate the chosen weight array to W */
 		S = gmt_sum (W, n);					/* Get sum of weights */
-		par[GMTREGRESS_XMEAN] = gmt_sumprod2 (W, X, n) / S;	/* Compute weighted X_mean */
-		par[GMTREGRESS_YMEAN] = gmt_sumprod2 (W, Y, n) / S;	/* Compute weighted Y_mean */
-		gmt_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
-		gmt_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
+		par[GMTREGRESS_XMEAN] = eval_sumprod2 (W, X, n) / S;	/* Compute weighted X_mean */
+		par[GMTREGRESS_YMEAN] = eval_sumprod2 (W, Y, n) / S;	/* Compute weighted Y_mean */
+		eval_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
+		eval_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed weights from given %c-weights\n", (w[GMT_X]) ? 'x' : 'y');
 	}
 	else {	/* No weights, create unit array */
-		gmt_unitary (W, n);				/* Unit weights */
+		ones (W, n);				/* Unit weights */
 		par[GMTREGRESS_XMEAN] = gmt_sum (X, n) / n;	/* Compute X_mean */
 		par[GMTREGRESS_YMEAN] = gmt_sum (Y, n) / n;	/* Compute X_mean */
-		gmt_add (X, -par[GMTREGRESS_XMEAN], U, n);	/* Compute U */
-		gmt_add (Y, -par[GMTREGRESS_YMEAN], V, n);	/* Compute V */
+		eval_add (X, -par[GMTREGRESS_XMEAN], U, n);	/* Compute U */
+		eval_add (Y, -par[GMTREGRESS_YMEAN], V, n);	/* Compute V */
 		S = (double)n;					/* Trivial sum of weights */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed unit weights in the absence of actual weights\n");
 	}
 	return (S);	/* Returning the weight sum */
 }
 
-double LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Basic LS y-regression on x, only uses w[GMT_Y] weights if not NULL */
 	uint64_t k;
 	double *Q = gmt_M_memory (GMT, NULL, n, double), *W = gmt_M_memory (GMT, NULL, n, double);
@@ -586,18 +586,18 @@ double LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], u
 	/* Because we operate on U and V, the terms S_x = S_y == 0 and are thus ignored in the equations below */
 	if (w && w[GMT_Y]) {	/* Weighted regression */
 		double *P = gmt_M_memory (GMT, NULL, n, double);
-		gmt_prod (U, W, P, n);	/* Form P[i] = W[i] * U[i] */
-		gmt_prod (P, U, Q, n);	/* Form Q[i] = P[i] * U[i] = W[i] * U[i] * U[i] */
-		S_xx = gmt_sum (Q, n);	/* The weighted sum of U^2 */
-		gmt_prod (P, V, Q, n);	/* Form Q[i] = P[i] * V[i] = W[i] * U[i] * V[i] */
-		S_xy = gmt_sum (Q, n);	/* The weighted sum of U*V */
+		eval_product (U, W, P, n);	/* Form P[i] = W[i] * U[i] */
+		eval_product (P, U, Q, n);	/* Form Q[i] = P[i] * U[i] = W[i] * U[i] * U[i] */
+		S_xx = gmt_sum (Q, n);		/* The weighted sum of U^2 */
+		eval_product (P, V, Q, n);	/* Form Q[i] = P[i] * V[i] = W[i] * U[i] * V[i] */
+		S_xy = gmt_sum (Q, n);		/* The weighted sum of U*V */
 		gmt_M_free (GMT, P);
 	}
 	else {	/* No weights supplied */
-		gmt_prod (U, U, Q, n);	/* Form Q[i] = U[i] * U[i] */
-		S_xx = gmt_sum (Q, n);	/* The sum of U^2 */
-		gmt_prod (U, V, Q, n);	/* Form Q[i] = U[i] * V[i] */
-		S_xy = gmt_sum (Q, n);	/* The sum of U*V */
+		eval_product (U, U, Q, n);	/* Form Q[i] = U[i] * U[i] */
+		S_xx = gmt_sum (Q, n);		/* The sum of U^2 */
+		eval_product (U, V, Q, n);	/* Form Q[i] = U[i] * V[i] */
+		S_xy = gmt_sum (Q, n);		/* The sum of U*V */
 	}
 	D = 1.0 / (S * S_xx);
 	par[GMTREGRESS_SLOPE] = (S * S_xy) * D;
@@ -616,7 +616,7 @@ double LSy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], u
 	return (scale);
 }
 
-double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par) {
+GMT_LOCAL double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *par) {
 	/* Basic LS xy orthogonal regression, with no data errors. See York [1966] */
 	uint64_t k;
 	unsigned int p;
@@ -627,13 +627,13 @@ double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_
 	mean_x = gmt_mean_and_std (GMT, x, n, &sig_x);
 	mean_y = gmt_mean_and_std (GMT, y, n, &sig_y);
 	/* Normalize the data */
-	gmt_add (x, -mean_x, u, n);	/* Get reduced x-coordinates u */
-	gmt_add (y, -mean_y, v, n);	/* Get reduced y-coordinates v */
-	gmt_prod (u, u, Q, n);		/* Compute Q[i] = u[i] * u[i] */
+	eval_add (x, -mean_x, u, n);	/* Get reduced x-coordinates u */
+	eval_add (y, -mean_y, v, n);	/* Get reduced y-coordinates v */
+	eval_product (u, u, Q, n);	/* Compute Q[i] = u[i] * u[i] */
 	sum_u2 = gmt_sum (Q, n);	/* Get sum of u*u */
-	gmt_prod (v, v, Q, n);		/* Compute Q[i] = v[i] * v[i] */
+	eval_product (v, v, Q, n);	/* Compute Q[i] = v[i] * v[i] */
 	sum_v2 = gmt_sum (Q, n);	/* Get sum of v*v */
-	gmt_prod (u, v, Q, n);		/* Compute Q[i] = u[i] * v[i] */
+	eval_product (u, v, Q, n);	/* Compute Q[i] = u[i] * v[i] */
 	sum_uv = gmt_sum (Q, n);	/* Get sum of u*v */
 	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);	/* Done with these arrays */
 	part1 = sum_v2 - sum_u2;
@@ -641,7 +641,7 @@ double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_
 	b[0] = (part1 + part2) / (2.0 * sum_uv);
 	b[1] = (part1 - part2) / (2.0 * sum_uv);
 	r = sum_uv / sqrt (sum_u2 * sum_v2);
-	gmt_unitary (W, n);			/* Unit weights */
+	ones (W, n);			/* Unit weights */
 	for (p = 0; p < 2; p++) {	/* Compute E from vertical y-residuals for both solutions to the slope */
 		a[p] = mean_y - b[p] * mean_x;	/* Trial intercept */
 		for (k = 0; k < n; k++) Q[k] = y[k] - b[p] * x[k] - a[p];
@@ -663,7 +663,7 @@ double LSxy_regress1D_basic (struct GMT_CTRL *GMT, double *x, double *y, uint64_
 	return (scale);
 }
 
-double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Basic LS RMA orthogonal regression with no weights [Reference?] */
 	uint64_t k;
 	double mx, sx, my, sy, scale;
@@ -686,7 +686,7 @@ double LSRMA_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[],
 	return (scale);
 }
 
-void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, double *e, uint64_t n, unsigned int regression, unsigned int norm, bool weighted, double angle, double *par) {
+GMT_LOCAL void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, double *e, uint64_t n, unsigned int regression, unsigned int norm, bool weighted, double angle, double *par) {
 	/* Solve the linear regression problem for a given slope angle and chosen misfit and norm to give a unique intercept */
 	/* x, y here are actually the reduced coordinates U, V */
 	uint64_t k;
@@ -731,7 +731,7 @@ void regress1D_sub (struct GMT_CTRL *GMT, double *x, double *y, double *W, doubl
 
 #define N_ANGLE_SELECTIONS	90	/* Fixed number of slope angles to try between min/max slope limits */
 
-double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, unsigned int regression, unsigned int norm, double *par) {
+GMT_LOCAL double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, unsigned int regression, unsigned int norm, double *par) {
 	/* Solve the linear regression problem for chosen misfit and norm by an iterative approach */
 	uint64_t k;
 	unsigned int n_iter = 0;
@@ -800,7 +800,7 @@ double regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint6
 
 #define GMTREGRESS_MAX_YORK_ITERATIONS	1000	/* Gotta have a stopper in case of bad data? */
 
-double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *w[], uint64_t n, double *par) {
 	/* Solution to general LS orthogonal regression with weights, per York et al. [2004] */
 	uint64_t i;
 	unsigned int n_iter = 0;
@@ -827,16 +827,16 @@ double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *
 		par[GMTREGRESS_SLOPE] = b_old;	/* Pass in previous best-fitting slope needed to update W */
 		W_sum = gmt_demeaning (GMT, X, Y, w, n, par, U, V, W, alpha, beta);	/* Sets the above variables */
 		/*  Step 5: Compute an improved estimate of the slope b */
-		b = gmt_sumprod3 (W, beta, V, n) / gmt_sumprod3 (W, beta, U, n);
+		b = eval_sumprod3 (W, beta, V, n) / eval_sumprod3 (W, beta, U, n);
 		/* Step 7: Calculate the corresponding intercept a (which is zero in U-V coordinates so we convert to X-Y) */
 		a = par[GMTREGRESS_YMEAN] - b * par[GMTREGRESS_XMEAN];
 		/* Step 8: Compute the adjusted points x (x,y) are the orthogonal projection of (X,Y) onto the regression line */
-		gmt_add (beta, par[GMTREGRESS_XMEAN], x, n);	/* Compute x (we don't actually need y so we dont do that here) */
+		eval_add (beta, par[GMTREGRESS_XMEAN], x, n);	/* Compute x (we don't actually need y so we dont do that here) */
 		/* Step 9: Compute u */
-		x_mean = gmt_sumprod2 (W, x, n) / W_sum;	/* Compute x_mean */
-		gmt_add (x, -x_mean, u, n);			/* Compute u */
+		x_mean = eval_sumprod2 (W, x, n) / W_sum;	/* Compute x_mean */
+		eval_add (x, -x_mean, u, n);			/* Compute u */
 		/* Step 10: Compute sigma_b and sigma_a */
-		sigma_b = 1.0 / gmt_sumprod3 (W, u, u, n);	/* Actually sigma_b^2 since we need that quantity first */
+		sigma_b = 1.0 / eval_sumprod3 (W, u, u, n);	/* Actually sigma_b^2 since we need that quantity first */
 		sigma_a = sqrt (1.0 / W_sum + x_mean * x_mean * sigma_b);
 		sigma_b = sqrt (sigma_b);			/* Now it is sigma_b */
 		/* Estimate weighted residuals (recycling V for holding the y-residuals) */
@@ -869,7 +869,7 @@ double LSxy_regress1D_york (struct GMT_CTRL *GMT, double *X, double *Y, double *
 	return (scale);
 }
 
-double LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
+GMT_LOCAL double LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], uint64_t n, double *par) {
 	/* Front to calling LSxy_regress1D_york or LSxy_regress1D_basic, depening on weights */
 	double scale;
 	if (w && w[GMT_X] && w[GMT_Y])	/* Have weights in x and y [and possibly correlation coefficients as well] */
@@ -879,7 +879,7 @@ double LSxy_regress1D (struct GMT_CTRL *GMT, double *x, double *y, double *w[], 
 	return (scale);
 }
 
-double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *par, unsigned int mode) {
+GMT_LOCAL double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double *w[], uint64_t n, unsigned int regression, unsigned int in_norm, double *par, unsigned int mode) {
 	/* Solves for the best regression of (x_in, y_in) given the current settings.
 	 * mode is only 1 when called to do RLS after the initial LMS regression returns. */
 	
@@ -973,7 +973,7 @@ double *do_regression (struct GMT_CTRL *GMT, double *x_in, double *y_in, double 
 				www[col] = ww[col];
 			else {	/* Must make unitary weights so we have something to change below */
 				www[col] = gmt_M_memory (GMT, NULL, n, double);
-				gmt_unitary (www[col], n);
+				ones (www[col], n);
 				made[col] = true;	/* So we know to free these arrays later */
 			}
 		}

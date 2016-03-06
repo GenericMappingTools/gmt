@@ -23,7 +23,7 @@
 
 /* Declare operator array */
 
-char *operator[GMTMATH_N_OPERATORS + 1] = {
+static char *operator[GMTMATH_N_OPERATORS + 1] = {
 
 @GMTMATH_OPERATOR_ARRAY@
 	"" /* last element is intentionally left blank */

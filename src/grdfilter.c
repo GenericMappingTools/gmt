@@ -795,7 +795,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct G
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 #ifdef DEBUG
-	unsigned int n_conv_tot = 0;
+	static unsigned int n_conv_tot = 0;
 #endif
 
 int GMT_grdfilter (void *V_API, int mode, void *args) {

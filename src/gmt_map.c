@@ -1885,7 +1885,7 @@ GMT_LOCAL uint64_t map_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, 
 
 #ifdef DEBUG
 /* If we need to dump out clipped polygon then set clip_dump = 1 during execution */
-int clip_dump = 0, clip_id = 0;
+GMT_LOCAL int clip_dump = 0, clip_id = 0;
 GMT_LOCAL void map_dumppol (uint64_t n, double *x, double *y, int *id) {
 	uint64_t i;
 	FILE *fp = NULL;

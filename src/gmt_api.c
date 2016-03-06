@@ -6202,7 +6202,7 @@ int GMT_Put_Row_ (int *rec_no, struct GMT_GRID *G, float *row) {
 }
 #endif
 
-char *ptrvoid (char ** p) { 	/* Handle as char ** just to determine if address is of a NULL pointer */
+GMT_LOCAL char *ptrvoid (char ** p) { 	/* Handle as char ** just to determine if address is of a NULL pointer */
 	return *p;
 }
 

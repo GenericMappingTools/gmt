@@ -5,7 +5,7 @@
  * All these functions are local (static) and included into gmt_sph.c where they are used.
  */
 
-double d_sign (doublereal *a, doublereal *b) {
+GMT_LOCAL double d_sign (doublereal *a, doublereal *b) {
 	double x;
 	x = (*a >= 0 ? *a : - *a);
 	return (*b >= 0 ? x : -x);

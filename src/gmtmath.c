@@ -3402,7 +3402,7 @@ GMT_LOCAL int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	return 0;
 }
 
-void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK *Sfrom)
+GMT_LOCAL void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK *Sfrom)
 {	/* Copy contents of Sfrom to Sto */
 	Sto->D          = Sfrom->D;
 	Sto->constant   = Sfrom->constant;
@@ -4218,7 +4218,7 @@ GMT_LOCAL int table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 
 #include "gmtmath.h"
 
-void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
+GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
 {	unsigned int i;
 	for (i = 0; i < GMTMATH_STACK_SIZE; i++) {
 		if (stack[i]->alloc_mode == 2)
@@ -4229,7 +4229,7 @@ void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack)
 	}
 }
 
-void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
+GMT_LOCAL void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
 {	unsigned int i;
 	for (i = 0; i < GMTMATH_STORE_SIZE; i++) {
 		if (recall[i] && !recall[i]->stored.constant) {
@@ -4244,7 +4244,7 @@ void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **recall)
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code); }
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_Ctrl (GMT, Ctrl); Free_Stack(API,stack); Free_Store(API,recall); Free_Misc;  gmt_end_module (GMT, GMT_cpy); bailout (code); }
 
-int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
+GMT_LOCAL int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	unsigned int expect;
 	int key;
 	bool check = GMT_IS_NAN, possible_number = false;
@@ -4314,7 +4314,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	return (GMTMATH_ARG_IS_BAD);	/* Dummy return to satisfy some compilers */
 }
 
-char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
+GMT_LOCAL char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
 	char *label = strchr (arg, '@') + 1;	/* Label that follows @ */
 	if (!label || label[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No label appended to STO|RCL|CLR operator!\n");
@@ -4323,7 +4323,7 @@ char *gmtmath_setlabel (struct GMT_CTRL *GMT, char *arg) {
 	return (label);
 }
 
-void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
+GMT_LOCAL void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!gmt_M_compat_check (GMT, 6)) return;	/* No checking so we may fail later */

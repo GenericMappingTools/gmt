@@ -23,7 +23,7 @@
 
 #define GRDMATH_N_OPERATORS @GRDMATH_N_OPERATORS@
 
-void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
+static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
 
 	/* Operator function	# of operands	# of outputs */

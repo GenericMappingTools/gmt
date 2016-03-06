@@ -1595,7 +1595,7 @@ GMT_LOCAL void grd_FACT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 
 /* Subroutines for grd_EXTREMA */
 
-int do_derivative (float *z, uint64_t this_node, int off, unsigned int type)
+GMT_LOCAL int do_derivative (float *z, uint64_t this_node, int off, unsigned int type)
 {	/* Examine a line of 3-points centered on the current this_node.
 	 * z is the data matrix.
 	 * off is shift to add to get index of the next value and subtract to get previous node.

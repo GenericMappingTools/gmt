@@ -114,7 +114,7 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #	define sys_siglist __sys_siglist
 #endif
 
-void process_cpu() {
+static void process_cpu() {
 	/* print current process accumulated cpu time */
 	struct rusage ru;
 	if (getrusage (RUSAGE_SELF, &ru) == -1 )
@@ -124,7 +124,7 @@ void process_cpu() {
 					 ru.ru_stime.tv_sec + ru.ru_stime.tv_usec / 1000000.0);
 }
 
-void process_mem() {
+static void process_mem() {
 	/* print current process memory usage */
 	double rss, vsize;
 #if defined(__APPLE__)
@@ -155,7 +155,7 @@ void process_mem() {
 	fprintf (stderr, "VmRSS: %.0lfkB VmSize: %.0lfkB\n", rss, vsize);
 }
 
-void process_info() {
+static void process_info() {
 	process_cpu();
 	process_mem();
 }

@@ -683,7 +683,7 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	return (0);
 }
 
-int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform) {
+GMT_LOCAL int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform) {
 	/* Deal with the constants or grids supplied via -L */
 	unsigned int i, j;
 	uint64_t ij;
@@ -1351,7 +1351,7 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 	return;
 }
 
-void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl) {
+GMT_LOCAL void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl) {
 	/* Place program options into the surface struct.  This was done this way
 	 * since surface.c relied heavily on global variables which are a no-no
 	 * in GMT5.  The simplest solution was to collect all those variables into

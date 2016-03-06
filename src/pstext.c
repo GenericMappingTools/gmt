@@ -119,7 +119,7 @@ struct PSTEXT_INFO {
 	struct GMT_FILL boxfill;
 };
 
-void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSTEXT_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSTEXT_CTRL);
@@ -138,13 +138,13 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-void Free_pstext_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.text);
 	gmt_M_free (GMT, C);
 }
 
-void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
+GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, char *text, struct PSTEXT_INFO *T) {
 	double offset[2];
 
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
@@ -187,7 +187,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	}
 }
 
-void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
+GMT_LOCAL void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C) {
 	gmt_M_memset (T, 1, struct PSTEXT_INFO);
 	if (C->T.mode != 'o' && C->C.dx == 0.0 && C->C.dy == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Cannot have non-rectangular text box if clearance (-C) is zero.\n");
@@ -217,7 +217,7 @@ void load_parameters_pstext (struct GMT_CTRL *GMT, struct PSTEXT_INFO *T, struct
 	T->block_justify = C->F.justify;
 }
 
-int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode) {
+GMT_LOCAL int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode) {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode.
 	 * Return 4 if GMT 4, 5 if GMT 5, -1 if nothing can be done */
@@ -256,7 +256,7 @@ int get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode) {
 	return (4);
 }
 
-int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
+GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	/* This displays the pstext synopsis and optionally full usage information */
 
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
@@ -351,7 +351,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 #define GET_CMD_TEXT	3
 #define GET_CMD_FORMAT	4
 
-int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options) {
+GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pstext and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
@@ -561,7 +561,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[]) {
+GMT_LOCAL int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[]) {
 	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
 	int ix, iy, nscan = 0;
 	unsigned int pos = 0;
@@ -608,7 +608,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
-#define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_pstext (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pstext task */
@@ -641,19 +641,19 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_pstext_usage (API, GMT_MODULE_PURPOSE, false));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE, false));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pstext_usage (API, GMT_USAGE, false));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE, false));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pstext_parse (GMT, Ctrl, options)) != 0) Return (error);
-	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMT_SYNOPSIS, true));	/* Return the synopsis with font listing */
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
+	if (Ctrl->L.active) Return (usage (API, GMT_SYNOPSIS, true));	/* Return the synopsis with font listing */
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
@@ -727,7 +727,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				if (line[0] == '\0') continue;	/* Can happen if reading from API memory */
 				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
-					GMT_putwords (GMT, PSL, plot_x, plot_y, paragraph, &T);
+					output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
 					n_processed = length = 0;
 					paragraph[0] = 0;	/* Empty existing text */
 					n_paragraphs++;
@@ -1003,7 +1003,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 
 	if (Ctrl->M.active) {
 		if (n_processed) {	/* Must output the last paragraph */
-			GMT_putwords (GMT, PSL, plot_x, plot_y, paragraph, &T);
+			output_words (GMT, PSL, plot_x, plot_y, paragraph, &T);
 			n_paragraphs++;
 		}
 	 	gmt_M_free (GMT, paragraph);

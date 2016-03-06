@@ -44,8 +44,8 @@ double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM 
 #define N_FAVOR_POLY	2
 
 #ifdef DEBUG
-bool dump = false;
-double dump_int_val;
+static bool dump = false;
+static double dump_int_val;
 #endif
 
 enum psscale_shift {

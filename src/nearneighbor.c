@@ -116,7 +116,7 @@ GMT_LOCAL void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **nod
 	}
 }
 
-void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
+GMT_LOCAL void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node) {
 	/* Frees allocated node space */
 
 	if (!node) return;	/* Nothing to do */

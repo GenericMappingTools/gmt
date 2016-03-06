@@ -291,7 +291,7 @@ GMT_LOCAL void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct G
 	gmt_M_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
-void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model) {
+GMT_LOCAL void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model) {
 	/* Routine to fit up elementary polynomial model of grd data,
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
 	where x,y are normalized to range [-1,1] and there are no

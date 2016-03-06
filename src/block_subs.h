@@ -27,16 +27,10 @@
 
 #if defined(BLOCKMEAN)
 #define BLOCKMEAN_CTRL BLOCK_CTRL
-#define NEW_BLK New_blockmean_Ctrl
-#define FREE_BLK Free_blockmean_Ctrl
 #elif defined(BLOCKMEDIAN)
 #define BLOCKMEDIAN_CTRL BLOCK_CTRL
-#define NEW_BLK New_blockmedian_Ctrl
-#define FREE_BLK Free_blockmedian_Ctrl
 #else
 #define BLOCKMODE_CTRL BLOCK_CTRL
-#define NEW_BLK New_blockmode_Ctrl
-#define FREE_BLK Free_blockmode_Ctrl
 #endif
 
 /*! All control options for this program (except common args) */
@@ -177,7 +171,7 @@ struct BLK_DATA {
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
 /*! Allocate and initialize a new control structure */
-GMT_LOCAL void *NEW_BLK (struct GMT_CTRL *GMT) {
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {
 	struct BLOCK_CTRL *C;
 	
 	C = gmt_M_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
@@ -193,7 +187,7 @@ GMT_LOCAL void *NEW_BLK (struct GMT_CTRL *GMT) {
 }
 
 /*! Deallocate control structure */
-GMT_LOCAL void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
+GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {
 	if (!C) return;
 	gmt_M_str_free (C->G.file);	
 	gmt_M_free (GMT, C);	

@@ -67,7 +67,7 @@ struct PSIMAGE_CTRL {
 	} M;
 };
 
-GMT_LOCAL void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSIMAGE_CTRL *C;
 
 	C = gmt_M_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
@@ -402,7 +402,7 @@ int GMT_psimage (void *V_API, int mode, void *args) {
 
 	GMT = gmt_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_psimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the psimage main code ----------------------------*/
