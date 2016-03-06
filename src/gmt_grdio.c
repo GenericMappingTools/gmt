@@ -102,7 +102,7 @@ EXTERN_MSC int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmt_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 #endif
-EXTERN_MSC void api_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+EXTERN_MSC void gmtapi_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 /* Local functions */
 
@@ -2142,7 +2142,7 @@ struct GMT_GRID *gmt_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	return (Gnew);
 }
 
-unsigned int grdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid) {
+unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid) {
 	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return 0;	/* Nothing to deallocate */
 	/* Only free G->data if allocated by GMT AND free_grid is true */
@@ -2150,7 +2150,7 @@ unsigned int grdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool
 		if (G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free_aligned (GMT, G->data);
 		G->data = NULL;	/* This will remove reference to external memory since gmt_M_free_aligned would not have been called */
 	}
-	if (G->extra) api_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
+	if (G->extra) gmtapi_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	//if (G->header && G->alloc_mode == GMT_ALLOC_INTERNALLY) gmt_M_free (GMT, G->header);
 	if (G->header) {	/* Free the header structure and anything allocated by it */
 		gmt_M_str_free (G->header->ProjRefWKT);
@@ -2163,7 +2163,7 @@ unsigned int grdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool
 
 void gmt_M_free_grid (struct GMT_CTRL *GMT, struct GMT_GRID **G, bool free_grid) {
 	/* By taking a reference to the grid pointer we can set it to NULL when done */
-	(void)grdio_free_grid_ptr (GMT, *G, free_grid);
+	(void)gmtgrdio_free_grid_ptr (GMT, *G, free_grid);
 	gmt_M_free (GMT, *G);
 }
 
@@ -2190,7 +2190,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 	return (false);
 }
 
-int grdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode) {
+int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode) {
 	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
 	double wesn_dup[4], inc_dup[2];
 	gmt_M_unused(mode);

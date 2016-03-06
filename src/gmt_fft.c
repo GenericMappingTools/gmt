@@ -101,7 +101,7 @@ GMT_LOCAL uint64_t fft_get_non_symmetric_f (unsigned int *f, unsigned int n) {
 #define FSIGNIF			24
 #endif
 
-void fft_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t) {
+void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t) {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
 	 * of the workspace that will be needed by the transform.
@@ -186,7 +186,7 @@ void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
 
-	fft_fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
+	gmtfft_fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
 	given_space += nx * ny;
 	given_space *= 8;
 	if (do_print)
@@ -213,7 +213,7 @@ void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 		                nyg = ny2 * ny3 * ny5;
 		                if (nyg < ny || nyg > ystop) continue;
 
-			fft_fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
+			gmtfft_fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
 			current_space += nxg*nyg;
 			current_space *= 8;
 			if (current_err < best_err) {

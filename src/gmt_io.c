@@ -169,10 +169,10 @@
 #include "common_byteswap.h"
 
 /* A few functions needed from elsewhere */
-EXTERN_MSC unsigned int api_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
-EXTERN_MSC int api_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
-EXTERN_MSC int api_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
-EXTERN_MSC char *api_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
+EXTERN_MSC unsigned int gmtapi_count_objects (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int geometry, unsigned int direction, int *first_ID);
+EXTERN_MSC int gmtapi_unregister_io (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
+EXTERN_MSC int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
+EXTERN_MSC char *gmtapi_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -2526,11 +2526,11 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	 * prevent us from register the data set separately in order to call GMT_gmtinfo.  We must temporarily
 	 * unregister the output, do our thing, then reregister again. */
 
-	n_reg = api_count_objects (GMT->parent, GMT_IS_DATASET, D->geometry, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
+	n_reg = gmtapi_count_objects (GMT->parent, GMT_IS_DATASET, D->geometry, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {	/* Yes, must save and unregister, then reregister later */
-		if ((item = api_validate_id (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMT->parent->error);
+		if ((item = gmtapi_validate_id (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMT->parent->error);
 		gmt_M_memcpy (&O, GMT->parent->object[item], 1, struct GMTAPI_DATA_OBJECT);
-		api_unregister_io (GMT->parent, object_ID, GMT_OUT);
+		gmtapi_unregister_io (GMT->parent, object_ID, GMT_OUT);
 	}
 
 	/* Determine w/e/s/n via GMT_gmtinfo */
@@ -2561,7 +2561,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, D)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
-	if ((item = api_validate_id (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) {
+	if ((item = gmtapi_validate_id (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
 	gmt_M_memcpy (GMT->parent->object[item], &O, 1, struct GMTAPI_DATA_OBJECT);	/* Restore what we had before */
@@ -6311,7 +6311,7 @@ void gmt_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols) {
 		gmtio_write_multilines (GMT, fp, GMT->common.h.title, "Title");
 	}
 	/* Always write command line */
-	gmt_write_tableheader (GMT, fp, api_create_header_item (GMT->parent, GMT_COMMENT_IS_COMMAND | GMT_COMMENT_IS_OPTION, GMT->current.options));
+	gmt_write_tableheader (GMT, fp, gmtapi_create_header_item (GMT->parent, GMT_COMMENT_IS_COMMAND | GMT_COMMENT_IS_OPTION, GMT->current.options));
 	if (GMT->common.h.remark) {	/* Optional remark(s) provided; could be several lines separated by \n */
 		gmtio_write_multilines (GMT, fp, GMT->common.h.remark, "Remark");
 	}

@@ -122,7 +122,7 @@ EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
 EXTERN_MSC void gmt_fft_initialization (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_fft_cleanup (struct GMT_CTRL *GMT);
-EXTERN_MSC void api_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
+EXTERN_MSC void gmtapi_garbage_collection (struct GMTAPI_CTRL *API, int level);	/* From gmt_api.c */
 EXTERN_MSC void gmt_translin (struct GMT_CTRL *GMT, double forw, double *inv);				/* Forward linear	*/
 EXTERN_MSC void gmt_itranslin (struct GMT_CTRL *GMT, double *forw, double inv);				/* Inverse linear	*/
 EXTERN_MSC double gmt_cartesian_dist (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
@@ -10277,7 +10277,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 		           GMT->current.proj.n_geodesic_calls, GMT->current.proj.n_geodesic_approx);
 	}
 
-	api_garbage_collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
+	gmtapi_garbage_collection (GMT->parent, GMT->hidden.func_level);	/* Free up all registered memory for this module level */
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
 

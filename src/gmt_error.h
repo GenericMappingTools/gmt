@@ -35,7 +35,7 @@
 /* Grid i/o error codes */
 
 /* external array with error descriptions */
-EXTERN_MSC const char* g_error_string[];
+EXTERN_MSC const char* gmt_error_string[];
 
 enum Gmt_error_code {
 	GMT_NOERROR_UNUSED=0,	/* The real GMT_NOERROR is declared in gmt_resources.h and is part of API */

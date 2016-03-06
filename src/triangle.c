@@ -1468,9 +1468,9 @@ size_t size;
 }
 
 #ifdef ANSI_DECLARATORS
-void trifree(VOID *memptr)
+static void trifree(VOID *memptr)
 #else /* not ANSI_DECLARATORS */
-void trifree(memptr)
+static void trifree(memptr)
 VOID *memptr;
 #endif /* not ANSI_DECLARATORS */
 

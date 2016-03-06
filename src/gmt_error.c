@@ -26,7 +26,7 @@
 
 #include "gmt_constants.h"
 
-const char *g_error_string[] = {
+const char *gmt_error_string[] = {
 	/* GMT_NOERROR */			"No internal GMT error",
 	/* GMT_GRDIO_NONUNIQUE_FORMAT */	"Non-unique grid format",
 	/* GMT_GRDIO_UNKNOWN_FORMAT */		"Not a supported grid format",

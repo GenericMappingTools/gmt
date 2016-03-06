@@ -34,7 +34,7 @@
 
 #include "declspec.h"
 /* external array with error descriptions */
-EXTERN_MSC const char* g_api_error_string[];
+EXTERN_MSC const char* gmt_api_error_string[];
 
 enum Gmt_api_error_code {
 	GMT_OK = 0,

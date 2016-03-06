@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-const char *g_api_error_string[] = {
+const char *gmt_api_error_string[] = {
 	/* GMT_OK */				"GMT_OK",
 	/* GMT_WRONG_MATRIX_SHAPE */		"GMT_WRONG_MATRIX_SHAPE",
 	/* GMT_ACCESS_NOT_ENABLED */		"GMT_ACCESS_NOT_ENABLED",

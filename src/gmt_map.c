@@ -73,7 +73,7 @@
  *	gmtlib_latpath :			Return path between 2 points of equal latitide\n
  *	gmtlib_lonpath :			Return path between 2 points of equal longitude\n
  *	map_radial_crossing :		Determine map crossing in the Lambert azimuthal equal area projection\n
- *	map_left_boundary :		Return left boundary in x-inches\n
+ *	gmtmap_left_boundary :		Return left boundary in x-inches\n
  *	map_linearxy :			Linear xy projection\n
  *	map_lon_inside :		Accounts for wrap-around in longitudes and checks for inside\n
  *	map_ellipse_crossing :		Find map crossings in the Mollweide projection\n
@@ -88,7 +88,7 @@
  *	map_rect_outside :		Determine if point is outside rect region\n
  *	map_rect_outside2 :		Determine if point is outside rect region (azimuthal proj only)\n
  *	map_rect_overlap :		Determine overlap between rect regions\n
- *	map_right_boundary :		Return x value of right map boundary\n
+ *	gmtmap_right_boundary :		Return x value of right map boundary\n
  *	map_xy_search :			Find xy map boundary\n
  *	map_wesn_clip:			Clip polygon to wesn boundaries\n
  *	map_wesn_crossing :		Find crossing between line and lon/lat rectangle\n
@@ -291,12 +291,12 @@ static char *GEOD_TEXT[3] = {"Vincenty", "Andoyer", "Rudoe"};
 EXTERN_MSC double gmt_get_angle (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 /*! . */
-double map_left_boundary (struct GMT_CTRL *GMT, double y) {
+double gmtmap_left_boundary (struct GMT_CTRL *GMT, double y) {
 	return ((*GMT->current.map.left_edge) (GMT, y));
 }
 
 /*! . */
-double map_right_boundary (struct GMT_CTRL *GMT, double y) {
+double gmtmap_right_boundary (struct GMT_CTRL *GMT, double y) {
 	return ((*GMT->current.map.right_edge) (GMT, y));
 }
 
@@ -4801,7 +4801,7 @@ GMT_LOCAL unsigned int map_wrap_around_check_x (struct GMT_CTRL *GMT, double *an
 		dx = GMT->current.map.width + jump;
 		yy[0] = yy[1] = last_y + (GMT->current.map.width - last_x) * dy / dx;
 		if (yy[0] < 0.0 || yy[0] > GMT->current.proj.rect[YHI]) return (0);
-		xx[0] = map_right_boundary (GMT, yy[0]);	xx[1] = map_left_boundary (GMT, yy[0]);
+		xx[0] = gmtmap_right_boundary (GMT, yy[0]);	xx[1] = gmtmap_left_boundary (GMT, yy[0]);
 		sides[0] = 1;
 		angle[0] = d_atan2d (dy, dx);
 	}
@@ -4809,7 +4809,7 @@ GMT_LOCAL unsigned int map_wrap_around_check_x (struct GMT_CTRL *GMT, double *an
 		dx = GMT->current.map.width - jump;
 		yy[0] = yy[1] = last_y + last_x * dy / dx;
 		if (yy[0] < 0.0 || yy[0] > GMT->current.proj.rect[YHI]) return (0);
-		xx[0] = map_left_boundary (GMT, yy[0]);	xx[1] = map_right_boundary (GMT, yy[0]);
+		xx[0] = gmtmap_left_boundary (GMT, yy[0]);	xx[1] = gmtmap_right_boundary (GMT, yy[0]);
 		sides[0] = 3;
 		angle[0] = d_atan2d (dy, -dx);
 	}
@@ -4833,14 +4833,14 @@ GMT_LOCAL void map_get_crossings_x (struct GMT_CTRL *GMT, double *xc, double *yc
 
 	xb -= 2.0 * gmtlib_half_map_width (GMT, yb);
 
-	dxa = xa - map_left_boundary (GMT, ya);
-	left_yb = map_left_boundary (GMT, yb);
+	dxa = xa - gmtmap_left_boundary (GMT, ya);
+	left_yb = gmtmap_left_boundary (GMT, yb);
 	dxb = left_yb - xb;
 	c = (doubleAlmostEqualZero (left_yb, xb)) ? 0.0 : 1.0 + dxa/dxb;
 	dyb = (gmt_M_is_zero (c)) ? 0.0 : fabs (yb - ya) / c;
 	yc[0] = yc[1] = (ya > yb) ? yb + dyb : yb - dyb;
-	xc[0] = map_left_boundary (GMT, yc[0]);
-	xc[1] = map_right_boundary (GMT, yc[0]);
+	xc[0] = gmtmap_left_boundary (GMT, yc[0]);
+	xc[1] = gmtmap_right_boundary (GMT, yc[0]);
 }
 
 /*! . */
@@ -4913,17 +4913,17 @@ GMT_LOCAL uint64_t map_truncate_x (struct GMT_CTRL *GMT, double *x, double *y, u
 		if (map_this_point_wraps_x (GMT, x[i1], x[i], w_last, w_this)) {
 			(*GMT->current.map.get_crossings) (GMT, xc, yc, x[i1], y[i1], x[i], y[i]);
 			if (l_or_r == -1)
-				GMT->current.plot.x[j] = map_left_boundary (GMT, yc[0]);
+				GMT->current.plot.x[j] = gmtmap_left_boundary (GMT, yc[0]);
 			else
-				GMT->current.plot.x[j] = map_right_boundary (GMT, yc[0]);
+				GMT->current.plot.x[j] = gmtmap_right_boundary (GMT, yc[0]);
 			GMT->current.plot.y[j] = yc[0];
 			j++;
 			if (j >= GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
 		}
 		if (l_or_r == -1) /* Left */
-			GMT->current.plot.x[j] = (x[i] >= GMT->current.map.half_width) ? map_left_boundary (GMT, y[i]) : x[i];
+			GMT->current.plot.x[j] = (x[i] >= GMT->current.map.half_width) ? gmtmap_left_boundary (GMT, y[i]) : x[i];
 		else	/* Right */
-			GMT->current.plot.x[j] = (x[i] < GMT->current.map.half_width) ? map_right_boundary (GMT, y[i]) : x[i];
+			GMT->current.plot.x[j] = (x[i] < GMT->current.map.half_width) ? gmtmap_right_boundary (GMT, y[i]) : x[i];
 		GMT->current.plot.y[j] = y[i];
 		j++, k++;
 		if (j >= GMT->current.plot.n_alloc) gmt_get_plot_array (GMT);
@@ -6591,7 +6591,7 @@ double gmtlib_half_map_width (struct GMT_CTRL *GMT, double y) {
 		case GMT_ECKERT4:
 		case GMT_ECKERT6:
 			if (!GMT->common.R.oblique && GMT->current.map.is_world)
-				half_width = map_right_boundary (GMT, y) - GMT->current.map.half_width;
+				half_width = gmtmap_right_boundary (GMT, y) - GMT->current.map.half_width;
 			else
 				half_width = GMT->current.map.half_width;
 			break;
@@ -7890,7 +7890,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 }
 
 /*! . */
-double map_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]) {
+double gmtmap_lat_swap_quick (struct GMT_CTRL *GMT, double lat, double c[]) {
 	/* Return latitude, in degrees, given latitude, in degrees, based on coefficients c */
 
 	double delta, cos2phi, sin2phi;

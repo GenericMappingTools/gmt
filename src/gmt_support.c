@@ -4889,7 +4889,7 @@ const char * GMT_strerror (int err) {
 	/* Returns the error string for a given error code "err"
 	 * Passes "err" on to nc_strerror if the error code is not one we defined */
 	if (err < 0) return nc_strerror (err);	/* Negative error codes come from netCDF */
-	return (g_error_string[err]);		/* Other errors are internal GMT errors */
+	return (gmt_error_string[err]);		/* Other errors are internal GMT errors */
 }
 
 /*! . */

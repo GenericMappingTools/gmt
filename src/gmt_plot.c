@@ -79,8 +79,8 @@ EXTERN_MSC int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS
 EXTERN_MSC bool gmt_genper_reset (struct GMT_CTRL *GMT, bool reset);
 EXTERN_MSC void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], int n);
 EXTERN_MSC void psl_set_int_array (struct PSL_CTRL *PSL, const char *param, int *array, int n);
-EXTERN_MSC double map_left_boundary (struct GMT_CTRL *GMT, double y);
-EXTERN_MSC double map_right_boundary (struct GMT_CTRL *GMT, double y);
+EXTERN_MSC double gmtmap_left_boundary (struct GMT_CTRL *GMT, double y);
+EXTERN_MSC double gmtmap_right_boundary (struct GMT_CTRL *GMT, double y);
 EXTERN_MSC void gmt_iobl (struct GMT_CTRL *GMT, double *lon, double *lat, double olon, double olat);	/* Convert oblique lon/lat to regular lon/lat */
 
 #define GMT_ELLIPSE_APPROX 72
@@ -2983,8 +2983,8 @@ GMT_LOCAL uint64_t plot_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *
 
 		xp = gmt_M_memory (GMT, NULL, GMT->current.plot.n, double);
 
-		x_on_border[JUMP_R] = map_left_boundary;	/* Pointers to functions that supply the x-coordinate of boundary for given y */
-		x_on_border[JUMP_L] = map_right_boundary;
+		x_on_border[JUMP_R] = gmtmap_left_boundary;	/* Pointers to functions that supply the x-coordinate of boundary for given y */
+		x_on_border[JUMP_L] = gmtmap_right_boundary;
 
 		/* Do the main truncation of bulk of polygon */
 
