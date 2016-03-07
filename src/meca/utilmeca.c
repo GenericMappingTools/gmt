@@ -8,7 +8,6 @@
 #include "gmt_dev.h"	/* to have gmt dev environment */
 #include "meca.h"
 #include "utilmeca.h"
-#include "nrutil.h"
 
 #define squared(x) ((x) * (x))
 

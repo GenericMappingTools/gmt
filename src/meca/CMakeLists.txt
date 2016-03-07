@@ -20,7 +20,7 @@
 #
 
 # source files
-set (SUPPL_LIB_SRCS utilmeca.c nrutil.c)
+set (SUPPL_LIB_SRCS utilmeca.c)
 set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
 
 # example files
