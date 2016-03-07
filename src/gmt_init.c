@@ -5013,7 +5013,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 			strncpy (GMT->current.language.month_name[0][i-1], full, 16U);
 			strncpy (GMT->current.language.month_name[1][i-1], abbrev, 16U);
 			strncpy (GMT->current.language.month_name[2][i-1], c, 16U);
-			gmtlib_str_toupper(abbrev);
+			gmt_str_toupper(abbrev);
 			strncpy (GMT->current.language.month_name[3][i-1], abbrev, 16U);
 			nm += i;
 		}

@@ -260,6 +260,8 @@ EXTERN_MSC void gmt_M_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P);
 EXTERN_MSC struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int source_type, unsigned int mode);
 EXTERN_MSC int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsigned int mode, struct GMT_PS *P);
 EXTERN_MSC void gmt_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj);
+EXTERN_MSC int gmt_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S);
+EXTERN_MSC void gmt_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC struct GMT_IMAGE * gmt_create_image (struct GMT_CTRL *GMT);
@@ -336,6 +338,8 @@ EXTERN_MSC int gmt_get_pair (struct GMT_CTRL *GMT, char *string, unsigned int mo
 EXTERN_MSC void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo);
 EXTERN_MSC void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double **yyy, uint64_t nn, struct GMT_DECORATE *G, struct GMT_TEXTSET *D, uint64_t seg);
 EXTERN_MSC unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **x, double **yy, uint64_t *nn, struct GMT_PEN *P);
+EXTERN_MSC int gmt_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode);
+EXTERN_MSC void gmt_str_toupper (char *string);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int gmt_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);

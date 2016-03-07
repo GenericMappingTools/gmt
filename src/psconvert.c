@@ -41,7 +41,7 @@
 
 #define GMT_PROG_OPTIONS "-V"
 
-EXTERN_MSC void gmtlib_str_toupper (char *string);
+EXTERN_MSC void gmt_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
@@ -1478,7 +1478,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
-			gmtlib_str_toupper (tag);
+			gmt_str_toupper (tag);
 
 			if (transparency) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "PS file with transparency must be converted to PDF before creating %s\n", tag);

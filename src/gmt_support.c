@@ -4520,61 +4520,6 @@ GMT_LOCAL bool support_straddle_dateline (double x0, double x1) {
 	return (false);
 }
 
-#if 0	/* Unused */
-/*! . */
-GMT_LOCAL int support_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode) {
-	/* Deals with linear trend in a dataset, depending on mode:
-	 * -1: Determine trend, and remove it from x,y. Return slope and intercept
-	 * 0 : Just determine trend. Return slope and intercept
-	 * +1: Restore trend in x,y based on given slope/intercept.
-	 * (x,y) is the data.  If x == NULL then data is equidistant with increment as the spacing.
-	 */
-	uint64_t i;
-	bool equidistant;
-	double xx;
-
-	equidistant = (x == NULL);	/* If there are no x-values we assume dx is passed via intercept */
-	if (mode < 1) {	/* Must determine trend */
-		uint64_t m;
-		double sum_x = 0.0, sum_xx = 0.0, sum_y = 0.0, sum_xy = 0.0;
-		for (i = m = 0; i < n; i++) {
-			if (gmt_M_is_dnan (y[i])) continue;
-			xx = (equidistant) ? increment*i : x[i];
-			sum_x  += xx;
-			sum_xx += xx*xx;
-			sum_y  += y[i];
-			sum_xy += xx*y[i];
-			m++;
-		}
-		if (m > 1) {	/* Got enough points to compute the trend */
-			*intercept = (sum_y*sum_xx - sum_x*sum_xy) / (m*sum_xx - sum_x*sum_x);
-			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
-		}
-		else {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with less than 2 points, return NaNs\n");
-			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
-			*slope = GMT->session.d_NaN;
-		}
-	}
-
-	if (mode) {	/* Either remove or restore trend from/to the data */
-		if (gmt_M_is_dnan (*slope)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with slope = NaN - skipped\n");
-			return (-1);
-		}
-		if (gmt_M_is_dnan (*intercept)) {
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with intercept = NaN - skipped\n");
-			return (-1);
-		}
-		for (i = 0; i < n; i++) {
-			xx = (equidistant) ? increment*i : x[i];
-			y[i] += (mode * (*intercept + (*slope) * xx));
-		}
-	}
-	return (GMT_NOERROR);
-}
-#endif
-
 /*! . */
 GMT_LOCAL double support_guess_surface_time (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny) {
 	/* Routine to guess a number proportional to the operations
@@ -4715,6 +4660,60 @@ char *gmtlib_file_unitscale (char *name) {
 	if (! (c[1] == 'u' || c[1] == 'U')) return NULL;		/* Did not have the proper modifier u or U */
 	if (strchr (GMT_LEN_UNITS2, c[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
 	return c;							/* We passed, return c */
+}
+
+/*! . */
+/* Used externally, e.g. GSFML */
+int gmt_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode) {
+	/* Deals with linear trend in a dataset, depending on mode:
+	 * -1: Determine trend, and remove it from x,y. Return slope and intercept
+	 * 0 : Just determine trend. Return slope and intercept
+	 * +1: Restore trend in x,y based on given slope/intercept.
+	 * (x,y) is the data.  If x == NULL then data is equidistant with increment as the spacing.
+	 */
+	uint64_t i;
+	bool equidistant;
+	double xx;
+
+	equidistant = (x == NULL);	/* If there are no x-values we assume dx is passed via intercept */
+	if (mode < 1) {	/* Must determine trend */
+		uint64_t m;
+		double sum_x = 0.0, sum_xx = 0.0, sum_y = 0.0, sum_xy = 0.0;
+		for (i = m = 0; i < n; i++) {
+			if (gmt_M_is_dnan (y[i])) continue;
+			xx = (equidistant) ? increment*i : x[i];
+			sum_x  += xx;
+			sum_xx += xx*xx;
+			sum_y  += y[i];
+			sum_xy += xx*y[i];
+			m++;
+		}
+		if (m > 1) {	/* Got enough points to compute the trend */
+			*intercept = (sum_y*sum_xx - sum_x*sum_xy) / (m*sum_xx - sum_x*sum_x);
+			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with less than 2 points, return NaNs\n");
+			*intercept = (m) ? sum_y : GMT->session.d_NaN;	/* Value of single y-point or NaN */
+			*slope = GMT->session.d_NaN;
+		}
+	}
+
+	if (mode) {	/* Either remove or restore trend from/to the data */
+		if (gmt_M_is_dnan (*slope)) {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with slope = NaN - skipped\n");
+			return (-1);
+		}
+		if (gmt_M_is_dnan (*intercept)) {
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with intercept = NaN - skipped\n");
+			return (-1);
+		}
+		for (i = 0; i < n; i++) {
+			xx = (equidistant) ? increment*i : x[i];
+			y[i] += (mode * (*intercept + (*slope) * xx));
+		}
+	}
+	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -10498,7 +10497,7 @@ void gmtlib_str_tolower (char *value) {
 }
 
 /*! . */
-void gmtlib_str_toupper (char *value) {
+void gmt_str_toupper (char *value) {
 	/* Convert entire string to upper case */
 	int i, c;
 	for (i = 0; value[i]; i++) {
@@ -10513,7 +10512,7 @@ void gmt_str_setcase (struct GMT_CTRL *GMT, char *value, int mode) {
 	if (mode == -1)
 		gmtlib_str_tolower (value);
 	else if (mode == +1)
-		gmtlib_str_toupper (value);
+		gmt_str_toupper (value);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bad mode (%d)\n", mode);
 }

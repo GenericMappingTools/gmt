@@ -362,22 +362,6 @@ GMT_LOCAL double gmtio_convert_aspatial_value (struct GMT_CTRL *GMT, unsigned in
 	return (value);
 }
 
-#if 0
-/*! Appends one more metadata item to this OGR structure */
-GMT_LOCAL int gmtio_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S) {
-	if (S == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtio_append_ogr_item: No GMT_OGR structure available\n");
-		return (GMT_PTR_IS_NULL);
-	}
-	S->n_aspatial++;
-	S->name = gmt_M_memory (GMT, S->name, S->n_aspatial, char *);
-	S->name[S->n_aspatial-1] = strdup (name);
-	S->type = gmt_M_memory (GMT, S->type, S->n_aspatial, unsigned int);
-	S->type[S->n_aspatial-1] = type;
-	return (GMT_NOERROR);
-}
-#endif
-
 /*! . */
 GMT_LOCAL void gmtio_handle_bars (struct GMT_CTRL *GMT, char *in, unsigned way) {
 	/* Way = 0: replace | inside quotes with ASCII 1, Way = 1: Replace ASCII 1 with | */
@@ -2012,7 +1996,7 @@ GMT_LOCAL int gmtio_scanf_g_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd
 				return (-1);
 				break;
 		}
-		gmtlib_str_toupper (month);
+		gmt_str_toupper (month);
 		for (i = ival[1] = 0; i < 12 && ival[1] == 0; i++) {
 			if (!strcmp (month, GMT->current.language.month_name[3][i])) ival[1] = i + 1;
 		}
@@ -2348,31 +2332,6 @@ GMT_LOCAL void gmtio_set_texttbl_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTTA
 		S = T->segment[seg];
 		T->n_records += S->n_rows;
 	}
-}
-
-/*! . */
-GMT_LOCAL void gmtio_write_ogr_header (FILE *fp, struct GMT_OGR *G) {
-	/* Write out table-level OGR/GMT header metadata */
-	unsigned int k, col;
-	char *flavor = "egpw";
-
-	fprintf (fp, "# @VGMT1.0 @G");
-	if (G->geometry > GMT_IS_POLYGON) fprintf (fp, "MULTI");
-	if (G->geometry == GMT_IS_POINT || G->geometry == GMT_IS_MULTIPOINT) fprintf (fp, "POINT\n");
-	if (G->geometry == GMT_IS_LINESTRING || G->geometry == GMT_IS_MULTILINESTRING) fprintf (fp, "LINESTRING\n");
-	if (G->geometry == GMT_IS_POLYGON || G->geometry == GMT_IS_MULTIPOLYGON) fprintf (fp, "POLYGON\n");
-	fprintf (fp, "# @R%s\n", G->region);
-	for (k = 0; k < 4; k++) {
-		if (G->proj[k]) fprintf (fp, "# @J%c%s\n", flavor[k], G->proj[k]);
-	}
-	if (G->n_aspatial) {
-		fprintf (fp, "# @N%s", G->name[0]);
-		for (col = 1; col < G->n_aspatial; col++) fprintf (fp, "|%s", G->name[col]);
-		fprintf (fp, "\n# @T%s", GMT_type[G->type[0]]);
-		for (col = 1; col < G->n_aspatial; col++) fprintf (fp, "|%s", GMT_type[G->type[col]]);
-		fprintf (fp, "\n");
-	}
-	fprintf (fp, "# FEATURE_DATA\n");
 }
 
 /*! . */
@@ -3262,7 +3221,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			for (k = 0; k < table->n_headers; k++) gmt_write_tableheader (GMT, fp, table->header[k]);	/* Write any existing header comments */
 			gmt_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 		}
-		if (table->ogr) gmtio_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
+		if (table->ogr) gmt_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
 	}
 
 	was = GMT->current.io.multi_segments[GMT_OUT];
@@ -3627,6 +3586,45 @@ bool gmt_z_input_is_nan_proxy (struct GMT_CTRL *GMT, unsigned int col, double va
 
 	if (GMT->common.d.is_zero[GMT_IN]) return doubleAlmostEqualZero (0.0, value);	/* Change to NaN if value is zero */
 	return doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], value);		/* Change to NaN if value ~nan_proxy */
+}
+
+/*! Appends one more metadata item to this OGR structure */
+int gmt_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S) {
+	if (S == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtio_append_ogr_item: No GMT_OGR structure available\n");
+		return (GMT_PTR_IS_NULL);
+	}
+	S->n_aspatial++;
+	S->name = gmt_M_memory (GMT, S->name, S->n_aspatial, char *);
+	S->name[S->n_aspatial-1] = strdup (name);
+	S->type = gmt_M_memory (GMT, S->type, S->n_aspatial, unsigned int);
+	S->type[S->n_aspatial-1] = type;
+	return (GMT_NOERROR);
+}
+
+/*! . */
+void gmt_write_ogr_header (FILE *fp, struct GMT_OGR *G) {
+	/* Write out table-level OGR/GMT header metadata */
+	unsigned int k, col;
+	char *flavor = "egpw";
+
+	fprintf (fp, "# @VGMT1.0 @G");
+	if (G->geometry > GMT_IS_POLYGON) fprintf (fp, "MULTI");
+	if (G->geometry == GMT_IS_POINT || G->geometry == GMT_IS_MULTIPOINT) fprintf (fp, "POINT\n");
+	if (G->geometry == GMT_IS_LINESTRING || G->geometry == GMT_IS_MULTILINESTRING) fprintf (fp, "LINESTRING\n");
+	if (G->geometry == GMT_IS_POLYGON || G->geometry == GMT_IS_MULTIPOLYGON) fprintf (fp, "POLYGON\n");
+	fprintf (fp, "# @R%s\n", G->region);
+	for (k = 0; k < 4; k++) {
+		if (G->proj[k]) fprintf (fp, "# @J%c%s\n", flavor[k], G->proj[k]);
+	}
+	if (G->n_aspatial) {
+		fprintf (fp, "# @N%s", G->name[0]);
+		for (col = 1; col < G->n_aspatial; col++) fprintf (fp, "|%s", G->name[col]);
+		fprintf (fp, "\n# @T%s", GMT_type[G->type[0]]);
+		for (col = 1; col < G->n_aspatial; col++) fprintf (fp, "|%s", GMT_type[G->type[col]]);
+		fprintf (fp, "\n");
+	}
+	fprintf (fp, "# FEATURE_DATA\n");
 }
 
 /*! . */

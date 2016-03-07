@@ -633,7 +633,7 @@ if (BUILD_DEVELOPER)
 		DESTINATION ${GMT_INCLUDEDIR}/gshhg
 		COMPONENT Runtime)
 	# Install meca supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
-	install (FILES meca/meca.h meca/nrutil.h meca/utilmeca.h
+	install (FILES meca/meca.h meca/utilmeca.h
 		DESTINATION ${GMT_INCLUDEDIR}/meca
 		COMPONENT Runtime)
 	# Install mgd77 supplements headers in separate subdirectory [These have no #define HAVE_* configuration]
