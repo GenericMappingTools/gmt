@@ -20,7 +20,8 @@
 # This will require sudo privileges.
 #
 #-------------------------------------------------------------------------
-printf "\ngmt_prepmex.sh will convert a GMT 5.2.x bundle so libraries are suitable for building the MATLAB interface.\n" >&2
+Rel=`gmt --version | awk '{print substr($1,1,3)}'`
+printf "\ngmt_prepmex.sh will convert a GMT %s.x bundle so libraries are suitable for building the MATLAB interface.\n" $Rel >&2
 printf "You must have sudo privileges on this computer.\n\nContinue? (y/n) [y]:" >&2
 read answer
 if [ "X$answer" = "Xn" ]; then
