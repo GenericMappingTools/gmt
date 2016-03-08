@@ -8113,6 +8113,8 @@ int gmt_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, int *n
 	char line[GMT_BUFSIZ] = {""}, type[8] = {""};
 	FILE *fp = GMT_fopen (GMT, A->file_custom, "r");
 
+	if (fp == NULL) return 1;
+
 	GMT_memset (n_int, 4, int);
 	while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
