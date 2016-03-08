@@ -156,7 +156,7 @@ struct X2SYS_FILE_INFO {
 	uint64_t n_rows;	/* Number of rows */
 	uint64_t n_segments;	/* Number of segments in this file */
 	uint64_t *ms_rec;	/* Pointer to array with start record for each segment */
-	char name[32];		/* Name of cruise or agency */
+	char name[64];		/* Name of cruise or agency */
 };
 
 struct X2SYS_BIX {
