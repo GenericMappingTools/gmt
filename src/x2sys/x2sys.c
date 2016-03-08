@@ -941,7 +941,7 @@ int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct
 		}
 		for (i = 0; i < s->n_out_columns; i++) z[i][j] = in[i];
 	}
-	strncpy (p->name, fname, 32U);
+	strncpy (p->name, fname, 63U);
 	p->n_rows = GMT->current.io.ndim;
 	p->ms_rec = NULL;
 	p->n_segments = 0;

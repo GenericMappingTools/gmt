@@ -2446,6 +2446,8 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	char line[GMT_BUFSIZ] = {""}, type[8] = {""};
 	FILE *fp = gmt_fopen (GMT, A->file_custom, "r");
 
+	if (fp == NULL) return 1;
+
 	gmt_M_memset (n_int, 4, int);
 	while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
