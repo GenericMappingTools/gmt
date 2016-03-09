@@ -196,7 +196,10 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 		gmt_set_geographic (GMT, GMT_IN);
 		GMT->current.proj.pars[0] = out[GMT_X];
 		GMT->current.proj.pars[1] = out[GMT_Y];
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) return (0);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+			gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
+			return (0);
+		}
 	
 		ix = 1.0 / GMT->current.proj.scale[GMT_X];
 		iy = 1.0 / GMT->current.proj.scale[GMT_Y];
@@ -1011,6 +1014,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			gmt_M_free (GMT, NN_dist);	 gmt_M_free (GMT, NN_info);	
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -1476,15 +1480,18 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			S2 = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			gmt_alloc_segment (GMT, S2, 0, C->n_columns, true);
 		}
-		Info = gmt_M_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
-		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = gmt_M_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 			
 		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+			gmt_M_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+			gmt_M_free_segment (GMT, &S2, GMT_ALLOC_INTERNALLY);
 			Return (API->error);				/* Enables data output and sets access mode */
 		}
+
+		Info = gmt_M_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
+		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = gmt_M_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 
 		gmt_init_distaz (GMT, Ctrl->D.unit, Ctrl->D.mode, GMT_MAP_DIST);
 
