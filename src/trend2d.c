@@ -562,26 +562,35 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
-	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.active, &work)) != 0) Return (error);
+	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.active, &work)) != 0) {
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
+		Return (error);
+	}
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (API->error);
 	}
 
 	if (xmin == xmax || ymin == ymax) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Maximum and minimum input values are the same.\n");
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (EXIT_FAILURE);
 	}
 	if (n_data == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Could not read any data.\n");
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (EXIT_FAILURE);
 	}
 	if (n_data < (uint64_t)Ctrl->N.value) {
