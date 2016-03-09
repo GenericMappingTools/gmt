@@ -613,6 +613,7 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 		if (n == 3) ival = i + 1;	/* Minimal lon, lat, abbrev */
 		if (ival <= 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hotspot ID numbers must be > 0\n");
+			gmt_fclose (GMT, fp);
 			return -1;
 		}
 		e[i].id = ival;
