@@ -4405,73 +4405,81 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 	gmt_getsharepath (GMT, "mgg", "carter", ".d", buffer, R_OK);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
  		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Cannot open r %s\n", buffer);
-                return (-1);
-        }
+		return (-1);
+	}
 
 	for (i = 0; i < 5; i++) {	/* Skip 4 headers, read 1 line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading Carter records\n");
-	                return (-1);
+        	fclose (fp);
+			return (-1);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
-                return(-1);
+       	fclose (fp);
+		return(-1);
 	}
 
-        for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
-                if (!fgets (buffer, GMT_BUFSIZ, fp)) {
+	for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
+		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read correction # %d\n", i);
+       		fclose (fp);
 			return (-1);
 		}
-                C->carter_correction[i] = (short)atoi (buffer);
-        }
+		C->carter_correction[i] = (short)atoi (buffer);
+	}
 
 	/* Read the offset table */
 
 	for (i = 0; i < 2; i++) {	/* Skip 1 headers, get next line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading Carter offset records\n");
-	                return (-1);
+       		fclose (fp);
+			return (-1);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
-                return (-1);
+       	fclose (fp);
+		return (-1);
 	}
 
-        for (i = 0; i < N_CARTER_OFFSETS; i++) {
-                 if (!fgets (buffer, GMT_BUFSIZ, fp)) {
+	for (i = 0; i < N_CARTER_OFFSETS; i++) {
+		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read offset # %d\n", i);
+       		fclose (fp);
 			return (-1);
 		}
-                C->carter_offset[i] = (short)atoi (buffer);
-        }
+		C->carter_offset[i] = (short)atoi (buffer);
+	}
 
 	/* Read the zone table */
 
 	for (i = 0; i < 2; i++) {	/* Skip 1 headers, get next line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading Carter zone records\n");
-	                return (-1);
+       		fclose (fp);
+			return (-1);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
-                return (-1);
+       	fclose (fp);
+		return (-1);
 	}
 
-        for (i = 0; i < N_CARTER_BINS; i++) {
-                 if (!fgets (buffer, GMT_BUFSIZ, fp)) {
+	for (i = 0; i < N_CARTER_BINS; i++) {
+		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "MGD77_carter_init: Could not read offset # %d\n", i);
 			return (-1);
 		}
-                C->carter_zone[i] = (short)atoi (buffer);
-        }
-        fclose (fp);
+		C->carter_zone[i] = (short)atoi (buffer);
+	}
+	fclose (fp);
 
 	/* Get here when all is well.  */
 
