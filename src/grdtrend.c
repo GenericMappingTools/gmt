@@ -553,6 +553,9 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (weighted) {
 		if (!gmt_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
+				gmt_M_free (GMT, gtd);		gmt_M_free (GMT, gtg);
+				gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
+				gmt_M_free (GMT, old);		gmt_M_free (GMT, pstuff);
 				Return (API->error);
 			}
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
