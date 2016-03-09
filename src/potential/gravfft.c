@@ -754,8 +754,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "It SHOULDN'T pass here\n");
 	}
 
-	if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+	if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K)) {
+		gmt_M_free (GMT, raised);
 		Return (EXIT_FAILURE);
+	}
 
 	/* Manually demux back since we may do loops below */
 	gmt_grd_mux_demux (API->GMT, Grid[0]->header, Grid[0]->data, GMT_GRID_IS_SERIAL);
@@ -806,6 +808,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid[0])) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY |
                         GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+		gmt_M_free (GMT, topo);
 		Return (API->error);
 	}
 
