@@ -5222,7 +5222,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	/* OK, try to do the importing */
 	if (in_ID != GMT_NOTSET) {	/* Make sure we select the item we just registered */
 		if ((item = gmtapi_validate_id (API, GMT_NOTSET, in_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) {
-			gmt_M_free (GMT, input);
+			gmt_M_str_free (input);
 			return_null (API, API->error);
 		}
 		API->object[item]->selected = true;	/* Make sure the item we want is now selected */
