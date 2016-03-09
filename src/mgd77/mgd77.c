@@ -5630,6 +5630,9 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 					c->modifier = &MGD77_Copy;
 				if (p[0] != '(') {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
+					for (pos = 0; pos < n_cruises; pos++) gmt_M_free (GMT, C_table[pos]);
+					gmt_M_free (GMT, C_table);
+					gmt_M_free (GMT, c);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				p++;
