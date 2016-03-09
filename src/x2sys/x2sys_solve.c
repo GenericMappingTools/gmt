@@ -403,6 +403,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		x2sys_end (GMT, S);
 		Return (EXIT_FAILURE);
 	}
 
@@ -486,6 +487,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 
 		if (GMT->common.b.ncol[GMT_IN] < (uint64_t)expect) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Binary file has %" PRIu64 " columns but %d is required\n", GMT->common.b.ncol[GMT_IN], expect);
+			gmt_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
 		}
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
@@ -570,6 +572,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
+			gmt_M_free (GMT, trk_list);
 			Return (EXIT_FAILURE);
 		}
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
