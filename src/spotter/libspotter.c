@@ -521,6 +521,8 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 		last_t = e[i].t_start;
 		if (e[i].t_stop >= e[i].t_start) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
+			gmt_fclose (GMT, fp);
+			gmt_M_free(GMT, e);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		spotter_setrot (GMT, &(e[i]));
@@ -554,7 +556,8 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	if (total_in && !total_out) spotter_total_to_stages (GMT, e, n, true, true);	/* Convert total reconstruction poles to forward stage poles */
 	if (!total_in && total_out) {
 		spotter_stages_to_total (GMT, e, n, true, true);	/* Convert forward stage poles to total reconstruction poles */
-		if (invert) for (i = 0; i < n; i++) {e[i].omega = -e[i].omega; e[i].omega_r = - e[i].omega_r;}
+		if (invert)
+			for (i = 0; i < n; i++) {e[i].omega = -e[i].omega; e[i].omega_r = - e[i].omega_r;}
 		invert = false;	/* Since we have taken care of this now */
 	}
 	if (n < n_alloc) e = gmt_M_memory (GMT, e, n, struct EULER);
@@ -707,6 +710,7 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 			while (stage < ns && t <= p[stage].t_stop) stage++;	/* Find first applicable stage pole */
 			if (stage == ns) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(spotter_backtrack) Ran out of stage poles for t = %g\n", t);
+				gmt_M_free(GMT, track);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			dt = MIN (p[stage].duration, t - MAX(p[stage].t_stop, t_zero));
@@ -887,6 +891,7 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 			/* while (stage < ns && (t + GMT_CONV8_LIMIT) < p[stage].t_stop) stage++; */	/* Find first applicable stage pole */
 			if (stage == ns) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
+				gmt_M_free(GMT, track);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			dt = MIN (tp[i], p[stage].t_start) - t;	/* Time interval to rotate */
