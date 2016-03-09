@@ -1405,8 +1405,8 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 			if (n_alloc >= this_end) {
 				n_alloc += MAX (GMT_CHUNK, n_int);
 				x = gmt_M_memory (GMT, x, n_alloc, double);
-				y = gmt_M_memory (GMT, x, n_alloc, double);
-				z = gmt_M_memory (GMT, x, n_alloc, double);
+				y = gmt_M_memory (GMT, y, n_alloc, double);
+				z = gmt_M_memory (GMT, z, n_alloc, double);
 			}
 
 			dx /= (floor((double)n_int) - 1);
