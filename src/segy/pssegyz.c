@@ -630,7 +630,10 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 
 	/* set up map projection and PS plotting */
 	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
-	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
+		if (fpi != stdin) fclose (fpi);
+		Return (GMT_RUNTIME_ERROR);
+	}
 	/* In this program we DO NOT want to call gmt_plane_perspective since that is already in the SEGV projection
 	 * Per Tim Henstock, Nov, 2015.
 	 * gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
