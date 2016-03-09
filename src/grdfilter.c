@@ -935,7 +935,9 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
 		nx_wrap = (int)gmt_M_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_GRID_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}
-	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->A.file)) == NULL) Return (API->error);	/* Precalculate area weights, optionally save debug grid */
+	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->A.file)) == NULL) { /* Precalculate area weights, optionally save debug grid */
+		Return (API->error);
+	}
 	gmt_M_memset (&F, 1, struct FILTER_INFO);
 
 	/* Set up the distance scalings for lon and lat, and assign pointer to distance function  */
@@ -1048,6 +1050,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 			wt_sum += Fin->data[ij_in];
 		}
 		if (GMT_Destroy_Data (API, &Fin) != GMT_OK) {	/* Done with this grid */
+			gmt_M_free (GMT, col_origin);
 			Return (API->error);
 		}
 		if (gmt_M_is_zero (wt_sum)) {	/* The custom filter is an operator; should have used -Fo */
