@@ -891,9 +891,17 @@ int GMT_project (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers data output */
+			for (rec = 0; rec < P.n_used; rec++) {
+				gmt_M_free (GMT, p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
+			}
+			gmt_M_free (GMT, p_data);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			for (rec = 0; rec < P.n_used; rec++) {
+				gmt_M_free (GMT, p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
+			}
+			gmt_M_free (GMT, p_data);
 			Return (API->error);
 		}
 
