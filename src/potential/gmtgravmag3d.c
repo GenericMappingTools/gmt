@@ -677,12 +677,15 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 		double out[3];
 		char save[GMT_LEN64] = {""};
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			gmt_M_free (GMT, loc_or);
 			Return (API->error);
 		}
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, y_obs);
+			gmt_M_free (GMT, body_verts);
 			Return (API->error);
 		}
 		strcpy (save, GMT->current.setting.format_float_out);
