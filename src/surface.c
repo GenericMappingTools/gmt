@@ -1408,8 +1408,8 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 			if (n_alloc >= this_end) {
 				n_alloc += MAX (GMT_CHUNK, n_int);
 				x = GMT_memory (GMT, x, n_alloc, double);
-				y = GMT_memory (GMT, x, n_alloc, double);
-				z = GMT_memory (GMT, x, n_alloc, double);
+				y = GMT_memory (GMT, y, n_alloc, double);
+				z = GMT_memory (GMT, z, n_alloc, double);
 			}
 
 			dx /= (floor((double)n_int) - 1);
