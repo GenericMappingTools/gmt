@@ -235,10 +235,10 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
 		strncpy (B[n].file, L[n].file, GMT_LEN256-1);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
-		for (n = 0; n < n_files; n++) {
-			gmt_M_str_free (L[n].file);	gmt_M_str_free (L[n].region);
-		}
-		gmt_M_free (GMT, L);
+			for (n = 0; n < n_files; n++) {
+				gmt_M_str_free (L[n].file);	gmt_M_str_free (L[n].region);
+			}
+			gmt_M_free (GMT, L);	gmt_M_free (GMT, B);
 			return (-1);
 		}
 		
