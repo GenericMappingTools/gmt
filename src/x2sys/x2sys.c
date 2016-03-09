@@ -1359,6 +1359,7 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 	while ((fread (&index, sizeof (uint32_t), 1U, fbin)) == 1U) {
 		if (fread (&no_of_tracks, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error bin index file\n");
+			fclose (fbin);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 		if (swap) {
@@ -1369,10 +1370,12 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 		for (i = 0; i < no_of_tracks; i++) {
 			if (fread (&id, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error bin index file\n");
+				fclose (fbin);
 				return (GMT_GRDIO_READ_FAILED);
 			}
 			if (fread (&flag, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error bin index file\n");
+				fclose (fbin);
 				return (GMT_GRDIO_READ_FAILED);
 			}
 			if (swap) {
