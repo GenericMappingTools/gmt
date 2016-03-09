@@ -873,6 +873,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				Out[GMT_Y]->data[ij] = (float)V[GMT_V];
 			}
 		}
+		gmt_M_free (GMT, xp);
+		gmt_M_free (GMT, yp);
 		for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
 			gmt_grd_init (GMT, Out[k]->header, options, true);
 			sprintf (Out[k]->header->remark, "Strain component %s", comp[k]);
@@ -882,8 +884,6 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		gmt_M_free (GMT, xp);
-		gmt_M_free (GMT, yp);
 	}
 
 	/* Clean up */
