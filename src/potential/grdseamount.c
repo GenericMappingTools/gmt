@@ -668,9 +668,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			gmt_M_free (GMT, V);
 			Return (API->error);
 		}
-		gmt_M_free (GMT, V);
+		gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
+		gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 		Return (GMT_OK);
 	}
 				
@@ -926,6 +928,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->M.file);
+		gmt_M_free (GMT, d_col);
 		Return (API->error);
 	}
 
