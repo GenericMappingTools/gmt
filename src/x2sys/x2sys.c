@@ -298,7 +298,10 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->dist_flag = 0;	/* Cartesian distances */
 	sprintf (X->separators, "%s\n", GMT_TOKEN_SEPARATORS);
 
-	if ((fp = x2sys_fopen (GMT, line, "r")) == NULL) return (X2SYS_BAD_DEF);
+	if ((fp = x2sys_fopen (GMT, line, "r")) == NULL) {
+		gmt_M_free (GMT, X);
+		return (X2SYS_BAD_DEF);
+	}
 
 	X->unit[X2SYS_DIST_SELECTION][0] = 'k';		X->unit[X2SYS_DIST_SELECTION][1] = '\0';	/* Initialize for geographic data (km and m/s) */
 	X->unit[X2SYS_SPEED_SELECTION][0] = GMT_MAP_DIST_UNIT;	X->unit[X2SYS_SPEED_SELECTION][1] = '\0';
@@ -731,6 +734,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 	if (fread (&year, sizeof (int), 1U, fp) != 1U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read leg year from %s\n", path);
+		fclose (fp);
 		return (-1);
 	}
 	p->year = year;
@@ -758,6 +762,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 		if (fread (&record, 18U, 1U, fp) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read record %" PRIu64 " from %s\n", j, path);
+			gmt_M_free (GMT, z);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
