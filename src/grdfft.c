@@ -378,6 +378,11 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	dim[GMT_ROW] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
+		gmt_M_free (GMT, X_pow);
+		gmt_M_free (GMT, Y_pow);
+		gmt_M_free (GMT, nused);
+		gmt_M_free (GMT, co_spec);
+		gmt_M_free (GMT, quad_spec);
 		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
