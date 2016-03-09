@@ -1482,6 +1482,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 		Return (API->error);
 	}
 
