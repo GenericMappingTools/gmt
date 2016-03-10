@@ -2705,7 +2705,7 @@ GMT_LOCAL int gmtio_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_
 		}
 	}
 	was = GMT->current.io.multi_segments[GMT_OUT];
-	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || table->segment[0]->header);
+	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || (table->n_segments == 1 && table->segment[0]->header));
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
 		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
@@ -3225,7 +3225,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 	}
 
 	was = GMT->current.io.multi_segments[GMT_OUT];
-	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || table->segment[0]->header);
+	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || (table->n_segments == 1 && table->segment[0]->header));
 	out = gmt_M_memory (GMT, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
