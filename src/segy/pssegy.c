@@ -524,12 +524,17 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 				tracelist = gmt_M_memory (GMT, tracelist, n_tracelist, double);
 			}
 		}
+		fclose(fpt);
 		n_tracelist = (int)ix;
 		GMT_Report (API, GMT_MSG_VERBOSE, "read in %d trace locations\n", n_tracelist);
 	}
 
 	/* set up map projection and PS plotting */
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		gmt_M_free (GMT, tracelist);
+		if (fpi != stdin) fclose (fpi);
+		Return (GMT_PROJECTION_ERROR);
+	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
