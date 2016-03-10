@@ -725,9 +725,8 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_OK) {
-		Return (API->error);
-	}
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, 0, NULL, Ctrl->Out.file, Out) != GMT_OK)
+		error++;
 		
 	/* Clean up memory */
 	
@@ -737,5 +736,8 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, body);
 
-	Return (EXIT_SUCCESS);
+	if (error)
+		Return (API->error);
+	else
+		Return (EXIT_SUCCESS);
 }
