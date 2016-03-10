@@ -723,7 +723,11 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 #endif
 		V = gmt_M_memory (GMT, NULL, n2 * n2, double);
 		s = gmt_M_memory (GMT, NULL, n2, double);
-		if ((error = gmt_svdcmp (GMT, A, (unsigned int)n2, (unsigned int)n2, s, V)) != 0) Return (error);
+		if ((error = gmt_svdcmp (GMT, A, (unsigned int)n2, (unsigned int)n2, s, V)) != 0) {
+			gmt_M_free (GMT, s);
+			gmt_M_free (GMT, V);
+			Return (error);
+		}
 
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = gmt_M_memory (GMT, NULL, n2, double);
@@ -732,6 +736,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			gmt_M_memcpy (eig, s, n2, double);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving eigenvalues\n");
+				gmt_M_free (GMT, eig);
 				Return (API->error);
 			}
 
@@ -743,6 +748,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				E->table[0]->segment[0]->coord[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
 			}
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_OK) {
+				gmt_M_free (GMT, eig);
 				Return (API->error);
 			}
 			if (Ctrl->C.mode == 1)
@@ -768,7 +774,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		gmt_M_memcpy (b, obs, n2, double);
 		limit = Ctrl->C.value;
 		n_use = gmt_solve_svd (GMT, A, (unsigned int)n2, (unsigned int)n2, V, s, b, 1U, obs, &limit, Ctrl->C.mode);
-		if (n_use == -1) Return (EXIT_FAILURE);
+		if (n_use == -1) {
+			gmt_M_free (GMT, b);
+			Return (EXIT_FAILURE);
+		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.2f %% of data variance]\n", n_use, n2, limit);
 
 		gmt_M_free (GMT, s);

@@ -736,8 +736,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	}
 	gmt_M_free (GMT, body);
 
-	if (error)
+	if (error) {
 		Return (API->error);
-	else
+	}
+	else {
 		Return (EXIT_SUCCESS);
+	}
 }
