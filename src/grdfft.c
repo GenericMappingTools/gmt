@@ -592,8 +592,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c) Butterworth band-pass: Append two wavelengths and order <lo>/<hi>/<order>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      where filter amplitudes = 0.5.  Replace wavelength by - to skip, e.g.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c) Butterworth band-pass: Append two wavelengths and order, i.e., <lo>/<hi>/<order>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      where filter amplitudes = 0.707.  Replace wavelength by - to skip, e.g.,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      try -F300/-/2 for a high-pass 2nd-order Butterworth filter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
