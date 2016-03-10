@@ -123,9 +123,9 @@ Optional Arguments
     Butterworth band-pass:
         Append *lo*/*hi*/*order*,
         the two wavelengths in correct units (see **-fg**) and the filter
-        order (an integer) to design a bandpass filter. At the given
+        order (an integer) to design a bandpass filter. At the given cut-off
         wavelengths the Butterworth filter weights will be 0.707 (i.e., the
-	power spectrum will be reduced by 0.5). To make a
+	power spectrum will therefore be reduced by 0.5). To make a
         highpass or lowpass filter, give a hyphen (-) for the *hi* or *lo*
         wavelength, respectively. E.g., **-F**-/30/2 will lowpass the data
         using a 2nd-order Butterworth filter, with half-weight at 30, while
