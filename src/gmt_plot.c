@@ -5559,7 +5559,6 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", GMT->current.ps.memname);
 		}
-		gmt_M_free(GMT, P);
 	}
 }
 
