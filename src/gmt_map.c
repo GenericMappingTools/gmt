@@ -5858,7 +5858,7 @@ GMT_LOCAL double map_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, d
 }
 
 /*! . */
-GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type) {
+GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned int type, char *unit_name) {
 	/* Assigns pointers to the chosen distance and azimuth functions */
 	char *type_name[3] = {"Map", "Contour", "Contour annotation"};
 	char *aux[6] = {"no", "authalic", "conformal", "meridional", "geocentric", "parametric"};
@@ -5890,34 +5890,34 @@ GMT_LOCAL void map_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsigned
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			GMT->current.map.dist[type].func = &map_flatearth_dist_meter;
 			GMT->current.map.azimuth_func  = &map_az_backaz_flatearth;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in meters\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			GMT->current.map.dist[type].func = &gmt_great_circle_dist_meter;
 			GMT->current.map.azimuth_func = &map_az_backaz_sphere;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m.\n",
-				type_name[type], aux[choice], rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m, in %s.\n",
+				type_name[type], aux[choice], rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, unit_name);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			GMT->current.map.dist[type].func = GMT->current.map.geodesic_meter;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using %s geodesics in meters\n", type_name[type], GEOD_TEXT[GMT->current.setting.proj_geodesic]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using %s geodesics in %s\n", type_name[type], GEOD_TEXT[GMT->current.setting.proj_geodesic], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			GMT->current.map.dist[type].func = map_flatearth_dist_degree;
 			GMT->current.map.azimuth_func = &map_az_backaz_flatearth;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in degrees\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			GMT->current.map.dist[type].func = &gmtlib_great_circle_dist_degree;
 			GMT->current.map.azimuth_func = &map_az_backaz_sphere;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in degrees.\n",
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in %s.\n", unit_name,
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			GMT->current.map.dist[type].func = &map_geodesic_dist_degree;
 			GMT->current.map.azimuth_func = GMT->current.map.geodesic_az_backaz;
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using geodesics in degrees\n", type_name[type]);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using geodesics in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			GMT->current.map.dist[type].func = &map_great_circle_dist_cos;
@@ -8660,16 +8660,16 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			/* First the three arc angular distance units */
 
 		case 'd':	/* Arc degrees on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_DEG + mode, type);
+			map_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-degree");
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
 		case 'm':	/* Arc minutes on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_DEG + mode, type);
+			map_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-minute");
 			GMT->current.map.dist[type].scale = GMT_DEG2MIN_F;
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
 		case 's':	/* Arc seconds on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_DEG + mode, type);
+			map_set_distaz (GMT, GMT_DIST_DEG + mode, type, "arc-second");
 			GMT->current.map.dist[type].scale = GMT_DEG2SEC_F;
 			GMT->current.map.dist[type].arc = true;	/* Angular measure */
 			break;
@@ -8677,26 +8677,26 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 			/* Various distance units on the planetary body */
 
 		case 'e':	/* Meters on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_M + mode, type);
+			map_set_distaz (GMT, GMT_DIST_M + mode, type, "meter");
 			break;
 		case 'f':	/* Feet on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_M + mode, type);
+			map_set_distaz (GMT, GMT_DIST_M + mode, type, "foot");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_FOOT;
 			break;
 		case 'k':	/* Kilometers on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_M + mode, type);
+			map_set_distaz (GMT, GMT_DIST_M + mode, type, "km");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_KM;
 			break;
 		case 'M':	/* Statute Miles on spherical body using desired metric mode  */
-			map_set_distaz (GMT, GMT_DIST_M + mode, type);
+			map_set_distaz (GMT, GMT_DIST_M + mode, type, "mile");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_MILE;
 			break;
 		case 'n':	/* Nautical miles on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_M + mode, type);
+			map_set_distaz (GMT, GMT_DIST_M + mode, type, "nautical mile");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_NAUTICAL_MILE;
 			break;
 		case 'u':	/* Survey feet on spherical body using desired metric mode */
-			map_set_distaz (GMT, GMT_DIST_M + mode, type);
+			map_set_distaz (GMT, GMT_DIST_M + mode, type, "survey feet");
 			GMT->current.map.dist[type].scale = 1.0 / METERS_IN_A_SURVEY_FOOT;
 			break;
 
@@ -8704,29 +8704,29 @@ unsigned int gmt_init_distaz (struct GMT_CTRL *GMT, char unit, unsigned int mode
 
 		case 'X':	/* Cartesian distances in user units */
 			proj_type = GMT_CARTESIAN;
-			map_set_distaz (GMT, GMT_CARTESIAN_DIST, type);
+			map_set_distaz (GMT, GMT_CARTESIAN_DIST, type, "");
 			break;
 		case 'C':	/* Cartesian distances (in PROJ_LENGTH_UNIT) after first projecting input coordinates with -J */
-			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type);
+			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ, type, "");
 			proj_type = GMT_GEO2CART;
 			break;
 
 		case 'R':	/* Cartesian distances squared in user units */
 			proj_type = GMT_CARTESIAN;
-			map_set_distaz (GMT, GMT_CARTESIAN_DIST2, type);
+			map_set_distaz (GMT, GMT_CARTESIAN_DIST2, type, "");
 			break;
 		case 'Z':	/* Cartesian distances squared (in PROJ_LENGTH_UNIT^2) after first projecting input coordinates with -J */
-			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ2, type);
+			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ2, type, "");
 			proj_type = GMT_GEO2CART;
 			break;
 
 			/* Specialized cosine distances used internally only (e.g., greenspline) */
 
 		case 'S':	/* Spherical cosine distances (for various gridding functions) */
-			map_set_distaz (GMT, GMT_DIST_COS + mode, type);
+			map_set_distaz (GMT, GMT_DIST_COS + mode, type, "");
 			break;
 		case 'P':	/* Spherical distances after first inversily projecting Cartesian coordinates with -J */
-			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ_INV, type);
+			map_set_distaz (GMT, GMT_CARTESIAN_DIST_PROJ_INV, type, "");
 			proj_type = GMT_CART2GEO;
 			break;
 

@@ -16,12 +16,13 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Author:	Paul Wessel & David Sandwell
- * Date:	1-JAN-2016
+ * Authors:	Paul Wessel & David Sandwell
+ * Date:	1-MAR-2016
  * Version:	5 API
  *
  * Brief synopsis: gpsgridder grids GPS vector strain data u(x,y) & v(x,y) using
- * Green's functions derived from a thin elastic sheet [Haines et al., 2015]
+ * Green's functions derived from a thin elastic sheet [e.g., Haines et al., 2015].
+ * See Sandwell et al. [2016] for details.
  */
 
 #define THIS_MODULE_NAME	"gpsgridder"
@@ -147,6 +148,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Fudging factor to avoid Green-function singularities.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Fd<del_radius> will add <del_radius> to all distances between nodes and points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (For geographical specify <del_radius>  in km).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Ff<factor> will add <r_min>*<factor> to all distances between nodes and points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       where <r_min> is the shortest inter-point distance found.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       [Default is -Ff0.01].\n");
@@ -409,11 +411,11 @@ GMT_LOCAL double get_gps_radius (struct GMT_CTRL *GMT, double *X0, double *X1) {
 
 GMT_LOCAL void get_gps_dxdy (struct GMT_CTRL *GMT, double *X0, double *X1, double *dx, double *dy, bool geo) {
 	/* Get increments dx,dy between point 1 and 0, as measured from point 1 */
-	if (geo) {	/* Do flat Earth approximation in meters */
+	if (geo) {	/* Do flat Earth approximation in km */
 		double dlon;
 		gmt_M_set_delta_lon (X0[GMT_X], X1[GMT_X], dlon);
-		*dx = dlon * cosd (0.5 * (X1[GMT_Y] + X0[GMT_Y])) * GMT->current.proj.DIST_M_PR_DEG;
-		*dy = (X1[GMT_Y] - X0[GMT_Y]) * GMT->current.proj.DIST_M_PR_DEG;
+		*dx = dlon * cosd (0.5 * (X1[GMT_Y] + X0[GMT_Y])) * GMT->current.proj.DIST_KM_PR_DEG;
+		*dy = (X1[GMT_Y] - X0[GMT_Y]) * GMT->current.proj.DIST_KM_PR_DEG;
 	}
 	else {	/* Cartesian data */
 		*dx = X1[GMT_X] - X0[GMT_X];
@@ -427,12 +429,16 @@ GMT_LOCAL void evaluate_greensfunctions (double dx, double dy, double par[], dou
 	
 	double dx2 = dx * dx, dy2 = dy * dy;	/* Squared offsets */
 	double dr2 = dx2 + dy2 + par[1];			/* Radius squared */
+	double c1, c2;
 	
-	G[0] = G[1] = par[0] * log (dr2);
+	c1 = (3.0 - par[0]) / 2.0;
+	c2 = (1.0 + par[0]);
+	
+	G[0] = G[1] = c1 * log (dr2);
 	dr2 = 1.0 / dr2;	/* Get inverse squared radius */
-	G[0] += dx2 * dr2;
-	G[1] += dy2 * dr2;
-	G[2] = dx * dy * dr2;
+	G[0] += c2 * dx2 * dr2;
+	G[1] += c2 * dy2 * dr2;
+	G[2]  = c2 * dx * dy * dr2;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -491,12 +497,14 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	geo = gmt_M_is_geographic (GMT, GMT_IN);
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Set pointers to 2-D distance functions */
+		GMT_Report (API, GMT_MSG_VERBOSE, "Convert lon/lat to geographic distances in km\n");
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
 		gmt_init_distaz (GMT, 'k', GMT_FLATEARTH, GMT_MAP_DIST);
 		normalize = GPS_TREND + GPS_NORM;
 	}
 	else {
+		GMT_Report (API, GMT_MSG_VERBOSE, "Using Cartesian user distances\n");
 		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 		normalize = GPS_TREND + GPS_NORM;
 	}
