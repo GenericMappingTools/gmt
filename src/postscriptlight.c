@@ -50,6 +50,7 @@
  * PSL_endlayer		: Place end object group DSC comment.
  * PSL_endplot		: Close plotfile
  * PSL_endsession	: Terminates the PSL session
+ * PSL_getplot		: Return string with entire PS code
  * PSL_plotarc		: Plots a circular arc
  * PSL_plotaxis		: Plots an axis with tickmarks and annotation/label
  * PSL_plotbitimage	: Plots a 1-bit image or imagemask
@@ -3629,7 +3630,7 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	PSL_command (PSL, "N %g %g M %g %g L %g %g L %g %g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
 	PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
 	if (PSL->internal.memory) {
-		psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hlpd the EPS */
+		psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hold the EPS */
 		strncat (&(PSL->internal.buffer[PSL->internal.n]), (char *)buffer, h->length);
 		PSL->internal.n += h->length;
 	}
