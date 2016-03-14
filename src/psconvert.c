@@ -519,8 +519,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
-			case '<':	/* Input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+			case '<':	/* Input files [Allow for file "-" under API calls] */
+				if (!(GMT->parent->mode && !strcmp (opt->arg, "-"))) {	/* Can check if file is sane */
+					if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+				}
 				Ctrl->In.n_files++;
 				break;
 
@@ -964,7 +966,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
-		if (API->mode && !strcmp (ps_names[k], "#")) {	/* Special use by external interface to rip the internal PSL PostScript string identified by file "#" */
+		if (API->mode && !strcmp (ps_names[k], "-")) {	/* Special use by external interface to rip the internal PSL PostScript string identified by file "#" */
 			struct GMT_PS *P = NULL;
 			if (GMT->PSL->internal.pmode != 3) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
