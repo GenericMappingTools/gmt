@@ -1143,7 +1143,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 #endif
 
 	gmt_M_free (GMT, tmp);
-	n_use = n;
+	//n_use = n;
 	return (n_use);
 }
 
