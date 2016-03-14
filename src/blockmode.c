@@ -570,6 +570,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	/* Ready to go. */
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		gmt_M_free (GMT, data);
 		Return (API->error);
 	}
 
