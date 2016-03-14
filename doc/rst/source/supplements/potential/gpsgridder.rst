@@ -38,11 +38,8 @@ Synopsis
 Description
 -----------
 
-**gpsgridder** computes the flexural response to loads using a range
-of user-selectable rheologies.  User may select from elastic, viscoelastic,
-or firmoviscous (with one or two viscous layers).  Temporal evolution can
-also be modeled by providing incremental load grids and specifying a
-range of model output times.
+**gpsgridder** grids 2-D vector data such as GPS velocities by using a coupled
+model based on 2-D elasticity.
 
 Required Arguments
 ------------------
@@ -91,7 +88,7 @@ Optional Arguments
 .. _-F:
 
 |-F|\ [**d**\ \|\ **f**]\ *fudge*\
-    The Green's functions are proportional to terms like 1/r^ and log(r)
+    The Green's functions are proportional to terms like 1/r^2 and log(r)
     and thus blow up for r == 0.  To prevent that we offer two schemes:
     **-Fd**\ *del_radius* lets you add a constant offset to all radii
     and must be specified in the user units.  Alternatively, use
@@ -173,7 +170,6 @@ Examples
 
 To compute the *u* and *v* strain rate grids from the GPS data set *gps.txt*,
 containing *x y u v du dv*, on a 2x2 arc minute grid for California, try
-for a 10 km thick plate with typical densities, try
 
    ::
 
