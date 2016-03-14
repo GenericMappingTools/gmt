@@ -520,7 +520,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files [Allow for file "-" under API calls] */
-				if (!(GMT->parent->mode && !strcmp (opt->arg, "-"))) {	/* Can check if file is sane */
+				if (!(GMT->parent->mode && !strcmp (opt->arg, "="))) {	/* Can check if file is sane */
 					if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				}
 				Ctrl->In.n_files++;
@@ -529,7 +529,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] or -A- */
-				n_errors = parse_A_settings (GMT, opt->arg, Ctrl);
+				n_errors += parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
@@ -966,7 +966,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
-		if (API->mode && !strcmp (ps_names[k], "-")) {	/* Special use by external interface to rip the internal PSL PostScript string identified by file "#" */
+		if (API->mode && !strcmp (ps_names[k], "=")) {	/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
 			struct GMT_PS *P = NULL;
 			if (GMT->PSL->internal.pmode != 3) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
@@ -994,6 +994,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		else
 			strncpy (ps_file, ps_names[k], GMT_BUFSIZ-1);
+
 		if ((fp = fopen (ps_file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
 			continue;
