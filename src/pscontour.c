@@ -783,8 +783,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
+				gmt_M_free (GMT, x);	gmt_M_free (GMT, y);	gmt_M_free (GMT, z);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -1453,7 +1455,10 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
 			label_mode |= 2;
 			if (Ctrl->contour.save_labels == 2) label_mode |= 4;
-			if ((error = gmt_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) Return (error);
+			if ((error = gmt_contlabel_save_begin (GMT, &Ctrl->contour)) != 0) {
+				gmt_M_free (GMT, cont);
+				Return (error);
+			}
 		}
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contoursand plot/save L|H labels */
 			size_t kk;
