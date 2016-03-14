@@ -848,8 +848,11 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* OK, here we have a recognized dataset ID */
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc,
+	                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+		free (tselect);
+		Return (API->error);
+	}
 
 	gmt_M_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
@@ -979,9 +982,11 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			gmt_M_free (GMT, x);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, x);
 			Return (API->error);
 		}
 	} else {	/* Need an entire (padded) grid */
@@ -1006,6 +1011,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 	}
 	if (myras.skip && fseek (fp, myras.skip, SEEK_CUR)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR skipping %" PRIi64 " bytes in %s.\n", (int64_t)myras.skip, myras.h.remark);
+		gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);
 		Return (EXIT_FAILURE);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Reading from raster %s\n", myras.h.remark);
@@ -1087,6 +1093,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR reading in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
 					gmt_M_free (GMT, buffer);
+					gmt_M_free (GMT, floatrasrow);
 					Return (EXIT_FAILURE);
 				}
 #ifdef DEBUG
