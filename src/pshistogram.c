@@ -872,7 +872,10 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
 	}
 	else {
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, F.wesn), "")) {
+			gmt_M_free (GMT, data);
+			Return (GMT_PROJECTION_ERROR);
+		}
 	}
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
