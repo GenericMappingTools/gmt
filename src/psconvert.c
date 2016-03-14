@@ -964,7 +964,25 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
-		if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
+		if (API->mode && strcmp (ps_names[k], "-")) {	/* Special use by external interface to rip the internal PSL PostScript string identified by file "-" */
+			struct GMT_PS *P = NULL;
+			if (GMT->PSL->internal.pmode != 3) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
+				continue;
+			}
+			/* For now we just create a temporary file */
+			P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
+			P->data = PSL_getplot (GMT->PSL);	/* Get the plot buffer */
+			P->n = GMT->PSL->internal.n;         /* Length of plot buffer */
+			P->mode = GMT->PSL->internal.pmode;  /* Mode of plot (1,2,3) */
+			P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
+			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
+			if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, ps_file, P) != GMT_OK) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to write PS structure to file %s!\n", ps_file);
+			}
+			delete = true;	/* Must delete this temporary file when done */
+		}
+		else if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
 			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
 			if (gmt_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s.  Skipping.\n", ps_file, ps_names[k]);
