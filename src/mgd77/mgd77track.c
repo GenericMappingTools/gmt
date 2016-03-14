@@ -630,7 +630,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 		
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		MGD77_Path_Free (GMT, n_paths, list);
+		Return (GMT_PROJECTION_ERROR);
+	}
 	
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -870,8 +873,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args) {
 		for (id = 0; id < n_id; id++)
 			annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat,
 			               cruise_id[id].angle, cruise_id[id].text, size);
-		gmt_M_free (GMT, cruise_id);
 	}
+	gmt_M_free (GMT, cruise_id);
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 	gmt_plotend (GMT);
