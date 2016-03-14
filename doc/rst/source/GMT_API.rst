@@ -2413,9 +2413,32 @@ Calling a GMT module
 
 Given your linked list of program options (or text array) and possibly
 some registered resources, you can now call the required GMT module
-using one of the two flavors discussed in :ref:`section <sec-func>` All
+using one of the two flavors discussed in :ref:`section <sec-func>`. All
 modules return an error or status code that your program should consider
-before processing the results.
+before processing the results.  There are some differences between calling
+modules on the command line and using them via the API.  These are discussed here.
+
+API-only modules
+~~~~~~~~~~~~~~~~
+
+There are two general-purpose modules that are not part of the command-line version of
+GMT.  These are the read and write modules.  Both take an option to specify what GMT
+resource is being read of written: **-Tc**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **p**\ \|\ **t**,
+which selects CPT, dataset, grid, image, PostScript, or textset, respectively.  In addition
+both modules accept the *infile* and *outfile* argument for source and destination.  These
+may be actual files of memory locations, of course.
+
+PostScript Access
+~~~~~~~~~~~~~~~~~
+
+The GMT module **psconvert** is normally given one or more PostScript files that may be
+converted to other formats.  When accessed by the API it may also be given the special
+file name "-", which means we are to use the internal PostScript string produced by
+the latest GMT plotting instead of any actual file name.  The module can access this
+string which must be a complete plot (i.e., it must have header, middle, and trailer
+and thus be a valid PostScript file).  This allows the API to convert plots to a
+suitable image format without any duplication and manipulation of the PostScript
+itself.
 
 Adjusting headers and comments
 ------------------------------
