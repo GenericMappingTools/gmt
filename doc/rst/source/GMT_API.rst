@@ -2433,7 +2433,7 @@ PostScript Access
 
 The GMT module **psconvert** is normally given one or more PostScript files that may be
 converted to other formats.  When accessed by the API it may also be given the special
-file name "-", which means we are to use the internal PostScript string produced by
+file name "=", which means we are to use the internal PostScript string produced by
 the latest GMT plotting instead of any actual file name.  The module can access this
 string which must be a complete plot (i.e., it must have header, middle, and trailer
 and thus be a valid PostScript file).  This allows the API to convert plots to a

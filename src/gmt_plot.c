@@ -5550,7 +5550,8 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	for (i = 0; i < 3; i++) gmt_M_str_free (GMT->current.map.frame.axis[i].file_custom);
 	PSL_endplot (PSL, !GMT->common.K.active);
 	
-	if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
+	// if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
+		if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
 		struct GMT_PS *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
 		P->n = PSL->internal.n;         /* Length of plot buffer */
