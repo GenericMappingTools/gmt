@@ -38,7 +38,8 @@ Description
 [or standard input] and interpolates the time-series or spatial profile at locations
 where the user needs the values. The user must provide the column number
 of the independent (monotonically increasing **or** decreasing)
-variable. Equidistant or arbitrary sampling can be selected. All columns
+variable, here called *time* (it may of course be any type of quantity).
+Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available. Extrapolation outside the range of the input data
 is not supported. 
@@ -54,7 +55,7 @@ Optional Arguments
 *table*
     This is one or more ASCII [of binary, see
     **-bi**] files with one column containing the
-    independent variable (which must be monotonically in/de-creasing)
+    independent *time* variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
 
@@ -96,7 +97,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ *knotfile*
-    *knotfile* is an optional ASCII file with the x locations where the
+    *knotfile* is an optional ASCII file with the *time* locations where the
     data set will be resampled in the first column. Note: If **-H** is
     selected it applies to both *table* and *knotfile*. Also note that
     **-i** never applies to *knotfile* since we always consider the
@@ -105,16 +106,16 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *start*\ [*stop*] 
-    For equidistant sampling, *start* indicates the location of the
+    For equidistant sampling, *start* indicates the *time* of the
     first output value. [Default is the smallest even multiple of *inc*
     inside the range of *table*]. Optionally, append /*stop* to
-    indicate the location of the last output value [Default is the
+    indicate the *time* of the last output value [Default is the
     largest even multiple of *inc* inside the range of *table*].
 
 .. _-T:
 
 **-T**\ *col*
-    Sets the column number of the independent variable [Default is 0
+    Sets the column number of the independent *time* variable [Default is 0
     (first)]. 
 
 .. _-V:
