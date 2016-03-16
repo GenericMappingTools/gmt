@@ -2068,7 +2068,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 */
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
-	double xx[4], yy[4], off[2], yshift[2], trim[2], xp = 0.0;
+	double xx[6], yy[6], off[2], yshift[2], trim[2], xp = 0.0;
 	int length, asymmetry[2], n, heads, outline, fill, status;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
@@ -2160,6 +2160,26 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 					xx[n] = xp + headlength; yy[n++] = headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				break;
+			case PSL_VEC_TAIL:
+				xx[0] = xp + tailwidth; yy[0] = -yshift[PSL_BEGIN];	n = 1;	/* Vector tip */
+				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+					xx[n] = xp + tailwidth - 0.5 * headwidth; yy[n++] = -0.5*headwidth;
+					xx[n] = xx[n-1] - headlength; yy[n++] = -0.5*headwidth;
+				}
+				xx[n] = xp + tailwidth - headlength; yy[n++] = -yshift[PSL_BEGIN];
+				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+					xx[n] = xp + tailwidth - 0.5 * headwidth - headlength; yy[n++] = 0.5*headwidth;
+					xx[n] = xx[n-1] + headlength; yy[n++] = 0.5*headwidth;
+				}
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
+				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
+				if (asymmetry[PSL_BEGIN] == 0) {	/* Draw feather center */
+					PSL_command (PSL, "V 0 W ");
+					xx[1] = xp + tailwidth - headlength; yy[1] = -yshift[PSL_BEGIN];
+					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);				/* Draw vector line body */
+					PSL_command (PSL, "U\n");
+				}
 				break;
 			case PSL_VEC_TAIL_PLAIN:
 				n = 0;
