@@ -10393,6 +10393,9 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				S->v.status |= GMT_VEC_BEGIN;
 				switch (p[1]) {
 					case 'a': S->v.v_kind[0] = GMT_VEC_ARROW;	break; /* Explicitly selected arrow head */
+					case 'A': S->v.v_kind[0] = GMT_VEC_ARROW_PLAIN;	break;
+					case 'i': S->v.v_kind[0] = GMT_VEC_TAIL;	break;
+					case 'I': S->v.v_kind[0] = GMT_VEC_TAIL_PLAIN;	break;
 					case 'c': S->v.v_kind[0] = GMT_VEC_CIRCLE;	break;
 					case 's': S->v.v_kind[0] = GMT_VEC_SQUARE;	break;
 					case 't': S->v.v_kind[0] = GMT_VEC_TERMINAL;	break;
@@ -10410,7 +10413,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				switch (p[1]) {
 					case 'a': S->v.v_kind[1] = GMT_VEC_ARROW;	break;	/* Explicitly selected arrow head */
 					case 'c': S->v.v_kind[1] = GMT_VEC_CIRCLE;	break;
-					case 's': S->v.v_kind[0] = GMT_VEC_SQUARE;	break;
+					case 's': S->v.v_kind[1] = GMT_VEC_SQUARE;	break;
 					case 't': S->v.v_kind[1] = GMT_VEC_TERMINAL;	break;
 			  	 	case 'l': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_L;	break;	/* Only left  half of head requested */
 			  	  	case 'r': S->v.v_kind[1] = GMT_VEC_ARROW;	S->v.status |= GMT_VEC_END_R;	break;	/* Only right half of head requested */

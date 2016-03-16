@@ -2150,6 +2150,28 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				break;
+			case PSL_VEC_ARROW_PLAIN:
+				n = 0;
+				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+					xx[n] = xp + headlength; yy[n++] = -headwidth;
+				}
+				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
+				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+					xx[n] = xp + headlength; yy[n++] = headwidth;
+				}
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				break;
+			case PSL_VEC_TAIL_PLAIN:
+				n = 0;
+				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+					xx[n] = xp - headlength; yy[n++] = -headwidth;
+				}
+				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
+				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+					xx[n] = xp - headlength; yy[n++] = headwidth;
+				}
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				break;
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[PSL_BEGIN] == -1)	/* Need left side */
 					PSL_plotarc (PSL, xp, 0.0, r, 0.0, 180.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
@@ -2199,17 +2221,39 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 			case PSL_VEC_ARROW:
 				xx[0] = xp; yy[0] = yshift[PSL_END];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_END] != +1) {	/* Need left side */
-					xx[n] = xp -headlength; yy[n++] = headwidth;
+					xx[n] = xp - headlength; yy[n++] = headwidth;
 				}
 				if (asymmetry[PSL_END] || headshape != 0.0) {	/* Need center back of head */
 					xx[n] = xp -0.5 * (2.0 - headshape) * headlength; yy[n++] = yshift[PSL_END];
 				}
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
-					xx[n] = xp -headlength; yy[n++] = -headwidth;
+					xx[n] = xp - headlength; yy[n++] = -headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s \n", dump[fill], line[outline]);
 				break;	/* Finalize, then reset outline parameter */
+			case PSL_VEC_ARROW_PLAIN:
+				n = 0;
+				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+					xx[n] = xp - headlength; yy[n++] = -headwidth;
+				}
+				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
+				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+					xx[n] = xp - headlength; yy[n++] = headwidth;
+				}
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				break;
+			case PSL_VEC_TAIL_PLAIN:
+				n = 0;
+				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
+					xx[n] = xp + headlength; yy[n++] = -headwidth;
+				}
+				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
+				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
+					xx[n] = xp + headlength; yy[n++] = headwidth;
+				}
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				break;
 			case PSL_VEC_CIRCLE:
 				if (asymmetry[PSL_END] == -1)	/* Need left side */
 					PSL_plotarc (PSL, xp, 0.0, r, 0.0, 180.0, PSL_MOVE);	/* Draw the (possibly shortened) arc */
