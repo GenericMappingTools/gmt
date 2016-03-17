@@ -518,9 +518,9 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
-				if ((n_pts = gmt_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
+				if ((n_pts = (int)gmt_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
 					lon = S->coord[GMT_X]; lat = S->coord[GMT_Y];
-					n_pts = S->n_rows;
+					n_pts = (int)S->n_rows;
 					must_free = false;
 				}
 				for (j = 0; j < n_pts; j++) {	/* Apply map projection */
