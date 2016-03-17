@@ -10,14 +10,16 @@ end point of the segment:
     **+a**\ *angle* sets the angle of the vector head apex [30].
 
     **+b** places a vector head at the beginning of the vector path [none].
-    Optionally, append **t** for a terminal line, **c** for a circle, or
-    **a** for arrow [Default].
+    Optionally, append **t** for a terminal line, **c** for a circle,
+    **a** for arrow [Default], **i** for tail, **A** for plain arrow,
+    and **I* for plain tail.
     Further append **l**\|\ **r** to only draw the left or right
     side of this head [both sides].
 
     **+e** places a vector head at the end of the vector path [none].
-    Optionally, append **t** for a terminal line, **c** for a circle, or
-    **a** for arrow [Default].
+    Optionally, append **t** for a terminal line, **c** for a circle,
+    **a** for arrow [Default], **i** for tail, **A** for plain arrow,
+    and **I* for plain tail.
     Further append **l**\|\ **r** to only draw the left or right
     side of this head [both sides].
 

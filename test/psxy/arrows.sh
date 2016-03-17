@@ -1,8 +1,10 @@
 #!/bin/bash
 ps=arrows.ps
-xr=`gmt math -Q 1 30 COSD MUL 1.5 ADD =`
+xr=`gmt math -Q 1 15 COSD MUL 1.5 ADD =`
+xri=`gmt math -Q 1 15 COSD MUL 1.5 SUB =`
 xl=`gmt math -Q $xr NEG =`
-gmt psbasemap -R-3/3/0/9 -Jx1i -P -Baf -K > $ps
+xli=`gmt math -Q $xri NEG =`
+gmt psbasemap -R-3/3/0/9 -Jx1i -P -Baf -K -Xc > $ps
 gmt psxy -R -J -O -K -W0.5p << EOF >> $ps
 > -W0.5p
 -1.5	0
@@ -16,6 +18,12 @@ $xl	9
 >
 $xr	0
 $xr	9
+>
+$xli	0
+$xli	9
+>
+$xri	0
+$xri	9
 EOF
 echo 0 8.8 0 3i | gmt psxy -R -J -O -K -Sv1i+jc -W6p --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
 echo 0 8.2 0 3i | gmt psxy -R -J -O -K -Sv1i+ea+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_MITER_LIMIT=0 >> $ps
@@ -33,5 +41,3 @@ echo 0 1.6 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eI+jc -W6p -Gred --MAP_VECTOR_SH
 echo 0 1.0 0 3i | gmt psxy -R -J -O -K -Sv1i+bI+eI+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
 echo 0 0.4 0 3i | gmt psxy -R -J -O -K -Sv1i+bA+eA+jc -W6p -Gred --MAP_VECTOR_SHAPE=0.5 --PS_LINE_CAP=round >> $ps
 gmt psxy -R -J -O -T >> $ps
-#gmt psconvert $ps -Tf -P
-#open arrow.pdf

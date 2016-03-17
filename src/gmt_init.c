@@ -6054,10 +6054,12 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
 	gmt_message (GMT, "\t   [Left and right are defined by looking from start to end of vector]\n");
 	gmt_message (GMT, "\t     +a<angle> to set angle of the vector head apex [30]\n");
 	gmt_message (GMT, "\t     +b to place a vector head at the beginning of the vector [none].\n");
-	gmt_message (GMT, "\t       Append t for terminal, c for circle, s for square, or a for arrow [Default].\n");
+	gmt_message (GMT, "\t       Append t for terminal, c for circle, s for square, a for arrow [Default],\n");
+	gmt_message (GMT, "\t       i for tail, A for plain arrow, and I for plain tail.\n");
 	gmt_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
 	gmt_message (GMT, "\t     +e to place a vector head at the end of the vector [none].\n");
-	gmt_message (GMT, "\t       Append t for terminal, c for circle, or a for arrow [Default].\n");
+	gmt_message (GMT, "\t       Append t for terminal, c for circle, s for square, a for arrow [Default],\n");
+	gmt_message (GMT, "\t       i for tail, A for plain arrow, and I for plain tail.\n");
 	gmt_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
 	if (mode & 8) gmt_message (GMT, "\t     +g<fill> to set head fill or use - to turn off fill [default fill].\n");
 	if (mode & 1) gmt_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");

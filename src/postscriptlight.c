@@ -2057,6 +2057,10 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 	return (image_no);
 }
 
+#define FIN_SLANT_COS	0.707106781187	/* I.e., 45 degrees slant */
+#define FIN_LENGTH_SCALE	0.66666667	/* 2/3 the length of the vector */
+#define FIN_HEIGTH_SCALE	0.5	/* 1/2 the width of the vector */
+
 static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Will make sure that arrow has a finite width in PS coordinates.
 	 * param must hold up to 11 values:
@@ -2068,7 +2072,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 */
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
-	double xx[6], yy[6], off[2], yshift[2], trim[2], xp = 0.0;
+	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0;
 	int length, asymmetry[2], n, heads, outline, fill, status;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
@@ -2100,6 +2104,10 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	kind[PSL_END] = (unsigned int)lrint (param[8]);
 	off[PSL_BEGIN] = (kind[PSL_BEGIN] == PSL_VEC_ARROW) ? 0.5 * (2.0 - headshape) * headlength : 0.0;
 	off[PSL_END] = (kind[PSL_END] == PSL_VEC_ARROW) ? 0.5 * (2.0 - headshape) * headlength : 0.0;
+	if (kind[PSL_BEGIN] == PSL_VEC_ARROW_PLAIN) off[PSL_BEGIN] = 0.5 * tailwidth *  headlength / headwidth;
+	else if (kind[PSL_BEGIN] == PSL_VEC_TAIL) off[PSL_BEGIN] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
+	if (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) off[PSL_END] = 0.5 * tailwidth *  headlength / headwidth;
+	else if (kind[PSL_END] == PSL_VEC_TAIL) off[PSL_END] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
@@ -2151,32 +2159,43 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				break;
 			case PSL_VEC_ARROW_PLAIN:
+				/* Must set up clip path (xc,yc) to ensure tip is at end of vector, AND double
+				 * the pen thickness since half will be clipped. */
 				n = 0;
+				xc[0] = xp + headlength; yc[0] = -headwidth;
 				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
 					xx[n] = xp + headlength; yy[n++] = -headwidth;
 				}
 				xx[n] = xp; yy[n++] = -yshift[PSL_BEGIN];	/* Vector tip */
+				xc[1] = xp; yc[1] = -yshift[PSL_BEGIN];	/* Vector tip */
 				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
 					xx[n] = xp + headlength; yy[n++] = headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				xc[2] = xp + headlength; yc[2] = headwidth;
+				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
+				PSL_setlinewidth (PSL, 2.0*tailwidth * PSL_POINTS_PER_INCH);
+				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
+				PSL_command (PSL, "P clip N ");
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
+				PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
-				xx[0] = xp + tailwidth; yy[0] = -yshift[PSL_BEGIN];	n = 1;	/* Vector tip */
+				xx[0] = xp + tailwidth + off[PSL_BEGIN]; yy[0] = -yshift[PSL_BEGIN];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_BEGIN] != +1) {	/* Need left side */
-					xx[n] = xp + tailwidth - 0.5 * headwidth; yy[n++] = -0.5*headwidth;
-					xx[n] = xx[n-1] - headlength; yy[n++] = -0.5*headwidth;
+					xx[n] = xp + tailwidth - FIN_SLANT_COS * headwidth + off[PSL_BEGIN]; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
 				}
-				xx[n] = xp + tailwidth - headlength; yy[n++] = -yshift[PSL_BEGIN];
+				xx[n] = xp + tailwidth - FIN_LENGTH_SCALE * headlength + off[PSL_BEGIN]; yy[n++] = -yshift[PSL_BEGIN];
 				if (asymmetry[PSL_BEGIN] != -1) {	/* Need right side */
-					xx[n] = xp + tailwidth - 0.5 * headwidth - headlength; yy[n++] = 0.5*headwidth;
-					xx[n] = xx[n-1] + headlength; yy[n++] = 0.5*headwidth;
+					xx[n] = xp + tailwidth - FIN_SLANT_COS * headwidth - FIN_LENGTH_SCALE * headlength + off[PSL_BEGIN]; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				if (asymmetry[PSL_BEGIN] == 0) {	/* Draw feather center */
 					PSL_command (PSL, "V 0 W ");
-					xx[1] = xp + tailwidth - headlength; yy[1] = -yshift[PSL_BEGIN];
+					xx[1] = xp + tailwidth - headlength + off[PSL_BEGIN]; yy[1] = -yshift[PSL_BEGIN];
 					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);				/* Draw vector line body */
 					PSL_command (PSL, "U\n");
 				}
@@ -2254,31 +2273,40 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 				break;	/* Finalize, then reset outline parameter */
 			case PSL_VEC_ARROW_PLAIN:
 				n = 0;
+				xc[0] = xp - headlength; yc[0] = -headwidth;
 				if (asymmetry[PSL_END] != +1) {	/* Need left side */
 					xx[n] = xp - headlength; yy[n++] = -headwidth;
 				}
 				xx[n] = xp; yy[n++] = -yshift[PSL_END];	/* Vector tip */
+				xc[1] = xp; yc[1] = -yshift[PSL_END];	/* Vector tip */
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
 					xx[n] = xp - headlength; yy[n++] = headwidth;
 				}
-				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Set up path */
+				xc[2] = xp - headlength; yc[2] = headwidth;
+				PSL_command (PSL, "V "); /* Place under gsave/grestore since changing pen */
+				PSL_setlinewidth (PSL, 2.0*tailwidth * PSL_POINTS_PER_INCH);
+				PSL_plotline (PSL, xc, yc, 3, PSL_MOVE);	/* Set up clip path */
+				PSL_command (PSL, "P clip N ");
+				PSL_plotline (PSL, xx, yy, n, PSL_MOVE+PSL_STROKE);	/* Plot arrow head */
+				PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);
+				PSL_command (PSL, "U\n");
 				break;
 			case PSL_VEC_TAIL:
-				xx[0] = xp - tailwidth; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
+				xx[0] = xp - tailwidth - off[PSL_BEGIN]; yy[0] = -yshift[PSL_END];	n = 1;	/* Vector tip */
 				if (asymmetry[PSL_END] != +1) {	/* Need left side */
-					xx[n] = xp - tailwidth + 0.5 * headwidth; yy[n++] = -0.5*headwidth;
-					xx[n] = xx[n-1] + headlength; yy[n++] = -0.5*headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth - off[PSL_BEGIN]; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xx[n-1] + FIN_LENGTH_SCALE * headlength; yy[n++] = -FIN_HEIGTH_SCALE * headwidth;
 				}
-				xx[n] = xp - tailwidth + headlength; yy[n++] = -yshift[PSL_END];
+				xx[n] = xp - tailwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = -yshift[PSL_END];
 				if (asymmetry[PSL_END] != -1) {	/* Need right side */
-					xx[n] = xp - tailwidth + 0.5 * headwidth + headlength; yy[n++] = 0.5*headwidth;
-					xx[n] = xx[n-1] - headlength; yy[n++] = 0.5*headwidth;
+					xx[n] = xp - tailwidth + FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - off[PSL_BEGIN]; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
+					xx[n] = xx[n-1] - FIN_LENGTH_SCALE * headlength; yy[n++] = FIN_HEIGTH_SCALE * headwidth;
 				}
 				PSL_plotline (PSL, xx, yy, n, PSL_MOVE);	/* Set up path */
 				PSL_command (PSL, "P clip %s %s ", dump[fill], line[outline]);
 				if (asymmetry[PSL_END] == 0) {	/* Draw feather center */
 					PSL_command (PSL, "V 0 W ");
-					xx[1] = xp - tailwidth + headlength; yy[1] = -yshift[PSL_END];
+					xx[1] = xp - tailwidth + headlength - off[PSL_BEGIN]; yy[1] = -yshift[PSL_END];
 					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);				/* Draw vector line body */
 					PSL_command (PSL, "U\n");
 				}
