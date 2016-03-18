@@ -64,9 +64,10 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} D;
-	struct GRDFFT_E {	/* -E[r|x|y][w[k]] */
+	struct GRDFFT_E {	/* -E[r|x|y][w[k]][n] */
 		bool active;
 		bool give_wavelength;
+		bool normalize;
 		bool km;
 		int mode;	/*-1/0/+1 */
 	} E;
@@ -305,7 +306,7 @@ GMT_LOCAL void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct G
 	}
 }
 
-GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct GMT_FFT_WAVENUMBER *K) {
+GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, bool normalize, char *file, struct GMT_FFT_WAVENUMBER *K) {
 	/* Compute [cross-]spectral estimates from the two grids X and Y and return frequency f and 8 quantities:
 	 * Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
 	 * Each quantity comes with its own 1-std dev error estimate, hence output is 17 columns.  If GridY == NULL
@@ -316,7 +317,7 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	uint64_t k, nk, ifreq, *nused = NULL;
 	unsigned int col;
 	float *X = GridX->data, *Y = NULL;	/* Short-hands */
-	double delta_k, r_delta_k, freq, coh_k, sq_norm, powfactor, tmp, eps_pow;
+	double delta_k, r_delta_k, freq, coh_k, sq_norm, powfactor, k_pow_factor, tmp, eps_pow;
 	double *X_pow = NULL, *Y_pow = NULL, *co_spec = NULL, *quad_spec = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -388,12 +389,14 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
 	if (give_wavelength && km) delta_k *= 1000.0;	/* Wanted distances measured in km */
 
+	k_pow_factor = powfactor;	/* Standard normalization */
 	for (k = 0; k < nk; k++) {
 		eps_pow = 1.0 / sqrt ((double)nused[k]);	/* Multiplicative error bars for power spectra  */
 		freq = (k + 1) * delta_k;
 		if (give_wavelength) freq = 1.0 / freq;
 
-		X_pow[k] *= powfactor;
+		if (normalize) k_pow_factor = powfactor / (double)nused[k];
+		X_pow[k] *= k_pow_factor;
 
 		col = 0;
 		/* Col 0 is the frequency (or wavelength) */
@@ -409,9 +412,9 @@ GMT_LOCAL int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct 
 			continue;
 		}
 
-		Y_pow[k]     *= powfactor;
-		co_spec[k]   *= powfactor;
-		quad_spec[k] *= powfactor;
+		Y_pow[k]     *= k_pow_factor;
+		co_spec[k]   *= k_pow_factor;
+		quad_spec[k] *= k_pow_factor;
 		/* Compute coherence first since it is needed by many of the other estimates */
 		coh_k = (co_spec[k] * co_spec[k] + quad_spec[k] * quad_spec[k]) / (X_pow[k] * Y_pow[k]);
 		sq_norm = sqrt ((1.0 - coh_k) / (2.0 * coh_k));	/* Save repetitive expression further down */
@@ -568,7 +571,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]][n] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
 
@@ -586,6 +589,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Each quantity is followed by a column of 1 std dev. error estimates.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to write wavelength instead of frequency; append k to report\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   wavelength in km (geographic grids only) [m].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append n to yield mean power instead of total power per frequency.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      frequencies outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
@@ -693,7 +697,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
-			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical */
+			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical, n for normalize */
 				Ctrl->E.active = true;
 				j = 0;
 				while (opt->arg[j]) {
@@ -703,6 +707,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_IN
 						case 'y': Ctrl->E.mode = -1; break;
 						case 'w': Ctrl->E.give_wavelength = true; break;
 						case 'k': if (Ctrl->E.give_wavelength) Ctrl->E.km = true; break;
+						case 'n': Ctrl->E.normalize = true; break;
 					}
 					j++;
 				}
@@ -921,7 +926,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 				break;
 			case GRDFFT_SPECTRUM:	/* This operator writes a table to file (or stdout if -G is not used) */
 				if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s...\n", spec_msg[Ctrl->In.n_grids-1]);
-				status = do_spectrum (GMT, Grid[0], Grid[1], &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, K);
+				status = do_spectrum (GMT, Grid[0], Grid[1], &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->E.normalize, Ctrl->G.file, K);
 				if (status < 0) Return (status);
 				par_count += status;
 				break;
