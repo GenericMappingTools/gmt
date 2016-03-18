@@ -4211,7 +4211,9 @@ relevant manual pages.
    Examples of different vector heads and attributes.  The default is the standard
    triangular arrow head, which can be modified by adjusting the apex angle [30] or
    changing its shape via the :ref:`MAP_VECTOR_SHAPE <MAP_VECTOR_SHAPE>` setting.
-   Other vector heads are the circle (**c**) and the terminal line (**t**).
+   Other vector heads are the circle (**c**), the terminal line (**t**), the
+   arrow fin (**i**) and the plain head (**A**) and tail (**I**); the last two
+   are line-drawings only and cannot be filled.
 
 .. _Char-esc-seq:
 
