@@ -130,6 +130,9 @@ struct PS2RASTER_CTRL {
 		bool active;
 		char *file;
 	} L;
+	struct PS2R_N {	/* -N */
+		bool active;
+	} N;
 	struct PS2R_P {	/* -P */
 		bool active;
 	} P;
@@ -574,6 +577,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				else
 					n_errors++;
 				break;
+			case 'N':	/* Rasterize the interal PSL plot directly to bitmap [API only] */
+				Ctrl->N.active = true;
+				break;
 			case 'P':	/* Force Portrait mode */
 				Ctrl->P.active = true;
 				break;
@@ -666,6 +672,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->L.active,
 		"Syntax error: Cannot handle both a file list and multiple ps files in input\n");
+
+	n_errors += gmt_M_check_condition (GMT, Ctrl->In.n_files > 1 && Ctrl->N.active && GMT->parent->mode,
+		"Syntax error: -N will rasterize internal PS - no file names accepted\n");
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && access (Ctrl->L.file, R_OK),
 		"Error: Cannot read list file %s\n", Ctrl->L.file);
