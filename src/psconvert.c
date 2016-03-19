@@ -38,7 +38,15 @@
 #define THIS_MODULE_KEYS	"FI)"
 
 #include "gmt_dev.h"
-#include "gmt_sharedlibs.h" 	/* Common shared libs structures */
+#ifdef _WIN32
+/* Various shared-library functions declared in gmt_sharedlibs.c */
+EXTERN_MSC void *dlopen (const char *module_name, int mode);
+EXTERN_MSC int dlclose (void *handle);
+EXTERN_MSC void *dlsym (void *handle, const char *name);
+EXTERN_MSC char *dlerror (void);
+#else	/* Standard Unix things */
+#include <dlfcn.h>
+#endif
 
 #define GMT_PROG_OPTIONS "-V"
 
@@ -987,6 +995,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		file_processing = false;
 		sprintf (gs_rasterizer, "%s/gsrasterize.so", GMT->init.runtime_plugindir);
+#ifdef __APPLE__
+		if (!dlopen_preflight (gs_rasterizer)) {	/* Not ready for prime-time */
+			GMT_Report (API, GMT_MSG_NORMAL, "Preflight check of shared library %s failed [%s]\n", gs_rasterizer, dlerror());
+			Return (EXIT_FAILURE);
+		}
+#endif
 		if ((handle = dlopen (gs_rasterizer, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open shared library %s [%s]\n", gs_rasterizer, dlerror());
 			Return (EXIT_FAILURE);
@@ -1002,6 +1016,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		if ((I->data = (*gs_func) (PSL_getplot (GMT->PSL), Ctrl->E.dpi, dim)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "gsrasterize_rip failed\n");
+			Return (EXIT_FAILURE);
+		}
+		if (dlclose (handle)) {	/* Trouble closing? */
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to close shared library %s [%s]\n", gs_rasterizer, dlerror());
 			Return (EXIT_FAILURE);
 		}
 		I->type = GMT_CHAR;
