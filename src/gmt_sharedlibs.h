@@ -13,8 +13,8 @@
  */
 
 #pragma once
-#ifndef _GMT_MODULE_H
-#define _GMT_MODULE_H
+#ifndef _GMT_SHAREDLIBS_H
+#define _GMT_SHAREDLIBS_H
 
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
@@ -46,4 +46,4 @@ struct Gmt_libinfo {
 }
 #endif
 
-#endif /* !_GMT_MODULE_H */
+#endif /* !_GMT_SHAREDLIBS_H */
