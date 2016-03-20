@@ -3402,6 +3402,36 @@ GMT_LOCAL int table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 	return 0;
 }
 
+GMT_LOCAL int table_RMS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: RMS 1 1 Root-mean-square of A.  */
+{
+	uint64_t s, row, n = 0;
+	double sum2 = 0.0;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) sum2 = S[last]->factor;
+	for (s = 0; s < info->T->n_segments; s++) {
+		if (!S[last]->constant) {
+			if (info->local) {n = 0; sum2 = 0.0;}	/* Start anew for each segment */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+				if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+				n++;
+				sum2 += (T->segment[s]->coord[col][row] * T->segment[s]->coord[col][row]);
+			}
+			if (info->local) {
+				sum2 = (n > 0) ? sqrt (sum2 / n) : GMT->session.d_NaN;
+			}
+		}
+		if (info->local) {
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+		}
+	}
+	if (info->local) return 0;	/* Done with local */
+	if (!S[last]->constant) sum2 = (n > 0) ? sqrt (sum2 / n) : GMT->session.d_NaN;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+	return 0;
+}
+
 GMT_LOCAL void assign_gmtstack (struct GMTMATH_STACK *Sto, struct GMTMATH_STACK *Sfrom)
 {	/* Copy contents of Sfrom to Sto */
 	Sto->D          = Sfrom->D;
@@ -3697,7 +3727,7 @@ GMT_LOCAL int table_STD (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct
 			sum2 += delta * (T->segment[s]->coord[col][row] - mean);
 		}
 		if (info->local) {
-			sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : 0.0;
+			sum2 = (n > 1) ? sqrt (sum2 / (n - 1)) : GMT->session.d_NaN;
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
 		}
 	}
@@ -3968,6 +3998,39 @@ GMT_LOCAL int table_UPPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	}
 	if (info->local) return 0;	/* Done with local */
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = high;
+	return 0;
+}
+
+GMT_LOCAL int table_VAR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: VAR 1 1 Variance of A.  */
+{
+	uint64_t s, row, n = 0;
+	double mean = 0.0, sum2 = 0.0, delta;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) {	/* Trivial case */
+		for (s = 0; s < info->T->n_segments; s++) gmt_M_memset (T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
+		return 0;
+	}
+
+	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+	for (s = 0; s < info->T->n_segments; s++) {
+		if (info->local) {n = 0; mean = sum2 = 0.0;}	/* Start anew for each segment */
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			if (gmt_M_is_dnan (T->segment[s]->coord[col][row])) continue;
+			n++;
+			delta = T->segment[s]->coord[col][row] - mean;
+			mean += delta / n;
+			sum2 += delta * (T->segment[s]->coord[col][row] - mean);
+		}
+		if (info->local) {
+			sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
+		}
+	}
+	if (info->local) return 0;	/* Done with local */
+	sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = sum2;
 	return 0;
 }
 

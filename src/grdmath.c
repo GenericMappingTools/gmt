@@ -3198,6 +3198,28 @@ GMT_LOCAL void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : rintf (stack[last]->G->data[node]);
 }
 
+GMT_LOCAL void grd_RMS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: RMS 1 1 Root-mean-square of A.  */
+{
+	uint64_t node;
+	double sum2 = 0.0;
+	gmt_M_unused(GMT);
+
+	if (stack[last]->constant)	/* Trivial case */
+		sum2 = stack[last]->factor;
+	else {
+		unsigned int row, col;
+		uint64_t n = 0;
+		gmt_M_grd_loop (GMT, info->G, row, col, node) {
+			if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+			n++;
+			sum2 += (stack[last]->G->data[node] * stack[last]->G->data[node]);
+		}
+		sum2 = (n > 0) ? sqrt (sum2 / n) : GMT->session.d_NaN;
+	}
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum2;
+}
+
 GMT_LOCAL void grd_RPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: RPDF 1 1 Rayleigh probability density function for z = A.  */
 {
@@ -3831,6 +3853,31 @@ GMT_LOCAL void grd_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 	}
 	if (high == -FLT_MAX) high = GMT->session.f_NaN;
 	for (node = 0; node < info->size; node++) if (!gmt_M_is_fnan (stack[last]->G->data[node])) stack[last]->G->data[node] = high;
+}
+
+GMT_LOCAL void grd_VAR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: VAR 1 1 Variance of A.  */
+{
+	uint64_t node, n = 0;
+	unsigned int row, col;
+	double mean = 0.0, sum2 = 0.0, delta;
+	gmt_M_unused(GMT);
+
+	if (stack[last]->constant) {	/* Trivial case */
+		gmt_M_memset (stack[last], info->size, float);
+		return;
+	}
+
+	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		if (gmt_M_is_fnan (stack[last]->G->data[node])) continue;
+		n++;
+		delta = stack[last]->G->data[node] - mean;
+		mean += delta / n;
+		sum2 += delta * (stack[last]->G->data[node] - mean);
+	}
+	sum2 = (n > 1) ? sum2 / (n - 1) : GMT->session.d_NaN;
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum2;
 }
 
 GMT_LOCAL void grd_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
