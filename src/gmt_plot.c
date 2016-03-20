@@ -5878,7 +5878,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	bool skip;
 	uint64_t i;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
-	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy, dim[3];
+	double gap, x0, y0, xp, yp, len2, len3, len4, cosa, sina, sa, ca, offx, offy, dim[3];
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (n < 2) return;
@@ -5911,6 +5911,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 	}
 
 	len2 = 0.5 * f->f_len;
+	len4 = 0.25 * f->f_len;
 	len3 = 0.866025404 * f->f_len;
 	if (f->f_sense == GMT_FRONT_CENTERED) len3 = len2;
 	if (f->f_symbol) {	/* Temporarily use miter to get sharp points at slip vectors */
@@ -6036,8 +6037,8 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 					yy[0] = yp - len2 * sina;
 					xx[1] = xp + len2 * cosa;
 					yy[1] = yp + len2 * sina;
-					xx[2] = xx[1] - len2 * ca;
-					yy[2] = yy[1] - len2 * sa;
+					xx[2] = xx[1] - len4 * ca;
+					yy[2] = yy[1] - len4 * sa;
 					PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
 
 					/* arrow "below" line */
@@ -6048,9 +6049,28 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 					yy[0] = yp + len2 * sina;
 					xx[1] = xp - len2 * cosa;
 					yy[1] = yp - len2 * sina;
-					xx[2] = xx[1] - len2 * ca;
-					yy[2] = yy[1] - len2 * sa;
+					xx[2] = xx[1] - len4 * ca;
+					yy[2] = yy[1] - len4 * sa;
 					PSL_plotline (PSL, xx, yy, 3, PSL_MOVE + PSL_STROKE);
+					break;
+
+				case GMT_FRONT_SLIPC: /* Draw curved strike-slip arrows a la USGS */
+					PSL_command (PSL, "V ");	/* Place symbol under gsave/grestore since we will translate/rotate */
+					PSL_setorigin (PSL, x0, y0, R2D * angle, PSL_FWD);
+					offy = GMT->current.setting.map_annot_offset[GMT_PRIMARY]; /* get offset from front line */
+					/* sense == GMT_FRONT_LEFT == left-lateral, R_RIGHT = right lateral */
+					/* arrow "above" line */
+					xx[0] = f->f_sense* len2;	xx[1] = -f->f_sense*len2;
+					yy[0] = yy[1] = offy;
+					PSL_plotline (PSL, xx, yy, 2, PSL_MOVE);
+					PSL_plotarc (PSL, xx[1], offy + 0.4 * f->f_len, 0.4 * f->f_len, 270.0, 270.0+f->f_sense*f->f_angle, PSL_STROKE);
+
+					/* arrow "below" line */
+					xx[0] = -f->f_sense*len2;	xx[1] = f->f_sense*len2;
+					yy[0] = yy[1] = -offy;
+					PSL_plotline (PSL, xx, yy, 2, PSL_MOVE);
+					PSL_plotarc (PSL, xx[1], -offy - 0.4 * f->f_len, 0.4 * f->f_len, 90.0, 90.0+f->f_sense*f->f_angle, PSL_STROKE);
+					PSL_command (PSL, "U\n");
 					break;
 
 				case GMT_FRONT_FAULT:	/* Normal fault ticks */

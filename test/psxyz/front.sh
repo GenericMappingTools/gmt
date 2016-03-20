@@ -14,11 +14,13 @@ EOF
 gmt psxyz -R-2/12/-2/22 -JM1i -O -K -W1p -Gred -Sf0.4i/0.1i+b t.txt -X0.25i -Y0.4i -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gred -Sf0.4i/0.1i+c -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gred -Sf0.4i/0.1i+f -X0.5i t.txt -p150/35 >> $ps
-gmt psxyz -R -J -O -K -W1p -Gred -Sf0.4i/0.1i+t -X1i t.txt -p150/35 >> $ps
+gmt psxyz -R -J -O -K -W1p -Sf0.6i/0.3i+S+r -X0.5i t.txt -p150/35 >> $ps
+gmt psxyz -R -J -O -K -W1p -Gred -Sf0.4i/0.1i+t -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gred -Sf-1/0.1i+b -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gred -Sf-1/0.1i+c -X0.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gred -Sf-1/0.1i+f -X0.5i t.txt -p150/35 >> $ps
-gmt psxyz -R -J -O -K -W1p -Gred -Sf-1/0.1i+t -X1i t.txt -p150/35 >> $ps
+gmt psxyz -R -J -O -K -W1p -Sf-1/0.4i+S+l -X0.5i t.txt -p150/35 >> $ps
+gmt psxyz -R -J -O -K -W1p -Gred -Sf-1/0.1i+t -X0.5i t.txt -p150/35 >> $ps
 # Right symbols using fixed interval, then same with just 1 centered symbol
 gmt psxyz -R -J -O -K -W1p -Gblue -Sf0.4i/0.1i+b+r -X-4.5i -Y2.5i t.txt -p150/35 >> $ps
 gmt psxyz -R -J -O -K -W1p -Gblue -Sf0.4i/0.1i+c+r -X0.5i t.txt -p150/35 >> $ps
