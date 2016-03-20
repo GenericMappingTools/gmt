@@ -995,7 +995,9 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	/* Here we use Lapack */
 	int n = m_in, lda = m_in, info, lwork;
 	double wkopt, *work = NULL;
+#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
 	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
+#endif
 	gmt_M_unused(n_in);	/* Since we are actually only doing square matrices... */
 	gmt_M_unused(v);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_svdcmp: Using Lapack dsyev\n");
