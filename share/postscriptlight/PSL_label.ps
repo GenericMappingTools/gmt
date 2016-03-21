@@ -211,7 +211,8 @@ end
   } for
 } def
 
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Curved Baseline Text Placement Functions
+
 /PSL_curved_path_labels
 { /psl_bits exch def				% 4 on/of bit settings as indicated below
   /PSL_placetext psl_bits 2 and 2 eq def		% true to place text, false to just make space
@@ -500,7 +501,7 @@ end
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for	% Lay down the rest of the path
 } def
 
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Draw Baseline Text Segment Lines
 % PSL_draw_path_lines will draw the lines that have been stored in the concatenated
 % PSL_path_x and PSL_path_y arrays using the pen attributes in the PSL_path_pen array
 
@@ -530,7 +531,7 @@ end
   U
 } def
 
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Straight Baseline Text Placement Functions
 % PSL_straight_path_labels deals with straight text labels w/wo textboxes (rect or rounded).
 % Only the (x,y) location of each label is needed.
 % Use <flags> PSL_straight_path_labels to paint|draw textboxes and place text
