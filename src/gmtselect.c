@@ -797,7 +797,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
-			int brow, i, this_node;
+			int brow, i, this_point_level;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
 			brow = irint (floor ((90.0 - in[GMT_Y]) / c.bsize));
@@ -809,7 +809,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 				while (ind < c.nb && c.bins[ind] != bin) ind++;	/* Set ind to right bin */
 				if (ind == c.nb) continue;			/* Bin not among the chosen ones */
 				last_bin = bin;
-				gmt_M_free_shore (GMT, &c);	/* Free previously allocated arrays */
+				gmt_free_shore (GMT, &c);	/* Free previously allocated arrays */
 				if ((err = gmt_get_shore_bin (GMT, ind, &c))) {
 					GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 					Return (EXIT_FAILURE);
@@ -817,7 +817,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 				/* Must use polygons.  Go in both directions to cover both land and sea */
 				for (id = 0; id < 2; id++) {
-					gmt_M_free_shore_polygons (GMT, p[id], np[id]);
+					gmt_free_shore_polygons (GMT, p[id], np[id]);
 					if (np[id]) gmt_M_free (GMT, p[id]);
 					np[id] = gmt_assemble_shore (GMT, &c, wd[id], true, west_border, east_border, &p[id]);
 					np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
@@ -825,10 +825,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 			}
 
 			if (c.ns == 0) {	/* No lines go through, check node level */
-				this_node = MIN (MIN (c.node_level[0], c.node_level[1]) , MIN (c.node_level[2], c.node_level[3]));
+				this_point_level = MIN (MIN (c.node_level[0], c.node_level[1]) , MIN (c.node_level[2], c.node_level[3]));
 			}
 			else {
-				this_node = 0;
+				this_point_level = 0;
 				gmt_geo_to_xy (GMT, lon, in[GMT_Y], &xx, &yy);
 				for (id = 0; id < 2; id++) {
 
@@ -857,11 +857,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 
 						/* Here, point is inside, we must assign value */
 
-						if (p[id][k].level > this_node) this_node = p[id][k].level;
+						if (p[id][k].level > this_point_level) this_point_level = p[id][k].level;
 					}
 				}
 			}
-			inside = Ctrl->N.mask[this_node];
+			inside = Ctrl->N.mask[this_point_level];
 			if (inside != Ctrl->I.pass[4]) { output_header = need_header; continue;}
 		}
 
@@ -894,10 +894,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
-		gmt_M_free_shore (GMT, &c);
+		gmt_free_shore (GMT, &c);
 		gmt_shore_cleanup (GMT, &c);
 		for (id = 0; id < 2; id++) {
-			gmt_M_free_shore_polygons (GMT, p[id], np[id]);
+			gmt_free_shore_polygons (GMT, p[id], np[id]);
 			if (np[id]) gmt_M_free (GMT, p[id]);
 		}
 	}

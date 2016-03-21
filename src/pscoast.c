@@ -633,6 +633,21 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 	}
 }
 
+GMT_LOCAL int check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, double clon, double clat, int status[]) {
+	/* For a global -JE map we need to know if the projection center and its antipode are on land, ocean, what,
+	 * since it affects how donut-hell will behave */
+	
+	int last_bin = INT_MAX;
+	if ((status[0] = gmt_shore_level_at_point (GMT, c, inside, &last_bin, clon, clat)) < 0) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projection center outside -R region so cannot determine status\n");
+	}
+	if ((status[1] = gmt_shore_level_at_point (GMT, c, inside, &last_bin, clon + 180.0, -clat)) < 0) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projection antipode outside -R region so cannot determine status\n");
+	}
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined in/out status of projection center [%d] and antipode [%d].\n", status[0], status[1]);
+	return (GMT_OK);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -826,6 +841,10 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 	if (clipping) gmt_map_basemap (GMT);
 
 	if (GMT->current.proj.projection == GMT_AZ_EQDIST && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YHI], GMT->common.R.wesn[YLO])) {
+		int status[2] = {0, 0};
+		if (check_antipode_status (GMT, &c, GMT_INSIDE, GMT->current.proj.central_meridian, GMT->current.proj.pole, status)) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: check_antipode_status crashed - not good\n");
+		}
 		possibly_donut_hell = true;
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
@@ -987,13 +1006,13 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				}
 			}
 
-			gmt_M_free_shore_polygons (GMT, p, np_new);
+			gmt_free_shore_polygons (GMT, p, np_new);
 			gmt_M_free (GMT, p);
 		}
 
 		if (Ctrl->W.active && c.ns) {	/* Draw or dump shorelines, no need to assemble polygons */
 			if ((np = gmt_assemble_shore (GMT, &c, 1, false, west_border, east_border, &p)) == 0) {
-				gmt_M_free_shore (GMT, &c);
+				gmt_free_shore (GMT, &c);
 				continue;
 			}
 
@@ -1021,11 +1040,11 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 				}
 			}
 
-			gmt_M_free_shore_polygons (GMT, p, np);
+			gmt_free_shore_polygons (GMT, p, np);
 			gmt_M_free (GMT, p);
 		}
 
-		gmt_M_free_shore (GMT, &c);
+		gmt_free_shore (GMT, &c);
 
 	}
 	if (need_coast_base) {
@@ -1056,7 +1075,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			}
 
 			if ((np = gmt_assemble_br (GMT, &r, shift, edge, &p)) == 0) {
-				gmt_M_free_br (GMT, &r);
+				gmt_free_br (GMT, &r);
 				continue;
 			}
 
@@ -1085,8 +1104,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			/* Free up memory */
 
-			gmt_M_free_br (GMT, &r);
-			gmt_M_free_shore_polygons (GMT, p, np);
+			gmt_free_br (GMT, &r);
+			gmt_free_shore_polygons (GMT, p, np);
 			gmt_M_free (GMT, p);
 		}
 		gmt_br_cleanup (GMT, &r);
@@ -1117,7 +1136,7 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 			}
 
 			if ((np = gmt_assemble_br (GMT, &b, shift, edge, &p)) == 0) {
-				gmt_M_free_br (GMT, &b);
+				gmt_free_br (GMT, &b);
 				continue;
 			}
 
@@ -1147,8 +1166,8 @@ int GMT_pscoast (void *V_API, int mode, void *args) {
 
 			/* Free up memory */
 
-			gmt_M_free_br (GMT, &b);
-			gmt_M_free_shore_polygons (GMT, p, np);
+			gmt_free_br (GMT, &b);
+			gmt_free_shore_polygons (GMT, p, np);
 			gmt_M_free (GMT, p);
 		}
 		gmt_br_cleanup (GMT, &b);

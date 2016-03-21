@@ -39,23 +39,24 @@
  * These functions simplifies the access to the GMT shoreline, border, and river
  * databases.
  *
- * The PUBLIC functions are (15):
+ * The PUBLIC functions are (16):
  *
- * gmt_set_levels	   : Modifies what items to extract from GSHHG database
- * gmt_set_resolution      : Converts resolutions f,h,i,l,c to integers 0-4
- * gmt_init_shore	   : Opens selected shoreline database and initializes structures
- * gmt_get_shore_bin	   : Returns all selected shore data for this bin
- * gmt_init_br		   : Opens selected border/river database and initializes structures
- * gmt_get_br_bin	   : Returns all selected border/river data for this bin
- * gmt_get_gshhg_lines     : Returns a GMT_DATASET with lines
- * gmt_assemble_shore	   : Creates polygons or lines from shoreline segments
- * gmt_prep_shore_polygons : Wraps polygons if necessary and prepares them for use
- * gmt_assemble_br	   : Creates lines from border or river segments
- * gmt_M_free_shore	   : Frees up memory used by shorelines for this bin
- * gmt_M_free_br		   : Frees up memory used by shorelines for this bin
- * gmt_M_free_shore_polygons : Frees list of polygon coordinates
- * gmt_shore_cleanup	   : Frees up main shoreline structure memory
- * gmt_br_cleanup	   : Frees up main river/border structure memory
+ * gmt_set_levels           : Modifies what items to extract from GSHHG database
+ * gmt_set_resolution       : Converts resolutions f,h,i,l,c to integers 0-4
+ * gmt_init_shore           : Opens selected shoreline database and initializes structures
+ * gmt_get_shore_bin        : Returns all selected shore data for this bin
+ * gmt_init_br              : Opens selected border/river database and initializes structures
+ * gmt_get_br_bin           : Returns all selected border/river data for this bin
+ * gmt_get_gshhg_lines      : Returns a GMT_DATASET with lines
+ * gmt_assemble_shore       : Creates polygons or lines from shoreline segments
+ * gmt_prep_shore_polygons  : Wraps polygons if necessary and prepares them for use
+ * gmt_shore_level_at_point : Return hierarchical level at specified point
+ * gmt_assemble_br          : Creates lines from border or river segments
+ * gmt_free_shore           : Frees up memory used by shorelines for this bin
+ * gmt_free_br              : Frees up memory used by shorelines for this bin
+ * gmt_free_shore_polygons  : Frees list of polygon coordinates
+ * gmt_shore_cleanup        : Frees up main shoreline structure memory
+ * gmt_br_cleanup           : Frees up main river/border structure memory
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
@@ -1260,7 +1261,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 				D->table[tbl]->segment[seg++] = S;	/* Hook onto dataset structure */
 				D->table[tbl]->n_records += S->n_rows;	/* Add up records in this table */
 			}
-			gmt_M_free_shore_polygons (GMT, p, np);
+			gmt_free_shore_polygons (GMT, p, np);
 			gmt_M_free (GMT, p);
 			D->n_segments += D->table[tbl]->n_segments;	/* Sum up total number of segments across the data set */
 			D->n_records  += D->table[tbl]->n_records;	/* Sum up total number of records across the data set */
@@ -1268,7 +1269,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 			gmt_set_tbl_minmax (GMT, D->table[tbl++]);	/* Determine min/max extent for all segments and the table */
 			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	/* Reset X column to be longitudes */
 		}
-		gmt_M_free_shore (GMT, &c);	/* Done with this GSHHS bin */
+		gmt_free_shore (GMT, &c);	/* Done with this GSHHS bin */
 	}
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reading GSHHS segments from bin # %5ld\n", c.bins[c.nb-1]);
 	if (tbl < n_alloc) D->table = gmt_M_memory (GMT, D->table, tbl, struct GMT_DATATABLE *);
@@ -1299,7 +1300,7 @@ int gmt_assemble_br (struct GMT_CTRL *GMT, struct GMT_BR *c, bool shift, double 
 	return (c->ns);
 }
 
-void gmt_M_free_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
+void gmt_free_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 	/* Removes allocated variables for this block only */
 	int i;
 
@@ -1310,7 +1311,7 @@ void gmt_M_free_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c) {
 	if (c->ns) gmt_M_free (GMT, c->seg);
 }
 
-void gmt_M_free_br (struct GMT_CTRL *GMT, struct GMT_BR *c) {
+void gmt_free_br (struct GMT_CTRL *GMT, struct GMT_BR *c) {
 	/* Removes allocated variables for this block only */
 	int i;
 
@@ -1451,11 +1452,98 @@ int gmt_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old,
 	return (np_new);
 }
 
-void gmt_M_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, unsigned int n) {
+void gmt_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, unsigned int n) {
 	/* Free the given list of polygon coordinates */
 	unsigned int k;
 	for (k = 0; k < n; k++) {
 		gmt_M_free (GMT, p[k].lon);
 		gmt_M_free (GMT, p[k].lat);
 	}
+}
+
+int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, int *last_bin, double lon, double lat) {
+	/* Determine the highest hierarchical level of the GSHHG polygon enclosing the given (lon,lat) point.
+	 * I.e., if the point is in the ocean we return 0, 1 on land, 2 in lake, 3 in island-in-lake, and 4 if in that pond.
+	 * Pass inside = GMT_ONEDGE (1) or GMT_INSIDE (2) to determine if "inside a polygon" should include landing
+	 * exactly on the edge or not.
+	 * We return -1 if the shore-machinery domain is exceeded.
+	 * Make sure last_bin is initialized to INT_MAX before this function is called the first time.
+	 * We assume gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info) has been
+	 * already called so we may simply select bins and do our thing.  It is up to the calling program
+	 * to clean up the shore stuff with gmt_free_shore etc. */
+	
+	int this_point_level, brow, bin, ind, err, wd[2] = {1, -1};
+	unsigned int col, np[2] = {0, 0}, id, side;
+	uint64_t k, i;
+	bool no_resample = false;
+	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
+	double xx = lon, yy, xmin, xmax, ymin, ymax, west_border, east_border;
+	
+	west_border = floor (GMT->common.R.wesn[XLO] / c->bsize) * c->bsize;
+	east_border = ceil (GMT->common.R.wesn[XHI]  / c->bsize) * c->bsize;
+	no_resample = (GMT->current.proj.xyz_projection[GMT_X] == GMT_LINEAR && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LINEAR);
+	while (xx < 0.0) xx += 360.0;
+	brow = irint (floor ((90.0 - lat) / c->bsize));
+	if (brow >= c->bin_ny) brow = c->bin_ny - 1;	/* Presumably only kicks in for south pole */
+	col = urint (floor (xx / c->bsize));
+	bin = brow * c->bin_nx + col;
+	if (bin != *last_bin) {	/* Do this upon entering new bin */
+		ind = 0;
+		while (ind < c->nb && c->bins[ind] != bin) ind++;	/* Set ind to right bin */
+		if (ind == c->nb) return -1;			/* Bin not among the chosen ones */
+		*last_bin = bin;
+		gmt_free_shore (GMT, c);	/* Free previously allocated arrays */
+		if ((err = gmt_get_shore_bin (GMT, ind, c))) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [gmt_shore_level_at_point]\n", GMT_strerror(err));
+			return (EXIT_FAILURE);
+		}
+
+		/* Must use polygons.  Go in both directions to cover both land and sea */
+		for (id = 0; id < 2; id++) {
+			gmt_free_shore_polygons (GMT, p[id], np[id]);
+			if (np[id]) gmt_M_free (GMT, p[id]);
+			np[id] = gmt_assemble_shore (GMT, c, wd[id], true, west_border, east_border, &p[id]);
+			np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, 0.01, -1);
+		}
+	}
+
+	if (c->ns == 0) {	/* No segment lines go through this bin, check node levels */
+		this_point_level = MIN (MIN (c->node_level[0], c->node_level[1]) , MIN (c->node_level[2], c->node_level[3]));
+	}
+	else {	/* Must scan the polygons */
+		this_point_level = 0;
+		gmt_geo_to_xy (GMT, lon, lat, &xx, &yy);
+		for (id = 0; id < 2; id++) {	/* For both directions */
+
+			for (k = 0; k < np[id]; k++) {	/* For all closed polygons */
+
+				if (p[id][k].n == 0) continue;
+
+				/* Find min/max of polygon [Note: longitudes are jump free for this bin] */
+
+				xmin = xmax = p[id][k].lon[0];
+				ymin = ymax = p[id][k].lat[0];
+
+				for (i = 1; i < p[id][k].n; i++) {
+					if (p[id][k].lon[i] < xmin) xmin = p[id][k].lon[i];
+					if (p[id][k].lon[i] > xmax) xmax = p[id][k].lon[i];
+					if (p[id][k].lat[i] < ymin) ymin = p[id][k].lat[i];
+					if (p[id][k].lat[i] > ymax) ymax = p[id][k].lat[i];
+				}
+				/* Check if we are outside this polygon */
+				if (yy < ymin || yy > ymax) continue;
+				if (xx < xmin || xx > xmax) continue;
+
+				/* Must compare with polygon; holes are handled explicitly via the levels */
+
+				if ((side = gmt_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < inside) continue;	/* Outside polygon */
+
+				/* Here, point is inside, we must assign value */
+
+				if (p[id][k].level > this_point_level) this_point_level = p[id][k].level;
+			}
+		}
+	}
+	
+	return this_point_level;
 }

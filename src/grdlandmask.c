@@ -402,7 +402,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 				}
 			}
 
-			gmt_M_free_shore_polygons (GMT, p, np_new);
+			gmt_free_shore_polygons (GMT, p, np_new);
 			gmt_M_free (GMT, p);
 		}
 
@@ -452,7 +452,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args) {
 			}
 		}
 
-		gmt_M_free_shore (GMT, &c);
+		gmt_free_shore (GMT, &c);
 	}
 
 	gmt_shore_cleanup (GMT, &c);
