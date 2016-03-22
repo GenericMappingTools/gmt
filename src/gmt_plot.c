@@ -2182,10 +2182,10 @@ GMT_LOCAL void plot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, st
 	char outstring[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 
-	PSL_command (PSL, "\n%% PostScript produced by:\n%%%%GMT: %s", GMT->init.module_name);
+	PSL_command (PSL, "\n%% PostScript produced by:\n%%@GMT: %s", GMT->init.module_name);
 	for (opt = options; opt; opt = opt->next) {
 		if (length >= 512) {
-			PSL_command (PSL, "%s \\\n%%%%GMT:+", outstring);
+			PSL_command (PSL, "%s \\\n%%@GMT:+", outstring);
 			length = 0;
 			gmt_M_memset (outstring, GMT_BUFSIZ, char);
 		}
@@ -5476,7 +5476,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 			strncpy (proj4name, GMT->current.proj.proj4[id].name, 16U);
 
 		pstr = gmt_export2proj4 (GMT);
-		PSL_command (PSL, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
+		PSL_command (PSL, "%%@PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
 			GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI],
 			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], pstr);
 		gmt_M_str_free (pstr);
