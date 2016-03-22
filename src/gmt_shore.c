@@ -1461,37 +1461,47 @@ void gmt_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, uns
 	}
 }
 
-int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, int *last_bin, double lon, double lat) {
+int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, double lon, double lat) {
 	/* Determine the highest hierarchical level of the GSHHG polygon enclosing the given (lon,lat) point.
 	 * I.e., if the point is in the ocean we return 0, 1 on land, 2 in lake, 3 in island-in-lake, and 4 if in that pond.
 	 * Pass inside = GMT_ONEDGE (1) or GMT_INSIDE (2) to determine if "inside a polygon" should include landing
 	 * exactly on the edge or not.
+	 * It is assumed that -Jx1d is in effect.
 	 * We return -1 if the shore-machinery domain is exceeded.
-	 * Make sure last_bin is initialized to INT_MAX before this function is called the first time.
+	 * Call with inside == -1 to free internal memory [no searching for level is done].
 	 * We assume gmt_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info) has been
 	 * already called so we may simply select bins and do our thing.  It is up to the calling program
 	 * to clean up the shore stuff with gmt_free_shore etc. */
-	
+	static int last_bin = INT_MAX;	/* Initially not set */
+	static int np[2] = {0, 0};	/* Initially not set */
+	static struct GMT_GSHHS_POL *p[2] = {NULL, NULL};	/* Initially not set */
 	int this_point_level, brow, bin, ind, err, wd[2] = {1, -1};
-	unsigned int col, np[2] = {0, 0}, id, side;
+	unsigned int col, id, side;
 	uint64_t k, i;
-	bool no_resample = false;
-	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
 	double xx = lon, yy, xmin, xmax, ymin, ymax, west_border, east_border;
+	
+	if (inside < 0) {	/* Final call to clean memory */
+		for (id = 0; id < 2; id++) {
+			gmt_free_shore_polygons (GMT, p[id], np[id]);
+			if (np[id]) gmt_M_free (GMT, p[id]);
+		}
+		gmt_free_shore (GMT, c);	/* Free previously allocated arrays */
+		last_bin = INT_MAX;		/* In case process lives on in API */
+		return GMT_OK;
+	}
 	
 	west_border = floor (GMT->common.R.wesn[XLO] / c->bsize) * c->bsize;
 	east_border = ceil (GMT->common.R.wesn[XHI]  / c->bsize) * c->bsize;
-	no_resample = (GMT->current.proj.xyz_projection[GMT_X] == GMT_LINEAR && GMT->current.proj.xyz_projection[GMT_Y] == GMT_LINEAR);
 	while (xx < 0.0) xx += 360.0;
 	brow = irint (floor ((90.0 - lat) / c->bsize));
 	if (brow >= c->bin_ny) brow = c->bin_ny - 1;	/* Presumably only kicks in for south pole */
 	col = urint (floor (xx / c->bsize));
 	bin = brow * c->bin_nx + col;
-	if (bin != *last_bin) {	/* Do this upon entering new bin */
+	if (bin != last_bin) {	/* Do this upon entering new bin */
 		ind = 0;
 		while (ind < c->nb && c->bins[ind] != bin) ind++;	/* Set ind to right bin */
 		if (ind == c->nb) return -1;			/* Bin not among the chosen ones */
-		*last_bin = bin;
+		last_bin = bin;
 		gmt_free_shore (GMT, c);	/* Free previously allocated arrays */
 		if ((err = gmt_get_shore_bin (GMT, ind, c))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s [gmt_shore_level_at_point]\n", GMT_strerror(err));
@@ -1503,7 +1513,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 			gmt_free_shore_polygons (GMT, p[id], np[id]);
 			if (np[id]) gmt_M_free (GMT, p[id]);
 			np[id] = gmt_assemble_shore (GMT, c, wd[id], true, west_border, east_border, &p[id]);
-			np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, 0.01, -1);
+			np[id] = gmt_prep_shore_polygons (GMT, &p[id], np[id], false, 0.01, -1);
 		}
 	}
 

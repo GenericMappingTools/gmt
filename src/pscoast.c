@@ -636,15 +636,29 @@ GMT_LOCAL void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k
 GMT_LOCAL int check_antipode_status (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, double clon, double clat, int status[]) {
 	/* For a global -JE map we need to know if the projection center and its antipode are on land, ocean, what,
 	 * since it affects how donut-hell will behave */
+	char old_J[64] = {""};
+	double alon = clon + 180.0;
+	if (alon >= 360.0) alon -= 360.0;
+	/* Switch to linear projection */
+	strcpy (old_J, GMT->common.J.string);
+	GMT->common.J.active = false;
+	gmt_parse_common_options (GMT, "J", 'J', "x1i");
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
+	GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	
-	int last_bin = INT_MAX;
-	if ((status[0] = gmt_shore_level_at_point (GMT, c, inside, &last_bin, clon, clat)) < 0) {
+	if ((status[0] = gmt_shore_level_at_point (GMT, c, inside, clon, clat)) < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projection center outside -R region so cannot determine status\n");
 	}
-	if ((status[1] = gmt_shore_level_at_point (GMT, c, inside, &last_bin, clon + 180.0, -clat)) < 0) {
+	if ((status[1] = gmt_shore_level_at_point (GMT, c, inside, alon, -clat)) < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Projection antipode outside -R region so cannot determine status\n");
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined in/out status of projection center [%d] and antipode [%d].\n", status[0], status[1]);
+	gmt_shore_level_at_point (GMT, c, -1, 0.0, 0.0);	/* Free memory */
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determined GSHHG level of projection center at (%g, %g) [%d] and antipode at (%g, %g) [%d].\n",
+		clon, clat, status[0], alon, -clat, status[1]);
+	/* Back to initial projection */
+	GMT->common.J.active = false;
+	gmt_parse_common_options (GMT, "J", 'J', old_J);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) return (-1);
 	return (GMT_OK);
 }
 
