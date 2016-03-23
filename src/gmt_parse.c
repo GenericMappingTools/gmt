@@ -515,7 +515,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	 * if no decision could be make and -1 if mixing of GMT4 & 5 styles are
 	 * found, which is an error. */
 	size_t k, j, last;
-	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
+	int gmt4 = 0, gmt5 = 0, n_digits = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
 	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
 	bool ignore5 = false;	/* true if label, title, prefix, suffix */
 	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
@@ -523,6 +523,10 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	
 	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "either" syntax but it is an empty string */
 	last = strlen (in);
+	for (k = 0; k < last; k++) {	/* Count digits.  If none then it is GMT5 and we can return */
+		if (isdigit (in[k])) n_digits++;
+	}
+	if (n_digits == 0) return (5);	/* If no numbers are given then we know it is GMT5 */
 	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
 	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
 	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
