@@ -2531,7 +2531,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 		}
 	}
 	GMT->common.o.n_cols = k;
-	if (GMT->common.b.active[GMT_OUT]) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];	/* Since -o machinery will march through */
+	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] == 0) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];	/* Since -o machinery will march through */
 	return (GMT_NOERROR);
 }
 
