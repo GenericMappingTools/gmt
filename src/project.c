@@ -865,14 +865,15 @@ int GMT_project (void *V_API, int mode, void *args) {
 		else {
 			/* Must set generating vector to point along zero-meridian so it is the desired number of degrees [Ctrl->G.colat]
 			 * from the pole. */
-			double C[3], N[3];
+			double C[3], N[3], counteract = 1.0;
 			gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, C, true);	/* User origin C */
 			gmt_cross3v (GMT, P.pole, C, N);		/* This is vector normal to meridian plan */
 			gmt_normalize3v (GMT, N);			/* Make it a unit vector */
 			make_euler_matrix (N, e, Ctrl->G.colat);	/* Rotation matrix about N */
 			matrix_3v (e, P.pole, x);			/* This is the generating vector for our circle */
+			if (Ctrl->L.constrain) counteract = 1.0 / sin_lat_to_pole;	/* Increase angle to counteract effect of small circle settings */
 			for (rec = 0; rec < P.n_used; rec++) {
-				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2] / sin_lat_to_pole);	/* Increase angle to counteract effect o small circle settings */
+				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2] * counteract);
 				matrix_3v (e,x,xt);
 				gmt_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
 			}
