@@ -738,7 +738,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 
 	/* Set up rotation matrix e for flat earth, or pole and center for spherical; get Ctrl->L.min, Ctrl->L.max if stay_within  */
 
-	if (Ctrl->N.active) {
+	if (Ctrl->N.active) {	/* Flat Earth mode */
 		theta = Ctrl->A.azimuth;
 		flat_project_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
 		/* Azimuth (theta) is now cartesian in degrees */
@@ -750,12 +750,12 @@ int GMT_project (void *V_API, int mode, void *args) {
 			if (Ctrl->Q.active) Ctrl->L.max *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}
-	else {
-		if (Ctrl->T.active) {
+	else {	/* Spherical Earth mode */
+		if (Ctrl->T.active) {	/* Gave the pole */
 			sin_lat_to_pole = oblique_setup (GMT, Ctrl->T.y, Ctrl->T.x, P.pole, &Ctrl->C.y, &Ctrl->C.x, center, Ctrl->C.active, Ctrl->G.active);
 			gmt_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 		}
-		else {	/* Using -C -E or -A */
+		else {	/* Using -C, -E or -A */
 			double s_hi, s_lo, s_mid, radius, m[3], ap[3], bp[3];
 			int done, n_iter = 0;
 			
@@ -807,7 +807,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
-			if (Ctrl->Q.active) Ctrl->L.max *= (GMT->current.proj.DIST_KM_PR_DEG * sin_lat_to_pole);
+			//if (Ctrl->Q.active) Ctrl->L.max *= (GMT->current.proj.DIST_KM_PR_DEG * sin_lat_to_pole);
+			if (Ctrl->Q.active) Ctrl->L.max *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}
 
@@ -832,6 +833,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 		P.output_choice[2] = 2;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Generate table data\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Go from min dist = %g to max dist = %g\n", Ctrl->L.min, Ctrl->L.max);
 		d_along = Ctrl->L.min;
 		while ((Ctrl->L.max - d_along) > (GMT_CONV8_LIMIT*Ctrl->G.inc)) {
 			p_data[P.n_used].a[2] = d_along;
@@ -861,7 +863,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			}
 		}
 		else {
-			/* Must set generating vector to point along zero-meridian so it is the desired number of degrees [90]
+			/* Must set generating vector to point along zero-meridian so it is the desired number of degrees [Ctrl->G.colat]
 			 * from the pole. */
 			double C[3], N[3];
 			gmt_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, C, true);	/* User origin C */
@@ -870,7 +872,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 			make_euler_matrix (N, e, Ctrl->G.colat);	/* Rotation matrix about N */
 			matrix_3v (e, P.pole, x);			/* This is the generating vector for our circle */
 			for (rec = 0; rec < P.n_used; rec++) {
-				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2]);
+				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2] / sin_lat_to_pole);	/* Increase angle to counteract effect o small circle settings */
 				matrix_3v (e,x,xt);
 				gmt_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, true);
 			}
