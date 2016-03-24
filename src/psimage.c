@@ -322,6 +322,7 @@ GMT_LOCAL int file_is_known (struct GMT_CTRL *GMT, char *file) {	/* Returns 1 if
 
 #define Return(code) {gmt_M_free (GMT, table); return (code);}
 
+#ifdef HAVE_GDAL
 GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size_t n, int *r, int *g, int *b) {
 	size_t i, j;
 	int idx;
@@ -359,6 +360,8 @@ GMT_LOCAL int find_unique_color (struct GMT_CTRL *GMT, unsigned char *rgba, size
 	}
 	Return (3);
 }
+#endif
+
 #undef Return
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}

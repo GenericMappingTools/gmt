@@ -359,6 +359,7 @@ GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	return (GMT_NOERROR);
 }
 
+#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 	/* Use information in Image header to allocate the image data.
@@ -369,6 +370,7 @@ GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 	if ((Image->data = gmt_M_memory (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }
+#endif
 
 /*! . */
 GMT_LOCAL int api_print_func (FILE *fp, const char *message) {
@@ -495,6 +497,8 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 		case GMT_IS_COORD:	break;	/* No worries */
 #ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	obj->I = obj->data; break;
+#else
+		case GMT_IS_IMAGE:	break;
 #endif
 		case GMT_N_FAMILIES:	break;
 	}
@@ -1202,12 +1206,14 @@ GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, do
 	return (GMT_OK);
 }
 
+#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	gmtgrdio_init_grdheader (API->GMT, I->header, opt, range, inc, registration, mode);
 	return (GMT_OK);
 }
+#endif
 
 /*! . */
 GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_MATRIX *M) {
@@ -1254,10 +1260,12 @@ GMT_LOCAL double * api_grid_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_
 	return (gmt_grd_coord (API->GMT, G->header, dim));
 }
 
+#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL double * api_image_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_IMAGE *I) {
 	return (gmt_grd_coord (API->GMT, I->header, dim));
 }
+#endif
 
 /*! . */
 GMT_LOCAL double * api_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRIX *M) {
@@ -1475,10 +1483,12 @@ GMT_LOCAL void api_grid_comment (struct GMTAPI_CTRL *API, unsigned int mode, voi
 	api_GI_comment (API, mode, arg, G->header);
 }
 
+#ifdef HAVE_GDAL
 /*! Update either command or remark field with text or commmand-line options */
 GMT_LOCAL void api_image_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_IMAGE *I) {
 	api_GI_comment (API, mode, arg, I->header);
 }
+#endif
 
 /*! Update either command or remark field with text or commmand-line options */
 GMT_LOCAL void api_vector_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_VECTOR *V) {
@@ -7897,8 +7907,10 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 	/* First intercept any API Keywords */
 	if (!strncmp (keyword, "API_PAD", 7U))	/* Change the grid padding setting */
 		sprintf (value, "%d", API->pad);
+#ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U))	/* Report image/band layout */
 		gmt_M_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
+#endif
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Report grid layout */
 		if (API->shape == GMT_IS_COL_FORMAT)
 			strcpy (value, "columns");
@@ -7940,6 +7952,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 			API->pad = pad;
 		}
 	}
+#ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U)) {	/* Change image/band layout */
 		if (strlen (value) != 4U) {
 			error = 1;
@@ -7948,6 +7961,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 		else
 			gmt_M_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 4, char);
 	}
+#endif
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Change grid layout */
 		if (!strncmp (keyword, "columns", 7U))
 			API->shape = GMT_IS_COL_FORMAT;	/* Switch to column-major format */

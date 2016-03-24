@@ -39,7 +39,7 @@ message (STATUS "Searching dependent libraries. This may take a few minutes...")
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
 
-find_package (GDAL)
+#find_package (GDAL)
 if (GDAL_FOUND)
 	set (HAVE_GDAL TRUE CACHE INTERNAL "System has GDAL")
 	include_directories (${GDAL_INCLUDE_DIR})

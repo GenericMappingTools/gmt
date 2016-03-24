@@ -89,24 +89,27 @@ done < /tmp/l.lis
 ln -s libXgmt.dylib libgmt.dylib
 ln -s libXgmt.5.dylib libXgmt.dylib
 ln -s libXpostscriptlight.5.dylib libXpostscriptlight.dylib
-# This is not necessary it seems, at least for fink and homebrew
-# Comment out for now.
-# Same stuff for gs which is called by psconvert as a system call.
-# Here we must determine from where to copy...
-#GSV=`gs --version`
-#if [ -d /sw/lib ]; then			# Fink
-#	FROM=/sw/lib
-#elif [ -d /opt/local/lib ]; then	# Macports
-#	FROM=/opt/local/lib
-#	cp $FROM/libgs.${GSV}.dylib libXgs.${GSV}.dylib 
-#	cp $FROM/libfreetype.6.dylib libXfreetype.6.dylib
-#	sudo install_name_tool -id $MEXLIBDIR/libXgs.${GSV}.dylib libXgs.${GSV}.dylib 
-#	sudo install_name_tool -id $MEXLIBDIR/libXfreetype.6.dylib libXfreetype.6.dylib
-#	sudo install_name_tool -change $FROM/libtiff.5.dylib $MEXLIBDIR/libXtiff.5.dylib libXgs.${GSV}.dylib 
-#	sudo install_name_tool -change $FROM/libfreetype.6.dylib $MEXLIBDIR/libXfreetype.6.dylib libXgs.${GSV}.dylib 
-#elif [ -d /usr/local/lib ]; then		# Brew
-#	FROM=/usr/local/lib
-#fi
+# If argument gs is given then we also do the same to the GS library.
+if [ "$1" == "gs" ]; then
+	# Same stuff for gs which is called by psconvert as a system call.
+	# Here we must determine from where to copy...
+	GSV=`gs --version`
+	if [ -d /sw/lib ]; then			# Fink has no shared lib yet...
+		FROM=/sw/lib
+		echo "Sorry, no libgs.dylib under fink yet"
+	elif [ -d /opt/local/lib ]; then	# Macports
+		FROM=/opt/local/lib
+		cp $FROM/libgs.${GSV}.dylib libXgs.${GSV}.dylib 
+		cp $FROM/libfreetype.6.dylib libXfreetype.6.dylib
+		sudo install_name_tool -id $MEXLIBDIR/libXgs.${GSV}.dylib libXgs.${GSV}.dylib 
+		sudo install_name_tool -id $MEXLIBDIR/libXfreetype.6.dylib libXfreetype.6.dylib
+		sudo install_name_tool -change $FROM/libtiff.5.dylib $MEXLIBDIR/libXtiff.5.dylib libXgs.${GSV}.dylib 
+		sudo install_name_tool -change $FROM/libfreetype.6.dylib $MEXLIBDIR/libXfreetype.6.dylib libXgs.${GSV}.dylib 
+	elif [ -d /usr/local/lib ]; then		# Brew
+		FROM=/usr/local/lib
+		echo "Sorry, no libgs.dylib under HomeBrew yet"
+	fi
+fi
 
 # Do plugin supplement separately since not called lib*
 cd gmt/plugins
