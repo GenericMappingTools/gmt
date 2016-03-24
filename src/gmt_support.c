@@ -9416,7 +9416,6 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 	}
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 int gmt_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 	/* Set two rows of padding (pad[] can be larger) around data according
@@ -9859,7 +9858,6 @@ int gmt_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *G) {
 		return (GMT_NOERROR);
 	}
 }
-#endif
 
 /*! . */
 bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180) {

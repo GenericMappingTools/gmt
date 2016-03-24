@@ -359,7 +359,6 @@ GMT_LOCAL int api_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	return (GMT_NOERROR);
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 	/* Use information in Image header to allocate the image data.
@@ -370,7 +369,6 @@ GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 	if ((Image->data = gmt_M_memory (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }
-#endif
 
 /*! . */
 GMT_LOCAL int api_print_func (FILE *fp, const char *message) {
@@ -408,9 +406,7 @@ GMT_LOCAL inline struct GMT_PS      * api_get_ps_ptr      (struct GMT_PS **ptr) 
 GMT_LOCAL inline struct GMT_MATRIX  * api_get_matrix_ptr  (struct GMT_MATRIX **ptr)  {return (*ptr);}
 GMT_LOCAL inline struct GMT_VECTOR  * api_get_vector_ptr  (struct GMT_VECTOR **ptr)  {return (*ptr);}
 GMT_LOCAL inline double      	    * api_get_coord_ptr   (double **ptr)             {return (*ptr);}
-#ifdef HAVE_GDAL
 GMT_LOCAL inline struct GMT_IMAGE   * api_get_image_ptr (struct GMT_IMAGE **ptr) {return (*ptr);}
-#endif
 /* Various inline functs to convert void pointer to specific type */
 GMT_LOCAL inline struct GMT_GRID_ROWBYROW * api_get_rbr_ptr (struct GMT_GRID_ROWBYROW *ptr) {return (ptr);}
 GMT_LOCAL inline struct GMT_FFT_INFO * api_get_fftinfo_ptr (struct GMT_FFT_INFO *ptr) {return (ptr);}
@@ -436,9 +432,7 @@ GMT_LOCAL void *api_return_address (void *data, unsigned int type) {
 		case GMT_IS_MATRIX:	p = api_get_matrix_ptr (data);	break;
 		case GMT_IS_VECTOR:	p = api_get_vector_ptr (data);	break;
 		case GMT_IS_COORD:	p = api_get_coord_ptr (data);	break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	p = api_get_image_ptr (data);	break;
-#endif
 	}
 	return (p);
 }
@@ -495,11 +489,7 @@ GMT_LOCAL void api_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJEC
 		case GMT_IS_MATRIX:	obj->M = obj->data; break;
 		case GMT_IS_VECTOR:	obj->V = obj->data; break;
 		case GMT_IS_COORD:	break;	/* No worries */
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	obj->I = obj->data; break;
-#else
-		case GMT_IS_IMAGE:	break;
-#endif
 		case GMT_N_FAMILIES:	break;
 	}
 }
@@ -1206,14 +1196,12 @@ GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, do
 	return (GMT_OK);
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
 	gmtgrdio_init_grdheader (API->GMT, I->header, opt, range, inc, registration, mode);
 	return (GMT_OK);
 }
-#endif
 
 /*! . */
 GMT_LOCAL int api_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_MATRIX *M) {
@@ -1260,12 +1248,10 @@ GMT_LOCAL double * api_grid_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_
 	return (gmt_grd_coord (API->GMT, G->header, dim));
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL double * api_image_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_IMAGE *I) {
 	return (gmt_grd_coord (API->GMT, I->header, dim));
 }
-#endif
 
 /*! . */
 GMT_LOCAL double * api_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRIX *M) {
@@ -1483,12 +1469,10 @@ GMT_LOCAL void api_grid_comment (struct GMTAPI_CTRL *API, unsigned int mode, voi
 	api_GI_comment (API, mode, arg, G->header);
 }
 
-#ifdef HAVE_GDAL
 /*! Update either command or remark field with text or commmand-line options */
 GMT_LOCAL void api_image_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_IMAGE *I) {
 	api_GI_comment (API, mode, arg, I->header);
 }
-#endif
 
 /*! Update either command or remark field with text or commmand-line options */
 GMT_LOCAL void api_vector_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_VECTOR *V) {
@@ -2535,11 +2519,9 @@ GMT_LOCAL int api_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_famil
 		case GMT_IS_CPT:
 			gmtlib_free_cpt_ptr (GMT, ptr);
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
 			gmtlib_free_image_ptr (GMT, ptr, true);
 			break;
-#endif
 		case GMT_IS_PS:
 			gmtlib_free_ps_ptr (GMT, ptr);
 			break;
@@ -2955,7 +2937,6 @@ GMT_LOCAL int api_export_textset (struct GMTAPI_CTRL *API, int object_ID, unsign
 	return GMT_OK;
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image) {
 	/* Handles the reading of a 2-D grid given in one of several ways.
@@ -2969,9 +2950,8 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	 */
 
 	int item, new_item, new_ID;
-	bool done = true, new = false, via = false;
+	bool done = true, via = false;
 	uint64_t i0, i1, j0, j1, ij, ij_orig, row, col;
-	size_t size;
 	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
 	double dx, dy, d;
 	p_func_size_t GMT_2D_to_index = NULL;
@@ -2980,6 +2960,10 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
+#ifdef HAVE_GDAL
+	bool new = false;
+	size_t size;
+#endif
 
 	GMT_Report (API, GMT_MSG_DEBUG, "api_import_image: Passed ID = %d and mode = %d\n", object_ID, mode);
 
@@ -2991,7 +2975,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a image file on disk */
-
+#ifdef HAVE_GDAL
 			if (image == NULL) {	/* Only allocate image struct when not already allocated */
 				if (mode & GMT_GRID_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_GRID_DATA_ONLY grid must already be allocated */
 				I_obj = gmt_create_image (GMT);
@@ -3024,6 +3008,9 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				return_null (API, GMT_IMAGE_READ_ERROR);
 			if (gmt_M_err_pass (GMT, gmt_image_BC_set (GMT, I_obj), S_obj->filename)) return_null (API, GMT_IMAGE_BC_ERROR);	/* Set boundary conditions */
 			I_obj->alloc_mode = GMT_ALLOC_INTERNALLY;
+#else
+			GMT_Report (API, GMT_MSG_NORMAL, "GDAL required to read image from file %s\n", S_obj->filename);
+#endif
 			break;
 
 	 	case GMT_IS_DUPLICATE:	/* GMT grid and header in a GMT_GRID container object. */
@@ -3171,9 +3158,13 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 	if (mode & GMT_IO_RESET) mode -= GMT_IO_RESET;
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of an image file on disk */
+#ifdef HAVE_GDAL
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Writing image to file %s\n", S_obj->filename);
 			/* Look at grdimage for how this might be done and incorporate here, maybe via a GMT_write_img function */
 			//if (gmt_M_err_pass (GMT, GMT_write_img (GMT, S_obj->filename, I_obj->header, I_obj->data, S_obj->wesn, I_obj->header->pad, mode), S_obj->filename)) return (gmtapi_report_error (API, GMT_IMAGE_WRITE_ERROR));
+#else
+			GMT_Report (API, GMT_MSG_NORMAL, "GDAL required to write image to file %s\n", S_obj->filename);
+#endif
 			break;
 
 	 	case GMT_IS_DUPLICATE:	/* Duplicate GMT image to a new GMT_IMAGE container object */
@@ -3203,7 +3194,6 @@ GMT_LOCAL int api_export_image (struct GMTAPI_CTRL *API, int object_ID, unsigned
 
 	return (GMT_OK);
 }
-#endif
 
 /*! . */
 GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid) {
@@ -3634,11 +3624,9 @@ GMT_LOCAL void *api_import_data (struct GMTAPI_CTRL *API, enum GMT_enum_family f
 		case GMT_IS_GRID:
 			new_obj = api_import_grid (API, object_ID, mode, data);	/* Try to import a grid */
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
 			new_obj = api_import_image (API, object_ID, mode, data);	/* Try to import a image */
 			break;
-#endif
 		case GMT_IS_PS:
 			new_obj = api_import_ps (API, object_ID, mode);		/* Try to import PS */
 			break;
@@ -3689,11 +3677,9 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 		case GMT_IS_GRID:	/* Export a GMT grid */
 			error = api_export_grid (API, object_ID, mode, data);
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* Export a GMT image */
 			error = api_export_image (API, object_ID, mode, data);
 			break;
-#endif
 		case GMT_IS_PS:	/* Export PS */
 			error = api_export_ps (API, object_ID, mode, data);
 			break;
@@ -3864,7 +3850,6 @@ GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
 	return (GMT_OK);	/* No error encountered */
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 GMT_LOCAL int api_destroy_image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_obj) {
 	/* Delete the given image resource.
@@ -3879,7 +3864,6 @@ GMT_LOCAL int api_destroy_image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_o
 	gmt_M_free_image (API->GMT, I_obj, true);
 	return GMT_OK;
 }
-#endif
 
 /*! . */
 GMT_LOCAL int api_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj) {
@@ -5286,12 +5270,10 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			new_obj = gmt_duplicate_grid (GMT, data, mode);
 			geometry = GMT_IS_SURFACE;
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
 			new_obj = gmtlib_duplicate_image (GMT, data, mode);
 			geometry = GMT_IS_SURFACE;
 			break;
-#endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
 			pmode = (mode & (GMT_ALLOC_VERTICAL + GMT_ALLOC_HORIZONTAL));	/* Just isolate any special allocation modes */
 			mode -= pmode;	/* Remove the hor/ver flags from the rest of mode */
@@ -6247,11 +6229,9 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 		case GMT_IS_CPT:
 			error = api_destroy_cpt (API, object);
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
 			error = api_destroy_image (API, object);
 			break;
-#endif
 		case GMT_IS_PS:
 			error = api_destroy_ps (API, object);
 			break;
@@ -6385,7 +6365,6 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if ((error = api_alloc_grid (API->GMT, new_obj)) != GMT_NOERROR) return_null (API, error);	/* Allocation error */
 			}
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
@@ -6402,7 +6381,6 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if ((error = api_alloc_image (API->GMT, new_obj)) != GMT_NOERROR) return_null (API, error);	/* Allocation error */
 			}
 			break;
-#endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
 			if (this_dim[GMT_TBL] > UINT_MAX || this_dim[GMT_ROW] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
 			if ((new_obj = gmt_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
@@ -6517,12 +6495,10 @@ double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void
 			if (dim > GMT_Y) return_null (API, GMT_DIM_TOO_LARGE);
 			coord = api_grid_coord (API, dim, container);
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image */
 			if (dim > GMT_Y) return_null (API, GMT_DIM_TOO_LARGE);
 			coord = api_image_coord (API, dim, container);
 			break;
-#endif
 		case GMT_IS_VECTOR:	/* GMT vector */
 			if (dim != GMT_Y) return_null (API, GMT_DIM_TOO_LARGE);
 			coord = api_vector_coord (API, dim, container);
@@ -6567,11 +6543,9 @@ int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *
 		case GMT_IS_GRID:	/* GMT grid */
 			api_grid_comment (API, mode, arg, container);
 			break;
-#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image */
 			api_image_comment (API, mode, arg, container);
 			break;
-#endif
 		case GMT_IS_DATASET:	/* GMT dataset */
 			api_dataset_comment (API, mode, arg, container);
 			break;

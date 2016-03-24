@@ -735,7 +735,8 @@ int GMT_project (void *V_API, int mode, void *args) {
 	p_data = gmt_M_memory (GMT, NULL, n_alloc, struct PROJECT_DATA);
 
 	if (Ctrl->G.active && Ctrl->E.active && (Ctrl->L.min == Ctrl->L.max)) Ctrl->L.constrain = true;	/* Default generate from A to B  */
-
+	if (Ctrl->L.constrain) fprintf (stderr, "Constrained\n");
+	
 	/* Set up rotation matrix e for flat earth, or pole and center for spherical; get Ctrl->L.min, Ctrl->L.max if stay_within  */
 
 	if (Ctrl->N.active) {	/* Flat Earth mode */
@@ -802,7 +803,7 @@ int GMT_project (void *V_API, int mode, void *args) {
 				gmt_normalize3v (GMT, x);
 				gmt_cross3v (GMT, x, P.pole, bp);
 				gmt_normalize3v (GMT, bp);
-				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (gmt_dot3v (GMT, ap, bp));
+				if (Ctrl->L.constrain) Ctrl->L.max = d_acosd (gmt_dot3v (GMT, ap, bp)) * sin_lat_to_pole;
 			}
 		}
 		if (Ctrl->L.constrain) {

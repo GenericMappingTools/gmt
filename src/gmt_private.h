@@ -103,10 +103,8 @@ struct GMTAPI_DATA_OBJECT {
 	struct GMT_PS *P;
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
-	/* End of temporary variables for API debug - will be removed eventually */
-#ifdef HAVE_GDAL
 	struct GMT_IMAGE *I;
-#endif
+	/* End of temporary variables for API debug - will be removed eventually */
 };
 
 struct GMTAPI_CTRL {

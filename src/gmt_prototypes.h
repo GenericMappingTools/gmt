@@ -263,10 +263,8 @@ EXTERN_MSC void gmt_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct
 EXTERN_MSC int gmt_append_ogr_item (struct GMT_CTRL *GMT, char *name, unsigned int type, struct GMT_OGR *S);
 EXTERN_MSC void gmt_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 
-#ifdef HAVE_GDAL
 EXTERN_MSC struct GMT_IMAGE * gmt_create_image (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_M_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image);
-#endif
 EXTERN_MSC struct GMT_MATRIX * gmt_create_matrix (struct GMT_CTRL *GMT, uint64_t n_layers, unsigned int direction);
 EXTERN_MSC void gmt_M_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix);
 EXTERN_MSC struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction);
@@ -341,9 +339,7 @@ EXTERN_MSC unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **x, double 
 EXTERN_MSC int gmt_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode);
 EXTERN_MSC void gmt_str_toupper (char *string);
 
-#ifdef HAVE_GDAL
 EXTERN_MSC int gmt_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);
-#endif
 EXTERN_MSC bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180);
 EXTERN_MSC bool gmt_x_out_of_bounds (struct GMT_CTRL *GMT, int *i, struct GMT_GRID_HEADER *h, bool wrap_180);
 EXTERN_MSC bool gmt_row_col_out_of_bounds (struct GMT_CTRL *GMT, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col);

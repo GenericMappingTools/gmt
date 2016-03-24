@@ -7118,7 +7118,6 @@ void gmt_M_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data) {
 	gmt_M_free (GMT, *data);
 }
 
-#ifdef HAVE_GDAL
 /*! . */
 struct GMT_IMAGE *gmt_create_image (struct GMT_CTRL *GMT) {
 	/* Allocates space for a new image container. */
@@ -7169,7 +7168,6 @@ void gmt_M_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_ima
 	gmtlib_free_image_ptr (GMT, *I, free_image);
 	gmt_M_free (GMT, *I);
 }
-#endif
 
 /*! . */
 struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction) {
