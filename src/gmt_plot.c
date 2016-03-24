@@ -5728,56 +5728,68 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	}
 }
 
+void ellipse_point (struct GMT_CTRL *GMT, double lon, double lat, double center, double sinp, double cosp, double major, double minor, double cos_azimuth, double sin_azimuth, double angle, double *plon, double *plat)
+{
+	/* Lon, lat is center of ellipse, our point is making an angle with the major axis. */
+	double x, y, x_prime, y_prime, rho, c, sin_c, cos_c;
+	sincos (angle, &y, &x);
+	x *= major;	y *= minor;
+	/* Get rotated coordinates in m */
+	x_prime = x * cos_azimuth - y * sin_azimuth;
+	y_prime = x * sin_azimuth + y * cos_azimuth;
+	/* Convert m back to lon lat */
+	rho = hypot (x_prime, y_prime);
+	c = rho / GMT->current.proj.EQ_RAD;
+	sincos (c, &sin_c, &cos_c);
+	*plat = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
+	if ((lat - 90.0) > -GMT_CONV8_LIMIT)	/* origin in Northern hemisphere */
+		*plon = lon + d_atan2d (x_prime, -y_prime);
+	else if ((lat + 90.0) < GMT_CONV8_LIMIT)	/* origin in Southern hemisphere */
+		*plon = lon + d_atan2d (x_prime, y_prime);
+	else
+		*plon = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
+	while ((*plon - center) < -180.0) *plon += 360.0;
+	while ((*plon - center) > +180.0) *plon -= 360.0;
+}
+
 void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major, double minor, double azimuth) {
 	/* gmt_geo_ellipse takes the location, axes (in km), and azimuth of an ellipse
-	   and draws an approximate ellipse using GMT_ELLIPSE_APPROX points and the chosen map projection */
+	   and draws an approximate ellipse using N-sided polygon and the chosen map projection.
+	   We determine N by looking at the spacing between successive points for a trial N and
+	   then scale N up or down to satisfy the minimum point spacing criteria. */
 
-	int i;
-	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c;
-	double sin_c, cos_c, center, *px = NULL, *py = NULL;
+	int i, N;
+	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, ax, ay, axx, ayy, bx, by, bxx, byy, L;
+	double center, *px = NULL, *py = NULL;
 	struct GMT_DATASEGMENT *S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 
-	gmt_alloc_segment (GMT, S, GMT_ELLIPSE_APPROX+1, 2, true);
-	px = S->coord[GMT_X];	py = S->coord[GMT_Y];
-
-	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;
 	major *= 500.0, minor *= 500.0;	/* Convert to meters of semi-major and semi-minor axes */
+	/* Set up azimuthal equidistant projection */
 	sincosd (90.0 - azimuth, &sin_azimuth, &cos_azimuth);
-	sincosd (lat, &sinp, &cosp);	/* Set up azimuthal equidistant projection */
+	sincosd (lat, &sinp, &cosp);
 
 	center = (GMT->current.proj.central_meridian < GMT->common.R.wesn[XLO] || GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI]) ? 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]) : GMT->current.proj.central_meridian;
 
-	/* Approximate ellipse by a GMT_ELLIPSE_APPROX-sided polygon */
+	delta_azimuth = 2.0 * M_PI / GMT_ELLIPSE_APPROX;	/* Initial guess of angular spacing */
+	/* Compute distance between first two points and compare to map_line_step to determine angular spacing */
+	ellipse_point (GMT, lon, lat, center, sinp, cosp, major, minor, cos_azimuth, sin_azimuth, 0.0, &ax, &ay);
+	ellipse_point (GMT, lon, lat, center, sinp, cosp, major, minor, cos_azimuth, sin_azimuth, delta_azimuth, &bx, &by);
+	gmt_geo_to_xy (GMT, ax, ay, &axx, &ayy);
+	gmt_geo_to_xy (GMT, bx, by, &bxx, &byy);
+	L = hypot (axx - bxx, ayy - byy);
+	N = irint (GMT_ELLIPSE_APPROX * L / GMT->current.setting.map_line_step);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Ellipse will be approximated by %d-sided polygon\n", N);
+	/* Approximate ellipse by a N-sided polygon */
+	
+	delta_azimuth = 2.0 * M_PI / N;
+	gmt_alloc_segment (GMT, S, N+1, 2, true);
+	px = S->coord[GMT_X];	py = S->coord[GMT_Y];
 
-	for (i = 0; i < GMT_ELLIPSE_APPROX; i++) {
+	for (i = 0; i < N; i++)
+		ellipse_point (GMT, lon, lat, center, sinp, cosp, major, minor, cos_azimuth, sin_azimuth, i * delta_azimuth, &px[i], &py[i]);
 
-		sincos (i * delta_azimuth, &y, &x);
-		x *= major;
-		y *= minor;
-
-		/* Get rotated coordinates in m */
-
-		x_prime = x * cos_azimuth - y * sin_azimuth;
-		y_prime = x * sin_azimuth + y * cos_azimuth;
-
-		/* Convert m back to lon lat */
-
-		rho = hypot (x_prime, y_prime);
-
-		c = rho / GMT->current.proj.EQ_RAD;
-		sincos (c, &sin_c, &cos_c);
-		py[i] = d_asind (cos_c * sinp + (y_prime * sin_c * cosp / rho));
-		if ((lat - 90.0) > -GMT_CONV8_LIMIT)	/* origin in Northern hemisphere */
-			px[i] = lon + d_atan2d (x_prime, -y_prime);
-		else if ((lat + 90.0) < GMT_CONV8_LIMIT)	/* origin in Southern hemisphere */
-			px[i] = lon + d_atan2d (x_prime, y_prime);
-		else
-			px[i] = lon + d_atan2d (x_prime * sin_c, (rho * cosp * cos_c - y_prime * sinp * sin_c));
-		while ((px[i] - center) < -180.0) px[i] += 360.0;
-		while ((px[i] - center) > +180.0) px[i] -= 360.0;
-	}
 	/* Explicitly close the polygon */
-	px[GMT_ELLIPSE_APPROX] = px[0], py[GMT_ELLIPSE_APPROX] = py[0];
+	px[N] = px[0], py[N] = py[0];
 	gmt_geo_polygons (GMT, S);
 
 	gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
