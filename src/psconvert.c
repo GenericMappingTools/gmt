@@ -1713,6 +1713,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
+#ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			struct GMT_IMAGE *I = NULL;
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
@@ -1725,6 +1726,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
 				remove (out_file);
 			}
+#else
+			GMT_Report (API, GMT_MSG_NORMAL, "Reading an image from file requires GDAL\n");
+#endif
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");

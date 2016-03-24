@@ -56,8 +56,12 @@
 # Make executables relocatable on supported platforms (relative RPATH) [FALSE]:
 #set (GMT_INSTALL_RELOCATABLE TRUE)
 
-# Exclude optional GDAL, PCRE, FFTW3, ZLIB dependencies even if you have them installed [FALSE]
-set (GMT_EXCLUDE_OPTIONAL_LIBS TRUE)
+# Exclude optional GDAL, PCRE, FFTW3, LAPACK, ZLIB dependencies even if you have them installed [FALSE]
+#set (GMT_EXCLUDE_GDAL TRUE)
+#set (GMT_EXCLUDE_PCRE TRUE)
+#set (GMT_EXCLUDE_FFTW3 TRUE)
+#set (GMT_EXCLUDE_LAPACK TRUE)
+#set (GMT_EXCLUDE_ZLIB TRUE)
 
 # ============================================================================
 # Advanced configuration begins here.  Usually it is not necessary to edit any
