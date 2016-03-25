@@ -151,10 +151,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct G
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				break;
 			case 'F':
