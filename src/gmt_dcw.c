@@ -495,7 +495,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_M_free (GMT, lon);
 		gmt_M_free (GMT, lat);
 		P->coord[GMT_X] = P->coord[GMT_Y] = NULL;
-		gmt_M_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
+		gmt_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
 	}
 	return (D);
 }

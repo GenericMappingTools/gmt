@@ -106,8 +106,8 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/* 
 	if (!C) return;
 	gmt_M_str_free (C->Out.file);	
 	gmt_M_str_free (C->D.name);	
-	if (C->S.active) gmt_M_free_text_selection (GMT, &C->S.select);	
-	if (C->Q.active) gmt_M_free_int_selection (GMT, &C->Q.select);	
+	if (C->S.active) gmt_free_text_selection (GMT, &C->S.select);	
+	if (C->Q.active) gmt_free_int_selection (GMT, &C->Q.select);	
 	gmt_M_free (GMT, C);	
 }
 

@@ -1455,7 +1455,7 @@ int GMT_gmtflexure (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	gmt_M_free_dataset (GMT, &W);
+	gmt_free_dataset (GMT, &W);
 
 	Return (EXIT_SUCCESS);
 }

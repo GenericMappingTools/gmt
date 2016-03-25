@@ -774,7 +774,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, u);
 				gmt_M_free (GMT, v);
 				for (k = 0; k > 2; k++)
-					gmt_M_free_grid (GMT, &Out[k], true);
+					gmt_free_grid (GMT, &Out[k], true);
 				Return (EXIT_SUCCESS);
 			}
 		}

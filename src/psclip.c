@@ -286,7 +286,7 @@ int GMT_psclip (void *V_API, int mode, void *args) {
 					PSL_beginclipping (PSL, S->coord[GMT_X], S->coord[GMT_Y], (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
 					if (duplicate)	/* Free duplicate segment */
-						gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+						gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				}
 			}
 			if (GMT_Destroy_Data (API, &D) != GMT_OK) {

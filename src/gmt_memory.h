@@ -49,13 +49,13 @@ enum GMT_enum_mem_alloc {	/* Initial memory for 2 double columns is 32 Mb */
 #define gmt_M_memory_aligned(C,ptr,n,type) gmt_M_memory_func(C,ptr,n,sizeof(type),true,__func__)
 #endif
 
-/*! Convenience macro for gmt_M_free_func */
+/*! Convenience macro for gmt_free_func */
 #if defined (DEBUG) || defined (MEMDEBUG)
-#define gmt_M_free(C,ptr) (gmt_M_free_func(C,ptr,false,__SOURCE_LINE_FUNC),(ptr)=NULL)
-#define gmt_M_free_aligned(C,ptr) (gmt_M_free_func(C,ptr,true,__SOURCE_LINE_FUNC),(ptr)=NULL)
+#define gmt_M_free(C,ptr) (gmt_free_func(C,ptr,false,__SOURCE_LINE_FUNC),(ptr)=NULL)
+#define gmt_M_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__SOURCE_LINE_FUNC),(ptr)=NULL)
 #else
-#define gmt_M_free(C,ptr) (gmt_M_free_func(C,ptr,false,__func__),(ptr)=NULL)
-#define gmt_M_free_aligned(C,ptr) (gmt_M_free_func(C,ptr,true,__func__),(ptr)=NULL)
+#define gmt_M_free(C,ptr) (gmt_free_func(C,ptr,false,__func__),(ptr)=NULL)
+#define gmt_M_free_aligned(C,ptr) (gmt_free_func(C,ptr,true,__func__),(ptr)=NULL)
 #endif
 
 /*! Convenience macro for free that excplicitly sets freed pointer to NULL */

@@ -56,7 +56,7 @@
  *  gmt_grd_pad_zero        :
  *  gmt_create_grid         :
  *  gmt_duplicate_grid      :
- *  gmt_M_free_grid           :
+ *  gmt_free_grid           :
  *  gmt_set_outgrid         :
  *  gmt_change_grdreg       :
  *  gmt_grd_zminmax         :
@@ -2161,7 +2161,7 @@ unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, b
 	return (G->alloc_mode);
 }
 
-void gmt_M_free_grid (struct GMT_CTRL *GMT, struct GMT_GRID **G, bool free_grid) {
+void gmt_free_grid (struct GMT_CTRL *GMT, struct GMT_GRID **G, bool free_grid) {
 	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	(void)gmtgrdio_free_grid_ptr (GMT, *G, free_grid);
 	gmt_M_free (GMT, *G);

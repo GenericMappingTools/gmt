@@ -599,7 +599,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	/* Must set coord pointers to NULL since they were not allocated */
 	for (seg = 0; seg < seg2; seg++)
 		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
-	gmt_M_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 	if (Ctrl->F.active) gmt_M_free (GMT, fwork);
 	gmt_M_free (GMT, rec);
 

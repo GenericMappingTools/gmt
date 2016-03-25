@@ -593,7 +593,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 				}
 				++k;
 			}
-			gmt_M_free_dir_list (GMT, &list);
+			gmt_free_dir_list (GMT, &list);
 		}
 	}
 
@@ -626,7 +626,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s has no extension! Ignored\n", list[k]);
 					++k;
 				}
-				gmt_M_free_dir_list (GMT, &list);
+				gmt_free_dir_list (GMT, &list);
 			}
 		}
 		else {	/* Just a list with one or more comma-separated library paths */
@@ -2987,7 +2987,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_GRID_DATA_ONLY)) {		/* Must init header and read the header information from file */
 				if (gmt_M_err_pass (GMT, gmt_read_image_info (GMT, S_obj->filename, I_obj), S_obj->filename)) {
-					if (new) gmt_M_free_image (GMT, &I_obj, false);
+					if (new) gmt_free_image (GMT, &I_obj, false);
 					return_null (API, GMT_IMAGE_READ_ERROR);
 				}
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
@@ -3252,12 +3252,12 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 					/* If we get here more than once we only allocate extra once */
 					if (G_obj->extra == NULL) G_obj->extra = gmt_M_memory (GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
 					if (api_open_grd (GMT, S_obj->filename, G_obj, r_mode, mode)) {	/* Open the grid for incremental row reading */
-						if (new) gmt_M_free_grid (GMT, &G_obj, false);
+						if (new) gmt_free_grid (GMT, &G_obj, false);
 						return_null (API, GMT_GRID_READ_ERROR);
 					}
 				}
 				else if (gmt_M_err_pass (GMT, gmt_read_grd_info (GMT, S_obj->filename, G_obj->header), S_obj->filename)) {
-					if (new) gmt_M_free_grid (GMT, &G_obj, false);
+					if (new) gmt_free_grid (GMT, &G_obj, false);
 					return_null (API, GMT_GRID_READ_ERROR);
 				}
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
@@ -3861,7 +3861,7 @@ GMT_LOCAL int api_destroy_image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_o
 	}
 	if ((*I_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_image (API->GMT, I_obj, true);
+	gmt_free_image (API->GMT, I_obj, true);
 	return GMT_OK;
 }
 
@@ -3875,7 +3875,7 @@ GMT_LOCAL int api_destroy_grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj
 	}
 	if ((*G_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_grid (API->GMT, G_obj, true);
+	gmt_free_grid (API->GMT, G_obj, true);
 	return GMT_OK;
 }
 
@@ -3889,7 +3889,7 @@ GMT_LOCAL int api_destroy_dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET *
 	}
 	if ((*D_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_dataset (API->GMT, D_obj);
+	gmt_free_dataset (API->GMT, D_obj);
 	return GMT_OK;
 }
 
@@ -3903,7 +3903,7 @@ GMT_LOCAL int api_destroy_textset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *
 	}
 	if ((*T_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_textset (API->GMT, T_obj);
+	gmt_free_textset (API->GMT, T_obj);
 	return GMT_OK;
 }
 
@@ -3917,7 +3917,7 @@ GMT_LOCAL int api_destroy_cpt (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_o
 	}
 	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_palette (API->GMT, P_obj);
+	gmt_free_palette (API->GMT, P_obj);
 	return GMT_OK;
 }
 
@@ -3931,7 +3931,7 @@ GMT_LOCAL int api_destroy_ps (struct GMTAPI_CTRL *API, struct GMT_PS **P_obj) {
 	}
 	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_ps (API->GMT, P_obj);
+	gmt_free_ps (API->GMT, P_obj);
 	return GMT_OK;
 }
 
@@ -3945,7 +3945,7 @@ GMT_LOCAL int api_destroy_matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M
 	}
 	if ((*M_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_matrix (API->GMT, M_obj, true);
+	gmt_free_matrix (API->GMT, M_obj, true);
 	return GMT_OK;
 }
 
@@ -3959,7 +3959,7 @@ GMT_LOCAL int api_destroy_vector (struct GMTAPI_CTRL *API, struct GMT_VECTOR **V
 	}
 	if ((*V_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
-	gmt_M_free_vector (API->GMT, V_obj, true);
+	gmt_free_vector (API->GMT, V_obj, true);
 	return GMT_OK;
 }
 
@@ -6404,7 +6404,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			if ((API->error = api_init_matrix (API, this_dim, range, inc, registration, mode, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_MATRIX *M = api_return_address (new_obj, GMT_IS_MATRIX);	/* Get pointer to resource */
-				gmt_M_free_matrix (API->GMT, &M, true);
+				gmt_free_matrix (API->GMT, &M, true);
 			}
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
@@ -6413,7 +6413,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			if ((API->error = api_init_vector (API, this_dim, range, inc, registration, def_direction, new_obj))) {	/* Failure, must free the object */
 				struct GMT_VECTOR *V = api_return_address (new_obj, GMT_IS_VECTOR);	/* Get pointer to resource */
-				gmt_M_free_vector (API->GMT, &V, true);
+				gmt_free_vector (API->GMT, &V, true);
 			}
 			break;
 		default:

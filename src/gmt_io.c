@@ -124,24 +124,24 @@
  * gmt_read_table
  * gmt_duplicate_segment
  * gmt_alloc_dataset
- * gmt_M_free_segment
- * gmt_M_free_table
+ * gmt_free_segment
+ * gmt_free_table
  * gmtlib_free_dataset_ptr
- * gmt_M_free_dataset
+ * gmt_free_dataset
  * gmtlib_free_textset_ptr
- * gmt_M_free_textset
+ * gmt_free_textset
  * gmt_create_image
  * gmtlib_duplicate_image
  * gmtlib_free_image_ptr
- * gmt_M_free_image
+ * gmt_free_image
  * gmt_create_vector
  * gmt_alloc_univector
  * gmtlib_free_vector_ptr
- * gmt_M_free_vector
+ * gmt_free_vector
  * gmt_create_matrix
  * gmtlib_duplicate_matrix
  * gmtlib_free_matrix_ptr
- * gmt_M_free_matrix
+ * gmt_free_matrix
  * gmt_not_numeric
  * gmt_conv_intext2dbl
  * gmtlib_ogr_get_type
@@ -151,7 +151,7 @@
  * gmt_get_aspatial_value
  * gmt_load_aspatial_string
  * gmt_get_dir_list
- * gmt_M_free_dir_list
+ * gmt_free_dir_list
  *
  * Author:  Paul Wessel
  * Date:    1-JAN-2010
@@ -2615,7 +2615,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			}
 			if (n_split == 0) continue;	/* Might have crossed dateline but had points exactly at 180 */
 			T->segment = gmt_M_memory (GMT, T->segment, n_segs + n_split - 1, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
-			gmt_M_free_segment (GMT, &(T->segment[seg]), D->alloc_mode);	/* Delete the old one */
+			gmt_free_segment (GMT, &(T->segment[seg]), D->alloc_mode);	/* Delete the old one */
 			T->segment[seg] = L[0];			/* Hook in the first replacement */
 			for (k = 1; k < n_split; k++) T->segment[n_segs++] = L[k];	/* Add the remaining segments to the end */
 			gmt_M_free (GMT, L);
@@ -3697,7 +3697,7 @@ int gmt_fclose (struct GMT_CTRL *GMT, FILE *stream) {
 		GMT->current.io.ncid = GMT->current.io.nvars = 0;
 		GMT->current.io.ndim = GMT->current.io.nrec = 0;
 		GMT->current.io.input = GMT->session.input_ascii;
-		gmt_M_free_tmp_arrays (GMT);	/* Free up pre-allocated vectors */
+		gmt_free_tmp_arrays (GMT);	/* Free up pre-allocated vectors */
 		return (0);
 	}
 	/* Regular file */
@@ -6900,13 +6900,13 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
 
 	if (first_seg) {	/* Never saw any segment or data records */
-		gmt_M_free_table (GMT, T, GMT_ALLOC_INTERNALLY);
+		gmt_free_table (GMT, T, GMT_ALLOC_INTERNALLY);
 		return (NULL);
 	}
 	if (T->segment[seg]->n_rows == 0) {	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		gmt_M_free (GMT, T->segment[seg]);
 		if (seg == 0) {	/* Happens when we just read 1 segment header with no data */
-			gmt_M_free_table (GMT, T, GMT_ALLOC_INTERNALLY);
+			gmt_free_table (GMT, T, GMT_ALLOC_INTERNALLY);
 			return (NULL);
 		}
 	}
@@ -7040,7 +7040,7 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 }
 
 /*! . */
-void gmt_M_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GMT_enum_alloc alloc_mode) {
+void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum GMT_enum_alloc alloc_mode) {
 	/* Free memory allocated by gmt_read_table */
 
 	unsigned int k;
@@ -7062,7 +7062,7 @@ void gmt_M_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S, enum 
 }
 
 /*! . */
-void gmt_M_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode) {
+void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum GMT_enum_alloc alloc_mode) {
 	unsigned int k;
 	if (!table) return;		/* Do not try to free NULL pointer */
 	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
@@ -7073,7 +7073,7 @@ void gmt_M_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table, enum G
 	gmtlib_free_ogr (GMT, &(table->ogr), 1);
 	if (table->segment) {	/* Free segments */
 		uint64_t seg;
-		for (seg = 0; seg < table->n_segments; seg++) gmt_M_free_segment (GMT, &(table->segment[seg]), alloc_mode);
+		for (seg = 0; seg < table->n_segments; seg++) gmt_free_segment (GMT, &(table->segment[seg]), alloc_mode);
 		gmt_M_free (GMT, table->segment);
 	}
 	gmt_M_free (GMT, table);
@@ -7085,7 +7085,7 @@ void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 	unsigned int tbl, k;
 	if (!data) return;	/* Do not try to free NULL pointer */
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
-		gmt_M_free_table (GMT, data->table[tbl], data->alloc_mode);
+		gmt_free_table (GMT, data->table[tbl], data->alloc_mode);
 	}
 	gmt_M_free (GMT, data->min);
 	gmt_M_free (GMT, data->max);
@@ -7094,7 +7094,7 @@ void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 }
 
 /*! . */
-void gmt_M_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data) {
+void gmt_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data) {
 	/* This takes pointer to data array and thus can return it as NULL */
 	gmtlib_free_dataset_ptr (GMT, *data);
 	gmt_M_free (GMT, *data);
@@ -7111,7 +7111,7 @@ void gmtlib_free_textset_ptr (struct GMT_CTRL *GMT, struct GMT_TEXTSET *data) {
 }
 
 /*! . */
-void gmt_M_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data) {
+void gmt_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data) {
 	/* This takes pointer to data array and thus can return it as NULL */
 
 	gmtlib_free_textset_ptr (GMT, *data);
@@ -7163,7 +7163,7 @@ void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free
 }
 
 /*! . */
-void gmt_M_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image) {
+void gmt_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image) {
 	/* By taking a reference to the image pointer we can set it to NULL when done */
 	gmtlib_free_image_ptr (GMT, *I, free_image);
 	gmt_M_free (GMT, *I);
@@ -7224,7 +7224,7 @@ unsigned int gmtlib_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V,
 }
 
 /*! . */
-void gmt_M_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector) {
+void gmt_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector) {
 	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	(void)gmtlib_free_vector_ptr (GMT, *V, free_vector);
@@ -7272,7 +7272,7 @@ unsigned int gmtlib_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M,
 	return (M->alloc_mode);
 }
 
-void gmt_M_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix) {
+void gmt_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix) {
 	/* By taking a reference to the matrix pointer we can set it to NULL when done */
 	(void)gmtlib_free_matrix_ptr (GMT, *M, free_matrix);
 	gmt_M_free (GMT, *M);
@@ -7508,7 +7508,7 @@ char **gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 }
 
 /*! . */
-void gmt_M_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
+void gmt_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	/* Free allocated array with directory content */
 	unsigned int k = 0;
 	char **list = *addr;

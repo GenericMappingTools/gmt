@@ -10179,7 +10179,7 @@ void gmt_end (struct GMT_CTRL *GMT) {
 	fflush (GMT->session.std[GMT_OUT]);	/* Make sure output buffer is flushed */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmt_M_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	gmt_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmtinit_free_user_media (GMT);
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
@@ -10206,7 +10206,7 @@ struct GMT_CTRL *gmt_begin_module (struct GMTAPI_CTRL *API, const char *lib_name
 
 	Csave = calloc (1U, sizeof (struct GMT_CTRL));
 
-	gmt_M_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
+	gmt_free_tmp_arrays (GMT);			/* Free temp memory for vector io or processing */
 
 	/* First memcpy over everything; this will include pointer addresses we will have to fix below */
 
@@ -10321,7 +10321,7 @@ void gmt_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy) {
 	/* GMT_IO */
 
 	gmtlib_free_ogr (GMT, &(GMT->current.io.OGR), 1);	/* Free up the GMT/OGR structure, if used */
-	gmt_M_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
+	gmt_free_tmp_arrays (GMT);			/* Free emp memory for vector io or processing */
 	gmtinit_reset_colformats (GMT);			/* Wipe previous settings */
 
 	gmt_fft_cleanup (GMT); /* Clean FFT resources */

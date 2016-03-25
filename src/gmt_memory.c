@@ -27,7 +27,7 @@
 /* Two functions called elsewhere:
    gmt_prep_tmp_arrays	: Called wherever temporary column vectors are needed, such
 			  as in data reading and fix_up_path and elsewhere.
-   gmt_M_free_tmp_arrays  : Called when ready to free up stuff
+   gmt_free_tmp_arrays  : Called when ready to free up stuff
    gmt_M_malloc              Memory management
    gmt_M_memory              Memory allocation/reallocation
    gmt_M_free                Memory deallocation
@@ -430,7 +430,7 @@ void gmt_memtrack_report (struct GMT_CTRL *GMT) {
 }
 #endif
 
-void gmt_M_free_tmp_arrays (struct GMT_CTRL *GMT) {
+void gmt_free_tmp_arrays (struct GMT_CTRL *GMT) {
 	/* Free temporary coordinate memory used by this session */
 	size_t col;
 
@@ -547,7 +547,7 @@ void *gmt_M_memory_func (struct GMT_CTRL *GMT, void *prev_addr, size_t nelem, si
 	return (tmp);
 }
 
-void gmt_M_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where) {
+void gmt_free_func (struct GMT_CTRL *GMT, void *addr, bool align, const char *where) {
 	if (addr == NULL) {
 #ifndef DEBUG
 		/* report freeing unallocated memory only in level GMT_MSG_DEBUG (-V4) */

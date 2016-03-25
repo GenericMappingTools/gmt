@@ -165,9 +165,9 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_DCW_free (GMT, &(C->E.info));
-	if (C->L.scale.refpoint) gmt_M_free_refpoint (GMT, &C->L.scale.refpoint);
+	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
 	gmt_M_free (GMT, C->L.scale.panel);
-	if (C->T.rose.refpoint) gmt_M_free_refpoint (GMT, &C->T.rose.refpoint);
+	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
 	gmt_M_free (GMT, C->T.rose.panel);
 	gmt_M_free (GMT, C);
 }

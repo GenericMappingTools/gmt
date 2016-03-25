@@ -183,7 +183,7 @@ int GMT_grdconvert (void *V_API, int mode, void *args) {
 	gmt_M_err_fail (GMT, gmt_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
 	type[1] = Grid->header->type;
 	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
-	gmt_M_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
+	gmt_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
 
 	if (type[1] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */

@@ -40,7 +40,7 @@
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct GMT_MATH_MACRO **M);
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
-EXTERN_MSC void gmt_M_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M);
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M);
 EXTERN_MSC struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char *mfile);
 
 #define GMTMATH_ARG_IS_OPERATOR	 0
@@ -4287,7 +4287,7 @@ GMT_LOCAL void Free_Stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack
 		if (stack[i]->alloc_mode == 2)
 			GMT_Destroy_Data (API, &stack[i]->D);
 		else if (stack[i]->alloc_mode == 1 && stack[i]->D)
-			gmt_M_free_dataset (API->GMT, &stack[i]->D);
+			gmt_free_dataset (API->GMT, &stack[i]->D);
 		gmt_M_free (API->GMT, stack[i]);
 	}
 }
@@ -4296,7 +4296,7 @@ GMT_LOCAL void Free_Store (struct GMTAPI_CTRL *API, struct GMTMATH_STORED **reca
 {	unsigned int i;
 	for (i = 0; i < GMTMATH_STORE_SIZE; i++) {
 		if (recall[i] && !recall[i]->stored.constant) {
-			gmt_M_free_dataset (API->GMT, &recall[i]->stored.D);
+			gmt_free_dataset (API->GMT, &recall[i]->stored.D);
 			gmt_M_free (API->GMT, recall[i]);
 		}
 	}
@@ -4734,7 +4734,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) if (no_C || !Ctrl->C.cols[j]) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 				}
-				else {	/* Need new named storage place; use gmt_duplicate_dataset/gmt_M_free_dataset since no point adding to registered resources since internal use only */
+				else {	/* Need new named storage place; use gmt_duplicate_dataset/gmt_free_dataset since no point adding to registered resources since internal use only */
 					k = n_stored;
 					recall[k] = gmt_M_memory (GMT, NULL, 1, struct GMTMATH_STORED);
 					recall[k]->label = strdup (label);
@@ -4779,7 +4779,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (EXIT_FAILURE);
 				}
-				if (recall[k]->stored.D) gmt_M_free_dataset (GMT, &recall[k]->stored.D);
+				if (recall[k]->stored.D) gmt_free_dataset (GMT, &recall[k]->stored.D);
 				gmt_M_str_free (recall[k]->label);
 				gmt_M_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
@@ -4989,7 +4989,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_OK) {
 				Return (API->error);
 			}
-			gmt_M_free_dataset (API->GMT, &N);
+			gmt_free_dataset (API->GMT, &N);
 		}
 		else {	/* Write the whole enchilada */
 			GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
@@ -5006,9 +5006,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (free_time) gmt_M_free_dataset (GMT, &Time);
+	if (free_time) gmt_free_dataset (GMT, &Time);
 	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */
-		if (recall[kk]->stored.D) gmt_M_free_dataset (GMT, &recall[kk]->stored.D);
+		if (recall[kk]->stored.D) gmt_free_dataset (GMT, &recall[kk]->stored.D);
 		gmt_M_str_free (recall[kk]->label);
 		gmt_M_free (GMT, recall[kk]);
 	}

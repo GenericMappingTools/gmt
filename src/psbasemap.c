@@ -70,11 +70,11 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->A.file);
-	if (C->D.insert.refpoint) gmt_M_free_refpoint (GMT, &C->D.insert.refpoint);
+	if (C->D.insert.refpoint) gmt_free_refpoint (GMT, &C->D.insert.refpoint);
 	gmt_M_free (GMT, C->D.insert.panel);
-	if (C->L.scale.refpoint) gmt_M_free_refpoint (GMT, &C->L.scale.refpoint);
+	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
 	gmt_M_free (GMT, C->L.scale.panel);
-	if (C->T.rose.refpoint) gmt_M_free_refpoint (GMT, &C->T.rose.refpoint);
+	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
 	gmt_M_free (GMT, C->T.rose.panel);
 	gmt_M_free (GMT, C);
 }

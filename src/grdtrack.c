@@ -794,7 +794,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				else
-					gmt_M_free_grid (GMT, &GC[g].G, true);
+					gmt_free_grid (GMT, &GC[g].G, true);
 			}
 			gmt_M_free (GMT, GC);
 			Return (EXIT_FAILURE);
@@ -802,7 +802,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		gmt_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);	/* Initialize the distance unit and scaling */
 
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
-		gmt_M_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
+		gmt_free_table (GMT, Din->table[0], Din->alloc_mode);	/* Since we will add our own below */
 		/* Set default spacing to half the min grid spacing: */
 		Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Convert to km if geographic or degrees if arc-units */
@@ -886,7 +886,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		else	/* Never written */
 #endif
-			gmt_M_free_dataset (GMT, &Dtmp);
+			gmt_free_dataset (GMT, &Dtmp);
 
 		/* Sample the grids along all profiles in Dout */
 
@@ -1189,7 +1189,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 		}
 		else	/* IMG allocated locally */
-			gmt_M_free_grid (GMT, &GC[g].G, true);
+			gmt_free_grid (GMT, &GC[g].G, true);
 	}
 	gmt_M_free (GMT, value);
 	gmt_M_free (GMT, GC);

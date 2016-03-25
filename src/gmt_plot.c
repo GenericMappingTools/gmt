@@ -63,7 +63,7 @@
  *	gmt_geo_vector           :
  *	gmtlib_create_ps            :
  *	gmtlib_free_ps_ptr          :
- *	gmt_M_free_ps              :
+ *	gmt_free_ps              :
  *	gmt_read_ps              :
  *	gmt_write_ps             :
  *	gmt_duplicate_ps         :
@@ -3292,7 +3292,7 @@ GMT_LOCAL void plot_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B,
 	gmt_geo_polygons (GMT, L);	/* "Draw" the line */
 	PSL_command (GMT->PSL, "U\n");
 
-	gmt_M_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 }
 
 GMT_LOCAL void plot_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C) {
@@ -4542,7 +4542,7 @@ void gmt_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B) {
 			if ((panel->mode & 1)) gmt_setfill (GMT, &panel->fill, outline);
 			if ((panel->mode & 2)) gmt_setpen (GMT, &panel->pen1);
 			gmt_geo_polygons (GMT, S);
-			gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 			return;	/* Done here */
 		}
 	}
@@ -5792,7 +5792,7 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 	px[N] = px[0], py[N] = py[0];
 	gmt_geo_polygons (GMT, S);
 
-	gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 }
 
 unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *pen, struct GMT_SYMBOL *S) {
@@ -6216,7 +6216,7 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
 }
 
 /*! . */
-void gmt_M_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
+void gmt_free_ps (struct GMT_CTRL *GMT, struct GMT_PS **P) {
 	/* Free the memory allocated in PSL to hold a PS plot (which is pointed to by P->data) */
 	gmtlib_free_ps_ptr (GMT, *P);
 	gmt_M_free (GMT, *P);

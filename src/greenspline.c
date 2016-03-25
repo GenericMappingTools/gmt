@@ -1812,7 +1812,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
 		dump_green (GMT, G, dGdr, par, x0, x1, 10001, Lz, Lg);
-		gmt_M_free_grid (GMT, &Grid, dimension == 2);
+		gmt_free_grid (GMT, &Grid, dimension == 2);
 		for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
 		free_lookup (GMT, &Lz, 0);
 		free_lookup (GMT, &Lg, 1);
@@ -1918,7 +1918,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, v);
 				gmt_M_free (GMT, A);
 				gmt_M_free (GMT, obs);
-				if (dimension == 2) gmt_M_free_grid (GMT, &Grid, true);
+				if (dimension == 2) gmt_free_grid (GMT, &Grid, true);
 				Return (EXIT_SUCCESS);
 			}
 		}
@@ -2092,7 +2092,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 		}
 		if (delete_grid) /* No longer required for 1-D and 3-D */
-			gmt_M_free_grid (GMT, &Grid, dimension > 1);
+			gmt_free_grid (GMT, &Grid, dimension > 1);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}

@@ -670,7 +670,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		else if (not_global)
-			gmt_M_free_dataset (GMT, &D);
+			gmt_free_dataset (GMT, &D);
 	}
 	gmt_M_free (GMT, Ctrl->T.value);
 	if (D && GMT_Destroy_Data (API, &D) != GMT_OK)

@@ -137,7 +137,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->S.arg);
-	gmt_M_freepen (GMT, &C->W.pen);
+	gmt_freepen (GMT, &C->W.pen);
 	gmt_M_free (GMT, C);
 }
 
@@ -1673,7 +1673,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					if (S.f.f_pen == 0) gmt_setpen (GMT, &current_pen);	/* Reinstate current pen */
 				}
 				if (duplicate)	/* Free duplicate segment */
-					gmt_M_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
+					gmt_free_segment (GMT, &L, GMT_ALLOC_INTERNALLY);
 			}
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {

@@ -496,7 +496,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				out[GMT_X] = S->coord[GMT_X][j];	out[GMT_Y] = S->coord[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			}
-			gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
@@ -540,7 +540,7 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 					gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 				gmt_geo_polygons (GMT, S);
 			}
-			gmt_M_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 		}
 
 		gmt_map_basemap (GMT);

@@ -1137,7 +1137,7 @@ GMT_LOCAL void support_set_bit (unsigned int *mark, uint64_t k, unsigned int *bi
 GMT_LOCAL void support_decorate_free (struct GMT_CTRL *GMT, struct GMT_DECORATE *G) {
 	/* Free memory used by decorate */
 
-	gmt_M_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+	gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
 	if (G->f_n) {	/* Array for fixed points */
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
 		gmt_M_free (GMT, G->f_xy[GMT_Y]);
@@ -5474,7 +5474,7 @@ char *gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen) {
 	return (text);
 }
 
-void gmt_M_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
+void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 	for (int k = 0; k < 2; k++) {
 		gmt_M_free (GMT, P->end[k].V);
 	}
@@ -5896,7 +5896,7 @@ struct GMT_PALETTE * gmtlib_duplicate_palette (struct GMT_CTRL *GMT, struct GMT_
 }
 
 /*! . */
-void gmt_M_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
+void gmt_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 	gmtlib_free_cpt_ptr (GMT, *P);
 	gmt_M_free (GMT, *P);
 	*P = NULL;
@@ -7976,7 +7976,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		}
 		else if (G->xp->n_columns < 2 || G->xp->n_records < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
-			gmt_M_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+			gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
 			error++;
 		}
 		else {	/* Should be OK to use */
@@ -8107,7 +8107,7 @@ int gmt_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		}
 		else if (G->xp->n_columns < 2 || G->xp->n_records < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Crossing file %s does not have enough columns or records\n", G->flag, G->file);
-			gmt_M_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+			gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
 			error++;
 		}
 		else {	/* Should be OK to use */
@@ -8210,7 +8210,7 @@ void gmt_contlabel_free (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 		gmt_M_free (GMT, L);
 	}
 	gmt_M_free (GMT, G->segment);
-	gmt_M_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
+	gmt_free_table (GMT, G->xp, GMT_ALLOC_INTERNALLY);
 	if (G->f_n) {	/* Array for fixed points */
 		gmt_M_free (GMT, G->f_xy[GMT_X]);
 		gmt_M_free (GMT, G->f_xy[GMT_Y]);
@@ -11942,7 +11942,7 @@ int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M) 
 }
 
 /*! . */
-void gmt_M_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M) {
+void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct GMT_MATH_MACRO **M) {
 	/* Free space allocated for macros */
 
 	unsigned int n, k;
@@ -11988,7 +11988,7 @@ struct GMT_OPTION * gmt_substitute_macros (struct GMT_CTRL *GMT, struct GMT_OPTI
 
 		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) return (NULL);
 	}
-	gmt_M_free_macros (GMT, n_macros, &M);
+	gmt_free_macros (GMT, n_macros, &M);
 
 	return (list);
 }
@@ -12378,7 +12378,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No need to insert new points at 180\n");
-		gmt_M_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
+		gmt_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
 		gmt_M_free (GMT, pos);
 		return 0;
 	}
@@ -12400,7 +12400,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 		if (S->ogr) gmt_duplicate_ogr_seg (GMT, L[seg], S);
 		start = pos[seg];
 	}
-	gmt_M_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
+	gmt_free_segment (GMT, &Sx, GMT_ALLOC_INTERNALLY);
 	gmt_M_free (GMT, pos);
 
 	*Lout = L;		/* Pass pointer to the array of segments */
@@ -12550,7 +12550,7 @@ int gmt_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int i
 }
 
 /*! . */
-void gmt_M_free_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION **S) {
+void gmt_free_int_selection (struct GMT_CTRL *GMT, struct GMT_INT_SELECTION **S) {
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
 	gmt_M_free (GMT, (*S)->item);
@@ -12624,7 +12624,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	}
 	support_free_list (GMT, list, n_items);	/* Done with the list */
 	if (error) {	/* Parsing error(s) */
-		gmt_M_free_int_selection (GMT, &select);
+		gmt_free_int_selection (GMT, &select);
 		return (NULL);
 	}
 	/* Here we got something to return */
@@ -12643,7 +12643,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 }
 
 /*! . */
-void gmt_M_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S) {
+void gmt_free_text_selection (struct GMT_CTRL *GMT, struct GMT_TEXT_SELECTION **S) {
 	/* Free the selection structure */
 	if (*S == NULL) return;	/* Nothing to free */
 	if ((*S)->pattern) support_free_list (GMT, (*S)->pattern, (*S)->n);
@@ -12692,7 +12692,7 @@ struct GMT_TEXT_SELECTION * gmt_set_text_selection (struct GMT_CTRL *GMT, char *
 	 * Escape ~ or +f at start of an actual pattern with \\~ to bypass their special meanings.
 	 * We return a pointer to struct GMT_TEXT_SELECTION, which holds the information.
 	 * Programs should call gmt_get_text_selection on a segment to determine a match,
-	 * and gmt_M_free_text_selection to free memory when done.
+	 * and gmt_free_text_selection to free memory when done.
 	 */
 	uint64_t k = 0, n = 0, n_items, arg_length;
 	bool invert = false;
@@ -12783,7 +12783,7 @@ void gmt_just_to_lonlat (struct GMT_CTRL *GMT, int justify, bool geo, double *x,
 }
 
 /*! . */
-void gmt_M_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap) {
+void gmt_free_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT **Ap) {
 	struct GMT_REFPOINT *A = *Ap;
 	if (A == NULL) return;	/* Nothing */
 	gmt_M_str_free (A->args);
@@ -12894,7 +12894,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			break;
 	}
 	if (n_errors)	/* Failure; free refpoint structure */
-		gmt_M_free_refpoint (GMT, &A);
+		gmt_free_refpoint (GMT, &A);
 	else {	/* Assign args */
 		A->mode = mode;
 		A->args = strdup (the_rest);
