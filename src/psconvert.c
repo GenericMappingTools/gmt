@@ -921,6 +921,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 		return_image = true;
+#ifndef HAVE_GDAL
+		GMT_Report (API, GMT_MSG_DEBUG, "Selecting ppmraw device since GDAL not available.\n");
+		Ctrl->T.device = GS_DEV_PPM;
+#endif
 	}
 	/* Parameters for all the formats available */
 
@@ -1713,12 +1717,43 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 
 		if (return_image) {	/* Must read in the saved raster image and return via Ctrl->F.file pointer */
-#ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			struct GMT_IMAGE *I = NULL;
+#ifdef HAVE_GDAL	/* Since GMT_Read_Data with GMT_IS_IMAGE, GMT_IS_FILE means a call to GDAL */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_file, NULL)) == NULL) {
 				Return (API->error);
 			}
+#else			/* Here we have already set device to PPM which we can read ourselves. */
+			uint64_t dim[3] = {0U, 0U, 3U}; 	/* 3 bands. This might change if we do monochrome at some point */
+			uint64_t row, col, ij;
+			FILE *fp_raw = NULL;
+			size_t n_read = 0U;
+			unsigned char rgb[3];
+			if ((fp_raw = fopen (out_file, "rb")) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open image file %s\n", out_file);
+				Return (EXIT_FAILURE);
+			}
+			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Skip 1st line */
+			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Skip 2nd line */
+			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Get 3rd line */
+			if (sscanf (line, "%" PRIu64 " %" PRIu64, &dim[GMT_X], &dim[GMT_Y]) != 2) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to decipher size of image in file %s\n", out_file);
+				Return (EXIT_FAILURE);
+			}
+			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create image structure\n");
+				Return (API->error);
+			}
+			gmt_M_grd_loop (GMT, I, row, col, ij) {	/* Demultiplex PPM rgbrgbrgb... image into rrrrr...ggggg...bbbbb layers */
+				if ((n_read = fread (rgb, sizeof (unsigned char), 3, fp_raw)) != 3) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Unable to read rgb-triplet from image in file %sn", out_file);
+					Return (API->error);
+				}
+				for (k = 0; k < 3; k++)	/* Offset each entry from ij by size of each plane */
+					I->data[ij+k*I->header->size] = rgb[k];
+			}
+#endif
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 				Return (API->error);
 			gmt_set_pad (GMT, API->pad);	/* Reset padding to GMT default */
@@ -1726,9 +1761,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Removing %s...\n", out_file);
 				remove (out_file);
 			}
-#else
-			GMT_Report (API, GMT_MSG_NORMAL, "Reading an image from file requires GDAL\n");
-#endif
 		}
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done.\n");

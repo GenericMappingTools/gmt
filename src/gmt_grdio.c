@@ -2190,33 +2190,46 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 	return (false);
 }
 
-int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode) {
+int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode) {
 	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
 	double wesn_dup[4], inc_dup[2];
+	unsigned int n_layers = 1;
 	gmt_M_unused(mode);
-	if (wesn == NULL) {	/* Must select -R setting */
-		if (!GMT->common.R.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-		}
+	if (dim && wesn == NULL && inc == NULL) {	/* Gave dimension instead, set range and inc */
+		gmt_M_memset (wesn_dup, 4, double);
+		wesn_dup[XHI] = (double)(dim[GMT_X]);
+		wesn_dup[YHI] = (double)(dim[GMT_Y]);
+		inc_dup[GMT_X] = inc_dup[GMT_Y] = 1.0;
+		registration = GMT_GRID_PIXEL_REG;
+		if (dim[GMT_Z] > 1) n_layers = dim[GMT_Z];
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid/Image dimensions imply w/e/s/n = 0/%g/0/%g, inc = 1/1, pixel registration, n_layers = %u\n",
+			wesn_dup[XHI], wesn_dup[YHI], n_layers);
 	}
-	else	/* In case user is passing header->wesn etc we must save them first as gmt_grd_init will clobber them */
-		gmt_M_memcpy (wesn_dup, wesn, 4, double);
-	if (inc == NULL) {	/* Must select -I setting */
-		if (!GMT->common.API_I.active) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	else {	/* Must infer dimension etc from wesn, inc, registration */
+		if (wesn == NULL) {	/* Must select -R setting */
+			if (!GMT->common.R.active) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 		}
+		else	/* In case user is passing header->wesn etc we must save them first as gmt_grd_init will clobber them */
+			gmt_M_memcpy (wesn_dup, wesn, 4, double);
+		if (inc == NULL) {	/* Must select -I setting */
+			if (!GMT->common.API_I.active) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+		}
+		else	/* In case user is passing header->inc etc we must save them first as gmt_grd_init will clobber them */
+			gmt_M_memcpy (inc_dup,  inc,  2, double);
 	}
-	else	/* In case user is passing header->inc etc we must save them first as gmt_grd_init will clobber them */
-		gmt_M_memcpy (inc_dup,  inc,  2, double);
 	/* Clobber header and reset */
 	gmt_grd_init (GMT, header, options, false);	/* This is for new grids only so update is always false */
-	if (wesn == NULL)
+	if (dim == NULL && wesn == NULL)
 		gmt_M_memcpy (header->wesn, GMT->common.R.wesn, 4, double);
 	else
 		gmt_M_memcpy (header->wesn, wesn_dup, 4, double);
-	if (inc == NULL)
+	if (dim == NULL && inc == NULL)
 		gmt_M_memcpy (header->inc, GMT->common.API_I.inc, 2, double);
 	else
 		gmt_M_memcpy (header->inc, inc_dup, 2, double);
@@ -2228,6 +2241,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	gmt_RI_prepare (GMT, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	gmt_M_err_pass (GMT, gmt_grd_RI_verify (GMT, header, 1), "");
 	gmt_M_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
+	if (dim) header->n_bands = n_layers;
 	gmt_set_grddim (GMT, header);	/* Set all dimensions before returning */
 	grdio_grd_get_units (GMT, header);
 	gmt_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */

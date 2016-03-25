@@ -191,7 +191,7 @@
 /* extern functions from various gmt_* only used here */
 EXTERN_MSC void gmtfft_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC unsigned int gmtgrdio_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid);
-EXTERN_MSC int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode);
+EXTERN_MSC int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode);
 
 #define GMTAPI_MAX_ID 999999	/* Largest integer that will fit in the %06d format */
 
@@ -1190,16 +1190,16 @@ GMT_LOCAL void api_index_to_2d_f (int *row, int *col, size_t index, int dim, int
 #endif
 
 /*! . */
-GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_GRID *G) {
+GMT_LOCAL int api_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_GRID *G) {
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating a blank container for output */
-	gmtgrdio_init_grdheader (API->GMT, G->header, opt, range, inc, registration, mode);
+	gmtgrdio_init_grdheader (API->GMT, G->header, opt, dim, range, inc, registration, mode);
 	return (GMT_OK);
 }
 
 /*! . */
-GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
+GMT_LOCAL int api_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, unsigned int direction, struct GMT_IMAGE *I) {
 	if (direction == GMT_OUT) return (GMT_OK);	/* OK for creating blank container for output */
-	gmtgrdio_init_grdheader (API->GMT, I->header, opt, range, inc, registration, mode);
+	gmtgrdio_init_grdheader (API->GMT, I->header, opt, dim, range, inc, registration, mode);
 	return (GMT_OK);
 }
 
@@ -6290,20 +6290,22 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * There are two ways to define the dimensions needed to actually allocate memory:
 	 * (A) Via uint64_t dim[]:
 	 *   The dim array contains up to 4 dimensions for:
-	 *	0: par[GMT_TBL] = number of tables,
-	 *	1: par[GMT_SEG] = number of segments per table
-	 *	2: par[GMT_ROW] = number of rows per segment.
-	 *	3: par[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
-	 * The dim array is ignored for CPT and GMT grids.
+	 *	0: dim[GMT_TBL] = number of tables,
+	 *	1: dim[GMT_SEG] = number of segments per table
+	 *	2: dim[GMT_ROW] = number of rows per segment.
+	 *	3: dim[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
+	 * The dim array is ignored for CPTs.
+	 *   For GMT_IS_IMAGE & GMT_IS_MATRIX, par[GMT_Z] = GMT[2] holds the number of bands or layers (dim == NULL means just 1).
+	 *   For GMT_IS_GRID, GMT_IS_IMAGE, & GMT_IS_MATRIX:
+	 *     par[0] holds the number of columns and par[1] holds the number of rows.  This implies that
+	 *     wesn = 0-<dim-1>, inc = 1, and registration is pixel-registration.
 	 *   For GMT_IS_VECTOR, par[0] holds the number of columns, optionally par[1] holds number of rows, if known
-	 *   For GMT_IS_MATRIX, par[GMT_Z] = GMT[2] holds the number of layers (dim == NULL means just 1 layer).
-	 *     par[0] holds the number of columns and par[1] holds the number of rows.
 	 * (B) Via range, inc, registration:
 	 *   Convert user domain range, increments, and registration into dimensions
 	 *   for the container.  For grids and images we fill out the GMT_GRID_HEADER;
 	 *   for vectors and matrices we fill out their internal parameters.
 	 *   For complex grids pass registration + GMT_GRID_IS_COMPLEX_{REAL|IMAG}
-	 *   For GMT_IS_MATRIX, par[GMT_Z] = holds the number of layers (dim == NULL means just 1 layer).
+	 *   For GMT_IS_MATRIX and GMT_IS_IMAGE, par[GMT_Z] = holds the number of layers or bands (dim == NULL means just 1).
 	 * pad sets the padding for grids and images, ignored for other resources.
 	 * Some default actions for grids:
 	 * range = NULL: Select current -R setting if present.
@@ -6354,7 +6356,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = gmt_create_grid (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-				error = api_init_grid (API, NULL, range, inc, registration, mode, def_direction, new_obj);
+				error = api_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, new_obj);
 				if (pad >= 0) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {	/* Already registered so has_ID must be false */
@@ -6370,7 +6372,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new_obj = gmt_create_image (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-				error = api_init_image (API, NULL, range, inc, registration, mode, def_direction, new_obj);
+				error = api_init_image (API, NULL, this_dim, range, inc, registration, mode, def_direction, new_obj);
 				if (pad >= 0) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {
