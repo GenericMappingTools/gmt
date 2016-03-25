@@ -7384,8 +7384,10 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value)
 	/* First intercept any API Keywords */
 	if (!strncmp (keyword, "API_PAD", 7U))	/* Change the grid padding setting */
 		sprintf (value, "%d", API->pad);
+#ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U))	/* Report image/band layout */
 		GMT_memcpy (value, API->GMT->current.gdal_read_in.O.mem_layout, 4, char);
+#endif
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Report grid layout */
 		if (API->shape == GMT_IS_COL_FORMAT)
 			strcpy (value, "columns");
@@ -7427,6 +7429,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val)
 			API->pad = pad;
 		}
 	}
+#ifdef HAVE_GDAL
 	else if (!strncmp (keyword, "API_IMAGE_LAYOUT", 16U)) {	/* Change image/band layout */
 		if (strlen (value) != 4U) {
 			error = 1;
@@ -7435,6 +7438,7 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val)
 		else
 			GMT_memcpy (API->GMT->current.gdal_read_in.O.mem_layout, value, 4, char);
 	}
+#endif
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Change grid layout */
 		if (!strncmp (keyword, "columns", 7U))
 			API->shape = GMT_IS_COL_FORMAT;	/* Switch to column-major format */
