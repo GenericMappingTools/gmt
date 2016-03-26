@@ -305,8 +305,8 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	mode3 = 3 + 10 * I->inside;	/* Set gmt_near_lines modes */
 	mode1 = 1 + 10 * I->inside;	/* Set gmt_near_lines modes */
 	
-	d_mean = GMT_memory (GMT, NULL, D->n_segments, double);		/* Mean distances from points along S to other lines */
-	n_sum = GMT_memory (GMT, NULL, D->n_segments, uint64_t);	/* Number of distances from points along S to other lines */
+	d_mean = gmt_M_memory (GMT, NULL, D->n_segments, double);		/* Mean distances from points along S to other lines */
+	n_sum = gmt_M_memory (GMT, NULL, D->n_segments, uint64_t);	/* Number of distances from points along S to other lines */
 	
 	/* We first want to obtain the mean distance from one segment to all others.  We do this by computing the
 	 * nearest distance from each point along our segment S to the other segments and compute the average of
@@ -318,7 +318,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
 				if (D->table[tbl]->segment[seg]->n_rows == 0) continue;	/* Skip segments with no records (may be itself) */
 				dist = DBL_MAX;	/* Reset for each line to find distance to that line */
-				status = GMT_near_a_line (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], seg, D->table[tbl]->segment[seg], mode3, &dist, &f_seg, &f_pt);
+				status = gmt_near_a_line (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], seg, D->table[tbl]->segment[seg], mode3, &dist, &f_seg, &f_pt);
 				d_mean[sno] += dist;	/* Sum of distances to this segment */
 				n_sum[sno]++;		/* Number of such distances */
 			}
@@ -331,7 +331,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
 			for (row = 0; row < Sp->n_rows; row++) {	/* Process each point along the trace in S and find nearest distance for each segment in table */
 				dist = DBL_MAX;		/* Reset for each line to find distance to that line */
-				status = GMT_near_a_line (GMT, Sp->coord[GMT_X][row], Sp->coord[GMT_Y][row], seg, S, mode3, &dist, &f_seg, &f_pt);
+				status = gmt_near_a_line (GMT, Sp->coord[GMT_X][row], Sp->coord[GMT_Y][row], seg, S, mode3, &dist, &f_seg, &f_pt);
 				d_mean[sno] += dist;	/* Sum of distances to this segment */
 				n_sum[sno]++;		/* Number of such distances */
 			}
@@ -341,7 +341,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	for (sno = 0; sno < D->n_segments; sno++) {
 		d_mean[sno] = (n_sum[sno] > 0) ? d_mean[sno] / n_sum[sno] : DBL_MAX;
 	}
-	GMT_free (GMT, n_sum);
+	gmt_M_free (GMT, n_sum);
 
 	/* Process each point along the trace in S and find nearest distance for each segment in table */
 	for (row = 0; row < S->n_rows; row++) {
@@ -402,7 +402,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			}
 		}
 	}
-	GMT_free (GMT, d_mean);
+	gmt_M_free (GMT, d_mean);
 	
 	if (n_close == 0)
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
