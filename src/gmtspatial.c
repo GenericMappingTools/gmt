@@ -50,13 +50,14 @@
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment legnth, then they are not the same feature */
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
-struct DUP {
+struct DUP {	/* Holds information on which single segment is closest to the current test segment */
 	uint64_t point;
 	uint64_t segment;
 	unsigned int table;
 	int mode;
 	bool inside;
 	double distance;
+	double mean_distance;
 	double closeness;
 	double setratio;
 	double a_threshold;
@@ -293,29 +294,68 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	
 	bool status;
 	unsigned int k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
-	uint64_t row, seg, pt, np;
+	uint64_t row, seg, pt, np, sno, *n_sum = NULL;
 	int k_signed;
-	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
-	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
+	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2], *d_mean = NULL;
+	double med_separation[2], med_close[2], high = 0, low = 0, use_length, use_sep, use_close, *sep = NULL;
 	struct GMT_DATASEGMENT *Sp = NULL;
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine the segments in D closest to our segment\n");
-	I->distance = DBL_MAX;
+	I->distance = I->mean_distance = DBL_MAX;
 	mode3 = 3 + 10 * I->inside;	/* Set gmt_near_lines modes */
 	mode1 = 1 + 10 * I->inside;	/* Set gmt_near_lines modes */
 	
+	d_mean = GMT_memory (GMT, NULL, D->n_segments, double);		/* Mean distances from points along S to other lines */
+	n_sum = GMT_memory (GMT, NULL, D->n_segments, uint64_t);	/* Number of distances from points along S to other lines */
+	
+	/* We first want to obtain the mean distance from one segment to all others.  We do this by computing the
+	 * nearest distance from each point along our segment S to the other segments and compute the average of
+	 * all those distances.  Then we reverse teh search and continue to accumulate averages */
+	
+	/* Process each point along the trace in S and find sum of nearest distances for each segment in table */
+	for (row = 0; row < S->n_rows; row++) {
+		for (tbl = sno = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
+				if (D->table[tbl]->segment[seg]->n_rows == 0) continue;	/* Skip segments with no records (may be itself) */
+				dist = DBL_MAX;	/* Reset for each line to find distance to that line */
+				status = GMT_near_a_line (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], seg, D->table[tbl]->segment[seg], mode3, &dist, &f_seg, &f_pt);
+				d_mean[sno] += dist;	/* Sum of distances to this segment */
+				n_sum[sno]++;		/* Number of such distances */
+			}
+		}
+	}
+
+	/* Must also do the reverse test: for each point for each line in the table, compute distance to S; it might be shorter */
+	for (tbl = sno = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
+			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
+			for (row = 0; row < Sp->n_rows; row++) {	/* Process each point along the trace in S and find nearest distance for each segment in table */
+				dist = DBL_MAX;		/* Reset for each line to find distance to that line */
+				status = GMT_near_a_line (GMT, Sp->coord[GMT_X][row], Sp->coord[GMT_Y][row], seg, S, mode3, &dist, &f_seg, &f_pt);
+				d_mean[sno] += dist;	/* Sum of distances to this segment */
+				n_sum[sno]++;		/* Number of such distances */
+			}
+		}
+	}
+	/* Compute the average distances */
+	for (sno = 0; sno < D->n_segments; sno++) {
+		d_mean[sno] = (n_sum[sno] > 0) ? d_mean[sno] / n_sum[sno] : DBL_MAX;
+	}
+	GMT_free (GMT, n_sum);
+
 	/* Process each point along the trace in S and find nearest distance for each segment in table */
 	for (row = 0; row < S->n_rows; row++) {
-		for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
-			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in current table */
+		for (tbl = sno = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
 				dist = DBL_MAX;	/* Reset for each line to find distance to that line */
 				status = gmt_near_a_line (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], seg, D->table[tbl]->segment[seg], mode3, &dist, &f_seg, &f_pt);
 				if (!status && I->inside) continue;	/* Only consider points that project perpendicularly within the line segment */
 				pt = lrint (f_pt);	/* We know f_seg == seg so no point assigning that */
-				if (dist < I->distance) {	/* Keep track of the single closest feature */
+				if (dist < I->distance && d_mean[sno] < I->mean_distance) {	/* Keep track of the single closest feature */
 					I->point = pt;
 					I->segment = seg;
 					I->distance = dist;
+					I->mean_distance = d_mean[sno];
 					I->table = tbl;
 				}
 				if (dist > I->d_threshold) continue;	/* Not close enough for duplicate consideration */
@@ -334,18 +374,19 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 	
 	/* Must also do the reverse test: for each point for each line in the table, compute distance to S; it might be shorter */
 	
-	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
-		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in current table */
+	for (tbl = sno = 0; tbl < D->n_tables; tbl++) {	/* For each table to compare it to */
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, sno++) {	/* For each segment in current table */
 			Sp = D->table[tbl]->segment[seg];	/* This is S', one of the segments that is close to S */
 			for (row = 0; row < Sp->n_rows; row++) {	/* Process each point along the trace in S and find nearest distance for each segment in table */
 				dist = DBL_MAX;		/* Reset for each line to find distance to that line */
 				status = gmt_near_a_line (GMT, Sp->coord[GMT_X][row], Sp->coord[GMT_Y][row], seg, S, mode3, &dist, &f_seg, &f_pt);
 				if (!status && I->inside) continue;	/* Only consider points that project perpendicularly within the line segment */
 				pt = lrint (f_pt);
-				if (dist < I->distance) {	/* Keep track of the single closest feature */
+				if (dist < I->distance && d_mean[sno] < I->mean_distance) {	/* Keep track of the single closest feature */
 					I->point = pt;
 					I->segment = seg;
 					I->distance = dist;
+					I->mean_distance = d_mean[sno];
 					I->table = tbl;
 				}
 				if (dist > I->d_threshold) continue;	/* Not close enough for duplicate consideration */
@@ -361,6 +402,7 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 			}
 		}
 	}
+	GMT_free (GMT, d_mean);
 	
 	if (n_close == 0)
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
@@ -423,20 +465,24 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 				}
 				np++;	/* Number of points within the overlap zone */
 			}
-			separation[0] = (np) ? separation[0] / np : DBL_MAX;		/* Mean distance between S and S' */
+            		separation[0] = (np > 1) ? separation[0] / np : DBL_MAX;	/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
-			close[0] = (np) ? separation[0] / use_length : DBL_MAX;		/* Closeness as viewed from S */
+			close[0] = (np > 1) ? separation[0] / use_length : DBL_MAX;	/* Closeness as viewed from S */
+			use_sep = (separation[0] == DBL_MAX) ? GMT->session.d_NaN : separation[0];
+			use_close = (close[0] == DBL_MAX) ? GMT->session.d_NaN : close[0];
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
 			            "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n",
-			            length[0], separation[0], close[0], np, S->n_rows);
+			            length[0], use_sep, use_close, np, S->n_rows);
 			if (I->mode) {
-				if (np) {
+				if (np > 1) {
 					gmt_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
 					med_close[0] = med_separation[0] / use_length;
 				}
 				else med_close[0] = DBL_MAX;
+				use_sep = (med_separation[0] == DBL_MAX) ? GMT->session.d_NaN : med_separation[0];
+				use_close = (med_close[0] == DBL_MAX) ? GMT->session.d_NaN : med_close[0];
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n",
-				            med_separation[0], med_close[0]);
+				            use_sep, use_close);
 			}
 	
 			/* Must now compare the other way */
@@ -459,18 +505,24 @@ GMT_LOCAL int is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, str
 				}
 				np++;	/* Number of points within the overlap zone */
 			}
-			separation[1] = (np) ? separation[1] / np : DBL_MAX;		/* Mean distance between S' and S */
+            		separation[1] = (np > 1) ? separation[1] / np : DBL_MAX;		/* Mean distance between S' and S */
 			use_length = (np) ? length[1] * np / Sp->n_rows : length[1];	/* ~reduce length to overlap section assuming equal point spacing */
-			close[1] = (np) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[1], separation[1], close[1], np, Sp->n_rows);
+			close[1] = (np > 1) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
+			use_sep = (separation[1] == DBL_MAX) ? GMT->session.d_NaN : separation[1];
+			use_close = (close[1] == DBL_MAX) ? GMT->session.d_NaN : close[1];
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n",
+				length[1], use_sep, use_close, np, Sp->n_rows);
 			if (I->mode) {
-				if (np) {
+				if (np > 1) {
 					gmt_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
 					med_close[1] = med_separation[1] / use_length;
 				}
 				else med_close[1] = DBL_MAX;
 				gmt_M_free (GMT, sep);
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n", med_separation[1], med_close[1]);
+				use_sep = (med_separation[1] == DBL_MAX) ? GMT->session.d_NaN : med_separation[1];
+				use_close = (med_close[1] == DBL_MAX) ? GMT->session.d_NaN : med_close[1];
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n",
+					use_sep, use_close);
 				k = (med_close[0] <= med_close[1]) ? 0 : 1;	/* Pick the setup with the smallest robust closeness */
 				closest = med_close[k];		/* The longer the segment and the closer they are, the smaller the closeness */
 			}

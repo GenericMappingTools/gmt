@@ -5584,6 +5584,8 @@ GMT_LOCAL bool map_near_a_line_spherical (struct GMT_CTRL *P, double lon, double
 		if (cx_dist >= cos_dist) return (true);	/* X is on the A-B extension AND within specified distance */
 	}
 
+	if (return_mindist && *dist_min < GMT_CONV8_LIMIT) *dist_min = 0.0;
+
 	return (within);	/* All tests failed, we are not close to the line(s), or we return a mindist (see comments above) */
 }
 
