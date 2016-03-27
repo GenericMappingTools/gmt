@@ -1771,12 +1771,14 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Get 3rd line */
 			if (sscanf (line, "%" PRIu64 " %" PRIu64, &dim[GMT_X], &dim[GMT_Y]) != 2) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to decipher size of image in file %s\n", out_file);
+				fclose (fp_raw);
 				Return (EXIT_FAILURE);
 			}
 			gmt_fgets (GMT, line, GMT_BUFSIZ, fp_raw);	/* Skip 4th line */
 			gmt_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 			if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create image structure\n");
+				fclose (fp_raw);
 				Return (API->error);
 			}
 
@@ -1791,6 +1793,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 			}
 			gmt_M_free (GMT, tmp);
+			fclose (fp_raw);
 #endif
 			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 				Return (API->error);
