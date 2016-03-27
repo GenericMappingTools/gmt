@@ -1022,18 +1022,30 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	y_width = ((F.rect) ? Ctrl->F.width2 : Ctrl->F.width) / (Gin->header->inc[GMT_Y] * y_scale);
 	if (!Ctrl->F.custom) {	/* Parameters computed from width and other settings */
 		F.x_half_width = irint (ceil (x_width / 2.0));
-		F.y_half_width = irint (ceil (y_width / 2.0));
-		F.nx = 2 * F.x_half_width + 1;
-		F.ny = 2 * F.y_half_width + 1;
-		if (gmt_M_is_zero (x_scale) || F.x_half_width < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
+		if (gmt_M_is_zero (x_scale) || F.x_half_width < 0) {	/* Safety valve when x_scale -> 0.0 */
 			F.nx = Gin->header->nx;
 			F.x_half_width = (F.nx - 1) / 2;
 			if ((F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;		/* When nx is even we may come up short by 1 */
 			F.nx = 2 * F.x_half_width + 1;
 		}
-		if (gmt_M_is_zero (y_scale) || F.y_half_width < 0 || F.ny > Gin->header->ny) {	/* Safety valve when y_scale -> 0.0 */
+		else {
+			F.nx = 2 * F.x_half_width + 1;
+			if (F.nx > Gin->header->nx) {
+				F.nx = Gin->header->nx;
+				F.x_half_width = (F.nx - 1) / 2;
+			}
+		}
+		F.y_half_width = irint (ceil (y_width / 2.0));
+		if (gmt_M_is_zero (y_scale) || F.y_half_width < 0) {	/* Safety valve when y_scale -> 0.0 */
 			F.ny = Gin->header->ny;
 			F.y_half_width = (F.ny - 1) / 2;
+		}
+		else {
+			F.ny = 2 * F.y_half_width + 1;
+			if (F.ny > Gin->header->ny) {
+				F.ny = Gin->header->ny;
+				F.y_half_width = (F.ny - 1) / 2;
+			}
 		}
 	}
 	visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */

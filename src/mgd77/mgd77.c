@@ -3786,7 +3786,7 @@ void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	gmt_init_time_system_structure (GMT, &(F->utime));
 	if (strcmp (F->utime.epoch, GMT->current.setting.time_system.epoch)) F->adjust_time = true;	/* Since MGD77+ uses unix time we must convert to new epoch */
 	gmt_M_memset (mgd77_range, MGD77_N_DATA_EXTENDED, struct MGD77_LIMITS);
-	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1 << i;
+	for (i = 0; i < MGD77_SET_COLS; i++) MGD77_this_bit[i] = 1U << i;
 	strncpy (F->user, gmt_putusername(GMT), MGD77_COL_ABBREV_LEN);
 	F->desired_column = gmt_M_memory (GMT, NULL, MGD77_MAX_COLS, char *);	/* Allocate array pointer for column names */
 	F->verbose_level = 0;
@@ -4192,7 +4192,7 @@ void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 
 	for (i = 0; i < F->n_out_columns; i++) {
 		set = F->order[i].set;
-		if (apply_bits[set] && (S->flags[set][rec] & (1 << F->order[i].item))) {
+		if (apply_bits[set] && (S->flags[set][rec] & (1U << F->order[i].item))) {
 			value = S->values[i];
 			value[rec] = GMT->session.d_NaN;
 		}
