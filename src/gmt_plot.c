@@ -6191,14 +6191,17 @@ void gmt_plane_perspective (struct GMT_CTRL *GMT, int plane, double level) {
 /* All functions involved in reading, writing, duplicating GMT_PS structs and their PostScript content */
 
 /*! . */
-struct GMT_PS * gmtlib_create_ps (struct GMT_CTRL *GMT) {
-	/* Makes an empty GMT_PS struct - no buffer is allocated by since done in PSL */
+struct GMT_PS * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
+	/* Makes an empty GMT_PS struct - If length > 0 then we also allocate the string */
 	struct GMT_PS *P = NULL;
 	P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
 	P->alloc_mode = GMT_ALLOC_INTERNALLY;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
-
+	if (length) {	/* Allocate a blank string */
+		P->data = gmt_M_memory (GMT, NULL, length, char);
+		P->n_alloc = length;
+	}
 	return (P);
 }
 
@@ -6380,7 +6383,7 @@ int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 /*! . */
 struct GMT_PS * gmt_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, unsigned int mode) {
 	/* Duplicates a GMT_PS structure.  Mode not used yet */
-	struct GMT_PS *P = gmtlib_create_ps (GMT);
+	struct GMT_PS *P = gmtlib_create_ps (GMT, P_from->n);
 	gmt_M_unused(mode);
 	gmt_copy_ps (GMT, P, P_from);
 	return (P);
@@ -6388,7 +6391,7 @@ struct GMT_PS * gmt_duplicate_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_from, u
 
 void gmt_copy_ps (struct GMT_CTRL *GMT, struct GMT_PS *P_copy, struct GMT_PS *P_obj) {
 	/* Just duplicate from P_obj into P_copy */
-	P_copy->data = gmt_M_memory (GMT, NULL, P_obj->n, char);
+	if (P_obj->n > P_copy->n_alloc) P_copy->data = gmt_M_memory (GMT, P_copy->data, P_obj->n, char);
 	gmt_M_memcpy (P_copy->data, P_obj->data, P_obj->n, char);
 	P_copy->n_alloc = P_copy->n = P_obj->n;
 	P_copy->mode = P_obj->mode;

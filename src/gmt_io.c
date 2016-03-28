@@ -7146,7 +7146,7 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	if (I->header->ProjRefPROJ4) Inew->header->ProjRefPROJ4 = strdup (I->header->ProjRefPROJ4);
 	if (I->header->pocket) Inew->header->pocket = strdup (I->header->pocket);
 
-	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possibly duplicate data array */
 		Inew->data = gmt_M_memory_aligned (GMT, NULL, I->header->size, char);
 		if (mode & GMT_DUPLICATE_DATA) gmt_M_memcpy (Inew->data, I->data, I->header->size, char);
 	}
@@ -7157,7 +7157,7 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 void gmtlib_free_image_ptr (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, bool free_image) {
 	/* Free contents of image pointer */
 	if (!I) return;	/* Nothing to deallocate */
-	if (free_image) gmt_M_free (GMT, I->data);
+	if (free_image) gmt_M_free_aligned (GMT, I->data);
 	gmt_M_free (GMT, I->header);
 	gmt_M_free (GMT, I->ColorMap);
 }

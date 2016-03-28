@@ -719,13 +719,15 @@ static size_t psl_a85_encode (struct PSL_CTRL *PSL, const unsigned char *src_buf
 	do { /* for each quad in src_buf while src_ptr < src_end */
 		const size_t ilen = nbytes > 4 ? 4 : nbytes, olen = ilen + 1;
 		static unsigned int line_len = 0;
-		unsigned int i, n = 0;
+		unsigned int i, n = 0, byte;
 		int j;
 		unsigned char quintuple[5] = { 0 };
 
 		/* Wrap 4 chars into a 4-byte integer */
-		for (i = 0; i < ilen; ++i)
-			n += *src_ptr++ << (24 - 8*i);
+		for (i = 0; i < ilen; ++i) {
+			byte = *src_ptr++;
+			n += byte << (24 - 8*i);
+		}
 
 		if (n == 0 && ilen == 4) {
 			/* Set the only output byte to "z" */

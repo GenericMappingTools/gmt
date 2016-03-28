@@ -1143,14 +1143,15 @@ where :ref:`family <tbl-family>` specifies what kind of resource is to be regist
 what we do if no resources have been registered. The choices are
 
     **GMT_ADD_FILES_IF_NONE** (1) means "add command line (option)
-    files if none have been registered already"
+    files if none have been registered already".
 
-    **GMT_ADD_FILES_ALWAYS** (2) means "always add any command line files"
+    **GMT_ADD_FILES_ALWAYS** (2) means "always add any command line files".
 
     **GMT_ADD_STDIO_IF_NONE** (4) means "add std\* if no other
-    input/output have been specified"
+    input/output have been specified".
 
-    **GMT_ADD_DEFAULT** (6) means "add std\* if ...
+    **GMT_ADD_DEFAULT** (6) means "always add any command line files first, and then
+    add std\* if no other input/output were specified".
 
     **GMT_ADD_STDIO_ALWAYS** (8) means "always add std\* even if
     resources have been registered".
@@ -1261,6 +1262,7 @@ and pass the ``par`` array as indicated below:
 
   **GMT_IS_PS**
     An empty :ref:`GMT_PS <struct-postscript>` structure with ``par[0]`` text buffer length allocated.
+    Give ``par[0]`` = 0 if the PostScript string is allocated or obtained by other means.
     The ``wesn``, ``inc``, and ``registration`` argument are ignored.  The ``data`` argument should be NULL.
 
   **GMT_IS_VECTOR**

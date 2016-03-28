@@ -135,7 +135,7 @@ EXTERN_MSC int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_rea
 EXTERN_MSC uint64_t gmtlib_bin_colselect (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmtlib_gap_detected (struct GMT_CTRL *GMT);
 EXTERN_MSC int gmtlib_set_gap (struct GMT_CTRL *GMT);
-EXTERN_MSC struct GMT_PS * gmtlib_create_ps (struct GMT_CTRL *GMT);
+EXTERN_MSC struct GMT_PS * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length);
 EXTERN_MSC void gmtlib_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols);
 EXTERN_MSC void gmtlib_grd_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size);
 EXTERN_MSC void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data);

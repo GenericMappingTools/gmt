@@ -366,7 +366,7 @@ GMT_LOCAL int api_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image) {
 
 	if (Image->data) return (GMT_PTR_NOT_NULL);
 	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);
-	if ((Image->data = gmt_M_memory (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((Image->data = gmt_M_memory_aligned (GMT, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }
 
@@ -6396,7 +6396,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		 	if ((new_obj = gmtlib_create_palette (API->GMT, this_dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_PS:	/* GMT PS struct, allocate one struct */
-		 	if ((new_obj = gmtlib_create_ps (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+		 	if ((new_obj = gmtlib_create_ps (API->GMT, this_dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
 			n_layers = (this_dim[GMTAPI_DIM_COL] == 0 && this_dim[GMTAPI_DIM_ROW] == 0) ? 1U : this_dim[GMT_Z];
