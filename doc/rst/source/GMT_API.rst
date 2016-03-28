@@ -1079,13 +1079,15 @@ it returns 0.
 +------------------+-------------------------------------------+
 | geometry         |  description                              |
 +==================+===========================================+
-| GMT_IS_TEXT      | Not a geographic item                     |
+| GMT_IS_NONE      | Not a geographic feature                  |
 +------------------+-------------------------------------------+
 | GMT_IS_POINT     | Multi-dimensional point data              |
 +------------------+-------------------------------------------+
 | GMT_IS_LINE      | Geographic or Cartesian line segments     |
 +------------------+-------------------------------------------+
 | GMT_IS_POLYGON   | Geographic or Cartesian closed polygons   |
++------------------+-------------------------------------------+
+| GMT_IS_PLP       | Either points, lines, or polygons         |
 +------------------+-------------------------------------------+
 | GMT_IS_SURFACE   | 2-D gridded surface                       |
 +------------------+-------------------------------------------+
@@ -1439,7 +1441,7 @@ To read an entire resource from a file, stream, or file handle, use
 * :ref:`geometry <tbl-geometry>`
 * mode -- *see below*
 * :ref:`wesn <tbl-wesn>`
-* input -- a pointer to char holding the file name to read.
+* input -- a pointer to char holding the file name to read, or NULL if ``stdin``
 * ptr -- NULL or the pointer returned by this function after a first call (when reading grids in two steps)
 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error)
 
