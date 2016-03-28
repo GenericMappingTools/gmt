@@ -1733,7 +1733,7 @@ void gmt_fft_initialization (struct GMT_CTRL *GMT) {
 void gmt_fft_cleanup (struct GMT_CTRL *GMT) {
 	/* Called by gmt_end */
 #ifndef __APPLE__
-	GMT_UNUSED(GMT)
+	gmt_M_unused(GMT);
 #endif
 #if defined HAVE_FFTW3F_THREADS
 	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
