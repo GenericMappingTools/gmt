@@ -607,7 +607,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	/* Set flowline sampling interval to 1/2 of the shortest distance between x-nodes */
 
 	/* sampling_int_in_km = 0.5 * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO])); */
-	sampling_int_in_km = G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
+	sampling_int_in_km = G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ?
+	                     cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
 	if (Ctrl->S2.dist != 0.0) sampling_int_in_km = Ctrl->S2.dist;
 	GMT_Report (API, GMT_MSG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
 
@@ -616,10 +617,12 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 	/* Start to read input data */
 	
 	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		gmt_M_free (GMT, processed_node);
 		Return (API->error);
 	}
 
 	if ((Z = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get data */
+		gmt_M_free (GMT, processed_node);
 		Return (API->error);
 	}
 	area = 111.195 * Z->header->inc[GMT_Y] * 111.195 * Z->header->inc[GMT_X];	/* In km^2 at Equator */
@@ -970,9 +973,13 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
+			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
+			gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
 			Return (API->error);
 		}
 
