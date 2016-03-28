@@ -1150,6 +1150,8 @@ what we do if no resources have been registered. The choices are
     **GMT_ADD_STDIO_IF_NONE** (4) means "add std\* if no other
     input/output have been specified"
 
+    **GMT_ADD_DEFAULT** (6) means "add std\* if ...
+
     **GMT_ADD_STDIO_ALWAYS** (8) means "always add std\* even if
     resources have been registered".
 
