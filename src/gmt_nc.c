@@ -168,7 +168,7 @@ GMT_LOCAL int gmtnc_io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 	unsigned yx_dim[2];  /* because xy_dim is not row major! */
 	size_t chunksize[5]; /* chunksize of z */
 	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
-	size_t n_contiguous_chunk_rows;  /* that are processed at once, 0 = all */
+	size_t n_contiguous_chunk_rows = 0;  /* that are processed at once, 0 = all */
 	ptrdiff_t imap[5] = {1,1,1,1,1}; /* mapping between dims of netCDF and in-memory grid */
 
 	/* catch illegal io_mode in debug */
@@ -1243,7 +1243,7 @@ int gmt_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	int err;            /* netcdf errors */
 	int n_shift;
 	unsigned dim[2], dim2[2], origin[2], origin2[2]; /* dimension and origin {y,x} of subset to read from netcdf */
-	unsigned width, height, row;
+	unsigned width = 0, height = 0, row;
 	uint64_t imag_offset;
 	float *pgrid = NULL;
 

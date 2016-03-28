@@ -145,7 +145,6 @@ EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #include "gmt_dev.h"
-#define GMT_UNUSED(x) (void)(x)
 #ifndef BUILD_SHARED_LIBS
 #include "${FILE_GMT_MODULE_H}"
 #endif
@@ -154,7 +153,7 @@ EOF
 else
 	cat << EOF >> ${FILE_GMT_MODULE_C}
 #include "gmt.h"
-#define GMT_UNUSED(x) (void)(x)
+#define gmt_M_unused(x) (void)(x)
 #include "gmt_supplements_module.h"
 #include <string.h>
 EOF
@@ -286,7 +285,7 @@ if [ "$U_TAG" = "CORE" ]; then
 EOF
 else
 	cat << EOF >> ${FILE_GMT_MODULE_C}
-	GMT_UNUSED(V_API);
+	gmt_M_unused(V_API);
 EOF
 fi
 cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -310,7 +309,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_${L_TAG}_module_info (void *API, char *candidate) {
 	int module_id = 0;
-	GMT_UNUSED(API);
+	gmt_M_unused(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_${L_TAG}_module[module_id].name != NULL &&
@@ -329,7 +328,7 @@ if [ "$U_TAG" = "CORE" ]; then
 /* Lookup module id by name, return function pointer */
 void *gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
-	GMT_UNUSED(API);
+	gmt_M_unused(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_${L_TAG}_module[module_id].name != NULL &&

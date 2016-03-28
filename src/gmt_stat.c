@@ -219,7 +219,7 @@ GMT_LOCAL void gmtstat_gamma_cf (struct GMT_CTRL *GMT, double *gammcf, double a,
 GMT_LOCAL double gmtstat_gammq (struct GMT_CTRL *GMT, double a, double x) {
 	/* Returns Q(a,x) = 1 - P(a,x) Inc. Gamma function */
 
-	double G, gln;
+	double G = 0.0, gln;
 
 	if (x < 0.0 || a <= 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  Invalid arguments to GMT_gammaq\n");

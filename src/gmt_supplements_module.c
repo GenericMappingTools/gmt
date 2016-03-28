@@ -25,7 +25,7 @@
  * 	gmt_make_module_src.sh supplements
  */
 #include "gmt.h"
-#define GMT_UNUSED(x) (void)(x)
+#define gmt_M_unused(x) (void)(x)
 #include "gmt_supplements_module.h"
 #include <string.h>
 
@@ -57,7 +57,7 @@ static struct Gmt_moduleinfo g_supplements_module[] = {
 	{"dimfilter", "misc", "Directional filtering of grids in the space domain", "<G{,GG},RG-,>DQ"},
 	{"gmtflexure", "potential", "Compute flexural deformation of 2-D loads, forces, and bending moments", "<D{,QD(,>D}"},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a 3-D body by the method of Okabe", "TD{,FD(,GG),>D}"},
-	{"gpsgridder", "potential", "Interpolate GPS strain vectors using Green's functions for elastic deformation", "<D{,ND(,TG(,CD),GG},RG-"},
+	{"gpsgridder", "potential", "Interpolate GPS velocity vectors using Green's functions for a thin elastic sheet", "<D{,ND(,TG(,CD),GG},RG-"},
 	{"gravfft", "potential", "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)", "<G{,GG},GDC,GDI"},
 	{"grdflexure", "potential", "Compute flexural deformation of 3-D surfaces for various rheologies", "<G{,GG}"},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", "<G{,FD(,GG}"},
@@ -111,7 +111,7 @@ void gmt_supplements_module_show_all (void *V_API) {
 /* Produce single list on stdout of all GMT supplements module names for gmt --show-modules */
 void gmt_supplements_module_list_all (void *V_API) {
 	unsigned int module_id = 0;
-	GMT_UNUSED(V_API);
+	gmt_M_unused(V_API);
 	while (g_supplements_module[module_id].name != NULL) {
 		printf ("%s\n", g_supplements_module[module_id].name);
 		++module_id;
@@ -121,7 +121,7 @@ void gmt_supplements_module_list_all (void *V_API) {
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_supplements_module_info (void *API, char *candidate) {
 	int module_id = 0;
-	GMT_UNUSED(API);
+	gmt_M_unused(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_supplements_module[module_id].name != NULL &&

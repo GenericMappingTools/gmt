@@ -25,7 +25,6 @@
  * 	gmt_make_module_src.sh core
  */
 #include "gmt_dev.h"
-#define GMT_UNUSED(x) (void)(x)
 #ifndef BUILD_SHARED_LIBS
 #include "gmt_core_module.h"
 #endif
@@ -255,7 +254,7 @@ void gmt_core_module_list_all (void *V_API) {
 /* Lookup module id by name, return option keys pointer (for external API developers) */
 const char *gmt_core_module_info (void *API, char *candidate) {
 	int module_id = 0;
-	GMT_UNUSED(API);
+	gmt_M_unused(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_core_module[module_id].name != NULL &&
@@ -270,7 +269,7 @@ const char *gmt_core_module_info (void *API, char *candidate) {
 /* Lookup module id by name, return function pointer */
 void *gmt_core_module_lookup (void *API, const char *candidate) {
 	int module_id = 0;
-	GMT_UNUSED(API);
+	gmt_M_unused(API);
 
 	/* Match actual_name against g_module[module_id].name */
 	while (g_core_module[module_id].name != NULL &&

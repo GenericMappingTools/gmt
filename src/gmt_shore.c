@@ -1476,7 +1476,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 	static int np[2] = {0, 0};	/* Initially not set */
 	static struct GMT_GSHHS_POL *p[2] = {NULL, NULL};	/* Initially not set */
 	int this_point_level, brow, bin, ind, err, wd[2] = {1, -1};
-	unsigned int col, id, side;
+	unsigned int col, id, side, uinside = 0U;
 	uint64_t k, i;
 	double xx = lon, yy, xmin, xmax, ymin, ymax, west_border, east_border;
 	
@@ -1489,7 +1489,8 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 		last_bin = INT_MAX;		/* In case process lives on in API */
 		return GMT_OK;
 	}
-	
+	else
+		uinside = (unsigned int)inside;
 	west_border = floor (GMT->common.R.wesn[XLO] / c->bsize) * c->bsize;
 	east_border = ceil (GMT->common.R.wesn[XHI]  / c->bsize) * c->bsize;
 	while (xx < 0.0) xx += 360.0;
@@ -1525,7 +1526,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 		gmt_geo_to_xy (GMT, lon, lat, &xx, &yy);
 		for (id = 0; id < 2; id++) {	/* For both directions */
 
-			for (k = 0; k < np[id]; k++) {	/* For all closed polygons */
+			for (k = 0; k < (uint64_t)np[id]; k++) {	/* For all closed polygons */
 
 				if (p[id][k].n == 0) continue;
 
@@ -1534,7 +1535,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 				xmin = xmax = p[id][k].lon[0];
 				ymin = ymax = p[id][k].lat[0];
 
-				for (i = 1; i < p[id][k].n; i++) {
+				for (i = 1; i < (uint64_t)p[id][k].n; i++) {
 					if (p[id][k].lon[i] < xmin) xmin = p[id][k].lon[i];
 					if (p[id][k].lon[i] > xmax) xmax = p[id][k].lon[i];
 					if (p[id][k].lat[i] < ymin) ymin = p[id][k].lat[i];
@@ -1546,7 +1547,7 @@ int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int ins
 
 				/* Must compare with polygon; holes are handled explicitly via the levels */
 
-				if ((side = gmt_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < inside) continue;	/* Outside polygon */
+				if ((side = gmt_non_zero_winding (GMT, xx, yy, p[id][k].lon, p[id][k].lat, p[id][k].n)) < uinside) continue;	/* Outside polygon */
 
 				/* Here, point is inside, we must assign value */
 

@@ -619,7 +619,7 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
 	double *workz = NULL, *c_model = NULL, *o_model = NULL, *w_model = NULL, *work = NULL;
-	double xmin, xmax, c_chisq, o_chisq = 0.0, w_chisq, scale = 1.0, prob;
+	double xmin = 0.0, xmax = 0.0, c_chisq, o_chisq = 0.0, w_chisq, scale = 1.0, prob;
 
 	char format[GMT_BUFSIZ];
 
