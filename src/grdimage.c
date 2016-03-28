@@ -116,7 +116,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 #endif
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\n", 
-			GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	             GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -287,19 +287,17 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 		}
 	}
 
+	if (!GMT->common.J.active) {	/* When no projection specified, use fake linear projection */
+		gmt_parse_common_options (GMT, "J", 'J', "X15c");
+		GMT->common.J.active = true;
+	}
+
 	if (n_files == 3) Ctrl->In.do_rgb = true;
 #ifdef HAVE_GDAL
 	if (Ctrl->D.active) {} else
 #endif
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
-#ifdef HAVE_GDAL
-//	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb && !Ctrl->D.active, 
-//					"Syntax error: Must specify color palette table\n");
-#else
-//	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb, 
-//					"Syntax error: Must specify color palette table\n");
-#endif
 	n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 					"Syntax error: Must specify one (or three) input file(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, 
