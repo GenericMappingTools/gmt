@@ -257,6 +257,7 @@ struct GMT_INTERNAL {
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	double **mem_coord;		/* Columns of temp memory */
+    char    *pocket;        /* A working variable to transmit info between psconvert & grdimage */
 	struct MEMORY_TRACKER *mem_keeper;	/* Only filled when #ifdef MEMDEBUG  */
 #ifdef DEBUG
 	bool gridline_debug;

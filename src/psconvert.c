@@ -806,7 +806,8 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P) {
 	char cmd[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
-	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%gmtinfo ");
+	API->GMT->hidden.pocket = strdup("yes");	/* Put just something in here to signal grdimage that it has work to do */
+	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%grdimage -");
 	if ((fp = popen(cmd, "w")) != NULL) {
 		int n;
 		char t[GMT_LEN128];

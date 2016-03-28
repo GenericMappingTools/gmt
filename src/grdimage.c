@@ -298,7 +298,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 #endif
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
+	n_errors += gmt_M_check_condition (GMT, (!(n_files == 1 || n_files == 3) && GMT->hidden.pocket == NULL), 
 					"Syntax error: Must specify one (or three) input file(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, 
 					"Syntax error -I option: Must specify intensity file or value\n");
@@ -373,6 +373,35 @@ GMT_LOCAL void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
+GMT_LOCAL int pick_pocket (struct GMTAPI_CTRL *API) {
+	char *line;
+	uint64_t dim[3] = {0U, 0U, 3U}; 	/* 3 bands. This might change if we do monochrome at some point */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, NULL) != GMT_OK) {	/* Establishes stdin data input */
+		return API->error;
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data input and sets access mode */
+		return API->error;
+	}
+	line = GMT_Get_Record (API, GMT_READ_TEXT, NULL);		/* Skip first header line */
+	line = GMT_Get_Record (API, GMT_READ_TEXT, NULL);		/* Skip second header line */
+	line = GMT_Get_Record (API, GMT_READ_TEXT, NULL);		/* Get first header line */
+	if (sscanf (line, "%" PRIu64 " %" PRIu64, &dim[GMT_X], &dim[GMT_Y]) != 2) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to decipher size of image in file %s\n", line);
+		GMT_End_IO (API, GMT_IN,  0);
+		return EXIT_FAILURE;
+	}
+	GMT_Report (API, GMT_MSG_NORMAL, "Image dimensions %s\t%d\t%d\n", line, dim[GMT_X], dim[GMT_Y]);
+	line = GMT_Get_Record (API, GMT_READ_TEXT, NULL);       /* Skip fourth header line */
+	line = GMT_Get_Record (API, GMT_READ_TEXT, NULL);       /* Get the whole image */
+	free (API->GMT->hidden.pocket);                         /* Free previous content (the message info) */
+	API->GMT->hidden.pocket = line;                         /* and put into the pocket */
+
+	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
+		return API->error;
+	}
+	return GMT_OK;
+}
+
 int GMT_grdimage (void *V_API, int mode, void *args) {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
 	bool nothing_inside = false, use_intensity_grid;
@@ -404,6 +433,8 @@ int GMT_grdimage (void *V_API, int mode, void *args) {
 	struct GMT_GRID *G2 = NULL;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
 #endif
+
+	if (API->GMT->hidden.pocket != NULL) { Return (pick_pocket (API)); }
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
