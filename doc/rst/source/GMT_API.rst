@@ -1053,7 +1053,7 @@ it returns 0.
 +------------------+-------------------------------------------+
 | geometry         |  description                              |
 +==================+===========================================+
-| GMT_IS_TEXT      | Not a geographic item                     |
+| GMT_IS_NONE      | Not a geographic feature                  |
 +------------------+-------------------------------------------+
 | GMT_IS_POINT     | Multi-dimensional point data              |
 +------------------+-------------------------------------------+
@@ -1061,9 +1061,9 @@ it returns 0.
 +------------------+-------------------------------------------+
 | GMT_IS_POLYGON   | Geographic or Cartesian closed polygons   |
 +------------------+-------------------------------------------+
-| GMT_IS_SURFACE   | 2-D gridded surface                       |
+| GMT_IS_PLP       | Either points, lines, or polygons         |
 +------------------+-------------------------------------------+
-| GMT_IS_NONE      | ??                                        |
+| GMT_IS_SURFACE   | 2-D gridded surface                       |
 +------------------+-------------------------------------------+
 
 
