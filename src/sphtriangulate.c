@@ -179,6 +179,7 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 		dim[GMT_ROW] = 2;		/* Each arc has 2 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate arcs\n");
+			gmt_M_free (GMT, arc);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		for (i = 0; i < n_arcs; i++) {
@@ -234,6 +235,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 	geometry = (get_arcs) ? GMT_IS_LINE : GMT_IS_POLY;
 	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
+		gmt_M_free (GMT, plon);		gmt_M_free (GMT, plat);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	if (nodes) {	/* Want Voronoi node and area information via Dout[1] */
@@ -338,6 +340,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 		dim[GMT_ROW] = 2;	/* Each arc needs 2 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
+			gmt_M_free (GMT, arc);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %d unique Voronoi arcs\n", n_arcs);
@@ -586,8 +589,10 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
+				gmt_M_free (GMT,  zz);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -681,17 +686,17 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 		Dout[1]->table[0]->n_headers = 1;
 		Dout[1]->table[0]->header[0] = strdup (header);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout[1]->io_mode, NULL, Ctrl->N.file, Dout[1]) != GMT_OK) {
+			gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
+			gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 			Return (API->error);
 		}
 	}
 
 	gmt_M_free (GMT, T.D.tri);
 	if (!Ctrl->C.active) {
-		gmt_M_free (GMT, lon);
-		gmt_M_free (GMT, lat);
+		gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
 	}
-	gmt_M_free (GMT, xx);
-	gmt_M_free (GMT, yy);
+	gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Triangularization completed\n");
 
