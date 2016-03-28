@@ -240,6 +240,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 	k = (line[1] == ' ') ? 2 : 1;	/* Since line may be "#TAG" or "# TAG" */
 	if (strncmp (&line[k], Ctrl->T.TAG, strlen(Ctrl->T.TAG))) {	/* Hard check to see if the TAG matches what we says it should be */
 		GMT_Report (API, GMT_MSG_NORMAL, "The TAG specified (%s) does not match the one in the .tbf file (%s)\n", Ctrl->T.TAG, &line[k]);
+		gmt_fclose (GMT, fp);
 		Return (EXIT_FAILURE);
 	}
 
