@@ -1115,7 +1115,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Loop over all input files */
 	
 	for (k = 0; k < Ctrl->In.n_files; k++) {
-		char *img;
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
 		if (API->mode && !strcmp (ps_names[k], "#")) {
