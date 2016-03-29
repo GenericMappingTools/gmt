@@ -788,7 +788,7 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 
-	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN)) != 0) Return (EXIT_FAILURE);
+	if ((nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN)) == 0) Return (EXIT_FAILURE);
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Found %d data sets in grdraster.info\n", nrasters);
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
