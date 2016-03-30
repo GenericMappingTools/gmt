@@ -804,18 +804,15 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 }
 
 GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2RASTER_CTRL *Ctrl) {
-	size_t size, nb;
-	int  fd[2] = {0, 0}, n;
-	int  dim[3];			/* Not meant to be used for now */
-	char cmd[GMT_LEN128] = {""}, buf[GMT_LEN128], t[16] = {""};
-	unsigned char *img = NULL;
+	size_t    size, nb;
+	uint64_t  dim[3];			/* Not meant to be used for now */
+	int       fd[2] = {0, 0}, n;
+	char      cmd[GMT_LEN128] = {""}, buf[GMT_LEN128], t[16] = {""};
 	FILE *fp = NULL;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
 
 	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
-	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%psconvert -");
-	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=V:\\lixo.ppm -");
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
 		fprintf(stderr, "Error: failed to open the pipe\n");
@@ -859,11 +856,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	GMT_Report (API, GMT_MSG_NORMAL, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
 
 	size = dim[GMT_X] * dim[GMT_Y] * dim[GMT_Z];	/* Determine number of bytes needed to hold image */
-	if ((img = gmt_M_memory (API->GMT, NULL, size, char)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to allocate space for image [%d bytes]\n", (int)size);
+	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
 		return EXIT_FAILURE;
 	}
-	if ((nb = read (fd[0], img, size)) != size) {
+	if ((nb = read (fd[0], I->data, size)) != size) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to read the entire image [read %d out of %d bytes]\n", nb, size);
 		return EXIT_FAILURE;
 	}
@@ -872,18 +869,12 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 
 	close (fd[0]);
 
-	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
-		return EXIT_FAILURE;
-	}
-	I->data = img; 
+	//I->data = img; 
 	I->type = GMT_CHAR;
 	I->header->nx = dim[GMT_X];	I->header->ny = dim[GMT_Y];	I->header->n_bands = dim[GMT_Z];
 	I->header->registration = GMT_GRID_PIXEL_REG;
-	I->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* By gsrasterize */
 	gmt_M_grd_setpad (API->GMT, I->header, nopad);	/* Copy the no pad to the header */
 	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK) {
-		gmt_M_free (API->GMT, img);
 		return EXIT_FAILURE;
 	}
 
@@ -955,7 +946,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	
 	int64_t (*read_source) (struct GMT_CTRL *, char **, size_t *, FILE *, char *, uint64_t *);	/* Pointer to source reader function */
 	void (*rewind_source) (FILE *, uint64_t *);	/* Pointer to source rewind function */
-	unsigned char * (*gs_func)(char *, int , int *) = NULL;	/* Function pointer to gsrasterize_rip */
+	//unsigned char *(*gs_func)(char *, int , int *) = NULL;	/* Function pointer to gsrasterize_rip */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
