@@ -298,7 +298,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GM
 #endif
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += gmt_M_check_condition (GMT, (!(n_files == 1 || n_files == 3) && GMT->hidden.pocket == NULL), 
+	n_errors += gmt_M_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 					"Syntax error: Must specify one (or three) input file(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, 
 					"Syntax error -I option: Must specify intensity file or value\n");

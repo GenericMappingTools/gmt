@@ -813,7 +813,6 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
 
-	API->GMT->hidden.pocket = strdup("yes");	/* Put just something in here to signal grdimage that it has work to do */
 	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
 	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%psconvert -");
 	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=V:\\lixo_.ppm -");
@@ -882,8 +881,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	I->header->registration = GMT_GRID_PIXEL_REG;
 	I->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* By gsrasterize */
 	gmt_M_grd_setpad (API->GMT, I->header, nopad);	/* Copy the no pad to the header */
-	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
+	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK) {
+		gmt_M_free (API->GMT, img);
 		return EXIT_FAILURE;
+	}
 
 	return GMT_OK;	/* Done here */				
 }
