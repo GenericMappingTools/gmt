@@ -5551,10 +5551,10 @@ void gmt_plotend (struct GMT_CTRL *GMT) {
 	PSL_endplot (PSL, !GMT->common.K.active);
 	
 	// if (PSL->internal.memory && !GMT->common.K.active) {    /* Time to write out buffer */
-		if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
+	if (PSL->internal.memory) {    /* Time to write out buffer regardless of mode */
 		struct GMT_PS *P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);
 		P->data = PSL_getplot (PSL);	/* Get the plot buffer */
-		P->n = PSL->internal.n;         /* Length of plot buffer */
+		P->n = PSL->internal.n;         /* Length of plot buffer; note P->n_alloc = 0 since we did not allocate this string here */
 		P->mode = PSL->internal.pmode;  /* Mode of plot (1,2,3) */
 		P->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since created in PSL */
 		if (GMT_Write_Data (GMT->parent, GMT_IS_PS, GMT_IS_REFERENCE, GMT_IS_NONE, 0, NULL, GMT->current.ps.memname, P) != GMT_OK) {
@@ -6200,7 +6200,7 @@ struct GMT_PS * gmtlib_create_ps (struct GMT_CTRL *GMT, uint64_t length) {
 	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	if (length) {	/* Allocate a blank string */
 		P->data = gmt_M_memory (GMT, NULL, length, char);
-		P->n_alloc = length;
+		P->n_alloc = length;	/* But P->n = 0 since nothing was placed there */
 	}
 	return (P);
 }

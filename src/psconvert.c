@@ -1136,7 +1136,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 #endif
 		P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
 		P->data = PSL_getplot (GMT->PSL);	/* Get pointer to the plot buffer */
-		P->n = GMT->PSL->internal.n;		/* Length of plot buffer */
+		P->n = GMT->PSL->internal.n;		/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 		if (pipe_ghost(API, P, Ctrl)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
 			gmt_M_free (GMT, P);
