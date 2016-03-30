@@ -817,10 +817,14 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
 	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%psconvert -");
 	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=V:\\lixo_.ppm -");
+#ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
 		fprintf(stderr, "Error: failed to open the pipe\n");
 		return EXIT_FAILURE;
 	}
+#else
+	pipe (fd);
+#endif
 	if (dup2 (fd[1], fileno (stdout)) < 0) {
 		fprintf (stderr, "Error: Failed to duplicate pipe\n");
 		return EXIT_FAILURE;
