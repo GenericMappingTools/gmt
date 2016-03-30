@@ -618,7 +618,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
                                       GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
-		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
+		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], false, Orig[k], &Grid[k]);
 	}
 
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];

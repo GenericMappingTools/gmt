@@ -500,6 +500,31 @@ GMT_LOCAL int grdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 	return (true);	/* Return true so the calling function can take appropriate action */
 }
 
+GMT_LOCAL void handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, float f_value, int pole)
+{
+	uint64_t node;
+	unsigned int col = 0;
+	char *name[3] = {"south", "", "north"};
+	gmt_M_unused(GMT);
+
+	if (pole == -1)
+		node = gmt_M_ijp (header, 0, 0);		/* First node at S pole */
+	else
+		node = gmt_M_ijp (header, header->ny-1, 0);	/* First node at N pole */
+	if (GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_GEOANGLE) {	/* Must average angle */
+		uint64_t orig = node;
+		double s, c, sum_s = 0.0, sum_c = 0.0;
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Average %d angles at the %s pole\n", header->nx, name[pole+1]);
+		for (col = 0; col < header->nx; col++, node++) {
+			sincosd ((double)grid[node], &s, &c);
+			sum_s += s;	sum_c += c;
+		}
+		f_value = (float)atan2d (sum_s, sum_c);
+		node = orig;
+	}
+	for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+}
+
 GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid) {
 	/* Enforce before writing a grid that periodic grids with repeating columns
 	 * agree on the node values in those columns; if different replace with average.
@@ -524,8 +549,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		if (p_conflicts) {
 			float f_value = (float)(sum / header->nx);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
-			node = gmt_M_ijp (header, 0, 0);	/* First node at S pole */
-			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+			handle_pole_averaging (GMT, header, grid, f_value, -1);
 		}
 	}
 	if (header->wesn[YHI] == +90.0) {	/* Check consistency of N pole duplicates */
@@ -540,8 +564,7 @@ GMT_LOCAL void grdio_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRI
 		if (p_conflicts) {
 			float f_value = (float)(sum / header->nx);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
-			node = gmt_M_ijp (header, header->ny-1, 0);	/* First node at N pole */
-			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+			handle_pole_averaging (GMT, header, grid, f_value, +1);
 		}
 	}
 	if (!gmt_M_360_range (header->wesn[XLO], header->wesn[XHI])) return;	/* Not 360-degree range */
@@ -630,7 +653,6 @@ GMT_LOCAL struct GMT_GRID_HEADER *grdio_duplicate_gridheader (struct GMT_CTRL *G
 	gmt_M_memcpy (hnew, h, 1, struct GMT_GRID_HEADER);
 	return (hnew);
 }
-
 
 /*----------------------------------------------------------|
  * Public functions that are part of the GMT Devel library  |
@@ -2167,16 +2189,18 @@ void gmt_free_grid (struct GMT_CTRL *GMT, struct GMT_GRID **G, bool free_grid) {
 	gmt_M_free (GMT, *G);
 }
 
-int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struct GMT_GRID **Out) {
-	/* When the input grid is a read-only memory location then we cannot use
-	 * the same grid to hold the output results but must allocate a separate
-	 * grid.  To avoid wasting memory we try to reuse the input array when
+int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT_GRID *G, struct GMT_GRID **Out) {
+	/* In most situations we can recycle the input grid to be the output grid as well.  However, there
+	 * are a few situations when we must override this situation:
+	 *   1) When OpenMP is enabled and calculations depend on nearby nodes.
+	 *   2) The input grid is a read-only memory location
+	 *   3) The intended output file is a memory location.
+	 * To avoid wasting memory we try to reuse the input array when
 	 * it is possible. We return true when new memory had to be allocated.
 	 * Note we duplicate the grid if we must so that Out always has the input
 	 * data in it (directly or via the pointer).  */
 
-	if (gmt_M_file_is_memory (file) || G->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
-		//*Out = gmt_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
+	if (separate || gmt_M_file_is_memory (file) || G->alloc_mode == GMT_ALLOC_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
 		if ((*Out = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to duplicate grid! - this is not a good thing and may crash this module\n");
 			(*Out) = G;

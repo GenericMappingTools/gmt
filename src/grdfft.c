@@ -867,7 +867,7 @@ int GMT_grdfft (void *V_API, int mode, void *args) {
 		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k]
 		 * From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 	 * we are done with using the addresses Orig[k] directly. */
-		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
+		(void) gmt_set_outgrid (GMT, Ctrl->In.file[k], false, Orig[k], &Grid[k]);
 		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */

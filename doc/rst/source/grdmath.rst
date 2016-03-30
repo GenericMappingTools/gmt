@@ -706,7 +706,7 @@ the imaginary amplitude 1.1:
 
    ::
 
-    gmt grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
+    gmt grdmath -R0/360/-90/90 -I1 8 4 YLM 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
 

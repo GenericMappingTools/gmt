@@ -329,18 +329,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_grdgradient (void *V_API, int mode, void *args) {
-	bool sigma_set = false, offset_set = false, bad, new_grid = false;
+	bool sigma_set = false, offset_set = false, bad, new_grid = false, separate = false;
 	int p[4], mx, error = 0;
 	unsigned int row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
 	
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
 	
-	double dx_grid, dy_grid, x_factor, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
+	double dx_grid, dy_grid, x_factor, x_factor_set, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output, one;
-	double x_factor2 = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
+	double x_factor2 = 0.0, x_factor2_set = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
-	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale;
+	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2];
 	
 	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
@@ -414,7 +414,10 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (Ctrl->S.active) {	/* Want slope grid */
 		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Surf)) == NULL) Return (API->error);
 	}
-	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, Surf, &Out);	/* true if input is a read-only array */
+#ifdef OPENMP
+	//separate = true;	/* Cannot use input grid to hold output grid when doing things in parallel */
+#endif
+	new_grid = gmt_set_outgrid (GMT, Ctrl->In.file, separate, Surf, &Out);	/* true if input is a read-only array */
 	
 	if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Flat-Earth approximation */
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
@@ -425,16 +428,18 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		dy_grid = Surf->header->inc[GMT_Y];
 	}
 	one = (Ctrl->D.active) ? +1.0 : -1.0;	/* With -D we want positive grad direction, not negative as for shading (-A, -E) */
-	x_factor = one / (2.0 * dx_grid);
+	x_factor_set = one / (2.0 * dx_grid);
 	y_factor = one / (2.0 * dy_grid);
 	if (Ctrl->A.active) {	/* Convert azimuths to radians to save multiplication later */
 		if (Ctrl->A.two) {
 			Ctrl->A.azimuth[1] *= D2R;
-			x_factor2 = x_factor * sin (Ctrl->A.azimuth[1]);
+			sin_Az[1] = sin (Ctrl->A.azimuth[1]);
+			x_factor2_set = x_factor_set * sin_Az[1];
 			y_factor2 = y_factor * cos (Ctrl->A.azimuth[1]);
 		}
 		Ctrl->A.azimuth[0] *= D2R;
-		x_factor *= sin (Ctrl->A.azimuth[0]);
+		sin_Az[0] = sin (Ctrl->A.azimuth[0]);
+		x_factor_set *= sin_Az[0];
 		y_factor *= cos (Ctrl->A.azimuth[0]);
 	}
 
@@ -450,17 +455,29 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 		scale = MAX (lim_z, MAX (lim_x, lim_y));
 		lim_x /= scale;	lim_y /= scale;		lim_z /= scale;
 		dx_grid /= lim_x;	dy_grid /= lim_y;
-		x_factor = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
+		x_factor_set = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
 	}
+
+#if 0	/* Not active since we have no way to do min/max via OpenMP in C.  So rethink this part */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,ij0,lat,dx_grid,col,ij,n,bad,index,dzdx,dzdy,dzdx2,dzdy2,dzds1,dzds2,output,azim,norm_z,mag,diffuse,spec) \
+	shared(Surf,GMT,Ctrl,x_factor_set,x_factor2_set,sin_Az,new_grid,Out,Slope,y_factor,y_factor2,p0,q0,p0q0_cte,k_ads,s) \
+	reduction(+:ave_gradient)
+#endif
+#endif
 	for (row = 0, ij0 = 0ULL; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
 		if (gmt_M_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = gmt_M_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = one / (2.0 * dx_grid);	/* Use previous value at the poles */
 			if (Ctrl->A.active) {
-				if (Ctrl->A.two) x_factor2 = x_factor * sin (Ctrl->A.azimuth[1]);
-				x_factor *= sin (Ctrl->A.azimuth[0]);
+				if (Ctrl->A.two) x_factor2 = x_factor * sin_Az[1];
+				x_factor *= sin_Az[0];
 			}
+		}
+		else {	/* Use the constant factors */
+			x_factor = x_factor_set;
+			if (Ctrl->A.two) x_factor2 = x_factor2_set;
 		}
 		for (col = 0; col < Surf->header->nx; col++, ij0++) {
 			ij = gmt_M_ijp (Surf->header, row, col);	/* Index into padded grid */

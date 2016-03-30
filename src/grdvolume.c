@@ -478,7 +478,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	(void) gmt_set_outgrid (GMT, Ctrl->In.file, Grid, &Work);	/* true if input is a read-only array */
+	(void) gmt_set_outgrid (GMT, Ctrl->In.file, false, Grid, &Work);	/* true if input is a read-only array */
 	gmt_grd_init (GMT, Work->header, options, true);
 
 	/* Set node increments relative to the lower-left node of a 4-point box */

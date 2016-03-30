@@ -357,7 +357,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args) {
 
 			/* Note that this option rearranges the input grid, so if a memory location is passed then
 			 * the grid in the calling program is no longer the original values */
-			new_grid = gmt_set_outgrid (GMT, opt->arg, G, &G2);	/* true if input is a read-only array */
+			new_grid = gmt_set_outgrid (GMT, opt->arg, false, G, &G2);	/* true if input is a read-only array */
 			gmt_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
 			gmt_sort_array (GMT, G2->data, G2->header->nm, GMT_FLOAT);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);

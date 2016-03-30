@@ -371,7 +371,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-	(void)gmt_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array */
+	(void)gmt_set_outgrid (GMT, Ctrl->In.file, false, Grid, &Out);	/* true if input is a read-only array */
 	gmt_grd_init (GMT, Out->header, options, true);
 
 	if (Ctrl->N.active)
