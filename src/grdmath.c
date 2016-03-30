@@ -3413,7 +3413,7 @@ GMT_LOCAL void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 {
 	uint64_t node, row, col;
 	unsigned int prev = last - 1;
-	double a, b;
+	double x0, y0;
 
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		gmt_init_distaz (GMT, 'k', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
@@ -3422,12 +3422,15 @@ GMT_LOCAL void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struc
 		return;
 	}
 
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,x0,y0) shared(info,stack,prev,last,GMT)
+#endif 
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {
-			a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
-			b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-			stack[prev]->G->data[node] = (float) gmt_distance (GMT, a, b, info->d_grd_x[col], info->d_grd_y[row]);
+			x0 = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
+			y0 = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
+			stack[prev]->G->data[node] = (float) gmt_distance (GMT, x0, y0, info->d_grd_x[col], info->d_grd_y[row]);
 		}
 	}
 }
@@ -3468,6 +3471,9 @@ GMT_LOCAL void grd_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT_IS_GEOANGLE;
 	gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST);
+#ifdef _OPENMP
+#pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
+#endif 
 	for (row = 0; row < info->G->header->my; row++) {
 		node = row * info->G->header->mx;
 		for (col = 0; col < info->G->header->mx; col++, node++) {

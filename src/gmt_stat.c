@@ -110,20 +110,19 @@ GMT_LOCAL double gmtstat_ln_gamma (struct GMT_CTRL *GMT, double xx) {
 		-0.536382e-5
 	};
 
-	static double stp = 2.50662827465, half = 0.5, one = 1.0, fpf = 5.5;
 	double x, tmp, ser;
 
 	int i;
 
-	x = xx - one;
-	tmp = x + fpf;
-	tmp = (x + half) * d_log (GMT,tmp) - tmp;
-	ser = one;
+	x = xx - 1.0;
+	tmp = x + 5.5;
+	tmp = (x + 0.5) * d_log (GMT,tmp) - tmp;
+	ser = 1.0;
 	for (i = 0; i < 6; i++) {
-		x += one;
+		x += 1.0;
 		ser += (cof[i]/x);
 	}
-	return (tmp + d_log (GMT,stp*ser) );
+	return (tmp + d_log (GMT, 2.50662827465*ser) );
 }
 
 GMT_LOCAL int gmtstat_ln_gamma_r (struct GMT_CTRL *GMT, double x, double *lngam) {
@@ -234,12 +233,10 @@ GMT_LOCAL double gmtstat_gammq (struct GMT_CTRL *GMT, double a, double x) {
 	return (G);
 }
 
+#define BETA_EPS 3.0e-7
+
 GMT_LOCAL double gmtstat_cf_beta (struct GMT_CTRL *GMT, double a, double b, double x) {
 	/* Continued fraction method called by gmtstat_inc_beta.  */
-
-	static int	itmax = 100;
-	static double eps = 3.0e-7;
-
 	double am = 1.0, bm = 1.0, az = 1.0;
 	double qab, qap, qam, bz, em, tem, d;
 	double ap, bp, app, bpp, aold;
@@ -266,9 +263,9 @@ GMT_LOCAL double gmtstat_cf_beta (struct GMT_CTRL *GMT, double a, double b, doub
 		bm = bp/bpp;
 		az = app/bpp;
 		bz = 1.0;
-	} while (((fabs (az-aold) ) >= (eps * fabs (az))) && (m < itmax));
+	} while (((fabs (az-aold) ) >= (BETA_EPS * fabs (az))) && (m < ITMAX));
 
-	if (m == itmax) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_cf_beta:  A or B too big, or ITMAX too small.\n");
+	if (m == ITMAX) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmtstat_cf_beta:  A or B too big, or ITMAX too small.\n");
 
 	return (az);
 }
