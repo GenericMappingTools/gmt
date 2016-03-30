@@ -815,7 +815,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 
 	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
 	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%psconvert -");
-	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=V:\\lixo_.ppm -");
+	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=V:\\lixo.ppm -");
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
 		fprintf(stderr, "Error: failed to open the pipe\n");
@@ -852,7 +852,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 		t[n++] = buf[0];
 	t[n] = '\0';						/* Make sure no character is left from previous usage */
 
-	while (read(fd[0], buf, 1U) && buf[0] != '\n')		/* Consume fourth header line */
+	while (read(fd[0], buf, 1U) && buf[0] != '\n');		/* Consume fourth header line */
 
 	dim[GMT_Y] = atoi (t);
 	dim[GMT_Z] = 3;	/* This might change if we do monochrome at some point */
@@ -870,6 +870,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	else
 		GMT_Report (API, GMT_MSG_NORMAL, "read %d bytes from the pipe:\n", nb);
 
+	close (fd[0]);
 
 	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
