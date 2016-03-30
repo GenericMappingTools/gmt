@@ -915,6 +915,31 @@ int GMT_get_grdtype (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	return (GMT_GRID_CARTESIAN);
 }
 
+void handle_pole_averaging (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, float f_value, int pole)
+{
+	uint64_t node;
+	unsigned int col = 0;
+	char *name[3] = {"south", "", "north"};
+	GMT_UNUSED(GMT);
+
+	if (pole == -1)
+		node = GMT_IJP (header, 0, 0);		/* First node at S pole */
+	else
+		node = GMT_IJP (header, header->ny-1, 0);	/* First node at N pole */
+	if (GMT->current.io.col_type[GMT_OUT][GMT_Z] == GMT_IS_GEOANGLE) {	/* Must average angle */
+		uint64_t orig = node;
+		double s, c, sum_s = 0.0, sum_c = 0.0;
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Average %d angles at the %s pole\n", header->nx, name[pole+1]);
+		for (col = 0; col < header->nx; col++, node++) {
+			sincosd ((double)grid[node], &s, &c);
+			sum_s += s;	sum_c += c;
+		}
+		f_value = (float)atan2d (sum_s, sum_c);
+		node = orig;
+	}
+	for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+}
+
 void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid)
 {	/* Enforce before writing a grid that periodic grids with repeating columns
 	 * agree on the node values in those columns; if different replace with average.
@@ -939,8 +964,7 @@ void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		if (p_conflicts) {
 			float f_value = (float)(sum / header->nx);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values at south pole. Values fixed by setting all to average row value.\n", p_conflicts);
-			node = GMT_IJP (header, 0, 0);	/* First node at S pole */
-			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+			handle_pole_averaging (GMT, header, grid, f_value, -1);
 		}
 	}
 	if (header->wesn[YHI] == +90.0) {	/* Check consistency of N pole duplicates */
@@ -955,8 +979,7 @@ void gmt_grd_check_consistency (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *he
 		if (p_conflicts) {
 			float f_value = (float)(sum / header->nx);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: detected %u inconsistent values at north pole. Values fixed by setting all to average row value.\n", p_conflicts);
-			node = GMT_IJP (header, header->ny-1, 0);	/* First node at N pole */
-			for (col = 0; col < header->nx; col++, node++) grid[node] = f_value;
+			handle_pole_averaging (GMT, header, grid, f_value, +1);
 		}
 	}
 	if (!GMT_360_RANGE (header->wesn[XLO], header->wesn[XHI])) return;	/* Not 360-degree range */
