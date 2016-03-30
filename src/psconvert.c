@@ -830,7 +830,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	}
 	close (fd[1]); 		/* Close original write end of pipe */
 
-	if ((fp = popen(cmd, "wb")) != NULL) {
+	if ((fp = popen(cmd, "w")) != NULL) {
 		fwrite (P->data, sizeof(char), P->n, fp);
 		fflush (fp);
 		if (pclose(fp) == -1)
