@@ -39,6 +39,7 @@
 
 #include "gmt_dev.h"
 #ifdef _WIN32
+#	define dup2 _dup2
 	/* Various shared-library functions declared in gmt_sharedlibs.c */
 	EXTERN_MSC void *dlopen (const char *module_name, int mode);
 	EXTERN_MSC int dlclose (void *handle);
@@ -744,13 +745,13 @@ GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size,
 	return out;			/* Return number of characters in L */
 }
 
-void file_rewind (FILE *fp, uint64_t *notused)
-{	/* Rewinds to start of file */
+void file_rewind (FILE *fp, uint64_t *notused) {
+	/* Rewinds to start of file */
 	rewind (fp);
 }
 
-void mem_rewind (FILE *notused, uint64_t *pos)
-{	/* Resets to start of memory */
+void mem_rewind (FILE *notused, uint64_t *pos) {
+	/* Resets to start of memory */
 	*pos = 0;
 }
 
@@ -802,29 +803,86 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 	}
 }
 
-#ifdef PIPE_GS
-GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P) {
-	char cmd[GMT_BUFSIZ] = {""};
+GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2RASTER_CTRL *Ctrl) {
+	size_t size, nb;
+	int  fd[2] = {0, 0}, n;
+	int  dim[3];			/* Not meant to be used for now */
+	char cmd[GMT_LEN128] = {""}, buf[GMT_LEN128], t[16] = {""};
+	unsigned char *img = NULL;
 	FILE *fp = NULL;
+	unsigned int nopad[4] = {0, 0, 0, 0};
+	struct GMT_IMAGE *I = NULL;
+
 	API->GMT->hidden.pocket = strdup("yes");	/* Put just something in here to signal grdimage that it has work to do */
-	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%grdimage -");
-	if ((fp = popen(cmd, "w")) != NULL) {
-		int n;
-		char t[GMT_LEN128];
+	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
+	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=%%pipe%%psconvert -");
+	//sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=V:\\lixo_.ppm -");
+	if (_pipe(fd, 145227600, O_BINARY) == -1) {
+		fprintf(stderr, "Error: failed to open the pipe\n");
+		return EXIT_FAILURE;
+	}
+	if (dup2 (fd[1], fileno (stdout)) < 0) {
+		fprintf (stderr, "Error: Failed to duplicate pipe\n");
+		return EXIT_FAILURE;
+	}
+	close (fd[1]); 		/* Close original write end of pipe */
+
+	if ((fp = popen(cmd, "wb")) != NULL) {
 		fwrite (P->data, sizeof(char), P->n, fp);
 		fflush (fp);
-		//n = fscanf(fp, "%s", &t);
-		//fscanf(fp, "%s", &t);
 		if (pclose(fp) == -1)
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript command.\n");
 	}
-	else { /* failed to open pipe */
+	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
 		return EXIT_FAILURE;
 	}
-	return 0;
+
+	n = read (fd[0], buf, 3U);				/* Consume first header line */
+	while (read (fd[0], buf, 1U) && buf[0] != '\n'); 	/* OK, by the end of this we are at the end of second header line */
+	n = 0;
+	while (read(fd[0], buf, 1U) && buf[0] != ' ') 		/* Get string with number of columns from 3rd header line */
+		t[n++] = buf[0];
+	dim[GMT_X] = atoi (t);
+	n = 0;
+	while (read(fd[0], buf, 1U) && buf[0] != '\n') 		/* Get string with number of rows from 3rd header line */
+		t[n++] = buf[0];
+	t[n] = '\0';						/* Make sure no character is left from previous usage */
+
+	while (read(fd[0], buf, 1U) && buf[0] != '\n')		/* Consume fourth header line */
+
+	dim[GMT_Y] = atoi (t);
+	dim[GMT_Z] = 3;	/* This might change if we do monochrome at some point */
+	GMT_Report (API, GMT_MSG_NORMAL, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
+
+	size = dim[GMT_X] * dim[GMT_Y] * dim[GMT_Z];	/* Determine number of bytes needed to hold image */
+	if ((img = gmt_M_memory (API->GMT, NULL, size, char)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to allocate space for image [%d bytes]\n", (int)size);
+		return EXIT_FAILURE;
+	}
+	if ((nb = read (fd[0], img, size)) != size) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to read the entire image [read %d out of %d bytes]\n", nb, size);
+		return EXIT_FAILURE;
+	}
+	else
+		GMT_Report (API, GMT_MSG_NORMAL, "read %d bytes from the pipe:\n", nb);
+
+
+	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, 0, 0, NULL)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
+		return EXIT_FAILURE;
+	}
+	I->data = img; 
+	I->type = GMT_CHAR;
+	I->header->nx = dim[GMT_X];	I->header->ny = dim[GMT_Y];	I->header->n_bands = dim[GMT_Z];
+	I->header->registration = GMT_GRID_PIXEL_REG;
+	I->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* By gsrasterize */
+	gmt_M_grd_setpad (API->GMT, I->header, nopad);	/* Copy the no pad to the header */
+	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
+		return EXIT_FAILURE;
+
+	return GMT_OK;	/* Done here */				
 }
-#endif
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
@@ -899,7 +957,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (mode == GMT_MODULE_PURPOSE) return (usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
+	//if (!options || options->option == GMT_OPT_USAGE) bailout (usage (API, GMT_USAGE));/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
@@ -1012,7 +1070,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")){	/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
+	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")) {
+		/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
+#if 0
 		void *handle = NULL;
 		char gs_rasterizer[GMT_BUFSIZ] = {""};
 		unsigned int nopad[4] = {0, 0, 0, 0};
@@ -1020,6 +1080,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		struct GMT_IMAGE *I = NULL;
 		read_source = &mem_line_reader;	/* Read from string with PS instead */
 		rewind_source = &mem_rewind;	/* Reset current position in PS string */
+#endif
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			Return (EXIT_FAILURE);
@@ -1028,6 +1089,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
 			Return (EXIT_FAILURE);
 		}
+#if 0
 		file_processing = false;
 		sprintf (gs_rasterizer, "%s/gsrasterize.dll", GMT->init.runtime_plugindir);
 #ifdef __APPLE__
@@ -1040,7 +1102,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open shared library %s [%s]\n", gs_rasterizer, dlerror());
 			Return (EXIT_FAILURE);
 		}
-		*(void **) (&gs_func) = dlsym (handle, "gsrasterize_rip");
+		*(void **)(&gs_func) = dlsym (handle, "gsrasterize_rip");
 		if (gs_func == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Could not find gsrasterize_rip in shared library %s\n", gs_rasterizer);
 			Return (EXIT_FAILURE);
@@ -1065,6 +1127,17 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 			Return (API->error);
 		Return (GMT_OK);	/* Done here */
+#endif
+		P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
+		P->data = PSL_getplot (GMT->PSL);	/* Get pointer to the plot buffer */
+		P->n = GMT->PSL->internal.n;		/* Length of plot buffer */
+		if (pipe_ghost(API, P, Ctrl)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
+			gmt_M_free (GMT, P);
+			Return (EXIT_FAILURE);
+		}
+		gmt_M_free (GMT, P);
+		Return (GMT_OK);	/* Done here */
 	}
 	else {	/* Standard file processing */
 		read_source = &file_line_reader;
@@ -1074,8 +1147,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
 		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
-
-	P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
 
 	/* --------------------------------------------------------------------------------------------- */
 	/* ------    If a multi-page PDF file creation is requested, do it and exit.   ------------------*/
@@ -1112,20 +1183,26 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 	/* ----------------------------------------------------------------------------------------------- */
 
+	P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
+
 	/* Loop over all input files */
 	
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
 		if (API->mode && !strcmp (ps_names[k], "#")) {
+#ifdef PIPE_GS
 			/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
 			/* For now we just create a temporary file */
 			P->data = PSL_getplot (GMT->PSL);	/* Get pointer to the plot buffer */
 			P->n = GMT->PSL->internal.n;		/* Length of plot buffer */
-#ifdef PIPE_GS
-			pipe_ghost(API, P);
 			//img = GMT_gsrasterize(P->data);
-			//img = GMT_Call_Module(API, "gsrasterize", 1, P->data);
+
+			if (pipe_ghost(API, P, Ctrl)) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
+				Return (EXIT_FAILURE);
+			}
+			Return (GMT_OK);	/* Done here */
 #endif
 		}
 		else if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
