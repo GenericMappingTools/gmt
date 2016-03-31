@@ -68,7 +68,7 @@ int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version
 		fprintf(stderr, FAILURE_PREFIX "cannot inquire version attribute length from file \"%s\" (%d).\n", filename, status);
 		return 0;
 	}
-	if (v_len == 0 || v_len > BUF_SIZE) {
+	if (v_len == 0 || v_len > BUF_SIZE-1) {
 		nc_close(ncid);
 		fprintf(stderr, FAILURE_PREFIX "invalid version attribute length: %" PRIuS "\n", v_len);
 		return 0;
