@@ -472,7 +472,7 @@ int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s)
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	unsigned int i = 0, j, pos = 0;
 
-	strncpy (s->fflags, string, GMT_BUFSIZ);
+	strncpy (s->fflags, string, GMT_BUFSIZ-1);
 	strncpy (line, string, GMT_BUFSIZ-1);	/* Make copy for later use */
 	gmt_M_memset (s->use_column, s->n_fields, bool);
 
