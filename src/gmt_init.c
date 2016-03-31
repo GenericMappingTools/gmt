@@ -5016,6 +5016,7 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (i <= 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: index in %s is zero or negative %s!\n", line);
+			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		if (dwu == 'M') {	/* Month record */
