@@ -387,7 +387,7 @@ GMT_LOCAL void set_weight_matrix (struct GMT_CTRL *GMT, struct FILTER_INFO *F, d
 	for (j = -F->y_half_width; j <= F->y_half_width; j++) {
 		y = y0 + ((j < 0) ? F->y[-j] : -F->y[j]);	/* y or latitude at this row in input grid */
 		if (F->d_flag > GRDFILTER_GEO_FLATEARTH1 && (y < F->y_min || y > F->y_max)) {		/* This filter row is outside input grid domain */
-			for (i = -F->x_half_width, ij = (j + F->y_half_width) * F->nx; i <= F->x_half_width; i++, ij++) weight[ij] = -1.0;
+			for (i = -F->x_half_width, ij = (int64_t)(j + F->y_half_width) * F->nx; i <= F->x_half_width; i++, ij++) weight[ij] = -1.0;
 			continue;	/* Done with this row */
 		}
 		if (F->d_flag == GRDFILTER_GEO_MERCATOR) y = IMG2LAT (y);	/* Recover actual latitudes */
