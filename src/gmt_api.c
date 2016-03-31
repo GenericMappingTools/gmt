@@ -4601,6 +4601,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 					not_url = !gmtlib_check_url_name (file);
 				if (gmt_access (GMT, file, F_OK) && not_url) {	/* For input we can check if the file exists (except if via Web) */
 					GMT_Report (API, GMT_MSG_NORMAL, "File %s not found\n", file);
+					gmt_M_str_free (file);
 					return_value (API, GMT_FILE_NOT_FOUND, GMT_NOTSET);
 				}
 				if (gmt_access (GMT, file, R_OK) && not_url) {	/* Found it but we cannot read. */
