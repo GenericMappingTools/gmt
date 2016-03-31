@@ -3943,7 +3943,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 		/* OK, here we are ready to update the structures */
 
 		if (constraint) {	/* Got a column constraint, just key it by name for now */
-			strncpy (F->Constraint[F->n_constraints].name, word, MGD77_COL_ABBREV_LEN);
+			strncpy (F->Constraint[F->n_constraints].name, word, MGD77_COL_ABBREV_LEN-1);
 			strncpy (F->Constraint[F->n_constraints].c_constraint, value, GMT_LEN64-1);
 			F->Constraint[F->n_constraints].code = constraint;
 			F->Constraint[F->n_constraints].exact = exact;
