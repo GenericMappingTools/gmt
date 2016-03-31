@@ -63,7 +63,6 @@ EXTERN_MSC void gmt_str_toupper (char *string);
 #	define dup2 _dup2
 #	define execv _execv
 #	define pipe _pipe
-	GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
 	static char quote = '\"';
 	static char *squote = "\"";
 #else
@@ -180,6 +179,10 @@ struct PS2RASTER_CTRL {
 		bool active;
 	} Z;
 };
+
+#ifdef WIN32	/* Special for Windows */
+	GMT_LOCAL int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
+#endif
 
 GMT_LOCAL int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
 	/* Syntax: -A[u][<margins>][-][+r][+s|S[m]<width>[u][/<height>[u]]] */
@@ -539,7 +542,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (!(GMT->parent->mode && !strcmp (opt->arg, "="))) {	/* Can check if file is sane */
-					if (strcmp(opt->arg, "#"))
 					if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
 				}
 				Ctrl->In.n_files++;
@@ -803,29 +805,34 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 	}
 }
 
-GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2RASTER_CTRL *Ctrl) {
-	size_t    size, nb;
-	uint64_t  dim[3];			/* Not meant to be used for now */
-	int       fd[2] = {0, 0}, n;
+GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl) {
 	char      cmd[GMT_LEN128] = {""}, buf[GMT_LEN128], t[16] = {""};
-	FILE *fp = NULL;
+	int       fd[2] = {0, 0}, n;
+	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
+	FILE     *fp = NULL;
+	unsigned char *tmp;
 	unsigned int nopad[4] = {0, 0, 0, 0};
 	struct GMT_IMAGE *I = NULL;
+	struct GMT_PS *P = NULL;
 
 	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
-		fprintf(stderr, "Error: failed to open the pipe\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
 		return EXIT_FAILURE;
 	}
 #else
 	pipe (fd);
 #endif
 	if (dup2 (fd[1], fileno (stdout)) < 0) {
-		fprintf (stderr, "Error: Failed to duplicate pipe\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
 		return EXIT_FAILURE;
 	}
 	close (fd[1]); 		/* Close original write end of pipe */
+
+	P = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
+	P->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the plot buffer */
+	P->n = API->GMT->PSL->internal.n;		/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
 
 	if ((fp = popen(cmd, "w")) != NULL) {
 		fwrite (P->data, sizeof(char), P->n, fp);
@@ -835,8 +842,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+		gmt_M_free (API->GMT, P);
 		return EXIT_FAILURE;
 	}
+	gmt_M_free (API->GMT, P);
 
 	n = read (fd[0], buf, 3U);				/* Consume first header line */
 	while (read (fd[0], buf, 1U) && buf[0] != '\n'); 	/* OK, by the end of this we are at the end of second header line */
@@ -853,30 +862,33 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct GMT_PS *P, struct PS2R
 
 	dim[GMT_Y] = atoi (t);
 	dim[GMT_Z] = 3;	/* This might change if we do monochrome at some point */
-	GMT_Report (API, GMT_MSG_NORMAL, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
 
-	size = dim[GMT_X] * dim[GMT_Y] * dim[GMT_Z];	/* Determine number of bytes needed to hold image */
 	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
 		return EXIT_FAILURE;
 	}
-	if ((nb = read (fd[0], I->data, size)) != size) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to read the entire image [read %d out of %d bytes]\n", nb, size);
-		return EXIT_FAILURE;
+
+	nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
+	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
+	for (row = 0; row < nRows; row++) {
+		read (fd[0], tmp, (unsigned int)(nCols * nBands));			/* Read a row of nCols by nBands bytes of data */
+		for (col = 0; col < nCols; col++) {
+			for (band = 0; band < nBands; band++) {
+				I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];
+			}
+		}
 	}
-	else
-		GMT_Report (API, GMT_MSG_NORMAL, "read %d bytes from the pipe:\n", nb);
+	gmt_M_free (API->GMT, tmp);
 
 	close (fd[0]);
 
-	//I->data = img; 
 	I->type = GMT_CHAR;
-	I->header->nx = dim[GMT_X];	I->header->ny = dim[GMT_Y];	I->header->n_bands = dim[GMT_Z];
+	I->header->nx = (uint32_t)dim[GMT_X];	I->header->ny = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];
 	I->header->registration = GMT_GRID_PIXEL_REG;
 	gmt_M_grd_setpad (API->GMT, I->header, nopad);	/* Copy the no pad to the header */
-	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 		return EXIT_FAILURE;
-	}
 
 	return GMT_OK;	/* Done here */				
 }
@@ -1125,15 +1137,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (API->error);
 		Return (GMT_OK);	/* Done here */
 #endif
-		P = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
-		P->data = PSL_getplot (GMT->PSL);	/* Get pointer to the plot buffer */
-		P->n = GMT->PSL->internal.n;		/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
-		if (pipe_ghost(API, P, Ctrl)) {
+		if (pipe_ghost(API, Ctrl)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
-			gmt_M_free (GMT, P);
 			Return (EXIT_FAILURE);
 		}
-		gmt_M_free (GMT, P);
 		Return (GMT_OK);	/* Done here */
 	}
 	else {	/* Standard file processing */
@@ -1187,22 +1194,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
-		if (API->mode && !strcmp (ps_names[k], "#")) {
-#ifdef PIPE_GS
-			/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
-			/* For now we just create a temporary file */
-			P->data = PSL_getplot (GMT->PSL);	/* Get pointer to the plot buffer */
-			P->n = GMT->PSL->internal.n;		/* Length of plot buffer */
-			//img = GMT_gsrasterize(P->data);
-
-			if (pipe_ghost(API, P, Ctrl)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
-				Return (EXIT_FAILURE);
-			}
-			Return (GMT_OK);	/* Done here */
-#endif
-		}
-		else if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
+		if (gmt_M_file_is_memory (ps_names[k])) {	/* For now we create temp file from PS given via memory so code below will work */
 			sprintf (ps_file, "%s/psconvert_stream_%d.ps", API->tmp_dir, (int)getpid());
 			if (gmt_copy (API, GMT_IS_PS, GMT_OUT, ps_names[k], ps_file)) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to make temp file %s from %s. Skipping.\n", ps_file, ps_names[k]);
@@ -1271,7 +1263,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Find HiResBoundingBox ...\n");
 			sprintf (BB_file, "%s/psconvert_%dc.bb", Ctrl->D.dir, (int)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
-			sprintf (cmd, "%s%s %s %s %c%s%c 2> %c%s%c", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, quote, BB_file, quote);
+			sprintf (cmd, "%s%s %s %s %c%s%c 2> %c%s%c",
+			         at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, quote, psfile_to_use, quote, quote, BB_file, quote);
 			GMT_Report (API, GMT_MSG_DEBUG, "Running: %s\n", cmd);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
@@ -1783,7 +1776,9 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			else {								/* output file exists */
 				if (isGMT_PS && excessK)
 					/* non-closed GMT input PS file */
-					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
+					GMT_Report (API, GMT_MSG_NORMAL,
+					            "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n",
+					            ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
 			if (transparency) {	/* Now convert PDF to desired format */
