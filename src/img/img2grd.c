@@ -776,7 +776,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		strcpy (Geo->header->title, "Data from Altimetry");
-		strncpy (Geo->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
+		strncpy (Geo->header->z_units, z_units, GMT_GRID_UNIT_LEN80-1);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 		GMT_Report (API, GMT_MSG_DEBUG, "Register Geo Grid container as grdsample input\n");
