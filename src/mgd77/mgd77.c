@@ -4105,7 +4105,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
 			for (i = (int)strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
 			if (i == -1) {	/* No extension present */
-				strncpy (this_arg, opt->arg, GMT_BUFSIZ);
+				strncpy (this_arg, opt->arg, GMT_BUFSIZ-1);
 				length = strlen (this_arg);
 				/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
 				for (k = n_dig = 0; k < length; k++) if (isdigit((int)this_arg[k])) n_dig++;
