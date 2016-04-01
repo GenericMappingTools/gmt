@@ -593,6 +593,9 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
+		gmt_M_free (GMT, X);
+		gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 		Return (API->error);
 	}
 
@@ -615,8 +618,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running gpsgridder since they will result in a singular matrix\n");
 			for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
 			gmt_M_free (GMT, X);
-			gmt_M_free (GMT, u);
-			gmt_M_free (GMT, v);
+			gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 			Return (GMT_DATA_READ_ERROR);
 		}
 		else
