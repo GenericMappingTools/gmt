@@ -581,7 +581,8 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 				}
 			}
 			else {			/* Everything varies. */
-				okabe_mag_param = gmt_M_memory (GMT, NULL, n_triang, struct MAG_PARAM);
+				if (okabe_mag_param == NULL)	/* If not yet allocated */`
+					okabe_mag_param = gmt_M_memory (GMT, NULL, n_triang, struct MAG_PARAM);
 				for (i = 0; i < n_triang; i++) {
 					Ctrl->H.t_dec = (okabe_mag_var4[vert[i].a].t_dec + okabe_mag_var4[vert[i].b].t_dec + okabe_mag_var4[vert[i].c].t_dec)/3.;
 					Ctrl->H.t_dip = (okabe_mag_var4[vert[i].a].t_dip + okabe_mag_var4[vert[i].b].t_dip + okabe_mag_var4[vert[i].c].t_dip)/3.;
