@@ -6310,7 +6310,7 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 			n_alloc = (n_alloc == 0) ? GMT_INITIAL_MEM_ROW_ALLOC : n_alloc << 1;	/* Start at 2 Mb, then double */
 			P->data = gmt_M_memory (GMT, P->data, n_alloc, char);
 		}
-		P->data[P->n++] = c;
+		P->data[P->n++] = (char)c;
 	}
 	if (P->n > n_alloc)
 		P->data = gmt_M_memory (GMT, P->data, P->n, char);
