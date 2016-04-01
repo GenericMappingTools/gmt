@@ -702,8 +702,8 @@ GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size
 	int c;
 	int64_t out = 0;
 	char *line = *L;
-	if (notusedhere == NULL);			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	if (notusedeither == NULL);			/* 		""		*/
+	if (notusedhere == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
+	if (notusedeither == NULL){};			/* 		""		*/
 	while ((c = fgetc (fp)) != EOF) {	/* Keep reading until End-Of-File */
 		if (c == '\r' || c == '\n') {	/* Got logical end of record */
 			line[out] = '\0';
@@ -730,7 +730,7 @@ GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size,
 	int c;
 	int64_t out = 0, in = 0;
 	char *line = *L, *string = &all_PS[*pos];
-	if (notusedhere == NULL);			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
+	if (notusedhere == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
 	while ((c = string[in++]) != EOF) {	/* Keep reading until End-Of-File */
 		if (c == '\r' || c == '\n') {	/* Got logical end of record */
 			line[out] = '\0';
@@ -751,12 +751,12 @@ GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size,
 }
 
 void file_rewind (FILE *fp, uint64_t *notused) {	/* Rewinds to start of file */
-	if (notused == NULL);			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
+	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
 	rewind (fp);
 }
 
 void mem_rewind (FILE *notused, uint64_t *pos) {	/* Resets to start of memory */
-	if (notused == NULL);			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
+	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
 	*pos = 0;
 }
 
