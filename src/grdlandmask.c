@@ -83,7 +83,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside = GMT_ONEDGE;					/* Default is that points on a boundary are inside */
-	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, double);		/* Default "wet" value = 0 */
+	gmt_M_memset (C->N.mask, GRDLANDMASK_N_CLASSES, float);		/* Default "wet" value = 0 */
 	C->N.mask[1] = C->N.mask[3] = 1.0f;				/* Default for "dry" areas = 1 (inside) */
 	
 	return (C);
