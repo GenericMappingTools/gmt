@@ -184,7 +184,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTFLEXURE_CTRL *Ctrl, struct 
 					Ctrl->A.deflection[side] = (opt->arg[k+2]) ? atof (&opt->arg[k+2]) : 0.0;
 				else if (Ctrl->A.bc[side] == BC_FREE) {	/* Get bending moment and shear force */
 					if (opt->arg[k+2])
-						n = sscanf (&opt->arg[k+2], "%lf/%lf", &Ctrl->A.moment[side], &Ctrl->A.force[side]);
+						sscanf (&opt->arg[k+2], "%lf/%lf", &Ctrl->A.moment[side], &Ctrl->A.force[side]);
 				}
 				if (both) {	/* Copy values over from left to right */
 					Ctrl->A.bc[RIGHT] = Ctrl->A.bc[LEFT];
