@@ -486,9 +486,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						GMT_Report (API, GMT_MSG_COMPAT,
 						            "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
 						c[0] = ' ';	/* Take out the slash for now */
-						n = sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
+						sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
 						n_errors += gmt_M_check_condition (GMT, gmt_getfill (GMT, colors, &Ctrl->N.fill),
-						                                 "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						                                   "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 						c[0] = '/';	/* Restore the slash */
 					}
