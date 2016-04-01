@@ -4486,7 +4486,7 @@ Here is a list of the attributes that is under your control:
 
 #. Map scale origin.  Required modifier given with **+c**\ [*slon*/]\ *slat*, where the longitude
    of the scale origin is optional for projections with constant scale along parallels.  For
-   a Mercator projection it may look like +**+c**\ 30N while an oblique projection may have **+c**\ 100W/23N,
+   a Mercator projection it may look like **+c**\ 30N while an oblique projection may have **+c**\ 100W/23N,
    for instance.
 
 #. Fancy scale bar.  By default a plain-looking scale bar is plotted.  Upgrade to a fancier bar
@@ -4510,7 +4510,7 @@ Here is a list of the attributes that is under your control:
 
    Example of two map scales for a Mercator projection evaluated at 53 degrees north.
    The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53\\232N"
-   while the scale on the right was placed with **-Lj**\ *BR\ **+c**\ 53\ **+w**\ 1000k\ **+l+f**.
+   while the scale on the right was placed with **-Lj**\ *BR*\ **+c**\ 53\ **+w**\ 1000k\ **+l+f**.
 
 Note that for the purpose of anchor justification (**+j**) the footprint of the map scale is
 considered the rectangle that contains the scale and all selected labels and annotations, i.e.,
