@@ -158,7 +158,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	int block_nx;		/* Number of nodes in x-dir for a given grid factor */
 	int block_ny;		/* Number of nodes in y-dir for a given grid factor */
 	unsigned int max_iterations;	/* Max iter per call to iterate */
-	double converge_limit_mode;	/* 1 if -C set fractional convergence limit */
+	unsigned int converge_limit_mode;	/* 1 if -C set fractional convergence limit */
 	uint64_t total_iterations;
 	bool periodic;		/* true if geographic grid and west-east == 360 */
 	int grid_east;
