@@ -3652,11 +3652,13 @@ GMT_LOCAL int api_export_data (struct GMTAPI_CTRL *API, enum GMT_enum_family fam
 	if ((item = gmtapi_validate_id (API, family, object_ID, GMT_OUT, GMT_NOTSET)) == GMT_NOTSET) return (gmtapi_report_error (API, API->error));
 
 	/* The case where object_ID is not set but a virtual (memory) file is found is a special case: we must supply the correct object_ID */
-	if (object_ID == GMT_NOTSET && item && API->object[item]->method != GMT_IS_FILE) object_ID = API->object[item]->ID;	/* Found virtual file; set actual object_ID */
+	if (object_ID == GMT_NOTSET && item && API->object[item]->method != GMT_IS_FILE)
+		object_ID = API->object[item]->ID;	/* Found virtual file; set actual object_ID */
 
 	/* Check if this is a container passed from the outside to capture output */
 	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
 		error = api_destroy_data_ptr (API, API->object[item]->actual_family, API->object[item]->data);	/* Do the dirty deed */
+		if (error) return error;
 		API->object[item]->resource = API->object[item]->data = NULL;	/* Since we now have nothing */
 		API->object[item]->messenger = false;	/* OK, now clean for output */
 	}
