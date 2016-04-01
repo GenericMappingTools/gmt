@@ -70,7 +70,7 @@ Optional Arguments
 **-I**\ *id*
     Only output information for the polygon that matches *id*. Use
     **-Ic** to get all the continents only [Default outputs all
-    polygons].
+    polygons].  See below for the *id* of the largest polygons.
 
 .. _-L:
 
@@ -123,6 +123,46 @@ file, try
    ::
 
     gmt gshhg gshhs_h.b -Ee -N2 > all_lakes.txt
+
+Specific Polygons
+-----------------
+
+None of the polygons have any name information associated with them (i.e.,
+the metadata does not contain this information).  However, here are the
+largest polygons:
+
+.. _tbl-polygons:
+
++-----+--------------------------------+
+| ID  | Landmass                       |
++=====+================================+
+|  0  | Eurasia                        |
++-----+--------------------------------+
+|  1  | Africa                         |
++-----+--------------------------------+
+|  2  | North America                  |
++-----+--------------------------------+
+|  3  | South America                  |
++-----+--------------------------------+
+|  4  | Antarctica (AC grounding line) |
++-----+--------------------------------+
+|  5  | Antarctica (AC ice line)       |
++-----+--------------------------------+
+|  6  | Australia                      |
++-----+--------------------------------+
+|  7  | Greenland                      |
++-----+--------------------------------+
+|  8  | New Guinea                     |
++-----+--------------------------------+
+|  9  | Borneo                         |
++-----+--------------------------------+
+| 10  | Madagascar                     |
++-----+--------------------------------+
+| 11  | Baffin Island                  |
++-----+--------------------------------+
+| 12  | Indonesia                      |
++-----+--------------------------------+
+
 
 Technical Information
 ---------------------
