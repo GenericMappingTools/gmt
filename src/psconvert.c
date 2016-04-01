@@ -868,7 +868,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl) 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Image dimensions %d\t%d\n", dim[GMT_X], dim[GMT_Y]);
 
 	if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_ALL, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create Image structure\n");
 		return EXIT_FAILURE;
 	}
 
@@ -1225,6 +1225,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				if (file_processing) fclose (fp);	/* Close original PS file */
 				if (delete) remove (ps_file);	/* Since we created a temporary file from the memdata */
 				for (kk = 0; kk < Ctrl->In.n_files; kk++) gmt_M_str_free (ps_names[kk]);
+				gmt_M_free (GMT, ps_names);
 				Return (EXIT_FAILURE);
 			}
 			while (read_source (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
