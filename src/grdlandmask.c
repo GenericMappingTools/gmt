@@ -39,28 +39,28 @@
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is true if the option has been activated */
-	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
+	struct GRDLNDM_A {	/* -A<min_area>[/<min_level>/<max_level>] */
 		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
-	struct D {	/* -D<resolution> */
+	struct GRDLNDM_D {	/* -D<resolution> */
 		bool active;
 		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
-	struct E {	/* -E */
+	struct GRDLNDM_E {	/* -E */
 		bool active;
 		unsigned int inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
-	struct G {	/* -G<maskfile> */
+	struct GRDLNDM_G {	/* -G<maskfile> */
 		bool active;
 		char *file;
 	} G;
-	struct I {	/* -Idx[/dy] */
+	struct GRDLNDM_I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
 	} I;
-	struct N {	/* -N<maskvalues> */
+	struct GRDLNDM_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		float mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
