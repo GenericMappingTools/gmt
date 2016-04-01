@@ -599,8 +599,8 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	n2 = 2 * n;	/* Dimension of array is twice since using u & v */
 	for (k = n; k < n_alloc; k++) gmt_M_free (GMT, X[k]);	/* Remove what was not used */
 	X = gmt_M_memory (GMT, X, n, double *);	/* Realloc to exact size */
-	u = gmt_M_memory (GMT, u, n2, double *);	/* We will append v to the end of u later so need the extra space */
-	v = gmt_M_memory (GMT, v, n, double *);
+	u = gmt_M_memory (GMT, u, n2, double);	/* We will append v to the end of u later so need the extra space */
+	v = gmt_M_memory (GMT, v, n, double);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " unique data constraints\n", n);
 	if (n_skip) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " data constraints as duplicates\n", n_skip);
 
