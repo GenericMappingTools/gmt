@@ -1073,14 +1073,18 @@ int GMT_pscontour (void *V_API, int mode, void *args) {
 		}
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		dim[GMT_TBL] = n_tables;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			gmt_M_free (GMT, cont);
+			Return (API->error);	/* An empty dataset */
+		}
 		n_seg_alloc = gmt_M_memory (GMT, NULL, n_tables, size_t);
 		n_seg = gmt_M_memory (GMT, NULL, n_tables, uint64_t);
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 	}
 	
 	if (make_plot) {
-		if (Ctrl->contour.delay) GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;	/* Signal that this program initiates clipping that will outlive this process */
+		if (Ctrl->contour.delay)	/* Signal that this program initiates clipping that will outlive this process */
+			GMT->current.ps.nclip = (Ctrl->N.active) ? +1 : +2;
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
