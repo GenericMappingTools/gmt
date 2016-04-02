@@ -3979,7 +3979,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Bit-test flag (%s) is not in +<col> or -<col> format.\n", p);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		strncpy (F->Bit_test[i].name, &p[1], MGD77_COL_ABBREV_LEN);
+		strncpy (F->Bit_test[i].name, &p[1], MGD77_COL_ABBREV_LEN-1);
 		i++;
 	}
 	F->n_bit_tests = i;
