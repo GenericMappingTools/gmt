@@ -226,12 +226,12 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	double l_epsilon, two_plus_em2;
 };
 
-GMT_LOCAL void set_coefficients (struct SURFACE_INFO *C) {
+GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* These are the coefficients in the finite-difference expressions given
 	 * by equations (A-4) [SURFACE_UNCONSTRAINED] and (A-7) [SURFACE_CONSTRAINED] in the reference. */
 	double e_4, loose, a0;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Set finite-difference coefficients [stride = %d]\n", C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set finite-difference coefficients [stride = %d]\n", C->current_stride);
 	
 	loose = 1.0 - C->interior_tension;
 	C->e_2 = C->l_epsilon * C->l_epsilon;
@@ -293,7 +293,7 @@ GMT_LOCAL void set_offset (struct SURFACE_INFO *C) {
  	C->offset[S2] = 2 * C->current_mx;	/* 2 rows below */
 }
 
-GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
+GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 
 	/* Fills in bilinear estimates into new node locations
 	   after grid is divided.   These new nodes are marked as
@@ -319,7 +319,7 @@ GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
 	 * previous solution was previous_nx x previous_ny while the new
 	 * grid is current_nx x current_ny.  */
 	expand = C->previous_stride / C->current_stride;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Expand grid by factor of %d when going from stride = %d to %d", expand, C->previous_stride, C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Expand grid by factor of %d when going from stride = %d to %d\n", expand, C->previous_stride, C->current_stride);
 	
 	for (previous_row = C->previous_ny - 1; previous_row >= 0; previous_row--) {
 		row = previous_row * expand;	/* Old row in the new extended grid */
@@ -333,7 +333,7 @@ GMT_LOCAL void fill_in_forecast (struct SURFACE_INFO *C) {
 
 	prev_size = 1.0 / (double)C->previous_stride;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fill in expanded grid by bilinear interpolation [stride = %d]\n", C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Fill in expanded grid by bilinear interpolation [stride = %d]\n", C->current_stride);
 	/* First do from southwest corner */
 
 	for (previous_row = 1; previous_row < C->previous_ny; previous_row++) {
@@ -444,7 +444,7 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	uint64_t k, k_skipped = 0;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Recompute data index for next iteration [stride = %d]", C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Recompute data index for next iteration [stride = %d]\n", C->current_stride);
 
 	for (k = 0; k < C->npoints; k++) {
 		col = x_to_col (C->data[k].x, h->wesn[XLO], C->r_inc[GMT_X]);
@@ -472,7 +472,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	unsigned char *status = C->status;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determine nearest point and set Briggs coefficients [stride = %d]", C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine nearest point and set Briggs coefficients [stride = %d]\n", C->current_stride);
 	
 	/* "Really close" will mean within 5% of the grid spacing from the center node */
 	C->small = 0.05 * ((C->inc[GMT_X] < C->inc[GMT_Y]) ? C->inc[GMT_X] : C->inc[GMT_Y]);
@@ -552,8 +552,8 @@ GMT_LOCAL void set_grid_parameters (struct SURFACE_INFO *C) {
 	C->previous_mx = C->current_mx;
 	C->previous_ny = C->current_ny;
 	/* Update the grid space parameters given the new C->current_stride setting */
+	GMT_Surface_Global.current_nx = C->current_nx = (C->nx - 1) / C->current_stride + 1;
 	GMT_Surface_Global.current_ny = C->current_ny = (C->ny - 1) / C->current_stride + 1;
-	C->current_nx = (C->nx - 1) / C->current_stride + 1;
 	C->current_mx = C->current_nx + 4;
 	GMT_Surface_Global.inc[GMT_X] = C->inc[GMT_X] = C->current_stride * C->Grid->header->inc[GMT_X];
 	GMT_Surface_Global.inc[GMT_Y] = C->inc[GMT_Y] = C->current_stride * C->Grid->header->inc[GMT_Y];
@@ -572,7 +572,7 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	float *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Initialize grid using moving average scheme [stride = %d]\n", C->current_stride);
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Initialize grid using moving average scheme [stride = %d]\n", C->current_stride);
 	
 	del_col = irint (ceil (C->radius / C->inc[GMT_X]));
 	del_row = irint (ceil (C->radius / C->inc[GMT_Y]));
@@ -626,8 +626,6 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read data and assign indices\n");
-	
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing input table data\n");
 	C->data = gmt_M_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
@@ -903,9 +901,9 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	double current_limit = C->converge_limit / C->current_stride;
 	double change, max_change = 0.0, busum, sum_node;
 	double *b = NULL;
-#ifdef OPENMP_
+#ifdef OPENMP_	/* We will alternate between treating the two grids as old (reading from) and new (writing to) */
 	float *u_new = C->Grid->data, *u_old = C->alternate_grid;
-#else
+#else		/* Here they are the same single grid */
 	float *u_new = C->Grid->data, *u_old = C->Grid->data;
 #endif
 
@@ -913,7 +911,9 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 
 	/* We need to do an even number of iterations so that the final result for this iteration resides in C->Grid->data */
 	do {
+#if OPENMP_
 		floatp_swap (u_old, u_new);	/* Swap the two grid pointers. First time u_old will point to previous (existing) solution  */
+#endif
 
 		set_BCs (GMT, C, u_old);	/* Set the boundary rows and columns */
 		
@@ -1007,7 +1007,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	float *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 	
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Compute rms misfit and curvature.\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Compute rms misfit and curvature.\n");
 
 	set_BCs (GMT, C, u);	/* First update the boundary values */
 
@@ -1122,7 +1122,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 
 	uint64_t last_index, n_outside, k;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Eliminate data points that are not nearest a node.\n");
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Eliminate data points that are not nearest a node.\n");
 
 	/* Sort the data  */
 
@@ -1277,6 +1277,8 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 	size_t n_alloc;
 	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, zmin = DBL_MAX, zmax = -DBL_MAX;
 
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Read breakline data and assign indices\n");
+	
 	n_alloc = GMT_INITIAL_MEM_ROW_ALLOC;
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);
 	y = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -1713,7 +1715,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Grid\tMode\tIteration\tMax Change\tConv Limit\tTotal Iterations\n");
 
-	set_coefficients (&C);
+	set_coefficients (GMT,&C);
 
 	C.previous_stride = C.current_stride;
 	find_nearest_point (GMT, &C);
@@ -1724,7 +1726,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		set_grid_parameters (&C);
 		set_offset (&C);
 		set_index (GMT, &C);
-		fill_in_forecast (&C);
+		fill_in_forecast (GMT, &C);
 		iterate (GMT, &C, 0);
 		C.previous_stride = C.current_stride;
 		find_nearest_point (GMT, &C);

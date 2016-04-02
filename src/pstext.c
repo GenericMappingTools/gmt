@@ -42,6 +42,13 @@ EXTERN_MSC void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, u
 
 #define PSTEXT_TOKEN_SEPARATORS	" \t"		/* Cannot use comma since font-specification has comma */
 
+#define GET_REC_TEXT	0
+#define GET_SEG_LABEL	1
+#define GET_SEG_HEADER	2
+#define GET_CMD_TEXT	3
+#define GET_CMD_FORMAT	4
+#define GET_REC_NUMBER	5
+
 struct PSTEXT_CTRL {
 	struct PSTEXT_A {	/* -A */
 		bool active;
@@ -63,8 +70,8 @@ struct PSTEXT_CTRL {
 		bool read_font;	/* True if we must read fonts from input file */
 		struct GMT_FONT font;
 		double angle;
-		int justify, R_justify, nread;
-		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format number using text (+T) */
+		int justify, R_justify, nread, first;
+		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h), 3 = specified text (+t), 4 = format z using text (+T) */
 		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
 		char *text;
 	} F;
@@ -263,7 +270,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l][+j[<justify>]]] [-G<color>|c|C] [%s] [-K]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|t|z[<fmt>]][+j[<justify>]]] [-G<color>|c|C] [%s] [-K]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
@@ -314,8 +321,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 		gmt_putfont (API->GMT, API->GMT->current.setting.font_annot[GMT_PRIMARY]));
 	GMT_Message (API, GMT_TIME_NONE, "\t   +j[<justify>] sets text justification relative to given (x,y) coordinate.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +h will use as text the most recent segment header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +l will use as text the label specified via -L<label> in the most recent segment header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Normaly the text is read from the data records.  Alternative ways to provide text:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +h will use as text the most recent segment header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +l will use as text the label specified via -L<label> in the most recent segment header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values via format <fmt> [FORMAT_FLOAT_MAP].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
@@ -344,12 +355,6 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 
 	return (EXIT_FAILURE);
 }
-
-#define GET_REC_TEXT	0
-#define GET_SEG_LABEL	1
-#define GET_SEG_HEADER	2
-#define GET_CMD_TEXT	3
-#define GET_CMD_FORMAT	4
 
 GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pstext and sets parameters in Ctrl.
@@ -409,7 +414,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 				Ctrl->F.active = true;
 				pos = 0;
 
-				while (gmt_getmodopt (GMT, opt->arg, "afjclhtT", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
+				while (gmt_getmodopt (GMT, opt->arg, "afjclhrtz", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
 					switch (p[0]) {
 						case 'a':	/* Angle */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
@@ -436,7 +441,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'l':	/* Segment label request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h can be selected in -F.\n");
+								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
@@ -444,28 +449,37 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_
 							break;
 						case 'h':	/* Segment header request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h can be selected in -F.\n");
+								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
 								Ctrl->F.get_text = GET_SEG_HEADER;
 							break;
+						case 'r':	/* Record number */
+							if (Ctrl->F.get_text) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
+								n_errors++;
+							}
+							else if (p[1])
+								Ctrl->F.first = atoi (&p[1]);
+							Ctrl->F.get_text = GET_REC_NUMBER;
+							break;
 						case 't':	/* Segment header request */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h and +t can be selected in -F.\n");
+								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
 								Ctrl->F.text = strdup (&p[1]);
 							Ctrl->F.get_text = GET_CMD_TEXT;
 							break;
-						case 'T':	/* text format */
+						case 'z':	/* text format */
 							if (Ctrl->F.get_text) {
-								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h and +t can be selected in -F.\n");
+								GMT_Report (API, GMT_MSG_COMPAT, "Error -F: Only one of +l, +h, +r, +t, +z can be selected.\n");
 								n_errors++;
 							}
 							else
-								Ctrl->F.text = strdup (&p[1]);
+								Ctrl->F.text = (p[1]) ? strdup (&p[1]) : strdup (GMT->current.setting.format_float_map);
 							Ctrl->F.get_text = GET_CMD_FORMAT;
 							break;
 						default:
@@ -629,7 +643,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 	const char *token_separator = NULL;
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""}, txt_f[GMT_LEN256] = {""};
-	int input_format_version = GMT_NOTSET;
+	int input_format_version = GMT_NOTSET, rec_number = 0;
 	struct GMT_FONT *c_font = NULL;
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
@@ -706,7 +720,8 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 		c_font = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_FONT);
 	}
 	token_separator = (Ctrl->F.read_font) ? PSTEXT_TOKEN_SEPARATORS : GMT_TOKEN_SEPARATORS;	/* Cannot use commas if fonts are to be read */
-
+	rec_number = Ctrl->F.first;	/* Number of first output record label if -F+r<first> was selected */
+	
 	do {	/* Keep returning records until we have no more files */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Keep returning records until we have no more files */
 			if (gmt_M_rec_is_error (GMT)) {
@@ -900,6 +915,10 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->F.get_text == GET_CMD_TEXT) {
 				in_txt = Ctrl->F.text;
+			}
+			else if (Ctrl->F.get_text == GET_REC_NUMBER) {
+				sprintf (label, "%d", rec_number++);
+				in_txt = label;
 			}
 			else if (Ctrl->F.get_text == GET_CMD_FORMAT) {
 				if (buffer[pos]) {
