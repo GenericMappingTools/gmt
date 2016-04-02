@@ -380,7 +380,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 				header->flags[1] = '0';		/* Flag to let us know the file type */
 				/* Store the file name with all extensions removed.
 				 * We'll use this to create header from file name info */
-				strncpy (header->title, file, GMT_GRID_TITLE_LEN80);
+				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 				strcpy  (header->remark, "Assumed to be a GTOPO30 or SRTM30 tile");
 			}
 			else if (name_len > 3 && !(strncmp (&header->name[name_len-4], ".hgt", 4) && strncmp (&header->name[name_len-4], ".HGT", 4))) {
