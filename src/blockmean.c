@@ -237,16 +237,12 @@ int GMT_blockmean (void *V_API, int mode, void *args) {
 	}
 	
 	if (gmt_M_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
-		unsigned int kind = 0;
-		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
-		double mem;
-		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
+		size_t n_bytes, n_bytes_per_record = sizeof (struct BLK_PAIR);
 		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
 		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLHG);
 		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (uint64_t);
-		mem = n_bytes_per_record * Grid->header->nm / 1024.0;	/* Report kbytes unless it is too much */
-		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for all arrays.\n", mem, unit[kind]);
+		n_bytes = n_bytes_per_record * Grid->header->nm;	/* Report kbytes unless it is too much */
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %s for all arrays.\n", gmt_memory_use (n_bytes));
 	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */

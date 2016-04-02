@@ -13103,3 +13103,15 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	*nn = new_n;
 	return 0;
 }
+
+char * gmt_memory_use (size_t bytes) {
+	/* Format the given bytes in terms of kb, Mb, or Gb, or Tb */
+	static char mem_report[GMT_LEN32] = {""};
+	unsigned int kind = 0;
+	double mem;
+	char *unit = "kMGT";	/* kilo-, Mega-, Giga-, Tera- */
+	mem = bytes / 1024.0;	/* Report kbytes unless it is too much */
+	while (mem > 1024.0 && kind < 3) { mem /= 1024.0; kind++; }	/* Goto next higher unit */
+	sprintf (mem_report, "%.3g %cb", mem, unit[kind]);
+	return mem_report;
+}

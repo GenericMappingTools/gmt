@@ -338,6 +338,7 @@ EXTERN_MSC void gmt_decorated_line (struct GMT_CTRL *GMT, double **xxx, double *
 EXTERN_MSC unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **x, double **yy, uint64_t *nn, struct GMT_PEN *P);
 EXTERN_MSC int gmt_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode);
 EXTERN_MSC void gmt_str_toupper (char *string);
+EXTERN_MSC char * gmt_memory_use (size_t bytes);
 
 EXTERN_MSC int gmt_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);
 EXTERN_MSC bool gmt_y_out_of_bounds (struct GMT_CTRL *GMT, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180);
