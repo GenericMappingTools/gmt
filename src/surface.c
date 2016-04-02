@@ -122,6 +122,9 @@ struct SURFACE_DATA {	/* Data point and index to node it currently constrains  *
 	float y;
 	float z;
 	uint64_t index;
+#ifdef DEBUG	/* For debugging purposes only - it is the original input data point number before sorting */
+	uint64_t number;
+#endif
 };
 
 struct SURFACE_BRIGGS {		/* Coefficients in Taylor series for Laplacian(z) a la I. C. Briggs (1974)  */
@@ -616,6 +619,9 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		if (j < 0 || j >= C->block_ny) continue;
 
 		C->data[k].index = i * C->block_ny + j;
+#ifdef DEBUG
+		C->data[k].number = k + 1;
+#endif
 		C->data[k].x = (float)in[GMT_X];
 		C->data[k].y = (float)in[GMT_Y];
 		C->data[k].z = (float)in[GMT_Z];
@@ -630,6 +636,9 @@ GMT_LOCAL int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		if (C->periodic && i == 0) {	/* Replicate information to eastern boundary */
 			i = C->block_nx - 1;
 			C->data[k].index = i * C->block_ny + j;
+#ifdef DEBUG
+			C->data[k].number = k + 1;
+#endif
 			C->data[k].x = (float)(in[GMT_X] + 360.0);
 			C->data[k].y = (float)in[GMT_Y];
 			C->data[k].z = (float)in[GMT_Z];
@@ -1169,7 +1178,7 @@ GMT_LOCAL void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, C->npoints, C->nxny, mean_error, mean_squared_error, curvature);
  }
 
-GMT_LOCAL void remove_planar_trend (struct SURFACE_INFO *C) {
+GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Fit LS plane and remove from data; we restore before output */
 	uint64_t i;
 	double a, b, c, d, xx, yy, zz;
@@ -1215,6 +1224,8 @@ GMT_LOCAL void remove_planar_trend (struct SURFACE_INFO *C) {
 		yy = (C->data[i].y - h->wesn[YLO]) * h->r_inc[GMT_Y];
 		C->data[i].z -= (float)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
+	
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Plane fit: z = %g + %g * col + %g * row\n", C->plane_c0, C->plane_c1, C->plane_c2);
 }
 
 GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {
@@ -1257,6 +1268,9 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	for (k = 0; k < C->npoints; k++) {
 		if (C->data[k].index == last_index) {
 			C->data[k].index = SURFACE_OUTSIDE;
+#ifdef DEBUG
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
+#endif
 			n_outside++;
 		}
 		else
@@ -1447,6 +1461,9 @@ GMT_LOCAL void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, s
 		if (srow < 0 || srow >= C->block_ny) continue;
 
 		C->data[k].index = scol * C->block_ny + srow;
+#ifdef DEBUG
+		C->data[k].number = k + 1;
+#endif
 		C->data[k].x = (float)x[n];
 		C->data[k].y = (float)y[n];
 		C->data[k].z = (float)z[n];
@@ -1803,7 +1820,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		interp_breakline (GMT, &C, xyzline);
 	}
 	throw_away_unusables (GMT, &C);
-	remove_planar_trend (&C);
+	remove_planar_trend (GMT, &C);
 	key = rescale_z_values (GMT, &C);
 	
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C.Grid) != GMT_OK) Return (API->error);
