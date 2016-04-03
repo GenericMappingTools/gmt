@@ -416,7 +416,10 @@ int gmt_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	else if ((fp = gmt_fopen (GMT, header->name, "r")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if ((error = esri_read_info (GMT, fp, header)) != 0) return (error);
+	if ((error = esri_read_info (GMT, fp, header)) != 0) {
+		gmt_fclose (GMT, fp);
+		return (error);
+	}
 
 	gmt_fclose (GMT, fp);
 		
@@ -489,16 +492,31 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (is_binary) {
 		int ny = header->ny;
 		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
-			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) {
+				gmt_fclose (GMT, fp);
+				gmt_M_free (GMT, actual_col);
+				if (nBits == 32) gmt_M_free (GMT, tmp); else gmt_M_free (GMT, tmp16);
+				return (GMT_GRDIO_SEEK_FAILED);
+			}
 
 		ij = imag_offset + pad[YHI] * width_out + pad[XLO];
 
 		for (row = first_row; row <= last_row; row++, ij += width_out) {
 			if (nBits == 32) {		/* Get one row */
-				if (gmt_M_fread (tmp, 4, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+				if (gmt_M_fread (tmp, 4, n_expected, fp) < n_expected) {
+					gmt_fclose (GMT, fp);
+					gmt_M_free (GMT, actual_col);
+					gmt_M_free (GMT, tmp);
+					return (GMT_GRDIO_READ_FAILED);
+				}
 			}
 			else {
-				if (gmt_M_fread (tmp16, 2, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+				if (gmt_M_fread (tmp16, 2, n_expected, fp) < n_expected) {
+					gmt_fclose (GMT, fp);
+					gmt_M_free (GMT, actual_col);
+					gmt_M_free (GMT, tmp16);
+					return (GMT_GRDIO_READ_FAILED);
+				}
 			}
 			for (col = 0, kk = ij; col < width_in; col++, kk++) {
 				if (nBits == 32) {
