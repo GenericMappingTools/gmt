@@ -296,12 +296,14 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		uint64_t dim[4] = {n_items, 0, 0, 2};	/* n_items tables whose records (to be allocated) will have 2 columns */
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create empty dataset for DCW polygons\n");
+			gmt_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
 			return NULL;
 		}
 	}
 
 	if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
+		gmt_free_segment (GMT, &P, GMT_ALLOC_INTERNALLY);
 		return NULL;
 	}
 
