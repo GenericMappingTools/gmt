@@ -319,6 +319,7 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	if (fgets (record, GMT_BUFSIZ, fp) == NULL) {	/* Just get first line. Not using gmt_fgets since we may be reading a binary file */
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 	gmt_fclose (GMT, fp);
