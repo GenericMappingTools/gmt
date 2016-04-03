@@ -1988,6 +1988,7 @@ GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 			continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
+			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
@@ -1998,6 +1999,7 @@ GMT_LOCAL int gmtinit_setshorthand (struct GMT_CTRL *GMT) {
 		if (gmt_grd_format_decoder (GMT, b, &id) != GMT_NOERROR) {
 			/* no valid type id */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown shorthand format [%s]\n", file, b);
+			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		snprintf (line, GMT_BUFSIZ, "%s/%s/%s/%s", b, c, d, e); /* ff/scale/offset/invalid */
@@ -4736,6 +4738,7 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 
 		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
+			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
