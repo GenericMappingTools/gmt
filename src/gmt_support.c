@@ -6823,7 +6823,7 @@ struct GMT_PALETTE * gmt_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE 
 		}
 	}
 	P->n_colors = last - first + 1;
-	gmt_M_memory (GMT, P->range, P->n_colors, struct GMT_LUT);	/* Truncate */
+	P->range = gmt_M_memory (GMT, P->range, P->n_colors, struct GMT_LUT);	/* Truncate */
 	return (P);
 }
 
@@ -12191,7 +12191,10 @@ struct GMT_DATASET * gmt_segmentize_data (struct GMT_CTRL *GMT, struct GMT_DATAS
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Segmentize input data into %" PRIu64 " 2-point segment lines\n", dim[GMT_SEG]);
 
 	/* Allocate the dataset with one large table */
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* Our new dataset */
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		gmt_M_free (GMT, coord);
+		return (NULL);	/* Our new dataset */
+	}
 	Tout = D->table[0];	/* The only output table */
 
 	if (S->method == SEGM_NETWORK) {	/* Make segments that connect every point with every other point */
@@ -12641,7 +12644,11 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	for (k = n = 0; k < n_items; k++) {
 		pos = 0;	/* Reset since gmt_strtok changed it */
 		while (!error && (gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
-			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) return (NULL);
+			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) {
+				gmt_free_int_selection (GMT, &select);
+				support_free_list (GMT, list, n_items);
+				return (NULL);
+			}
 
 			/* Now set the item numbers for this sub-range */
 			assert (stop < max_value);	/* Somehow we allocated too little */
