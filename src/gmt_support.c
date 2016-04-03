@@ -3989,6 +3989,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		if (error) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Failed to parse symbol commands in file %s\n", file);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Offending line: %s\n", buffer);
+			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 
@@ -3998,6 +3999,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				s->fill->rgb[0] = -1;
 			else if (gmt_getfill (GMT, fill_p, s->fill)) {
 				gmt_fill_syntax (GMT, 'G', " ");
+				fclose (fp);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
@@ -4009,6 +4011,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				s->pen->rgb[0] = -1;
 			else if (gmt_getpen (GMT, pen_p, s->pen)) {
 				gmt_pen_syntax (GMT, 'W', " ", 0);
+				fclose (fp);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
@@ -7886,6 +7889,7 @@ struct GMT_DATATABLE *gmt_make_profile (struct GMT_CTRL *GMT, char option, char 
 		if (error) {
 			gmt_M_free (GMT, T->segment);
 			gmt_M_free (GMT, T);
+			gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c:  Valid coordinate codes are [lcr][bmt] and z[+-]\n", option);
 			return (NULL);
 		}
