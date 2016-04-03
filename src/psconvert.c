@@ -809,7 +809,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB) {
+GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double *w, double *h) {
 	char      cmd[GMT_LEN128] = { "" }, buf[GMT_LEN128], t[32] = { "" }, *pch;
 	int       fd[2] = { 0, 0 }, n, c_begin = 0;
 	double    x0, y0, x1, y1;
@@ -856,9 +856,10 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	close(fd[0]);
 
 	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
+	*w = x1 - x0;	*h = y1 - y0;					/* We will need these in pipe_ghost() */
 
 	pch = strstr(PS->data, "BoundingBox");			/* Find where is the BB */
-	sprintf(buf, "BoundingBox: 0 0 %.0f %.0f", ceil(x1 - x0), ceil(y1 - y0));
+	sprintf(buf, "BoundingBox: 0 0 %.0f %.0f", ceil(*w), ceil(*h));
 	for (n = 0; n < strlen(buf); n++)				/* and update it */
 		pch[n] = buf[n];
 	while (pch[n] != '\n') {						/* Make sure that there are only spaces till next new line */
@@ -886,13 +887,14 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 	PS->data[PS->n - 1] = '\0';			/* There is some remaining trash at the end so remove last new line and after. Should be done elsewhere. */
 	gmt_M_free (API->GMT, PS);
+
 	return GMT_OK;
 }
 /* ---------------------------------------------------------------------------------------------- */
 
-GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params) {
+GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params, double w, double h) {
 	char      cmd[512] = {""}, buf[GMT_LEN128], t[16] = {""};
-	int       fd[2] = {0, 0}, n;
+	int       fd[2] = {0, 0}, n, pix_w, pix_h;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	FILE     *fp = NULL;
 	unsigned char *tmp;
@@ -901,9 +903,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	struct GMT_PS *PS = NULL;
 
 	/* sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -"); */
-	sprintf(cmd, "%s ", Ctrl->G.file);
+	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
+	pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
+	sprintf(cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
 	strcat (cmd, gs_params);
-	strcat (cmd, " -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");	/* WHEN WORKING FINE, MUST SET RESOLUTION DYNAMICALLY */
+	strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
@@ -1168,6 +1172,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")) {
+		double w, h;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
 		/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
@@ -1177,10 +1182,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
 			Return (EXIT_FAILURE);
 		}
-		if (pipe_HR_BB (API, Ctrl, gs_BB)) {
+		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 		}
-		if (pipe_ghost(API, Ctrl, gs_params)) {
+		if (pipe_ghost(API, Ctrl, gs_params, w, h)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
 			Return (EXIT_FAILURE);
 		}
@@ -1793,8 +1798,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 			sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -g%dx%d -r%d -sOutputFile=%c%s%c -f%c%s%c",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, alpha_bits(Ctrl), device[Ctrl->T.device],
-				device_options[Ctrl->T.device],
-				pix_w, pix_h, Ctrl->E.dpi, quote, out_file, quote, quote, tmp_file, quote);
+				device_options[Ctrl->T.device], pix_w, pix_h, Ctrl->E.dpi, quote, out_file, quote, quote, tmp_file, quote);
 
 			if (Ctrl->S.active)	/* Print GhostScript command */
 				GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd);
