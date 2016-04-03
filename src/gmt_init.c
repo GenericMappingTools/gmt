@@ -7619,7 +7619,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
 			GMT->current.map.frame.draw_box = false;
-			error += gmtinit_decode5_wesnz (GMT, value, false);
+			error += (bool)gmtinit_decode5_wesnz (GMT, value, false);
 			break;
 
 		case GMTCASE_BASEMAP_FRAME_RGB:
