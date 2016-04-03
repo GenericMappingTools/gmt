@@ -2691,6 +2691,7 @@ GMT_LOCAL int gmtio_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_
 				strcpy (file, "<stdout>");
 			else
 				strcpy (file, "<output file descriptor>");
+			close_file = true;	/* Since fdopen allocates fp memory */
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmtio_write_texttable\n", dest_type);
@@ -3205,6 +3206,8 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in gmtio_write_table\n", *fd);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
+			else
+				close_file = true;	/* fdopen allocates memory */
 			if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
 			if (fp == GMT->session.std[GMT_OUT])
 				strcpy (file, "<stdout>");
@@ -3949,12 +3952,16 @@ int gmt_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 
 	if (D->io_mode == GMT_WRITE_OGR && gmtio_prep_ogr_output (GMT, D)) {	/* Must preprocess aspatial information and set metadata */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to prepare for OGR output formatting\n");
+		if (close_file) gmt_fclose (GMT, fp);
 		return (EXIT_FAILURE);
 	}
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLE) {	/* Write segments to separate files; must pass original file name in case a template */
-			if ((error = gmtio_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
+			if ((error = gmtio_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) {
+				if (close_file) gmt_fclose (GMT, fp);
+				return (error);
+			}
 		}
 		else if (D->io_mode == GMT_WRITE_TABLE) {	/* Must write this table a its own file */
 			if (D->table[tbl]->file[GMT_OUT])
@@ -3962,10 +3969,16 @@ int gmt_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Data Table to %s\n", out_file);
-			if ((error = gmtio_write_table (GMT, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
+			if ((error = gmtio_write_table (GMT, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) {
+				if (close_file) gmt_fclose (GMT, fp);
+				return (error);
+			}
 		}
 		else {	/* Write to stream we set up earlier */
-			if ((error = gmtio_write_table (GMT, fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
+			if ((error = gmtio_write_table (GMT, fp, GMT_IS_STREAM, D->table[tbl], use_GMT_io, D->io_mode))) {
+				if (close_file) gmt_fclose (GMT, fp);
+				return (error);
+			}
 		}
 	}
 
@@ -6393,6 +6406,7 @@ int gmtlib_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 				strcpy (file, "<stdout>");
 			else
 				strcpy (file, "<output file descriptor>");
+			close_file = true;	/* Since fdopen allocates fp memory */
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Write Text Table to %s\n", file);
 			break;
 		default:
@@ -7254,7 +7268,10 @@ struct GMT_MATRIX * gmtlib_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MA
 	gmt_M_memset (&M->data, 1, union GMT_UNIVECTOR);
 	if (duplicate_data) {
 		size_t size = M->n_rows * M->n_columns;
-		if (gmt_alloc_univector (GMT, &(M->data), M->type, size)) return (NULL);
+		if (gmt_alloc_univector (GMT, &(M->data), M->type, size)) {
+			gmt_M_free (GMT, M);
+			return (NULL);
+		}
 		gmtio_duplicate_univector (GMT, &M->data, &M_in->data, M->type, size);
 	}
 	return (M);
