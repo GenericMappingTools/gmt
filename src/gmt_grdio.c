@@ -1470,7 +1470,7 @@ void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: X unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
-					strncpy (h->x_units, ptr, GMT_GRID_UNIT_LEN80);
+					strncpy (h->x_units, ptr, GMT_GRID_UNIT_LEN80-1);
 					break;
 				case 1:
 					gmt_M_memset (h->y_units, GMT_GRID_UNIT_LEN80, char);
@@ -1478,7 +1478,7 @@ void gmt_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL,
 								"Warning: Y unit string exceeds upper length of %d characters (truncated)\n",
 								GMT_GRID_UNIT_LEN80);
-					strncpy (h->y_units, ptr, GMT_GRID_UNIT_LEN80);
+					strncpy (h->y_units, ptr, GMT_GRID_UNIT_LEN80-1);
 					break;
 				case 2:
 					gmt_M_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);

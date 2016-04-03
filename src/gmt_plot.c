@@ -5464,7 +5464,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++) if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
-		char *pstr = NULL, proj4name[16];
+		char *pstr = NULL, proj4name[16] = {""};
 		Cartesian_m[0] = (GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y]) * GMT->current.proj.i_scale[GMT_Y];
 		Cartesian_m[1] = (GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X]) * GMT->current.proj.i_scale[GMT_X];
 		Cartesian_m[2] = (GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y]) * GMT->current.proj.i_scale[GMT_Y];
@@ -5473,7 +5473,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		if (GMT->current.proj.projection == GMT_LINEAR && gmt_M_is_geographic (GMT, GMT_IN))
 			strcpy (proj4name, "latlong");
 		else
-			strncpy (proj4name, GMT->current.proj.proj4[id].name, 16U);
+			strncpy (proj4name, GMT->current.proj.proj4[id].name, 15U);
 
 		pstr = gmt_export2proj4 (GMT);
 		PSL_command (PSL, "%%@PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,

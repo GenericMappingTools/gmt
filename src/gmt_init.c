@@ -5031,29 +5031,29 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		if (dwu == 'M') {	/* Month record */
-			strncpy (GMT->current.language.month_name[0][i-1], full, 16U);
-			strncpy (GMT->current.language.month_name[1][i-1], abbrev, 16U);
-			strncpy (GMT->current.language.month_name[2][i-1], c, 16U);
+			strncpy (GMT->current.language.month_name[0][i-1], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.month_name[1][i-1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.month_name[2][i-1], c, GMT_LEN16-1);
 			gmt_str_toupper(abbrev);
-			strncpy (GMT->current.language.month_name[3][i-1], abbrev, 16U);
+			strncpy (GMT->current.language.month_name[3][i-1], abbrev, GMT_LEN16-1);
 			nm += i;
 		}
 		else if (dwu == 'W') {	/* Weekday record */
-			strncpy (GMT->current.language.day_name[0][i-1], full, 16U);
-			strncpy (GMT->current.language.day_name[1][i-1], abbrev, 16U);
-			strncpy (GMT->current.language.day_name[2][i-1], c, 16U);
+			strncpy (GMT->current.language.day_name[0][i-1], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.day_name[1][i-1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.day_name[2][i-1], c, GMT_LEN16-1);
 			nw += i;
 		}
 		else if (dwu == 'U') {			/* Week name record */
-			strncpy (GMT->current.language.week_name[0], full, 16U);
-			strncpy (GMT->current.language.week_name[1], abbrev, 16U);
-			strncpy (GMT->current.language.week_name[2], c, 16U);
+			strncpy (GMT->current.language.week_name[0], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.week_name[1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.week_name[2], c, GMT_LEN16-1);
 			nu += i;
 		}
 		else {	/* Compass name record */
-			strncpy (GMT->current.language.cardinal_name[0][i-1], full, 16U);
-			strncpy (GMT->current.language.cardinal_name[1][i-1], abbrev, 16U);
-			strncpy (GMT->current.language.cardinal_name[2][i-1], c, 16U);
+			strncpy (GMT->current.language.cardinal_name[0][i-1], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.cardinal_name[1][i-1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.cardinal_name[2][i-1], c, GMT_LEN16-1);
 			nc += i;
 		}
 	}
@@ -8767,7 +8767,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 	}
 
 	/* Store possible unit.  For most cases these are irrelevant as no unit is expected */
-	if (len) GMT->current.setting.given_unit[case_val] = value[len-1];
+	if (len && case_val >= 0) GMT->current.setting.given_unit[case_val] = value[len-1];
 
 	if (error && case_val >= 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
 	return ((error) ? 1 : 0);
