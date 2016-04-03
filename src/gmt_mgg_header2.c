@@ -299,7 +299,10 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			return (GMT_GRDIO_READ_FAILED);
 		}
 		swap_all = grd98_swap_mgg_header (&mggHeader);
-		if (swap_all == -1) return (GMT_GRDIO_GRD98_BADMAGIC);
+		if (swap_all == -1) {
+			gmt_fclose (GMT, fp);
+			return (GMT_GRDIO_GRD98_BADMAGIC);
+		}
 		if (mggHeader.numType == 0) mggHeader.numType = sizeof (int);
 	}
 	else
