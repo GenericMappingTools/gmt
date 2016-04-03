@@ -1680,7 +1680,9 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	if (gmt_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
-		gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
+		gmt_M_free (GMT, to_gdalread);
+		free_from_gdalread (GMT, from_gdalread);
+		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
@@ -1713,6 +1715,7 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 	gmt_M_free (GMT, to_gdalread);
 	free_from_gdalread (GMT, from_gdalread);
+	gmt_M_free (GMT, from_gdalread);
 
 	return (GMT_NOERROR);
 }
@@ -1862,6 +1865,8 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 				grid[j] = (float)from_gdalread->Int32.data[j+i];
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR data type not supported with gdalread in gmt_customio.\n");
+			gmt_M_free (GMT, to_gdalread);
+			free_from_gdalread (GMT, from_gdalread);
 			return (GMT_GRDIO_OPEN_FAILED);
 		}
 	}
