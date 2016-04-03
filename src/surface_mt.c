@@ -1799,7 +1799,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use));
 		mem_use = C.Grid->header->size;	mem_total += mem_use;
 		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for node status", gmt_memory_use (mem_use));
-		GMT_Report (API, GMT_MSG_VERBOSE, "----------------------------------------");
+		GMT_Report (API, GMT_MSG_VERBOSE, "----------------------------------------\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Total memory use", gmt_memory_use (mem_total));
 	}
 
