@@ -2216,7 +2216,7 @@ int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, struct GMT
 
 int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, uint64_t dim[], double wesn[], double inc[], unsigned int registration, unsigned int mode) {
 	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
-	double wesn_dup[4], inc_dup[2];
+	double wesn_dup[4] = {0.0, 0.0, 0.0, 0.0}, inc_dup[2] = {0.0, 0.0};
 	unsigned int n_layers = 1;
 	gmt_M_unused(mode);
 	if (dim && wesn == NULL && inc == NULL) {	/* Gave dimension instead, set range and inc */
