@@ -1169,15 +1169,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")) {
 		/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
-#if 0
-		void *handle = NULL;
-		char gs_rasterizer[GMT_BUFSIZ] = {""};
-		unsigned int nopad[4] = {0, 0, 0, 0};
-		int dim[3] = {0, 0, 0};
-		struct GMT_IMAGE *I = NULL;
-		read_source = &mem_line_reader;	/* Read from string with PS instead */
-		rewind_source = &mem_rewind;	/* Reset current position in PS string */
-#endif
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
 			Return (EXIT_FAILURE);
@@ -1186,45 +1177,6 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
 			Return (EXIT_FAILURE);
 		}
-#if 0
-		file_processing = false;
-		sprintf (gs_rasterizer, "%s/gsrasterize.dll", GMT->init.runtime_plugindir);
-#ifdef __APPLE__
-		if (!dlopen_preflight (gs_rasterizer)) {	/* Not ready for prime-time */
-			GMT_Report (API, GMT_MSG_NORMAL, "Preflight check of shared library %s failed [%s]\n", gs_rasterizer, dlerror());
-			Return (EXIT_FAILURE);
-		}
-#endif
-		if ((handle = dlopen (gs_rasterizer, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to open shared library %s [%s]\n", gs_rasterizer, dlerror());
-			Return (EXIT_FAILURE);
-		}
-		*(void **)(&gs_func) = dlsym (handle, "gsrasterize_rip");
-		if (gs_func == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Could not find gsrasterize_rip in shared library %s\n", gs_rasterizer);
-			Return (EXIT_FAILURE);
-		}
-		if ((I = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, NULL, 0, 0, NULL)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Could not crate Image structure\n");
-			Return (API->error);
-		}
-		if ((I->data = (*gs_func) (PSL_getplot (GMT->PSL), Ctrl->E.dpi, dim)) == NULL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "gsrasterize_rip failed\n");
-			Return (EXIT_FAILURE);
-		}
-		if (dlclose (handle)) {	/* Trouble closing? */
-			GMT_Report (API, GMT_MSG_NORMAL, "Unable to close shared library %s [%s]\n", gs_rasterizer, dlerror());
-			Return (EXIT_FAILURE);
-		}
-		I->type = GMT_CHAR;
-		I->header->nx = dim[GMT_X];	I->header->ny = dim[GMT_Y];	I->header->n_bands = dim[GMT_Z];
-		I->header->registration = GMT_GRID_PIXEL_REG;
-		I->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* By gsrasterize */
-		gmt_M_grd_setpad (GMT, I->header, nopad);	/* Copy the no pad to the header */
-		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
-			Return (API->error);
-		Return (GMT_OK);	/* Done here */
-#endif
 		if (pipe_HR_BB (API, Ctrl, gs_BB)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 		}
