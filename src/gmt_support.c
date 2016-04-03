@@ -5981,6 +5981,8 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in gmt_read_cpt\n", *fd);
 			return (NULL);
 		}
+		else
+			close_file = true;	/* fdopen allocates memory */
 		if (fd == NULL) fp = GMT->session.std[GMT_IN];	/* Default input */
 		if (fp == GMT->session.std[GMT_IN])
 			strcpy (cpt_file, "<stdin>");
@@ -6227,6 +6229,9 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 				dz = X->range[n].z_high - X->range[n].z_low;
 				if (dz == 0.0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Z-slice with dz = 0\n");
+					if (Z) gmt_M_free (GMT, Z);
+					gmt_M_free (GMT, X->range);
+					gmt_M_free (GMT, X);
 					return (NULL);
 				}
 				X->range[n].i_dz = 1.0 / dz;
@@ -6272,14 +6277,23 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 
 	if (X->categorical && n_cat_records != n) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot decode %s as categorical CPT file\n", cpt_file);
+		if (Z) gmt_M_free (GMT, Z);
+		gmt_M_free (GMT, X->range);
+		gmt_M_free (GMT, X);
 		return (NULL);
 	}
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Failed to decode %s\n", cpt_file);
+		if (Z) gmt_M_free (GMT, Z);
+		gmt_M_free (GMT, X->range);
+		gmt_M_free (GMT, X);
 		return (NULL);
 	}
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT file %s has no z-slices!\n", cpt_file);
+		if (Z) gmt_M_free (GMT, Z);
+		gmt_M_free (GMT, X->range);
+		gmt_M_free (GMT, X);
 		return (NULL);
 	}
 
@@ -6678,6 +6692,8 @@ int gmt_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in gmt_write_cpt\n", *fd);
 			return (EXIT_FAILURE);
 		}
+		else
+			close_file = true;	/* fdopen allocates memory */
 		if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
 		if (fp == GMT->session.std[GMT_OUT])
 			strcpy (cpt_file, "<stdout>");
