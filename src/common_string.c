@@ -32,6 +32,7 @@
  *  gmt_strrepc             Replaces all occurrences of a char in the string
  *  gmt_strlcmp             Compares strings (ignoring case) until first reaches null character
  *  gmt_strtok              Reiterant replacement of strtok
+ *  gmt_strtok_m            A Matlab style strtok  
  *  gmt_dos_path_fix            Turn /c/dir/... paths into c:/dir/...
  *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
