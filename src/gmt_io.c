@@ -5893,6 +5893,8 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in gmtlib_read_texttable\n", *fd);
 			return (NULL);
 		}
+		else
+			close_file = true;	/* fdopen allocates memory */
 		if (fd == NULL) fp = GMT->session.std[GMT_IN];	/* Default input */
 		if (fp == GMT->session.std[GMT_IN])
 			strcpy (file, "<stdin>");
@@ -5908,6 +5910,7 @@ struct GMT_TEXTTABLE * gmtlib_read_texttable (struct GMT_CTRL *GMT, void *source
 	n_read++;
 	if (gmt_M_rec_is_eof (GMT)) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s is empty!\n", file);
+		if (close_file) gmt_fclose (GMT, fp);
 		return (NULL);
 	}
 
