@@ -808,8 +808,90 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 	}
 }
 
-GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl) {
-	char      cmd[GMT_LEN128] = {""}, buf[GMT_LEN128], t[16] = {""};
+/* ---------------------------------------------------------------------------------------------- */
+GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB) {
+	char      cmd[GMT_LEN128] = { "" }, buf[GMT_LEN128], t[32] = { "" }, *pch;
+	int       fd[2] = { 0, 0 }, n, c_begin = 0;
+	double    x0, y0, x1, y1;
+	FILE     *fp = NULL;
+	struct GMT_PS *PS = NULL;
+
+#ifdef _WIN32
+	if (_pipe(fd, 512, O_BINARY) == -1) {
+		GMT_Report(API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
+		return EXIT_FAILURE;
+	}
+#else
+	pipe(fd);
+#endif
+	if (dup2(fd[1], fileno(stderr)) < 0) {
+		GMT_Report(API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
+		return EXIT_FAILURE;
+	}
+	close(fd[1]); 		/* Close original write end of pipe */
+
+	PS = gmt_M_memory(API->GMT, NULL, 1, struct GMT_PS);
+	PS->data = PSL_getplot(API->GMT->PSL);	/* Get pointer to the plot buffer */
+	PS->n = API->GMT->PSL->internal.n;		/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
+
+	sprintf(cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);
+
+	if ((fp = popen(cmd, "w")) != NULL) {
+		fwrite(PS->data, sizeof(char), PS->n, fp);
+		fflush(fp);
+		if (pclose(fp) == -1)
+			GMT_Report(API, GMT_MSG_NORMAL, "Error closing GhostScript command.\n");
+	}
+	else {
+		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
+		gmt_M_free(API->GMT, PS);
+		return EXIT_FAILURE;
+	}
+
+	while (read(fd[0], t, 1U) && t[0] != '\n'); 	/* Consume first line that has the BoundingBox */
+	n = 0;
+	while (read(fd[0], t, 1U) && t[0] != '\n')		/* Read secod line which has the HiResBoundingBox */
+		buf[n++] = t[0];
+	buf[n] = '\0';
+	close(fd[0]);
+
+	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
+
+	pch = strstr(PS->data, "BoundingBox");			/* Find where is the BB */
+	sprintf(buf, "BoundingBox: 0 0 %.0f %.0f", ceil(x1 - x0), ceil(y1 - y0));
+	for (n = 0; n < strlen(buf); n++)				/* and update it */
+		pch[n] = buf[n];
+	while (pch[n] != '\n') {						/* Make sure that there are only spaces till next new line */
+		pch[n] = ' ';
+		n++;
+	}
+
+	pch = strstr(PS->data, "HiResBoundingBox");		/* Find where is the HiResBB */
+	sprintf (buf, "HiResBoundingBox: 0 0 %.4f %.4f", x1-x0, y1-y0);
+	for (n = 0; n < strlen(buf); n++)				/* and update it */
+		pch[n] = buf[n];
+
+	/* Find where is the setpagedevice line */
+	pch = strstr(PS->data, "setpagedevice");
+	while (pch[c_begin] != '\n') c_begin--;
+	/* So now we know where the line starts. Put a 'translate' command in its place. */
+	if (x0 != 0 || y0 != 0) {
+		sprintf(buf, "%.3f %.3f translate", -x0, -y0);
+		c_begin++;									/* It had receeded one position too much */
+		for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
+		while (pch[c_begin] != '\n') {				/* Make sure that there are only spaces till next new line */
+			pch[c_begin] = ' ';	c_begin++;
+		}
+	}
+
+	PS->data[PS->n - 1] = '\0';			/* There is some remaining trash at the end so remove last new line and after. Should be done elsewhere. */
+	gmt_M_free (API->GMT, PS);
+	return GMT_OK;
+}
+/* ---------------------------------------------------------------------------------------------- */
+
+GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params) {
+	char      cmd[512] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fd[2] = {0, 0}, n;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	FILE     *fp = NULL;
@@ -818,7 +900,10 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl) 
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_PS *PS = NULL;
 
-	sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");
+	/* sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -"); */
+	sprintf(cmd, "%s ", Ctrl->G.file);
+	strcat (cmd, gs_params);
+	strcat (cmd, " -r300x300 -sDEVICE=ppmraw -sOutputFile=- -");	/* WHEN WORKING FINE, MUST SET RESOLUTION DYNAMICALLY */
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
@@ -1140,7 +1225,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			Return (API->error);
 		Return (GMT_OK);	/* Done here */
 #endif
-		if (pipe_ghost(API, Ctrl)) {
+		if (pipe_HR_BB (API, Ctrl, gs_BB)) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
+		}
+		if (pipe_ghost(API, Ctrl, gs_params)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
 			Return (EXIT_FAILURE);
 		}
