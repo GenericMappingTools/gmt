@@ -686,16 +686,31 @@ int gmt_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	tmp = gmt_M_memory (GMT, NULL, mx, unsigned int);
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) if (gmt_M_fread (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
+		for (j = 0; j < first_row; j++) if (gmt_M_fread (tmp, sizeof (unsigned int), mx, fp) < mx) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
+			gmt_M_free (GMT, tmp);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 	}
 	else {		/* Simply seek by it */
-		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
+			gmt_M_free (GMT, tmp);
+			return (GMT_GRDIO_SEEK_FAILED);
+		}
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
+			gmt_M_free (GMT, tmp);
+			return (GMT_GRDIO_READ_FAILED);	/* Failed to get one row */
+		}
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
@@ -716,7 +731,12 @@ int gmt_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip data by reading it */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
+			gmt_M_free (GMT, tmp);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 	}
 
 	header->nx = width_in;
