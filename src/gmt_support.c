@@ -1825,10 +1825,20 @@ GMT_LOCAL uint64_t support_smooth_contour (struct GMT_CTRL *GMT, double **x_in, 
 
 	if (gmt_intpol (GMT, t_in, x, n, n_out, t_out, x_tmp, stype)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT internal error\n");
+		gmt_M_free (GMT, t_in);
+		gmt_M_free (GMT, t_out);
+		gmt_M_free (GMT, flag);
+		gmt_M_free (GMT, x_tmp);
+		gmt_M_free (GMT, y_tmp);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	if (gmt_intpol (GMT, t_in, y, n, n_out, t_out, y_tmp, stype)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT internal error\n");
+		gmt_M_free (GMT, t_in);
+		gmt_M_free (GMT, t_out);
+		gmt_M_free (GMT, flag);
+		gmt_M_free (GMT, x_tmp);
+		gmt_M_free (GMT, y_tmp);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
