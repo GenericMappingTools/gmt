@@ -745,6 +745,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 				if (fabs(fabs(az - azp) - M_PI) < D2R * 10.) {
 					azi[n][1] = azp;
 					azi[++n][0] = az;
+					assert (n < 3);	/* Since Coverity flagged previous line as exceeding limit */
 				}
 				if (fabs(fabs(az -azp) - M_PI * 2.) < D2R * 2.) {
 					if (azp < az) azi[n][0] += M_PI * 2.;
