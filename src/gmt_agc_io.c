@@ -131,24 +131,37 @@ int gmt_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
 	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);			/* Opening the file failed somehow */
-	if (gmt_M_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
+	if (gmt_M_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
+	}
 
 	y_min = recdata[0];	y_max = recdata[1];
-	if (y_min >= y_max)
+	if (y_min >= y_max) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
+	}
 	x_min = recdata[2];	x_max = recdata[3];
-	if (x_min >= x_max)
+	if (x_min >= x_max) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
+	}
 	y_inc = recdata[4];	x_inc = recdata[5];
-	if (x_inc <= 0.0 || y_inc <= 0.0)
+	if (x_inc <= 0.0 || y_inc <= 0.0) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
+	}
 	nx = (int)gmt_M_get_n (GMT, x_min, x_max, x_inc, 0);
-	if (nx <= 0)
+	if (nx <= 0) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
+	}
 	ny = (int)gmt_M_get_n (GMT, y_min, y_max, y_inc, 0);
-	if (ny <= 0)
+	if (ny <= 0) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_BAD_VAL);
+	}
+	gmt_fclose (GMT, fp);
 	/* OK so far; see if file size matches the predicted size given the header info */
 	predicted_size = lrint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
 	if (predicted_size == buf.st_size) {
@@ -175,7 +188,10 @@ int gmt_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	else if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	if (gmt_M_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
+	if (gmt_M_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) {
+		gmt_fclose (GMT, fp);
+		return (GMT_GRDIO_READ_FAILED);
+	}
 	
 	header->registration = GMT_GRID_NODE_REG;	/* Hardwired since no info about this in the header */
 	header->wesn[XLO]  = recdata[2];
@@ -214,7 +230,10 @@ int gmt_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	
 	agc_pack_header (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	if (gmt_M_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
+	if (gmt_M_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) {
+		gmt_fclose (GMT, fp);
+		return (GMT_GRDIO_WRITE_FAILED);
+	}
 
 	gmt_fclose (GMT, fp);
 
@@ -274,7 +293,11 @@ int gmt_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
-		if (agc_read_record (fp, z)) return (GMT_GRDIO_READ_FAILED);
+		if (agc_read_record (fp, z)) {
+			gmt_M_free (GMT, k);
+			gmt_fclose (GMT, fp);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 		rowstart = datablockrow * ZBLOCKHEIGHT;
 		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
@@ -398,7 +421,11 @@ int gmt_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			}
 		}
 
-		if (agc_write_record (fp, outz, prez, postz)) return (GMT_GRDIO_WRITE_FAILED);
+		if (agc_write_record (fp, outz, prez, postz)) {
+			gmt_M_free (GMT, k);
+			gmt_fclose (GMT, fp);
+			return (GMT_GRDIO_WRITE_FAILED);
+		}
 
 		if (++datablockrow >= n_blocks_y) {
 			datablockrow = 0;
