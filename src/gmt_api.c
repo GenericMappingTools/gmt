@@ -1459,9 +1459,9 @@ GMT_LOCAL void api_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	if (mode & GMT_COMMENT_IS_REMARK) 	api_update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  H->remark);
 	else if (mode & GMT_COMMENT_IS_COMMAND) api_update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, H->command);
 	else if (mode & GMT_COMMENT_IS_TITLE)   api_update_txt_item (API, mode, arg, GMT_GRID_TITLE_LEN80,    H->title);
-	else if (mode & GMT_COMMENT_IS_NAME_X)  api_update_txt_item (API, mode, arg, GMT_GRID_NAME_LEN256,    H->x_units);
-	else if (mode & GMT_COMMENT_IS_NAME_Y)  api_update_txt_item (API, mode, arg, GMT_GRID_NAME_LEN256,    H->y_units);
-	else if (mode & GMT_COMMENT_IS_NAME_Z)  api_update_txt_item (API, mode, arg, GMT_GRID_NAME_LEN256,    H->z_units);
+	else if (mode & GMT_COMMENT_IS_NAME_X)  api_update_txt_item (API, mode, arg, GMT_GRID_UNIT_LEN80,     H->x_units);
+	else if (mode & GMT_COMMENT_IS_NAME_Y)  api_update_txt_item (API, mode, arg, GMT_GRID_UNIT_LEN80,     H->y_units);
+	else if (mode & GMT_COMMENT_IS_NAME_Z)  api_update_txt_item (API, mode, arg, GMT_GRID_UNIT_LEN80,     H->z_units);
 }
 
 /*! Replace or Append either command or remark field with text or commmand-line options */
