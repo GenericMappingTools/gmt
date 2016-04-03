@@ -6598,6 +6598,9 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 		}
 		f = P->range[i].z_high - P->range[i].z_low;
 		if (f == 0.0) {
+			gmt_M_free (GMT, x);
+			gmt_M_free (GMT, lut);
+			if (log_mode) gmt_M_free (GMT, z_out);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Z-slice with dz = 0\n");
 			return (NULL);
 		}
