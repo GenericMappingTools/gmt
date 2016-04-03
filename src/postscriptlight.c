@@ -4044,7 +4044,8 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		/* Write definitions of macros to plotfile */
 
 		PSL_command (PSL, "%%%%BoundingBox: 0 0 %d %d\n", lrint (PSL->internal.p_width), lrint (PSL->internal.p_height));
-		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g\n", PSL->internal.p_width, PSL->internal.p_height);
+		/* The spaces below are to accommodate eventual need by psconvert when working with in-memory-PS */
+		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g             \n", PSL->internal.p_width, PSL->internal.p_height);
 		if (title) {
 			PSL_command (PSL, "%%%%Title: %s\n", title);
 			PSL_command (PSL, "%%%%Creator: %s\n", PSL->init.session);
