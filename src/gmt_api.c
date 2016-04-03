@@ -2278,7 +2278,11 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 
 			case GMT_IS_DUPLICATE:	/* Duplicate the input dataset */
 				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
-				if ((Din_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				if ((Din_obj = S_obj->resource) == NULL) {
+					gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated earlier since gmt_alloc_dataset does it all */
+					gmt_M_free (GMT, D_obj);
+					return_null (API, GMT_PTR_IS_NULL);
+				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from GMT_DATASET memory location\n");
 				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated earlier since gmt_alloc_dataset does it all */
 				gmt_M_free (GMT, D_obj);
