@@ -262,16 +262,16 @@ GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->e_2 = C->l_epsilon * C->l_epsilon;
 	e_4 = C->e_2 * C->e_2;
 	C->eps_p2 = C->e_2;
-	C->eps_m2 = 1.0/C->e_2;
+	C->eps_m2 = 1.0 / C->e_2;
 	C->one_plus_e2 = 1.0 + C->e_2;
-	C->two_plus_ep2 = 2.0 + 2.0*C->eps_p2;
-	C->two_plus_em2 = 2.0 + 2.0*C->eps_m2;
+	C->two_plus_ep2 = 2.0 + 2.0 * C->eps_p2;
+	C->two_plus_em2 = 2.0 + 2.0 * C->eps_m2;
 
 	C->x_edge_const = 4 * C->one_plus_e2 - 2 * (C->interior_tension / loose);
 	C->e_m2 = 1.0 / C->e_2;
 	C->y_edge_const = 4 * (1.0 + C->e_m2) - 2 * (C->interior_tension * C->e_m2 / loose);
 
-	a0 = 1.0 / ( (6 * e_4 * loose + 10 * C->e_2 * loose + 8 * loose - 2 * C->one_plus_e2) + 4*C->interior_tension*C->one_plus_e2);
+	a0 = 1.0 / ( (6 * e_4 * loose + 10 * C->e_2 * loose + 8 * loose - 2 * C->one_plus_e2) + 4 * C->interior_tension * C->one_plus_e2);
 	C->a0_const_1 = 2 * loose * (1.0 + e_4);
 	C->a0_const_2 = 2.0 - C->interior_tension + 2 * loose * C->e_2;
 
@@ -288,28 +288,29 @@ GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->coeff[SURFACE_UNCONSTRAINED][NW] = C->coeff[SURFACE_UNCONSTRAINED][NE] = C->coeff[SURFACE_UNCONSTRAINED][SW] =
 		C->coeff[SURFACE_UNCONSTRAINED][SE] = C->coeff[SURFACE_CONSTRAINED][NW] * a0;
 
-	C->e_2  *= 2;		/* We will need these in boundary conditions  */
+	C->e_2  *= 2;		/* We will need these in the boundary conditions  */
 	C->e_m2 *= 2;
 }
 
 GMT_LOCAL void set_offset (struct SURFACE_INFO *C) {
-	/* The offset array holds the offset in 2-D index relative
+	/* The offset array holds the offset in 1-D index relative
 	 * to the current node.  For movement along a row this is
 	 * always -2, -1, 0, +1, +2 but along a column we move in
-	 * multiples of current_mx, the extended grid row width (current_nx + 4).
+	 * multiples of current_mx, the extended grid row width,
+	 * i.e., current_mx = current_nx + 4.
 	 */
- 	C->offset[N2] = -2 * C->current_mx;	/* 2 rows above */
- 	C->offset[NW] = -C->current_mx - 1;	/* 1 row above and one column left */
- 	C->offset[N1] = -C->current_mx;		/* 1 row above */
- 	C->offset[NE] = -C->current_mx + 1;	/* 1 row above and one column right */
- 	C->offset[W2] = -2;			/* 2 columns left */
- 	C->offset[W1] = -1;			/* 1 column left */
- 	C->offset[E1] = +1;			/* 1 column right */
- 	C->offset[E2] = +2;			/* 2 columns right */
- 	C->offset[SW] = C->current_mx - 1;	/* 1 row below and one column left */
- 	C->offset[S1] = C->current_mx;		/* 1 row below */
- 	C->offset[SE] = C->current_mx + 1;	/* 1 row below and one column right */
- 	C->offset[S2] = 2 * C->current_mx;	/* 2 rows below */
+ 	C->offset[N2] = -2 * C->current_mx;	/* N2: 2 rows above */
+ 	C->offset[NW] = -C->current_mx - 1;	/* NW: 1 row above and one column left */
+ 	C->offset[N1] = -C->current_mx;		/* N1: 1 row above */
+ 	C->offset[NE] = -C->current_mx + 1;	/* NE: 1 row above and one column right */
+ 	C->offset[W2] = -2;			/* W2: 2 columns left */
+ 	C->offset[W1] = -1;			/* W1 : 1 column left */
+ 	C->offset[E1] = +1;			/* E1 : 1 column right */
+ 	C->offset[E2] = +2;			/* E2 : 2 columns right */
+ 	C->offset[SW] = C->current_mx - 1;	/* SW : 1 row below and one column left */
+ 	C->offset[S1] = C->current_mx;		/* S1 : 1 row below */
+ 	C->offset[SE] = C->current_mx + 1;	/* SE : 1 row below and one column right */
+ 	C->offset[S2] = 2 * C->current_mx;	/* S2 : 2 rows below */
 }
 
 GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -323,9 +324,9 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 */
 
 	uint64_t index_00, index_10, index_11, index_01, index_new, current_node, previous_node;
-	int previous_row, previous_col, ii, jj, col, row, expand, first;
+	int previous_row, previous_col, i, j, col, row, expand, first;
 	unsigned char *status = C->status;
-	double a0, a1, a2, a3, r_prev_size, a0_plus_a2_dy, a1_plus_a3_dy;
+	double c, sx, sy, sxy, r_prev_size, c_plus_sy_dy, sx_plus_sxy_dy;
 	float *u = C->Grid->data;
 	
 	/* First we expand the active grid to allow for more nodes. We do this by
@@ -360,7 +361,7 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Precalculate the fractional increments of rows and cols in-between the old constrained rows and cols.
 	 * These are fractions between 0 and 1.  E.g., if we quadruple the grid dimensions in x and y then 
 	 * expand == 4 and the 4 fractions = {0, 0.25, 0.5, 0.75}. */
-	for (ii = 0; ii < expand; ii++) C->fraction[ii] = ii * r_prev_size;
+	for (i = 0; i < expand; i++) C->fraction[i] = i * r_prev_size;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Fill in expanded grid by bilinear interpolation [stride = %d]\n", C->current_stride);
 
@@ -378,22 +379,22 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 			index_10 = index_00 + expand;				/* Lower right corner of square bin */
 			index_11 = index_01 + expand;				/* Upper right corner of square bin */
 
-			/* Get bilinear coefficients for interpolation z = a0 + a1 * delta_x + a2 * delta_y + a3 * delta_x * delta_y.
+			/* Get bilinear coefficients for interpolation z = c + sx * delta_x + sy * delta_y + sxy * delta_x * delta_y.
 			 * Below, delta_x and delta_y are obtained via C->fraction that we pre-calculated above. */
-			a0 = u[index_00];	a1 = u[index_10] - a0;
-			a2 = u[index_01] - a0;	a3 = u[index_11] - u[index_10] - a2;
+			c = u[index_00];	sx = u[index_10] - c;
+			sy = u[index_01] - c;	sxy = u[index_11] - u[index_10] - sy;
 
 			/* Fill in all the denser nodes except the lower-left starting point */
 
-			for (jj = 0, first = 1; jj < expand; jj++) {	/* Set first = 1 so we skip the first column when jj = 0 */
-				a0_plus_a2_dy = a0 + a2 * C->fraction[jj];	/* Compute terms that remain constant for this jj */
-				a1_plus_a3_dy = a1 + a3 * C->fraction[jj];
-				index_new = index_00 - jj * C->current_mx + first;	/* Start node on this intermediate row */
-				for (ii = first;  ii < expand; ii++, index_new++) {	/* Sweep across this row and interpolate */
-					u[index_new] = (float)(a0_plus_a2_dy + C->fraction[ii] * a1_plus_a3_dy);
+			for (j = 0, first = 1; j < expand; j++) {	/* Set first = 1 so we skip the first column when j = 0 */
+				c_plus_sy_dy = c + sy * C->fraction[j];	/* Compute terms that remain constant for this j */
+				sx_plus_sxy_dy = sx + sxy * C->fraction[j];
+				index_new = index_00 - j * C->current_mx + first;	/* Start node on this intermediate row */
+				for (i = first;  i < expand; i++, index_new++) {	/* Sweep across this row and interpolate */
+					u[index_new] = (float)(c_plus_sy_dy + C->fraction[i] * sx_plus_sxy_dy);
 					status[index_new] = SURFACE_IS_UNCONSTRAINED;	/* These are considered temporary estimates */
 				}
-				first = 0;	/* Reset to 0 for the remainder of the jj loop */
+				first = 0;	/* Reset to 0 for the remainder of the j loop */
 			}
 			status[index_00] = SURFACE_IS_CONSTRAINED;	/* The previous node values will be kept fixed in the next iterate call */
 		}
@@ -405,10 +406,10 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		row = previous_row * expand;	/* Corresponding row in the new extended grid */
 		index_00 = C->node_ne_corner + row * C->current_mx;	/* Lower node */
 		index_01 = index_00  - expand * C->current_mx;		/* Upper node */
-		a2 = u[index_01] - u[index_00];				/* Vertical gradient in u toward ymax (for increasing jj) */
-		index_new = index_00 - C->current_mx;			/* Since we start at jj = 1 we skip up one row */
-		for (jj = 1; jj < expand; jj++, index_new -= C->current_mx) {	/* Start at 1 since we skip the constrained index_00 node */
-			u[index_new] = u[index_00] + (float)(C->fraction[jj] * a2);
+		sy = u[index_01] - u[index_00];				/* Vertical gradient in u toward ymax (for increasing j) */
+		index_new = index_00 - C->current_mx;			/* Since we start at j = 1 we skip up one row */
+		for (j = 1; j < expand; j++, index_new -= C->current_mx) {	/* Start at 1 since we skip the constrained index_00 node */
+			u[index_new] = u[index_00] + (float)(C->fraction[j] * sy);
 			status[index_new] = SURFACE_IS_UNCONSTRAINED;	/* These are considered temporary estimates */
 		}
 		status[index_00] = SURFACE_IS_CONSTRAINED;	/* The previous node values will be kept fixed in the next iterate call */
@@ -418,10 +419,10 @@ GMT_LOCAL void fill_in_forecast (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		col = previous_col * expand;	/* Corresponding col in the new extended grid */
 		index_00 = C->node_nw_corner + col;	/* Left node */
 		index_10 = index_00 + expand;		/* Right node */
-		a1 = u[index_10] - u[index_00];		/* Horizontal gradient in u toward xmax (for increasing ii) */
+		sx = u[index_10] - u[index_00];		/* Horizontal gradient in u toward xmax (for increasing i) */
 		index_new = index_00 + 1;		/* Start at 1 since we skip the constrained index_00 node */
-		for (ii = 1; ii < expand; ii++, index_new++) {
-			u[index_new] = u[index_00] + (float)(C->fraction[ii] * a1);
+		for (i = 1; i < expand; i++, index_new++) {
+			u[index_new] = u[index_00] + (float)(C->fraction[i] * sx);
 			status[index_new] = SURFACE_IS_UNCONSTRAINED;	/* These are considered temporary estimates */
 		}
 		status[index_00] = SURFACE_IS_CONSTRAINED;	/* The previous node values will be kept fixed in the next iterate call */
