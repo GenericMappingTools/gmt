@@ -1980,7 +1980,10 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	/* Allocate grid memory */
 
 	Grid->header->registration = GMT_GRID_PIXEL_REG;	/* These are always pixel grids */
-	if ((status = gmt_grd_RI_verify (GMT, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
+	if ((status = gmt_grd_RI_verify (GMT, Grid->header, 1))) {	/* Final verification of -R -I; return error if we must */
+		gmt_fclose (GMT, fp);
+		return (status);
+	}
 	gmt_M_grd_setpad (GMT, Grid->header, GMT->current.io.pad);			/* Assign default pad */
 	gmt_set_grddim (GMT, Grid->header);					/* Set all dimensions before returning */
 	Grid->data = gmt_M_memory_aligned (GMT, NULL, Grid->header->size, float);
@@ -1989,12 +1992,18 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	first_i = irint (floor (Grid->header->wesn[XLO] * Grid->header->r_inc[GMT_X]));				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
 	n_skip = lrint (floor ((GMT->current.proj.rect[YHI] - Grid->header->wesn[YHI]) * Grid->header->r_inc[GMT_Y]));	/* Number of rows clearly above y_max */
-	if (fseek (fp, n_skip * n_cols * GMT_IMG_ITEMSIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+	if (fseek (fp, n_skip * n_cols * GMT_IMG_ITEMSIZE, SEEK_SET)) {
+		gmt_fclose (GMT, fp);
+		return (GMT_GRDIO_SEEK_FAILED);
+	}
 
 	i2 = gmt_M_memory (GMT, NULL, n_cols, int16_t);
 	for (row = 0; row < Grid->header->ny; row++) {	/* Read all the rows, offset by 2 boundary rows and cols */
-		if (gmt_M_fread (i2, sizeof (int16_t), n_cols, fp) != n_cols)
-			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		if (gmt_M_fread (i2, sizeof (int16_t), n_cols, fp) != n_cols) {
+			gmt_M_free (GMT, i2);
+			gmt_fclose (GMT, fp);
+			return (GMT_GRDIO_READ_FAILED);	/* Failed to get one row */
+		}
 #ifndef WORDS_BIGENDIAN
 		u2 = (uint16_t *)i2;
 		for (col = 0; col < n_cols; col++)
@@ -2539,8 +2548,16 @@ bool gmtlib_check_url_name (char *fname) {
 }
 
 #ifdef HAVE_GDAL
-int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) {
+GMT_LOCAL void gdal_free_from (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread)
+{
 	int i;
+	for (i = 0; i < from_gdalread->RasterCount; ++i )
+		if (from_gdalread->band_field_names[i].DataType) gmt_M_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+	if (from_gdalread->band_field_names) gmt_M_free (GMT, from_gdalread->band_field_names);
+	if (from_gdalread->ColorMap) gmt_M_free (GMT, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
+}
+
+int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) {
 	size_t k;
 	double dumb;
 	struct GMT_GDALREAD_IN_CTRL *to_gdalread = NULL;
@@ -2562,10 +2579,16 @@ int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
+		gmt_M_free (GMT, to_gdalread);
+		gdal_free_from (GMT, from_gdalread);
+		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	if (from_gdalread->band_field_names != NULL && strcmp(from_gdalread->band_field_names[0].DataType, "Byte")) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Using data type other than byte (unsigned char) is not implemented\n");
+		gmt_M_free (GMT, to_gdalread);
+		gdal_free_from (GMT, from_gdalread);
+		gmt_M_free (GMT, from_gdalread);
 		return (EXIT_FAILURE);
 	}
 
@@ -2594,10 +2617,7 @@ int gmt_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	gmt_set_grddim (GMT, I->header);		/* This recomputes nx|ny. Dangerous if -R is not compatible with inc */
 
 	gmt_M_free (GMT, to_gdalread);
-	for ( i = 0; i < from_gdalread->RasterCount; ++i )
-		gmt_M_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
-	gmt_M_free (GMT, from_gdalread->band_field_names);
-	gmt_M_free (GMT, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
+	gdal_free_from (GMT, from_gdalread);
 	gmt_M_free (GMT, from_gdalread);
 
 	return (GMT_NOERROR);
