@@ -212,7 +212,10 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	gmt_M_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
-	if (gmt_M_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (gmt_M_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
+		gmt_fclose (GMT, fp);
+		return (GMT_GRDIO_READ_FAILED);
+	}
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
 	ok = grd98_swap_mgg_header (&mggHeader);
@@ -221,6 +224,7 @@ int gmt_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	if (ok == -1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized header, expected 0x%04X saw 0x%04X\n",
 		            GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
 
@@ -311,11 +315,18 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	size = abs (mggHeader.numType);
 
 	if (piping)	{ /* Skip data by reading it */
-		for (j = 0; j < first_row; j++) if (gmt_M_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
+		for (j = 0; j < first_row; j++) if (gmt_M_fread ( tLong, size, n_expected, fp) != n_expected) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
+			gmt_M_free (GMT, tLong);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 	}
 	else if (first_row) { /* Simply seek by it */
 		long_offset = (off_t)first_row * (off_t)n_expected * size;
 		if (fseek (fp, long_offset, 1)) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tLong);
 			return (GMT_GRDIO_SEEK_FAILED);
 		}
@@ -350,6 +361,9 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 				else grid[kk] = (float) tChar[actual_col[i]] / (float) mggHeader.precision;
 			}
 			else {
+				gmt_fclose (GMT, fp);
+				gmt_M_free (GMT, actual_col);
+				gmt_M_free (GMT, tLong);
 				return (GMT_GRDIO_UNKNOWN_TYPE);
 			}
 			if (gmt_M_is_fnan (grid[kk])) {
@@ -365,7 +379,8 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		int ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) {
 			if (gmt_M_fread ( tLong, size, n_expected, fp) != n_expected) {
-				gmt_M_free (GMT, tLong);		gmt_M_free (GMT, actual_col);
+				gmt_M_free (GMT, tLong);
+				gmt_M_free (GMT, actual_col);
 				gmt_fclose (GMT, fp);
 				return (GMT_GRDIO_READ_FAILED);
 			}
@@ -433,7 +448,11 @@ int gmt_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	}
 
 	/* store header information and array */
-	if ((err = grd98_GMTtoMGG2(header, &mggHeader)) != 0) return (err);;
+	if ((err = grd98_GMTtoMGG2(header, &mggHeader)) != 0) {
+		gmt_fclose (GMT, fp);
+		gmt_M_free (GMT, actual_col);
+		return (err);
+	}
 	if (gmt_M_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
 		gmt_M_free (GMT, actual_col);
 		gmt_fclose (GMT, fp);
@@ -456,6 +475,9 @@ int gmt_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 				else if (mggHeader.numType == sizeof (short)) tShort[iu] = (short)mggHeader.nanValue;
 				else if (mggHeader.numType == sizeof (char))  tChar[iu] = (char)mggHeader.nanValue;
 				else {
+					gmt_M_free (GMT, tLong);
+					gmt_M_free (GMT, actual_col);
+					gmt_fclose (GMT, fp);
 					return (GMT_GRDIO_UNKNOWN_TYPE);
 				}
 			} else {
@@ -469,11 +491,20 @@ int gmt_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 					tShort[iu] = (short) rint((double)grid[kk] * mggHeader.precision);
 				else if (mggHeader.numType == sizeof (char))
 					tChar[iu] = (char) rint((double)grid[kk] * mggHeader.precision);
-				else
+				else {
+					gmt_M_free (GMT, tLong);
+					gmt_M_free (GMT, actual_col);
+					gmt_fclose (GMT, fp);
 					return (GMT_GRDIO_UNKNOWN_TYPE);
+				}
 			}
 		}
-		if (gmt_M_fwrite (tLong, size, width_out, fp) != width_out) return (GMT_GRDIO_WRITE_FAILED);
+		if (gmt_M_fwrite (tLong, size, width_out, fp) != width_out) {
+			gmt_M_free (GMT, tLong);
+			gmt_M_free (GMT, actual_col);
+			gmt_fclose (GMT, fp);
+			return (GMT_GRDIO_WRITE_FAILED);
+		}
 	}
 	gmt_M_free (GMT, tLong);
 	gmt_M_free (GMT, actual_col);
