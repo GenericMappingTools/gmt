@@ -1077,6 +1077,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 			}
 			if (n_model == GMT_N_MAX_MODEL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Exceeding max basis functions (%d) \n", option, GMT_N_MAX_MODEL);
+				gmt_M_str_free (arg);
 				return -1;
 			}
 		}
@@ -1879,6 +1880,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (gmtlib_getuserpath (GMT, "conf/gmt.conf", line) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find system defaults file - Aborting.\n");
+			fclose (fpo);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
