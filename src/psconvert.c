@@ -810,9 +810,11 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double *w, double *h) {
-	char      cmd[GMT_LEN128] = { "" }, buf[GMT_LEN128], t[32] = { "" }, *pch;
-	int       fd[2] = { 0, 0 }, n, c_begin = 0;
-	double    x0, y0, x1, y1;
+	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
+	char      cmd[GMT_LEN128] = { "" }, buf[GMT_LEN128], t[32] = { "" }, *pch, c;
+	int       fd[2] = { 0, 0 }, n, r, c_begin = 0;
+	bool      landscape = false;
+	double    x0, y0, x1, y1, xt, yt;
 	FILE     *fp = NULL;
 	struct GMT_PS *PS = NULL;
 
@@ -856,34 +858,54 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	close(fd[0]);
 
 	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
-	*w = x1 - x0;	*h = y1 - y0;					/* We will need these in pipe_ghost() */
+	c = PS->data[500];
+	PS->data[500] = '\0';							/* Temporary cut the string to not search the whole file */
+	pch = strstr(PS->data, "Landscape");
+	if (pch != NULL) landscape = true;
+	PS->data[500] = c;								/* Reset the deleted char */
 
-	pch = strstr(PS->data, "BoundingBox");			/* Find where is the BB */
+	if (landscape)									/* We will need these in pipe_ghost() */
+		xt = -x1, yt = -y0, *w = y1-y0, *h = x1-x0, r = -90;
+	else
+		xt = -x0, yt = -y0, *w = x1-x0, *h = y1-y0, r = 0;
+
 	sprintf(buf, "BoundingBox: 0 0 %.0f %.0f", ceil(*w), ceil(*h));
-	for (n = 0; n < strlen(buf); n++)				/* and update it */
-		pch[n] = buf[n];
-	while (pch[n] != '\n') {						/* Make sure that there are only spaces till next new line */
-		pch[n] = ' ';
-		n++;
-	}
-
-	pch = strstr(PS->data, "HiResBoundingBox");		/* Find where is the HiResBB */
-	sprintf (buf, "HiResBoundingBox: 0 0 %.4f %.4f", x1-x0, y1-y0);
-	for (n = 0; n < strlen(buf); n++)				/* and update it */
-		pch[n] = buf[n];
-
-	/* Find where is the setpagedevice line */
-	pch = strstr(PS->data, "setpagedevice");
-	while (pch[c_begin] != '\n') c_begin--;
-	/* So now we know where the line starts. Put a 'translate' command in its place. */
-	if (x0 != 0 || y0 != 0) {
-		sprintf(buf, "%.3f %.3f translate", -x0, -y0);
-		c_begin++;									/* It had receeded one position too much */
-		for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
-		while (pch[c_begin] != '\n') {				/* Make sure that there are only spaces till next new line */
-			pch[c_begin] = ' ';	c_begin++;
+	if ((pch = strstr(PS->data, "BoundingBox")) != NULL) {		/* Find where is the BB */
+		for (n = 0; n < strlen(buf); n++)			/* and update it */
+			pch[n] = buf[n];
+		while (pch[n] != '\n') {					/* Make sure that there are only spaces till next new line */
+			pch[n] = ' ';	n++;
 		}
 	}
+	else
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have a %%BoundingBox\n");
+
+	sprintf (buf, "HiResBoundingBox: 0 0 %.4f %.4f", *w, *h);
+	if ((pch = strstr(PS->data, "HiResBoundingBox")) != NULL) {	/* Find where is the HiResBB */
+		for (n = 0; n < strlen(buf); n++)			/* and update it */
+			pch[n] = buf[n];
+	}
+	else
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have a %%HiResBoundingBox\n");
+
+	/* Find where is the setpagedevice line */
+	if ((pch = strstr(PS->data, "setpagedevice")) != NULL) {
+		while (pch[c_begin] != '\n') c_begin--;
+		/* So now we know where the line starts. Put a 'translate' command in its place. */
+		if (x0 != 0 || y0 != 0) {
+			if (r == 0)
+				sprintf(buf, "%.3f %.3f translate", xt, yt);
+			else
+				sprintf(buf, "%d rotate\n%.3f %.3f translate", r, xt, yt);
+			c_begin++;								/* It had receeded one position too much */
+			for (n = 0; n < strlen(buf); n++, c_begin++) pch[c_begin] = buf[n];
+			while (pch[c_begin] != '\n') {			/* Make sure that there are only spaces till next new line */
+				pch[c_begin] = ' ';	c_begin++;
+			}
+		}
+	}
+	else
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have the stpagedice line\n");
 
 	PS->data[PS->n - 1] = '\0';			/* There is some remaining trash at the end so remove last new line and after. Should be done elsewhere. */
 	gmt_M_free (API->GMT, PS);
@@ -893,6 +915,12 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 /* ---------------------------------------------------------------------------------------------- */
 
 GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params, double w, double h) {
+	/* Run the command that converts the PostScript into a raster format, but using a in-memory PS as source.
+	   For that we use the popen function to run the GS command. The biggest problem, however, is that popen only
+	   access one pipe and we need two. One for the PS input and the other for the raster output. There are popen
+	   versions (popen2) that have that capacity, but not the one on Windows so we resort to a trick using both
+	   popen() and pipe().
+	*/
 	char      cmd[512] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fd[2] = {0, 0}, n, pix_w, pix_h;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
@@ -906,7 +934,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
 	pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
 	sprintf(cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
-	strcat (cmd, gs_params);
+	if (strlen(gs_params) < 450) strcat (cmd, gs_params);	/* We know it is but Coverity doesn't, and complians */
 	strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
@@ -948,7 +976,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	n = 0;
 	while (read(fd[0], buf, 1U) && buf[0] != '\n') 		/* Get string with number of rows from 3rd header line */
 		t[n++] = buf[0];
-	t[n] = '\0';						/* Make sure no character is left from previous usage */
+	t[n] = '\0';							/* Make sure no character is left from previous usage */
 
 	while (read(fd[0], buf, 1U) && buf[0] != '\n');		/* Consume fourth header line */
 
