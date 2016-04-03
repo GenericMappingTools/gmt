@@ -895,6 +895,11 @@ GMT_LOCAL int gmtinit_trend_modifiers (struct GMT_CTRL *GMT, char option, char *
 	unsigned int pos = 0;
 	int k, sdim = dim;
 
+	if (dim >= 2) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "INTERNAL Error gmtinit_trend_modifiers: was passed dim >= 2 (%u)\n", dim);
+		return -1;
+	}
+
 	/* Gave one or more modifiers */
 
 	while ((gmt_strtok (c, "+", &pos, p))) {
@@ -1846,7 +1851,7 @@ GMT_LOCAL void gmtinit_parse_format_float_out (struct GMT_CTRL *GMT, char *value
 		k = 0;
 		while ((gmt_strtok (value, " ", &pos, fmt)))
 			GMT->current.io.o_format[k++] = strdup (fmt);
-		strncpy (GMT->current.setting.format_float_out, GMT->current.io.o_format[k-1], GMT_LEN64-1);
+		if (k) strncpy (GMT->current.setting.format_float_out, GMT->current.io.o_format[k-1], GMT_LEN64-1);
 	}
 	else {	/* No columns, set the default format */
 		gmtinit_reset_colformats (GMT);	/* Wipe previous settings */
@@ -9334,7 +9339,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				sprintf (value, "%gx%g", fabs (GMT->current.setting.ps_page_size[0]), fabs (GMT->current.setting.ps_page_size[1]));
 			else if (GMT->current.setting.ps_media >= USER_MEDIA_OFFSET)
 				sprintf (value, "%s", GMT->session.user_media_name[GMT->current.setting.ps_media-USER_MEDIA_OFFSET]);
-			else
+			else if (GMT->current.setting.ps_media < GMT_N_MEDIA)
 				sprintf (value, "%s", GMT_media_name[GMT->current.setting.ps_media]);
 			if (GMT->current.setting.ps_page_size[0] < 0.0)
 				strcat (value, "-");
