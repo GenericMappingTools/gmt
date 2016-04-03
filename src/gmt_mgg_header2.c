@@ -188,16 +188,21 @@ int gmt_is_mgg2_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	gmt_M_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
-	if (gmt_M_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1)
+	if (gmt_M_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
+	}
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
 	ok = grd98_swap_mgg_header (&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (ok == -1)
+	if (ok == -1) {
+		gmt_fclose (GMT, fp);
 		return (-1);	/* Not this kind of file */
+	}
 	header->type = GMT_GRID_IS_RF;
+	gmt_fclose (GMT, fp);
 	return GMT_NOERROR;
 }
 
