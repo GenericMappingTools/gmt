@@ -1593,7 +1593,10 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 			strcat (header->command, " ");
 			strcat (header->command, argv[i]);
 		}
-		header->command[len] = 0;
+		if (len < GMT_GRID_COMMAND_LEN320)
+			header->command[len] = 0;
+		else /* Must truncate */
+			header->command[GMT_GRID_COMMAND_LEN320-1] = 0;
 		sprintf (header->title, "Produced by %s", GMT->init.module_name);
 		GMT_Destroy_Args (API, argc, &argv);
 	}
