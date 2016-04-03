@@ -90,11 +90,17 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	if (ierror == -2) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
+		gmt_M_free (GMT, lptr);
+		gmt_M_free (GMT, list);
+		gmt_M_free (GMT, lend);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
 	if (ierror > 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
+		gmt_M_free (GMT, lptr);
+		gmt_M_free (GMT, list);
+		gmt_M_free (GMT, lend);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
@@ -116,6 +122,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	if (ierror) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRLIST.\n");
+		gmt_M_free (GMT, list);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	
@@ -154,6 +161,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 		if (0 < ierror) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in CRLIST.  IERROR = %" PRId64 ".\n", ierror);
+			gmt_M_free (GMT, list);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		
