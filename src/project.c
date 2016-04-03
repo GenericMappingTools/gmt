@@ -735,7 +735,6 @@ int GMT_project (void *V_API, int mode, void *args) {
 	p_data = gmt_M_memory (GMT, NULL, n_alloc, struct PROJECT_DATA);
 
 	if (Ctrl->G.active && Ctrl->E.active && (Ctrl->L.min == Ctrl->L.max)) Ctrl->L.constrain = true;	/* Default generate from A to B  */
-	if (Ctrl->L.constrain) fprintf (stderr, "Constrained\n");
 	
 	/* Set up rotation matrix e for flat earth, or pole and center for spherical; get Ctrl->L.min, Ctrl->L.max if stay_within  */
 
