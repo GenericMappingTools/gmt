@@ -1225,7 +1225,7 @@ GMT_LOCAL void remove_planar_trend (struct GMT_CTRL *GMT, struct SURFACE_INFO *C
 		C->data[i].z -= (float)(C->plane_c0 + C->plane_c1 * xx + C->plane_c2 * yy);
 	}
 	
-	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Plane fit: z = %g + %g * col + %g * row\n", C->plane_c0, C->plane_c1, C->plane_c2);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "LS plane determined: z = %g + (%g * col) + (%g * row)\n", C->plane_c0, C->plane_c1, C->plane_c2);
 }
 
 GMT_LOCAL void replace_planar_trend (struct SURFACE_INFO *C) {

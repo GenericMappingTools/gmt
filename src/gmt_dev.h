@@ -158,6 +158,11 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_prototypes.h"     /* All GMT low-level API */
 #include "common_string.h"      /* All code shared between GMT and PSL */
 
+/* If GLIBC compatible qsort_r is not available */
+#ifndef HAVE_QSORT_R_GLIBC
+#	include "compat/qsort.h"
+#endif
+
 #ifdef __cplusplus
 }
 #endif
