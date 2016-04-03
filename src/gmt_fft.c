@@ -1557,7 +1557,7 @@ GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, un
         /* Now get factors of ntotal  */
         ntotal = gmt_M_get_nm (GMT, nx, ny);
         n_factors = gmt_get_prime_factors (GMT, ntotal, f);
-        storage = MAX (nonsym, f[n_factors-1]);
+        storage = (n_factors > 0) ? MAX (nonsym, f[n_factors-1]) : nonsym;
         if (storage != 2) storage *= 2;
         if (storage < nx) storage = nx;
         if (storage < ny) storage = ny;
