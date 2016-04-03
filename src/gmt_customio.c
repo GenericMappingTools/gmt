@@ -198,13 +198,20 @@ int gmt_is_ras_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 	gmt_M_memset (&h, 1, struct rasterfile);
-	if (customio_read_rasheader (fp, &h))
+	if (customio_read_rasheader (fp, &h)) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
-	if (h.magic != RAS_MAGIC)
+	}
+	if (h.magic != RAS_MAGIC) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_NOT_RAS);
-	if (h.type != 1 || h.depth != 8)
+	}
+	if (h.type != 1 || h.depth != 8) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_NOT_8BIT_RAS);
+	}
 	header->type = GMT_GRID_IS_RB;
+	gmt_fclose (GMT, fp);
 	return GMT_NOERROR;
 }
 
@@ -1218,8 +1225,10 @@ int gmt_is_srf_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = gmt_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
-	if (gmt_M_fread (id, sizeof (char), 4U, fp) < 4U)
+	if (gmt_M_fread (id, sizeof (char), 4U, fp) < 4U) {
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
+	}
 	gmt_fclose (GMT, fp);
 	if (!strncmp (id, "DSBB", 4U))
 		header->type = GMT_GRID_IS_SF;
