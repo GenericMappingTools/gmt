@@ -6364,6 +6364,7 @@ int gmt_write_ps (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, unsi
 			strcpy (ps_file, "<stdout>");
 		else
 			strcpy (ps_file, "<output file descriptor>");
+		close_file = true;	/* since fdopen allocates space */
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unrecognized source type %d in gmt_write_ps\n", dest_type);
