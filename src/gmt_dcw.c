@@ -131,9 +131,13 @@ GMT_LOCAL int dcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, 
 	Country = gmt_M_memory (GMT, Country, k, struct GMT_DCW_COUNTRY);
 
 	/* Get states */
-	if (!dcw_get_path (GMT, "dcw-states", ".txt", path)) return -1;
+	if (!dcw_get_path (GMT, "dcw-states", ".txt", path)) {
+		gmt_M_free (GMT, Country);
+		return -1;
+	}
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to open file %s [permission trouble?]\n", path);
+		gmt_M_free (GMT, Country);
 		return -1;
 	}
 	State = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_STATE);
