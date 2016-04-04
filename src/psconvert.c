@@ -914,14 +914,19 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 }
 /* ---------------------------------------------------------------------------------------------- */
 
-GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params, double w, double h) {
+GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_params, double w, double h, char *out_file) {
 	/* Run the command that converts the PostScript into a raster format, but using a in-memory PS as source.
 	   For that we use the popen function to run the GS command. The biggest problem, however, is that popen only
 	   access one pipe and we need two. One for the PS input and the other for the raster output. There are popen
 	   versions (popen2) that have that capacity, but not the one on Windows so we resort to a trick using both
 	   popen() and pipe().
+
+	   w,h are the raster Width and Height calculated by a previous call to pipe_HR_BB().
+	   out_file is a string with two different meanings:
+	      1. If it's empty than we save the raster in a GMT_IMAGE structure
+	      2. If it holds a file name plus the settings for that driver, than we save the result in a file.
 	*/
-	char      cmd[512] = {""}, buf[GMT_LEN128], t[16] = {""};
+	char      cmd[1024] = {""}, buf[GMT_LEN128], t[16] = {""};
 	int       fd[2] = {0, 0}, n, pix_w, pix_h;
 	uint64_t  dim[3], nXY, row, col, band, nCols, nRows, nBands;
 	FILE     *fp = NULL;
@@ -935,20 +940,25 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
 	sprintf(cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
 	if (strlen(gs_params) < 450) strcat (cmd, gs_params);	/* We know it is but Coverity doesn't, and complains */
-	strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
+
+	if (out_file[0] == '\0') {		/* Need to open a pipe to capture the popen output, which will contain the raster */
+		strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
-	if (_pipe(fd, 145227600, O_BINARY) == -1) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
-		return EXIT_FAILURE;
-	}
+		if (_pipe(fd, 145227600, O_BINARY) == -1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
+			return EXIT_FAILURE;
+		}
 #else
-	pipe (fd);
+		pipe (fd);
 #endif
-	if (dup2 (fd[1], fileno (stdout)) < 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
-		return EXIT_FAILURE;
+		if (dup2 (fd[1], fileno (stdout)) < 0) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
+			return EXIT_FAILURE;
+		}
+		close (fd[1]); 		/* Close original write end of pipe */
 	}
-	close (fd[1]); 		/* Close original write end of pipe */
+	else
+		strcat (cmd, out_file);
 
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
 	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the plot buffer */
@@ -966,6 +976,11 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		return EXIT_FAILURE;
 	}
 	gmt_M_free (API->GMT, PS);
+	
+	/* ----------- IF WE WROTE A FILE THAN WE ARE DONE AND WILL RETURN RIGHT NOW -------------- */
+	if (out_file[0] != '\0')
+		return GMT_OK;
+	/* ---------------------------------------------------------------------------------------- */
 
 	n = read (fd[0], buf, 3U);				/* Consume first header line */
 	while (read (fd[0], buf, 1U) && buf[0] != '\n'); 	/* OK, by the end of this we are at the end of second header line */
@@ -1216,7 +1231,15 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
 
-		if (pipe_ghost(API, Ctrl, gs_params, w, h)) {	/* Run ghostscript to convert the PS to the desired output format */
+		if (Ctrl->T.active) {			/* Than write the converted file into a file instead of storing it into a Image struct */
+			char t[GMT_LEN256] = {""};
+			sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]); 
+			strcat (out_file, t);
+			sprintf(t, "%s/psconvert_test", API->tmp_dir);
+			strcat (t, ext[Ctrl->T.device]);
+			strcat (out_file, squote);	strcat (out_file, t);	strcat (out_file, squote);	strcat (out_file, " -");
+		}
+		if (pipe_ghost(API, Ctrl, gs_params, w, h, out_file)) {	/* Run ghostscript to convert the PS to the desired output format */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
 			error++;
 		}
