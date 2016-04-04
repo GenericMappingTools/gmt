@@ -449,6 +449,14 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 			break;
 	}
 
+	/* Open the crossover info */
+
+	fp = GMT->session.std[GMT_IN];
+	if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", Ctrl->In.file);
+		Return (EXIT_FAILURE);
+	}
+
 	/* Allocate memory for COE data */
 
 	gmt_M_memset (data, N_COE_PARS, double *);
@@ -461,14 +469,6 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	if (!data[COL_WW]) data[COL_WW] = gmt_M_memory (GMT, NULL, n_alloc, double);
 	for (i = 0; i < 2; i++) ID[i] = gmt_M_memory (GMT, NULL, n_alloc, int);
 
-	/* Read the crossover info */
-
-	fp = GMT->session.std[GMT_IN];
-	if (Ctrl->In.file && (fp = gmt_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", Ctrl->In.file);
-		Return (EXIT_FAILURE);
-	}
-
 	if (n_tracks == 0 && !GMT->common.b.active[GMT_IN])	{	/* Create track list on the go */
 		grow_list = true;
 		trk_list = gmt_M_memory (GMT, NULL, n_alloc_t, char *);
@@ -477,6 +477,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	n_expected_fields = 2 + n_active + Ctrl->W.active;
 	expect = (int)n_expected_fields;
 
+	/* Read the crossover file */
+	
 	n_COE = 0;
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
 		/* Here, first two cols have track IDs and we do not write track names */
@@ -698,7 +700,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	old_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 
 	/* Because it can happen that a track has less crossovers than n_par, we must determine R(track), the max parameters per track we can fit */
-	R = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);		/* Number of parameter for each track p, so that 1 <= R(p) < n_par */
+	R = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Number of parameter for each track p, so that 1 <= R(p) < n_par */
 	col_off = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Since R(p) may vary, need cumulative sum of R(p) to get correct column */
 	for (k = 0; k < n_COE; k++) {	/* Count number of crossovers per track */
 		i = ID[0][k];	/* Get track # 1 ID */
