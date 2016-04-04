@@ -934,7 +934,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
 	pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
 	sprintf(cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
-	if (strlen(gs_params) < 450) strcat (cmd, gs_params);	/* We know it is but Coverity doesn't, and complians */
+	if (strlen(gs_params) < 450) strcat (cmd, gs_params);	/* We know it is but Coverity doesn't, and complains */
 	strcat (cmd, " -sDEVICE=ppmraw -sOutputFile=- -");
 #ifdef _WIN32
 	if (_pipe(fd, 145227600, O_BINARY) == -1) {
@@ -1173,6 +1173,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
+			gmt_M_free (GMT, line);
 			Return (EXIT_FAILURE);
 		}
 		ps_names = gmt_M_memory (GMT, NULL, n_alloc, char *);
@@ -1187,10 +1188,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		fclose (fpl);
 	}
-
-	/* One or more files given on command line */
-
-	else if (Ctrl->In.n_files) {
+	else if (Ctrl->In.n_files) {	/* One or more files given on command line */
 		ps_names = gmt_M_memory (GMT, NULL, Ctrl->In.n_files, char *);
 		j = 0;
 		for (opt = options; opt; opt = opt->next) {
@@ -1199,34 +1197,37 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 	}
 
+	/* -------------- Special case of in-memory PS. Process it and return ----------------- */
 	if (API->mode && Ctrl->In.n_files == 1 && !strcmp (ps_names[0], "=")) {
+		int    error = 0;
 		double w, h;	/* Width and height in pixels of the final raster cropped of the outer white spaces */
-		/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
-			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
-			Return (EXIT_FAILURE);
+			error++;
 		}
 		if (GMT->PSL->internal.pmode != 3) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
-			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
-			Return (EXIT_FAILURE);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			            "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
+			error++;
 		}
-		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h)) {
+		if (error) {	/* Return in error state */
+			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);		Return (EXIT_FAILURE);
+		}
+		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
-		}
-		if (pipe_ghost(API, Ctrl, gs_params, w, h)) {
+
+		if (pipe_ghost(API, Ctrl, gs_params, w, h)) {	/* Run ghostscript to convert the PS to the desired output format */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
-			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
-			Return (EXIT_FAILURE);
+			error++;
 		}
 		gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
-		Return (GMT_OK);	/* Done here */
+		Return (error ? EXIT_FAILURE : GMT_OK);		/* Done here */
 	}
-	else {	/* Standard file processing */
-		read_source = &file_line_reader;
-		rewind_source = &file_rewind;
-	}
+	/* -------------------------------------------------------------------------------------- */
+
+	/* Standard file processing */
+	read_source = &file_line_reader;
+	rewind_source = &file_rewind;
 	
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
@@ -1237,6 +1238,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* --------------------------------------------------------------------------------------------- */
 	if (Ctrl->T.active && Ctrl->T.device == -GS_DEV_PDF) {
 		char *all_names_in = NULL, *cmd2 = NULL;
+		int   error = 0;
 
 		n_alloc = 0;
 		for (k = 0; k < Ctrl->In.n_files; k++)
@@ -1254,16 +1256,16 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		sys_retval = system (cmd2);		/* Execute the GhostScript command */
 		if (sys_retval) {
 			GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd2, sys_retval);
-			Return (EXIT_FAILURE);
+			error++;
 		}
-		if (Ctrl->S.active)
+		if (!error && Ctrl->S.active)
 			GMT_Report (API, GMT_MSG_NORMAL, "%s\n", cmd2);
 
 		gmt_M_free (GMT, all_names_in);
 		gmt_M_free (GMT, cmd2);
 		gmt_M_free (GMT, ps_names);
 		gmt_M_free (GMT, line);
-		Return (GMT_OK);
+		Return (error ? EXIT_FAILURE : GMT_OK);		/* Done here */
 	}
 	/* ----------------------------------------------------------------------------------------------- */
 
