@@ -337,7 +337,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			smsurf_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in SMSURF (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
-				gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);		gmt_M_free (GMT, wt);
+				gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
+				gmt_M_free (GMT, wt);		gmt_M_free (GMT, sigma);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 			if (ierror == 1)
@@ -348,7 +349,7 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 				getsig_ (&n, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
-					gmt_M_free (GMT, wt);
+					gmt_M_free (GMT, grad);		gmt_M_free (GMT, wt);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
