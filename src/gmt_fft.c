@@ -1549,9 +1549,9 @@ GMT_LOCAL size_t fft_brenner_worksize (struct GMT_CTRL *GMT, unsigned int nx, un
 	
         /* Find workspace needed.  First find non_symmetric factors in nx, ny  */
         n_factors = gmt_get_prime_factors (GMT, nx, f);
-        nonsymx = fft_get_non_symmetric_f (f, n_factors);
+        nonsymx = (unsigned int)fft_get_non_symmetric_f (f, n_factors);
         n_factors = gmt_get_prime_factors (GMT, ny, f);
-        nonsymy = fft_get_non_symmetric_f (f, n_factors);
+        nonsymy = (unsigned int)fft_get_non_symmetric_f (f, n_factors);
         nonsym = MAX (nonsymx, nonsymy);
 	
         /* Now get factors of ntotal  */
