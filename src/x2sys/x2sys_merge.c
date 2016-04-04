@@ -319,6 +319,8 @@ GMT_LOCAL void clear_mem (struct GMT_CTRL *GMT, char **pairs_base, char **pairs_
 
 	for (i = 0; i < n_base; i++)  gmt_M_free (GMT, pairs_base[i]);
 	for (i = 0; i < n_merge; i++) gmt_M_free (GMT, pairs_merge[i]);
+	gmt_M_free (GMT, pairs_base);
+	gmt_M_free (GMT, pairs_merge);
 	gmt_M_free (GMT, map_base_start);
 	gmt_M_free (GMT, map_base_end);
 	gmt_M_free (GMT, map_merge_start);
