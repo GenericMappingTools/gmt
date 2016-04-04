@@ -2237,7 +2237,7 @@ int gmtgrdio_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 		wesn_dup[YHI] = (double)(dim[GMT_Y]);
 		inc_dup[GMT_X] = inc_dup[GMT_Y] = 1.0;
 		registration = GMT_GRID_PIXEL_REG;
-		if (dim[GMT_Z] > 1) n_layers = dim[GMT_Z];
+		if (dim[GMT_Z] > 1) n_layers = (unsigned int)dim[GMT_Z];
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Grid/Image dimensions imply w/e/s/n = 0/%g/0/%g, inc = 1/1, pixel registration, n_layers = %u\n",
 			wesn_dup[XHI], wesn_dup[YHI], n_layers);
 	}
