@@ -34,6 +34,9 @@
 
 #define GMT_PROG_OPTIONS "->RV"
 
+#define XREPORT_EXTERNAL	1
+#define XREPORT_INTERNAL	2
+
 struct X2SYS_REPORT_CTRL {
 	struct In {
 		bool active;
@@ -179,7 +182,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struc
 				Ctrl->N.active = true;
 				Ctrl->N.min = atoi (opt->arg);
 				break;
-			case 'Q':	/* Specify internal or external only */
+			case 'Q':	/* Specify internal or external only [Default is both] */
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
@@ -275,9 +278,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args) {
 	
 	/* Select internal, external, or both */
 	
-	if (Ctrl->Q.active) {
-		if (Ctrl->Q.mode == 1) internal = false;
-		if (Ctrl->Q.mode == 2) external = false;
+	if (Ctrl->Q.active) {	/* Follow user options */
+		internal = (Ctrl->Q.mode == XREPORT_EXTERNAL) ? false : true;
+		external = (Ctrl->Q.mode == XREPORT_INTERNAL) ? false : true;
 	}
 	coe_kind = 0;
 	if (internal) coe_kind |= 1;
