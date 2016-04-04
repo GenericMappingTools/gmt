@@ -268,7 +268,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "UNIF: Number of evaluation points = %" PRId64 ", number of extrapolation points = %" PRId64 "\n", nm, ierror);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "UNIF: Number of evaluation points = %" PRId64 ", number of extrapolation points = %" PRId64 "\n", nm, ierror);
 	}
 	else if (mode == 2) {	/* c-1 interpolation (intrc1) with global gradients gradg. */
 		int64_t maxit, nitg;
@@ -290,7 +291,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GRADG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GRADG (iteration %" PRId64 "): tolerance = %g max change = %g  maxit = %" PRId64 " no. iterations = %" PRId64 " ier = %" PRId64 "\n",
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+			            "GRADG (iteration %" PRId64 "): tolerance = %g max change = %g  maxit = %" PRId64 " no. iterations = %" PRId64 " ier = %" PRId64 "\n",
 				iter, dgmax, dgmx, maxit, nitg, ierror);
 			if (vartens) {
 				/* compute tension factors sigma (getsig).  iflgs > 0 if vartens = true */
@@ -300,7 +302,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG (iteration %" PRId64 "): ier = %" PRId64 "\n", iter, ierror);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+				            "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
@@ -310,7 +313,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
 		double wtk, smtol, gstol, e, sm, *wt = gmt_M_memory (GMT, NULL, n, double);
@@ -323,18 +327,22 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		/* compute and print smsurf parameters. */
 		smtol = sqrt (2.0 / sm);
 		gstol = 0.05 * e;
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "SMSURF parameters:\n\texpected squared error = %g\n\tsmoothing parameter sm = %g\n", e, sm);
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "\tgauss-seidel tolerance = %g\n\tsmoothing tolerance = %g\n\tweights = %g\n", gstol, smtol, wtk);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "SMSURF parameters:\n\texpected squared error = %g\n\tsmoothing parameter sm = %g\n", e, sm);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "\tgauss-seidel tolerance = %g\n\tsmoothing tolerance = %g\n\tweights = %g\n", gstol, smtol, wtk);
 
 		/* loop on smsurf/getsig iterations. */
 		for (iter = iflgs = 0; iter < itgs; iter++) {
 			smsurf_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in SMSURF (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
-				gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
+				gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);		gmt_M_free (GMT, wt);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
-			if (ierror == 1) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Error in SMSURF: inactive constraint in SMSURF (iteration %" PRId64 ").  f is a constant function\n", iter);
+			if (ierror == 1)
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+				            "Error in SMSURF: inactive constraint in SMSURF (iteration %" PRId64 ").  f is a constant function\n", iter);
 			if (vartens) {	/* compute tension factors sigma (getsig).  iflgs > 0 if vt = true. */
 				iflgs = 1;
 				getsig_ (&n, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
@@ -343,7 +351,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 					gmt_M_free (GMT, wt);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+				            "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
@@ -353,7 +362,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: ier = %" PRId64 "\n", ierror);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
+		            "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
 	
 	gmt_M_free (GMT, plon);
