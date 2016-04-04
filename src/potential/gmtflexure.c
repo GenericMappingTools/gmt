@@ -701,7 +701,6 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 	/* Allocate memory for load and restore force */
 
 	k = gmt_M_memory (GMT, NULL, n, double);
-	w_old = gmt_M_memory (GMT, NULL, n, double);
 	load = gmt_M_memory (GMT, NULL, n, double);
 
 	/* Initialize restoring force */
@@ -716,11 +715,15 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 
 	w0 = w[0];	w1 = w[1];	wn1 = w[n-2];	wn = w[n-1];
 
-	memcpy ((void *)load, (void *)p, n * sizeof (double));
+	gmt_M_memcpy (load, p, n, double);
 
-	error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right);
+	if ((error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right))) {
+		gmt_M_free (GMT, load);
+		gmt_M_free (GMT, k);
+		return (error);
+	}
 
-	if (error) return (error);
+	w_old = gmt_M_memory (GMT, NULL, n, double);
 
 	while (!error && diff > LIMIT) {	/* Iterate as long as rms difference is > LIMIT. diff starts at 2*LIMIT. */
 
@@ -730,12 +733,12 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 
 		/* Save previous solution */
 
-		memcpy ((void *)w_old, (void *)w, n * sizeof (double));
+		gmt_M_memcpy (w_old, w, n, double);
 
 		/* Initialize arrays again */
 
-		memcpy ((void *)load, (void *)p, n * sizeof (double));
-		memset ((void *)w, 0, n * sizeof (double));
+		gmt_M_memcpy (load, p, n, double);
+		gmt_M_memset (w, n, double);
 		w[0] = w0;	w[1] = w1;	w[n-2] = wn1;	w[n-1] = wn;	/* Reset BC values */
 
 		error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right);
@@ -815,8 +818,7 @@ GMT_LOCAL int flx1dw0 (struct GMT_CTRL *GMT, double *w, double *w0, double *d, d
 
 	/* Matrix row 0: */
 
-	work[0] = 0.0;
-	work[1] = 0.0;
+	work[0] = work[1] = 0.0;
 	restore = k[0] * dx_4;
 	if (bc_left == 0) {		/* 'infinity' conditions */
 		work[2] = 10.0 * d[0] - 4.0 * d[1] + restore - stress2;

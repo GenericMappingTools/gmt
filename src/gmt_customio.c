@@ -1672,7 +1672,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
  *		gmt_gdal_write_grd_info, gmt_gdal_read_grd, gmt_gdal_write_grd
  *-----------------------------------------------------------*/
 
-static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
+static inline void free_from_gdalread (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *from_gdalread) {
 	int i;
 	gmt_M_free (GMT, from_gdalread->ColorMap);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
@@ -1680,7 +1680,6 @@ static inline void free_from_gdalread(struct GMT_CTRL *GMT, struct GMT_GDALREAD_
 	gmt_M_str_free (from_gdalread->ProjectionRefPROJ4);
 	gmt_M_str_free (from_gdalread->ProjectionRefWKT);
 	gmt_M_free (GMT, from_gdalread->band_field_names);
-	gmt_M_free (GMT, from_gdalread);
 }
 
 int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
@@ -1887,6 +1886,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR data type not supported with gdalread in gmt_customio.\n");
 			gmt_M_free (GMT, to_gdalread);
 			free_from_gdalread (GMT, from_gdalread);
+			gmt_M_free (GMT, from_gdalread);
 			return (GMT_GRDIO_OPEN_FAILED);
 		}
 	}
@@ -1925,6 +1925,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	gmt_M_free (GMT, to_gdalread);
 	free_from_gdalread (GMT, from_gdalread);
+	gmt_M_free (GMT, from_gdalread);
 
 	return (GMT_NOERROR);
 }

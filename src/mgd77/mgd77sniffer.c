@@ -946,7 +946,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 				if (sscanf (custom_limit_line,"%s %s %s %s %s", field_abbrev, tmp_min, tmp_max, tmp_maxSlope, tmp_area) == 5) {
 					i = 0;
 					while (strcmp (mgd77snifferdefs[i].abbrev, field_abbrev) && i <= MGD77_N_NUMBER_FIELDS) i++;
-					if (i <= MGD77_N_NUMBER_FIELDS) {
+					if (i < MGD77_N_NUMBER_FIELDS) {
 						if (strcmp(tmp_min, "-"))  mgd77snifferdefs[i].minValue = atof (tmp_min);
 						if (strcmp(tmp_max, "-"))  mgd77snifferdefs[i].maxValue = atof (tmp_max);
 						if (strcmp(tmp_maxSlope, "-")) maxSlope[i] = atof (tmp_maxSlope);
