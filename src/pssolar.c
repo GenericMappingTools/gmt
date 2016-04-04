@@ -434,8 +434,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		if (Ctrl->C.active) {			/* Output all members of the Sun struct as a vector of doubles */
 			double out[10];
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 10)) != GMT_OK) Return (API->error);
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
+				gmt_M_free (GMT, Sun);
 				Return (API->error);
+			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) Return (API->error);
 			out[0] = -Sun->HourAngle;		out[1] = Sun->SolarDec;		out[2] = Sun->SolarAzim;
 			out[3] = Sun->SolarElevation;		out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
@@ -445,10 +447,14 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);		
 		}
 		else {
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Registers default output destination*/
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination*/
+				gmt_M_free (GMT, Sun);
 				Return (API->error);
-			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK)	/* Enables data output and sets access mode */
+			}
+			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
+				gmt_M_free (GMT, Sun);
 				Return (API->error);
+			}
 
 			sprintf (record, "\tSun current position:    long = %f\tlat = %f", -Sun->HourAngle, Sun->SolarDec);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
@@ -477,10 +483,14 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output (this one is ignored here)*/
 		gmt_set_tableheader (GMT, GMT_OUT, true);	/* Turn on table headers on output */
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) Return (API->error);
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK)	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			gmt_M_free (GMT, Sun);
 			Return (API->error);
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK)	/* Enables data output and sets access mode */
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, Sun);
 			Return (API->error);
+		}
 		for (n = n_items = 0; n < 4; n++) if (Ctrl->T.radius[n] > 0.0) n_items++;
 
 		for (n = 0; n < 4; n++) {						/* Loop over the number of requested terminators */
