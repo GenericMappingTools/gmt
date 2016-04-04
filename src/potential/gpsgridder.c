@@ -533,8 +533,10 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	r_min = DBL_MAX;	r_max = -DBL_MAX;
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
+				gmt_M_free (GMT, X);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -594,8 +596,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		for (p = 0; p < n; p++) gmt_M_free (GMT, X[p]);
-		gmt_M_free (GMT, X);
-		gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
+		gmt_M_free (GMT, X);	gmt_M_free (GMT, u);	gmt_M_free (GMT, v);
 		Return (API->error);
 	}
 
