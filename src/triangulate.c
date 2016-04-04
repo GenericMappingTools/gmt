@@ -401,7 +401,10 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
 		int nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);	/* Coverity says it would leak */
+			Return (API->error);
+		}
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
 
@@ -461,6 +464,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+			if (!Ctrl->Q.active) gmt_delaunay_free (GMT, &link);
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
