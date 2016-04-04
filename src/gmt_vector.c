@@ -989,32 +989,33 @@ int gmt_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int nu, double *b
 	return (bad);
 }
 
+#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
+	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
+#endif
+
 int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int n_in, double *w, double *v) {
 	/* Front for SVD calculations */
 #ifdef HAVE_LAPACK
 	/* Here we use Lapack */
 	int n = m_in, lda = m_in, info, lwork;
 	double wkopt, *work = NULL;
-#ifndef __APPLE__	/* Since it is already declared in Accelerate.h */
-	extern int dsyev_ (char* jobz, char* uplo, int* n, double* a, int* lda, double* w, double* work, int* lwork, int* info);
-#endif
 	gmt_M_unused(n_in);	/* Since we are actually only doing square matrices... */
 	gmt_M_unused(v);
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_svdcmp: Using Lapack dsyev\n");
 	/* Query and allocate the optimal workspace */
-        lwork = -1;
-        dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
-        lwork = (int)wkopt;
+	lwork = -1;
+	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, &wkopt, &lwork, &info );
+	lwork = (int)wkopt;
 	work = gmt_M_memory (GMT, NULL, lwork, double);
-        /* Solve eigenproblem */
-        dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
-        /* Check for convergence */
-        if (info > 0 ) {
+	/* Solve eigenproblem */
+	dsyev_ ( "Vectors", "Upper", &n, a, &lda, w, work, &lwork, &info );
+	/* Check for convergence */
+	if (info > 0 ) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_svdcmp: Error - dsyev failed to compute eigenvalues.\n" );
 		return (EXIT_FAILURE);
-        }
-       /* Free workspace */
-        gmt_M_free (GMT, work);
+	}
+	/* Free workspace */
+	gmt_M_free (GMT, work);
 	/* No separate v matrix but stored in a, so... */
 	v = a;
 	return (GMT_NOERROR);
