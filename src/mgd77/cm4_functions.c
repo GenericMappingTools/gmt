@@ -306,6 +306,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_D.path);
 				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+				gmt_M_str_free (msec);	gmt_M_str_free (mjdy);	free (mjdy);
 				return 1;
 			}
 			jaft = 0;
@@ -348,6 +349,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			if (Ctrl->CM4_DATA.n_times > 1) gmt_M_str_free (Ctrl->CM4_D.dst);
 			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 			           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+			gmt_M_str_free (msec);	gmt_M_str_free (mjdy);	free (mjdy);
 			return 1;
 		}
 
@@ -356,7 +358,12 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			Ctrl->CM4_D.dst[n] = intdst(mjdl, mjdh, mjdy[n], msec[n], dstx, &cerr);
 
 		gmt_M_str_free ( dstx);
-		if (cerr > 49) return 1;
+		if (cerr > 49) {
+			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
+			           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+			gmt_M_str_free (msec);	gmt_M_str_free (mjdy);	free (mjdy);
+			return 1;
+		}
 	}
 	if (Ctrl->CM4_I.index) {
 		if (Ctrl->CM4_I.load) {
@@ -364,6 +371,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_I.path);
 				clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 				           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+				gmt_M_str_free (msec);	gmt_M_str_free (mjdy);	free (mjdy);
 				return 1;
 			}
 			jaft = 0;
@@ -385,13 +393,13 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 		/* MUST INVESTIGATE IF IT WORTH HAVING AN ARRAY OF f107 LIKE IN THE DST CASE */
 		Ctrl->CM4_I.F107 = intf107(iyrl, imol, iyrh, imoh, iyr, imon, idom, idim, msec[0], f107x, &cerr);
 		if (cerr > 49) {
-			gmt_M_str_free (msec);	gmt_M_str_free (mjdy);
+			gmt_M_str_free (msec);	gmt_M_str_free (mjdy);	free(mjdy);
 			clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
 	                   esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
 			return 1;
 		}
 	}
-	gmt_M_str_free (msec);	gmt_M_str_free (mjdy);
+	gmt_M_str_free (msec);	gmt_M_str_free (mjdy);	free (mjdy);
 
 	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
 	hysq = calloc(82080U, sizeof(double));
