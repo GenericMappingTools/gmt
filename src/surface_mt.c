@@ -190,7 +190,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	uint64_t nxny;			/* Total number of grid nodes without boundaries  */
 	uint64_t mxmy;			/* Total number of grid nodes with padding */
 	uint64_t total_iterations;	/* Total iterations so far. */
-#ifdef OPENMP_
+#ifdef _OPENMP
 	uint64_t *briggs_index;		/* Since we cannot access Briggs array sequentially when multiple threads */
 #endif
 	struct SURFACE_DATA *data;	/* All the data constraints */
@@ -203,6 +203,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	unsigned int set_limit[2];	/* For low and high: NONE = unconstrained, DATA = by min data value, VALUE = by user value, SURFACE by a grid */
 	unsigned int max_iterations;	/* Max iterations per call to iterate */
 	unsigned int converge_mode; 	/* BY_PERCENT if -C set fractional convergence limit [BY_VALUE] */
+	unsigned int p[5][4];
 	int current_stride;		/* Current node spacings relative to final spacing  */
 	int previous_stride;		/* Previous node spacings relative to final spacing  */
 	int nx;				/* Number of nodes in x-dir. (Final grid) */
@@ -222,7 +223,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	char *limit_file[2];		/* Pointers to grids with low and high limits, if selected */
 	bool periodic;			/* true if geographic grid and west-east == 360 */
 	bool constrained;		/* true if set_limit[LO] or set_limit[HI] is true */
-#ifdef OPENMP_
+#ifdef _OPENMP
 	float *alternate_grid;		/* Used in iterate when we cannot write to the same grid across all threads */
 #endif
 	double limit[2];		/* Low and hight constrains on range of solution */
@@ -506,7 +507,6 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	float z_at_node, *u = C->Grid->data;
 	unsigned char *status = C->status;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
-	struct SURFACE_DATA *D = NULL;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine nearest point and set Briggs coefficients [stride = %d]\n", C->current_stride);
 	
@@ -520,7 +520,6 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	last_index = UINTMAX_MAX;	briggs_index = 0U;
 	
 	for (k = 0; k < C->npoints; k++) {	/* Find constraining value  */
-		D = &(C->data[k]);
 		if (C->data[k].index != last_index) {	/* Moving to the next node to address its nearest data constraint */
 			/* Note: Index calculations do not consider the boundary padding */
 			row = (int)index_to_row (C->data[k].index, C->current_nx);
@@ -578,7 +577,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 			b[4] = b[0] + b[1] + b[2] + b[3] + btemp;
 	 			b[5] = btemp * C->data[k].z;
 				b[4] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[4]);	/* We do this calculation here instead of inside iterate loop */
-#ifdef OPENMP_
+#ifdef _OPENMP
 				C->briggs_index[node] = briggs_index;	/* Since with OpenMP there is no longer a sequential access of Briggs coefficients in iterate */
 #endif
 	 			briggs_index++;
@@ -869,83 +868,78 @@ GMT_LOCAL int write_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char 
 }
 
 GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, float *u)
-{	/* Fill in auxiliary boundary values, see euqations (A-8,9,10) in the reference */
-	uint64_t node, node_w, node_e;
-	int col, row, *d_node = C->offset;	/* Relative changes in node index from present node */;
+{	/* Fill in auxiliary boundary rows and columns; see equations (A-8,9,10) in the reference */
+	uint64_t n, n_s, n_n, n_w, n_e;
+	int col, row, *d_n = C->offset;	/* Relative changes in node index from present node n */
 	double x_0_const = 4.0 * (1.0 - C->boundary_tension) / (2.0 - C->boundary_tension);
 	double x_1_const = (3 * C->boundary_tension - 2.0) / (2.0 - C->boundary_tension);
 	double y_denom = 2 * C->l_epsilon * (1.0 - C->boundary_tension) + C->boundary_tension;
 	double y_0_const = 4 * C->l_epsilon * (1.0 - C->boundary_tension) / y_denom;
 	double y_1_const = (C->boundary_tension - 2 * C->l_epsilon * (1.0 - C->boundary_tension) ) / y_denom;
-	float v, a, c;
 	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Apply all boundary conditions [stride = %d]\n", C->current_stride);
 
 	/* First set (1-T)d2[]/dn2 + Td[]/dn = 0 along edges */
 
-	for (col = 0; col < C->current_nx; col++) {	/* set BC1 along south and north side */
-		node = C->node_sw_corner + col;	/* Set south: u_{0-1} = 2 * u_{00} - u_{01};  */
-		v = u[node+d_node[S1]] = (float)(y_0_const * u[node] + y_1_const * u[node+d_node[N1]]);
-		node = C->node_nw_corner + col;	/* Set north: u_01 = 2 * u_00 - u_0-1;  */
-		v = u[node+d_node[N1]] = (float)(y_0_const * u[node] + y_1_const * u[node+d_node[S1]]);
+	for (col = 0, n_s = C->node_sw_corner, n_n = C->node_nw_corner; col < C->current_nx; col++, n_s++, n_n++) {	/* set BC1 along south and north side */
+		u[n_s+d_n[S1]] = (float)(y_0_const * u[n_s] + y_1_const * u[n_s+d_n[N1]]);	/* South: u_{0-1} = 2 * u_{00} - u_{01};  */
+		u[n_n+d_n[N1]] = (float)(y_0_const * u[n_n] + y_1_const * u[n_n+d_n[S1]]);	/* North: u_01 = 2 * u_00 - u_0-1;  */
 	}
 	if (C->periodic) {	/* Set periodic boundary conditions in longitude at west and east boundaries */
-		for (row = 0, node_w = C->node_nw_corner, node_e = C->node_ne_corner; row < C->current_ny; row++, node_w += C->current_mx, node_e += C->current_mx) {
-			u[node_w+d_node[W1]] = u[node_e+d_node[W1]];	/* West side */
-			u[node_e+d_node[E1]] = u[node_w+d_node[E1]];	/* East side */
-			v = u[node_e] = u[node_w] = 0.5f * (u[node_e] + u[node_w]);	/* Set to average of east and west */
+		for (row = 0, n_w = C->node_nw_corner, n_e = C->node_ne_corner; row < C->current_ny; row++, n_w += C->current_mx, n_e += C->current_mx) {
+			u[n_w+d_n[W1]] = u[n_e+d_n[W1]];	/* West side */
+			u[n_e+d_n[E1]] = u[n_w+d_n[E1]];	/* East side */
+			u[n_e] = u[n_w] = 0.5f * (u[n_e] + u[n_w]);	/* Set to average of east and west */
 		}
 	}
 	else {	/* Regular natural BC */
-		for (row = 0, node_w = C->node_nw_corner, node_e = C->node_ne_corner; row < C->current_ny; row++, node_w += C->current_mx, node_e += C->current_mx) {
+		for (row = 0, n_w = C->node_nw_corner, n_e = C->node_ne_corner; row < C->current_ny; row++, n_w += C->current_mx, n_e += C->current_mx) {
 			/* Set west: u_{-10} = 2 * u_{00} - u_{10};  */
-			v = u[node_w+d_node[W1]] = (float)(x_1_const * u[node_w+d_node[E1]] + x_0_const * u[node_w]);
+			u[n_w+d_n[W1]] = (float)(x_1_const * u[n_w+d_n[E1]] + x_0_const * u[n_w]);
 			/* Set east: u_{10} = 2 * u_{00} - u_{-10};  */
-            		a =u[node_e+d_node[W1]]; c =u[node_e];
-			v = u[node_e+d_node[E1]] = (float)(x_1_const * u[node_e+d_node[W1]] + x_0_const * u[node_e]);
+			u[n_e+d_n[E1]] = (float)(x_1_const * u[n_e+d_n[W1]] + x_0_const * u[n_e]);
 		}
 	}
 
 	/* Now set d2[]/dxdy = 0 at each of the 4 corners */
 
-	node = C->node_sw_corner;
-	v = u[node+d_node[SW]]  = u[node+d_node[SE]] + u[node+d_node[W1]] - u[node+d_node[NE]];
-	node = C->node_nw_corner;
-	v = u[node+d_node[NW]]  = u[node+d_node[NE]] + u[node+d_node[SW]] - u[node+d_node[SE]];
-	node = C->node_se_corner;
-	v = u[node+d_node[SE]] = u[node+d_node[SW]]  + u[node+d_node[NE]] - u[node+d_node[NW]];
-	node = C->node_ne_corner;
-	v = u[node+d_node[NE]]  = u[node+d_node[NW]] + u[node+d_node[SE]] - u[node+d_node[SW]];
+	n = C->node_sw_corner;
+	u[n+d_n[SW]]  = u[n+d_n[SE]] + u[n+d_n[W1]] - u[n+d_n[NE]];
+	n = C->node_nw_corner;
+	u[n+d_n[NW]]  = u[n+d_n[NE]] + u[n+d_n[SW]] - u[n+d_n[SE]];
+	n = C->node_se_corner;
+	u[n+d_n[SE]] = u[n+d_n[SW]]  + u[n+d_n[NE]] - u[n+d_n[NW]];
+	n = C->node_ne_corner;
+	u[n+d_n[NE]]  = u[n+d_n[NW]] + u[n+d_n[SE]] - u[n+d_n[SW]];
 
 	/* Now set dC/dn = 0 at each edge */
 
-	for (col = 0; col < C->current_nx; col++) {	/* set BC2 along south and north side */
-		node = C->node_sw_corner + col;	/* South side */
-		v = u[node+d_node[S2]] = (float)(u[node+d_node[N2]] + C->eps_m2*(u[node+d_node[NW]] + u[node+d_node[NE]]
-			- u[node+d_node[SW]] - u[node+d_node[SE]]) + C->two_plus_em2 * (u[node+d_node[S1]] - u[node+d_node[N1]]));
-		
-		node = C->node_nw_corner + col;	/* North side */
-		v = u[node+d_node[N2]] = -(float)(-u[node+d_node[S2]] + C->eps_m2 * (u[node+d_node[NW]] + u[node+d_node[NE]]
-			- u[node+d_node[SW]] - u[node+d_node[SE]]) + C->two_plus_em2 * (u[node+d_node[S1]] - u[node+d_node[N1]]));
+	for (col = 0, n_s = C->node_sw_corner, n_n = C->node_nw_corner; col < C->current_nx; col++, n_s++, n_n++) {	/* set BC2 along south and north side */
+		/* South side */
+		u[n_s+d_n[S2]] = (float)(u[n_s+d_n[N2]] + C->eps_m2*(u[n_s+d_n[NW]] + u[n_s+d_n[NE]]
+			- u[n_s+d_n[SW]] - u[n_s+d_n[SE]]) + C->two_plus_em2 * (u[n_s+d_n[S1]] - u[n_s+d_n[N1]]));
+		/* North side */
+		u[n_n+d_n[N2]] = (float)(u[n_n+d_n[S2]] + C->eps_m2 * (u[n_n+d_n[SW]] + u[n_n+d_n[SE]]
+			- u[n_n+d_n[NW]] - u[n_n+d_n[NE]]) + C->two_plus_em2 * (u[n_n+d_n[N1]] - u[n_n+d_n[S1]]));
 	}
 
-	for (row = 0, node_w = C->node_nw_corner, node_e = C->node_ne_corner; row < C->current_ny; row++, node_w += C->current_mx, node_e += C->current_mx) {	/* set BC2 along west and east side */
+	for (row = 0, n_w = C->node_nw_corner, n_e = C->node_ne_corner; row < C->current_ny; row++, n_w += C->current_mx, n_e += C->current_mx) {	/* set BC2 along west and east side */
 		if (C->periodic) {	/* Set periodic boundary conditions in longitude */
-			v = u[node_w+d_node[W2]] = u[node_e+d_node[W2]];	/* West side */
-			v = u[node_e+d_node[E2]] = u[node_w+d_node[E2]];	/* East side */
+			u[n_w+d_n[W2]] = u[n_e+d_n[W2]];	/* West side */
+			u[n_e+d_n[E2]] = u[n_w+d_n[E2]];	/* East side */
 		}
 		else {	/* Natural BCs */
 			/* West side */
-			v = u[node_w+d_node[W2]] = u[node_w+d_node[E2]] + (float)(C->eps_p2 * (u[node_w+d_node[NE]] + u[node_w+d_node[SE]]
-				-u[node_w+d_node[NW]] - u[node_w+d_node[SW]]) + C->two_plus_ep2 * (u[node_w+d_node[W1]] - u[node_w+d_node[E1]]));
+			u[n_w+d_n[W2]] = u[n_w+d_n[E2]] + (float)(C->eps_p2 * (u[n_w+d_n[NE]] + u[n_w+d_n[SE]]
+				-u[n_w+d_n[NW]] - u[n_w+d_n[SW]]) + C->two_plus_ep2 * (u[n_w+d_n[W1]] - u[n_w+d_n[E1]]));
 			/* East side */
-			v = u[node_e+d_node[E2]] = - (float)(-u[node_e+d_node[W2]] + C->eps_p2 * (u[node_e+d_node[NE]] + u[node_e+d_node[SE]]
-				- u[node_e+d_node[NW]] - u[node_e+d_node[SW]]) + C->two_plus_ep2 * (u[node_e+d_node[W1]] - u[node_e+d_node[E1]]));
+			u[n_e+d_n[E2]] = (float)(u[n_e+d_n[W2]] + C->eps_p2 * (u[n_e+d_n[NW]] + u[n_e+d_n[SW]]
+				- u[n_e+d_n[NE]] - u[n_e+d_n[SE]]) + C->two_plus_ep2 * (u[n_e+d_n[E1]] - u[n_e+d_n[W1]]));
 		}
 	}
 }
 
-#if OPENMP_
+#if _OPENMP
 #define floatp_swap(px, py) {float *float_tmp; float_tmp = px, px = py, py = float_tmp;}
 #endif
 
@@ -955,21 +949,24 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	unsigned int set, quadrant, current_max_iterations = C->max_iterations * C->current_stride;
 	int col, row, k, *d_node = C->offset;	/* Relative changes in node index from present node */
 	unsigned char *status = C->status;	/* Quadrant or status information for each node */
+	char *mname[2] = {"node", "data"};
 	bool finished;
 	double current_limit = C->converge_limit / C->current_stride;
-	double change, max_change = 0.0, busum, sum_node, was;
+	double change, max_change, busum, sum_node;
 	double *b = NULL;
-#ifdef OPENMP_	/* We will alternate between treating the two grids as old (reading from) and new (writing to) */
+#ifdef _OPENMP	/* We will alternate between treating the two grids as old (reading from) and new (writing to) */
 	float *u_new = C->Grid->data, *u_old = C->alternate_grid;
 #else		/* Here they are the same single grid */
 	float *u_new = C->Grid->data, *u_old = C->Grid->data;
 #endif
 
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Starting iterations, mode = %s Max iterations = %d [stride = %d]\n", mname[mode], current_max_iterations, C->current_stride);
+
 	sprintf (C->format, "%%4ld\t%%c\t%%8" PRIu64 "\t%s\t%s\t%%10" PRIu64 "\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	/* We need to do an even number of iterations so that the final result for this iteration resides in C->Grid->data */
 	do {
-#if OPENMP_
+#if _OPENMP
 		floatp_swap (u_old, u_new);	/* Swap the two grid pointers. First time u_old will point to previous (existing) solution  */
 #endif
 
@@ -981,15 +978,16 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #endif
 
 		/* Now loop over all interior data nodes */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Iteration %d\n", iteration_count);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(col,node,row,sum_node,k,b,busum,briggs_index,change) shared(C,status,u_new,u_old,p) reduction(max : max_change)
+#pragma omp parallel for private(row,node,col,sum_node,set,k,b,quadrant,busum,briggs_index,change) shared(C,status,u_new,u_old,d_node) reduction(max:max_change)
 #endif
 		for (row = 0; row < C->current_ny; row++) {	/* Loop over rows */
 			node = C->node_nw_corner + row * C->current_mx;	/* Node at left side of this row */
 			for (col = 0; col < C->current_nx; col++, node++) {	/* Loop over all columns */
 				if (status[node] == SURFACE_IS_CONSTRAINED) {	/* Data constraint fell exactly on the node, keep it as is */
-#if OPENMP_
+#if _OPENMP
 					u_new[node] = u_old[node];		/* Must copy over to other grid when OpenMP is enabled */
 #endif
 					continue;
@@ -1003,19 +1001,18 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 					sum_node += (u_old[node+d_node[k]] * C->coeff[set][k]);
 					
 				if (set == SURFACE_CONSTRAINED) {	/* Solution is (A-7) and modifications depend on which quadrant the point lies in */
-#ifdef OPENMP_
+#ifdef _OPENMP
 					briggs_index = C->briggs_index[node];	/* Get Briggs array index from lookup table */
 #endif
 					b = C->Briggs[briggs_index].b;		/* Shorthand to this node's Briggs b-array */
-					quadrant = status[node];			/* Which quadrant did the point fall in? */
+					quadrant = status[node];		/* Which quadrant did the point fall in? */
 					for (k = 0, busum = 0.0; k < 4; k++)
-						busum += b[k] * u_old[node+d_node[p[quadrant][k]]];
+						busum += b[k] * u_old[node+d_node[C->p[quadrant][k]]];
 					sum_node = (sum_node + C->a0_const_2 * (busum + b[5])) * b[4];
-#ifndef OPENMP_
+#ifndef _OPENMP
 					briggs_index++;	/* Got to next sequential Briggs array index */
 #endif
 				}
-
 				/* We now apply the over-relaxation: */
 				sum_node = u_old[node] * C->relax_old + sum_node * C->relax_new;
 
@@ -1025,12 +1022,9 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 					else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && sum_node > C->Bound[HI]->data[node])
 						sum_node = C->Bound[HI]->data[node];
 				}
-				was = u_old[node];
 				change = fabs (sum_node - u_old[node]);		/* Change in node value between iterations */
 				u_new[node] = (float)sum_node;			/* Our new estimate at this node */
 				if (change > max_change) max_change = change;	/* Keep track of max change across all nodes */
-				//fprintf (stderr, "I = %d row = %d col = %d node = %d status = %d was = %g new = %g change = %g\n",
-				//	iteration_count, row, col, node, (int)status[node], was, sum_node, change);
 			}	/* End of loop over columns */
 		}	/* End of loop over rows [and possibly threads via OpenMP] */
 	
@@ -1038,8 +1032,8 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		max_change *= C->z_rms;	/* Scale max_change back into original z units */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
 			C->current_stride, C->mode_type[mode], iteration_count, max_change, current_limit, C->total_iterations);
-#ifdef OPENMP_	/* Must impose the condition that # of iteration is even so that old_u (i.e. C->Grid->data) holds the final solution */
-		finished = ((max_change <= current_limit || iteration_count >= current_max_iterations) && iteration_count%2 == 0);
+#ifdef _OPENMP	/* Must impose the condition that # of iteration is even so that old_u (i.e. C->Grid->data) holds the final solution */
+		finished = ((max_change <= current_limit || iteration_count >= current_max_iterations) && (iteration_count%2 == 0));
 #else		/* Does not matter here since u_old == u_new anyway */
 		finished = (max_change <= current_limit || iteration_count >= current_max_iterations);
 #endif
@@ -1340,6 +1334,7 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	C->mx			= C->Grid->header->mx;
 	C->my			= C->Grid->header->my;
 	C->mxmy			= C->Grid->header->size;
+	gmt_M_memcpy (C->p, p, 20, unsigned int);
 	
 	gmt_M_memcpy (C->info.wesn, C->Grid->header->wesn, 4, double);
 }
@@ -1782,25 +1777,27 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Report on memory usage for this run */
 		size_t mem_use, mem_total;
 		mem_use = mem_total = C.npoints * sizeof (struct SURFACE_DATA);
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for data array", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "-----------------------------------------\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for data array", gmt_memory_use (mem_use));
 		mem_use = sizeof (struct GMT_GRID) + C.Grid->header->size * sizeof (float);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for final grid", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for final grid", gmt_memory_use (mem_use));
 		for (end = LO; end <= HI; end++) if (C.set_limit[end]) {	/* Will need to keep a lower|upper surface constrain grid */
 			mem_total += mem_use;
-			GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for constraint grid", gmt_memory_use (mem_use));
+			GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for constraint grid", gmt_memory_use (mem_use));
 		}
-#ifdef OPENMP_
+#ifdef _OPENMP
 		mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for alternate grid", gmt_memory_use (mem_use));
-		mem_use = C.Grid->size * sizeof (uint64_t);	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for Briggs indices", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for alternate grid", gmt_memory_use (mem_use));
+		mem_use = C.Grid->header->size * sizeof (uint64_t);	mem_total += mem_use;
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for Briggs indices", gmt_memory_use (mem_use));
 #endif
 		mem_use = C.npoints * sizeof (struct SURFACE_BRIGGS) ;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for Briggs coefficients", gmt_memory_use (mem_use));
 		mem_use = C.Grid->header->size;	mem_total += mem_use;
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Memory for node status", gmt_memory_use (mem_use));
-		GMT_Report (API, GMT_MSG_VERBOSE, "----------------------------------------\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "%32s:  %s\n", "Total memory use", gmt_memory_use (mem_total));
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Memory for node status", gmt_memory_use (mem_use));
+		GMT_Report (API, GMT_MSG_VERBOSE, "-----------------------------------------\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "%-30s: %9s\n", "Total memory use", gmt_memory_use (mem_total));
+		GMT_Report (API, GMT_MSG_VERBOSE, "=========================================\n");
 	}
 
 	/* Allocate the memory needed to perform the gridding  */
@@ -1810,9 +1807,9 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	C.fraction = gmt_M_memory (GMT, NULL, C.current_stride, double);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL)
 		Return (API->error);
-#ifdef OPENMP_
+#ifdef _OPENMP
 	/* To avoid race conditions we must alternate by updating one grid with values from another */
-	C.alternate_grid = gmt_M_memory_aligned (GMT, NULL, C->Grid->header->size, float);
+	C.alternate_grid = gmt_M_memory_aligned (GMT, NULL, C.Grid->header->size, float);
 	/* Because threads run simultaneously we cannot access the Briggs array sequentially and must use a helper index array */
 	C.briggs_index = gmt_M_memory (GMT, NULL, C.mxmy, uint64_t);
 #endif
@@ -1851,7 +1848,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	/* Clean up after ourselves */
 	
-#ifdef OPENMP_
+#ifdef _OPENMP
 	gmt_M_free_aligned (GMT, C.alternate_grid);
 #endif
 	gmt_M_free (GMT, C.data);

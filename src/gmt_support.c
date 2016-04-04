@@ -13146,6 +13146,6 @@ char * gmt_memory_use (size_t bytes) {
 	char *unit = "kMGT";	/* kilo-, Mega-, Giga-, Tera- */
 	mem = bytes / 1024.0;	/* Report kbytes unless it is too much */
 	while (mem > 1024.0 && kind < 3) { mem /= 1024.0; kind++; }	/* Goto next higher unit */
-	sprintf (mem_report, "%.3g %cb", mem, unit[kind]);
+	sprintf (mem_report, "%.1f %cb", mem, unit[kind]);
 	return mem_report;
 }
