@@ -359,10 +359,10 @@ int gmt_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 
 			if (!strncmp (record, "BYTEORDER", 4) ) {
 				sscanf (record, "%*s %c", &header->flags[0]);	/* Store the endianness flag here */
-				strncpy (header->title, file, GMT_GRID_TITLE_LEN80);
+				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 			}
 			else if (!strncmp (record, "ncols ", 6) ) {	/* Ah. A Arc/Info float binary file with a separate .hdr */
-				strncpy (header->title, file, GMT_GRID_TITLE_LEN80);
+				strncpy (header->title, file, GMT_GRID_TITLE_LEN80-1);
 				header->flags[0] = 'L';	/* If is truly 'L' or 'B' we'll find only when parsing the whole header */
 				header->flags[1] = '2';	/* Flag to let us know the file type */
 			}
