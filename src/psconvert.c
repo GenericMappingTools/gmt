@@ -1204,10 +1204,12 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* Special use by external interface to rip the internal PSL PostScript string identified by file "=" */
 		if (!return_image) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript rip requires output file via -F\n");
+			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
 			Return (EXIT_FAILURE);
 		}
 		if (GMT->PSL->internal.pmode != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Internal PSL PostScript is only half-baked [mode = %d]\n", GMT->PSL->internal.pmode);
+			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
 			Return (EXIT_FAILURE);
 		}
 		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h)) {
@@ -1215,8 +1217,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 		}
 		if (pipe_ghost(API, Ctrl, gs_params, w, h)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to wrap ghostscript in pipes.\n");
+			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
 			Return (EXIT_FAILURE);
 		}
+		gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
 		Return (GMT_OK);	/* Done here */
 	}
 	else {	/* Standard file processing */
