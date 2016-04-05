@@ -295,7 +295,6 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 	                                 "Syntax error: Binary output requires a namestem in -N\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.name, "Syntax error -N:  must provide output template name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
 	                                 "Syntax error -N: Output template must contain %%d\n");
 
@@ -414,6 +413,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) fwork = filterxy_setup (GMT);
 	if (Ctrl->N.active) {
 		int n_formats;
+		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%d.bin") : strdup ("splitxyz_segment_%d.txt");
 		for (col = n_formats = 0; Ctrl->N.name[col]; col++) if (Ctrl->N.name[col] == '%') n_formats++;
 		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 	}
@@ -586,7 +586,6 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
 		int n_formats = 0;
-		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%d.bin") : strdup ("splitxyz_segment_%d.txt");
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;
 		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		/* The io_mode tells the i/o function to split segments into files */
