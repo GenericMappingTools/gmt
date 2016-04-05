@@ -306,6 +306,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.xpower", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
+				gmt_M_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
@@ -322,6 +323,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.ypower", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
+				gmt_M_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
@@ -337,6 +339,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.cpower", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
+				gmt_M_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
@@ -352,6 +355,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.npower", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
+				gmt_M_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
@@ -367,6 +371,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.gain", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
+				gmt_M_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
@@ -405,6 +410,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 			sprintf (fname, "%s.phase", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
+				gmt_M_free (GMT, f_or_w);
 				return (EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, " Writing %s\n", fname);
