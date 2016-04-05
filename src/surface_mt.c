@@ -108,6 +108,7 @@ struct SURFACE_CTRL {
 
 #ifdef DEBUG
 	int debug = 0;
+	bool raw = false;
 	char debug_prefix[32] = {"surface"};
 	float *f = NULL;
 #endif
@@ -988,8 +989,10 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	if (debug) {
 		G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->Grid->header->wesn, C->inc, GMT_GRID_NODE_REG, GMT_NOTSET, NULL);
 		G->header->nx = C->current_nx;	G->header->ny = C->current_ny;
-		if (debug == 3)	/* Alternate pointers to two grids */
-			u_old = C->alternate_grid;
+		if (debug == 2)	/* Use two grids and copy new to old before each iteration*/
+			u_old = C->alternate_grid;	/* u_old is always the temp grid which we copy to before iteration */
+		if (debug == 3)	/* Use two grids and alternate pointer */
+			u_old = C->alternate_grid;	/* So upon first swap u_new will be the tmp grid and u_old will be G->data */
 	}
 #endif
 
@@ -1009,11 +1012,13 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			sprintf (file, "%s_%7.7d_%s_%d.nc", debug_prefix, (int)iteration_count, mname[mode], C->current_stride);
 			gmt_M_memcpy (f, u_old, C->current_mxmy, float);
 			G->data = f;	/* This is the latest solution */
-			for (row = 0; row < C->current_ny; row++) {
-				y_up = (double)(C->Grid->header->ny - row - 1);	/* # of rows from south (where y_up = 0) to this node */
-				node = row_col_to_node (row, 0, C->current_mx);	/* Node index at left end of interior row */
-				for (col = 0; col < C->current_nx; col++, node++)	/* March across this row */
-				 	G->data[node] = (float)((G->data[node] * C->z_rms) + (evaluate_plane (C, col*C->current_stride, y_up*C->current_stride)));
+			if (!raw) {	/* Must scale back up and add plane */
+				for (row = 0; row < C->current_ny; row++) {
+					y_up = (double)(C->Grid->header->ny - row - 1);	/* # of rows from south (where y_up = 0) to this node */
+					node = row_col_to_node (row, 0, C->current_mx);	/* Node index at left end of interior row */
+					for (col = 0; col < C->current_nx; col++, node++)	/* March across this row */
+					 	G->data[node] = (float)((G->data[node] * C->z_rms) + (evaluate_plane (C, col*C->current_stride, y_up*C->current_stride)));
+				}
 			}
 			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_OK)
 				fprintf (stderr, "Writing %s failed\n", file);
@@ -1093,11 +1098,13 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 			sprintf (file, "%s_%7.7d_%s_%d.nc", debug_prefix, (int)iteration_count, mname[mode], C->current_stride);
 			gmt_M_memcpy (f, u_new, C->current_mxmy, float);
 			G->data = f;	/* This is the latest solution */
-			for (row = 0; row < C->current_ny; row++) {
-				y_up = (double)(C->Grid->header->ny - row - 1);	/* # of rows from south (where y_up = 0) to this node */
-				node = row_col_to_node (row, 0, C->current_mx);	/* Node index at left end of interior row */
-				for (col = 0; col < C->current_nx; col++, node++)	/* March across this row */
-				 	G->data[node] = (float)((G->data[node] * C->z_rms) + (evaluate_plane (C, col*C->current_stride, y_up*C->current_stride)));
+			if (!raw) {	/* Must scale back up and add plane */
+				for (row = 0; row < C->current_ny; row++) {
+					y_up = (double)(C->Grid->header->ny - row - 1);	/* # of rows from south (where y_up = 0) to this node */
+					node = row_col_to_node (row, 0, C->current_mx);	/* Node index at left end of interior row */
+					for (col = 0; col < C->current_nx; col++, node++)	/* March across this row */
+					 	G->data[node] = (float)((G->data[node] * C->z_rms) + (evaluate_plane (C, col*C->current_stride, y_up*C->current_stride)));
+				}
 			}
 			if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_OK)
 				fprintf (stderr, "Writing %s failed\n", file);
@@ -1619,7 +1626,14 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				Ctrl->E.active = true;
 				debug = 1; k = 0;
 				if (opt->arg[0] == '+') {
-					debug = (opt->arg[1] == 'm') ? 2 : 3;
+					switch (opt->arg[1]) {
+						case 'o': debug = 1; break;
+						case 'O': debug = 1; raw = true; break;
+						case 'p': debug = 3; break;
+						case 'P': debug = 3; raw = true; break;
+						case 'm': debug = 2; break;
+						case 'M': debug = 2; raw = true; break;
+					}
 					k = 2;
 				}
 				if (opt->arg[k]) strcpy (debug_prefix, &opt->arg[k]);
@@ -1952,6 +1966,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	
 //#ifdef _OPENMP
 	gmt_M_free_aligned (GMT, C.alternate_grid);
+	gmt_M_free (GMT, C.briggs_index);
 //#endif
 if (debug) gmt_M_free (GMT, f);
 	gmt_M_free (GMT, C.data);
