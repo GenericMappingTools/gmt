@@ -560,6 +560,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		gmt_M_free (GMT, rec);
 		Return (API->error);
 	}
 	
