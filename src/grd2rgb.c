@@ -475,6 +475,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 
 		if (header.depth < 8) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile must be at least 8 bits deep\n");
+			PSL_free (picture);
 			Return (EXIT_FAILURE);
 		}
 
@@ -509,8 +510,11 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
-			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
+		                             GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+				PSL_free (picture);
+				Return (API->error);
+			}
 		
 		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
