@@ -305,10 +305,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_splitxyz (void *V_API, int mode, void *args) {
-	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
+	unsigned int i, j, d_col, h_col, z_cols, xy_cols[2] = {0, 1}, io_mode = 0;
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0;
 	int error = 0;
-	bool ok, io_mode = 0, first = true, no_z_column;
+	bool ok, first = true, no_z_column;
 	uint64_t dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
@@ -411,13 +411,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	Ctrl->A.azimuth = D2R * (90.0 - Ctrl->A.azimuth);	/* Work in cartesian angle and radians  */
 	Ctrl->C.value *= D2R;
 	if (Ctrl->F.active) fwork = filterxy_setup (GMT);
-	if (Ctrl->N.active) {
-		int n_formats;
-		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%d.bin") : strdup ("splitxyz_segment_%d.txt");
-		for (col = n_formats = 0; Ctrl->N.name[col]; col++) if (Ctrl->N.name[col] == '%') n_formats++;
-		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
-	}
-	else
+	if (!Ctrl->N.active)
 		gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 
 	if ((error = gmt_set_cols (GMT, GMT_OUT, n_outputs)) != GMT_OK) {
@@ -588,7 +582,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	if (Ctrl->N.active) {
 		int n_formats = 0;
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;
-		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
+		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		/* The io_mode tells the i/o function to split segments into files */
 		gmt_M_str_free (Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->N.name);
