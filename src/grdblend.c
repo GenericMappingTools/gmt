@@ -692,11 +692,17 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	z = gmt_M_memory (GMT, NULL, Grid->header->nx, float);	/* Memory for one output row */
 
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+		gmt_M_free (GMT, z);
+		Return (API->error);
+	}
 
 	if (gmt_M_file_is_memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
 		/* Allocate space for the entire output grid */
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+			gmt_M_free (GMT, z);
+			Return (API->error);
+		}
 		write_all_at_once = true;
 	}
 	else {
@@ -811,6 +817,7 @@ int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	if (write_all_at_once) {	/* Must write entire grid */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+			gmt_M_free (GMT, z);
 			Return (API->error);
 		}
 	}
