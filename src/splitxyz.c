@@ -39,36 +39,36 @@
 int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 
 struct SPLITXYZ_CTRL {
-	struct Out {	/* -> */
+	struct SPLITXYZ_Out {	/* -> */
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A<azimuth>/<tolerance> */
+	struct SPLITXYZ_A {	/* -A<azimuth>/<tolerance> */
 		bool active;
 		double azimuth, tolerance;
 	} A;
-	struct C {	/* -C<course_change> */
+	struct SPLITXYZ_C {	/* -C<course_change> */
 		bool active;
 		double value;
 	} C;
-	struct D {	/* -D<mindist> */
+	struct SPLITXYZ_D {	/* -D<mindist> */
 		bool active;
 		double value;
 	} D;
-	struct F {	/* -F<xy_filter>/<z_filter> */
+	struct SPLITXYZ_F {	/* -F<xy_filter>/<z_filter> */
 		bool active;
 		double xy_filter, z_filter;
 	} F;
-	struct N {	/* -N<namestem> */
+	struct SPLITXYZ_N {	/* -N<namestem> */
 		bool active;
 		char *name;
 	} N;
-	struct Q {	/* -Q[<xyzdg>] */
+	struct SPLITXYZ_Q {	/* -Q[<xyzdg>] */
 		bool active;
 		bool z_selected;
 		char col[SPLITXYZ_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} Q;
-	struct S {	/* -S */
+	struct SPLITXYZ_S {	/* -S */
 		bool active;
 	} S;
 };
@@ -295,6 +295,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct GM
 	                                 "Syntax error: Binary output requires a namestem in -N\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->S.active) ? 5 : 3);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.name, "Syntax error -N:  must provide output template name.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.name && !strstr (Ctrl->N.name, "%"),
 	                                 "Syntax error -N: Output template must contain %%d\n");
 
