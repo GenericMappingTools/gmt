@@ -235,6 +235,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args) {
 
 	if (!gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Got the first record from the track binindex file */
 		GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track binindex file\n");
+		gmt_fclose (GMT, fp);
 		Return (EXIT_FAILURE);
 	}
 	k = (line[1] == ' ') ? 2 : 1;	/* Since line may be "#TAG" or "# TAG" */
