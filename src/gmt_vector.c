@@ -1123,7 +1123,9 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		//s = cblas_ddot (n, &u[j*n], 1, b, 1);
 		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
 	}
+#ifdef _OPENMP
 #pragma omp parallel for private(i,j,s) shared(u,tmp,n,x)
+#endif
 	for (j = 0; j < n; j++) {	/* Now premultiply by v */
 		s = 0.0;
 		//s = cblas_ddot (n, &u[j], n, tmp, 1);
@@ -1137,7 +1139,9 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		for (i = 0; i < n; i++) s += u[i*n+j]*b[i];	/* Calculate v'*b */
 		tmp[j] = s * w[j];	/* Now have temp = inv(w)*v'*b */
 	}
+#ifdef _OPENMP
 #pragma omp parallel for private(i,j,s) shared(v,tmp,n,x)
+#endif
 	for (j = 0; j < n; j++) {	/* Now premultiply by v */
 		s = 0.0;
 		for (i = 0; i < n; i++) s += v[j*n+i]*tmp[i];
