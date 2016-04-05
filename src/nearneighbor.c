@@ -451,7 +451,11 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	if (n < n_alloc) point = gmt_M_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	/* Compute weighted averages based on the nearest neighbors */
 
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) {
+		gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);
+		gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);
+		Return (API->error);
+	}
 
 	n_set = n_almost = n_none = 0;
 
@@ -498,9 +502,15 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Gridded row %10ld\n", row);
 
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) {
+		gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);
+		gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);
+		Return (API->error);
+	}
 
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+		gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);
+		gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);
 		Return (API->error);
 	}
 
@@ -512,11 +522,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args) {
 		(gmt_M_is_dnan (Ctrl->E.value)) ? GMT_Message (API, GMT_TIME_NONE, "NaN)\n") : GMT_Message (API, GMT_TIME_NONE,  line, Ctrl->E.value);
 	}
 
-	gmt_M_free (GMT, point);
-	gmt_M_free (GMT, grid_node);
-	gmt_M_free (GMT, d_col);
-	gmt_M_free (GMT, x0);
-	gmt_M_free (GMT, y0);
+	gmt_M_free (GMT, point);	gmt_M_free (GMT, grid_node);	gmt_M_free (GMT, d_col);
+	gmt_M_free (GMT, x0);		gmt_M_free (GMT, y0);
 
 	Return (GMT_OK);
 }
