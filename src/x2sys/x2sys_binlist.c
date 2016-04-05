@@ -220,6 +220,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active && !s->geographic) {
 		GMT_Report (API, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
+		x2sys_end (GMT, s);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		Return (EXIT_FAILURE);		
 	}
 
@@ -241,14 +243,20 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {
 			GMT_Report (API, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
 			x2sys_free_list (GMT, trk_name, n_tracks);
+			x2sys_end (GMT, s);
 			Return (EXIT_FAILURE);
 		}
 		GMT->current.setting.proj_ellipsoid = gmt_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
-		GMT_Report (API, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
+		GMT_Report (API, GMT_MSG_VERBOSE,
+		            "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n",
+		            B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		gmt_parse_common_options (GMT, "J", 'J', proj);
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) {
+			x2sys_free_list (GMT, trk_name, n_tracks);
+			Return (GMT_PROJECTION_ERROR);
+		}
 		gmt_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
 		gmt_geo_to_xy (GMT, B.wesn[XHI], B.wesn[YHI], &B.wesn[XHI], &B.wesn[YHI]);
 		y_max = B.wesn[YHI];
