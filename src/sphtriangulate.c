@@ -236,6 +236,7 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 		gmt_M_free (GMT, plon);		gmt_M_free (GMT, plat);
+		gmt_M_free (GMT, arc);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	if (nodes) {	/* Want Voronoi node and area information via Dout[1] */
@@ -590,6 +591,8 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
+				gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
+				gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 				gmt_M_free (GMT,  zz);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -676,6 +679,8 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) gmt_set_segmentheader (GMT, GMT_OUT, true);	/* Must produce multisegment output files */
 
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout[0]->io_mode, NULL, Ctrl->Out.file, Dout[0]) != GMT_OK) {
+		gmt_M_free (GMT, lon);	gmt_M_free (GMT, lat);
+		gmt_M_free (GMT, xx);	gmt_M_free (GMT, yy);
 		Return (API->error);
 	}
 	if (Ctrl->N.active) {
