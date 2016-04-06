@@ -741,8 +741,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 				if (Ctrl->D.variable) raised[m] *= Rho->data[m];
 			}
 
-		if (GMT_FFT_2D (API, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX))
+		if (GMT_FFT_2D (API, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX)) {
+			gmt_M_free (GMT, raised);	gmt_M_free (GMT, topo);
 			Return (EXIT_FAILURE);
+		}
 
 		if (Ctrl->D.active || Ctrl->T.moho)	/* "classical" anomaly */
 			do_parker (GMT, Grid[0], Ctrl, K, raised, n, Ctrl->misc.rho);
@@ -755,7 +757,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K)) {
-		gmt_M_free (GMT, raised);
+		gmt_M_free (GMT, raised);	gmt_M_free (GMT, topo);
 		Return (EXIT_FAILURE);
 	}
 
