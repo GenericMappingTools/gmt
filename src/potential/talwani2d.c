@@ -617,8 +617,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
+				gmt_M_free (GMT, body);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
 			if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Process segment headers or end-of-file */
@@ -643,6 +645,7 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 				ns = sscanf (GMT->current.io.segment_header, "%lf",  &rho);
 				if (ns == 0 && !Ctrl->D.active) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Neither segment header nor -D specified density - must quit\n");
+					gmt_M_free (GMT, body);
 					Return (API->error);
 				}
 				if (Ctrl->D.active) rho = Ctrl->D.rho;
@@ -678,6 +681,10 @@ int GMT_talwani2d (void *V_API, int mode, void *args) {
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+ 		for (k = 0; k < n_bodies; k++) {
+			gmt_M_free (GMT, body[k].x);	gmt_M_free (GMT, body[k].z);
+		}
+		gmt_M_free (GMT, body);
 		Return (API->error);
 	}
 	
