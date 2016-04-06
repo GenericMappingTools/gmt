@@ -4983,6 +4983,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT, FILE *outfp, FILE *infp, const Swa
 			}
 			sprintf (message, "%s: error reading stream while skipping.\n", __func__);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
+			gmt_M_str_free (buffer);
 			return false;
 		}
 		bytes_read += nbytes;
