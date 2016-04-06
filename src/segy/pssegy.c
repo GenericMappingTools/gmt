@@ -505,6 +505,7 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 
 	if (Ctrl->T.active && (fpt = fopen (Ctrl->T.file, "r")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find trace list file %s\n", Ctrl->T.file);
+		if (fpi != stdin) fclose (fpi);
 		Return (EXIT_FAILURE);
 	}
 
@@ -535,7 +536,10 @@ int GMT_pssegy (void *V_API, int mode, void *args) {
 		if (fpi != stdin) fclose (fpi);
 		Return (GMT_PROJECTION_ERROR);
 	}
-	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
+	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
+		if (fpi != stdin) fclose (fpi);
+		Return (GMT_RUNTIME_ERROR);
+	}
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
