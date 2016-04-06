@@ -5180,6 +5180,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			int c_err = 0;
 			char CPT_file[GMT_BUFSIZ] = {""}, *file = strdup (input);
 			if ((c_err = api_colors2cpt (API, &file)) < 0) { /* Maybe converted colors to new CPT file */
+				gmt_M_str_free (input);
 				return_null (API, GMT_CPT_READ_ERROR);	/* Failed in the conversion */
 			}
 			else if (c_err == 0) {	/* Regular cpt (master or local), append .cpt and set path */
@@ -5193,7 +5194,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 			else	/* Got color list, now a temp CPT file instead */
 				strncpy (CPT_file, file, GMT_BUFSIZ-1);
 			gmt_M_str_free (file);	/* Free temp CPT file name */
-			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) return_null (API, API->error);
+			if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, CPT_file)) == GMT_NOTSET) {
+				gmt_M_str_free (input);
+				return_null (API, API->error);
+			}
 		}
 		else if ((in_ID = GMT_Register_IO (API, family|module_input, method, geometry, GMT_IN, wesn, input)) == GMT_NOTSET) return_null (API, API->error);
 	}
@@ -5207,6 +5211,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	if (just_get_data) {
 		if ((item = gmtapi_validate_id (API, GMT_NOTSET, in_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) {
+			gmt_M_str_free (input);
 			return_null (API, API->error);
 		}
 		/* Try to catch a matrix masquerading as datatable by examining the object's method too */
