@@ -739,7 +739,9 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		sprintf (format, "min/max values are :\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "min/max values are :\t%s\t%s\t%s\t%s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, x_min, x_max, F.yy0, F.yy1);
 	}
 
@@ -803,12 +805,15 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 4U)) != GMT_OK) {
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+				gmt_M_free (GMT, data);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);	/* Enables data output and sets access mode */
 			}
 			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -W%g -Z%u", Ctrl->W.inc, Ctrl->Z.mode);
@@ -817,6 +822,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
 			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4U, unsigned int);	/* Restore 4 current output col types */
@@ -844,13 +850,19 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 		}
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
+			gmt_M_free (GMT, data);
 			Return (EXIT_FAILURE);
 		}
 	}
 
 	if (automatic && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		sprintf (format, "Use w/e/s/n = %s/%s/%s/%s and x-tick/y-tick = %s/%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_Report (API, GMT_MSG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
+		sprintf (format, "Use w/e/s/n = %s/%s/%s/%s and x-tick/y-tick = %s/%s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI],
+		            GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval,
+		            GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 	}
 
 	if (Ctrl->A.active) {	/* Must flip x and y axis */
