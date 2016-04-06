@@ -668,7 +668,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->L.active) {	/* OK, that was all we wanted */
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
-			gmt_M_free (GMT, V);
+			gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
+			gmt_M_free (GMT, h);		gmt_M_free (GMT, h_sum);
 			Return (API->error);
 		}
 		gmt_M_free (GMT, V);		gmt_M_free (GMT, V_sum);
@@ -890,7 +891,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 			prev_user_time = this_user_time;	/* Make this the previous time */
 		}
 		if (empty) {
-			GMT_Report (API, GMT_MSG_VERBOSE, "No contribution made for time %g %s\n", Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
+			GMT_Report (API, GMT_MSG_VERBOSE, "No contribution made for time %g %s\n",
+			            Ctrl->T.time[t].value * Ctrl->T.time[t].scale, gmt_modeltime_unit (Ctrl->T.time[t].u));
 			continue;
 		}
 		
@@ -921,6 +923,8 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 		gmt_M_memcpy (data, Grid->data, Grid->header->size, float);	/* This will go away once gmt_nc.c is fixed to leave array alone */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Grid) != GMT_OK) {
+			gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
+			gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 			Return (API->error);
 		}
 		gmt_M_memcpy (Grid->data, data, Grid->header->size, float);
@@ -928,17 +932,14 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if (Ctrl->M.active) L->table[0]->n_records = t_use;
 	if (Ctrl->M.active && GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, 0, NULL, Ctrl->M.file, L) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Error writing list of grid files to %s\n", Ctrl->M.file);
-		gmt_M_free (GMT, d_col);
+		gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
+		gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 		Return (API->error);
 	}
 
 	//for (ij = 0; ij < n_smts; ij++) fprintf (stderr, "Smt %d: V = %g Stacked V = %g h = %g Stacked h = %g\n", (int)ij, V[ij], V_sum[ij], h[ij], h_sum[ij]);
-	gmt_M_free (GMT, d_col);
-	gmt_M_free (GMT, V);
-	gmt_M_free (GMT, h);
-	gmt_M_free (GMT, V_sum);
-	gmt_M_free (GMT, h_sum);
-	gmt_M_free (GMT, data);
+	gmt_M_free (GMT, d_col);	gmt_M_free (GMT, V);		gmt_M_free (GMT, h);
+	gmt_M_free (GMT, V_sum);	gmt_M_free (GMT, h_sum);	gmt_M_free (GMT, data);
 	
 	Return (GMT_OK);
 }
