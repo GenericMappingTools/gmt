@@ -1005,22 +1005,23 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 
 	/* Now open file and do it */
 
-	if ( (fp = gmt_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
+	if ((fp = gmt_fopen (GMT, myras.h.remark, "rb") ) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR opening %s for read.\n", myras.h.remark);
+		gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
 		Return (EXIT_FAILURE);
 	}
 	if (myras.skip && fseek (fp, myras.skip, SEEK_CUR)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "ERROR skipping %" PRIi64 " bytes in %s.\n", (int64_t)myras.skip, myras.h.remark);
-		gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);
+		gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
 		Return (EXIT_FAILURE);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Reading from raster %s\n", myras.h.remark);
 	if (myras.swap_me) GMT_Report (API, GMT_MSG_VERBOSE, "Data from %s will be byte-swapped\n", myras.h.remark);
 
 	if (myras.type == 'b') {	/* Must handle bit rasters a bit differently */
-		if ( (gmt_M_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
+		if ((gmt_M_fread (ubuffer, sizeof (unsigned char), nmask, fp)) != nmask) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failure to read a bitmap raster from %s.\n", myras.h.remark);
-			gmt_M_free (GMT, ubuffer);
+			gmt_M_free (GMT, ubuffer);		gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
 			gmt_fclose (GMT, fp);
 			Return (EXIT_FAILURE);
 		}
@@ -1086,14 +1087,13 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 				if (jseek && fseek (fp, (off_t)jseek * (off_t)ksize * (off_t)myras.h.nx, SEEK_CUR) ) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR seeking in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
-					gmt_M_free (GMT, buffer);
+					gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
 					Return (EXIT_FAILURE);
 				}
 				if ((gmt_M_fread (buffer, ksize, n_expected, fp)) != n_expected) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR reading in %s\n", myras.h.remark);
 					gmt_fclose (GMT, fp);
-					gmt_M_free (GMT, buffer);
-					gmt_M_free (GMT, floatrasrow);
+					gmt_M_free (GMT, buffer);	gmt_M_free (GMT, floatrasrow);
 					Return (EXIT_FAILURE);
 				}
 #ifdef DEBUG
