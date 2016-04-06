@@ -744,6 +744,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 	if (fread (&n_records, sizeof (int), 1U, fp) != 1U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
+		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	p->n_rows = n_records;
@@ -751,6 +752,7 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 	if (fread (p->name, sizeof (char), 10U, fp) != 10U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read agency from %s\n", path);
+		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
@@ -762,6 +764,8 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 		if (fread (&record, 18U, 1U, fp) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read record %" PRIu64 " from %s\n", j, path);
+			fclose (fp);
+			for (i = 0; i < (int)s->n_out_columns; i++) gmt_M_free (GMT, z[i]);
 			gmt_M_free (GMT, z);
 			return (GMT_GRDIO_READ_FAILED);
 		}
