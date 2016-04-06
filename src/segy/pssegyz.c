@@ -629,7 +629,10 @@ int GMT_pssegyz (void *V_API, int mode, void *args) {
 	}
 
 	/* set up map projection and PS plotting */
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (fpi != stdin) fclose (fpi);
+		Return (GMT_PROJECTION_ERROR);
+	}
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
 		if (fpi != stdin) fclose (fpi);
 		Return (GMT_RUNTIME_ERROR);
