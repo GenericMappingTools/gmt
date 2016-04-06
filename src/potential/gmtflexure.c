@@ -718,8 +718,7 @@ GMT_LOCAL int flx1dk (struct GMT_CTRL *GMT, double w[], double d[], double p[], 
 	gmt_M_memcpy (load, p, n, double);
 
 	if ((error = flx1d (GMT, w, d, load, n, dx, k, 1, stress, bc_left, bc_right))) {
-		gmt_M_free (GMT, load);
-		gmt_M_free (GMT, k);
+		gmt_M_free (GMT, load);		gmt_M_free (GMT, k);
 		return (error);
 	}
 
