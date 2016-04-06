@@ -556,9 +556,11 @@ int GMT_trend2d (void *V_API, int mode, void *args) {
 	allocate_the_memory (GMT, np, &gtg, &v, &gtd, &lambda, &workb, &workz, &c_model, &o_model, &w_model);
 
 	if ((error = gmt_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if ((error = gmt_set_cols (GMT, GMT_OUT, Ctrl->n_outputs)) != GMT_OK) {
+		free_the_memory (GMT,gtg, v, gtd, lambda, workb, workz, c_model, o_model, w_model, data, work);
 		Return (error);
 	}
 	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
