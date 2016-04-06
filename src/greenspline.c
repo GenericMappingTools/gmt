@@ -1430,8 +1430,11 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	r_min = DBL_MAX;	r_max = -DBL_MAX;
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) {		/* Bail if there are any read errors */
+				for (p = 0; p < n_alloc; p++) gmt_M_free (GMT, X[p]);
+				gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -1482,6 +1485,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		for (p = 0; p < n_alloc; p++) gmt_M_free (GMT, X[p]);
 		gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 		Return (API->error);
 	}
@@ -1499,6 +1503,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
+			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			Return (API->error);
 		}
 		gmt_reenable_i_opt (GMT);	/* Recover settings provided by user (if -i was used at all) */
@@ -1575,6 +1581,8 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Bad dimension selected (%d) - aborting!\n", dimension);
+						for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
+						gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 						Return (GMT_DATA_READ_ERROR);
 						break;
 				}
@@ -1619,8 +1627,7 @@ int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (!Ctrl->C.active || gmt_M_is_zero (Ctrl->C.value)) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "You must reconcile duplicates before running greenspline since they will result in a singular matrix\n");
 			for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
-			gmt_M_free (GMT, X);
-			gmt_M_free (GMT, obs);
+			gmt_M_free (GMT, X);	gmt_M_free (GMT, obs);
 			if (m) {
 				for (p = 0; p < m; p++) gmt_M_free (GMT, D[p]);
 				gmt_M_free (GMT, D);
