@@ -937,6 +937,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args) {
 	}
 	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->A.file)) == NULL) { /* Precalculate area weights, optionally save debug grid */
 		if (!fast_way) gmt_M_free (GMT, x_shift);
+		gmt_M_free (GMT, col_origin);
 		Return (API->error);
 	}
 	gmt_M_memset (&F, 1, struct FILTER_INFO);
