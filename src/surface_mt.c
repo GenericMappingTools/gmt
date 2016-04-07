@@ -235,7 +235,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	unsigned int set_limit[2];	/* For low and high: NONE = unconstrained, DATA = by min data value, VALUE = by user value, SURFACE by a grid */
 	unsigned int max_iterations;	/* Max iterations per call to iterate */
 	unsigned int converge_mode; 	/* BY_PERCENT if -C set fractional convergence limit [BY_VALUE] */
-	unsigned int p[5][4];
+	unsigned int p[5][4];		/* Arrays with four nodes as function of quadrant in constrained fit */
 	int current_stride;		/* Current node spacings relative to final spacing  */
 	int previous_stride;		/* Previous node spacings relative to final spacing  */
 	int nx;				/* Number of nodes in x-dir. (Final grid) */
@@ -261,7 +261,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 #endif
 	double limit[2];		/* Low and hight constrains on range of solution */
 	double inc[2];			/* Size of each grid cell for current grid factor */
-	double r_inc[2];		/* Reciprocals  */
+	double r_inc[2];		/* Reciprocal grid spacings  */
 	double converge_limit;		/* Convergence limit */
 	double radius;			/* Search radius for initializing grid  */
 	double tension;			/* Tension parameter on the surface  */
@@ -273,16 +273,16 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	double plane_icept;		/* Intercept of best fitting plane to data  */
 	double plane_sx;		/* Slope of best fitting plane to data in x-direction */
 	double plane_sy;		/* Slope of best fitting plane to data in y-direction */
-	double small;			/* Let data point coincide with node if distance < small */
+	double min_distance;		/* Let data point determine node value if distance to node is < min_distance */
 	double *fraction;		/* Hold fractional increments of row and column used in fill_in_forecast */
 	double coeff[2][12];		/* Coefficients for 12 nearby nodes, for constrained [0] and unconstrained [1] nodes */
 	double relax_old, relax_new;	/* Coefficients for relaxation factor to speed up convergence */
 	double wesn_orig[4];		/* Original -R domain as we might have shifted it due to -r */
-	double a0_const_1, a0_const_2;	/* Various constants for off gridnode point equation */
-	double e_2, e_m2, one_plus_e2;
+	double alpha;			/* Aspect ratio dy/dx (1 for square pixels) */
+	double a0_const_1, a0_const_2;	/* Various constants for off gridnode point equations */
+	double alpha2, e_m2, one_plus_e2;
 	double eps_p2, eps_m2, two_plus_ep2;
-	double x_edge_const, y_edge_const;
-	double l_epsilon, two_plus_em2;
+	double two_plus_em2;
 };
 
 GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
@@ -290,43 +290,41 @@ GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 * by equations (A-4) [SURFACE_UNCONSTRAINED=0] and (A-7) [SURFACE_CONSTRAINED=1] in the reference.
 	 * Note that the SURFACE_UNCONSTRAINED coefficients are normalized by a0 (20 for no tension/aspects)
 	 * whereas the SURFACE_CONSTRAINED is used for a partial sum hence the normalization is done when the
-	 * sum over the Briggs coefficients have been included. */
-	double e_4, loose, a0;
+	 * sum over the Briggs coefficients have been included in iterate. */
+	double alpha4, loose, a0;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set finite-difference coefficients [stride = %d]\n", C->current_stride);
 	
 	loose = 1.0 - C->interior_tension;
-	C->e_2 = C->l_epsilon * C->l_epsilon;
-	e_4 = C->e_2 * C->e_2;
-	C->eps_p2 = C->e_2;
-	C->eps_m2 = 1.0 / C->e_2;
-	C->one_plus_e2 = 1.0 + C->e_2;
+	C->alpha2 = C->alpha * C->alpha;
+	alpha4 = C->alpha2 * C->alpha2;
+	C->eps_p2 = C->alpha2;
+	C->eps_m2 = 1.0 / C->alpha2;
+	C->one_plus_e2 = 1.0 + C->alpha2;
 	C->two_plus_ep2 = 2.0 + 2.0 * C->eps_p2;
 	C->two_plus_em2 = 2.0 + 2.0 * C->eps_m2;
 
-	C->x_edge_const = 4 * C->one_plus_e2 - 2 * (C->interior_tension / loose);
-	C->e_m2 = 1.0 / C->e_2;
-	C->y_edge_const = 4 * (1.0 + C->e_m2) - 2 * (C->interior_tension * C->e_m2 / loose);
+	C->e_m2 = 1.0 / C->alpha2;
 
-	a0 = 1.0 / ( (6 * e_4 * loose + 10 * C->e_2 * loose + 8 * loose - 2 * C->one_plus_e2) + 4 * C->interior_tension * C->one_plus_e2);
-	C->a0_const_1 = 2 * loose * (1.0 + e_4);
-	C->a0_const_2 = 2.0 - C->interior_tension + 2 * loose * C->e_2;
+	a0 = 1.0 / ( (6 * alpha4 * loose + 10 * C->alpha2 * loose + 8 * loose - 2 * C->one_plus_e2) + 4 * C->interior_tension * C->one_plus_e2);
+	C->a0_const_1 = 2.0 * loose * (1.0 + alpha4);
+	C->a0_const_2 = 2.0 - C->interior_tension + 2 * loose * C->alpha2;
 
-	C->coeff[SURFACE_CONSTRAINED][W2] = C->coeff[SURFACE_CONSTRAINED][E2] = -loose;
-	C->coeff[SURFACE_CONSTRAINED][N2] = C->coeff[SURFACE_CONSTRAINED][S2] = -loose * e_4;
+	C->coeff[SURFACE_CONSTRAINED][W2]   = C->coeff[SURFACE_CONSTRAINED][E2]   = -loose;
+	C->coeff[SURFACE_CONSTRAINED][N2]   = C->coeff[SURFACE_CONSTRAINED][S2]   = -loose * alpha4;
 	C->coeff[SURFACE_UNCONSTRAINED][W2] = C->coeff[SURFACE_UNCONSTRAINED][E2] = -loose * a0;
-	C->coeff[SURFACE_UNCONSTRAINED][N2] = C->coeff[SURFACE_UNCONSTRAINED][S2] = -loose * e_4 * a0;
-	C->coeff[SURFACE_CONSTRAINED][W1] = C->coeff[SURFACE_CONSTRAINED][E1] = 2 * loose * C->one_plus_e2;
+	C->coeff[SURFACE_UNCONSTRAINED][N2] = C->coeff[SURFACE_UNCONSTRAINED][S2] = -loose * alpha4 * a0;
+	C->coeff[SURFACE_CONSTRAINED][W1]   = C->coeff[SURFACE_CONSTRAINED][E1]   = 2 * loose * C->one_plus_e2;
 	C->coeff[SURFACE_UNCONSTRAINED][W1] = C->coeff[SURFACE_UNCONSTRAINED][E1] = (2 * C->coeff[SURFACE_CONSTRAINED][W1] + C->interior_tension) * a0;
-	C->coeff[SURFACE_CONSTRAINED][N1] = C->coeff[SURFACE_CONSTRAINED][S1] = C->coeff[SURFACE_CONSTRAINED][W1] * C->e_2;
-	C->coeff[SURFACE_UNCONSTRAINED][N1] = C->coeff[SURFACE_UNCONSTRAINED][S1] = C->coeff[SURFACE_UNCONSTRAINED][W1] * C->e_2;
-	C->coeff[SURFACE_CONSTRAINED][NW] = C->coeff[SURFACE_CONSTRAINED][NE] = C->coeff[SURFACE_CONSTRAINED][SW] =
-		C->coeff[SURFACE_CONSTRAINED][SE] = -2 * loose * C->e_2;
+	C->coeff[SURFACE_CONSTRAINED][N1]   = C->coeff[SURFACE_CONSTRAINED][S1]   = C->coeff[SURFACE_CONSTRAINED][W1] * C->alpha2;
+	C->coeff[SURFACE_UNCONSTRAINED][N1] = C->coeff[SURFACE_UNCONSTRAINED][S1] = C->coeff[SURFACE_UNCONSTRAINED][W1] * C->alpha2;
+	C->coeff[SURFACE_CONSTRAINED][NW]   = C->coeff[SURFACE_CONSTRAINED][NE]   = C->coeff[SURFACE_CONSTRAINED][SW] =
+		C->coeff[SURFACE_CONSTRAINED][SE] = -2 * loose * C->alpha2;
 	C->coeff[SURFACE_UNCONSTRAINED][NW] = C->coeff[SURFACE_UNCONSTRAINED][NE] = C->coeff[SURFACE_UNCONSTRAINED][SW] =
 		C->coeff[SURFACE_UNCONSTRAINED][SE] = C->coeff[SURFACE_CONSTRAINED][NW] * a0;
 
-	C->e_2  *= 2;		/* We will need these in the boundary conditions  */
-	C->e_m2 *= 2;
+	C->alpha2 *= 2;		/* We will need these coefficients times two in the boundary conditions; do the doubling here  */
+	C->e_m2   *= 2;
 }
 
 GMT_LOCAL void set_offset (struct SURFACE_INFO *C) {
@@ -548,7 +546,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine nearest point and set Briggs coefficients [stride = %d]\n", C->current_stride);
 	
 	/* "Really close" will mean within 5% of the current grid spacing from the center node */
-	C->small = SURFACE_CLOSENESS_FACT * ((C->inc[GMT_X] < C->inc[GMT_Y]) ? C->inc[GMT_X] : C->inc[GMT_Y]);
+	C->min_distance = SURFACE_CLOSENESS_FACT * ((C->inc[GMT_X] < C->inc[GMT_Y]) ? C->inc[GMT_X] : C->inc[GMT_Y]);
 
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
 		status[node] = SURFACE_IS_UNCONSTRAINED;
@@ -561,7 +559,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 			/* Note: Index calculations do not consider the boundary padding */
 			row = (int)index_to_row (C->data[k].index, C->current_nx);
 			col = (int)index_to_col (C->data[k].index, C->current_nx);
-			last_index = C->data[k].index;
+			last_index = C->data[k].index;	/* Now this is the last unique index we worked on */
 	 		node = row_col_to_node (row, col, C->current_mx);
 			/* Get coordinates of this node */
 			x0 = col_to_x (col, h->wesn[XLO], h->wesn[XHI], C->inc[GMT_X], C->current_nx);
@@ -570,7 +568,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 			dx = x_to_fcol (C->data[k].x, x0, C->r_inc[GMT_X]);
 			dy = y_to_frow (C->data[k].y, y0, C->r_inc[GMT_Y]);
 	
-	 		if (fabs (dx) < C->small && fabs (dy) < C->small) {	/* Close enough to assign fixed value to node */
+	 		if (fabs (dx) < C->min_distance && fabs (dy) < C->min_distance) {	/* Close enough to assign fixed value to node */
 	 			status[node] = SURFACE_IS_CONSTRAINED;
 	 			/* Since point is basically moved from (dx, dy) to (0,0) we must adjust for
 	 			 * the small change in the planar trend between the two locations, and then
@@ -610,9 +608,9 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 			btemp = 2 * C->one_plus_e2 / ( dxpdy * xys );
 	 			b = C->Briggs[briggs_index].b;	/* Shorthand to current Briggs-array element */
 	 			b[0] = 1.0 - 0.5 * (dx + (dx * dx)) * btemp;
-	 			b[3] = 0.5 * (C->e_2 - (dy + (dy * dy)) * btemp);
+	 			b[3] = 0.5 * (C->alpha2 - (dy + (dy * dy)) * btemp);
 	 			xy1 = 1.0 / xys;
-	 			b[1] = (C->e_2 * xys - 4 * dy) * xy1;
+	 			b[1] = (C->alpha2 * xys - 4 * dy) * xy1;
 	 			b[2] = 2 * (dy - dx + 1.0) * xy1;
 	 			b[4] = b[0] + b[1] + b[2] + b[3] + btemp;
 	 			b[5] = btemp * C->data[k].z;
@@ -697,7 +695,7 @@ GMT_LOCAL void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	 				}
 	 			}
 	 		}
-			node = row_col_to_node (row, col+1, C->current_mx);	/* CHECK */
+			node = row_col_to_node (row, col, C->current_mx);
 	 		if (sum_w == 0.0) {
 	 			sprintf (C->format, "Warning: no data inside search radius at: %s %s [node set to data mean]\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, C->format, x0, y0);
@@ -918,9 +916,9 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, float *u)
 	int col, row, *d_n = C->offset;	/* Relative changes in node index from present node n */
 	double x_0_const = 4.0 * (1.0 - C->boundary_tension) / (2.0 - C->boundary_tension);
 	double x_1_const = (3 * C->boundary_tension - 2.0) / (2.0 - C->boundary_tension);
-	double y_denom = 2 * C->l_epsilon * (1.0 - C->boundary_tension) + C->boundary_tension;
-	double y_0_const = 4 * C->l_epsilon * (1.0 - C->boundary_tension) / y_denom;
-	double y_1_const = (C->boundary_tension - 2 * C->l_epsilon * (1.0 - C->boundary_tension) ) / y_denom;
+	double y_denom = 2 * C->alpha * (1.0 - C->boundary_tension) + C->boundary_tension;
+	double y_0_const = 4 * C->alpha * (1.0 - C->boundary_tension) / y_denom;
+	double y_1_const = (C->boundary_tension - 2 * C->alpha * (1.0 - C->boundary_tension) ) / y_denom;
 	
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Apply all boundary conditions [stride = %d]\n", C->current_stride);
 
@@ -1317,7 +1315,7 @@ GMT_LOCAL void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	*/
 	last_index = UINTMAX_MAX;	n_outside = 0;
 	for (k = 0; k < C->npoints; k++) {
-		if (C->data[k].index == last_index) {	/* Same but further away */
+		if (C->data[k].index == last_index) {	/* Same node but further away than our guy */
 			C->data[k].index = SURFACE_OUTSIDE;
 #ifdef DEBUG
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Original point %" PRIu64 " will be ignored.\n", C->data[k].number);
@@ -1356,11 +1354,13 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		C->r_z_rms = 1.0 / C->z_rms;
 
 	for (k = 0; k < C->npoints; k++) C->data[k].z *= (float)C->r_z_rms;
-{
+#if 0
+{	/* For debugging purposes */
 	FILE *fp = fopen ("z.txt", "w");
 	for (k = 0; k < C->npoints; k++) fprintf (fp, "%g\t%g\t%g\n", C->data[k].x, C->data[k].y, C->data[k].z);
 	fclose (fp);
 }
+#endif
 	if (C->converge_limit == 0.0 || C->converge_mode == BY_PERCENT) {	/* Set default values for convergence criteria */
 		unsigned int ppm;
 		double limit = (C->converge_mode == BY_PERCENT) ? C->converge_limit : SURFACE_CONV_LIMIT;
@@ -1441,7 +1441,7 @@ GMT_LOCAL void init_surface_parameters (struct SURFACE_INFO *C, struct SURFACE_C
 	C->limit[HI]		= Ctrl->L.limit[HI];
 	C->boundary_tension	= Ctrl->T.b_tension;
 	C->interior_tension	= Ctrl->T.i_tension;
-	C->l_epsilon		= Ctrl->A.value;
+	C->alpha		= Ctrl->A.value;
 	C->converge_limit	= Ctrl->C.value;
 	C->converge_mode	= Ctrl->C.mode;
 	C->n_alloc		= GMT_INITIAL_MEM_ROW_ALLOC;
