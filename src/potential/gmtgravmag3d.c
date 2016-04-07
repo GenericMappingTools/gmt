@@ -524,6 +524,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "It shouldn't pass here\n");
+		gmt_M_free (GMT, body_verts);
 		return (EXIT_FAILURE); /* should not happen but just in case */
 	}
 
@@ -669,7 +670,10 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 			strcpy (Gout->header->z_units, "nT");
 		}
 
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) {
+			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
+			Return (API->error);
+		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 			gmt_M_free (GMT, loc_or);	gmt_M_free (GMT, y_obs);	gmt_M_free (GMT, body_verts);
 			Return (API->error);
