@@ -255,6 +255,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', proj);
 		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, B.wesn), "")) {
 			x2sys_free_list (GMT, trk_name, n_tracks);
+			x2sys_end (GMT, s);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		gmt_geo_to_xy (GMT, B.wesn[XLO], B.wesn[YLO], &B.wesn[XLO], &B.wesn[YLO]);
