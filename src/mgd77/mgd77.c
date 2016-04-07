@@ -3879,7 +3879,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 		if (!bstring[0]) F->use_flags[MGD77_M77_SET] = F->use_flags[MGD77_CDF_SET] = false;	/* Turn use of flag bits OFF */
 	}
 	else {	/* No bit-flag conditions */
-		strncpy (cstring, arg, GMT_BUFSIZ);
+		strncpy (cstring, arg, GMT_BUFSIZ-1);
 		bstring[0] = '\0';
 	}
 
@@ -3913,7 +3913,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 			strncpy (word, p, (size_t)(k-1));
 			word[k-1] = '\0';
 			while (p[k] && strchr ("><=!", p[k])) k++;
-			strncpy (value, &p[k], GMT_LEN256);
+			strncpy (value, &p[k], GMT_LEN256-1);
 		}
 		else			/* Just copy the word */
 			strncpy (word, p, GMT_LEN256);
