@@ -5167,10 +5167,16 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	family -= module_input;
 	API->module_input = (module_input) ? true : false;
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
-		if ((in_ID = api_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
+		if ((in_ID = api_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMT_NOTSET) {
+			if (infile) free (infile);
+			return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
+		}
 		if (!full_region (wesn)) {	/* Must update subset selection */
 			int item;
-			if ((item = gmtapi_validate_id (API, family, in_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, API->error);
+			if ((item = gmtapi_validate_id (API, family, in_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) {
+				if (infile) free (infile);
+				return_null (API, API->error);
+			}
 			gmt_M_memcpy (API->object[item]->wesn, wesn, 4, double);
 		}
 	}
