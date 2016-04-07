@@ -757,8 +757,10 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	/* Read the sliced model */
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) { 		/* Bail if there are any read errors */
+				gmt_M_free (GMT, cake);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_table_header (GMT)) 	/* Skip all table headers */
 				continue;
 			if (gmt_M_rec_is_segment_header (GMT) || gmt_M_rec_is_eof (GMT)) {	/* Process segment headers or end-of-file */
@@ -804,6 +806,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 				ns = sscanf (GMT->current.io.segment_header, "%lf %lf", &depth, &rho);
 				if (ns == 1 && !Ctrl->D.active) {
 					GMT_Report (API, GMT_MSG_VERBOSE, "Neither segment header nor -D specified density - must quit\n");
+					gmt_M_free (GMT, cake);
 					Return (API->error);
 				}
 				if (Ctrl->D.active) rho = Ctrl->D.rho;
@@ -842,12 +845,14 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+		gmt_M_free (GMT, cake);
 		Return (API->error);
 	}
 	
 	if (ndepths >= GMT_TALWANI3D_N_DEPTHS) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Model cannot have more than %d depth layer\n", GMT_TALWANI3D_N_DEPTHS);
 		GMT_Report (API, GMT_MSG_NORMAL, "You must increase GMT_TALWANI3D_N_DEPTHS and recompile\n");
+		gmt_M_free (GMT, cake);
 		Return (EXIT_FAILURE);
 	}
 	/* Finish allocation and sort on layers */
@@ -859,12 +864,16 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Z.mode == 1) {	/* Got grid with observation levels which also sets output locations */
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, G) == NULL) {
+			gmt_M_free (GMT, cake);
 			Return (API->error);
 		}
 	}
 	else if (GMT->common.R.active) {	/* Gave -R -I [-r] */
-		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
-			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc,
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) {
+			gmt_M_free (GMT, cake);
+			Return (API->error);
+		}
 	}
 	else {	/* Got a dataset with output locations */
 		gmt_disable_i_opt (GMT);	/* Do not want any -i to affect the reading from -C,-F,-L files */
@@ -898,6 +907,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 		double scl = (!(flat_earth || Ctrl->M.active[TALWANI3D_HOR])) ? METERS_IN_A_MILE : 1.0;	/* Perhaps convert to km */
 		double out[4];
 		if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+			gmt_M_free (GMT, depths);
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -905,6 +915,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, depths);
 			Return (API->error);
 		}
 		if (D->n_segments > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);	
@@ -936,6 +947,7 @@ int GMT_talwani3d (void *V_API, int mode, void *args) {
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			gmt_M_free (GMT, depths);
 			Return (API->error);
 		}
 	}
