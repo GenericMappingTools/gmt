@@ -844,7 +844,10 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 		if (!Ctrl->G.active) Ctrl->T.active = true;
 	}
 
-	if (error) Return (EXIT_FAILURE);
+	if (error) {
+		free (tselect);
+		Return (EXIT_FAILURE);
+	}
 
 	/* OK, here we have a recognized dataset ID */
 
