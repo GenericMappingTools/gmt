@@ -958,7 +958,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		close (fd[1]); 		/* Close original write end of pipe */
 	}
 	else
-		strcat (cmd, out_file);
+		strncat (cmd, out_file, 1023);
 
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
 	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the plot buffer */
