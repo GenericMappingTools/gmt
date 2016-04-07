@@ -876,10 +876,12 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing illumination grid\n");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
+			gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 			Return (API->error);
 		}
 		if (Intens->header->nx != Topo->header->nx || Intens->header->ny != Topo->header->ny) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity grid has improper dimensions!\n");
+			gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 			Return (EXIT_FAILURE);
 		}
 		i_reg = gmt_change_grdreg (GMT, Intens->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */
@@ -903,8 +905,7 @@ int GMT_grdview (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) {
-		gmt_M_free (GMT, xval);
-		gmt_M_free (GMT, yval);
+		gmt_M_free (GMT, xval);		gmt_M_free (GMT, yval);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
