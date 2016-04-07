@@ -553,8 +553,10 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 			}
 		}
 	}
+	if (Ctrl->F.active) gmt_M_free (GMT, fwork);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		gmt_M_free (GMT, rec);
+		gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 		Return (API->error);
 	}
 	
@@ -565,6 +567,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	dim[GMT_SEG] = seg2;	dim[GMT_COL] = n_outputs;
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		gmt_M_free (GMT, rec);
+		gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 		Return (API->error);	/* An empty table */
 	}
 	for (seg = 0; seg < seg2; seg++) {	/* We fake a table by setting the coord pointers to point to various points in our single S_out arrays */
@@ -577,6 +580,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		S->header = strdup (header);
 		S->id = seg;
 	}
+	gmt_M_free (GMT, rec);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
@@ -588,6 +592,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 		Ctrl->Out.file = strdup (Ctrl->N.name);
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+		gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
 		Return (API->error);
 	}
 
@@ -595,8 +600,6 @@ int GMT_splitxyz (void *V_API, int mode, void *args) {
 	for (seg = 0; seg < seg2; seg++)
 		for (j = 0; j < n_outputs; j++) D[GMT_OUT]->table[0]->segment[seg]->coord[j] = NULL;
 	gmt_free_segment (GMT, &S_out, GMT_ALLOC_INTERNALLY);
-	if (Ctrl->F.active) gmt_M_free (GMT, fwork);
-	gmt_M_free (GMT, rec);
 
 	Return (GMT_OK);
 }
