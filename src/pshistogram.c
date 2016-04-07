@@ -695,11 +695,13 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {
+		gmt_M_free (GMT, data);
 		Return (API->error);	/* Disables further data input */
 	}
 
 	if (n == 0) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error, read only 0 points.\n");
+		gmt_M_free (GMT, data);
 		Return (EXIT_FAILURE);
 	}
 
@@ -712,7 +714,9 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, data[0], data[n-1]);
-		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n",
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		         GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 	}
 
@@ -735,6 +739,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	if (fill_boxes (GMT, &F, data, n)) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
+		gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 		Return (EXIT_FAILURE);
 	}
 
@@ -765,9 +770,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 			dim[GMT_ROW] = n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (error);
 			}
 			S = D->table[0]->segment[0];	/* Only one table with one segment here, with 2 cols and F.n_boxes rows */
@@ -792,9 +799,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				row++;
 			}
 			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
 		}
@@ -809,7 +818,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-				gmt_M_free (GMT, data);
+				gmt_M_free (GMT, data);		gmt_M_free (GMT, F.boxh);
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
