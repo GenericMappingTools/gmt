@@ -593,7 +593,7 @@ GMT_LOCAL int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl
 			record[0] = 0;
 			for (col = 0; col < P->n_outputs; col++) {
 				if (P->output_choice[col] == -1)	/* Output all z columns as one string */
-					strcat (record, p_data[rec].t);
+					strncat (record, p_data[rec].t, GMT_BUFSIZ-1);
 				else {
 					sprintf (text, GMT->current.setting.format_float_out, p_data[rec].a[P->output_choice[col]]);
 					strcat (record, text);
