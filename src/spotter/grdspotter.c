@@ -815,7 +815,11 @@ int GMT_grdspotter (void *V_API, int mode, void *args) {
 		
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
-	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
+		gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
+		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
+		Return (API->error);
+	}
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 		gmt_M_free (GMT, x_cva);	gmt_M_free (GMT, y_cva);
 		gmt_M_free (GMT, y_smt);	gmt_M_free (GMT, lat_area);
