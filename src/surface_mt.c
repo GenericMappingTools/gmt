@@ -287,7 +287,10 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 
 GMT_LOCAL void set_coefficients (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* These are the coefficients in the finite-difference expressions given
-	 * by equations (A-4) [SURFACE_UNCONSTRAINED=0] and (A-7) [SURFACE_CONSTRAINED=1] in the reference. */
+	 * by equations (A-4) [SURFACE_UNCONSTRAINED=0] and (A-7) [SURFACE_CONSTRAINED=1] in the reference.
+	 * Note that the SURFACE_UNCONSTRAINED coefficients are normalized by a0 (20 for no tension/aspects)
+	 * whereas the SURFACE_CONSTRAINED is used for a partial sum hence the normalization is done when the
+	 * sum over the Briggs coefficients have been included. */
 	double e_4, loose, a0;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Set finite-difference coefficients [stride = %d]\n", C->current_stride);
@@ -585,6 +588,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 						z_at_node = C->Bound[HI]->data[node];
 	 			}
 	 			u[node] = z_at_node;
+		//fprintf(stderr, "Point %d [index %d] fixes node %d [row = %d col = %d] at %g\n", (int)C->data[k].number, (int)C->data[k].index, (int)last_index, row, col, z_at_node);
 	 		}
 	 		else {	/* We have a nearby data point in one of the quadrants */
 	 			if (dx >= 0.0) {
@@ -616,6 +620,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 #ifdef PARALLEL_MODE
 				C->briggs_index[node] = briggs_index;	/* Since with OpenMP there is no longer a sequential access of Briggs coefficients in iterate */
 #endif
+	//fprintf(stderr, "Point %d [index %d] constraints node %d [row = %d col = %d] as %g in quadrant %d\n", (int)C->data[k].number, (int)C->data[k].index, (int)last_index, row, col, C->data[k].z, status[node]);
 	 			briggs_index++;
 	 		}
 	 	}
@@ -1030,7 +1035,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		if (debug == 2) gmt_M_memcpy (u_old, u_new, C->current_mxmy, float);	/* Copy previous solution to u_old */
 		if (debug == 3) floatp_swap (u_old, u_new);	/* Swap the two grid pointers. First time u_old will point to previous (existing) solution  */
 #endif
-		if (debug) {	/* Dump this iteration grid */
+		if (debug && debug_prefix[0] != '-') {	/* Dump this iteration grid */
 			sprintf (file, "%s_%7.7d_%s_%d.nc", debug_prefix, (int)iteration_count, mode_name[mode], C->current_stride);
 			gmt_M_memcpy (tmp_grid, u_old, C->current_mxmy, float);
 			G->data = tmp_grid;	/* This is the latest solution */
@@ -1074,12 +1079,12 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 				}
 				
 				/* Here we must estimate a solution via equations (A-4) [SURFACE_UNCONSTRAINED] or (A-7) [SURFACE_CONSTRAINED] */
-				//dump = (row == 4 && col == 3 && iteration_count == 7);
+				dump = (row == 19 && col == 32 && (iteration_count > 0 && iteration_count < 20));
 				u_00 = 0.0;	/* Start with zero, build updated solution for central node */
 				set = (status[node] == SURFACE_IS_UNCONSTRAINED) ? SURFACE_UNCONSTRAINED : SURFACE_CONSTRAINED;	/* Index to C->coeff set to use */
-				for (k = 0; k < 12; k++) {	/* This is either equation (A-4) or the corresponding part of (A-7), depending on set */
+				for (k = 0; k < 12; k++) {	/* This is either equation (A-4) or the corresponding part of (A-7), depending on the value of set */
 					u_00 += (u_old[node+d_node[k]] * C->coeff[set][k]);
-					//if (dump) fprintf (stderr, "k = %d u_ij = %g C = %g sum = %g\n", k, u_old[node+d_node[k]], C->coeff[set][k], u_00);
+					//if (dump) fprintf (stderr, "I%d k = %d u_ij = %g C = %g sum = %g\n", (int)iteration_count, k, u_old[node+d_node[k]], C->coeff[set][k], u_00);
 				}
 				if (set == SURFACE_CONSTRAINED) {	/* Solution is (A-7) and modifications depend on which quadrant the point lies in */
 #ifdef PARALLEL_MODE
@@ -1087,9 +1092,12 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 #endif
 					b = C->Briggs[briggs_index].b;		/* Shorthand to this node's Briggs b-array */
 					quadrant = status[node];		/* Which quadrant did the point fall in? */
-					for (k = 0, sum_bk_uk = 0.0; k < 4; k++)	/* Sum over b[k]*u[k] for nodes A-D in Fig A-1 */
+					for (k = 0, sum_bk_uk = 0.0; k < 4; k++) {	/* Sum over b[k]*u[k] for nodes A-D in Fig A-1 */
 						sum_bk_uk += b[k] * u_old[node+d_node[C->p[quadrant][k]]];
-					u_00 = (u_00 + C->a0_const_2 * (sum_bk_uk + b[5])) * b[4];	/* Add point E in Fig A-1 to sum_bk_uk */
+						//if (dump) fprintf (stderr, "I%d k = %d b[k] = %g u[k] = %g sum_bk_uk = %g\n", (int)iteration_count, k, b[k], u_old[node+d_node[C->p[quadrant][k]]], sum_bk_uk);
+					}
+					u_00 = (u_00 + C->a0_const_2 * (sum_bk_uk + b[5])) * b[4];	/* Add point E in Fig A-1 to sum_bk_uk and normalize */
+					//if (dump) fprintf (stderr, "I%d b[4] = %g b[5] = %g u_00 = %g\n\n", (int)iteration_count, b[4], b[5], u_00);
 #ifndef PARALLEL_MODE
 					briggs_index++;	/* Got to next sequential Briggs array index */
 #endif
@@ -1122,7 +1130,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		finished = (max_z_change <= current_limit || iteration_count >= current_max_iterations);
 #endif
 #ifdef DEBUG_SURF
-		if (debug) {	/* Dump this iteration grid */
+		if (debug && debug_prefix[0] != '-') {	/* Dump this iteration grid */
 			sprintf (file, "%s_%7.7d_%s_%d.nc", debug_prefix, (int)iteration_count, mode_name[mode], C->current_stride);
 			gmt_M_memcpy (tmp_grid, u_new, C->current_mxmy, float);
 			G->data = tmp_grid;	/* This is the latest solution */
@@ -1794,7 +1802,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.value < 1, "Syntax error -N option: Max iterations must be nonzero\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 1.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.value < 0.0 || Ctrl->Z.value > 2.0, "Syntax error -Z option: Relaxation value must be 1 <= z <= 2\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Syntax error option -G: Must specify output grid file\n");
 	n_errors += gmt_check_binary_io (GMT, 3);
 
