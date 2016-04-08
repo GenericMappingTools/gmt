@@ -358,6 +358,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
+				gmt_M_free (GMT, a);
 				Return (EXIT_FAILURE);
 			}
 			else {	/* Try to decode as a single rotation */
