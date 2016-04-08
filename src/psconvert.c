@@ -723,6 +723,7 @@ GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size
 	return out;			/* Return number of characters in L */
 }
 
+#if 0
 GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *notusedhere, char *all_PS, uint64_t *pos) {
 	/* mem_line_reader gets the next logical record from all_PS (starting at pos) and passes it back via L.
 	 * We use this function since PS files may be shitty and contain a mixture of \r or \n
@@ -749,6 +750,7 @@ GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size,
 	if (out) line[out] = '\0';	/* If we got anything, terminate with NULL character */
 	return out;			/* Return number of characters in L */
 }
+#endif
 
 void file_rewind (FILE *fp, uint64_t *notused) {	/* Rewinds to start of file */
 	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
