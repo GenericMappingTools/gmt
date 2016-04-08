@@ -438,13 +438,19 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				gmt_M_free (GMT, Sun);
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) Return (API->error);
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+				gmt_M_free (GMT, Sun);
+				Return (API->error);
+			}
 			out[0] = -Sun->HourAngle;		out[1] = Sun->SolarDec;		out[2] = Sun->SolarAzim;
 			out[3] = Sun->SolarElevation;		out[4] = Sun->Sunrise;		out[5] = Sun->Sunset;
 			out[6] = Sun->SolarNoon;		out[7] = Sun->Sunlight_duration;out[8] = Sun->SolarElevationCorrected;
 			out[9] = Sun->EQ_time;
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);		
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) { 
+				gmt_M_free (GMT, Sun);
+				Return (API->error);
+			}
 		}
 		else {
 			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination*/
@@ -470,7 +476,10 @@ int GMT_pssolar (void *V_API, int mode, void *args) {
 				hour = (int)(Sun->Sunlight_duration / 60);	min = irint(Sun->Sunlight_duration - hour * 60);
 				sprintf (record, "\tDuration = %02d:%02d", hour, min);			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
-			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) Return (API->error);
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {
+				gmt_M_free (GMT, Sun);
+				Return (API->error);
+			}
 		}
 	}
 
