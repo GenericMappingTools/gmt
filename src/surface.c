@@ -1318,7 +1318,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	return (0);
 }
 
-GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny) {
+GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny, bool pixel) {
 	/* Calls gmt_optimal_dim_for_surface to determine if there are
 	 * better choices for nx, ny that might speed up calculations
 	 * by having many more common factors.
@@ -1345,6 +1345,10 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
 			if (m%2) n += G->header->inc[GMT_Y];
+			if (pixel) {	/* Since we already added 1/2 pixel we need to undo that here so the report matches original phase */
+				w -= G->header->inc[GMT_X] / 2.0;	e -= G->header->inc[GMT_X] / 2.0;
+				s -= G->header->inc[GMT_Y] / 2.0;	n -= G->header->inc[GMT_Y] / 2.0;
+			}
 			gmt_ascii_format_col (GMT, buffer, w, GMT_OUT, GMT_X);
 			sprintf (region, "-R%s/", buffer);
 			gmt_ascii_format_col (GMT, buffer, e, GMT_OUT, GMT_X);
@@ -1802,7 +1806,7 @@ int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
 	if (C.grid == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.nx-1, C.ny-1);
+	if ((C.grid == 1 && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.nx-1, C.ny-1, GMT->common.r.active);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 
 	/* New idea: set grid = 1, read data, setting index.  Then throw
