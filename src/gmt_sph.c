@@ -322,8 +322,8 @@ int gmt_ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, do
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
-			gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);		gmt_M_free (GMT, plon);
-			gmt_M_free (GMT, wt);		gmt_M_free (GMT, sigma);
+			gmt_M_free (GMT, grad);		gmt_M_free (GMT, plat);	
+			gmt_M_free (GMT, plon);		gmt_M_free (GMT, sigma);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE,
