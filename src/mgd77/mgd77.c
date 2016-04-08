@@ -1780,7 +1780,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	}
 	else {
 		MGD77_nc_status (GMT, nc_def_dim (F->nc_id, "time", NC_UNLIMITED, &F->nc_recid));		/* Define unlimited time dimension */
-		entry = MGD77_Info_from_Abbrev (GMT, "time", H, &set, &j);
+		MGD77_Info_from_Abbrev (GMT, "time", H, &set, &j);
 		time_id = j;
 	}
 
