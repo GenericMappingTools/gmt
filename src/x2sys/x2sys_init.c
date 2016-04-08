@@ -323,11 +323,13 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 		if (mkdir (path)) {
 #endif
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create TAG directory : %s\n", path);
+			fclose (fp_def);	/* Close local def file */
 			Return (EXIT_FAILURE);
 		}
 	}
 	else if (!Ctrl->F.active) {	/* Directory exists but -F not on */
 		GMT_Report (API, GMT_MSG_NORMAL, "TAG directory already exists: %s\n", path);
+		fclose (fp_def);	/* Close local def file */
 		Return (EXIT_FAILURE);
 	}
 	
@@ -401,6 +403,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	}
 	if (n_found) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Remove/rename old files or use -F to overwrite\n");
+		fclose (fp_def);	/* Close local def file */
 		Return (EXIT_FAILURE);
 	}
 
@@ -408,6 +411,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", tag_file);
 	if ((fp = x2sys_fopen (GMT, tag_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Could not create file %s\n", tag_file);
+		fclose (fp_def);	/* Close local def file */
 		Return (EXIT_FAILURE);
 	}
 
