@@ -438,8 +438,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (gmt_M_rec_is_error (GMT)) 		/* Bail if there are any read errors */
+			if (gmt_M_rec_is_error (GMT)) { 	/* Bail if there are any read errors */
+				gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
+				gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
 				Return (GMT_RUNTIME_ERROR);
+			}
 			if (gmt_M_rec_is_any_header (GMT)) 	/* Skip all table and segment headers */
 				continue;
 			if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
@@ -576,7 +579,11 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	gmt_parse_common_options (GMT, "J", 'J', "x1i");
 	GMT->common.R.active = GMT->common.J.active = true;
 	wesn[XLO] = wesn[YLO] = -Ctrl->S.scale;	wesn[XHI] = wesn[YHI] = Ctrl->S.scale;
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), "")) {
+		gmt_M_free (GMT, length);		gmt_M_free (GMT, xx);	gmt_M_free (GMT, sum);
+		gmt_M_free (GMT, azimuth);		gmt_M_free (GMT, yy);
+		Return (GMT_PROJECTION_ERROR);
+	}
 
 	if (GMT->current.map.frame.paint) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
 		GMT->current.map.frame.paint = false;	/* Turn off so gmt_plotinit wont fill */
