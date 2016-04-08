@@ -269,6 +269,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 
 	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
+		x2sys_free_list (GMT, trk_name, n_tracks);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 
@@ -286,6 +287,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 		if (xpos == -1 || ypos == -1) {
 			GMT_Report (API, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
 			x2sys_end (GMT, s);
+			x2sys_free_list (GMT, trk_name, n_tracks);
 			Return (EXIT_FAILURE);		
 		}
 		/* Supply dummy linear proj */
@@ -296,7 +298,10 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 			GMT->common.R.wesn[XLO] += 360.0;
 			GMT->common.R.wesn[XHI] += 360.0;
 		}
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+			x2sys_free_list (GMT, trk_name, n_tracks);
+			Return (GMT_PROJECTION_ERROR);
+		}
 	}
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
@@ -333,6 +338,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
+				x2sys_end (GMT, s);
+				x2sys_free_list (GMT, trk_name, n_tracks);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				break;
 			}
@@ -367,6 +374,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 			else {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
+				x2sys_end (GMT, s);
+				x2sys_free_list (GMT, trk_name, n_tracks);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				break;
 			}
