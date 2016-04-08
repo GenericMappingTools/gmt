@@ -758,7 +758,7 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 		}
 	}
 	else	/* The output here is the final result */
-		strncpy (s_out_ID, Ctrl->G.file, GMT_LEN256);
+		strncpy (s_out_ID, Ctrl->G.file, GMT_LEN256-1);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1i -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
 	GMT_Report (API, GMT_MSG_DEBUG, "Calling grdproject %s.\n", cmd);
 	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
