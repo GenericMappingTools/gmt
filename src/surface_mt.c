@@ -876,42 +876,48 @@ GMT_LOCAL int write_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char 
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Prepare final output grid [stride = %d]\n", C->current_stride);
 
-	if ((err = load_constraints (GMT, C, false)) != 0) return (err);	/* Reload constraints, but this time do not transform data */
-		
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
 	if (GMT->common.r.active) {	/* Pixel registration request. Reset region to the original extent */
 		gmt_M_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
 		C->Grid->header->registration = GMT->common.r.registration;
-		/* Must reduce nx,ny by 1 to exclude the extra padding added for pixel grids */
+		/* Must reduce both nx,ny by 1 and make the eastmost column and northernmost row part of the grid pad */
 		C->Grid->header->nx--;	C->nx--;
 		C->Grid->header->ny--;	C->ny--;
+		C->Grid->header->pad[XHI]++;	/* Presumably increase pad from 2 to 3 */
+		C->Grid->header->pad[YHI]++;	/* Presumably increase pad from 2 to 3 */
 		gmt_set_grddim (GMT, C->Grid->header);	/* Reset all integer dimensions and xy_off */
 	}
-	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Make sure we clip to the specified bounds */
-		if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && u[node] < C->Bound[LO]->data[node]) u[node] = C->Bound[LO]->data[node];
-		if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && u[node] > C->Bound[HI]->data[node]) u[node] = C->Bound[HI]->data[node];
+	if (C->constrained) {	/* Must check that we don't exceed any imposed limits.  */
+		/* Reload the constraints, but this time do not transform the data */
+		if ((err = load_constraints (GMT, C, false)) != 0) return (err);
+		
+		gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Make sure we clip to the specified bounds */
+			if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && u[node] < C->Bound[LO]->data[node]) u[node] = C->Bound[LO]->data[node];
+			if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && u[node] > C->Bound[HI]->data[node]) u[node] = C->Bound[HI]->data[node];
+		}
+		/* Free any bounding surfaces */
+		for (end = LO; end <= HI; end++) {
+			if ((C->set_limit[end] > NONE && C->set_limit[end] < SURFACE) && GMT_Destroy_Data (GMT->parent, &C->Bound[end]) != GMT_OK) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free %s boundary\n", limit[end]);
+			}
+		}
 	}
-	if (C->periodic) {	/* Ensure exact periodicity of E-W boundaries */
+	if (C->periodic) {	/* Ensure exact periodicity at E-W boundaries */
 		for (row = 0; row < C->current_ny; row++) {
 			node = row_col_to_node (row, 0, C->current_mx);
 			u[node] = u[node+C->current_nx-1] = (float)(0.5 * (u[node] + u[node+C->current_nx-1]));	/* Set these to the same as their average */
 		}
 	}
+	/* Time to write our final grid */
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK)
 		return (GMT->parent->error);
 
-	/* Free bounding surfaces, if any */
-	for (end = LO; end <= HI; end++) {
-		if ((C->set_limit[end] > NONE && C->set_limit[end] < SURFACE) && GMT_Destroy_Data (GMT->parent, &C->Bound[end]) != GMT_OK) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free %s boundary\n", limit[end]);
-		}
-	}
 	return (0);
 }
 
-GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, float *u)
-{	/* Fill in auxiliary boundary rows and columns; see equations (A-8,9,10) in the reference */
+GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, float *u) {
+	/* Fill in auxiliary boundary rows and columns; see equations (A-8,9,10) in the reference */
 	uint64_t n, n_s, n_n, n_w, n_e;	/* Node variables */
 	int col, row, *d_n = C->offset;	/* Relative changes in node index from present node n */
 	double x_0_const = 4.0 * (1.0 - C->boundary_tension) / (2.0 - C->boundary_tension);
@@ -1371,7 +1377,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	return (0);
 }
 
-GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny) {
+GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int factors[], unsigned int nx, unsigned int ny, bool pixel) {
 	/* Calls gmt_optimal_dim_for_surface to determine if there are
 	 * better choices for nx, ny that might speed up calculations
 	 * by having many more common factors.
@@ -1398,6 +1404,10 @@ GMT_LOCAL void suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];	/* Potential revised s/n extent */
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
 			if (m%2) n += G->header->inc[GMT_Y];
+			if (pixel) {	/* Since we already added 1/2 pixel we need to undo that here so the report matches original phase */
+				w -= G->header->inc[GMT_X] / 2.0;	e -= G->header->inc[GMT_X] / 2.0;
+				s -= G->header->inc[GMT_Y] / 2.0;	n -= G->header->inc[GMT_Y] / 2.0;
+			}
 			gmt_ascii_format_col (GMT, buffer, w, GMT_OUT, GMT_X);
 			sprintf (region, "-R%s/", buffer);
 			gmt_ascii_format_col (GMT, buffer, e, GMT_OUT, GMT_X);
@@ -1874,7 +1884,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}
 	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.nx-1, C.ny-1);
+	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) || Ctrl->Q.active) suggest_sizes (GMT, C.Grid, C.factors, C.nx-1, C.ny-1, GMT->common.r.active);
 	if (Ctrl->Q.active) Return (EXIT_SUCCESS);
 
 	/* Set current_stride = 1, read data, setting indices.  Then throw
