@@ -339,6 +339,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
+			gmt_M_free (GMT, flag);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -346,8 +347,16 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
-	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
-	if ((check = segy_get_binhd (fpi, &binhead)) != true) {if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;}
+	if ((check = segy_get_reelhd (fpi, reelhead)) != true) {
+		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE);
+		gmt_M_free (GMT, flag);
+		return EXIT_FAILURE;
+	}
+	if ((check = segy_get_binhd (fpi, &binhead)) != true) {
+		if (fpi != stdin) fclose (fpi); GMT_exit (GMT, EXIT_FAILURE);
+		gmt_M_free (GMT, flag);
+		return EXIT_FAILURE;
+	}
 
 	if (swap_bytes) {
 		/* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
@@ -374,6 +383,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, number of samples per trace unknown\n");
+		if (fpi != stdin) fclose (fpi);
+		gmt_M_free (GMT, flag);
 		Return (EXIT_FAILURE);
 	}
 
@@ -391,6 +402,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.value[Y_ID]) { /* still no sample interval at this point is a problem! */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error, no sample interval in reel header\n");
+		if (fpi != stdin) fclose (fpi);
+		gmt_M_free (GMT, flag);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	if (read_cont && (Ctrl->Q.value[Y_ID] != Grid->header->inc[GMT_Y])) {
@@ -398,7 +411,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 		Ctrl->Q.value[Y_ID] = Grid->header->inc[GMT_Y];
 	}
 
-	if (Grid->header->inc[GMT_Y] < Ctrl->Q.value[Y_ID]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning, grid spacing < sample interval, expect gaps in output....\n");
+	if (Grid->header->inc[GMT_Y] < Ctrl->Q.value[Y_ID])
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning, grid spacing < sample interval, expect gaps in output....\n");
 
 	/* starts reading actual data here....... */
 
