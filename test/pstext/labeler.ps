@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.2.0_r14814 [64-bit] Document from psxy
+%%HiResBoundingBox: 0 0 612 792             
+%%Title: GMT v5.3.0_r16132 [64-bit] Document from psxy
 %%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Sep  7 08:49:40 2015
+%%CreationDate: Wed Apr  6 15:53:34 2016
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -272,7 +272,6 @@ end
     PSL_heights psl_k PSL_height put
   } for
 } def
-%%%%%%%%%%%%%%%%%%% CURVED BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_curved_path_labels
 { /psl_bits exch def
   /PSL_placetext psl_bits 2 and 2 eq def
@@ -523,7 +522,6 @@ end
 {PSL_xp 0 get PSL_yp 0 get M
   1 1 j { /ii exch def PSL_xp ii get PSL_yp ii get L} for
 } def
-%%%%%%%%%%%%%%%%%%% DRAW BASELINE TEXT SEGMENT LINES
 /PSL_draw_path_lines
 {
   /PSL_n_paths1 PSL_n_paths 1 sub def
@@ -549,7 +547,6 @@ end
   } for
   U
 } def
-%%%%%%%%%%%%%%%%%%% STRAIGHT BASELINE TEXT PLACEMENT FUNCTIONS
 /PSL_straight_path_labels
 {
   /psl_bits exch def
@@ -666,8 +663,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/7/-0.5/6.5 -JX6i -P -Baf -Sc0.25i -Gred -Wfaint points.txt -K
-%%PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0/7/-0.5/6.5 -JX6i -P -Baf -Sc0.25i -Gred -Wfaint points.txt -K
+%@PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
@@ -986,8 +983,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/7/-0.5/6.5 -JX6i -O -K -F+T%2.2d+f10p,Helvetica-Bold,white p.txt
-%%PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/7/-0.5/6.5 -JX6i -O -K -F+r+f10p,Helvetica-Bold,white p.txt
+%@PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
@@ -998,19 +995,19 @@ clipsave
 0 7200 D
 -7200 0 D
 PSL_clip N
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1 A
-617 5863 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
-167 F1
-(00) mc Z
-3497 5966 M (01) mc Z
-6377 5863 M (02) mc Z
-2571 5143 M (03) mc Z
-5040 4834 M (04) mc Z
-2469 4423 M (05) mc Z
-6480 4011 M (06) mc Z
-6480 2777 M (07) mc Z
-2160 1646 M (08) mc Z
-5863 1543 M (09) mc Z
+617 5863 M 167 F1
+(0) mc Z
+3497 5966 M (1) mc Z
+6377 5863 M (2) mc Z
+2571 5143 M (3) mc Z
+5040 4834 M (4) mc Z
+2469 4423 M (5) mc Z
+6480 4011 M (6) mc Z
+6480 2777 M (7) mc Z
+2160 1646 M (8) mc Z
+5863 1543 M (9) mc Z
 1440 617 M (10) mc Z
 4217 1337 M (11) mc Z
 3703 6686 M (12) mc Z
@@ -1022,8 +1019,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/7/-0.5/6.5 -JX6i -O -K '-F+Tz = %.1f\312+f9p,Times-Italic+jTC' -Dj0/0.2i points.txt
-%%PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/7/-0.5/6.5 -JX6i -O -K '-F+zz = %.1f\312+f9p,Times-Italic+jTC' -Dj0/0.2i points.txt
+%@PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
@@ -1034,8 +1031,8 @@ clipsave
 0 7200 D
 -7200 0 D
 PSL_clip N
-617 5623 M PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
-150 F6
+PSL_font_encode 6 get 0 eq {Standard+_Encoding /Times-Italic /Times-Italic PSL_reencode PSL_font_encode 6 1 put} if
+617 5623 M 150 F6
 (z = 9.5\312) tc Z
 3497 5726 M (z = 10.0\312) tc Z
 6377 5623 M (z = 11.7\312) tc Z
@@ -1057,8 +1054,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: pstext -R0/7/-0.5/6.5 -JX6i -O -K '-F+tSome text label+f24p,Courier-Bold' t.txt
-%%PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: pstext -R0/7/-0.5/6.5 -JX6i -O -K '-F+tSome text label+f24p,Courier-Bold' t.txt
+%@PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
@@ -1069,8 +1066,8 @@ clipsave
 0 7200 D
 -7200 0 D
 PSL_clip N
-3086 3086 M PSL_font_encode 9 get 0 eq {Standard+_Encoding /Courier-Bold /Courier-Bold PSL_reencode PSL_font_encode 9 1 put} if
-400 F9
+PSL_font_encode 9 get 0 eq {Standard+_Encoding /Courier-Bold /Courier-Bold PSL_reencode PSL_font_encode 9 1 put} if
+3086 3086 M 400 F9
 (Some text label) mc Z
 PSL_cliprestore
 %%EndObject
@@ -1080,8 +1077,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT: psxy -R0/7/-0.5/6.5 -JX6i -O -T
-%%PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy +a=6378137.000 +b=6356752.314245 +ellps=WGS84
+%@GMT: psxy -R0/7/-0.5/6.5 -JX6i -O -T
+%@PROJ: xy 0.00000000 7.00000000 -0.50000000 6.50000000 0.000 7.000 -0.500 6.500 +xy
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin

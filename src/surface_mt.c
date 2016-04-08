@@ -135,7 +135,7 @@ float *tmp_grid = NULL;			/* Temp grid used for writing debug grids */
 #define SURFACE_CONV_LIMIT		0.0001		/* Default is 100 ppm of data range as convergence criterion */
 #define SURFACE_MAX_ITERATIONS		500		/* Default iterations at final grid size */
 #define SURFACE_OVERRELAXATION		1.4		/* Default over-relaxation value */
-#define SURFACE_CLOSENESS_FACT		0.05		/* A node is considered known if the nearest data is within 0.05 of a gridspacing of the node */
+#define SURFACE_CLOSENESS_FACTOR	0.05		/* A node is considered known if the nearest data is within 0.05 of a gridspacing of the node */
 #define SURFACE_IS_UNCONSTRAINED	0		/* Various constants used to flag nearest node */
 #define SURFACE_DATA_IS_IN_QUAD1	1		/* Nearnest data constraint is in quadrant 1 relative to current node */
 #define SURFACE_DATA_IS_IN_QUAD2	2		/* Nearnest data constraint is in quadrant 2 relative to current node */
@@ -273,7 +273,6 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	double plane_icept;		/* Intercept of best fitting plane to data  */
 	double plane_sx;		/* Slope of best fitting plane to data in x-direction */
 	double plane_sy;		/* Slope of best fitting plane to data in y-direction */
-	double min_distance;		/* Let data point determine node value if distance to node is < min_distance */
 	double *fraction;		/* Hold fractional increments of row and column used in fill_in_forecast */
 	double coeff[2][12];		/* Coefficients for 12 nearby nodes, for constrained [0] and unconstrained [1] nodes */
 	double relax_old, relax_new;	/* Coefficients for relaxation factor to speed up convergence */
@@ -538,7 +537,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, last_index, node, briggs_index;
 	int row, col;
-	double x0, y0, dx, dy, dxpdy, xys, xy1, btemp, *b = NULL;
+	double x0, y0, dx, dy, dxpdy, xys, xy1, btemp, min_distance, *b = NULL;
 	float z_at_node, *u = C->Grid->data;
 	unsigned char *status = C->status;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
@@ -546,7 +545,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine nearest point and set Briggs coefficients [stride = %d]\n", C->current_stride);
 	
 	/* "Really close" will mean within 5% of the current grid spacing from the center node */
-	C->min_distance = SURFACE_CLOSENESS_FACT * ((C->inc[GMT_X] < C->inc[GMT_Y]) ? C->inc[GMT_X] : C->inc[GMT_Y]);
+	min_distance = SURFACE_CLOSENESS_FACTOR * MIN (C->inc[GMT_X], C->inc[GMT_Y]);
 
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
 		status[node] = SURFACE_IS_UNCONSTRAINED;
@@ -568,7 +567,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 			dx = x_to_fcol (C->data[k].x, x0, C->r_inc[GMT_X]);
 			dy = y_to_frow (C->data[k].y, y0, C->r_inc[GMT_Y]);
 	
-	 		if (fabs (dx) < C->min_distance && fabs (dy) < C->min_distance) {	/* Close enough to assign fixed value to node */
+	 		if (fabs (dx) < min_distance && fabs (dy) < min_distance) {	/* Close enough to assign fixed value to node */
 	 			status[node] = SURFACE_IS_CONSTRAINED;
 	 			/* Since point is basically moved from (dx, dy) to (0,0) we must adjust for
 	 			 * the small change in the planar trend between the two locations, and then
@@ -622,6 +621,103 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 			briggs_index++;
 	 		}
 	 	}
+	 }
+}
+
+GMT_LOCAL void find_nearest_point_new (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+	/* Determines all data point per bin, obtains mean value if more than one and sets the
+	 * Briggs parameters or, if really close, fixes the node value */
+	uint64_t k, n, last_index, node, briggs_index;
+	int row, col;
+	double x0, y0, dx, dy, mean_x, mean_y, dxpdy, xys, xy1, btemp, min_distance, *b = NULL;
+	float mean_z, *u = C->Grid->data;
+	unsigned char *status = C->status;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
+
+	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine mean data constraints and set Briggs coefficients [stride = %d]\n", C->current_stride);
+	
+	/* "Really close" will mean within 5% of the current grid spacing from the center node */
+	min_distance = SURFACE_CLOSENESS_FACTOR * MIN (C->inc[GMT_X], C->inc[GMT_Y]);
+
+	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
+		status[node] = SURFACE_IS_UNCONSTRAINED;
+	}
+	
+	briggs_index = 0U;
+	k = 0;
+	while (k < C->npoints) {	/* While there are still points  */
+		last_index = C->data[k].index;	/* Now this is the current index we are working on */
+		mean_x = C->data[k].x;	mean_y = C->data[k].y;	mean_z = (float)C->data[k].z;
+		n = 1;	k++;
+		while (k < C->npoints && C->data[k].index == last_index) {	/* Keep adding up point vals for same index */
+			mean_x += C->data[k].x;	mean_y += C->data[k].y;	mean_z += (float)C->data[k].z;
+			k++;	n++;
+		}
+		if (n > 1) {
+			mean_x /= n;	mean_y /= n;	mean_z /= n;		/* Compute average x,y,z */
+		}
+		/* Note: Index calculations do not consider the boundary padding */
+		row = (int)index_to_row (last_index, C->current_nx);
+		col = (int)index_to_col (last_index, C->current_nx);
+	 	node = row_col_to_node (row, col, C->current_mx);
+		/* Get coordinates of this node */
+		x0 = col_to_x (col, h->wesn[XLO], h->wesn[XHI], C->inc[GMT_X], C->current_nx);
+		y0 = row_to_y (row, h->wesn[YLO], h->wesn[YHI], C->inc[GMT_Y], C->current_ny);
+		/* Get offsets dx,dy of mean data point location relative to this node (dy is positive up) */
+		dx = x_to_fcol (mean_x, x0, C->r_inc[GMT_X]);
+		dy = y_to_frow (mean_y, y0, C->r_inc[GMT_Y]);
+	
+ 		if (fabs (dx) < min_distance && fabs (dy) < min_distance) {	/* Close enough to assign fixed value to node */
+ 			status[node] = SURFACE_IS_CONSTRAINED;
+ 			/* Since point is basically moved from (dx, dy) to (0,0) we must adjust for
+ 			 * the small change in the planar trend between the two locations, and then
+ 			 * possibly clip the value if constraining surfaces were given.  Note that
+ 			 * dx, dy is in -1/1 range normalized by (current_x|y_inc) so to recover the
+ 			 * corresponding dx,dy in units of final grid fractions we must scale both
+			 * dx and dy by current_stride; this is equivalant of scaling the trend.
+			 * This trend then is normalized by dividing by the z rms.*/
+			
+ 			mean_z += (float) (C->r_z_rms * C->current_stride * evaluate_trend (C, dx, dy));
+ 			if (C->constrained) {
+				if (C->set_limit[LO] && !gmt_M_is_fnan (C->Bound[LO]->data[node]) && mean_z < C->Bound[LO]->data[node])
+					mean_z = C->Bound[LO]->data[node];
+				else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && mean_z > C->Bound[HI]->data[node])
+					mean_z = C->Bound[HI]->data[node];
+ 			}
+ 			u[node] = mean_z;
+ 		}
+ 		else {	/* We have a nearby data point in one of the quadrants */
+ 			if (dx >= 0.0) {
+ 				if (dy >= 0.0)
+ 					status[node] = SURFACE_DATA_IS_IN_QUAD1;
+ 				else
+ 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
+ 			}
+ 			else {
+ 				if (dy >= 0.0)
+ 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
+ 				else
+ 					status[node] = SURFACE_DATA_IS_IN_QUAD3;
+ 			}
+			/* Evaluate the 6 Briggs coefficients [Equation (A-6) in reference] */
+ 			dx = fabs (dx);	dy = fabs (dy);	/* Pretend it is 1st quadrant geometry */
+			dxpdy = dx + dy;
+ 			xys = 1.0 + dxpdy;
+ 			btemp = 2 * C->one_plus_e2 / ( dxpdy * xys );
+ 			b = C->Briggs[briggs_index].b;	/* Shorthand to current Briggs-array element */
+ 			b[0] = 1.0 - 0.5 * (dx + (dx * dx)) * btemp;
+ 			b[3] = 0.5 * (C->alpha2 - (dy + (dy * dy)) * btemp);
+ 			xy1 = 1.0 / xys;
+ 			b[1] = (C->alpha2 * xys - 4 * dy) * xy1;
+ 			b[2] = 2 * (dy - dx + 1.0) * xy1;
+ 			b[4] = b[0] + b[1] + b[2] + b[3] + btemp;
+ 			b[5] = btemp * mean_z;
+			b[4] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[4]);	/* We do this calculation here instead of inside iterate loop */
+#ifdef PARALLEL_MODE
+			C->briggs_index[node] = briggs_index;	/* Since with OpenMP there is no longer a sequential access of Briggs coefficients in iterate */
+#endif
+ 			briggs_index++;
+ 		}
 	 }
 }
 

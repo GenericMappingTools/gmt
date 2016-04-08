@@ -18,7 +18,7 @@ Synopsis
 [ |-A| ]
 |SYN_OPT-B|
 [ |-D|\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*]] ]
-[ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+r**\ *text*\ \|\ **z**\ [*format*]] ] 
+[ |-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **z**\ [*format*]] ] 
 [ |-G|\ *color* ] [ |-J|\ *parameters* ]
 [ |-K| ]
 [ |-L| ] [ |-M| ] [ |-N| ] [ |-O| ] [ |-P| ]
@@ -133,7 +133,7 @@ Optional Arguments
 
 .. _-F:
 
-|-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+r**\ *text*\ \|\ **z**\ [*format*]]
+|-F|\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+h**\ \|\ **+l** \|\ **+l** \|\ **+r**\ [*first*] \|\ **+t**\ *text*\ \|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`), and centered
     on the data point. Use this option to override these defaults by
