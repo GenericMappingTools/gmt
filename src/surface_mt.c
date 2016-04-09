@@ -67,8 +67,9 @@ struct SURFACE_CTRL {
 		char *file;	/* Name of file with breaklines */
 	} D;
 #ifdef DEBUG_SURF
-	struct E {	/* -E[+o|p|m][<name>] */
+	struct E {	/* -E[+o|p|m+1][<name>] */
 		bool active;
+		bool once;
 	} E;
 #endif
 	struct G {	/* -G<file> */
@@ -115,7 +116,8 @@ struct SURFACE_CTRL {
 /* Paul Wessel testing only!
  * Compiled for debug to simulate grid updating such as under OpenMP
  * but without actually running OpenMP. The -E option supports:
- * -E[+o|m|p][<name>]
+ * -E[+o|m|p+1][<name>]
+ * +1 : Force a single iteration cycle (no multigrid)
  * +o : Original algorithm (update on a single grid) [Default]
  * +m : Two grids, use memcpy to move latest to old, then update on new grid
  * +p : Two grids, use pointers to alternate old and new grid.
@@ -125,6 +127,7 @@ struct SURFACE_CTRL {
  */
 int debug = 0;				/* No debug is the default, even when compiled this way */
 bool nondimensional = false;		/* True means we save nondimensional grids */
+bool save_intermediate = false;		/* True means we save intermediate grids after each iteration */
 char debug_prefix[32] = {"surface"};	/* Prefix for intermediate grids */
 float *tmp_grid = NULL;			/* Temp grid used for writing debug grids */
 #define PARALLEL_MODE			/* Use an array to relate node index to Briggs index */
@@ -1142,7 +1145,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		if (debug == 2) gmt_M_memcpy (u_old, u_new, C->current_mxmy, float);	/* Copy previous solution to u_old */
 		if (debug == 3) floatp_swap (u_old, u_new);	/* Swap the two grid pointers. First time u_old will point to previous (existing) solution  */
 #endif
-		if (debug && debug_prefix[0] != '-') {	/* Dump this iteration grid */
+		if (save_intermediate) {	/* Dump this iteration grid */
 			sprintf (file, "%s_%7.7d_%s_%d.nc", debug_prefix, (int)iteration_count, mode_name[mode], C->current_stride);
 			gmt_M_memcpy (tmp_grid, u_old, C->current_mxmy, float);
 			G->data = tmp_grid;	/* This is the latest solution */
@@ -1231,14 +1234,14 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		max_z_change = max_u_change * C->z_rms;		/* Scale max_u_change back into original z units -> max_z_change */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
 			C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
-		if (C->logging) fprintf (C->fp_log, C->format, C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
+		if (C->logging) fprintf (C->fp_log, "%d\t%c\t%" PRIu64 "\t%.8g\t%.8g\t%" PRIu64 "\n", C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
 #ifdef PARALLEL_MODE	/* Must impose the condition that # of iteration is even so that old_u (i.e. C->Grid->data) holds the final solution */
 		finished = ((max_z_change <= current_limit || iteration_count >= current_max_iterations) && (iteration_count%2 == 0));
 #else		/* Does not matter here since u_old == u_new anyway */
 		finished = (max_z_change <= current_limit || iteration_count >= current_max_iterations);
 #endif
 #ifdef DEBUG_SURF
-		if (debug && debug_prefix[0] != '-') {	/* Dump this iteration grid */
+		if (save_intermediate) {	/* Dump this iteration grid */
 			sprintf (file, "%s_%7.7d_%s_%d.nc", debug_prefix, (int)iteration_count, mode_name[mode], C->current_stride);
 			gmt_M_memcpy (tmp_grid, u_new, C->current_mxmy, float);
 			G->data = tmp_grid;	/* This is the latest solution */
@@ -1780,6 +1783,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 				debug = 1; k = 0;
 				if (opt->arg[0] == '+') {
 					switch (opt->arg[1]) {
+						case '1': Ctrl->E.once = true; break;
 						case 'o': debug = 1; break;
 						case 'O': debug = 1; nondimensional = true; break;
 						case 'p': debug = 3; break;
@@ -1789,16 +1793,20 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					}
 					k = 2;
 				}
-				if (opt->arg[k]) strcpy (debug_prefix, &opt->arg[k]);
+				if (opt->arg[k]) {
+					strcpy (debug_prefix, &opt->arg[k]);
+					save_intermediate = true;
+					fprintf (stderr, "Save intermediate grids with prefix %s_\n", debug_prefix);
+				}
 				switch (debug) {
 					case 1:
-						fprintf (stderr, "Debug using original single grid iteration.  Save intermediate grids with prefix %s_\n", debug_prefix);
+						fprintf (stderr, "Debug using original single grid iteration.\n");
 						break;
 					case 2:
-						fprintf (stderr, "Debug using two grids, copying starting grid.  Save intermediate grids with prefix %s_\n", debug_prefix);
+						fprintf (stderr, "Debug using two grids, copying starting grid.\n");
 						break;
 					case 3:
-						fprintf (stderr, "Debug using two grids, swapping pointers.  Save intermediate grids with prefix %s_\n", debug_prefix);
+						fprintf (stderr, "Debug using two grids, swapping pointers.\n");
 						break;
 				}
 				break;
@@ -2038,6 +2046,9 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	C.current_stride = gmt_gcd_euclid (C.nx-1, C.ny-1);
 	C.n_factors = gmt_get_prime_factors (GMT, C.current_stride, C.factors);
+#ifdef DEBUG
+	if (Ctrl->E.once) C.current_stride = 1;	/* Force final iteration stage immediately */
+#endif
 	set_grid_parameters (&C);
 	while (C.current_nx < 4 || C.current_ny < 4) {	/* Must have at least a grid of 4x4 */
 		smart_divide (&C);
