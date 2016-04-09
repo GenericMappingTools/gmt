@@ -490,7 +490,10 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	if (!strcmp (header->name, "="))	/* Read from pipe */
 		fp = GMT->session.std[GMT_IN];
 	else if ((fp = gmt_fopen (GMT, header->name, r_mode)) != NULL) {
-		if ((error = esri_read_info (GMT, fp, header)) != 0) return (error);
+		if ((error = esri_read_info (GMT, fp, header)) != 0) {
+			gmt_fclose (GMT, fp);
+			return (error);
+		}
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
@@ -569,7 +572,6 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			}
 		}
 
-		if (nBits == 16) gmt_M_free (GMT, tmp16);
 	}
 	else {		/* ASCII */
 		n_left = header->nm;
@@ -609,6 +611,7 @@ int gmt_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	gmt_fclose (GMT, fp);
 	gmt_M_free (GMT, actual_col);
 	gmt_M_free (GMT, tmp);
+	if (nBits == 16) gmt_M_free (GMT, tmp16);
 
 	if (n_left) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
