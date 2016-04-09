@@ -101,6 +101,10 @@ struct SURFACE_CTRL {
 		bool active;
 		double b_tension, i_tension;
 	} T;
+	struct W {	/* -W[<logfile>] */
+		bool active;
+		char *file;
+	} W;
 	struct Z {	/* -Z<over_relaxation_parameter> */
 		bool active;
 		double value;
@@ -225,6 +229,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 #ifdef PARALLEL_MODE
 	uint64_t *briggs_index;		/* Since we cannot access Briggs array sequentially when multiple threads */
 #endif
+	FILE *fp_log;			/* File pointer to log file, if -W is selected */
 	struct SURFACE_DATA *data;	/* All the data constraints */
 	struct SURFACE_BRIGGS *Briggs;	/* Array with Briggs 6-coefficients per nearest active data constraint */
 	struct GMT_GRID *Grid;		/* The final grid */
@@ -256,6 +261,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	char *limit_file[2];		/* Pointers to grids with low and high limits, if selected */
 	bool periodic;			/* true if geographic grid and west-east == 360 */
 	bool constrained;		/* true if set_limit[LO] or set_limit[HI] is true */
+	bool logging;			/* true if -W was specified */
 #ifdef PARALLEL_MODE
 	float *alternate_grid;		/* Used in iterate when we cannot write to the same grid across all threads */
 #endif
@@ -532,7 +538,7 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->npoints -= k_skipped;
 }
 
-GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void find_nearest_point_old (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines the nearest data point per bin and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, last_index, node, briggs_index;
@@ -624,7 +630,7 @@ GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	 }
 }
 
-GMT_LOCAL void find_nearest_point_new (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines all data point per bin, obtains mean value if more than one and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, n, last_index, node, briggs_index;
@@ -643,18 +649,17 @@ GMT_LOCAL void find_nearest_point_new (struct GMT_CTRL *GMT, struct SURFACE_INFO
 		status[node] = SURFACE_IS_UNCONSTRAINED;
 	}
 	
-	briggs_index = 0U;
-	k = 0;
-	while (k < C->npoints) {	/* While there are still points  */
-		last_index = C->data[k].index;	/* Now this is the current index we are working on */
-		mean_x = C->data[k].x;	mean_y = C->data[k].y;	mean_z = (float)C->data[k].z;
-		n = 1;	k++;
-		while (k < C->npoints && C->data[k].index == last_index) {	/* Keep adding up point vals for same index */
+	briggs_index = 0U;	k = 0;
+	while (k < C->npoints) {	/* While there are more data constraints...  */
+		last_index = C->data[k].index;	/* This is the current index we are working on */
+		mean_x = C->data[k].x;	mean_y = C->data[k].y;	mean_z = (float)C->data[k].z;	/* The first (and maybe only) data constraint */
+		n = 1;	k++;	/* Found one point, go the next */
+		while (k < C->npoints && C->data[k].index == last_index) {	/* Keep summing point values as long as we have the same index */
 			mean_x += C->data[k].x;	mean_y += C->data[k].y;	mean_z += (float)C->data[k].z;
-			k++;	n++;
+			k++;	n++;	/* Found another point, go the next */
 		}
-		if (n > 1) {
-			mean_x /= n;	mean_y /= n;	mean_z /= n;		/* Compute average x,y,z */
+		if (n > 1) {	/* More than one constraint found, estimate mean location and value */
+			mean_x /= n;	mean_y /= n;	mean_z /= n;
 		}
 		/* Note: Index calculations do not consider the boundary padding */
 		row = (int)index_to_row (last_index, C->current_nx);
@@ -684,7 +689,7 @@ GMT_LOCAL void find_nearest_point_new (struct GMT_CTRL *GMT, struct SURFACE_INFO
 				else if (C->set_limit[HI] && !gmt_M_is_fnan (C->Bound[HI]->data[node]) && mean_z > C->Bound[HI]->data[node])
 					mean_z = C->Bound[HI]->data[node];
  			}
- 			u[node] = mean_z;
+ 			u[node] = mean_z;	/* Set the fixed node value */
  		}
  		else {	/* We have a nearby data point in one of the quadrants */
  			if (dx >= 0.0) {
@@ -699,7 +704,7 @@ GMT_LOCAL void find_nearest_point_new (struct GMT_CTRL *GMT, struct SURFACE_INFO
  				else
  					status[node] = SURFACE_DATA_IS_IN_QUAD3;
  			}
-			/* Evaluate the 6 Briggs coefficients [Equation (A-6) in reference] */
+			/* Evaluate the 6 Briggs coefficients [Equation (A-6) in the reference] */
  			dx = fabs (dx);	dy = fabs (dy);	/* Pretend it is 1st quadrant geometry */
 			dxpdy = dx + dy;
  			xys = 1.0 + dxpdy;
@@ -1124,6 +1129,8 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Starting iterations, mode = %s Max iterations = %d [stride = %d]\n", mode_name[mode], current_max_iterations, C->current_stride);
 
 	sprintf (C->format, "%%4ld\t%%c\t%%8" PRIu64 "\t%s\t%s\t%%10" PRIu64 "\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (C->logging) fprintf (C->fp_log, "%c Grid size = %d Mode = %c Convergence limit = %g -Z%d\n",
+		GMT->current.setting.io_seg_marker[GMT_OUT], C->current_stride, C->mode_type[mode], current_limit, C->current_stride);
 
 	/* We need to do an even number of iterations so that the final result for this iteration resides in C->Grid->data */
 	do {
@@ -1224,6 +1231,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 		max_z_change = max_u_change * C->z_rms;		/* Scale max_u_change back into original z units -> max_z_change */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, C->format,
 			C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
+		if (C->logging) fprintf (C->fp_log, C->format, C->current_stride, C->mode_type[mode], iteration_count, max_z_change, current_limit, C->total_iterations);
 #ifdef PARALLEL_MODE	/* Must impose the condition that # of iteration is even so that old_u (i.e. C->Grid->data) holds the final solution */
 		finished = ((max_z_change <= current_limit || iteration_count >= current_max_iterations) && (iteration_count%2 == 0));
 #else		/* Does not matter here since u_old == u_new anyway */
@@ -1672,6 +1680,7 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.value = SURFACE_MAX_ITERATIONS;
 	C->A.value = 1.0;	/* Real xinc == yinc in terms of distances */
+	C->W.file = strdup ("surface_log.txt");
 	C->Z.value = SURFACE_OVERRELAXATION;
 		
 	return (C);
@@ -1680,9 +1689,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->G.file);	
-	gmt_M_str_free (C->D.file);	
-	gmt_M_str_free (C->L.file[LO]);	
-	gmt_M_str_free (C->L.file[HI]);	
+	if (C->D.file) gmt_M_str_free (C->D.file);	
+	if (C->L.file[LO]) gmt_M_str_free (C->L.file[LO]);	
+	if (C->L.file[HI]) gmt_M_str_free (C->L.file[HI]);	
+	if (C->W.file) gmt_M_str_free (C->W.file);	
 	gmt_M_free (GMT, C);	
 }
 
@@ -1692,8 +1702,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [-Q] [%s] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-Q] [-S<search_radius>[m|s]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]%s[%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -1732,6 +1742,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   No appended letter sets tension for both to same value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Query for grid sizes that might run faster than your selected -R -I.\n");
 	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Write convergence information to log file [surface_log.txt]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set <over_relaxation parameter>.  Default = %g.  Use a value\n", SURFACE_OVERRELAXATION);
 	GMT_Message (API, GMT_TIME_NONE, "\t   between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n");
@@ -1892,6 +1903,13 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 					n_errors++;
 				}
 				break;
+			case 'W':
+				Ctrl->W.active = true;
+				if (opt->arg[0]) {	/* Specified named log file */
+					gmt_M_str_free (Ctrl->W.file);
+					Ctrl->W.file = strdup (opt->arg);
+				}
+				break;
 			case 'Z':
 				Ctrl->Z.active = true;
 				Ctrl->Z.value = atof (opt->arg);
@@ -2028,6 +2046,15 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	set_offset (&C);	/* Initialize the node-jumps across rows for this grid size */
 	set_index (GMT, &C);	/* Determine the nearest data constraint for this grid size */
 
+	if (Ctrl->W.active) {	/* Want to log convergence information to file */
+		if ((C.fp_log = gmt_fopen (GMT, Ctrl->W.file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to create log file %s.\n", Ctrl->W.file);
+			Return (EXIT_FAILURE);
+		}
+		C.logging = true;
+		fprintf (C.fp_log, "#grid\tmode\tgrid_iteration\tchange\tlimit\ttotal_iteration\n");
+	}
+	
 	/* Now the data are ready to go for the first iteration.  */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Report on memory usage for this run */
@@ -2058,8 +2085,8 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 
 	/* Allocate the memory needed to perform the gridding  */
 
-	C.Briggs = gmt_M_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
-	C.status = gmt_M_memory (GMT, NULL, C.mxmy, char);
+	C.Briggs   = gmt_M_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
+	C.status   = gmt_M_memory (GMT, NULL, C.mxmy, char);
 	C.fraction = gmt_M_memory (GMT, NULL, C.current_stride, double);
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL)
 		Return (API->error);
@@ -2067,7 +2094,7 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	/* To avoid race conditions we must alternate by updating one grid with values from another */
 	C.alternate_grid = gmt_M_memory_aligned (GMT, NULL, C.Grid->header->size, float);
 	/* Because threads run simultaneously we cannot access the Briggs array sequentially and must use a helper index array */
-	C.briggs_index = gmt_M_memory (GMT, NULL, C.mxmy, uint64_t);
+	C.briggs_index   = gmt_M_memory (GMT, NULL, C.mxmy, uint64_t);
 #endif
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted average in a search radius  */
 #ifdef DEBUG_SURF
@@ -2100,6 +2127,9 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) check_errors (GMT, &C);	/* Report on mean misfit and curvature */
 
 	restore_planar_trend (&C);	/* Restore the least-square plane we removed earlier */
+
+	if (Ctrl->W.active)	/* Close the log file */
+		gmt_fclose (GMT, C.fp_log);
 
 	/* Write the output grid */
 	if ((error = write_surface (GMT, &C, Ctrl->G.file)) != 0)
