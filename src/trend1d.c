@@ -784,8 +784,11 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 
 	/* Before output, convert back to polynomial coefficients, if desired */
 
-	if (!Ctrl->N.M.chebyshev)
+	if (!Ctrl->N.M.chebyshev) {
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert from Chebyshev to polynomial coefficients\n");
+		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, "%g\n", c_model[i]);
 		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
