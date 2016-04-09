@@ -786,7 +786,6 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->N.M.chebyshev) {
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert from Chebyshev to polynomial coefficients\n");
-		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, "%g\n", c_model[i]);
 		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
 	}
 
