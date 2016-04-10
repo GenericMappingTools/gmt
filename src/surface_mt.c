@@ -67,7 +67,7 @@ struct SURFACE_CTRL {
 		char *file;	/* Name of file with breaklines */
 	} D;
 #ifdef DEBUG_SURF
-	struct E {	/* -E[+o|p|m+1][<name>] */
+	struct E {	/* -E[+o|p|m+1+a][<name>] */
 		bool active;
 		bool once;
 	} E;
@@ -118,6 +118,7 @@ struct SURFACE_CTRL {
  * but without actually running OpenMP. The -E option supports:
  * -E[+o|m|p+1][<name>]
  * +1 : Force a single iteration cycle (no multigrid)
+ * +a : Determine average data constraint [default select just nearest]
  * +o : Original algorithm (update on a single grid) [Default]
  * +m : Two grids, use memcpy to move latest to old, then update on new grid
  * +p : Two grids, use pointers to alternate old and new grid.
@@ -128,6 +129,7 @@ struct SURFACE_CTRL {
 int debug = 0;				/* No debug is the default, even when compiled this way */
 bool nondimensional = false;		/* True means we save nondimensional grids */
 bool save_intermediate = false;		/* True means we save intermediate grids after each iteration */
+bool average = false;			/* True means we should average nearest data constraints for early grids */
 char debug_prefix[32] = {"surface"};	/* Prefix for intermediate grids */
 float *tmp_grid = NULL;			/* Temp grid used for writing debug grids */
 #define PARALLEL_MODE			/* Use an array to relate node index to Briggs index */
@@ -541,7 +543,7 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->npoints -= k_skipped;
 }
 
-GMT_LOCAL void find_nearest_point_old (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines the nearest data point per bin and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, last_index, node, briggs_index;
@@ -633,7 +635,7 @@ GMT_LOCAL void find_nearest_point_old (struct GMT_CTRL *GMT, struct SURFACE_INFO
 	 }
 }
 
-GMT_LOCAL void find_nearest_point (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines all data point per bin, obtains mean value if more than one and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, n, last_index, node, briggs_index;
@@ -1057,11 +1059,11 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, float *u) 
 	/* Now set d2[]/dxdy = 0 at each of the 4 corners */
 
 	n = C->node_sw_corner;	/* Just use shorthand in each expression */
-	u[n+d_n[SW]]  = u[n+d_n[SE]] + u[n+d_n[W1]] - u[n+d_n[NE]];
+	u[n+d_n[SW]]  = u[n+d_n[SE]] + u[n+d_n[NW]] - u[n+d_n[NE]];
 	n = C->node_nw_corner;
 	u[n+d_n[NW]]  = u[n+d_n[NE]] + u[n+d_n[SW]] - u[n+d_n[SE]];
 	n = C->node_se_corner;
-	u[n+d_n[SE]] = u[n+d_n[SW]]  + u[n+d_n[NE]] - u[n+d_n[NW]];
+	u[n+d_n[SE]]  = u[n+d_n[SW]] + u[n+d_n[NE]] - u[n+d_n[NW]];
 	n = C->node_ne_corner;
 	u[n+d_n[NE]]  = u[n+d_n[NW]] + u[n+d_n[SE]] - u[n+d_n[SW]];
 
@@ -1083,8 +1085,8 @@ GMT_LOCAL void set_BCs (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, float *u) 
 		}
 		else {	/* Natural BCs */
 			/* West side */
-			u[n_w+d_n[W2]] = u[n_w+d_n[E2]] + (float)(C->eps_p2 * (u[n_w+d_n[NE]] + u[n_w+d_n[SE]]
-				-u[n_w+d_n[NW]] - u[n_w+d_n[SW]]) + C->two_plus_ep2 * (u[n_w+d_n[W1]] - u[n_w+d_n[E1]]));
+			u[n_w+d_n[W2]] = (float)(u[n_w+d_n[E2]] + C->eps_p2 * (u[n_w+d_n[NE]] + u[n_w+d_n[SE]]
+				- u[n_w+d_n[NW]] - u[n_w+d_n[SW]]) + C->two_plus_ep2 * (u[n_w+d_n[W1]] - u[n_w+d_n[E1]]));
 			/* East side */
 			u[n_e+d_n[E2]] = (float)(u[n_e+d_n[W2]] + C->eps_p2 * (u[n_e+d_n[NW]] + u[n_e+d_n[SW]]
 				- u[n_e+d_n[NE]] - u[n_e+d_n[SE]]) + C->two_plus_ep2 * (u[n_e+d_n[E1]] - u[n_e+d_n[W1]]));
@@ -1457,6 +1459,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 
 	for (k = 0; k < C->npoints; k++) ssz += (C->data[k].z * C->data[k].z);
 	C->z_rms = sqrt (ssz / C->npoints);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Normalize detrended data constraints by z rms = %g\n", C->z_rms);
 
 	if (C->z_rms < GMT_CONV8_LIMIT) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Input data lie exactly on a plane.\n");
@@ -1467,13 +1470,7 @@ GMT_LOCAL int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		C->r_z_rms = 1.0 / C->z_rms;
 
 	for (k = 0; k < C->npoints; k++) C->data[k].z *= (float)C->r_z_rms;
-#if 0
-{	/* For debugging purposes */
-	FILE *fp = fopen ("z.txt", "w");
-	for (k = 0; k < C->npoints; k++) fprintf (fp, "%g\t%g\t%g\n", C->data[k].x, C->data[k].y, C->data[k].z);
-	fclose (fp);
-}
-#endif
+
 	if (C->converge_limit == 0.0 || C->converge_mode == BY_PERCENT) {	/* Set default values for convergence criteria */
 		unsigned int ppm;
 		double limit = (C->converge_mode == BY_PERCENT) ? C->converge_limit : SURFACE_CONV_LIMIT;
@@ -1781,9 +1778,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 			case 'E':
 				Ctrl->E.active = true;
 				debug = 1; k = 0;
-				if (opt->arg[0] == '+') {
-					switch (opt->arg[1]) {
+				while (opt->arg[k] == '+') {
+					switch (opt->arg[k+1]) {
 						case '1': Ctrl->E.once = true; break;
+						case 'a': average = true; break;
 						case 'o': debug = 1; break;
 						case 'O': debug = 1; nondimensional = true; break;
 						case 'p': debug = 3; break;
@@ -1791,7 +1789,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT
 						case 'm': debug = 2; break;
 						case 'M': debug = 2; nondimensional = true; break;
 					}
-					k = 2;
+					k += 2;
 				}
 				if (opt->arg[k]) {
 					strcpy (debug_prefix, &opt->arg[k]);
@@ -2120,8 +2118,13 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 	 * progressively refine the grid until we reach the final configuration. */
 	
 	C.previous_stride = C.current_stride;
-	find_nearest_point (GMT, &C);	/* Assign nearest data value to nodes and evaluate Briggs coefficients */
-	iterate (GMT, &C, GRID_DATA);	/* Grid the data using the data constraints */
+#ifdef DEBUG_SURF
+	if (average)
+		find_mean_constraint (GMT, &C);		/* Assign mean data value to nodes and evaluate Briggs coefficients */
+	else
+#endif
+	find_nearest_constraint (GMT, &C);		/* Assign nearest data value to nodes and evaluate Briggs coefficients */
+	iterate (GMT, &C, GRID_DATA);			/* Grid the data using the data constraints */
 	 
 	while (C.current_stride > 1) {	/* More intermediate grids remain, go to next */
 		smart_divide (&C);			/* Set the new current_stride */
@@ -2130,7 +2133,12 @@ int GMT_surface_mt (void *V_API, int mode, void *args) {
 		set_index (GMT, &C);			/* Recompute the index values for the nearest data points */
 		fill_in_forecast (GMT, &C);		/* Expand the grid and fill it via bilinear interpolation */
 		iterate (GMT, &C, GRID_NODES);		/* Grid again but only to improve on the bilinear guesses */
-		find_nearest_point (GMT, &C);		/* Update nearest data value to nodes and evaluate Briggs coefficients */
+#ifdef DEBUG_SURF
+		if (average)
+			find_mean_constraint (GMT, &C);	/* Assign mean data value to nodes and evaluate Briggs coefficients */
+		else
+#endif
+		find_nearest_constraint (GMT, &C);	/* Assign nearest data value to nodes and evaluate Briggs coefficients */
 		iterate (GMT, &C, GRID_DATA);		/* Grid the data but now use the data constraints */
 		C.previous_stride = C.current_stride;	/* Remember previous stride before we smart-divide again */
 	}
