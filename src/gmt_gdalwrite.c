@@ -164,11 +164,12 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 		for (i = 0; i < GDALGetDriverCount(); i++) {
 			hDriver = GDALGetDriver(i);
 			if (GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATE, NULL) != NULL || 
-			     GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATECOPY, NULL) != NULL)
+			    GDALGetMetadataItem(hDriver, GDAL_DCAP_CREATECOPY, NULL) != NULL)
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "  %s: %s\n", 
-					GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
+				            GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
 		}
 		GDALDestroyDriverManager();
+		gmt_M_free(GMT, outByte);
 		return(-1);
 	}
 
