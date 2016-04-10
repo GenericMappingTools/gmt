@@ -319,14 +319,13 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	n_expected = header->nx;
 	tLong  = gmt_M_memory (GMT, NULL, n_expected, int);
-	tShort = (short *)tLong;	tChar  = (char *)tLong;	tFloat  = (float *)tLong;
+	tShort = (short *)tLong;	tChar = (char *)tLong;	tFloat = (float *)tLong;
 	size = abs (mggHeader.numType);
 
 	if (piping)	{ /* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (gmt_M_fread ( tLong, size, n_expected, fp) != n_expected) {
 			gmt_fclose (GMT, fp);
-			gmt_M_free (GMT, actual_col);
-			gmt_M_free (GMT, tLong);
+			gmt_M_free (GMT, actual_col);	gmt_M_free (GMT, tLong);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 	}
@@ -334,8 +333,7 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		long_offset = (off_t)first_row * (off_t)n_expected * size;
 		if (fseek (fp, long_offset, 1)) {
 			gmt_fclose (GMT, fp);
-			gmt_M_free (GMT, actual_col);
-			gmt_M_free (GMT, tLong);
+			gmt_M_free (GMT, actual_col);	gmt_M_free (GMT, tLong);
 			return (GMT_GRDIO_SEEK_FAILED);
 		}
 	}
@@ -343,7 +341,11 @@ int gmt_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	header->has_NaNs = GMT_GRID_NO_NANS;	/* We are about to check for NaNs and if none are found we retain 1, else 2 */
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (gmt_M_fread (tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
+		if (gmt_M_fread (tLong, size, n_expected, fp) != n_expected) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);	gmt_M_free (GMT, tLong);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
