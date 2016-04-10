@@ -1842,6 +1842,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (gmt_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
+		gmt_M_free (GMT, to_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
