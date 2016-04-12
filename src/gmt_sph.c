@@ -122,7 +122,7 @@ int gmt_stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *
 
 	if (ierror) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRLIST.\n");
-		gmt_M_free (GMT, list);
+		gmt_M_free (GMT, list);		gmt_M_free (GMT, lend);		gmt_M_free (GMT, lptr);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	
