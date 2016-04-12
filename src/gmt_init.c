@@ -7161,10 +7161,12 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 				GMT->common.g.get_dist[i] = &gmtinit_xy_deg_dist;
 				GMT->common.g.method[i] = GMT_GAP_IN_DDIST;
 				GMT->common.g.gap[i] *= GMT_MIN2DEG;
+				break;
 			case 's':	/* Arc seconds, reset pointer */
 				GMT->common.g.get_dist[i] = &gmtinit_xy_deg_dist;
 				GMT->common.g.method[i] = GMT_GAP_IN_DDIST;
 				GMT->common.g.gap[i] *= GMT_SEC2DEG;
+				break;
 			case 'f':	/* Feet  */
 				GMT->common.g.gap[i] *= METERS_IN_A_FOOT;
 				break;
