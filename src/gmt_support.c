@@ -6032,6 +6032,10 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 				X->model = GMT_CMYK;
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: unrecognized COLOR_MODEL in color palette table %s\n", cpt_file);
+				if (close_file) fclose (fp);
+				if (Z) gmt_M_free (GMT, Z);
+				gmt_M_free (GMT, X->range);
+				gmt_M_free (GMT, X);
 				return (NULL);
 			}
 			continue;	/* Don't want this instruction to be also kept as a comment */
@@ -6083,6 +6087,10 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 				X->patch[id].fill = gmt_M_memory (GMT, NULL, 1, struct GMT_FILL);
 				if (gmt_getfill (GMT, T1, X->patch[id].fill)) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: CPT Pattern fill (%s) not understood!\n", T1);
+					if (close_file) fclose (fp);
+					if (Z) gmt_M_free (GMT, Z);
+					gmt_M_free (GMT, X->range);
+					gmt_M_free (GMT, X);
 					return (NULL);
 				}
 				X->has_pattern = true;
