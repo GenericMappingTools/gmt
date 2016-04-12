@@ -182,10 +182,19 @@ float *tmp_grid = NULL;			/* Temp grid used for writing debug grids */
 #define index_to_row(index,nx) ((index) / (nx))
 
 /* The 4 indices refers to points A-D in Figure A-1 in the reference */
+#if 0
 static unsigned int p[5][4] = {	/* Indices into C->offset for each of the 4 quadrants, i.e., C->offset[p[quadrant][k]]], k = 0-3 */
 	{ 0, 0, 0,  0},	/* This row is not used */
 	{10, 9, 5,  1},	/* Indices for 1st quadrant */
 	{ 8, 9, 6,  3},	/* Indices for 2nd quadrant */
+	{ 1, 2, 6, 10},	/* Indices for 3rd quadrant */
+	{ 3, 2, 5,  8}	/* Indices for 4th quadrant */
+};
+#endif
+static unsigned int p[5][4] = {	/* Indices into C->offset for each of the 4 quadrants, i.e., C->offset[p[quadrant][k]]], k = 0-3 */
+	{ 0, 0, 0,  0},	/* This row is not used */
+	{ 1, 5, 9, 10},	/* Indices for 1st quadrant */
+	{ 3, 6, 9,  8},	/* Indices for 2nd quadrant */
 	{ 1, 2, 6, 10},	/* Indices for 3rd quadrant */
 	{ 3, 2, 5,  8}	/* Indices for 4th quadrant */
 };
@@ -543,21 +552,50 @@ GMT_LOCAL void set_index (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	C->npoints -= k_skipped;
 }
 
+GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, double *b, double xx, double yy, float z) {
+	/* Given the normalized offset (xx,yy) from current node (value z) we determine the
+	 * Briggs coefficients b_k, k = 1,5  [Equation (A-6) in the reference] 
+	 * Here, xx, yy are the fractional distances, accounting for any anisotropy.
+	 * Note b[5] initially contains the sum of the 5 Briggs coefficients but
+	 * we actually need to divide by it so we do that change here as well.
+	 * Finally, b[4] will multiply with the off-node constraint so we do that here.
+	 */
+	double xx2, yy2, xx_plus_yy, xx_plus_yy_plus_one, inv_xx_plus_yy_plus_one, inv_delta;
+	
+	xx_plus_yy = xx + yy;
+	xx_plus_yy_plus_one = 1.0 + xx_plus_yy;
+	inv_xx_plus_yy_plus_one = xx_plus_yy_plus_one;
+	xx2 = xx * xx;	yy2 = yy * yy;
+	inv_delta = inv_xx_plus_yy_plus_one / xx_plus_yy;
+	b[0] = (xx2 + 2.0 * xx * yy + xx - yy2 - yy) * inv_delta;
+	b[1] = 2.0 * (yy - xx + 1.0) * inv_xx_plus_yy_plus_one;
+	b[2] = 2.0 * (xx - yy + 1.0) * inv_xx_plus_yy_plus_one;
+	b[3] = (-xx2 + 2.0 * xx * yy - xx + yy2 + yy) * inv_delta;
+	b[4] = 4.0 * inv_delta;
+	fprintf (stderr, "b1 = %g b2 = %g b3 = %g b4 = %g b5 = %g\n", b[0], b[1], b[2], b[3], b[4]);
+	/* We need to sum k = 0<5 of u[k]*b[k], where u[k] are the nodes of the points A-D,
+	 * but the k = 4 point (E) is our data constraint.  We multiply that in here, once,
+	 * add add b[4] to the rest of the sum inside the iteration loop. */
+	b[4] *= z;
+	
+	/* We also need to normalize by the sum of the b[k] values, so sum them here */
+	b[5] = b[0] + b[1] + b[2] + b[3] + b[4];
+	/* b[5] is part of a denominator so we do the division here instead of inside iterate loop */
+	b[5] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[5]);
+}
+
 GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	/* Determines the nearest data point per bin and sets the
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, last_index, node, briggs_index;
 	int row, col;
-	double x0, y0, dx, dy, dxpdy, xys, xy1, btemp, min_distance, *b = NULL;
+	double xx, yy, x0, y0, dx, dy;
 	float z_at_node, *u = C->Grid->data;
 	unsigned char *status = C->status;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine nearest point and set Briggs coefficients [stride = %d]\n", C->current_stride);
 	
-	/* "Really close" will mean within 5% of the current grid spacing from the center node */
-	min_distance = SURFACE_CLOSENESS_FACTOR * MIN (C->inc[GMT_X], C->inc[GMT_Y]);
-
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
 		status[node] = SURFACE_IS_UNCONSTRAINED;
 	}
@@ -578,7 +616,9 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 			dx = x_to_fcol (C->data[k].x, x0, C->r_inc[GMT_X]);
 			dy = y_to_frow (C->data[k].y, y0, C->r_inc[GMT_Y]);
 	
-	 		if (fabs (dx) < min_distance && fabs (dy) < min_distance) {	/* Close enough to assign fixed value to node */
+			/* "Really close" will mean within 5% of the current grid spacing from the center node */
+
+	 		if (fabs (dx) < SURFACE_CLOSENESS_FACTOR && fabs (dy) < SURFACE_CLOSENESS_FACTOR) {	/* Close enough to assign fixed value to node */
 	 			status[node] = SURFACE_IS_CONSTRAINED;
 	 			/* Since point is basically moved from (dx, dy) to (0,0) we must adjust for
 	 			 * the small change in the planar trend between the two locations, and then
@@ -596,39 +636,27 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 						z_at_node = C->Bound[HI]->data[node];
 	 			}
 	 			u[node] = z_at_node;
-		//fprintf(stderr, "Point %d [index %d] fixes node %d [row = %d col = %d] at %g\n", (int)C->data[k].number, (int)C->data[k].index, (int)last_index, row, col, z_at_node);
 	 		}
 	 		else {	/* We have a nearby data point in one of the quadrants */
-	 			if (dx >= 0.0) {
-	 				if (dy >= 0.0)
+	 			if (dy >= 0.0) {	/* Upper two quadrants */
+		 			if (dx >= 0.0)
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD1;
 	 				else
-	 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
+	 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
+					xx = fabs (dx);	yy = C->alpha2 * fabs (dy);
 	 			}
 	 			else {
-	 				if (dy >= 0.0)
-	 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
+		 			if (dx >= 0.0)
+	 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
 	 				else
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD3;
-	 			}
-				/* Evaluate the 6 Briggs coefficients [Equation (A-6) in reference] */
-	 			dx = fabs (dx);	dy = fabs (dy);
-				dxpdy = dx + dy;
-	 			xys = 1.0 + dxpdy;
-	 			btemp = 2 * C->one_plus_e2 / ( dxpdy * xys );
-	 			b = C->Briggs[briggs_index].b;	/* Shorthand to current Briggs-array element */
-	 			b[0] = 1.0 - 0.5 * (dx + (dx * dx)) * btemp;
-	 			b[3] = 0.5 * (C->alpha2 - (dy + (dy * dy)) * btemp);
-	 			xy1 = 1.0 / xys;
-	 			b[1] = (C->alpha2 * xys - 4 * dy) * xy1;
-	 			b[2] = 2 * (dy - dx + 1.0) * xy1;
-	 			b[4] = b[0] + b[1] + b[2] + b[3] + btemp;
-	 			b[5] = btemp * C->data[k].z;
-				b[4] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[4]);	/* We do this calculation here instead of inside iterate loop */
+	 				yy = fabs (dx);	xx = C->alpha2 * fabs (dy);
+				}
+				/* Evaluate the Briggs coefficients */
+				solve_Briggs_coefficients (C, C->Briggs[briggs_index].b, xx, yy, C->data[k].z);
 #ifdef PARALLEL_MODE
 				C->briggs_index[node] = briggs_index;	/* Since with OpenMP there is no longer a sequential access of Briggs coefficients in iterate */
 #endif
-	//fprintf(stderr, "Point %d [index %d] constraints node %d [row = %d col = %d] as %g in quadrant %d\n", (int)C->data[k].number, (int)C->data[k].index, (int)last_index, row, col, C->data[k].z, status[node]);
 	 			briggs_index++;
 	 		}
 	 	}
@@ -640,16 +668,13 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 	 * Briggs parameters or, if really close, fixes the node value */
 	uint64_t k, n, last_index, node, briggs_index;
 	int row, col;
-	double x0, y0, dx, dy, mean_x, mean_y, dxpdy, xys, xy1, btemp, min_distance, *b = NULL;
+	double xx, yy, x0, y0, dx, dy, mean_x, mean_y;
 	float mean_z, *u = C->Grid->data;
 	unsigned char *status = C->status;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Determine mean data constraints and set Briggs coefficients [stride = %d]\n", C->current_stride);
 	
-	/* "Really close" will mean within 5% of the current grid spacing from the center node */
-	min_distance = SURFACE_CLOSENESS_FACTOR * MIN (C->inc[GMT_X], C->inc[GMT_Y]);
-
 	gmt_M_grd_loop (GMT, C->Grid, row, col, node) {	/* Reset status of all interior grid nodes */
 		status[node] = SURFACE_IS_UNCONSTRAINED;
 	}
@@ -677,7 +702,9 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
 		dx = x_to_fcol (mean_x, x0, C->r_inc[GMT_X]);
 		dy = y_to_frow (mean_y, y0, C->r_inc[GMT_Y]);
 	
- 		if (fabs (dx) < min_distance && fabs (dy) < min_distance) {	/* Close enough to assign fixed value to node */
+ 		/* "Really close" will mean within 5% of the current grid spacing from the center node */
+
+		if (fabs (dx) < SURFACE_CLOSENESS_FACTOR && fabs (dy) < SURFACE_CLOSENESS_FACTOR) {	/* Close enough to assign fixed value to node */
  			status[node] = SURFACE_IS_CONSTRAINED;
  			/* Since point is basically moved from (dx, dy) to (0,0) we must adjust for
  			 * the small change in the planar trend between the two locations, and then
@@ -697,32 +724,22 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  			u[node] = mean_z;	/* Set the fixed node value */
  		}
  		else {	/* We have a nearby data point in one of the quadrants */
- 			if (dx >= 0.0) {
- 				if (dy >= 0.0)
+ 			if (dy >= 0.0) {	/* Upper two quadrants */
+	 			if (dx >= 0.0)
  					status[node] = SURFACE_DATA_IS_IN_QUAD1;
  				else
- 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
+ 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
+				xx = fabs (dx);	yy = C->alpha2 * fabs (dy);
  			}
  			else {
- 				if (dy >= 0.0)
- 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
+	 			if (dx >= 0.0)
+ 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
  				else
  					status[node] = SURFACE_DATA_IS_IN_QUAD3;
- 			}
-			/* Evaluate the 6 Briggs coefficients [Equation (A-6) in the reference] */
- 			dx = fabs (dx);	dy = fabs (dy);	/* Pretend it is 1st quadrant geometry */
-			dxpdy = dx + dy;
- 			xys = 1.0 + dxpdy;
- 			btemp = 2 * C->one_plus_e2 / ( dxpdy * xys );
- 			b = C->Briggs[briggs_index].b;	/* Shorthand to current Briggs-array element */
- 			b[0] = 1.0 - 0.5 * (dx + (dx * dx)) * btemp;
- 			b[3] = 0.5 * (C->alpha2 - (dy + (dy * dy)) * btemp);
- 			xy1 = 1.0 / xys;
- 			b[1] = (C->alpha2 * xys - 4 * dy) * xy1;
- 			b[2] = 2 * (dy - dx + 1.0) * xy1;
- 			b[4] = b[0] + b[1] + b[2] + b[3] + btemp;
- 			b[5] = btemp * mean_z;
-			b[4] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[4]);	/* We do this calculation here instead of inside iterate loop */
+ 				yy = fabs (dx);	xx = C->alpha2 * fabs (dy);
+			}
+			/* Evaluate the Briggs coefficients */
+			solve_Briggs_coefficients (C, C->Briggs[briggs_index].b, xx, yy, C->data[k].z);
 #ifdef PARALLEL_MODE
 			C->briggs_index[node] = briggs_index;	/* Since with OpenMP there is no longer a sequential access of Briggs coefficients in iterate */
 #endif
@@ -1208,7 +1225,7 @@ GMT_LOCAL uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mo
 						sum_bk_uk += b[k] * u_old[node+d_node[C->p[quadrant][k]]];
 						//if (dump) fprintf (stderr, "I%d k = %d b[k] = %g u[k] = %g sum_bk_uk = %g\n", (int)iteration_count, k, b[k], u_old[node+d_node[C->p[quadrant][k]]], sum_bk_uk);
 					}
-					u_00 = (u_00 + C->a0_const_2 * (sum_bk_uk + b[5])) * b[4];	/* Add point E in Fig A-1 to sum_bk_uk and normalize */
+					u_00 = (u_00 + C->a0_const_2 * (sum_bk_uk + b[4])) * b[5];	/* Add point E in Fig A-1 to sum_bk_uk and normalize */
 					//if (dump) fprintf (stderr, "I%d b[4] = %g b[5] = %g u_00 = %g\n\n", (int)iteration_count, b[4], b[5], u_00);
 #ifndef PARALLEL_MODE
 					briggs_index++;	/* Got to next sequential Briggs array index */

@@ -102,6 +102,7 @@ struct SURFACE_CTRL {
 #define SURFACE_CONV_LIMIT	0.0001		/* Default is 100 ppm of data range as convergence criterion */
 #define SURFACE_MAX_ITERATIONS	500		/* Default iterations at final grid size */
 #define SURFACE_OVERRELAXATION	1.4		/* Default over-relaxation value */
+#define SURFACE_CLOSENESS_FACTOR	0.05	/* A node is considered known if the nearest data is within 0.05 of a gridspacing of the node */
 #define SURFACE_IS_UNCONSTRAINED	0	/* Various constants used to flag nearest node */
 #define SURFACE_DATA_IS_IN_QUAD1	1
 #define SURFACE_DATA_IS_IN_QUAD2	2
@@ -184,7 +185,6 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	double z_scale;			/* Root mean square range of z after removing planar trend  */
 	double r_z_scale;		/* reciprocal of z_scale  */
 	double plane_c0, plane_c1, plane_c2;	/* Coefficients of best fitting plane to data  */
-	double small;			/* Let data point coincide with node if distance < C->small */
 	double coeff[2][12];		/* Coefficients for 12 nearby points, constrained and unconstrained  */
 	double relax_old, relax_new;	/* Coefficients for relaxation factor to speed up convergence */
 	double wesn_orig[4];		/* Original -R domain as we might have shifted it due to -r */
@@ -427,7 +427,6 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	last_index = UINTMAX_MAX;
-	C->small = 0.05 * ((C->grid_xinc < C->grid_yinc) ? C->grid_xinc : C->grid_yinc);
 
 	for (i = 0; i < C->nx; i += C->grid)	/* Reset grid info */
 		for (j = 0; j < C->ny; j += C->grid)
@@ -444,11 +443,11 @@ GMT_LOCAL void find_nearest_point (struct SURFACE_INFO *C) {
 	 		y0 = h->wesn[YLO] + block_j*C->grid_yinc;
 	 		dx = (C->data[k].x - x0)*C->r_grid_xinc;
 	 		dy = (C->data[k].y - y0)*C->r_grid_yinc;
-	 		if (fabs(dx) < C->small && fabs(dy) < C->small) {	/* Close enough to assign value to node */
+	 		if (fabs(dx) < SURFACE_CLOSENESS_FACTOR && fabs(dy) < SURFACE_CLOSENESS_FACTOR) {	/* Close enough to assign value to node */
 	 			iu[iu_index] = SURFACE_IS_CONSTRAINED;
 	 			/* v3.3.4: NEW CODE
 	 			 * Since point is basically moved from (dx, dy) to (0,0) we must adjust for
-	 			 * the C->small change in the planar trend between the two locations, and then
+	 			 * the small change in the planar trend between the two locations, and then
 	 			 * possibly clip the range if constraining surfaces were given.  Note that
 	 			 * dx, dy is in -1/1 range normalized by (grid * x|y_inc) so to recover the
 	 			 * dx,dy in final grid fractions we must scale by grid */
