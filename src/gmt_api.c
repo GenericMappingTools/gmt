@@ -2209,8 +2209,14 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 		if (S_obj->family != GMT_IS_DATASET) continue;	/* We're doing datasets here, so skip other data types */
 		if (API->module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
 		if (S_obj->status != GMT_IS_UNUSED) { 	/* Already read this resource before; are we allowed to re-read? */
-			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
-			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) {
+				gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj); 
+				return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
+			}
+			if (!(mode & GMT_IO_RESET)) {
+				gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj); 
+				return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+			}
 		}
 		if (this_item == GMT_NOTSET) this_item = item;	/* First item that worked */
 		via = false;
@@ -2221,10 +2227,14 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 				if (item == first_item) GMT_setmode (GMT, GMT_IN);	/* Windows may need to switch read mode from text to binary */
 #endif
 				/* GMT_read_table will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
-				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
+				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0) {	/* Only single tables if GMT/OGR */
+					gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj); 
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %s\n", GMT_family[S_obj->family], GMT_method[S_obj->method], S_obj->filename);
-				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (GMT, S_obj->filename, S_obj->method, greenwich, &geometry, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
+				}
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE,
+				            "Reading %s from %s %s\n", GMT_family[S_obj->family], GMT_method[S_obj->method], S_obj->filename);
+				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (GMT, S_obj->filename, S_obj->method, greenwich, &geometry, use_GMT_io)) == NULL)
+					continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
 				update = true;
@@ -2327,7 +2337,8 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 	 		case GMT_IS_DUPLICATE_VIA_VECTOR:
 				/* Each column array source becomes column arrays in a separate table with one (or more if NaN-records) segments */
 				if ((V_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n", V_obj->n_columns, V_obj->n_rows);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
+				            V_obj->n_columns, V_obj->n_rows);
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : V_obj->n_columns;
 				D_obj->table[D_obj->n_tables] = GMT_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = GMT_memory (GMT, NULL, s_alloc, struct GMT_DATASEGMENT *);
@@ -2388,7 +2399,8 @@ struct GMT_DATASET *GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_I
 				if (V_obj->type[0] != GMT_DOUBLE) return_null (API, GMT_NOT_A_VALID_TYPE);
 				/* Each column array source becomes preallocated column arrays in a separate table with a single segment */
 				n_columns = (GMT->common.i.active) ? GMT->common.i.n_cols : V_obj->n_columns;
-				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n", V_obj->n_columns, V_obj->n_rows);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table from user %" PRIu64 " column arrays of length %" PRIu64 "\n",
+				            V_obj->n_columns, V_obj->n_rows);
 				D_obj->table[D_obj->n_tables] = GMT_memory (GMT, NULL, 1, struct GMT_DATATABLE);
 				D_obj->table[D_obj->n_tables]->segment = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT *);
 				D_obj->table[D_obj->n_tables]->segment[0] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
@@ -2689,7 +2701,10 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 	}
 	else {		/* Requested a single, specific data table */
 		int flag = (API->module_input) ? GMTAPI_MODULE_INPUT : GMTAPI_OPTION_INPUT;	/* Needed by Validate_ID */
-		if ((first_item = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, object_ID, GMT_IN, flag)) == GMT_NOTSET) return_null (API, API->error);
+		if ((first_item = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, object_ID, GMT_IN, flag)) == GMT_NOTSET) {
+			GMT_free (GMT, T_obj);
+			return_null (API, API->error);
+		}
 		last_item  = first_item;
 		n_alloc = 1;
 	}
@@ -2708,8 +2723,14 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 		if (S_obj->family != GMT_IS_TEXTSET) continue;	/* We're doing textsets here, so skip other things */
 		if (API->module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
 		if (S_obj->status != GMT_IS_UNUSED) {	/* Already read this resource before; are we allowed to re-read? */
-			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
-			if (!(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) {
+				GMT_free (GMT, T_obj->table);	GMT_free (GMT, T_obj);
+				return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
+			}
+			if (!(mode & GMT_IO_RESET)) {
+				GMT_free (GMT, T_obj->table);	GMT_free (GMT, T_obj);
+				return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
+			}
 		}
 		if (this_item == GMT_NOTSET) this_item = item;	/* First item that worked */
 		via = false;
@@ -2753,7 +2774,10 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 		 	case GMT_IS_DUPLICATE_VIA_MATRIX:
 		 	case GMT_IS_REFERENCE_VIA_MATRIX:
 				/* Each matrix source becomes a separate table with one segment */
-			 	if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			 	if ((M_obj = S_obj->resource) == NULL) {
+					GMT_free (GMT, T_obj->table);	GMT_free (GMT, T_obj);
+			 		return_null (API, GMT_PTR_IS_NULL);
+			 	}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating text table from user matrix location\n");
 				T_obj->table[T_obj->n_tables] = GMT_memory (GMT, NULL, 1, struct GMT_TEXTTABLE);
 				T_obj->table[T_obj->n_tables]->segment = GMT_memory (GMT, NULL, 1, struct GMT_TEXTSEGMENT *);
@@ -2774,8 +2798,7 @@ struct GMT_TEXTSET *GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_I
 				break;
 			default:	/* Barking up the wrong tree here... */
 				GMT_Report (API, GMT_MSG_NORMAL, "Wrong method used to import data tables\n");
-				GMT_free (GMT, T_obj->table);
-				GMT_free (GMT, T_obj);
+				GMT_free (GMT, T_obj->table);	GMT_free (GMT, T_obj);
 				return_null (API, GMT_NOT_A_VALID_METHOD);
 				break;
 		}
