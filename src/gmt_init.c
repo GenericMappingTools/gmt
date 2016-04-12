@@ -1003,13 +1003,17 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 	/* Deal with backwards compatibilities fro GMT4: -N[f]<nmodel>[r] */
 	arg = gmtinit_old_trendsyntax (GMT, option, in_arg);	/* Returns a possibly recreated option string */
 	if ((c = strchr (arg, '+'))) {	/* Gave one or more modifiers */
-		if (gmtinit_trend_modifiers (GMT, option, c, 1U, M)) return -1;
+		if (gmtinit_trend_modifiers (GMT, option, c, 1U, M)) {
+			gmt_M_str_free (arg);
+			return -1;
+		}
 		c[0] = '\0';	/* Chop off modifiers in arg before processing the model settings */
 	}
 	while ((gmt_strtok (arg, ",", &pos, p))) {	/* For each item in the series... */
 		/* Here, p will hold one instance of [P|p|F|f|C|c|S|s|x]<list-of-terms> */
 		if (!strchr ("CFSPcfspx", p[0])) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function type (%c)\n", option, p[0]);
+			gmt_M_str_free (arg);
 			return -1;
 		}
 		this_range = &p[1];
@@ -1028,6 +1032,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 		}
 		else if ((step = gmt_parse_range (GMT, this_range, &xstart, &xstop)) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Bad basis function order (%s)\n", option, this_range);
+			gmt_M_str_free (arg);
 			return -1;
 		}
 		if (!single && islower (p[0])) xstart = 0;	/* E.g., p3 should become p0-3 */
@@ -1889,7 +1894,10 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 	}
-	if ((fpi = fopen (line, "r")) == NULL) return (-1);
+	if ((fpi = fopen (line, "r")) == NULL) {
+		fclose (fpo);
+		return (-1);
+	}
 
 	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
