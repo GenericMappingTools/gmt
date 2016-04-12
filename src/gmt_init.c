@@ -681,8 +681,8 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -b: Column count must be > 0\n");
 						return (EXIT_FAILURE);
 					}
-					while (text[++i] && isdigit ((int)text[i]))
-						; --i; /* Wind past the digits */
+					while (text[++i] && isdigit ((int)text[i])); /* Wind past the digits */
+					--i;	/* Then go back to last digit since for loop will do i++ after this */
 					break;
 				case ',':
 					break;	/* Comma between sequences are optional and just ignored */

@@ -3371,7 +3371,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			if ((G_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Change alloc mode\n");
-			G_obj->alloc_mode = G_obj->alloc_mode;
+			S_obj->alloc_mode = G_obj->alloc_mode;
 			GMT_Report (API, GMT_MSG_DEBUG, "api_import_grid: Check pad\n");
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory")) return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
