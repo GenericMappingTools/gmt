@@ -22,9 +22,11 @@
  */
 
 #if defined(_WIN64) || defined(__MINGW64__)
-#define LONG __int64 	/* A signed 8-byte integer, under Windows64 */
+#define LONG __int64    /* A signed 8-byte integer, under Windows64 */
+#define PRIu "I64u"     /* printf format for unsigned uint64 */
 #else
-#define LONG long 	/* A signed 4 or 8-byte integer */
+#define LONG long       /* A signed 4 or 8-byte integer */
+#define PRIu "lu"
 #endif
 
 /*****************************************************************************/
@@ -3709,8 +3711,7 @@ struct otri *t;
   struct osub printsh;
   vertex printvertex;
 
-  printf("triangle x%lx with orientation %d:\n", (unsigned LONG) t->tri,
-         t->orient);
+  printf("triangle x%" PRIu " with orientation %d:\n", (unsigned LONG) t->tri, t->orient);
   decode(t->tri[0], printtri);
   if (printtri.tri == m->dummytri) {
     printf("    [0] = Outer space\n");
