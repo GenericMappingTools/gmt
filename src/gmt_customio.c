@@ -285,7 +285,10 @@ int gmt_ras_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	h.type = 1;
 	h.maptype = h.maplength = 0;
 
-	if (customio_write_rasheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
+	if (customio_write_rasheader (fp, &h))  {
+		gmt_fclose (GMT, fp);
+		return (GMT_GRDIO_WRITE_FAILED);
+	}
 
 	gmt_fclose (GMT, fp);
 
@@ -690,14 +693,15 @@ int gmt_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			gmt_fclose (GMT, fp);
 			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tmp);
+			if (!piping) gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 	}
 	else {		/* Simply seek by it */
 		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) {
-			gmt_fclose (GMT, fp);
 			gmt_M_free (GMT, actual_col);
 			gmt_M_free (GMT, tmp);
+			if (!piping) gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_SEEK_FAILED);
 		}
 	}
@@ -731,11 +735,13 @@ int gmt_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip data by reading it */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) {
-			gmt_fclose (GMT, fp);
-			gmt_M_free (GMT, actual_col);
-			gmt_M_free (GMT, tmp);
-			return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) {
+			if (gmt_M_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) {
+				gmt_fclose (GMT, fp);
+				gmt_M_free (GMT, actual_col);
+				gmt_M_free (GMT, tmp);
+				return (GMT_GRDIO_READ_FAILED);
+			}
 		}
 	}
 
@@ -997,11 +1003,13 @@ int gmt_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	}
 	if (piping) {	/* Skip remaining data by reading them */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) {
-			gmt_fclose (GMT, fp);
-			gmt_M_free (GMT, k);
-			gmt_M_free (GMT, tmp);
-			return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) {
+			if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) {
+				gmt_fclose (GMT, fp);
+				gmt_M_free (GMT, k);
+				gmt_M_free (GMT, tmp);
+				return (GMT_GRDIO_READ_FAILED);
+			}
 		}
 	}
 

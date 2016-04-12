@@ -3792,7 +3792,7 @@ struct osub *s;
   struct otri printtri;
   vertex printvertex;
 
-  printf("subsegment x" PRIu "% with orientation %d and mark %d:\n",
+  printf("subsegment x%" PRIu " with orientation %d and mark %d:\n",
          (unsigned LONG) s->ss, s->ssorient, mark(*s));
   sdecode(s->ss[0], printsh);
   if (printsh.ss == m->dummysub) {

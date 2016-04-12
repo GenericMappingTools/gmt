@@ -46,6 +46,7 @@
  *	1-AUG-2014.   PW: Data version is now 2.3.2. [no change to format]
  *	1-NOV-2014.   PW: Data version is now 2.3.3. [no change to format]
  *	1-JAN-2015.   PW: Data version is now 2.3.4. [no change to format]
+ *	12-APR-2016.  PW: Data version is now 2.3.5. [no change to format]
  *
  * The format of binary GSHHG files are simply sequential:
  * [ Item Header 0 ]
