@@ -2673,6 +2673,11 @@ int gmt_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading image with gdalread.\n");
+		gmt_M_free (GMT, to_gdalread);
+		for (i = 0; i < from_gdalread->RasterCount; i++)
+			gmt_M_str_free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
+		gmt_M_free (GMT, from_gdalread->band_field_names);
+		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
