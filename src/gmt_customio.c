@@ -270,15 +270,18 @@ int GMT_ras_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	h.type = 1;
 	h.maptype = h.maplength = 0;
 
-	if (GMT_write_rasheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_write_rasheader (fp, &h)) {
+		GMT_fclose (GMT, fp);
+		return (GMT_GRDIO_WRITE_FAILED);
+	}
 
 	GMT_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
 
-int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* header:	grid structure header */
+int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
+	/* header:	grid structure header */
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
@@ -639,10 +642,18 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	tmp = GMT_memory (GMT, NULL, mx, unsigned int);
 
 	if (piping) {	/* Skip data by reading it */
-		for (j = 0; j < first_row; j++) if (GMT_fread (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
+		for (j = 0; j < first_row; j++) if (GMT_fread (tmp, sizeof (unsigned int), mx, fp) < mx) {
+			gmt_M_free (GMT, tmp);
+			if (!piping) GMT_fclose (GMT, fp);
+			return (GMT_GRDIO_READ_FAILED);
+		}
 	}
 	else {		/* Simply seek by it */
-		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * mx * sizeof (unsigned int)), SEEK_CUR)) {
+			gmt_M_free (GMT, tmp);
+			if (!piping) GMT_fclose (GMT, fp);
+			return (GMT_GRDIO_SEEK_FAILED);
+		}
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -669,7 +680,13 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip data by reading it */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) {
+			if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) {
+				GMT_free (GMT, actual_col);		GMT_free (GMT, tmp);
+				GMT_fclose (GMT, fp);
+				return (GMT_GRDIO_READ_FAILED);
+			}
+		}	
 	}
 
 	header->nx = width_in;
@@ -759,7 +776,11 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			if (ival > 1) ival = 1;	/* Truncate to 1 */
 			tmp[word] |= (ival << bit);
 		}
-		if (GMT_fwrite (tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_WRITE_FAILED);
+		if (GMT_fwrite (tmp, sizeof (unsigned int), mx, fp) < mx) {
+			GMT_free (GMT, actual_col);		GMT_free (GMT, tmp);
+			GMT_fclose (GMT, fp);
+			return (GMT_GRDIO_WRITE_FAILED);
+		}
 	}
 
 	GMT_fclose (GMT, fp);
@@ -887,7 +908,10 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 		for (j = 0; j < first_row; j++) if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek over it */
-		if (fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) {
+			gmt_M_free (GMT, tmp);
+			return (GMT_GRDIO_SEEK_FAILED);
+		}
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -911,7 +935,13 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 	}
 	if (piping) {	/* Skip remaining data by reading them */
 		int ny = header->ny;
-		for (j = last_row + 1; j < ny; j++) if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+		for (j = last_row + 1; j < ny; j++) {
+			if (GMT_fread (tmp, size, n_expected, fp) < n_expected) {
+				GMT_free (GMT, k);		GMT_free (GMT, tmp);
+				GMT_fclose (GMT, fp);
+				return (GMT_GRDIO_READ_FAILED);
+			}
+		}
 	}
 
 	header->nx = width_in;
@@ -1010,7 +1040,11 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		ij = imag_offset + j2 * width_in + i2;
 		for (iu = 0; iu < width_out; iu++) GMT_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
-		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
+		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) {
+			GMT_free (GMT, k);		GMT_free (GMT, tmp);
+			GMT_fclose (GMT, fp);
+			return (GMT_GRDIO_WRITE_FAILED);
+		}
 	}
 
 	GMT_free (GMT, k);
@@ -1509,7 +1543,11 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
 		ij = imag_offset + j2 * width_in + i2;
 		for (iu = 0; iu < width_out; iu++) GMT_encode (GMT, tmp, iu, grid[ij+k[iu]], type);
-		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
+		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) {
+			GMT_free (GMT, k);		GMT_free (GMT, tmp);
+			GMT_fclose (GMT, fp);
+			return (GMT_GRDIO_WRITE_FAILED);
+		}
 	}
 
 	GMT_free (GMT, k);
