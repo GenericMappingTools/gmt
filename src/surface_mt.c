@@ -564,7 +564,7 @@ GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, double *b, dou
 	
 	xx_plus_yy = xx + yy;
 	xx_plus_yy_plus_one = 1.0 + xx_plus_yy;
-	inv_xx_plus_yy_plus_one = xx_plus_yy_plus_one;
+	inv_xx_plus_yy_plus_one = 1.0 / xx_plus_yy_plus_one;
 	xx2 = xx * xx;	yy2 = yy * yy;
 	inv_delta = inv_xx_plus_yy_plus_one / xx_plus_yy;
 	b[0] = (xx2 + 2.0 * xx * yy + xx - yy2 - yy) * inv_delta;
@@ -572,14 +572,14 @@ GMT_LOCAL void solve_Briggs_coefficients (struct SURFACE_INFO *C, double *b, dou
 	b[2] = 2.0 * (xx - yy + 1.0) * inv_xx_plus_yy_plus_one;
 	b[3] = (-xx2 + 2.0 * xx * yy - xx + yy2 + yy) * inv_delta;
 	b[4] = 4.0 * inv_delta;
-	fprintf (stderr, "b1 = %g b2 = %g b3 = %g b4 = %g b5 = %g\n", b[0], b[1], b[2], b[3], b[4]);
+	/* We also need to normalize by the sum of the b[k] values, so sum them here */
+	b[5] = b[0] + b[1] + b[2] + b[3] + b[4];
+	//fprintf (stderr, "b: %g %g %g %g %g %g [%g/%g]\n", b[0], b[1], b[2], b[3], b[4], b[5], xx, yy);
 	/* We need to sum k = 0<5 of u[k]*b[k], where u[k] are the nodes of the points A-D,
 	 * but the k = 4 point (E) is our data constraint.  We multiply that in here, once,
 	 * add add b[4] to the rest of the sum inside the iteration loop. */
 	b[4] *= z;
 	
-	/* We also need to normalize by the sum of the b[k] values, so sum them here */
-	b[5] = b[0] + b[1] + b[2] + b[3] + b[4];
 	/* b[5] is part of a denominator so we do the division here instead of inside iterate loop */
 	b[5] = 1.0 / (C->a0_const_1 + C->a0_const_2 * b[5]);
 }
@@ -643,14 +643,14 @@ GMT_LOCAL void find_nearest_constraint (struct GMT_CTRL *GMT, struct SURFACE_INF
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD1;
 	 				else
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD2;
-					xx = fabs (dx);	yy = C->alpha2 * fabs (dy);
+					xx = fabs (dx);	yy = fabs (dy);
 	 			}
 	 			else {
 		 			if (dx >= 0.0)
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD4;
 	 				else
 	 					status[node] = SURFACE_DATA_IS_IN_QUAD3;
-	 				yy = fabs (dx);	xx = C->alpha2 * fabs (dy);
+	 				yy = fabs (dx);	xx = fabs (dy);	/* Must swap dx,dy for these quadrants */
 				}
 				/* Evaluate the Briggs coefficients */
 				solve_Briggs_coefficients (C, C->Briggs[briggs_index].b, xx, yy, C->data[k].z);
@@ -729,14 +729,14 @@ GMT_LOCAL void find_mean_constraint (struct GMT_CTRL *GMT, struct SURFACE_INFO *
  					status[node] = SURFACE_DATA_IS_IN_QUAD1;
  				else
  					status[node] = SURFACE_DATA_IS_IN_QUAD2;
-				xx = fabs (dx);	yy = C->alpha2 * fabs (dy);
+				xx = fabs (dx);	yy = fabs (dy);
  			}
  			else {
 	 			if (dx >= 0.0)
  					status[node] = SURFACE_DATA_IS_IN_QUAD4;
  				else
  					status[node] = SURFACE_DATA_IS_IN_QUAD3;
- 				yy = fabs (dx);	xx = C->alpha2 * fabs (dy);
+ 				yy = fabs (dx);	xx = fabs (dy);	/* Must swap dx,dy for these quadrants */
 			}
 			/* Evaluate the Briggs coefficients */
 			solve_Briggs_coefficients (C, C->Briggs[briggs_index].b, xx, yy, C->data[k].z);
