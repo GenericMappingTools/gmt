@@ -3756,6 +3756,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has unrecognized <types> declaration in %s\n", name, flags);
+							fclose (fp);
 							GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 							break;
 					}
@@ -4000,6 +4001,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			else if (gmt_getfill (GMT, fill_p, s->fill)) {
 				gmt_fill_syntax (GMT, 'G', " ");
 				fclose (fp);
+				gmt_M_free (GMT, head);
 				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			}
 		}
