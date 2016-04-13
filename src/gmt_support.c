@@ -3746,6 +3746,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);
+					fclose (fp);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				for (k = 0; k < head->n_required; k++) {	/* Determine the argument types */
