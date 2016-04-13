@@ -7876,7 +7876,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
-			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
+			error += gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_MAP_TICK_PEN_SECONDARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);

@@ -2426,8 +2426,8 @@ GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_
 			case GMT_IS_Z:	/* Format -Z<value> */
 				virt_col = abs (GMT->common.a.col[col]) - 1;	/* So -3 becomes 2 etc */
 				if (space) strcat (buffer, " ");
-				strcat (buffer, sflag[virt_col]);
-				if (S->ogr) strcat (buffer, S->ogr->tvalue[GMT->common.a.ogr[col]]);
+				strncat (buffer, sflag[virt_col], GMT_BUFSIZ-1);
+				if (S->ogr) strncat (buffer, S->ogr->tvalue[GMT->common.a.ogr[col]], GMT_BUFSIZ-1);
 				space = true;
 				break;
 			default:	/* Regular column cases are skipped */
@@ -2438,7 +2438,7 @@ GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_
 		if (space) strcat (buffer, " ");
 		strcat (buffer, "-Ph");
 	}
-	if (S->header) { strcat (buffer, " "); strcat (buffer, S->header); }	/* Append rest of previous header */
+	if (S->header) {strcat (buffer, " "); strncat (buffer, S->header, GMT_BUFSIZ-1);}	/* Append rest of previous header */
 	gmt_M_str_free (S->header);
 	S->header = strdup (buffer);
 }

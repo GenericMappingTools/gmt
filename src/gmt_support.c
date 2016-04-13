@@ -10298,7 +10298,7 @@ int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 		}
 		if (string[0]) {	/* Got optional arguments */
 			if (strchr (string, '/'))	/* Got both declimation and label */
-				k = sscanf (string, "%[^/]/%s", txt_a, ms->dlabel);
+				sscanf (string, "%[^/]/%s", txt_a, ms->dlabel);
 			else
 				strcpy (txt_a, string);
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &ms->declination), txt_a);
@@ -12864,7 +12864,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 		n = support_find_mod_syntax_start (arg, k);
 		if (arg[n]) {	/* Separated via +modifiers (or nothing follows), but here we know just is 2 chars */
 			strncpy (txt_x, &arg[k], 2);	txt_x[2] = 0;
-			strcpy (the_rest, &arg[n]);
+			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 		}
 		else {	/* Old syntax with things separated by slashes */
 			if ((n = sscanf (&arg[k], "%[^/]/%s", txt_x, the_rest)) < 1) return NULL;	/* Not so good */
@@ -12876,7 +12876,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 		n = support_find_mod_syntax_start (arg, k);
 		if (arg[n]) { /* Separated via +modifiers (or nothing follows) */
 			int n2;
-			strcpy (the_rest, &arg[n]);
+			strncpy (the_rest, &arg[n], GMT_LEN256-1);
 			arg[n] = 0;	/* Chop off modifiers temporarily */
 			if ((n2 = sscanf (&arg[k], "%[^/]/%s", txt_x, txt_y)) < 2) return NULL;	/* Not so good */
 			arg[n] = '+';	/* Restore modifiers */
