@@ -5964,6 +5964,7 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 		Z = support_cpt_parse_z_unit (GMT, cpt_file, GMT_IN);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot open color palette table %s\n", cpt_file);
+			gmt_M_free (GMT, Z);
 			return (NULL);
 		}
 		close_file = true;	/* We only close files we have opened here */
