@@ -7739,7 +7739,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			/* With PRIMARY|SECONDARY not specified we will fall through (no break) to catch both cases: */
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
-			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
+			error += gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
