@@ -1793,7 +1793,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.offset = pad[XLO];		to_gdalread->mini_hdr.side[0] = 'r';
 			to_gdalread->mini_hdr.mx = header->mx;
 			if (gmt_M_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
-				gmt_M_free (GMT, to_gdalread);
+				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
 				return (EXIT_FAILURE);
 			}
 		}
@@ -1801,7 +1801,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.offset = pad[XHI];		to_gdalread->mini_hdr.side[0] = 'l';
 			to_gdalread->mini_hdr.mx = header->mx;
 			if (gmt_M_check_condition (GMT, !header->mx, "Programming error, header.mx not set\n")) {
-				gmt_M_free (GMT, to_gdalread);
+				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
 				return (EXIT_FAILURE);
 			}
 		}
@@ -1809,7 +1809,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.offset = pad[YLO];		to_gdalread->mini_hdr.side[0] = 't';
 			to_gdalread->mini_hdr.my = header->my;
 			if (gmt_M_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
-				gmt_M_free (GMT, to_gdalread);
+				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
 				return (EXIT_FAILURE);
 			}
 		}
@@ -1817,7 +1817,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			to_gdalread->mini_hdr.offset = pad[YHI];		to_gdalread->mini_hdr.side[0] = 'b';
 			to_gdalread->mini_hdr.my = header->my;
 			if (gmt_M_check_condition (GMT, !header->my, "Programming error, header.my not set\n")) {
-				gmt_M_free (GMT, to_gdalread);
+				gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
 				return (EXIT_FAILURE);
 			}
 		}
@@ -1850,7 +1850,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (gmt_gdalread (GMT, header->name, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR reading file with gdalread.\n");
-		gmt_M_free (GMT, to_gdalread);
+		gmt_M_free (GMT, to_gdalread);	gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 
