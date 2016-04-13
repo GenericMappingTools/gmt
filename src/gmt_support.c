@@ -3991,6 +3991,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 		if (error) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Failed to parse symbol commands in file %s\n", file);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Offending line: %s\n", buffer);
+			gmt_M_free (GMT, head);
 			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
