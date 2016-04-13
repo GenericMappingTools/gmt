@@ -1532,7 +1532,11 @@ int gmt_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	}
 	if (piping) {	/* Skip remaining data by reading it */
 		for (j = last_row + 1; j < ny; j++)
-			if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
+			if (gmt_M_fread (tmp, size, n_expected, fp) < n_expected) {
+				gmt_fclose (GMT, fp);
+				gmt_M_free (GMT, k);	gmt_M_free (GMT, tmp);
+				return (GMT_GRDIO_READ_FAILED);
+			}
 	}
 
 	header->nx = width_in;
