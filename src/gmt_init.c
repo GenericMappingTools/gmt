@@ -5035,11 +5035,16 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
 		if (i <= 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: index in %s is zero or negative %s!\n", line);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: index in %s is zero or negative!\n", line);
 			fclose (fp);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
 		if (dwu == 'M') {	/* Month record */
+			if (i > 12) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: month index in %s exceeds 12!\n", line);
+				fclose (fp);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			strncpy (GMT->current.language.month_name[0][i-1], full, GMT_LEN16-1);
 			strncpy (GMT->current.language.month_name[1][i-1], abbrev, GMT_LEN16-1);
 			strncpy (GMT->current.language.month_name[2][i-1], c, GMT_LEN16-1);
@@ -5048,6 +5053,11 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 			nm += i;
 		}
 		else if (dwu == 'W') {	/* Weekday record */
+			if (i > 7) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: weekday index in %s exceeds 7!\n", line);
+				fclose (fp);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			strncpy (GMT->current.language.day_name[0][i-1], full, GMT_LEN16-1);
 			strncpy (GMT->current.language.day_name[1][i-1], abbrev, GMT_LEN16-1);
 			strncpy (GMT->current.language.day_name[2][i-1], c, GMT_LEN16-1);
@@ -5060,6 +5070,11 @@ GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
 			nu += i;
 		}
 		else {	/* Compass name record */
+			if (i > 4) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: cCardinal name index in %s exceeds 4!\n", line);
+				fclose (fp);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
 			strncpy (GMT->current.language.cardinal_name[0][i-1], full, GMT_LEN16-1);
 			strncpy (GMT->current.language.cardinal_name[1][i-1], abbrev, GMT_LEN16-1);
 			strncpy (GMT->current.language.cardinal_name[2][i-1], c, GMT_LEN16-1);
@@ -7824,8 +7839,10 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 			else {
 				double inc[2];
 				i = sscanf (lower_value, "%[^/]/%s", txt_a, txt_b);
-				if (i != 2) error = true;
-				error = gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
+				if (i != 2)
+					error = true;
+				else
+					error = gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_a, GMT_IS_LAT, &GMT->current.setting.map_polar_cap[0]), txt_a);
 				if (gmt_getinc (GMT, txt_b, inc)) error = true;
 				GMT->current.setting.map_polar_cap[1] = inc[GMT_X];
 			}

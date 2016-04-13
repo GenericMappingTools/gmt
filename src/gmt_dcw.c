@@ -330,7 +330,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		want_state = false;
 		if (code[2] == '.') {	/* Requesting a state */
 			gmt_M_memset (state, GMT_LEN16, char);
-			strcpy (state, &code[3]);
+			strncpy (state, &code[3], GMT_LEN16-1);
 			code[2] = '\0';
 			want_state = true;
 		}
