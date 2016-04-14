@@ -431,6 +431,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct
 			case 'D':	/* Columns to delete */
 				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
+				break;
 				
 			case 'E':	/* character to generate no-string value */
 				Ctrl->E.active = true;
