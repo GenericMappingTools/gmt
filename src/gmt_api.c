@@ -2518,9 +2518,10 @@ GMT_LOCAL int api_destroy_data_ptr (struct GMTAPI_CTRL *API, enum GMT_enum_famil
 	 * The containers are always allocated by GMT so those are freed at the end.
 	 */
 
-	struct GMT_CTRL *GMT = API->GMT;
+	struct GMT_CTRL *GMT;
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (!ptr) return (GMT_OK);	/* Null pointer */
+	GMT = API->GMT;
 
 	switch (family) {	/* dataset, cpt, text table or grid */
 		case GMT_IS_GRID:	/* GMT grid; return alloc mode of data array in case it was allocated externally */
