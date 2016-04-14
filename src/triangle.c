@@ -15597,46 +15597,39 @@ struct behavior *b;
     }
   }
 
-  printf("\n  Mesh vertices: %ld\n", m->vertices.items - m->undeads);
-  printf("  Mesh triangles: %ld\n", m->triangles.items);
-  printf("  Mesh edges: %ld\n", m->edges);
-  printf("  Mesh exterior boundary edges: %ld\n", m->hullsize);
-  if (b->poly || b->refine) {
-    printf("  Mesh interior boundary edges: %ld\n",
-           m->subsegs.items - m->hullsize);
-    printf("  Mesh subsegments (constrained edges): %ld\n",
-           m->subsegs.items);
+  printf("\n  Mesh vertices: %" PRIu "\n", m->vertices.items - m->undeads);
+  printf("  Mesh triangles: %" PRIu "\n", m->triangles.items);
+  printf("  Mesh edges: %" PRIu "\n", m->edges);
+  printf("  Mesh exterior boundary edges: %" PRIu "\n", m->hullsize); if (b->poly || b->refine) {
+    printf("  Mesh interior boundary edges: %" PRIu "\n", m->subsegs.items - m->hullsize);
+    printf("  Mesh subsegments (constrained edges): %" PRIu "\n", m->subsegs.items);
   }
   printf("\n");
 
   if (b->verbose) {
     quality_statistics(m, b);
     printf("Memory allocation statistics:\n\n");
-    printf("  Maximum number of vertices: %ld\n", m->vertices.maxitems);
-    printf("  Maximum number of triangles: %ld\n", m->triangles.maxitems);
+    printf("  Maximum number of vertices: %" PRIu "\n", m->vertices.maxitems);
+    printf("  Maximum number of triangles: %" PRIu "\n", m->triangles.maxitems);
     if (m->subsegs.maxitems > 0) {
-      printf("  Maximum number of subsegments: %ld\n", m->subsegs.maxitems);
+      printf("  Maximum number of subsegments: %" PRIu "\n", m->subsegs.maxitems);
     }
     if (m->viri.maxitems > 0) {
-      printf("  Maximum number of viri: %ld\n", m->viri.maxitems);
+      printf("  Maximum number of viri: %" PRIu "\n", m->viri.maxitems);
     }
     if (m->badsubsegs.maxitems > 0) {
-      printf("  Maximum number of encroached subsegments: %ld\n",
-             m->badsubsegs.maxitems);
+      printf("  Maximum number of encroached subsegments: %" PRIu "\n", m->badsubsegs.maxitems);
     }
     if (m->badtriangles.maxitems > 0) {
-      printf("  Maximum number of bad triangles: %ld\n",
-             m->badtriangles.maxitems);
+      printf("  Maximum number of bad triangles: %" PRIu "\n", m->badtriangles.maxitems);
     }
     if (m->flipstackers.maxitems > 0) {
-      printf("  Maximum number of stacked triangle flips: %ld\n",
-             m->flipstackers.maxitems);
+      printf("  Maximum number of stacked triangle flips: %" PRIu "\n", m->flipstackers.maxitems);
     }
     if (m->splaynodes.maxitems > 0) {
-      printf("  Maximum number of splay tree nodes: %ld\n",
-             m->splaynodes.maxitems);
+      printf("  Maximum number of splay tree nodes: %" PRIu "\n", m->splaynodes.maxitems);
     }
-    printf("  Approximate heap memory use (bytes): %ld\n\n",
+    printf("  Approximate heap memory use (bytes): %" PRIu "\n\n",
            m->vertices.maxitems * m->vertices.itembytes +
            m->triangles.maxitems * m->triangles.itembytes +
            m->subsegs.maxitems * m->subsegs.itembytes +
@@ -15648,22 +15641,19 @@ struct behavior *b;
 
     printf("Algorithmic statistics:\n\n");
     if (!b->weighted) {
-      printf("  Number of incircle tests: %ld\n", m->incirclecount);
+      printf("  Number of incircle tests: %" PRIu "\n", m->incirclecount);
     } else {
-      printf("  Number of 3D orientation tests: %ld\n", m->orient3dcount);
+      printf("  Number of 3D orientation tests: %" PRIu "\n", m->orient3dcount);
     }
-    printf("  Number of 2D orientation tests: %ld\n", m->counterclockcount);
+    printf("  Number of 2D orientation tests: %" PRIu "\n", m->counterclockcount);
     if (m->hyperbolacount > 0) {
-      printf("  Number of right-of-hyperbola tests: %ld\n",
-             m->hyperbolacount);
+      printf("  Number of right-of-hyperbola tests: %" PRIu "\n", m->hyperbolacount);
     }
     if (m->circletopcount > 0) {
-      printf("  Number of circle top computations: %ld\n",
-             m->circletopcount);
+      printf("  Number of circle top computations: %" PRIu "\n", m->circletopcount);
     }
     if (m->circumcentercount > 0) {
-      printf("  Number of triangle circumcenter computations: %ld\n",
-             m->circumcentercount);
+      printf("  Number of triangle circumcenter computations: %" PRIu "\n", m->circumcentercount);
     }
     printf("\n");
   }
