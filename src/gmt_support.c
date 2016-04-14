@@ -4285,7 +4285,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_spherical (struct GMT_CTRL *G
 
 	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
-	double dist_inc, cross_half_width, d_shift, orientation, sign, az_cross, x, y;
+	double dist_inc, cross_half_width, d_shift, orientation, sign = 1, az_cross, x, y;
 	double dist_across_seg, angle_radians, across_ds_radians;
 	double Rot[3][3], Rot0[3][3], E[3], P[3], L[3], R[3], T[3], X[3];
 
@@ -4431,7 +4431,7 @@ GMT_LOCAL struct GMT_DATASET * support_crosstracks_cartesian (struct GMT_CTRL *G
 
 	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
-	double dist_across_seg, orientation, sign, az_cross, x, y, sa, ca;
+	double dist_across_seg, orientation, sign = 1, az_cross, x, y, sa, ca;
 
 	struct GMT_DATASET *Xout = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
@@ -5208,7 +5208,7 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", size, name, fill);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
-	if (n == 2) {	/* Could be size,name or size,fill or name,fill */
+	if (n == 2 && i > 0) {	/* Could be size,name or size,fill or name,fill */
 		if (line[i-1] == ',') {		/* Must be size,name, so we can continue */
 		}
 		else if (line[0] == ',') {	/* ,name,fill got stored in size,name */
@@ -13094,7 +13094,7 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	uint64_t last, next, current = 0, inc, n, new_n, start[2] = {0,0}, orig_start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
 	int increment[2] = {1, -1};
 	unsigned int k, proj_type, effect;
-	double *x = NULL, *y = NULL, dist, ds = 0.0, f1, f2, x0, x1, y0, y1, offset;
+	double *x = NULL, *y = NULL, dist, ds = 0.0, f1, f2, x0, x1 = 0, y0, y1 = 0, offset;
 
 	if (P == NULL) return 0;	/* No settings given */
 	if (gmt_M_is_zero (P->end[BEG].offset) && gmt_M_is_zero (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL) return 0;	/* No trims given */
