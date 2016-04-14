@@ -158,6 +158,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT
 					strcat (string, "+j");
 					strcat (string, txt_c);
 				}
+				break;
 			case 'D':
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
