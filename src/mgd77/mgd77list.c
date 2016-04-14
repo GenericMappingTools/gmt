@@ -565,6 +565,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct G
 							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
+						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "ERROR -N: Syntax is -Nd|s<unit>\n");
 						n_errors++;
