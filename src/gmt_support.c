@@ -10152,12 +10152,12 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	char string[GMT_BUFSIZ] = {""};
 	struct GMT_MAP_PANEL *save_panel = ms->panel;	/* In case it was set and we wipe it below with gmt_M_memset */
 
-	if (!strstr (text, "+w")) return support_getscale_old (GMT, option, text, ms);	/* Old-style args */
-
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
+
+	if (!strstr (text, "+w")) return support_getscale_old (GMT, option, text, ms);	/* Old-style args */
 
 	gmt_M_memset (ms, 1, struct GMT_MAP_SCALE);
 	ms->panel = save_panel;	/* In case it is not NULL */
