@@ -2977,7 +2977,7 @@ GMT_LOCAL int gmtinit_parse5_B_frame_setting (struct GMT_CTRL *GMT, char *in) {
 
 	/* OK, here we are pretty sure this is a frame -B statement */
 
-	strcpy (text, in);
+	strncpy (text, in, GMT_BUFSIZ-1);
 	gmtinit_handle5_plussign (GMT, text, "bgnot", 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 
