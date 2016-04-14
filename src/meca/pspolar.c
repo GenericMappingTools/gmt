@@ -381,6 +381,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT
 					gmt_pen_syntax (GMT, 'W', " ", 0);
 					n_errors++;
 				}
+				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
