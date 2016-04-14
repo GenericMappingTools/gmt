@@ -214,6 +214,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
 						k = 1;
+						break;
 					case 's':	/* Speed unit selection */
 						if (!strchr ("c" GMT_LEN_UNITS2, (int)opt->arg[1])) {
 							GMT_Report (API, GMT_MSG_NORMAL, "ERROR -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
