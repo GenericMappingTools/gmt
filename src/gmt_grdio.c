@@ -1920,9 +1920,11 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	switch (buf.st_size) {	/* Known sizes are 1 or 2 min at lat_max = ~72, ~80, or ~85 */
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_85*GMT_IMG_ITEMSIZE:
 			if (lat == 0.0) lat = GMT_IMG_MAXLAT_85;
+			min = 1;
 			break;
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_80*GMT_IMG_ITEMSIZE:
 			if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;
+			min = 1;
 			break;
 		case GMT_IMG_NLON_1M*GMT_IMG_NLAT_1M_72*GMT_IMG_ITEMSIZE:
 			if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
@@ -1930,9 +1932,11 @@ int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 			break;
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_85*GMT_IMG_ITEMSIZE:
 			if (lat == 0.0) lat = GMT_IMG_MAXLAT_85;
+			min = 2;
 			break;
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE:
 			if (lat == 0.0) lat = GMT_IMG_MAXLAT_80;
+			min = 2;
 			break;
 		case GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_72*GMT_IMG_ITEMSIZE:
 			if (lat == 0.0) lat = GMT_IMG_MAXLAT_72;
