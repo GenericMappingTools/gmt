@@ -1093,7 +1093,7 @@ GMT_LOCAL int api_get_key (void *API, char option, char *keys[], int n_keys) {
 	int k;
 	if (n_keys && keys == NULL)
 		GMT_Report (API, GMT_MSG_NORMAL, "api_get_key: INTERNAL ERROR: keys array is NULL but n_keys = %d\n", n_keys);
-	for (k = 0; k < n_keys; k++) if (keys[k][K_OPT] == option) return (k);
+	for (k = 0; keys && k < n_keys; k++) if (keys[k][K_OPT] == option) return (k);
 	return (GMT_NOTSET);
 }
 
