@@ -1559,19 +1559,24 @@ void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 	gamma = 180.0 - d_asind (GMT->current.proj.g_sin_tilt * P);
 	Omega = 180.0 - tilt - gamma;
 
-	if (GMT->current.proj.g_debug > 0) gmt_message (GMT, "vgenper: tilt %6.3f sin_tilt %10.6f P %6.4f gamma %6.4f\n   Omega %6.4f eccen %10.4f\n", tilt, GMT->current.proj.g_sin_tilt, P, gamma, Omega, eccen);
+	if (GMT->current.proj.g_debug > 0)
+		gmt_message (GMT, "vgenper: tilt %6.3f sin_tilt %10.6f P %6.4f gamma %6.4f\n   Omega %6.4f eccen %10.4f\n",
+		             tilt, GMT->current.proj.g_sin_tilt, P, gamma, Omega, eccen);
 
 	if (eccen == 1.0) {
 		max_yt = MIN (max_yt, rmax * 2.0);
-		if (GMT->current.proj.g_debug > 1) gmt_message (GMT, "vgenper: Projected map is a parabola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
+		if (GMT->current.proj.g_debug > 1)
+			gmt_message (GMT, "vgenper: Projected map is a parabola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
 	}
 	else if (eccen > 1.0) {
 		if (width != 0.0) {
-			if (GMT->current.proj.g_debug > 1) gmt_message (GMT, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n", tilt, omega_max);
+			if (GMT->current.proj.g_debug > 1)
+				gmt_message (GMT, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n", tilt, omega_max);
 		}
 		else {
 			max_yt = MIN (max_yt, rmax * 2.0);
-			if (GMT->current.proj.g_debug > 1) gmt_message (GMT, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
+			if (GMT->current.proj.g_debug > 1)
+				gmt_message (GMT, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
 		}
 	}
 	else if (eccen > 0.5) {
@@ -1579,11 +1584,14 @@ void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 			double t = sind (tilt), Pecc, maxecc = 0.5;
 			Pecc = sqrt (1.0/(1.0 - (t*t/maxecc)));
 			max_yt = R*sqrt ((Pecc-1.0)/(Pecc+1.0));
-			if (GMT->current.proj.g_debug > 1) gmt_message (GMT, "vgenper: Projected map is an enlongated ellipse (eccentricity of %6.4f) with requested tilt %6.3f\nwill truncate plot at rmax %8.2f\n", eccen, tilt, max_yt);
+			if (GMT->current.proj.g_debug > 1)
+				gmt_message (GMT, "vgenper: Projected map is an enlongated ellipse (eccentricity of %6.4f) with "
+				                  "requested tilt %6.3f\nwill truncate plot at rmax %8.2f\n", eccen, tilt, max_yt);
 		}
 		else {
 			if (max_yt > rmax *2.0) max_yt = rmax * 2.0;
-			if (GMT->current.proj.g_debug > 1) gmt_message (GMT, "vgenper: Projected map is an enlongated ellipse with requested tilt %6.3f\n eccentricity %6.3f\n Plot truncated for projected distances > rmax %8.2f\n", tilt, eccen, rmax/1000.0);
+			if (GMT->current.proj.g_debug > 1)
+				gmt_message (GMT, "vgenper: Projected map is an enlongated ellipse with requested tilt %6.3f\n eccentricity %6.3f\n Plot truncated for projected distances > rmax %8.2f\n", tilt, eccen, rmax/1000.0);
 		}
 	}
 
@@ -1602,7 +1610,10 @@ void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 	if (azimuth > 180.0) lonvp = -lonvp;
 	lonvp += lon0;
 
-	if (GMT->current.proj.g_debug > 1) gmt_message (GMT, "vgenper: pointing at longitude %10.4f latitude %10.4f\n          with tilt %5.2f azimuth %6.2f at distance %6.4f\n         with width %6.3f height %6.3f twist %6.2f\n", lonvp, latvp, tilt, azimuth, rho, width, height, twist);
+	if (GMT->current.proj.g_debug > 1)
+		gmt_message (GMT, "vgenper: pointing at longitude %10.4f latitude %10.4f\n          "
+		                  "with tilt %5.2f azimuth %6.2f at distance %6.4f\n         "
+		                  "with width %6.3f height %6.3f twist %6.2f\n", lonvp, latvp, tilt, azimuth, rho, width, height, twist);
 
 	GMT->current.proj.g_yoffset = 0.0;
 
@@ -1622,10 +1633,15 @@ void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 		yt_max = -yt_min;
 
 		if (GMT->current.proj.g_debug > 2) {
-			fp = fopen("g_border.txt", "w");
-
-			gmt_message (GMT, "tilt %10.4f sin_tilt %10.4f cos_tilt %10.4f\n", tilt, GMT->current.proj.g_sin_tilt, GMT->current.proj.g_cos_tilt);
-			gmt_message (GMT, "azimuth %10.4f sin_azimuth %10.4f cos_azimuth %10.4f\n", azimuth, GMT->current.proj.g_sin_azimuth, GMT->current.proj.g_cos_azimuth);
+			if ((fp = fopen("g_border.txt", "w")) == NULL) {
+				gmt_message (GMT, "Failed to write the g_border.txt file\n");
+			}
+			else {
+				gmt_message (GMT, "tilt %10.4f sin_tilt %10.4f cos_tilt %10.4f\n",
+				             tilt, GMT->current.proj.g_sin_tilt, GMT->current.proj.g_cos_tilt);
+				gmt_message (GMT, "azimuth %10.4f sin_azimuth %10.4f cos_azimuth %10.4f\n",
+				             azimuth, GMT->current.proj.g_sin_azimuth, GMT->current.proj.g_cos_azimuth);
+			}
 		}
 
 		for (az = 0 ; az < 360 ; az++) {
@@ -1634,14 +1650,15 @@ void gmt_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, double altitud
 			y *= rmax;
 			proj_genper_to_xtyt (GMT, (double)az, x, y, GMT->current.proj.g_yoffset, &xt, &yt);
 
-			if (GMT->current.proj.g_debug > 2) fprintf (fp,"%3d x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
+			if (fp && GMT->current.proj.g_debug > 2)
+				fprintf (fp,"%3d x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
 
 			xt_min = MIN (xt, xt_min);
 			xt_max = MAX (xt, xt_max);
 			yt_min = MIN (yt, yt_min);
 			yt_max = MAX (yt, yt_max);
 		}
-		if (GMT->current.proj.g_debug > 2) fclose(fp);
+		if (GMT->current.proj.g_debug > 2 && fp) fclose(fp);
 		if (eccen > 0.5) {
 			GMT->current.proj.g_width = atand (2.0*rmax/H);
 			height = width = 2.0 * GMT->current.proj.g_width;
