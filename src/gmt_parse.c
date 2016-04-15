@@ -311,7 +311,7 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 			}
 			else {	/* One of possibly several -B<arg> options; concatenate and separate by RS */
 				if (B_string[0]) strcat (B_string, B_delim);	/* Add RS separator between args */
-				strcat (B_string, opt->arg);
+				strncat (B_string, opt->arg, GMT_LEN256-1);
 			}
 		}
 		else {	/* Gave -R[<args>], -V[<args>] etc., so we either use or update the history and continue */
