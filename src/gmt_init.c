@@ -3386,7 +3386,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	 * GMT->current.proj structure.  The function returns true if an error is encountered.
 	 */
 
-	int i, j, k, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
+	int i, j, k = 0, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	int n_slashes = 0, last_pos, error = 0;
 	unsigned int mod_flag = 0;
 	bool width_given = false;
@@ -3702,7 +3702,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 		case GMT_ORTHO:
 			GMT->current.proj.g_debug = 0;
-			GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
+			GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set =
+			                          GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
 			GMT->current.proj.g_sphere = true; /* force spherical as default */
 			GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = 0.0;
 
@@ -4252,62 +4253,48 @@ GMT_LOCAL int gmtinit_scanf_epoch (struct GMT_CTRL *GMT, char *s, int64_t *rata_
 	return (GMT_NOERROR);
 }
 
-#ifdef HARDWIRE_GMTCONF 
-GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
+/*! Load a PostScript encoding from a file, given the filename.
+ * Use Brute Force and Ignorance.
+ */
+GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
+	char line[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""};
+	unsigned int code = 0, pos;
+	FILE *in = NULL;
+	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
-	/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
-	   To add additional fonts, create a similar file called PSL_custom_fonts.txt
-	   in GMT/share/postscriptlight and add your extra font information there.
-	   The fontheight below is the height of A for unit fontsize.
-	   Encoded = 0 if we may reencode this font as needed.
-	*/
-	unsigned int i = 0;
-	size_t n_alloc = 0;
+	sprintf (symbol, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
+	gmt_getsharepath (GMT, "postscriptlight", symbol, ".ps", line, R_OK);
+	if ((in = fopen (line, "r")) == NULL) {
+		perror (line);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	}
 
-	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
-	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC); 
+	while (fgets (line, GMT_LEN256, in)) {
+		pos = 0;
+		while ((gmt_strtok (line, " /\t\n", &pos, symbol))) {
+			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */ {
+				code = 0;
+				continue;
+			}
+			if (strcmp (symbol, "degree") == 0)
+				enc->code[gmt_degree] = code;
+			else if (strcmp (symbol, "ring") == 0)
+				enc->code[gmt_ring] = code;
+			else if (strcmp (symbol, "quotedbl") == 0)
+				enc->code[gmt_dquote] = code;
+			else if (strcmp (symbol, "quotesingle") == 0)
+				enc->code[gmt_squote] = code;
+			else if (strcmp (symbol, "colon") == 0)
+				enc->code[gmt_colon] = code;
+			code++;
+		}
+	}
 
-	/* Use strdup() because the non-hardwired version uses it too and somewhere there must be a free() */
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica");
-	GMT->session.font[i].height = 0.709;		GMT->session.font[i++].name = strdup("Helvetica-Bold");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Oblique");
-	GMT->session.font[i].height = 0.709;		GMT->session.font[i++].name = strdup("Helvetica-BoldOblique");
-	GMT->session.font[i].height = 0.673;		GMT->session.font[i++].name = strdup("Times-Roman");
-	GMT->session.font[i].height = 0.685;		GMT->session.font[i++].name = strdup("Times-Bold");
-	GMT->session.font[i].height = 0.673;		GMT->session.font[i++].name = strdup("Times-Italic");
-	GMT->session.font[i].height = 0.685;		GMT->session.font[i++].name = strdup("Times-BoldItalic");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-Bold");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-Oblique");
-	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-BoldOblique");
-	GMT->session.font[i].height = 0.679;		GMT->session.font[i++].name = strdup("Symbol");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-Book");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-BookOblique");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-Demi");
-	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-DemiOblique");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-Demi");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-DemiItalic");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-Light");
-	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-LightItalic");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Narrow");
-	GMT->session.font[i].height = 0.706;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-Bold");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-Oblique");
-	GMT->session.font[i].height = 0.706;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-BoldOblique");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Roman");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Italic");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Bold");
-	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-BoldItalic");
-	GMT->session.font[i].height = 0.689;		GMT->session.font[i++].name = strdup("Palatino-Roman");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Palatino-Italic");
-	GMT->session.font[i].height = 0.665;		GMT->session.font[i++].name = strdup("Palatino-Bold");
-	GMT->session.font[i].height = 0.677;		GMT->session.font[i++].name = strdup("Palatino-BoldItalic");
-	GMT->session.font[i].height = 0.610;		GMT->session.font[i++].name = strdup("ZapfChancery-MediumItalic");
-	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("ZapfDingbats");
-
-	GMT->session.n_fonts = i;
-	return i;
+	fclose (in);
+	return (GMT_NOERROR);
 }
 
+#ifdef HARDWIRE_GMTCONF 
 GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 
 	/* GMT Time language file for US (english) mode [US] */
@@ -4367,6 +4354,167 @@ GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 	strcpy (GMT->current.language.cardinal_name[2][2], "S");
 	strcpy (GMT->current.language.cardinal_name[0][3], "North"); strcpy (GMT->current.language.cardinal_name[1][3], "N");
 	strcpy (GMT->current.language.cardinal_name[2][3], "N");
+}
+#endif
+
+/*! . */
+GMT_LOCAL int gmtinit_parse_V_option (struct GMT_CTRL *GMT, char arg) {
+	int mode = gmt_get_V (arg);
+	if (mode < 0) return true;	/* Error in parsing */
+	GMT->current.setting.verbose = (unsigned int)mode;
+	return false;
+}
+
+/*! . */
+GMT_LOCAL unsigned int gmtinit_key_lookup (char *name, char **list, unsigned int n) {
+	unsigned int i;
+
+	for (i = 0; i < n && strcmp (name, list[i]); i++);
+	return (i);
+}
+
+/*! . */
+GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
+	FILE *fp = NULL;
+	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, full[16] = {""}, abbrev[16] = {""}, c[16] = {""}, dwu;
+	char *months[12];
+
+	int i, nm = 0, nw = 0, nu = 0, nc = 0;
+
+#ifdef HARDWIRE_GMTCONF 
+	if (!strcmp(GMT->current.setting.language, "us")) {
+		gmtinit_def_us_locale (GMT);
+		return 0;
+	}
+#endif
+
+	gmt_M_memset (months, 12, char *);
+
+	sprintf (line, "gmt_%s", GMT->current.setting.language);
+	gmt_getsharepath (GMT, "localization", line, ".locale", file, R_OK);
+	if ((fp = fopen (file, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load language %s - revert to us (English)!\n",
+		            GMT->current.setting.language);
+		gmt_getsharepath (GMT, "localization", "gmt_us", ".locale", file, R_OK);
+		if ((fp = fopen (file, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
+		strcpy (GMT->current.setting.language, "us");
+	}
+
+	while (fgets (line, GMT_BUFSIZ, fp)) {
+		if (line[0] == '#' || line[0] == '\n') continue;
+		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
+		if (i <= 0) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: index in %s is zero or negative!\n", line);
+			fclose (fp);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
+		if (dwu == 'M') {	/* Month record */
+			if (i > 12) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: month index in %s exceeds 12!\n", line);
+				fclose (fp);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+			strncpy (GMT->current.language.month_name[0][i-1], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.month_name[1][i-1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.month_name[2][i-1], c, GMT_LEN16-1);
+			gmt_str_toupper(abbrev);
+			strncpy (GMT->current.language.month_name[3][i-1], abbrev, GMT_LEN16-1);
+			nm += i;
+		}
+		else if (dwu == 'W') {	/* Weekday record */
+			if (i > 7) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: weekday index in %s exceeds 7!\n", line);
+				fclose (fp);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+			strncpy (GMT->current.language.day_name[0][i-1], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.day_name[1][i-1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.day_name[2][i-1], c, GMT_LEN16-1);
+			nw += i;
+		}
+		else if (dwu == 'U') {			/* Week name record */
+			strncpy (GMT->current.language.week_name[0], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.week_name[1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.week_name[2], c, GMT_LEN16-1);
+			nu += i;
+		}
+		else {	/* Compass name record */
+			if (i > 4) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: cCardinal name index in %s exceeds 4!\n", line);
+				fclose (fp);
+				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+			}
+			strncpy (GMT->current.language.cardinal_name[0][i-1], full, GMT_LEN16-1);
+			strncpy (GMT->current.language.cardinal_name[1][i-1], abbrev, GMT_LEN16-1);
+			strncpy (GMT->current.language.cardinal_name[2][i-1], c, GMT_LEN16-1);
+			nc += i;
+		}
+	}
+	fclose (fp);
+	if (!(nm == 78 && nw == 28 && nu == 1 && nc == 10)) {	/* Sums of 1-12, 1-7, 1, and 1-4, respectively */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+	}
+	return (GMT_NOERROR);
+}
+
+#ifdef HARDWIRE_GMTCONF 
+GMT_LOCAL unsigned int gmtinit_def_std_fonts (struct GMT_CTRL *GMT) {
+
+	/* Listing of "Standard" 35 PostScript fonts found on most PS printers.
+	   To add additional fonts, create a similar file called PSL_custom_fonts.txt
+	   in GMT/share/postscriptlight and add your extra font information there.
+	   The fontheight below is the height of A for unit fontsize.
+	   Encoded = 0 if we may reencode this font as needed.
+	*/
+	unsigned int i = 0;
+	size_t n_alloc = 0;
+
+	gmt_set_meminc (GMT, GMT_SMALL_CHUNK);	/* Only allocate a small amount */
+	GMT->session.font = gmt_M_malloc (GMT, GMT->session.font, i, &n_alloc, struct GMT_FONTSPEC); 
+
+	/* Use strdup() because the non-hardwired version uses it too and somewhere there must be a free() */
+	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica");
+	GMT->session.font[i].height = 0.709;		GMT->session.font[i++].name = strdup("Helvetica-Bold");
+	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Oblique");
+	GMT->session.font[i].height = 0.709;		GMT->session.font[i++].name = strdup("Helvetica-BoldOblique");
+	GMT->session.font[i].height = 0.673;		GMT->session.font[i++].name = strdup("Times-Roman");
+	GMT->session.font[i].height = 0.685;		GMT->session.font[i++].name = strdup("Times-Bold");
+	GMT->session.font[i].height = 0.673;		GMT->session.font[i++].name = strdup("Times-Italic");
+	GMT->session.font[i].height = 0.685;		GMT->session.font[i++].name = strdup("Times-BoldItalic");
+	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier");
+	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-Bold");
+	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-Oblique");
+	GMT->session.font[i].height = 0.620;		GMT->session.font[i++].name = strdup("Courier-BoldOblique");
+	GMT->session.font[i].height = 0.679;		GMT->session.font[i++].name = strdup("Symbol");
+	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-Book");
+	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-BookOblique");
+	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-Demi");
+	GMT->session.font[i].height = 0.734;		GMT->session.font[i++].name = strdup("AvantGarde-DemiOblique");
+	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-Demi");
+	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-DemiItalic");
+	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-Light");
+	GMT->session.font[i].height = 0.675;		GMT->session.font[i++].name = strdup("Bookman-LightItalic");
+	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Narrow");
+	GMT->session.font[i].height = 0.706;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-Bold");
+	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-Oblique");
+	GMT->session.font[i].height = 0.706;		GMT->session.font[i++].name = strdup("Helvetica-Narrow-BoldOblique");
+	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Roman");
+	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Italic");
+	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-Bold");
+	GMT->session.font[i].height = 0.704;		GMT->session.font[i++].name = strdup("NewCenturySchlbk-BoldItalic");
+	GMT->session.font[i].height = 0.689;		GMT->session.font[i++].name = strdup("Palatino-Roman");
+	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("Palatino-Italic");
+	GMT->session.font[i].height = 0.665;		GMT->session.font[i++].name = strdup("Palatino-Bold");
+	GMT->session.font[i].height = 0.677;		GMT->session.font[i++].name = strdup("Palatino-BoldItalic");
+	GMT->session.font[i].height = 0.610;		GMT->session.font[i++].name = strdup("ZapfChancery-MediumItalic");
+	GMT->session.font[i].height = 0.700;		GMT->session.font[i++].name = strdup("ZapfDingbats");
+
+	GMT->session.n_fonts = i;
+	return i;
 }
 
 /*! . */
@@ -4648,7 +4796,6 @@ GMT_LOCAL void gmtinit_conf (struct GMT_CTRL *GMT) {
 	if (error)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized value during gmtdefaults initialization.\n");
 }
-
 #endif
 
 /*! . */
@@ -4781,50 +4928,6 @@ GMT_LOCAL unsigned int gmtinit_load_user_media (struct GMT_CTRL *GMT) {
 	GMT->session.n_user_media = n;
 
 	return (n);
-}
-
-/*! Load a PostScript encoding from a file, given the filename.
- * Use Brute Force and Ignorance.
- */
-GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
-	char line[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""};
-	unsigned int code = 0, pos;
-	FILE *in = NULL;
-	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
-
-	sprintf (symbol, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
-	gmt_getsharepath (GMT, "postscriptlight", symbol, ".ps", line, R_OK);
-	if ((in = fopen (line, "r")) == NULL) {
-		perror (line);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-	}
-
-	while (fgets (line, GMT_LEN256, in))
-	{
-		pos = 0;
-		while ((gmt_strtok (line, " /\t\n", &pos, symbol)))
-		{
-			if (strcmp (symbol, "[") == 0)	/* We have found the start of the encoding array. */
-			{
-				code = 0;
-				continue;
-			}
-			if (strcmp (symbol, "degree") == 0)
-				enc->code[gmt_degree] = code;
-			else if (strcmp (symbol, "ring") == 0)
-				enc->code[gmt_ring] = code;
-			else if (strcmp (symbol, "quotedbl") == 0)
-				enc->code[gmt_dquote] = code;
-			else if (strcmp (symbol, "quotesingle") == 0)
-				enc->code[gmt_squote] = code;
-			else if (strcmp (symbol, "colon") == 0)
-				enc->code[gmt_colon] = code;
-			code++;
-		}
-	}
-
-	fclose (in);
-	return (GMT_NOERROR);
 }
 
 /*! . */
@@ -4983,110 +5086,6 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 	for (i = 0; i < 3; i++) GMT->session.no_rgb[i] = -1.0;
 
 	return (GMT);
-}
-
-/*! . */
-GMT_LOCAL int gmtinit_parse_V_option (struct GMT_CTRL *GMT, char arg) {
-	int mode = gmt_get_V (arg);
-	if (mode < 0) return true;	/* Error in parsing */
-	GMT->current.setting.verbose = (unsigned int)mode;
-	return false;
-}
-
-/*! . */
-GMT_LOCAL unsigned int gmtinit_key_lookup (char *name, char **list, unsigned int n) {
-	unsigned int i;
-
-	for (i = 0; i < n && strcmp (name, list[i]); i++);
-	return (i);
-}
-
-/*! . */
-GMT_LOCAL int gmtinit_get_language (struct GMT_CTRL *GMT) {
-	FILE *fp = NULL;
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, full[16] = {""}, abbrev[16] = {""}, c[16] = {""}, dwu;
-	char *months[12];
-
-	int i, nm = 0, nw = 0, nu = 0, nc = 0;
-
-#ifdef HARDWIRE_GMTCONF 
-	if (!strcmp(GMT->current.setting.language, "us")) {
-		gmtinit_def_us_locale (GMT);
-		return 0;
-	}
-#endif
-
-	gmt_M_memset (months, 12, char *);
-
-	sprintf (line, "gmt_%s", GMT->current.setting.language);
-	gmt_getsharepath (GMT, "localization", line, ".locale", file, R_OK);
-	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Could not load language %s - revert to us (English)!\n",
-		            GMT->current.setting.language);
-		gmt_getsharepath (GMT, "localization", "gmt_us", ".locale", file, R_OK);
-		if ((fp = fopen (file, "r")) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-		}
-		strcpy (GMT->current.setting.language, "us");
-	}
-
-	while (fgets (line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#' || line[0] == '\n') continue;
-		sscanf (line, "%c %d %s %s %s", &dwu, &i, full, abbrev, c);
-		if (i <= 0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: index in %s is zero or negative!\n", line);
-			fclose (fp);
-			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-		}
-		if (dwu == 'M') {	/* Month record */
-			if (i > 12) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: month index in %s exceeds 12!\n", line);
-				fclose (fp);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-			}
-			strncpy (GMT->current.language.month_name[0][i-1], full, GMT_LEN16-1);
-			strncpy (GMT->current.language.month_name[1][i-1], abbrev, GMT_LEN16-1);
-			strncpy (GMT->current.language.month_name[2][i-1], c, GMT_LEN16-1);
-			gmt_str_toupper(abbrev);
-			strncpy (GMT->current.language.month_name[3][i-1], abbrev, GMT_LEN16-1);
-			nm += i;
-		}
-		else if (dwu == 'W') {	/* Weekday record */
-			if (i > 7) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: weekday index in %s exceeds 7!\n", line);
-				fclose (fp);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-			}
-			strncpy (GMT->current.language.day_name[0][i-1], full, GMT_LEN16-1);
-			strncpy (GMT->current.language.day_name[1][i-1], abbrev, GMT_LEN16-1);
-			strncpy (GMT->current.language.day_name[2][i-1], c, GMT_LEN16-1);
-			nw += i;
-		}
-		else if (dwu == 'U') {			/* Week name record */
-			strncpy (GMT->current.language.week_name[0], full, GMT_LEN16-1);
-			strncpy (GMT->current.language.week_name[1], abbrev, GMT_LEN16-1);
-			strncpy (GMT->current.language.week_name[2], c, GMT_LEN16-1);
-			nu += i;
-		}
-		else {	/* Compass name record */
-			if (i > 4) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: cCardinal name index in %s exceeds 4!\n", line);
-				fclose (fp);
-				GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-			}
-			strncpy (GMT->current.language.cardinal_name[0][i-1], full, GMT_LEN16-1);
-			strncpy (GMT->current.language.cardinal_name[1][i-1], abbrev, GMT_LEN16-1);
-			strncpy (GMT->current.language.cardinal_name[2][i-1], c, GMT_LEN16-1);
-			nc += i;
-		}
-	}
-	fclose (fp);
-	if (!(nm == 78 && nw == 28 && nu == 1 && nc == 10)) {	/* Sums of 1-12, 1-7, 1, and 1-4, respectively */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
-		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
-	}
-	return (GMT_NOERROR);
 }
 
 /*----------------------------------------------------------|
