@@ -262,8 +262,8 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 	if (GMT->session.GSHHGDIR) {
 		sprintf (path, "%s/%s%s", GMT->session.GSHHGDIR, stem, ".nc");
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: GSHHGDIR set, trying %s\n", path);
-		if ( access (path, F_OK) == 0) {	/* File exists here */
-			if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) ) {
+		if (access (path, F_OK) == 0) {	/* File exists here */
+			if (access (path, R_OK) == 0 && gshhg_require_min_version (path, version) ) {
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "1. GSHHG: OK, could access %s\n", path);
 				return (path);
 			}
@@ -286,16 +286,19 @@ GMT_LOCAL char *shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path)
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: coastline.conf found at %s\n", path);
-		if ( access (path, R_OK) == 0) {	/* File can be read */
-			fp = fopen (path, "r");
+		if (access (path, R_OK) == 0) {					/* File can be read */
+			if ((fp = fopen (path, "r")) == NULL) {		/* but Coverity still complains if we don't test if it's NULL */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to open %s\n", path);
+				return (NULL);
+			}
 			while (fgets (dir, GMT_BUFSIZ, fp)) {	/* Loop over all input lines until found or done */
 				if (dir[0] == '#' || dir[0] == '\n') continue;	/* Comment or blank */
 				gmt_chop (dir);		/* Chop off LF or CR/LF */
 				sprintf (path, "%s/%s%s", dir, stem, ".nc");
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "2. GSHHG: Trying %s\n", path);
-				if ( access (path, R_OK) == 0) {	/* File can be read */
+				if (access (path, R_OK) == 0) {	/* File can be read */
 L1:
-					if ( gshhg_require_min_version (path, version) ) {
+					if (gshhg_require_min_version (path, version)) {
 						fclose (fp);
 						/* update invalid GMT->session.GSHHGDIR */
 						gmt_M_str_free (GMT->session.GSHHGDIR);
