@@ -4138,7 +4138,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 			/* We simulate POSIX opendir/readdir/closedir by listing the directory to a temp file */
 			sprintf (line, "dir /b %s > .tmpdir", F->MGD77_datadir[j]);
 			if (system (line)) {
-				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error.\n", line);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] returned error.\n", line);
 				continue;
 			}
 			fp = fopen (".tmpdir", "r");
@@ -4159,7 +4159,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #else
 			fclose (fp);
 			if (remove (".tmpdir"))
-				GMT_Report (API, GMT_MSG_NORMAL, "Failed to remoce the .tmpdir file.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to remoce the .tmpdir file.\n");
 #endif /* HAVE_DIRENT_H_ */
 		}
 		all = false;	/* all is only true once (or never) inside this loop */
