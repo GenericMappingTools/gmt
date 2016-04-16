@@ -1872,7 +1872,7 @@ GMT_LOCAL bool gmtinit_badvalreport (struct GMT_CTRL *GMT, const char *keyword) 
 
 /*! . */
 GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
-	unsigned int error = 0, rec = 0;
+	unsigned int rec = 0;
 	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	FILE *fpi = NULL, *fpo = NULL;
 
@@ -1924,8 +1924,6 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 
 	fclose (fpi);
 	if (fpo != GMT->session.std[GMT_OUT]) fclose (fpo);
-
-	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: %d GMT Defaults conversion errors while writing gmt.conf\n", error);
 
 	return (0);
 }
