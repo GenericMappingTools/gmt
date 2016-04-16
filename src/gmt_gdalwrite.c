@@ -178,7 +178,6 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 		GDALDestroyDriverManager();
-		if (papszOptions != NULL) CSLDestroy (papszOptions);
 		gmt_M_free(GMT, outByte);
 		return (-1);
 	}
