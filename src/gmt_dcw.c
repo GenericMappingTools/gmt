@@ -370,7 +370,10 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			size_t tmp_size = max_np;
 			gmt_M_malloc2 (GMT, lon, lat, np, &tmp_size, double);
 			gmt_M_malloc2 (GMT, dx, dy, np, &max_np, unsigned short int);
-			//max_np = np;
+			if (lon == NULL || lat == NULL || dx == NULL|| dy == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error allocation memory!\n");
+				continue;
+			}
 		}
 
 	        /* Get the varid of the lon and lat variables, based on their names, and get the data */
