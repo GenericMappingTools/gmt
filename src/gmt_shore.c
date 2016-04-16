@@ -722,6 +722,7 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_GSHHS_ID_id, start, count, seg_ID));
+
 	if (c->two_Antarcticas) {	/* Read the flag that identifies Antarctica polygons */
 		seg_info_ANT = gmt_M_memory (GMT, NULL, c->bin_nseg[b], signed char);
 		GMT_err_trap (nc_get_vara_schar (c->cdfid, c->seg_info_id_ANT, start, count, seg_info_ANT));
@@ -955,9 +956,18 @@ int gmt_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 	seg_level = gmt_M_memory (GMT, NULL, c->bin_nseg[b], short);
 	seg_start = gmt_M_memory (GMT, NULL, c->bin_nseg[b], int);
 
-	GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_n_id, start, count, seg_n));
-	GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_level_id, start, count, seg_level));
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
+	if ((err = nc_get_vara_short (c->cdfid, c->seg_n_id, start, count, seg_n))) {
+		gmt_M_free (GMT, seg_n);	gmt_M_free (GMT, seg_level);	gmt_M_free (GMT, seg_start);
+		return err;
+	}
+	if ((err = nc_get_vara_short (c->cdfid, c->seg_level_id, start, count, seg_level))) {
+		gmt_M_free (GMT, seg_n);	gmt_M_free (GMT, seg_level);	gmt_M_free (GMT, seg_start);
+		return err;
+	}
+	if ((err = nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start))) {
+		gmt_M_free (GMT, seg_n);	gmt_M_free (GMT, seg_level);	gmt_M_free (GMT, seg_start);
+		return err;
+	}
 
 	c->seg = NULL;
 	for (s = i = 0; i < c->ns; i++) {
@@ -1218,7 +1228,7 @@ struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], c
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 	unsigned int base = gmt_set_resolution (GMT, &res, 'D');
-	int ind, err, np, k;
+	int ind, err, np = 0, k;
 	size_t n_alloc = GMT_CHUNK;
 	uint64_t tbl = 0, seg, n_seg = 0;
 	double west_border, east_border;
