@@ -1048,11 +1048,10 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	size_t n_alloc = GMT_SMALL_CHUNK;
 
 	char **ps_names = NULL;
-	char ps_file[GMT_BUFSIZ] = "", no_U_file[GMT_BUFSIZ] = "",
-			clean_PS_file[GMT_BUFSIZ] = "", tmp_file[GMT_BUFSIZ] = "",
-			out_file[GMT_BUFSIZ] = "", BB_file[GMT_BUFSIZ] = "";
+	char ps_file[GMT_BUFSIZ] = "", no_U_file[GMT_BUFSIZ] = "", clean_PS_file[GMT_BUFSIZ] = "", tmp_file[GMT_BUFSIZ] = "",
+	     out_file[GMT_BUFSIZ] = "", BB_file[GMT_BUFSIZ] = "";
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
-			cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
+	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "svg", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *device_options[N_GS_DEVICES] = {
@@ -1843,7 +1842,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			}
 			else
-				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
+				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ-1);
 			strcat (out_file, ext[Ctrl->T.device]);
 
 			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (was Ctrl->A.resize = true;) */
@@ -1899,7 +1898,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 					strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 				}
 				else
-					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
+					strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ-1);
 				strcat (out_file, ext[Ctrl->T.device]);
 				/* After conversion, convert the tmp PDF file to desired format via a 2nd gs call */
 				sprintf (cmd, "%s%s %s %s%s -sDEVICE=%s %s -r%d -sOutputFile=%c%s%c %c%s%c",
