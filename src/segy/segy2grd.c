@@ -482,7 +482,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args) {
 				/* get value starting at Ctrl->S.value of header into a double */
 				uint32_t tmp;
 				memcpy (&tmp, &header[Ctrl->S.value], sizeof (uint32_t));
-				x0 = (swap_bytes) ? (double) bswap32 (tmp) : (double) tmp;
+				x0 = (double) bswap32 (tmp);
 			}
 			else
 				x0 = (1.0 + (double) ix);
