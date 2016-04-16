@@ -2988,7 +2988,7 @@ static void psl_computeBezierControlPoints (struct PSL_CTRL *PSL, double *K, int
 		r[i] = r[i] - m*r[i-1];
 	}
 
-	/* Evalute p1 */
+	/* Evaluate p1 */
 	p1[n-1] = r[n-1] / b[n-1];
 	for (i = n - 2; i >= 0; --i)
 		p1[i] = (r[i] - c[i] * p1[i+1]) / b[i];

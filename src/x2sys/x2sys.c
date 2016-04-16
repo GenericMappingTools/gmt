@@ -1923,7 +1923,7 @@ GMT_LOCAL unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int
 	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
 	for (i = k = n_aux = 0; i < n_items; i++) {
 		for (j = 0, this_aux = MGD77_NOT_SET; j < N_GENERIC_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
-		if (this_aux != MGD77_NOT_SET) {	/* Found a request for an auxillary column  */
+		if (this_aux != MGD77_NOT_SET) {	/* Found a request for an auxiliary column  */
 			aux[n_aux].type = auxlist[this_aux].type;
 			aux[n_aux].text = auxlist[this_aux].text;
 			aux[n_aux].pos = k;
@@ -1936,7 +1936,7 @@ GMT_LOCAL unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int
 
 void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR) {
 	/* Load an ephemeral correction table */
-	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
+	/* Pass aux as NULL if the auxiliary columns do not matter (only used by x2sys_datalist) */
 	unsigned int i, n_items, n_aux = 0, n_cols, missing;
 	int ks;
 	char path[GMT_BUFSIZ] = {""}, **item_names = NULL, **col_name = NULL, **aux_name = NULL;
@@ -1966,14 +1966,14 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
 	n_items = MGD77_Scan_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, &item_names, 0);
-	if (aux && (n_aux = separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist)) != 0) {	/* Determine which auxillary columns are requested (if any) */
+	if (aux && (n_aux = separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist)) != 0) {	/* Determine which auxiliary columns are requested (if any) */
 		aux_name = gmt_M_memory (GMT, NULL, n_aux, char *);
 		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
 	}
 	for (i = missing = 0; i < n_items; i++) {
 		if (MGD77_Match_List (GMT, item_names[i], n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
 			if ((ks = MGD77_Match_List (GMT, item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxillary columns\n", ctable, item_names[i]);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxiliary columns\n", ctable, item_names[i]);
 				missing++;
 			}
 			else

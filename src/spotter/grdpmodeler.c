@@ -383,7 +383,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		}
 		/* Just need on common set of x/y arrays; select G_mod[0] as our template */
 		G = G_mod[0];
-		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model prediction grids based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 	}
 	else {	/* No output grids, must have input age grid to rely on */
 		G = G_age;
@@ -396,7 +396,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args) {
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 		out = gmt_M_memory (GMT, NULL, Ctrl->S.n_items + 3, double);
 	}
 

@@ -305,15 +305,15 @@ struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init 
 
 /* We may want to output columns that themselves are not stored in the MGD77[+] files but
  * rather are computed based on data that are stored in the file.  We consider such information
- * as AUXILLARY columns and insert them between the observed columns when needed.  The following
+ * as AUXILIARY columns and insert them between the observed columns when needed.  The following
  * structures are used to facilitate this process. */
 
 #ifdef USE_CM4
-#define N_MGD77_AUX	22		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
+#define N_MGD77_AUX	22		/* Number of auxiliary derived columns for MGD77 data, including optional CM4 */
 #else
-#define N_MGD77_AUX	21		/* Number of auxilliary derived columns for MGD77 data */
+#define N_MGD77_AUX	21		/* Number of auxiliary derived columns for MGD77 data */
 #endif
-#define N_GENERIC_AUX	4		/* Number of auxilliary derived columns for general files (dist, azim, cc, vel) */
+#define N_GENERIC_AUX	4		/* Number of auxiliary derived columns for general files (dist, azim, cc, vel) */
 
 #define MGD77_AUX_DS	0	/* Distance */
 #define MGD77_AUX_AZ	1	/* Azimuth */

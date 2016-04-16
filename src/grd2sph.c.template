@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * grd2sph evalutes a grid using a spherical harmonics model
+ * grd2sph evaluates a grid using a spherical harmonics model
  *
  * Author:	Paul Wessel
  * Date:	10-FEB-2015

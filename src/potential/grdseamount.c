@@ -741,7 +741,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 						phi_curr = phi_solver (in, f, v_curr, Ctrl->E.active);
 						phi_prev = phi_solver (in, f, v_prev, Ctrl->E.active);
 						h0 = (Ctrl->E.active) ? in[5] : in[3];
-						switch (Ctrl->C.mode) {	/* Given the phi values, evalute the corresponding heights */
+						switch (Ctrl->C.mode) {	/* Given the phi values, evaluate the corresponding heights */
 							case SHAPE_CONE:  h_curr = h0 * (1 - phi_curr) / (1 - f); h_prev = h0 * (1 - phi_prev) / (1 - f); break;
 							case SHAPE_PARA:  h_curr = h0 * (1 - phi_curr * phi_curr) / (1 - f * f); h_prev = h0 * (1 - phi_prev * phi_prev) / (1 - f * f); break;
 							case SHAPE_GAUS:  h_curr = h0 * exp (4.5 * (f*f - phi_curr * phi_curr)); h_prev = h0 * exp (4.5 * (f*f - phi_prev * phi_prev)); break;
@@ -784,7 +784,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args) {
 						r = r_km;
 						if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
 						f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
-						A = f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evalute radius(az) */
+						A = f * (e2 * ca2 + sa2);	/* Elliptical components A, B, C needed to evaluate radius(az) */
 						B = -f * (sa * ca * (1.0 - e2));
 						C = f * (e2 * sa2 + ca2);
 						r_in = in[3];			/* Semi-major axis in user units (Cartesian or km)*/

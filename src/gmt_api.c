@@ -4030,12 +4030,12 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 	gmt_strtok (*str, ",", &pos, last);	/* Get first color entry */
 	strncpy (first, last, GMT_LEN64-1);	/* Make this the first color */
 	if (gmt_getrgb (API->GMT, first, rgb)) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", first);
+		GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", first);
 		return (GMT_NOTSET);
 	}
 	while (gmt_strtok (*str, ",", &pos, last)) {	/* Get next color entry */
 		if (gmt_getrgb (API->GMT, last, rgb)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Badly formated color entry: %s\n", last);
+			GMT_Report (API, GMT_MSG_NORMAL, "Badly formatted color entry: %s\n", last);
 			return (GMT_NOTSET);
 		}
 		fprintf (fp, "%g\t%s\t%g\t%s\n", z, first, z+1.0, last);

@@ -2001,7 +2001,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 		c  = F->order[col].set;			/* Determine set */
 		if (!(c == MGD77_M77_SET && F->use_corrections[c])) continue;	/* Do not apply any corrections for this set */
 		id = F->order[col].item;			/* Determine item */
-		/* Need to determine which auxillary columns (e.g., lon, lat) are needed and if they are not part of the requested output columns
+		/* Need to determine which auxiliary columns (e.g., lon, lat) are needed and if they are not part of the requested output columns
 		 * then they need to be secured separately.  Once these are all obtained we can apply the corrections */
 		if (S->H.info[c].col[id].adjust) E.apply_corrections = true;	/* So we know if anything needs to be done in the next loop */
 		switch (S->H.info[c].col[id].adjust) {
@@ -2056,7 +2056,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	if (E.apply_corrections) {	/* One or more of the depth, faa, and mag columns needs to be recomputed */
 		int nc_id[N_E77_AUX_FIELDS] = {NCPOS_TIME,NCPOS_LAT,NCPOS_LON,NCPOS_TWT,NCPOS_MTF1,NCPOS_GOBS,NCPOS_EOT};
 		char *abbrev[N_E77_AUX_FIELDS] = {"time","lat","lon","twt","mtf1","gobs","eot"};
-		/* First make sure the auxillary data fields are set */
+		/* First make sure the auxiliary data fields are set */
 		for (i = 0; i < N_E77_AUX_FIELDS; i++) {
 			if (!E.needed[i]) continue;	/* Dont need this particular column */
 			if (E.got_it[nc_id[i]]) {	/* This aux is actually one of the output columns so we have already read it - just use a pointer */
@@ -2071,7 +2071,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 				E.needed[i] = 2;	/* So we know which aux columns to deallocate when done */
 			}
 		}
-		/* Now E.aux[i] points to the correct array of values for each auxillary column that is needed */
+		/* Now E.aux[i] points to the correct array of values for each auxiliary column that is needed */
 
 		if (E.correction_requested[E77_CORR_FIELD_TWT]) {	/* Must correct twt for wraps */
 			bool has_prev_twt = false;

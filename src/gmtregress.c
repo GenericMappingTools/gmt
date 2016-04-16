@@ -328,7 +328,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct 
 }
 
 GMT_LOCAL double model (double x, double *par) {
-	/* Evalute the model given the parameters in par */
+	/* Evaluate the model given the parameters in par */
 	return (par[GMTREGRESS_SLOPE] * x + par[GMTREGRESS_ICEPT]);
 }
 

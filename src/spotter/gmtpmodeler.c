@@ -323,7 +323,7 @@ int GMT_gmtpmodeler (void *V_API, int mode, void *args) {
 		GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Evalute %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate %d model predictions based on %s\n", Ctrl->S.n_items, Ctrl->E.rot.file);
 
 	/* Read the location data from file or stdin */
 

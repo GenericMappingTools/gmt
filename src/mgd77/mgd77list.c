@@ -681,7 +681,7 @@ GMT_LOCAL int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, s
 			k++;
 		}
 		else
-		{	/* Found a request for an auxillary column  */
+		{	/* Found a request for an auxiliary column  */
 			aux[n_aux].type = auxlist[this_aux].type;
 			aux[n_aux].text = auxlist[this_aux].text;
 			aux[n_aux].pos = k;
@@ -699,7 +699,7 @@ GMT_LOCAL int augment_aux_columns (int n_items, char **item_name, struct MGD77_A
 	for (i = k = 0, n = n_aux; i < n_items; i++) {
 		for (j = 0, this_aux = MGD77_NOT_SET; j < N_MGD77_AUX && this_aux == MGD77_NOT_SET; j++)
 			if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
-		if (this_aux != MGD77_NOT_SET && !auxlist[this_aux].requested) {	/* Found a request for an auxillary column not yet requested  */
+		if (this_aux != MGD77_NOT_SET && !auxlist[this_aux].requested) {	/* Found a request for an auxiliary column not yet requested  */
 			aux[n].type = auxlist[this_aux].type;
 			aux[n].text = auxlist[this_aux].text;
 			aux[n].pos = k;
@@ -838,7 +838,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	n_out_columns = M.n_out_columns;				/* This is the total number of columns in the final output */
 	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidently access dvalue[z_col] further down in the loop */
 	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidently access dvalue[m_col] further down in the loop */
-	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxillary columns are requested (if any) */
+	n_aux = separate_aux_columns (&M, fx_setting, aux, auxlist);				/* Determine which auxiliary columns are requested (if any) */
 	if (Ctrl->L.active) {
 		n_aux = augment_aux_columns ((int)n_items, item_names, aux, auxlist, (int)n_aux);	/* Determine which auxillary columns are needed by -L */
 		for (kk = 0; kk < n_items; kk++) gmt_M_free (GMT, item_names[kk]);
@@ -849,9 +849,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	aux_tvalue[MGD77_AUX_DA] = gmt_M_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 	
-	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the
+	/* Most auxiliary columns depend on values in the data columns.  If the user did not specify the
 	   required data columns then we must append them to make sure we have access to the values we need
-	   to calculate the auxillary values. Also, so limit tests on data records (e.g., distances, region,
+	   to calculate the auxiliary values. Also, so limit tests on data records (e.g., distances, region,
 	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
 	 
@@ -863,7 +863,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested \
 		|| auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested || Ctrl->A.code[ADJ_MG] > 1);
-	n_sub = 0;	/* This value will hold the number of columns that we will NOT printout (they are only needed to calculate auxillary values) */
+	n_sub = 0;	/* This value will hold the number of columns that we will NOT printout (they are only needed to calculate auxiliary values) */
 	if (need_distances || need_lonlat) {	/* Must make sure we get lon,lat if they are not already requested */
 		 if (MGD77_Get_Column (GMT, "lat", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lat"), n_sub++;	/* Append lat to requested list */
 		 if (MGD77_Get_Column (GMT, "lon", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lon"), n_sub++;	/* Append lon to requested list */
@@ -892,7 +892,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 	else if (Ctrl->A.cable_adjust)
 		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
 
-	/* If logical tests are specified we must make sure the required columns are included as auxillary */
+	/* If logical tests are specified we must make sure the required columns are included as auxiliary */
 	for (kk = 0; kk < M.n_constraints; kk++) {
 		if (MGD77_Get_Column (GMT, M.Constraint[kk].name, &M) != MGD77_NOT_SET) continue;	/* OK, already included */
 		strcat (fx_setting, ",");
@@ -1024,14 +1024,14 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			first_warning = false;
 		}
 		for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {	/* Prepare GMT output formatting machinery */
-			while (kx < n_aux && aux[kx].pos == kk) {	/* Insert formatting for auxillary column (none are special) */
+			while (kx < n_aux && aux[kx].pos == kk) {	/* Insert formatting for auxiliary column (none are special) */
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 				pos++, kx++;
 			}
 			if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
 			c  = M.order[kk].set;
 			id = M.order[kk].item;
-			if (c == MGD77_M77_SET && id == time_column)	{/* Special time formatting */
+			if (c == MGD77_M77_SET && id == time_column)	{	/* Special time formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = M.time_format;
 			}
 			else if (c == MGD77_M77_SET && id == lon_column)	/* Special lon formatting */
@@ -1045,7 +1045,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		if (first_cruise && !GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */
 			fprintf (GMT->session.std[GMT_OUT], "# ");
 			for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
-				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
+				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxiliary column */
 					fprintf (GMT->session.std[GMT_OUT], "%s", auxlist[aux[kx].type].header);
 					if ((pos+1) < n_out_columns) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 					pos++, kx++;
@@ -1224,7 +1224,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 			/* This record will now be printed out */
 		
-			if (need_time) {	/* Need auxillary time columns such as year, days etc, hence we get the calendar first, then use MGD77_cal_to_fyear */
+			if (need_time) {	/* Need auxiliary time columns such as year, days etc, hence we get the calendar first, then use MGD77_cal_to_fyear */
 				MGD77_gcal_from_dt (GMT, &M, dvalue[t_col][rec], &cal);	/* No adjust for TZ; this is GMT UTC time */
 				aux_dvalue[MGD77_AUX_YR] = (double)cal.year;
 				aux_dvalue[MGD77_AUX_MO] = (double)cal.month;
@@ -1438,7 +1438,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			
 			if (string_output) {	/* Must do it col by col and deal with the requested string(s) */
 				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
-					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
+					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxiliary column */
 						if (aux[kx].text)
 							fprintf (GMT->session.std[GMT_OUT], "%s", aux_tvalue[aux[kx].type]);
 						else
@@ -1474,7 +1474,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 			}
 			else {	/* Use GMT output machinery which can handle binary output, if requested */
 				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
-					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
+					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxiliary column */
 						out[pos] = aux_dvalue[aux[kx].type];
 						pos++, kx++;
 					}
