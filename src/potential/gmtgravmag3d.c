@@ -1130,8 +1130,6 @@ GMT_LOCAL int check_triang_cw (unsigned int n, unsigned int type) {
 	unsigned int i, n_swaped = 0, tmp;
 	double x1 = 0, x2 = 0, x3 = 0, y1 = 0, y2 = 0, y3 = 0, det, d_tmp[3];
 
-	if (type > 0)	/* Not yet implemented || 28-4-2010. Dont't undersand why but seams true !!!! */
-		return (0);
 	for (i = 0; i < n; i++) {
 		if (type == 0) { /* triangulate */
 			x1 = triang[vert[i].a].x;	 y1 = triang[vert[i].a].y;
