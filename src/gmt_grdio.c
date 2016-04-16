@@ -851,7 +851,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	size_t i = 0, j;
 	int val;
 	unsigned int direction = (magic) ? GMT_IN : GMT_OUT;
-	char tmp[GMT_BUFSIZ];
+	char tmp[GMT_BUFSIZ] = {""};
 
 	grdio_grd_parse_xy_units (GMT, header, file, direction);	/* Parse and strip xy scaling via +u<unit> modifier */
 
@@ -873,10 +873,9 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		if (header->type == GMT_GRID_IS_GD && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
 			char *pch = strstr(&header->name[i+3], "::");
 			if (pch) {		/* The file name was omitted within the SUBDATASET. Must put it there for GDAL */
-				tmp[0] = '\0';
 				strncpy (tmp, &header->name[i+3], pch - &header->name[i+3] + 1);
 				strcat (tmp, "\"");	strncat(tmp, header->name, i-1);	strcat(tmp, "\"");
-				strcat (tmp, &pch[1]);
+				if (strlen(&pch[1]) < (GMT_BUFSIZ-strlen(tmp)-1)) strcat (tmp, &pch[1]);
 				strncpy (header->name, tmp, GMT_LEN256-1);
 			}
 			else
@@ -1773,7 +1772,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your grid x's or longitudes appear to be outside the map region and will be skipped.\n");
 		return (0);
 	}
-	return (grid_global ? 1 : 2);
+	return (2);
 }
 
 int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
