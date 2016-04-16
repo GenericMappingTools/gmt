@@ -325,7 +325,8 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else
-		remove (tmp_file);	/* Just remove the symbol def file */
+		if (remove (tmp_file))	/* Just remove the symbol def file */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file: %s\n", tmp_file);
 		
 	return GMT_OK;
 }
