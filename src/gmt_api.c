@@ -682,7 +682,7 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	struct GMT_GRID *G = NULL;
 	struct GMT_PS *P = NULL;
 	struct GMT_IMAGE *I = NULL;
-	struct GMT_CTRL *GMT = API->GMT;
+	struct GMT_CTRL *GMT = NULL;
 	bool mem[2] = {false, false};
 	enum GMT_enum_method method;
 
@@ -691,6 +691,7 @@ int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
 	mem[GMT_IN]  = gmt_M_file_is_memory (ifile);
 	mem[GMT_OUT] = gmt_M_file_is_memory (ofile);
+	GMT = API->GMT;
 
 	switch (family) {
 		case GMT_IS_DATASET:
@@ -2362,7 +2363,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, D_obj->table[D_obj->n_tables]->segment, seg, struct GMT_DATASEGMENT *);
 				api_increment_d (D_obj, n_records, n_columns, seg);	/* Update counters for D_obj's only table */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2422,7 +2423,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, D_obj->table[D_obj->n_tables]->segment, seg, struct GMT_DATASEGMENT *);
 				api_increment_d (D_obj, n_records, n_columns, seg);	/* Update counters for D_obj's only table */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;			/* Mark as read */
 				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2452,7 +2453,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 				api_increment_d (D_obj, V_obj->n_rows, n_columns, 1U);	/* Update counters for D_obj with 1 segment */
 				D_obj->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since we just hooked on the arrays */
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->data = D_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				D_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -2827,7 +2828,7 @@ GMT_LOCAL struct GMT_TEXTSET *api_import_textset (struct GMTAPI_CTRL *API, int o
 				T_obj->table[T_obj->n_tables]->n_records += M_obj->n_rows;
 				T_obj->table[T_obj->n_tables]->n_segments = 1;
 				new_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_DUPLICATE, S_obj->geometry, GMT_IN, NULL, T_obj);	/* Register a new resource to hold T_obj */
-				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+				if ((new_item = gmtapi_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 				API->object[new_item]->data = T_obj;
 				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 				T_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -3123,7 +3124,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 				I_obj->data[ij] = (char)d;
 			}
 			new_ID = GMT_Register_IO (API, GMT_IS_IMAGE, GMT_IS_DUPLICATE, S_obj->geometry, GMT_IN, NULL, I_obj);	/* Register a new resource to hold I_obj */
-			if ((new_item = gmtapi_validate_id (API, GMT_IS_IMAGE, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = gmtapi_validate_id (API, GMT_IS_IMAGE, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->data = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -3150,7 +3151,7 @@ GMT_LOCAL struct GMT_IMAGE *api_import_image (struct GMTAPI_CTRL *API, int objec
 			/* Here we extend I_obj->data to allow for padding, then rearrange rows */
 			/* gmt_grd_pad_on (GMT, I, GMT->current.io.pad);*/
 			new_ID = GMT_Register_IO (API, GMT_IS_IMAGE, GMT_IS_REFERENCE, S_obj->geometry, GMT_IN, NULL, I_obj);	/* Register a new resource to hold I_obj */
-			if ((new_item = gmtapi_validate_id (API, GMT_IS_IMAGE, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = gmtapi_validate_id (API, GMT_IS_IMAGE, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->data = I_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			I_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -3417,7 +3418,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), "Grid memory")) return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			new_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_DUPLICATE, S_obj->geometry, GMT_IN, NULL, G_obj);	/* Register a new resource to hold G_obj */
-			if ((new_item = gmtapi_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = gmtapi_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->data = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -3446,7 +3447,7 @@ GMT_LOCAL struct GMT_GRID *api_import_grid (struct GMTAPI_CTRL *API, int object_
 			/* Here we extend G_obj->data to allow for padding, then rearrange rows */
 			gmt_grd_pad_on (GMT, G_obj, GMT->current.io.pad);
 			new_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, S_obj->geometry, GMT_IN, NULL, G_obj);	/* Register a new resource to hold G_obj */
-			if ((new_item = gmtapi_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_NOTSET);	/* Some internal error... */
+			if ((new_item = gmtapi_validate_id (API, GMT_IS_GRID, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
 			API->object[new_item]->data = G_obj;
 			API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 			G_obj->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
@@ -3865,11 +3866,12 @@ GMT_LOCAL int api_begin_io (struct GMTAPI_CTRL *API, unsigned int direction) {
 	 * Returns:	false if successfull, true if error.
 	 */
 
-	struct GMT_CTRL *GMT = API->GMT;
+	struct GMT_CTRL *GMT = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (!API->registered[direction]) GMT_Report (API, GMT_MSG_DEBUG, "api_begin_io: Warning: No %s resources registered\n", GMT_direction[direction]);
 
+	GMT = API->GMT;
 	API->io_mode[direction] = GMTAPI_BY_SET;
 	API->io_enabled[direction] = true;	/* OK to access resources */
 	GMT->current.io.ogr = GMT_OGR_UNKNOWN;
@@ -5763,7 +5765,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 					}
 					GMT->current.io.status = status;
 				}
-				if (S_obj->family == GMT_IS_TEXTSET) {
+				else if (S_obj->family == GMT_IS_TEXTSET) {
 					DT_obj = S_obj->resource;
 					status = api_wind_to_next_textrecord (p, DT_obj, mode);	/* Get current record status and wind counters if needed */
 					switch (status) {
@@ -5790,7 +5792,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval) {
 							n_fields = 0;
 							break;
 						case GMT_IO_TABLE_HEADER:	/* Table header(s) */
-							strncpy (GMT->current.io.current_record, DS_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
+							strncpy (GMT->current.io.current_record, DT_obj->table[p[GMT_TBL]]->header[p[GMTAPI_HDR_POS]-1], GMT_BUFSIZ-1);
 							record = NULL;	/* No data record to return */
 							n_fields = 0;
 							break;
@@ -7180,14 +7182,22 @@ GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, cha
 	for (i = len; i > 0 && name[i] != '/'; i--);	/* i points to 1st char in name after slash, or 0 if no leading dirs */
 	if (i) i++;	/* Move to 1st char after / */
 	for (j = len; j > 0 && name[j] != '.'; j--);	/* j points to period before extension, or it is 0 if no extension */
-	strcpy (file, &name[i]);			/* Make a full copy of filename without leading directories */
-	len = strlen (file);
+	len = strlen (&name[i]);
+	strncpy (file, &name[i], GMT_BUFSIZ-1);		/* Make a full copy of filename without leading directories */
 	for (i = len; i > 0 && file[i] != '.'; i--);	/* i now points to period before extension in file, or it is 0 if no extension */
 	if (i) file[i] = '\0';	/* Truncate at the extension */
-	strcat (file, "_");
-	strcat (file, suffix);
-	if (j) strcat (file, &name[j]);
-	//strcat (file, "=bf"); /* Make native for debugging */
+	/* Determine length of new filename and make sure it fits */
+	len = strlen (file);
+	if (j) len += strlen (&name[j]);
+	len += (1 + strlen(suffix));
+	if ((GMT_BUFSIZ - len) > 0) {	/* Have enough space */
+		strcat (file, "_");
+		strcat (file, suffix);
+		if (j) strcat (file, &name[j]);
+		//strcat (file, "=bf"); /* Make native for debugging */
+	}
+	else
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File name [ %s] way too long - trouble in fft_file_name_with_suffix\n", file);
 	return (file);
 }
 
@@ -7659,7 +7669,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* 1b. Check if this is either gmtmath or grdmath which both use the special = outfile syntax and replace that by -=<outfile> */
 	if (!strncmp (module, "gmtmath", 7U) || !strncmp (module, "grdmath", 7U)) {
 		struct GMT_OPTION *delete = NULL;
-		for (opt = *head; opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
+		for (opt = *head; opt && opt->next; opt = opt->next) {	/* Here opt will end up being the last option */
 			if (!strcmp (opt->arg, "=")) {
 				if (opt->next) {	/* Combine the previous = and <whatever> options into a single -=<whatever> option, then delete the former */
 					opt->next->option = '=';
