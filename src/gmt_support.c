@@ -3666,6 +3666,26 @@ GMT_LOCAL int support_gnomonic_adjust (struct GMT_CTRL *GMT, double angle, doubl
 }
 
 /*! . */
+GMT_LOCAL void gmtlib_free_one_custom_symbol (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL *sym) {
+	/* Free one allocated custom symbol */
+	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *current = NULL;
+
+	if (sym == NULL) return;
+	s = sym->first;
+	while (s) {
+		current = s;
+		s = s->next;
+		gmt_M_free (GMT, current->fill);
+		gmt_M_free (GMT, current->pen);
+		gmt_M_free (GMT, current->string);
+		gmt_M_free (GMT, current);
+	}
+	gmt_M_free (GMT, sym->PS_macro);
+	gmt_M_free (GMT, sym->type);
+	gmt_M_free (GMT, sym);
+}
+
+/*! . */
 GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	unsigned int k, bb, nc = 0, nv, error = 0, var_symbol = 0;
 	int last;
@@ -3747,6 +3767,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 				if (strlen (flags) != head->n_required) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);
 					fclose (fp);
+					gmtlib_free_one_custom_symbol (GMT, head);
 					GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 				}
 				for (k = 0; k < head->n_required; k++) {	/* Determine the argument types */
@@ -11415,7 +11436,12 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *x = NULL;
 	char **L = NULL, line[GMT_BUFSIZ] = {""}, str[GMT_LEN64] = {""}, type[8] = {""}, txt[GMT_BUFSIZ] = {""};
-	FILE *fp = gmt_fopen (GMT, A->file_custom, "r");
+	FILE *fp = NULL;
+
+	if ((fp = gmt_fopen (GMT, A->file_custom, "r")) == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to open custom annotation file %s!\n", A->file_custom);
+		return (0);
+	}
 
 	text = ((item == 'a' || item == 'i') && labels);
 	x = gmt_M_memory (GMT, NULL, n_alloc, double);
@@ -11822,23 +11848,10 @@ struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char 
 void gmtlib_free_custom_symbols (struct GMT_CTRL *GMT) {
 	/* Free the allocated list of custom symbols */
 	unsigned int i;
-	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *current = NULL;
 
 	if (GMT->init.n_custom_symbols == 0) return;
-	for (i = 0; i < GMT->init.n_custom_symbols; i++) {
-		s = GMT->init.custom_symbol[i]->first;
-		while (s) {
-			current = s;
-			s = s->next;
-			gmt_M_free (GMT, current->fill);
-			gmt_M_free (GMT, current->pen);
-			gmt_M_free (GMT, current->string);
-			gmt_M_free (GMT, current);
-		}
-		gmt_M_free (GMT, GMT->init.custom_symbol[i]->PS_macro);
-		gmt_M_free (GMT, GMT->init.custom_symbol[i]->type);
-		gmt_M_free (GMT, GMT->init.custom_symbol[i]);
-	}
+	for (i = 0; i < GMT->init.n_custom_symbols; i++)
+		gmtlib_free_one_custom_symbol (GMT, GMT->init.custom_symbol[i]);
 	gmt_M_free (GMT, GMT->init.custom_symbol);
 	GMT->init.n_custom_symbols = 0;
 }
@@ -12622,7 +12635,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	 * If ~ is given we return the inverse selection.
 	 * We return a pointer to struct GMT_INT_SELECTION, which holds the info.
 	 */
-	unsigned int error = 0, pos = 0;
+	unsigned int pos = 0;
 	uint64_t k = 0, n = 0, n_items;
 	int64_t i, start = -1, stop = -1, step, max_value = 0, value = 0;
 	struct GMT_INT_SELECTION *select = NULL;
@@ -12656,7 +12669,7 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 	/* Here we have user-supplied selection information */
 	for (k = n = 0; k < n_items; k++) {
 		pos = 0;	/* Reset since gmt_strtok changed it */
-		while (!error && (gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
+		while ((gmt_strtok (list[k], ",", &pos, p))) {	/* While it is not empty or there are parsing errors, process next item */
 			if ((step = gmt_parse_range (GMT, p, &start, &stop)) == 0) {
 				gmt_free_int_selection (GMT, &select);
 				support_free_list (GMT, list, n_items);
@@ -12670,10 +12683,6 @@ struct GMT_INT_SELECTION * gmt_set_int_selection (struct GMT_CTRL *GMT, char *it
 		}
 	}
 	support_free_list (GMT, list, n_items);	/* Done with the list */
-	if (error) {	/* Parsing error(s) */
-		gmt_free_int_selection (GMT, &select);
-		return (NULL);
-	}
 	/* Here we got something to return */
 	select->n = n;							/* Total number of items */
 	select->item = gmt_M_memory (GMT, select->item, n, uint64_t);	/* Trim back array size */
@@ -12936,8 +12945,7 @@ struct GMT_REFPOINT * gmt_get_refpoint (struct GMT_CTRL *GMT, char *arg) {
 			else
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Anchor point specified via map coordinates: %g, %g\n", A->x, A->y);
 			break;
-		case GMT_REFPOINT_NOTSET:
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Should never reach this case in gmt_get_refpoint - report this problem\n");
+		case GMT_REFPOINT_NOTSET:	/* Here to prevent a warning */
 			break;
 	}
 	if (n_errors)	/* Failure; free refpoint structure */
