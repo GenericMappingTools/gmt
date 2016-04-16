@@ -1993,10 +1993,16 @@ void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, d
 		*scale = GMT->session.d_NaN;
 		return;
 	}
+	else if (n == 1) {	/* Single point has no deviation */
+		*scale = 0.0;
+		return;
+	}
+		
 	dev = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_DOUBLE);
-	for (i = n; i > 1 && gmt_M_is_dnan (dev[i-1]); i--);
+	/* Eliminate any NaNs which would have congregated at the end of the array */
+	for (i = n; i > 0 && gmt_M_is_dnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
@@ -2014,10 +2020,14 @@ void gmt_getmad_f (struct GMT_CTRL *GMT, float *x, uint64_t n, double location, 
 		*scale = GMT->session.d_NaN;
 		return;
 	}
+	else if (n == 1) {	/* Single point has no deviation */
+		*scale = 0.0;
+		return;
+	}
 	dev = gmt_M_memory (GMT, NULL, n, double);
 	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
 	gmt_sort_array (GMT, dev, n, GMT_FLOAT);
-	for (i = n; i > 1 && gmt_M_is_fnan (dev[i-1]); i--);
+	for (i = n; i > 0 && gmt_M_is_fnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
