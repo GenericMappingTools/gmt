@@ -1574,7 +1574,7 @@ GMT_LOCAL int gmtinit_parse_n_option (struct GMT_CTRL *GMT, char *item) {
 			case 'b':	/* Set BCs */
 				GMT->common.n.bc_set = true;
 				strncpy (GMT->common.n.BC, &p[1], 4U);
-				for (j = 0; j < strlen (GMT->common.n.BC); j++) {
+				for (j = 0; j < MIN (4,strlen (GMT->common.n.BC)); j++) {
 					switch (GMT->common.n.BC[j]) {
 						case 'g': case 'x': case 'y': break;
 						default:
@@ -2808,7 +2808,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 				strcpy (workspace, &GMT->current.map.frame.axis[i].prefix[1]);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
-				strcpy (&workspace[1], GMT->current.map.frame.axis[i].prefix);
+				strncpy (&workspace[1], GMT->current.map.frame.axis[i].prefix, GMT_LEN64-2);
 			}
 			gmt_M_memcpy (GMT->current.map.frame.axis[i].prefix, workspace, GMT_LEN64, char);
 		}
@@ -2818,7 +2818,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 				strcpy (workspace, &GMT->current.map.frame.axis[i].unit[1]);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
-				strcpy (&workspace[1], GMT->current.map.frame.axis[i].unit);
+				strncpy (&workspace[1], GMT->current.map.frame.axis[i].unit, GMT_LEN64-2);
 			}
 			gmt_M_memcpy (GMT->current.map.frame.axis[i].unit, workspace, GMT_LEN64, char);
 		}
@@ -3116,7 +3116,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	}
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 
-	strcpy (text, &in[k]);			/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
+	strncpy (text, &in[k], GMT_BUFSIZ-1);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmtinit_handle5_plussign (GMT, text, "Llpu", 0);	/* Temporarily change any +<letter> except +L|l, +p, +u to ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +L|l, +p, or +s */
 	while (text[k] && !(text[k] == '+' && strchr ("Llpu", text[k+1]))) k++;
@@ -3393,6 +3393,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char;
 	char txt_arr[11][GMT_LEN256];
 
+	if (args == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -J option: No argument for parsing\n");
+		return (true);
+	}
 	gmt_M_memset (l_pos, 3, int);	gmt_M_memset (p_pos, 3, int);
 	gmt_M_memset (t_pos, 3, int);	gmt_M_memset (d_pos, 3, int);
 	GMT->current.proj.lon0 = GMT->current.proj.lat0 = GMT->session.d_NaN;	/* Projection center, to be set via -J */
@@ -3699,12 +3703,13 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 
 		case GMT_ORTHO:
+			/* Reset any genper related settings */
 			GMT->current.proj.g_debug = 0;
 			GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set =
 			                          GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
 			GMT->current.proj.g_sphere = true; /* force spherical as default */
 			GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = 0.0;
-
+			/* Intentional fall-through (no break) */
 		case GMT_AZ_EQDIST:	/* Azimuthal equal-distant */
 		case GMT_LAMB_AZ_EQ:	/* Lambert Azimuthal Equal-Area */
 		case GMT_GNOMONIC:	/* Gnomonic */
@@ -4026,7 +4031,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			break;
 
 		default:
-			error = true;
+			error++;
 			project = GMT_NO_PROJ;
 			break;
 	}
@@ -6559,7 +6564,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	if (strchr ("LCRlcr", item[0]) && strchr ("TMBtmb", item[1])) {	/* Extended -R option using coordinate codes and grid increments */
 		char X[2][GMT_LEN64] = {"", ""}, code[3] = {""};
 		double xdim, ydim, orig[2];
-		int nx, ny, just;
+		int nx, ny, just, part;
 		gmt_M_memcpy (code, item, 2, char);
 		if ((just = gmt_just_decode (GMT, code, PSL_NO_DEF)) == -99) {	/* Since justify not in correct format */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -R: Unrecognized justification code %s\n", code);
@@ -6594,8 +6599,9 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		if (!GMT->common.r.active) nx--, ny--;	/* Needed to get correct dimensions */
 		xdim = nx * GMT->common.API_I.inc[GMT_X];
 		ydim = ny * GMT->common.API_I.inc[GMT_Y];
+		part = just / 4;	/* Need any multiples of 4 in just */
 		GMT->common.R.wesn[XLO] = orig[GMT_X] - 0.5 * ((just%4)-1) * xdim;
-		GMT->common.R.wesn[YLO] = orig[GMT_Y] - 0.5 * (just/4) * ydim;
+		GMT->common.R.wesn[YLO] = orig[GMT_Y] - 0.5 * part * ydim;
 		GMT->common.R.wesn[XHI] = GMT->common.R.wesn[XLO] + xdim;
 		GMT->common.R.wesn[YHI] = GMT->common.R.wesn[YLO] + ydim;
 		return (GMT_NOERROR);
@@ -9828,7 +9834,7 @@ int gmt_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *optio
 		if (lines)
 			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, param);		/* Separate lines */
 		else
-			strcat (record, param);
+			strncat (record, param, GMT_BUFSIZ-1);
 		n++;
 	}
 	if (!lines && n)
@@ -10052,7 +10058,7 @@ int gmt_get_ellipsoid (struct GMT_CTRL *GMT, char *name) {
 
 	/* Try to get ellipsoid from the default list; use case-insensitive checking */
 
-	strcpy (ename, name);		/* Make a copy of name */
+	strncpy (ename, name, GMT_LEN64-1);		/* Make a copy of name */
 	gmtlib_str_tolower (ename);	/* Convert to lower case */
 	for (i = 0; i < GMT_N_ELLIPSOIDS; i++) {
 		strcpy (line, GMT->current.setting.ref_ellipsoid[i].name);
@@ -10637,7 +10643,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	if (!strncmp (text, "E-", 2U) || !strncmp (text, "J-", 2U)) {
 		/* Special degenerate geographic ellipse and rectangle symbols, remove the - to avoid parsing issues */
 		degenerate = true;
-		if (text[2]) strcpy (diameter, &text[2]);	/* Gave circle diameter on command line */
+		if (text[2]) strncpy (diameter, &text[2], GMT_LEN32-1);	/* Gave circle diameter on command line */
 		text[1] = 0;
 	}
 	if (!text[0]) {	/* No symbol or size given */
