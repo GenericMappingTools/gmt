@@ -634,7 +634,8 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 					GMT->current.io.ogr = GMT_OGR_FALSE;
 					return (false);
 				}
-				n_aspatial = gmtio_ogr_decode_aspatial_names (GMT, &p[1], S);
+				else
+					n_aspatial = gmtio_ogr_decode_aspatial_names (GMT, &p[1], S);
 				if (S->n_aspatial == 0)
 					S->n_aspatial = n_aspatial;
 				else if (S->n_aspatial != n_aspatial) {
@@ -3937,6 +3938,8 @@ int gmt_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert file descriptor %d to stream in gmtio_write_table\n", *fd);
 				return (EXIT_FAILURE);
 			}
+			else
+				close_file = true;	/* fdopen allocates memory */
 			if (fd == NULL) fp = GMT->session.std[GMT_OUT];	/* Default destination */
 			if (fp == GMT->session.std[GMT_OUT])
 				strcpy (file, "<stdout>");
@@ -4006,13 +4009,15 @@ bool gmt_input_is_bin (struct GMT_CTRL *GMT, const char *filename) {
 
 /*! . */
 FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) {
-	char path[GMT_BUFSIZ];
+	char path[GMT_BUFSIZ], *c = NULL;
 	FILE *fd = NULL;
 
 	if (mode[0] != 'r')	/* Open file for writing (so cannot be netCDF) */
 		return (fopen (filename, mode));
-	else if (GMT->common.b.active[GMT_IN])	/* Definitely not netCDF */
-		return (fopen (gmt_getdatapath(GMT, filename, path, R_OK), mode));
+	else if (GMT->common.b.active[GMT_IN]) {	/* Definitely not netCDF */
+		if ((c = gmt_getdatapath (GMT, filename, path, R_OK)) == NULL) return NULL;
+		return (fopen (c, mode));
+	}
 	else if (gmt_M_compat_check (GMT, 4) && GMT->common.b.varnames[0])	/* Definitely netCDF */
 		return (gmt_nc_fopen (GMT, filename, mode));
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
@@ -4023,14 +4028,12 @@ FILE * gmt_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode) 
 	else if (!strcmp (filename, "/dev/null"))	/* The Unix null device; catch here to avoid gmt_nc_fopen */
 #endif
 	{
-		char *c;
 		if ((c = gmt_getdatapath(GMT, filename, path, R_OK)) == NULL) return fd;
 		return (fopen (c, mode));
 	}
 	else {	/* Maybe netCDF */
 		fd = gmt_nc_fopen (GMT, filename, mode);
 		if (!fd) {
-			char *c;
 			if ((c = gmt_getdatapath(GMT, filename, path, R_OK)) != NULL) fd = fopen(c, mode);
 		}
 		return (fd);
@@ -5769,7 +5772,7 @@ int gmt_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		else if ((p = strrchr (s, 'T'))) {	/* There is a T in there (but could be stuff like 2012-OCT-20 with no trailing T) */
 			char *p2 = NULL;
 			/* Watch for shit like 2013-OCT-23 with no trailing T */
-			if (GMT->current.io.date_input.mw_text && GMT->current.io.date_input.delimiter[0] && (p2 = strrchr (s, GMT->current.io.date_input.delimiter[0][0])) > p) {
+			if (GMT->current.io.date_input.mw_text && GMT->current.io.date_input.delimiter[0][0] && (p2 = strrchr (s, GMT->current.io.date_input.delimiter[0][0])) > p) {
 				/* Got a delimiter after that T, so assume it is a T in a name instead */
 				strncpy (calstring, s, GMT_LEN64-1);
 				clocklen = 0;
@@ -7503,15 +7506,18 @@ char **gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 	(void)closedir (D);
 #elif defined(WIN32)
 	char text[GMT_LEN256] = {""};
+	int left;
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	sprintf (text, "%s/*", path);
+	left = GMT_LEN256 - strlen (path) - 2;
+	left -= ((ext) ? strlen (ext) : 2);
 	if (ext)
-		strcat (text, ext);	/* Look for files with given ending in this dir */
+		strncat (text, ext, left);	/* Look for files with given ending in this dir */
 	else
-		strcat (text, ".*");	/* Look for all files in this dir */
+		strncat (text, ".*", left);	/* Look for all files in this dir */
 	if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error opening directory %s\n", path);
 		return NULL;
