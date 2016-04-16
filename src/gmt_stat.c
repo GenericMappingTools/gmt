@@ -2168,7 +2168,6 @@ double gmt_quantile (struct GMT_CTRL *GMT, double *x, double q, uint64_t n) {
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
 	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
 	while (n > 1 && gmt_M_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
-	if (n < 1) return (GMT->session.d_NaN);		/* Need at least 1 point to do something */
 	if (q == 100.0) return (x[n-1]);		/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
 	i_f = (uint64_t)floor (f);
@@ -2190,7 +2189,6 @@ double gmt_quantile_f (struct GMT_CTRL *GMT, float *x, double q, uint64_t n) {
 	if (n == 0) return (GMT->session.d_NaN);	/* No data, so no defined quantile */
 	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
 	while (n > 1 && gmt_M_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
-	if (n < 1) return (GMT->session.d_NaN);		/* Need at least 1 point to do something */
 	if (q == 100.0) return ((double)x[n-1]);	/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
 	i_f = (uint64_t)floor (f);
