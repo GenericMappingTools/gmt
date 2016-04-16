@@ -425,7 +425,9 @@ GMT_LOCAL int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_IN
 				B[k].open = false;
 				gmt_M_free (GMT, B[k].z);
 				gmt_M_free (GMT, B[k].RbR);
-				if (B[k].delete) remove (B[k].file);	/* Delete the temporary resampled file */
+				if (B[k].delete)	/* Delete the temporary resampled file */
+					if (remove (B[k].file))
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to delete file %s\n", B[k].file); 
 			}
 			continue;
 		}
