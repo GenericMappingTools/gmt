@@ -1929,7 +1929,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 			}
 			if (GMT->current.proj.z_down) {	/* Want to annotate depth rather than radius */
 				if (GMT->current.map.frame.axis[GMT_Y].file_custom)
-					ny = gmtlib_coordinate_array (GMT, 0.0, n-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
+					ny = gmtlib_coordinate_array (GMT, 0.0, n-s, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &tval, &label_c);
 				else
 					ny = gmtlib_linear_array (GMT, 0.0, n-s, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &tval);
 				val = gmt_M_memory (GMT, NULL, ny, double);
@@ -1941,7 +1941,7 @@ GMT_LOCAL void plot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 					ny = gmtlib_coordinate_array (GMT, s, n, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER], &val, &label_c);
 				else
 					ny = gmtlib_linear_array (GMT, s, n, dy[k], GMT->current.map.frame.axis[GMT_Y].phase, &val);
-				tval = val;	/* Same thing */
+				tval = val;	/* Here they are the same thing */
 			}
 			last = ny - 1;
 			for (i = 0; i < ny; i++) {
@@ -2195,7 +2195,7 @@ GMT_LOCAL void plot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, st
 			outstring[length++] = '-';
 			outstring[length++] = opt->option;
 		}
-		strcat (outstring, opt->arg);
+		if ((strlen (opt->arg) + length) < GMT_BUFSIZ) strcat (outstring, opt->arg);
 		length += strlen (opt->arg);
 		if (strchr (opt->arg, ' ')) outstring[length++] = '\'';
 	}
@@ -2594,7 +2594,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
 		   tricky is while we may know this is the 3rd extra variable, we dont know if -C<cpt> was used or if this is psxyz, no? */
 		want_col = start + n;
-		for (col = pos = 0; col <= want_col; col++) gmt_strtok (GMT->current.io.current_record, GMT_TOKEN_SEPARATORS, &pos, text);
+		for (col = pos = 0; col <= want_col; col++) (void)gmt_strtok (GMT->current.io.current_record, GMT_TOKEN_SEPARATORS, &pos, text);
 	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
@@ -5142,7 +5142,7 @@ void gmt_write_label_record (struct GMT_CTRL *GMT, FILE *fp, double x, double y,
 		strcat (record, word);
 		strcat (record, GMT->current.setting.io_col_separator);
 	}
-	strcat (record, label);
+	strncat (record, label, GMT_BUFSIZ-1);
 	fprintf (fp, "%s\n", record);	/* Write the data record */
 	return;
 }
@@ -5404,7 +5404,7 @@ struct PSL_CTRL * gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		if (gmt_M_file_is_memory (&(Out->arg[k]))) {
 			write_to_mem = 2;
 			GMT->current.ps.memory = true;
-			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16);
+			strncpy (GMT->current.ps.memname, &(Out->arg[k]), GMT_STR16-1);
 		}
 		else if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
@@ -6022,6 +6022,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							break;
 						case GMT_FRONT_RIGHT:
 							angle += M_PI;
+							/* Purposefully pass through after changing the angle */
 						case GMT_FRONT_LEFT:
 							/* Half square on the chosen side */
 							sincos (angle, &sina, &cosa);
@@ -6279,10 +6280,12 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot determine size of PostScript file give by file descriptor %d\n", *fd);
 			return (NULL);
 		}
-		if (fd && (fp = fdopen (*fd, "r")) == NULL) {
+		if ((fp = fdopen (*fd, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot convert PostScript file descriptor %d to stream in gmt_read_ps\n", *fd);
 			return (NULL);
 		}
+		else
+			close_file = true;	/* Since fdopen creates a FILE struct */
 		if (fd == NULL)
 			fp = GMT->session.std[GMT_IN];	/* Default input */
 		else
