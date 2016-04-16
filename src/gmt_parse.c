@@ -299,8 +299,8 @@ GMT_LOCAL int parse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION *o
 				opt2 = opt;                     /* Since we dont want to change the opt loop avove */
 				B_next = opt->next;             /* Pointer to option following the -B option */
 				gmt_M_str_free (opt2->arg);/* Free previous pointer to arg */
-				gmt_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
-				opt2->arg = strdup (p);         /* Update arg */
+				if (gmt_strtok (GMT->init.history[B_id], B_delim, &pos, p))	/* Get the first argument */
+					opt2->arg = strdup (p);         /* Update arg */
 				while (gmt_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
 					opt2->next = GMT_Make_Option (GMT->parent, 'B', p);	/* Create new struct */
 					opt2->next->previous = opt2;

@@ -7814,6 +7814,7 @@ uint64_t gmt_map_clip_path (struct GMT_CTRL *GMT, double **x, double **y, bool *
 				break;
 			case GMT_VANGRINTEN:
 				do_circle = GMT->current.map.is_world;
+				/* Fall through on purpose */
 			case GMT_LAMB_AZ_EQ:
 			case GMT_AZ_EQDIST:
 			case GMT_ORTHO:
