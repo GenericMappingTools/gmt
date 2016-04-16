@@ -892,11 +892,13 @@ int gmt_native_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *hea
 	else if ((fp = gmt_fopen (GMT, header->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	GMT_err_trap (customio_native_write_grd_header (fp, header));
-
+	err = customio_native_write_grd_header (fp, header);
 	gmt_fclose (GMT, fp);
 
-	return (GMT_NOERROR);
+	if (err)
+		return err;
+	else
+		return GMT_NOERROR;
 }
 
 int gmt_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
