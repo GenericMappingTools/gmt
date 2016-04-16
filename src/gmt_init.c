@@ -8175,10 +8175,10 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 				}
 				else
 					pos = 0;
-				gmt_strtok (lower_value, "x", &pos, txt_a);	/* Returns width and update pos */
-				GMT->current.setting.ps_page_size[0] = gmt_convert_units (GMT, txt_a, GMT_PT, GMT_PT);
-				gmt_strtok (lower_value, "x", &pos, txt_b);	/* Returns height and update pos */
-				GMT->current.setting.ps_page_size[1] = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+				if (gmt_strtok (lower_value, "x", &pos, txt_a))	/* Returns width and update pos */
+					GMT->current.setting.ps_page_size[0] = gmt_convert_units (GMT, txt_a, GMT_PT, GMT_PT);
+				if (gmt_strtok (lower_value, "x", &pos, txt_b))	/* Returns height and update pos */
+					GMT->current.setting.ps_page_size[1] = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				if (GMT->current.setting.ps_page_size[0] <= 0.0) error++;
 				if (GMT->current.setting.ps_page_size[1] <= 0.0) error++;
 				GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
