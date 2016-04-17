@@ -822,60 +822,72 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 
 #ifdef _WIN32
 	if (_pipe(fd, 512, O_BINARY) == -1) {
-		GMT_Report(API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
 		return EXIT_FAILURE;
 	}
 #else
-	pipe(fd);
-#endif
-	if (dup2(fd[1], fileno(stderr)) < 0) {
-		GMT_Report(API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
+	if (pipe (fd) == -1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
 		return EXIT_FAILURE;
 	}
-	close(fd[1]); 		/* Close original write end of pipe */
+#endif
+	if (dup2 (fd[1], fileno (stderr)) < 0) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
+		return EXIT_FAILURE;
+	}
+	if (close (fd[1]) == -1) { 		/* Close original write end of pipe */
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close write end of pipe.\n");
+		return EXIT_FAILURE;
+	}
 
-	PS = gmt_M_memory(API->GMT, NULL, 1, struct GMT_PS);
-	PS->data = PSL_getplot(API->GMT->PSL);	/* Get pointer to the plot buffer */
-	PS->n = API->GMT->PSL->internal.n;		/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
+	/* Allocate GMT_PS struct to hold the string that lives inside GMT->PSL */
+	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
+	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the internal plot buffer */
+	PS->n = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
+	PS->data[PS->n] = '\0';			/* Safety precaution since MATLAB can screw us sometimes */
 
-	sprintf(cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);
+	sprintf (cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);	/* Set up gs command */
 
-	if ((fp = popen(cmd, "w")) != NULL) {
-		fwrite(PS->data, sizeof(char), PS->n, fp);
-		fflush(fp);
-		if (pclose(fp) == -1)
-			GMT_Report(API, GMT_MSG_NORMAL, "Error closing GhostScript command.\n");
+	if ((fp = popen (cmd, "w")) != NULL) {	/* Successful pipe-job, now shove PS into it */
+		fwrite (PS->data, sizeof(char), PS->n, fp);
+		fflush (fp);
+		if (pclose (fp) == -1)
+			GMT_Report(API, GMT_MSG_NORMAL, "Error closing pipe used for GhostScript command.\n");
 	}
 	else {
 		GMT_Report(API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
-		gmt_M_free(API->GMT, PS);
+		gmt_M_free (API->GMT, PS);
 		return EXIT_FAILURE;
 	}
 
+	/* Now read the image from input pipe fd[0] */
 	while (read(fd[0], t, 1U) && t[0] != '\n'); 	/* Consume first line that has the BoundingBox */
 	n = 0;
-	while (read(fd[0], t, 1U) && t[0] != '\n')		/* Read secod line which has the HiResBoundingBox */
+	while (read(fd[0], t, 1U) && t[0] != '\n')	/* Read secod line which has the HiResBoundingBox */
 		buf[n++] = t[0];
 	buf[n] = '\0';
-	close(fd[0]);
+	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close read end of pipe.\n");
+		return EXIT_FAILURE;
+	}
 
 	sscanf(buf, "%s %lf %lf %lf %lf", t, &x0, &y0, &x1, &y1);
 	c = PS->data[500];
-	PS->data[500] = '\0';							/* Temporary cut the string to not search the whole file */
+	PS->data[500] = '\0';				/* Temporary cut the string to not search the whole file */
 	pch = strstr(PS->data, "Landscape");
 	if (pch != NULL) landscape = true;
-	PS->data[500] = c;								/* Reset the deleted char */
+	PS->data[500] = c;				/* Restore the deleted character */
 
-	if (landscape)									/* We will need these in pipe_ghost() */
+	if (landscape)					/* We will need these in pipe_ghost() */
 		xt = -x1, yt = -y0, *w = y1-y0, *h = x1-x0, r = -90;
 	else
 		xt = -x0, yt = -y0, *w = x1-x0, *h = y1-y0, r = 0;
 
-	sprintf(buf, "BoundingBox: 0 0 %.0f %.0f", ceil(*w), ceil(*h));
-	if ((pch = strstr(PS->data, "BoundingBox")) != NULL) {		/* Find where is the BB */
+	sprintf (buf, "BoundingBox: 0 0 %.0f %.0f", ceil(*w), ceil(*h));
+	if ((pch = strstr (PS->data, "BoundingBox")) != NULL) {		/* Find where is the BB */
 		for (n = 0; n < strlen(buf); n++)			/* and update it */
 			pch[n] = buf[n];
-		while (pch[n] != '\n') {					/* Make sure that there are only spaces till next new line */
+		while (pch[n] != '\n') {				/* Make sure that there are only spaces till next new line */
 			pch[n] = ' ';	n++;
 		}
 	}
@@ -909,7 +921,6 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	else
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have the stpagedice line\n");
 
-	PS->data[PS->n - 1] = '\0';			/* There is some remaining trash at the end so remove last new line and after. Should be done elsewhere. */
 	gmt_M_free (API->GMT, PS);
 
 	return GMT_OK;
@@ -940,7 +951,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	/* sprintf(cmd, "gswin64c -q -r300x300 -sDEVICE=ppmraw -sOutputFile=- -"); */
 	pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
 	pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
-	sprintf(cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
+	sprintf (cmd, "%s -r%d -g%dx%d ", Ctrl->G.file, Ctrl->E.dpi, pix_w, pix_h);
 	if (strlen(gs_params) < 450) strcat (cmd, gs_params);	/* We know it is but Coverity doesn't, and complains */
 
 	if (out_file[0] == '\0') {		/* Need to open a pipe to capture the popen output, which will contain the raster */
@@ -951,26 +962,36 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 			return EXIT_FAILURE;
 		}
 #else
-		pipe (fd);
+		if (pipe (fd) == -1) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to open the pipe.\n");
+			return EXIT_FAILURE;
+		}
 #endif
 		if (dup2 (fd[1], fileno (stdout)) < 0) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to duplicate pipe.\n");
 			return EXIT_FAILURE;
 		}
-		close (fd[1]); 		/* Close original write end of pipe */
+		if (close (fd[1]) == -1) { 		/* Close original write end of pipe */
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close write end of pipe.\n");
+			return EXIT_FAILURE;
+		}
 	}
 	else
 		strncat (cmd, out_file, 1023);
 
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
 	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the plot buffer */
-	PS->n = API->GMT->PSL->internal.n;		/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
-
-	if ((fp = popen(cmd, "w")) != NULL) {
-		fwrite (PS->data, sizeof(char), PS->n, fp);
-		fflush (fp);
-		if (pclose(fp) == -1)
-			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript command.\n");
+	PS->n = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
+	PS->data[PS->n] = '\0';			/* Safety precaution since MATLAB can screw us sometimes */
+	if ((fp = popen (cmd, "w")) != NULL) {
+		if (fwrite (PS->data, sizeof(char), PS->n, fp) != PS->n) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
+		}
+		if (fflush (fp) == EOF) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error flushing GhostScript process.\n");
+		}
+		if (pclose (fp) == -1)
+			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GhostScript process.\n");
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Cannot execute GhostScript command.\n");
@@ -993,7 +1014,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	n = 0;
 	while (read(fd[0], buf, 1U) && buf[0] != '\n') 		/* Get string with number of rows from 3rd header line */
 		t[n++] = buf[0];
-	t[n] = '\0';							/* Make sure no character is left from previous usage */
+	t[n] = '\0';						/* Make sure no character is left from previous usage */
 
 	while (read(fd[0], buf, 1U) && buf[0] != '\n');		/* Consume fourth header line */
 
@@ -1009,7 +1030,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	nCols = dim[GMT_X];		nRows = dim[GMT_Y];		nBands = dim[2];	nXY = nRows * nCols;
 	tmp   = gmt_M_memory(API->GMT, NULL, nCols * nBands, char);
 	for (row = 0; row < nRows; row++) {
-		read (fd[0], tmp, (unsigned int)(nCols * nBands));			/* Read a row of nCols by nBands bytes of data */
+		read (fd[0], tmp, (unsigned int)(nCols * nBands));	/* Read a row of nCols by nBands bytes of data */
 		for (col = 0; col < nCols; col++) {
 			for (band = 0; band < nBands; band++) {
 				I->data[row + col*nRows + band*nXY] = tmp[band + col*nBands];
@@ -1018,7 +1039,9 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	}
 	gmt_M_free (API->GMT, tmp);
 
-	close (fd[0]);
+	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to close read end of pipe.\n");
+	}
 
 	I->type = GMT_CHAR;
 	I->header->nx = (uint32_t)dim[GMT_X];	I->header->ny = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];

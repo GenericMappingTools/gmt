@@ -6215,8 +6215,8 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_PS *P) {
 		if (P->alloc_mode == GMT_ALLOC_INTERNALLY)	/* Was allocated by GMT */
 			gmt_M_free (GMT, P->data);
 		/* Note: We never need to free the array allocated inside PSL since PSL always destroys it */
-		P->data = NULL;
 	}
+	P->data = NULL;		/* Whatever we pointed to is now longer known to P */
 	P->n_alloc = P->n = 0;
 	P->mode = 0;
 }
