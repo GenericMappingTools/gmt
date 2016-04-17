@@ -204,7 +204,7 @@ void gmt_strtok_m (char *in, char **token, char **remain, char *sep) {
 	p = malloc(strlen(in)+1);
 	if (gmt_strtok (in, s, &pos, p)) {
 		token[0] = strdup(p);
-		if (gmt_strtok (in, sep, &pos, p))
+		if (gmt_strtok (in, s, &pos, p))
 			remain[0] = strdup(p);
 	}
 	free(p);
