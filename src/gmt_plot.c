@@ -5977,6 +5977,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							break;
 						case GMT_FRONT_RIGHT:
 							angle += M_PI;
+							/* Purposefully pass through after changing the angle */
 						case GMT_FRONT_LEFT:
 							sincos (angle, &sina, &cosa);
 							xx[0] = x0 + len2 * cosa;
@@ -5997,6 +5998,7 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							break;
 						case GMT_FRONT_RIGHT:
 							angle += M_PI;
+							/* Purposefully pass through after changing the angle */
 						case GMT_FRONT_LEFT:
 							dir1 = R2D * angle;
 							dir2 = dir1 + 180.0;
@@ -6286,10 +6288,7 @@ struct GMT_PS * gmt_read_ps (struct GMT_CTRL *GMT, void *source, unsigned int so
 		}
 		else
 			close_file = true;	/* Since fdopen creates a FILE struct */
-		if (fd == NULL)
-			fp = GMT->session.std[GMT_IN];	/* Default input */
-		else
-			n_alloc = buf.st_size;		/* We know what to allocate here */
+		n_alloc = buf.st_size;		/* We know what to allocate here */
 		if (fp == GMT->session.std[GMT_IN])
 			strcpy (ps_file, "<stdin>");
 		else
