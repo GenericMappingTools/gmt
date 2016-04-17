@@ -184,8 +184,7 @@ GMT_LOCAL bool overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, str
 
 GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER *h, struct GRDBLEND_INFO **blend) {
 	int type, status, not_supported;
-	bool do_sample;
-	unsigned int one_or_zero = !h->registration, n = 0, nr;
+	unsigned int one_or_zero = !h->registration, n = 0, nr, do_sample;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ] = {""};
 	char Targs[GMT_LEN256] = {""}, Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
@@ -216,6 +215,8 @@ GMT_LOCAL int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n
 					continue;
 				if (gmt_M_rec_is_eof (GMT)) 		/* Reached end of file */
 					break;
+				if (line == NULL)	/* As a precaution for sscanf below */
+					continue;
 			}
 			
 			/* Data record to process.  We permint this kind of records:
