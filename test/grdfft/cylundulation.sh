@@ -15,13 +15,13 @@ ps=cylundulation.ps
 #gmt grdmath -R0/127/0/127 -I1 2 1 NRAND = C.nc
 #gmt grdmath A.nc B.nc ADD C.nc ADD = surf.nc
 gmt makecpt -Cpolar -T-14/14/1 -Z > t.cpt
-gmt grdimage surf.nc -JX4.5i -Ct.cpt -B64f32g64+u" m" -BWSne -P -K -Xc -Y0.5i > $ps
-gmt psxy -Rsurf.nc -J -O -K -Sv0.21i+e -Wthick -Gblack << EOF >> $ps
+gmt grdimage "${src:-.}"/surf.nc -JX4.5i -Ct.cpt -B64f32g64+u" m" -BWSne -P -K -Xc -Y0.5i > $ps
+gmt psxy -R"${src:-.}"/surf.nc -J -O -K -Sv0.21i+e -Wthick -Gblack << EOF >> $ps
 64 64 18 2i
 64 64 -60 2i
 EOF
 gmt psscale -DjRM+w4.5i/0.1i+jLM+o0.2i/0 -Ct.cpt -Baf -R -J -O -K >> $ps
-gmt grdfft surf.nc -Exw -N+zp --GMT_FFT=brenner > /dev/null
+gmt grdfft "${src:-.}"/surf.nc -Exw -N+zp --GMT_FFT=brenner > /dev/null
 echo 0	white 0.5 gray > t.cpt
 gmt makecpt -N -T0.5/3.5/1 -Crainbow >> t.cpt
 gmt grdimage surf_mag.nc -R-1/1/-1/1 -J -O -K -Ct.cpt -Bafg1+u" m@+-1@+" -BWSne+t"Two cylindrical undulations and noise" -Y5i >> $ps
