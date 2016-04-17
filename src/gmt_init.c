@@ -7066,7 +7066,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 	/* Process the GMT gap detection option for parameters */
 	/* Syntax, e.g., -g[x|X|y|Y|d|D|[<col>]z][+|-]<gap>[d|m|s|e|f|k|M|n|c|i|p] or -ga */
 
-	if (!txt && !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
+	if (!txt || !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
 	if ((i = GMT->common.g.n_methods) == GMT_N_GAP_METHODS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot specify more than %d gap criteria\n", GMT_N_GAP_METHODS);
 		return (1);

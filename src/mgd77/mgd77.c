@@ -3451,7 +3451,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		if (p[0] == '1' || p[0] == '3') ix += 19;
 		iy = (p[1] - '0');
 		if (p[0] == '1' || p[0] == '7') iy += 10;
-		H->meta.ten_box[iy][ix] -= 1;	/* So if there is perfect match we should have 0s */
+		if (k == 0) H->meta.ten_box[iy][ix] -= 1;	/* So if there is perfect match we should have 0s */
 	}
 	for (iy = 0; iy < 20; iy++) {
 		for (ix = 0; ix < 38; ix++) {
@@ -4141,7 +4141,10 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call [%s] returned error.\n", line);
 				continue;
 			}
-			fp = fopen (".tmpdir", "r");
+			if ((fp = fopen (".tmpdir", "r")) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "System call failed to create .tmpdir file.\n");
+				continue;
+			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				gmt_chop (line); /* Get rid of CR/LF issues */
 				d_name = line;

@@ -2345,6 +2345,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 								}
 								D[curr].number[i] -= 360.0;
 							}
+							break;
 						default:
 							/* Verify that measurements are within range */
 							if (!gmt_M_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue ||\

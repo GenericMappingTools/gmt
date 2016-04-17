@@ -323,7 +323,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GM
 			case 'T':	/* Set output knots */
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->T.inc) != 3) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Suntax error -T option: Syntax is -T<tmin>/<tmax>/<tinc>[+]\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Syntax is -T<tmin>/<tmax>/<tinc>[+]\n");
 					++n_errors;
 				}
 				else {
@@ -381,11 +381,9 @@ GMT_LOCAL void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_I
 
 GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 	uint64_t i, i1, i2;
-	bool normalize = false;
 	double t_0, t_1, time, w_sum;
 	double (*get_weight[3]) (double, double);	/* Pointers to desired weight function.  */
 	
-
 	t_0 = F->data[F->t_col][0];
 	t_1 = F->data[F->t_col][F->n_rows-1];
 	if (F->equidist) F->dt = (t_1 - t_0) / (F->n_rows - 1);
@@ -396,6 +394,10 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 		gmt_M_memcpy (F->f_wt, F->Fin->table[0]->segment[0]->coord[GMT_X], F->n_f_wts, double);
 		for (i = 0, w_sum = 0.0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
 		F->f_operator = (gmt_M_is_zero (w_sum));	/* If weights sum to zero it is an operator like {-1 1] or [1 -2 1] */
+		if (w_sum > 1.0) {	/* Must normalize filter weights */
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Must normalize custom filter since weight sum > 1 [%g]\n", w_sum);
+			for (i = 0; i < F->n_f_wts; ++i) F->f_wt[i] /= w_sum;
+		}
 		F->half_n_f_wts = F->n_f_wts / 2;
 		F->half_width = F->half_n_f_wts * F->dt;
 		F->filter_width = 2.0 * F->half_width;
@@ -414,11 +416,6 @@ GMT_LOCAL int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F) {
 			i1 = F->half_n_f_wts - i;
 			i2 = F->half_n_f_wts + i;
 			F->f_wt[i1] = F->f_wt[i2] = ( *get_weight[F->filter_type]) (time, F->half_width);
-		}
-		if (normalize) {
-			w_sum = 0.0;
-			for (i = 0; i < F->n_f_wts; ++i) w_sum += F->f_wt[i];
-			for (i = 0; i < F->n_f_wts; ++i) F->f_wt[i] /= w_sum;
 		}
 	}
 	else

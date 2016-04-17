@@ -218,8 +218,10 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	gmt_M_memcpy (pad, Grid->header->pad, 4, int);	/* Save the original pad */
 	gmt_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) {
-		if ((Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) /* Must keep original if readonly */
+		if ((Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid)) == NULL) {	/* Must keep original if readonly */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
+			return (GMT->parent->error);
+		}
 	}
 	gmt_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT);
 	

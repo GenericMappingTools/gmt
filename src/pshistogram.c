@@ -203,7 +203,7 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 		else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
 			F->yy0 = d_log101p (GMT, (double)b0);
 		else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-			F->yy0 = (100.0 * b0) / F->n_counted;
+			F->yy0 = (F->n_counted) ? (100.0 * b0) / F->n_counted : 0.0;
 		else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
 			F->yy0 = (F->n_counted) ? d_log1p (GMT, 100.0 * b0 / F->n_counted) : 0.0;
 		else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)
@@ -219,7 +219,7 @@ GMT_LOCAL int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, doub
 		else if (F->hist_type == PSHISTOGRAM_LOG10_COUNTS)
 			F->yy1 = d_log101p (GMT, (double)b1);
 		else if (F->hist_type == PSHISTOGRAM_FREQ_PCT)
-			F->yy1 = (100.0 * b1) / F->n_counted;
+			F->yy1 = (F->n_counted) ? (100.0 * b1) / F->n_counted : 0.0;
 		else if (F->hist_type == PSHISTOGRAM_LOG_FREQ_PCT)
 			F->yy1 = (F->n_counted) ? d_log1p (GMT, 100.0 * b1 / F->n_counted) : 0.0;
 		else if (F->hist_type == PSHISTOGRAM_LOG10_FREQ_PCT)

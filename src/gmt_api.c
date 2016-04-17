@@ -8250,8 +8250,8 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	struct GMT_GRID_HEADER header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
-	if (file == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No file given to GMT_F77_readgrdinfo\n");
+	if (name == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_readgrdinfo\n");
 		return EXIT_FAILURE;
 	}
 	file = strdup (name);
@@ -8293,8 +8293,8 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	struct GMT_GRID_HEADER header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
-	if (file == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No file given to GMT_F77_readgrd\n");
+	if (name == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_readgrd\n");
 		return EXIT_FAILURE;
 	}
 	file = strdup (name);
@@ -8345,8 +8345,8 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 
 	/* Initialize with default values */
 
-	if (file == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "No file given to GMT_F77_writegrd\n");
+	if (name == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_writegrd\n");
 		return EXIT_FAILURE;
 	}
 	file = strdup (name);
