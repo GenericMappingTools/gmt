@@ -810,7 +810,13 @@ int gmt_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	/* Store header information and array */
 
-	if (do_header) GMT_err_trap (customio_native_write_grd_header (fp, header));
+	if (do_header) {
+		if ((err = customio_native_write_grd_header (fp, header))) {
+			gmt_fclose (GMT, fp);
+			gmt_M_free (GMT, actual_col);
+			return err;
+		}
+	}
 
 	mx = urint (ceil (width_out / 32.0));
 	tmp = gmt_M_memory (GMT, NULL, mx, unsigned int);
