@@ -367,7 +367,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT
 			Ctrl->N.info->trend_mode = override_mode;
 	}
 
-	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
+	if (Ctrl->N.active && Ctrl->N.info && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
