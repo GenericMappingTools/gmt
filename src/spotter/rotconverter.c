@@ -485,9 +485,6 @@ int GMT_rotconverter (void *V_API, int mode, void *args) {
 			out[col++] = a[stage].t_stop;
 			out[col++] = a[stage].omega * a[stage].duration;
 		}
-		if (out[4] > 0.0) {
-			k = 9;
-		}
 		if (a[stage].has_cov) {
 			double K[9];
 			spotter_covar_to_record (GMT, &a[stage], K);

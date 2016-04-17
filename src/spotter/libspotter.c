@@ -1476,8 +1476,11 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	/* alpha:	Level of significance, e.g., 0.95 for 95% confidence region */
 	/* p:		Euler rotation structure for the current rotation */
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
-		
-	unsigned int i, j, ii, jj, na, try, n, matrix_dim = 3, nrots, dump = 0, fake = 0, axis[3];
+	
+#if DEBUG
+	bool dump = true;
+#endif
+	unsigned int i, j, ii, jj, na, try, n, matrix_dim = 3, nrots, fake = 0, axis[3];
 	bool done, got_it, bail;
 	size_t n_alloc;
 	char *name = "uvw";
@@ -1605,13 +1608,17 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	lon = gmt_M_memory (GMT, NULL, n_alloc, double);
 	lat = gmt_M_memory (GMT, NULL, n_alloc, double);
 	n = 0;
+#if DEBUG
 	if (dump) fp = fopen ("dump_r.txt","w");
+#endif
 	for (i = 0; i < na; i++) {
 		sincos (phi[i], &sa, &ca);
 		uvw[axis[GMT_X]] = axis_length[axis[GMT_X]] * ca * t[i];
 		uvw[axis[GMT_Y]] = axis_length[axis[GMT_Y]] * sa * t[i];
 		uvw[axis[GMT_Z]] = axis_length[axis[GMT_Z]] * sqrt (c2 - t[i]*t[i]);
+#if DEBUG
 		if (dump) fprintf (fp, "%g\t%g\t%g\n", uvw[0], uvw[1], uvw[2]);
+#endif
 		got_it = false;
 		try = 0;
 		while (!got_it && try < 2) {
@@ -1638,7 +1645,9 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No (u,v,w) solution for angle %g\n", phi[i]);
 		}
 	}
+#ifdef DEBUG
 	if (dump) fclose (fp);
+#endif
 	if (gmt_polygon_is_open (GMT, lon, lat, n)) {	/* Must close the polygon */
 		lon[n] = lon[0];
 		lat[n] = lat[1];
@@ -1721,13 +1730,17 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	 * par: Returns azimuth, major, minor axes in the E-N plane.
 	 * Note: I rederived to project onto E-N rather than E-V.
 	 */
+#ifdef DEBUG
 	bool override = false;
+#endif
 	double A, B, C, F, G, H, a2, b2, c2, r, tmp[3][3];
 	
+#ifdef DEBUG
 	if (override) {
 		spotter_matrix_transpose (GMT, tmp, D);
 		gmt_M_memcpy (D, tmp, 9, double);
 	}
+#endif
 	
 	/* Get square of each axis */
 	
