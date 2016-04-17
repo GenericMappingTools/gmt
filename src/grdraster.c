@@ -73,99 +73,99 @@ struct GRDRASTER_INFO {
 	char type;
 };
 
-GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
 	/* convert unsigned char */
 	unsigned int i;
 	unsigned char tempval;
-	for (i = 0; i < ras.h.nx; ++i) {
+	for (i = 0; i < ras->h.nx; ++i) {
 		gmt_M_memcpy (&tempval, &buffer[i], 1, char);
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
 			row[i] = (float)tempval;
-			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
-			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_c_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
 	/* convert char */
 	unsigned int i;
 	char tempval;
-	for (i = 0; i < ras.h.nx; ++i) {
+	for (i = 0; i < ras->h.nx; ++i) {
 		tempval = buffer[i];
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
 			row[i] = (float)tempval;
-			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
-			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
 	/* convert uint16_t */
 	unsigned int i;
 	uint16_t tempval;
-	for (i = 0; i < ras.h.nx; ++i) {
+	for (i = 0; i < ras->h.nx; ++i) {
 		gmt_M_memcpy (&tempval, &buffer[i * sizeof(uint16_t)], 1, uint16_t);
-		if (ras.swap_me)
+		if (ras->swap_me)
 			tempval = bswap16 (tempval);
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
 			row[i] = (float)tempval;
-			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
-			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
 	/* convert int16_t */
 	unsigned int i;
 	int16_t tempval;
 	uint16_t *u = (uint16_t *)&tempval;
-	for (i = 0; i < ras.h.nx; i++) {
+	for (i = 0; i < ras->h.nx; i++) {
 		gmt_M_memcpy (&tempval, &buffer[i * sizeof(int16_t)], 1, int16_t);
-		if (ras.swap_me)
+		if (ras->swap_me)
 			*u = bswap16 (*u);
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
 			row[i] = (float)tempval;
-			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
-			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
 		}
 	}
 	return;
 }
 
-GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ras, float *row, char *buffer) {
+GMT_LOCAL inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO *ras, float *row, char *buffer) {
 	/* convert int32_t */
 	unsigned int i;
 	int32_t tempval;
 	uint32_t *u = (uint32_t *)&tempval;
-	for (i = 0; i < ras.h.nx; i++) {
+	for (i = 0; i < ras->h.nx; i++) {
 		gmt_M_memcpy (&tempval, &buffer[i * sizeof(int32_t)], 1, int32_t);
-		if (ras.swap_me)
+		if (ras->swap_me)
 			*u = bswap32 (*u);
-		if (ras.nanset && tempval == ras.nanflag) {
+		if (ras->nanset && tempval == ras->nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
 		else {
 			row[i] = (float)tempval;
-			if (ras.h.z_scale_factor != 1.0) row[i] *= (float)ras.h.z_scale_factor;
-			if (ras.h.z_add_offset != 0.0) row[i] += (float)ras.h.z_add_offset;
+			if (ras->h.z_scale_factor != 1.0) row[i] *= (float)ras->h.z_scale_factor;
+			if (ras->h.z_add_offset != 0.0) row[i] += (float)ras->h.z_add_offset;
 		}
 	}
 	return;
@@ -1104,19 +1104,19 @@ int GMT_grdraster (void *V_API, int mode, void *args) {
 #endif
 				switch (myras.type) {
 					case 'u':	/* unsigned char */
-						convert_u_row (GMT, myras, floatrasrow, buffer);
+						convert_u_row (GMT, &myras, floatrasrow, buffer);
 						break;
 					case 'c':	/* char */
-						convert_c_row (GMT, myras, floatrasrow, buffer);
+						convert_c_row (GMT, &myras, floatrasrow, buffer);
 						break;
 					case 'd':	/* uint16_t */
-						convert_d_row (GMT, myras, floatrasrow, buffer);
+						convert_d_row (GMT, &myras, floatrasrow, buffer);
 						break;
 					case 'i':	/* int16_t */
-						convert_i_row (GMT, myras, floatrasrow, buffer);
+						convert_i_row (GMT, &myras, floatrasrow, buffer);
 						break;
 					case 'l':	/* int32_t */
-						convert_l_row (GMT, myras, floatrasrow, buffer);
+						convert_l_row (GMT, &myras, floatrasrow, buffer);
 						break;
 				}
 				iras = irasstart;
