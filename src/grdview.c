@@ -281,9 +281,9 @@ GMT_LOCAL void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, str
 	struct GMT_FILL *f = NULL;
 
 	if (n < 3) return;	/* Need at least 3 points to make a polygon */
+	if (P->skip) return;	/* Skip this z-slice */
 
 	index = gmt_get_rgb_from_z (GMT, P, z, rgb);
-	if (P && P->skip) return;	/* Skip this z-slice */
 
 	/* Now we must paint, with colors or patterns */
 
