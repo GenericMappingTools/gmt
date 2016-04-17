@@ -342,7 +342,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 						GMT_Report (API, GMT_MSG_VERBOSE, "Error reading time file %s\n", &c[2]);
 						n_errors++;
 					}
-					if ((Tin->n_records + ng) > MAX_GRIDS) {
+					else if ((Tin->n_records + ng) > MAX_GRIDS) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids given via file %s (max = %d)\n", &c[2], MAX_GRIDS);
 						n_errors++;
 					}
@@ -816,7 +816,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		else
 			Din->table[0] = gmt_make_profile (GMT, 'E', Ctrl->E.lines, true, false, false, Ctrl->E.step, Ctrl->A.mode, NULL);
-		if (Din->table == NULL)
+		if (Din->table[0] == NULL)
 			Return (EXIT_FAILURE);
 		Din->n_columns = Din->table[0]->n_columns;	/* Since could have changed via +d */
 	}
