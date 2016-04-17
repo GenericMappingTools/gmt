@@ -193,6 +193,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
 	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
+	uint64_t row, col;
 	
 	double x, y;
 
@@ -309,7 +310,6 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 			for (jj = kk = 0, track = B.base[ij].first_track->next_track, first = true; first && jj < B.base[ij].n_tracks; jj++, track = track->next_track) {
 				in_bin_flag[track->track_id] |= track->track_flag;	/* Build the total bit flag for this cruise INSIDE the region only */
 				if (Ctrl->L.active) {	/* Just build integer list of track ids for this bin */
-					y_ok = n_ok = true;
 					y_ok = (Ctrl->F.flags) ? ((track->track_flag & combo) == combo) : true;		/* Each cruise must have the requested fields if -F is set */
 					n_ok = (Ctrl->N.flags) ? ((track->track_flag & missing) == missing) : true;	/* Each cruise must have the missing fields */
 					if (y_ok && n_ok) ids_in_bin[kk++] = track->track_id;
@@ -322,8 +322,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 					if (n_ok) n_match[track->track_id] = 1;
 					if (y_ok) y_match[track->track_id] = 1;
 					if (y_ok && !n_ok && Ctrl->C.active && first) {
-						x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.inc[GMT_X];
-						y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.inc[GMT_Y];
+						row = ij / B.nx_bin;	/* To hold the row number */
+						col = ij % B.nx_bin;	/* To hold the col number */
+						x = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
+						y = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
 						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 						fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 						gmt_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);

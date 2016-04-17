@@ -339,9 +339,10 @@ GMT_LOCAL int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char **
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LOCAL uint64_t next_unused_track (uint64_t *cluster, uint64_t n) {
+	/* Determines the next track not yet assigned to a cluster */
 	uint64_t k;
 	for (k = 0; k < n; k++) if (cluster[k] == 0) return (k);
-	return (n);
+	return (n);	/* Found nothing so we are done */
 }
 
 int GMT_x2sys_solve (void *V_API, int mode, void *args) {
@@ -736,51 +737,50 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 	 * independent crossing clusters) and then we need such a constraint for each cluster of tracks that intersect.  Here
 	 * we find the number of such clusters and which cluster each track belongs to. */
 
-	if (Ctrl->E.mode != F_IS_SCALE) {	/* Constraint equations are needed when there is an offset in the model (all but the scaling model) */
-		char *C = NULL, *used = NULL;
+	if (Ctrl->E.mode != F_IS_SCALE) {	/* Constraint equations are needed when there is an offset in the model (this means all but the scaling model) */
+		char *C = NULL;
 		uint64_t ij, g, n_in_cluster, *member = NULL;
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Determine number of independent track clusters\n");
-		C = gmt_M_memory (GMT, NULL, n_tracks*n_tracks, double);	/* For the connectivity matrix that shows which tracks cross */
-		used = gmt_M_memory (GMT, NULL, n_tracks, double);	/* Array to remember which tracks we have dealt with so far */
-		cluster = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Array to remember which cluster a track belongs to */
-		/* First build the adjacency matrix C */
+		C = gmt_M_memory (GMT, NULL, n_tracks*n_tracks, char);		/* For the connectivity matrix that shows which tracks cross */
+		cluster = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);		/* Array to remember which cluster a track belongs to */
+		/* First build the symmetric adjacency matrix C */
 		for (k = 0; k < n_COE; k++) {	/* Identify crossing pairs (the # of crossings doesn't matter) */
 			i = ID[0][k];	/* Get track # 1 ID */
 			j = ID[1][k];	/* Get track # 2 ID */
 			ij = i * n_tracks + j;	/* Index in upper triangular matrix */
-			if (C[ij] == 0) C[ij] = C[j*n_tracks+i] = 1;	/* Make C symmetric */
+			if (C[ij] == 0) C[ij] = C[j*n_tracks+i] = 1;	/* These cross, set C_ij = C_ji = 1 */
 		}
 
 		member = gmt_M_memory (GMT, NULL, n_tracks, uint64_t);	/* Temp array to keep all members of current cluster */
 		n_constraints = 0;
 		/* Below, cluster[] array will use counting from 1 to n_constraints, but later we reset to run from 0 instead */
 		while ((p = next_unused_track (cluster, n_tracks)) < n_tracks) {	/* Still more clusters to form */
-			n_constraints++;		/* Increment number of constraints, this will happen at least once */
+			n_constraints++;		/* Increment number of constraints, this will happen at least once (i.e., for each cluster) */
 			gmt_M_memset (member, n_tracks, uint64_t);	/* Cluster starts off with no members */
 			member[0] = p;			/* This is the first member of this cluster */
 			cluster[p] = n_constraints;	/* So we set this cluster number right away */
-			n_in_cluster = 1;		/* It is the first member of this cluster so far */
-			for (i = 0; i < n_tracks; i++) {	/* Scan adjacency matrix for other direct members than crossed p */
-				if (cluster[i] || C[p*n_tracks+i] == 0) continue;	/* Skip those already dealt with or if no crossing */
-				member[n_in_cluster++] = i;	/* Add track #i to p's cluster */
-				cluster[i] = cluster[p];	/* And set it to same cluster id as p */
+			n_in_cluster = 1;		/* Only one track in this cluster so far */
+			for (i = 0; i < n_tracks; i++) {	/* Scan adjacency matrix for other tracks than directly crossed track p */
+				if (cluster[i] || C[p*n_tracks+i] == 0) continue;	/* Skip tracks already dealt with or not crossing track p */
+				member[n_in_cluster++] = i;	/* i crossed p! Add track #i to p's cluster... */
+				cluster[i] = cluster[p];	/* ...and assign it to the same cluster as p */
 			}
 			g = 1;	/* Start at 2nd entry since 1st (p) has already been given its direct cluster numbers */
 			while (g < n_in_cluster) {	/* Since n_in_cluster may grow we must check via a test at the top */
-				k = member[g];	/* We will examine the k't row in the adjacency matrix for tracks that crossed k */
+				k = member[g];	/* Now we examine the k't row in the adjacency matrix for other tracks that crossed k */
 				for (i = 0; i < n_tracks; i++) {
-					if (cluster[i] || C[k*n_tracks+i] == 0) continue;	/* Skip those already dealt with or if no crossing */
-					member[n_in_cluster++] = i;	/* Add track #i to p's cluster */
-					cluster[i] = cluster[p];	/* And set it to same cluster */
+					if (cluster[i] || C[k*n_tracks+i] == 0) continue;	/* Skip tracks already dealt with or not crossing track k */
+					member[n_in_cluster++] = i;	/* Add track #i to p's growing cluster */
+					cluster[i] = cluster[p];	/* And set it to same cluster as p */
 				}
 				g++;	/* Go to next cluster member */
 			}
+			/* Done determining the cluster for track p, go to next track */
 		}
 		for (g = 0; g < n_tracks; g++) cluster[g]--;	/* Shift cluster numbers to start at zero instead of 1 */
 		gmt_M_free (GMT, member);
 		gmt_M_free (GMT, C);
-		gmt_M_free (GMT, used);
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			if (n_constraints > 1) {	/* Report on the clusters */

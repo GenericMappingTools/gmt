@@ -412,18 +412,21 @@ GMT_LOCAL void column3D (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, d
 		switch (GMT->current.proj.z_project.face[i]) {
 			case 0:	/* yz plane positive side */
 				sign = 1.0;
+				/* Purposefully fall throught after flipping the sign */
 			case 1:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_X, x + sign * x_size);
 				PSL_plotbox (PSL, y - y_size, z - z_size, y + y_size, z + z_size);
 				break;
 			case 2:	/* xz plane positive side */
 				sign = 1.0;
+				/* Purposefully fall throught after flipping the sign */
 			case 3:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_Y, y + sign * y_size);
 				PSL_plotbox (PSL, x - x_size, z - z_size, x + x_size, z + z_size);
 				break;
 			case 4:	/* xy plane positive side */
 				sign = 1.0;
+				/* Purposefully fall throught after flipping the sign */
 			case 5:	/* negative side */
 				gmt_plane_perspective (GMT, GMT_Z, z + sign * z_size);
 				PSL_plotbox (PSL, x - x_size, y - y_size, x + x_size, y + y_size);

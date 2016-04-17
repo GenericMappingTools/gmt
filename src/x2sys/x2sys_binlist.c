@@ -169,7 +169,7 @@ GMT_LOCAL int comp_bincross (const void *p1, const void *p2) {
 int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, record[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""};
 
-	uint64_t this_bin_index, index, last_bin_index, row;
+	uint64_t this_bin_index, index, last_bin_index, row, col;
 	unsigned int trk, curr_x_pt, prev_x_pt, n_tracks;
 	int ii_notused, jj_notused, bcol, brow, start_col, end_col, jump_180, jump_360;
 	int this_bin_col;	/* This col node for bin */
@@ -437,9 +437,11 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 		GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, trk_name[trk]);
 		for (index = 0; index < B.nm_bin; index++) {
+			row = index / B.nx_bin;	/* To hold the row number */
+			col = index % B.nx_bin;	/* To hold the col number */
 			if (B.binflag[index] == 0) continue;
-			x = B.wesn[XLO] + ((index % B.nx_bin) + 0.5) * B.inc[GMT_X];
-			y = B.wesn[YLO] + ((index / B.nx_bin) + 0.5) * B.inc[GMT_Y];
+			x = B.wesn[XLO] + (col + 0.5) * B.inc[GMT_X];
+			y = B.wesn[YLO] + (row + 0.5) * B.inc[GMT_Y];
 			gmt_ascii_format_col (GMT, record, x, GMT_OUT, GMT_X);
 			strcat (record, GMT->current.setting.io_col_separator);
 			gmt_ascii_format_col (GMT, text, y, GMT_OUT, GMT_Y);

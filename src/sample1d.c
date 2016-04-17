@@ -203,10 +203,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GM
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if ((c = strchr (opt->arg, 'c')) != NULL) Ctrl->I.mode = INT_2D_CART, *c = 0;	/* Chop off unit c as not understood by gmt_get_distance */
+				if ((c = strchr (opt->arg, 'c')) != NULL) Ctrl->I.mode = INT_2D_CART, c[0] = 0;	/* Chop off unit c as not understood by gmt_get_distance */
 				Ctrl->I.smode = gmt_get_distance (GMT, opt->arg, &(Ctrl->I.inc), &(Ctrl->I.unit));
 				if (strchr (GMT_LEN_UNITS, Ctrl->I.unit)) Ctrl->I.mode = INT_2D_GEO;
-				if (Ctrl->I.mode == INT_2D_CART) *c = 'c';	/* Restore the c */
+				if (Ctrl->I.mode == INT_2D_CART && c) c[0] = 'c';	/* Restore the c */
 				break;
 			case 'N':
 				if ((Ctrl->N.active = gmt_check_filearg (GMT, 'N', opt->arg, GMT_IN, GMT_IS_DATASET)) != 0)

@@ -421,6 +421,7 @@ GMT_LOCAL int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INF
 				GMT->current.io.output (GMT, fpout, 3, out);
 			}
 			gmt_fclose (GMT, fpout);
+			break;
 		case 'o':		/* Write Coherency spectrum [ B&P 2nd Ed. eqn. 9.82 ] */
 			sprintf (fname, "%s.coh", namestem);
 			if ((fpout = gmt_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {

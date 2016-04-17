@@ -741,9 +741,13 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	rata_day = gmt_rd_from_gymd (GMT, year, 1, 1);	/* Get the rata day for start of cruise year */
 	t_off = gmt_rdc2dt (GMT, rata_day, 0.0);		/* Secs to start of day */
 
-
 	if (fread (&n_records, sizeof (int), 1U, fp) != 1U) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Could not read n_records from %s\n", path);
+		fclose (fp);
+		return (GMT_GRDIO_READ_FAILED);
+	}
+	if (n_records <= 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "x2sys_read_gmtfile: Got bad n_records %d\n", n_records);
 		fclose (fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -1049,7 +1053,7 @@ void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n) {
 
 int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, struct X2SYS_BIX *B, struct GMT_IO *G) {
 	char tag_file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, sfile[GMT_BUFSIZ] = {""}, suffix[16] = {""}, unit[2][2];
-	unsigned int n, k, pos = 0, geodetic = 0, n_errors = 0;
+	unsigned int n, k, pos = 0, geodetic = GMT_IS_GIVEN_RANGE, n_errors = 0;
 	int dist_flag = 0;
 	bool geographic = false, parsed_command_R = false, n_given[2] = {false, false}, c_given = false;
 	double dist, save_R_wesn[4];
@@ -1222,11 +1226,11 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 			dist_flag = 2;
 			c_given = true;
 		}
-		if (geodetic == 0 && (B->wesn[XLO] < 0 || B->wesn[XHI] < 0)) {
+		if (geodetic == GMT_IS_0_TO_P360_RANGE && (B->wesn[XLO] < 0 || B->wesn[XHI] < 0)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -R and -G settings are contradicting each other!\n");
 			n_errors++;
 		}
-		else if  (geodetic == 2 && (B->wesn[XLO] > 0 && B->wesn[XHI] > 0)) {
+		else if (geodetic == GMT_IS_M180_TO_P180_RANGE && (B->wesn[XLO] > 0 && B->wesn[XHI] > 0)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Your -R and -G settings are contradicting each other!\n");
 			n_errors++;
 		}
@@ -1314,16 +1318,22 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 
 	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error in header record\n");
-		exit (EXIT_FAILURE);
+		fclose (ftrack);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	gmt_chop (line);	/* Remove trailing CR or LF */
 	if (strcmp (&line[2], S->TAG)) {	/* Mismatch between database tag and present tag */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "track data file %s lists tag as %s but active tag is %s\n",  track_path, &line[2], S->TAG);
-		exit (EXIT_FAILURE);
+		fclose (ftrack);
+		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
 		gmt_chop (line);	/* Remove trailing CR or LF */
-		sscanf (line, "%s %d %d", name, &id, &flag);
+		if (sscanf (line, "%s %d %d", name, &id, &flag) != 3) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to read name id flag from track data file\n");
+			fclose (ftrack);
+			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
+		}
 		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
 				size_t old_n_alloc = n_alloc;
@@ -1374,6 +1384,11 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 		if (swap) {
 			index = bswap32 (index);
 			no_of_tracks = bswap32 (no_of_tracks);
+		}
+		if (index >= B->nm_bin) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad bin index obtained from index file\n");
+			fclose (fbin);
+			return (GMT_GRDIO_READ_FAILED);
 		}
 		B->base[index].first_track = B->base[index].last_track = x2sys_bix_make_track (GMT, 0, 0);
 		for (i = 0; i < no_of_tracks; i++) {

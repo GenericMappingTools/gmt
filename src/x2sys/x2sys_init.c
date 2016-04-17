@@ -203,7 +203,10 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct 
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				if (opt->arg[0]) gmt_getinc (GMT, opt->arg, Ctrl->I.inc);
+				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+					gmt_inc_syntax (GMT, 'I', 1);
+					n_errors++;
+				}
 				Ctrl->I.string = strdup (opt->arg);
 				break;
 			case 'm':
