@@ -599,7 +599,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_
 
 int GMT_psmask (void *V_API, int mode, void *args) {
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
-	unsigned int io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
+	unsigned int io_mode = GMT_WRITE_SET, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
 	unsigned int fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
 	int error = 0;
 	bool node_only, make_plot, closed;
@@ -652,9 +652,8 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		uint64_t dim[4] = {1, 0, 0, 2};
-		if (Ctrl->D.file || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
-			io_mode = GMT_WRITE_SET;
-		else {	/* Must determine the kind of output organization */
+		if (Ctrl->D.file && strchr (Ctrl->D.file, '%')) {	/* File given and filename has C-format specifier */
+			/* Must determine the kind of output organization */
 			k = 0;
 			while (Ctrl->D.file[k]) {
 				if (Ctrl->D.file[k++] == '%') {	/* Start of format */
@@ -851,7 +850,7 @@ int GMT_psmask (void *V_API, int mode, void *args) {
 					D->table[0]->n_segments++;	D->n_segments++;
 					D->table[0]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
-					if (io_mode == GMT_WRITE_TABLE && !D->table[0]->file[GMT_OUT])
+					if (io_mode == GMT_WRITE_SET && !D->table[0]->file[GMT_OUT])
 						D->table[0]->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENT)
 						S->file[GMT_OUT] = gmt_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);

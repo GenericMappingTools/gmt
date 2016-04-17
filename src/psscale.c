@@ -247,8 +247,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL) n_errors++;	/* Failed basic parsing */
-				if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
+				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, opt->arg)) == NULL)
+					n_errors++;	/* Failed basic parsing */
+				else if (strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
 					/* Args are +w<length>/<width>[+e[b|f][<length>]][+h][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
 					if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnow")) n_errors++;
 					/* Required modifier +w */
@@ -653,7 +654,7 @@ GMT_LOCAL void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctr
 			ny = (Ctrl->I.active) ? urint (width * Ctrl->N.dpi) : 1;
 		}
 		nm = nx * ny;
-		inc_i = length / nx;
+		inc_i = (nx) ? length / nx : 0.0;
 		inc_j = (ny > 1) ? (max_intens[1] - max_intens[0]) / (ny - 1) : 0.0;
 		barmem = (Ctrl->M.active || P->is_gray) ? nm : 3 * nm;
 		bar = gmt_M_memory (GMT, NULL, barmem, unsigned char);
