@@ -2878,16 +2878,18 @@ GMT_LOCAL int table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 			k += info->T->segment[s]->n_rows;
 		}
 	}
-	gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
-	for (row = info->T->n_records; row > 1 && gmt_M_is_dnan (z[row-1]); row--);
-	if (row)
-		gmt_mode (GMT, z, row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
-	else
-		mode = GMT->session.d_NaN;
+	if (!info->local) {
+		gmt_sort_array (GMT, z, info->T->n_records, GMT_DOUBLE);
+		for (row = info->T->n_records; row > 1 && gmt_M_is_dnan (z[row-1]); row--);
+		if (row)
+			gmt_mode (GMT, z, row, row/2, 0, gmt_mode_selection, &GMT_n_multiples, &mode);
+		else
+			mode = GMT->session.d_NaN;
 
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mode;
-	if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
-	gmt_M_free (GMT, z);
+		for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = mode;
+		if (GMT_n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
+		gmt_M_free (GMT, z);
+	}
 	return 0;
 }
 
