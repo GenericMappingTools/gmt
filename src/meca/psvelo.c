@@ -513,7 +513,8 @@ int GMT_psvelo (void *V_API, int mode, void *args) {
 				break;
 			case CROSS:
 				/* triangular arrowheads */
-				meca_trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,Ctrl->W.pen);
+				meca_trace_cross (GMT, xy[GMT_X],xy[GMT_Y],eps1,eps2,theta,Ctrl->S.scale,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
+					Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,&(Ctrl->W.pen));
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);

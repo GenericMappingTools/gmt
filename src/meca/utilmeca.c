@@ -744,8 +744,8 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 			else {
 				if (fabs(fabs(az - azp) - M_PI) < D2R * 10.) {
 					azi[n][1] = azp;
-					azi[++n][0] = az;
 					assert (n < 3);	/* Since Coverity flagged previous line as exceeding limit */
+					azi[++n][0] = az;
 				}
 				if (fabs(fabs(az -azp) - M_PI * 2.) < D2R * 2.) {
 					if (azp < az) azi[n][0] += M_PI * 2.;
@@ -1227,7 +1227,7 @@ void meca_paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angl
 }
 
 /************************************************************************/
-int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, double eps2, double theta, double sscale, double v_width, double h_length, double h_width, double vector_shape, int outline, struct GMT_PEN pen)
+int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, double eps2, double theta, double sscale, double v_width, double h_length, double h_width, double vector_shape, int outline, struct GMT_PEN *pen)
 {
 	/* make a Strain rate cross at(slat,slon) */
 
@@ -1246,8 +1246,8 @@ int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps
 	gmt_M_unused(outline);
 
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
-	gmt_setpen (GMT, &pen);			/* Pen for segment line */
-	PSL_setfill (GMT->PSL, pen.rgb, 0);	/* Same color for arrow head fill with no outline */
+	gmt_setpen (GMT, pen);			/* Pen for segment line */
+	PSL_setfill (GMT->PSL, pen->rgb, 0);	/* Same color for arrow head fill with no outline */
 	sincosd (theta, &s, &c);
 
 	/*  extension component */

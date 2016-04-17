@@ -308,14 +308,16 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 						strncpy (txt, &opt->arg[2], GMT_LEN256-1);
 						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
-						p++;
-						switch (strlen (p)) {
-							case 1:
-								Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
-								break;
-							case 2:
-								Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
-								break;
+						if (p) {	/* Also specified symbols */
+							p++;
+							switch (strlen (p)) {
+								case 1:
+									Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
+									break;
+								case 2:
+									Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
+									break;
+							}
 						}
 						break;
 					case 'e':	/* Set color for T axis symbol */
