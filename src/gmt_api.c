@@ -8254,8 +8254,8 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_readgrdinfo\n");
 		return EXIT_FAILURE;
 	}
-	file = strdup (name);
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
+	file = strdup (name);
 
 	/* Read the grid header */
 
@@ -8297,8 +8297,8 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_readgrd\n");
 		return EXIT_FAILURE;
 	}
-	file = strdup (name);
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
+	file = strdup (name);
 
 	/* Read the grid header */
 	gmt_grd_init (API->GMT, &header, NULL, false);
@@ -8349,8 +8349,8 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 		GMT_Report (API, GMT_MSG_NORMAL, "No filename given to GMT_F77_writegrd\n");
 		return EXIT_FAILURE;
 	}
-	file = strdup (name);
 	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
+	file = strdup (name);
 
 	gmt_grd_init (API->GMT, &header, NULL, false);
 	if (full_region (limit)) {	/* Here that means limit was not properly given */
@@ -8371,8 +8371,8 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	header.nx = dim[GMT_X];	header.ny = dim[GMT_Y];
 	header.registration = dim[GMT_Z];
 	gmt_set_grddim (API->GMT, &header);
-	if (title) strncpy (header.title, title, GMT_GRID_TITLE_LEN80);
-	if (remark) strncpy (header.remark, remark, GMT_GRID_REMARK_LEN160);
+	if (title) strncpy (header.title, title, GMT_GRID_TITLE_LEN80-1);
+	if (remark) strncpy (header.remark, remark, GMT_GRID_REMARK_LEN160-1);
 
 	if (dim[3] == 1) gmtlib_inplace_transpose (array, header.ny, header.nx);
 

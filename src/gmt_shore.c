@@ -615,20 +615,38 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	/* Get polygon variables if they are needed */
 
-	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_poly_id, start, &c->n_poly));
+	if ((err = nc_get_var1_int (c->cdfid, c->n_poly_id, start, &c->n_poly))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		return (err);
+	}
 	count[0] = c->n_poly;
 	c->GSHHS_parent = gmt_M_memory (GMT, NULL, c->n_poly, int);
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent));
+	if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		return (err);
+	}
 	c->GSHHS_area = gmt_M_memory (GMT, NULL, c->n_poly, double);
-	GMT_err_trap (nc_get_vara_double (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area));
+	if ((err = nc_get_vara_double (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		return (err);
+	}
 	if (int_areas) for (i = 0; i < c->n_poly; i++) c->GSHHS_area[i] *= 0.1;	/* Since they were stored as 10 * km^2 using integers */
 	c->GSHHS_area_fraction = gmt_M_memory (GMT, NULL, c->n_poly, int);
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_areafrac_id, start, count, c->GSHHS_area_fraction));
+	if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_areafrac_id, start, count, c->GSHHS_area_fraction))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		return (err);
+	}
 	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
-	        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes));
+	        if ((err = nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes))) {
+			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+			return (err);
+		}
 		c->GSHHS_node = gmt_M_memory (GMT, NULL, c->n_nodes, int);
 		count[0] = c->n_nodes;
-		GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node));
+		if ((err = nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node))) {
+			gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+			return (err);
+		}
 	}
 
 	/* Get bin variables, then extract only those corresponding to the bins to use */
@@ -643,19 +661,32 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	stmp = gmt_M_memory (GMT, NULL, c->n_bin, short);
 
 	if (c->ant_mode == GSHHS_ANTARCTICA_ICE) {	/* Get node levels relevant for ice-shelf */
-		GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp));
+		err = nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp);
 	}
 	else {	/* Get node levels relevant for grounding line */
-		GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id_ANT, start, count, stmp));
+		err = nc_get_vara_short (c->cdfid, c->bin_info_id_ANT, start, count, stmp);
+	}
+	if (err) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		gmt_M_free (GMT, stmp);
+		return (err);
 	}
 	for (i = 0; i < c->nb; i++) c->bin_info[i] = stmp[c->bins[i]];
 
-	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
+	if ((err = nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		gmt_M_free (GMT, stmp);
+		return (err);
+	}
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
 	gmt_M_free (GMT, stmp);
 
 	itmp = gmt_M_memory (GMT, NULL, c->n_bin, int);
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
+	if ((err = nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp))) {
+		gmt_shore_cleanup (GMT, c);	/* Free what we have so far and bail */
+		gmt_M_free (GMT, itmp);
+		return (err);
+	}
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 
 	gmt_M_free (GMT, itmp);
@@ -716,16 +747,33 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 	count[0] = c->bin_nseg[b];
 
 	seg_info = gmt_M_memory (GMT, NULL, c->bin_nseg[b], int);
+	if ((err = nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info))) {
+		gmt_M_free (GMT, seg_info);
+		return (err);
+	}
 	seg_start = gmt_M_memory (GMT, NULL, c->bin_nseg[b], int);
+	if ((err = nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start))) {
+		gmt_M_free (GMT, seg_info);
+		gmt_M_free (GMT, seg_start);
+		return (err);
+	}
 	seg_ID = gmt_M_memory (GMT, NULL, c->bin_nseg[b], int);
-
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_GSHHS_ID_id, start, count, seg_ID));
+	if ((err = nc_get_vara_int (c->cdfid, c->seg_GSHHS_ID_id, start, count, seg_ID))) {
+		gmt_M_free (GMT, seg_info);
+		gmt_M_free (GMT, seg_start);
+		gmt_M_free (GMT, seg_ID);
+		return (err);
+	}
 
 	if (c->two_Antarcticas) {	/* Read the flag that identifies Antarctica polygons */
 		seg_info_ANT = gmt_M_memory (GMT, NULL, c->bin_nseg[b], signed char);
-		GMT_err_trap (nc_get_vara_schar (c->cdfid, c->seg_info_id_ANT, start, count, seg_info_ANT));
+		if ((err = nc_get_vara_schar (c->cdfid, c->seg_info_id_ANT, start, count, seg_info_ANT))) {
+			gmt_M_free (GMT, seg_info);
+			gmt_M_free (GMT, seg_start);
+			gmt_M_free (GMT, seg_ID);
+			gmt_M_free (GMT, seg_info_ANT);
+			return (err);
+		}
 	}
 
 	/* First tally how many useful segments */
@@ -813,8 +861,16 @@ int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c
 		c->seg[s].dy = gmt_M_memory (GMT, NULL, c->seg[s].n, short);
 		start[0] = seg_start[s];
 		count[0] = c->seg[s].n;
-		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
-		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));
+		if ((err = nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx)) || 
+			(err = nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy))) {
+			gmt_free_shore (GMT, c);
+			gmt_M_free (GMT, seg_skip);
+			gmt_M_free (GMT, seg_info);
+			gmt_M_free (GMT, seg_start);
+			gmt_M_free (GMT, seg_ID);
+			if (c->two_Antarcticas) gmt_M_free (GMT, seg_info_ANT);
+			return (err);
+		}
 	}
 
 	gmt_M_free (GMT, seg_skip);
@@ -913,18 +969,25 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 
 	/* Allocate space for arrays of bin information */
 
-	c->bin_nseg     = gmt_M_memory (GMT, NULL, nb, short);
-	c->bin_firstseg     = gmt_M_memory (GMT, NULL, nb, int);
-
 	count[0] = c->n_bin;
 	stmp = gmt_M_memory (GMT, NULL, c->n_bin, short);
 
-	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
+	if ((err = nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp))) {
+		gmt_M_free (GMT, stmp);
+		gmt_br_cleanup (GMT, c);
+		return (err);
+	}
+	c->bin_nseg = gmt_M_memory (GMT, NULL, nb, short);
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
 	gmt_M_free (GMT, stmp);
 
 	itmp = gmt_M_memory (GMT, NULL, c->n_bin, int);
-	GMT_err_trap (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
+	if ((err = nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp))) {
+		gmt_M_free (GMT, itmp);
+		gmt_br_cleanup (GMT, c);
+		return (err);
+	}
+	c->bin_firstseg	= gmt_M_memory (GMT, NULL, nb, int);
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 
 	gmt_M_free (GMT, itmp);
@@ -985,8 +1048,14 @@ int gmt_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsi
 		c->seg[s].dy = gmt_M_memory (GMT, NULL, c->seg[s].n, short);
 		start[0] = seg_start[i];
 		count[0] = c->seg[s].n;
-		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
-		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));
+		if ((err = nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx)) ||
+			(err = nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy))) {
+				gmt_free_br (GMT, c);
+				gmt_M_free (GMT, seg_n);
+				gmt_M_free (GMT, seg_level);
+				gmt_M_free (GMT, seg_start);
+				return err;
+			}
 
 		s++;
 	}
