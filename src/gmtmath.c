@@ -3878,7 +3878,6 @@ GMT_LOCAL int table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 	}
 	strip = S[last]->factor;
 	scale = M_PI / strip;
-	if (!info->notime) stop = strip - info->t_max;
 	for (s = 0; s < info->T->n_segments; s++) {
 		if (info->notime) {	/* If no time then A refers to number of rows and min and max are in rows */
 			t_min = 0.0;
@@ -4392,14 +4391,14 @@ GMT_LOCAL void gmtmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!gmt_M_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
-	if (!strcmp (*arg, "CHIDIST"))      {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }
-	else if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
-	else if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("PCDF");     }
-	else if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("FCDF");     }
-	else if (!strcmp (*arg, "MED"))     {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("MEDIAN");   }
-	else if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("TCDF");     }
-	else if (!strcmp (*arg, "Tn"))      {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("TNORM");    }
-	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("ZCDF");     }
+	if (!strcmp (*arg, "CHIDIST"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }
+	else if (!strcmp (*arg, "CHICRIT")) {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
+	else if (!strcmp (*arg, "CPOISS"))  {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("PCDF");     }
+	else if (!strcmp (*arg, "FDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("FCDF");     }
+	else if (!strcmp (*arg, "MED"))     {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("MEDIAN");   }
+	else if (!strcmp (*arg, "TDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("TCDF");     }
+	else if (!strcmp (*arg, "Tn"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("TNORM");    }
+	else if (!strcmp (*arg, "ZDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("ZCDF");     }
 
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
