@@ -414,7 +414,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 
 				if (S->header) T[CLOSED][out_seg]->header = strdup (S->header);
 				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input to output */
-				if (Ctrl->C.active && distance > 0.0) out_p = Copy_This_Segment (S, T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
+				if (Ctrl->C.active && distance > 0.0) (void) Copy_This_Segment (S, T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
 				n_islands++;	/* Number of originally closed polygons found in input */
 				out_seg++;	/* Number of closed segments placed in T[CLOSED] so far */
 				n_closed++;	/* Number of closed polygons (which will grow when we connect below) */
@@ -424,7 +424,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 				T[OPEN][n_open] = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate segment structure */
 				gmt_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, true);		/* Allocate space for segment arrays */
 				if (S->header) T[OPEN][n_open]->header = strdup (S->header);		/* Duplicate segment header, if any */
-				out_p = Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
+				(void) Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
 			}
 			else { /* No -C was given: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
