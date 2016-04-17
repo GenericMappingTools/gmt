@@ -261,7 +261,12 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	for (j = first_row; j <= last_row; j++, ij += width_out) {
 		start[0] = j * header->nx;
-		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
+		if ((err = nc_get_vara_float (ncid, header->z_id, start, edge, tmp))) {	/* Get one row */
+			gmt_M_free (GMT, actual_col);
+			gmt_M_free (GMT, tmp);
+			nc_close (ncid);
+			return (err);
+		}
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i;
 			grid[kk] = tmp[actual_col[i]];
@@ -310,6 +315,8 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	float value;
 	nc_type z_type;
 
+	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);	/* Cannot do piping on netCDF files */
+
 	/* Determine the value to be assigned to missing data, if not already done so */
 
 	switch (header->type) {
@@ -346,10 +353,18 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	/* Write grid header */
 
-	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
-	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
-	GMT_err_trap (gmt_cdf_grd_info (GMT, ncid, header, 'w'));
+	if ((err = nc_create (header->name, NC_CLOBBER, &ncid))) {
+		gmt_M_free (GMT, actual_col);
+		return (err);
+	}
+	if ((err = nc_set_fill (ncid, NC_NOFILL, &old_fill_mode))) {
+		gmt_M_free (GMT, actual_col);
+		return (err);
+	} 
+	if ((err = gmt_cdf_grd_info (GMT, ncid, header, 'w'))) {
+		gmt_M_free (GMT, actual_col);
+		return (err);
+	}
 
 	/* Set start position for writing grid */
 
@@ -377,7 +392,11 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
 			}
-			GMT_err_trap (nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f));
+			if ((err = nc_put_vara_float (ncid, header->z_id, start, edge, tmp_f))) {
+				gmt_M_free (GMT, actual_col);
+				gmt_M_free (GMT, tmp_f);
+				return (err);
+			}
 		}
 		gmt_M_free (GMT, tmp_f);
 	}
@@ -402,7 +421,11 @@ int gmt_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
 				}
 			}
-			GMT_err_trap (nc_put_vara_long (ncid, header->z_id, start, edge, tmp_i));
+			if ((err = nc_put_vara_long (ncid, header->z_id, start, edge, tmp_i))) {
+				gmt_M_free (GMT, actual_col);
+				gmt_M_free (GMT, tmp_i);
+				return (err);
+			}
 		}
 		gmt_M_free (GMT, tmp_i);
 	}
