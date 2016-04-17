@@ -143,9 +143,16 @@ GMT_LOCAL int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_p
 		return (EXIT_FAILURE);
 	}
 
-	fseek (fp, (off_t)0, SEEK_END);
+	if (fseek (fp, (off_t)0, SEEK_END)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot seek to end of file %s!\n", file);
+		return (EXIT_FAILURE);
+	}
+	
 	img_size = ftell (fp);
-	fseek (fp, 0, SEEK_SET);
+	if (fseek (fp, 0, SEEK_SET)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot seek to start of file %s!\n", file);
+		return (EXIT_FAILURE);
+	}
 
 	n_pix = (unsigned int) (img_size / byte_per_pixel);
 
