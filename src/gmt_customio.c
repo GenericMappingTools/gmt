@@ -1271,7 +1271,7 @@ GMT_LOCAL int customio_read_srfheader6 (FILE *fp, struct srf_header6 *h) {
 		return (GMT_GRDIO_READ_FAILED);
 	if (gmt_M_fread (&h->nx, 2*sizeof (short int), 1U, fp) != 1U)
 		return (GMT_GRDIO_READ_FAILED);
-	if (gmt_M_fread (h->wesn, sizeof (struct srf_header6) - ((size_t)h->wesn - (size_t)h->id), 1U, fp) != 1U)
+	if (gmt_M_fread (h->wesn, sizeof (double), 4U, fp) != 4U)
 		return (GMT_GRDIO_READ_FAILED);
 
 	return GMT_NOERROR;
