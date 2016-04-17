@@ -13045,7 +13045,7 @@ double gmt_pol_area (double x[], double y[], uint64_t n) {
 
 /*! . */
 void gmt_centroid (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *pos, int geo) {
-	/* Estimate mean position */
+	/* Estimate mean position.  geo is 1 if geographic data (requiring vector mean) */
 	uint64_t i, k;
 
 	assert (n > 0);

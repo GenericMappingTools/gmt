@@ -541,7 +541,7 @@ GMT_LOCAL double gmt_demeaning (struct GMT_CTRL *GMT, double *X, double *Y, doub
 		par[GMTREGRESS_YMEAN] = eval_sumprod2 (W, Y, n) / S;	/* Compute weighted Y_mean */
 		eval_add (X, -par[GMTREGRESS_XMEAN], U, n);		/* Compute U */
 		eval_add (Y, -par[GMTREGRESS_YMEAN], V, n);		/* Compute V */
-		if (beta) {	/* Compute beta (as alpha above) which is needed for weighted orthogonal regression */
+		if (beta && alpha) {	/* Compute beta (as alpha above) which is needed for weighted orthogonal regression */
 			for (i = 0; i < n; i++) {
 				if (w[GMT_Z]) corr_i = w[GMT_Z][i];
 				beta[i] = W[i] * (U[i] / w[GMT_Y][i] + par[GMTREGRESS_SLOPE] * V[i] / w[GMT_X][i] - (par[GMTREGRESS_SLOPE] * U[i] + V[i]) * corr_i / alpha[i]);

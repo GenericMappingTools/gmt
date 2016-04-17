@@ -170,7 +170,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/* 
 	gmt_M_free (GMT, C);	
 }
 
-GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int *geo) {
+GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double *out, int geo) {
 	uint64_t i;
 	double wesn[4], xx, yy, size, ix, iy;
 	double *xp = NULL, *yp = NULL;
@@ -178,7 +178,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 	wesn[XLO] = wesn[YLO] = DBL_MAX;
 	wesn[XHI] = wesn[YHI] = -DBL_MAX;
 	
-	gmt_centroid (GMT, x, y, n, out, *geo);	/* Get mean location */
+	gmt_centroid (GMT, x, y, n, out, geo);	/* Get mean location */
 	
 	for (i = 0; i < n; i++) {
 		wesn[XLO] = MIN (wesn[XLO], x[i]);
@@ -187,7 +187,7 @@ GMT_LOCAL unsigned int area_size (struct GMT_CTRL *GMT, double x[], double y[], 
 		wesn[YHI] = MAX (wesn[YHI], y[i]);
 	}
 	xp = gmt_M_memory (GMT, NULL, n, double);	yp = gmt_M_memory (GMT, NULL, n, double);
-	if (*geo == 1) {	/* Initializes GMT projection parameters to the -JA settings */
+	if (geo == 1) {	/* Initializes GMT projection parameters to the -JA settings */
 		GMT->current.proj.projection = GMT_LAMB_AZ_EQ;
 		GMT->current.proj.unit = 1.0;
 		GMT->current.proj.pars[3] = 39.3700787401574814;
@@ -1159,7 +1159,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				S->coord[GMT_X][1] = S->coord[GMT_X][2] = GMT->common.R.wesn[XHI];
 				S->coord[GMT_Y][0] = S->coord[GMT_Y][1] = S->coord[GMT_Y][4] = GMT->common.R.wesn[YLO];
 				S->coord[GMT_Y][2] = S->coord[GMT_Y][3] = GMT->common.R.wesn[YHI];
-				(void)area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, info, &geo);
+				(void)area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, info, geo);
 				gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
 				d_expect = 0.5 * sqrt (info[GMT_Z]/n_points);
 				R_index = d_bar / d_expect;
@@ -1272,7 +1272,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 						break;
 				}
 				if (poly)	/* Polygon */
-					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, &geo);
+					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, geo);
 				else
 					length_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out);
 				if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
