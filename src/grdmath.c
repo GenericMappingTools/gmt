@@ -2037,7 +2037,11 @@ GMT_LOCAL void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	gmt_set_cols (GMT, GMT_IN, 2);
+	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_OK) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE setting number of input columns\n");
+		info->error = GMT->parent->error;
+		return;
+	}
 	gmt_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE reading file %s!\n", info->ASCII_file);
@@ -2284,7 +2288,11 @@ GMT_LOCAL struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_I
 	else
 		gmt_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
 
-	gmt_set_cols (GMT, GMT_IN,  2);
+	if (gmt_set_cols (GMT, GMT_IN, 2) != GMT_OK) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s setting number of input columns\n", op);
+		info->error = GMT->parent->error;
+		return NULL;
+	}
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s reading file %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
@@ -4218,15 +4226,15 @@ GMT_LOCAL void grdmath_backwards_fixing (struct GMT_CTRL *GMT, char **arg)
 {	/* Handle backwards compatible operator names */
 	char *t = NULL, old[GMT_LEN16] = {""};
 	if (!gmt_M_compat_check (GMT, 6)) return;	/* No checking so we may fail later */
-	if (!strcmp (*arg, "CHIDIST"))      {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }
-	else if (!strcmp (*arg, "CHICRIT")) {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
-	else if (!strcmp (*arg, "CPOISS"))  {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("PCDF");     }
-	else if (!strcmp (*arg, "FDIST"))   {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("FCDF");     }
-	else if (!strcmp (*arg, "MED"))     {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("MEDIAN");   }
-	else if (!strcmp (*arg, "TDIST"))   {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("TCDF");     }
-	else if (!strcmp (*arg, "Xn"))      {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("XNORM");    }
-	else if (!strcmp (*arg, "Yn"))      {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("YNORM");    }
-	else if (!strcmp (*arg, "ZDIST"))   {strcpy (old, *arg); gmt_M_str_free (*arg); *arg = t = strdup ("ZCDF");     }
+	if (!strcmp (*arg, "CHIDIST"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CDF");  }
+	else if (!strcmp (*arg, "CHICRIT")) {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("CHI2CRIT"); }
+	else if (!strcmp (*arg, "CPOISS"))  {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("PCDF");     }
+	else if (!strcmp (*arg, "FDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("FCDF");     }
+	else if (!strcmp (*arg, "MED"))     {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("MEDIAN");   }
+	else if (!strcmp (*arg, "TDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("TCDF");     }
+	else if (!strcmp (*arg, "Xn"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("XNORM");    }
+	else if (!strcmp (*arg, "Yn"))      {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("YNORM");    }
+	else if (!strcmp (*arg, "ZDIST"))   {strncpy (old, *arg, GMT_LEN16-1); gmt_M_str_free (*arg); *arg = t = strdup ("ZCDF");     }
 
 	if (t)
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Operator %s is deprecated; use %s instead.\n", old, t);
