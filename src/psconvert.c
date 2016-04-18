@@ -983,7 +983,6 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
 	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the plot buffer */
 	PS->n = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
-	PS->data[PS->n] = '\0';			/* Safety precaution since MATLAB can screw us sometimes */
 	if ((fp = popen (cmd, "w")) != NULL) {
 		if (fwrite (PS->data, sizeof(char), PS->n, fp) != PS->n) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error writing PostScript buffer to GhostScript process.\n");
