@@ -24,7 +24,7 @@ Rflag=-R3/9/50/54
 
 # Now get the topography for the same area from GTOPO30 and store it as topo.nc.
 # The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
-# We make an gradient grid as well, which we will use to "illuminate" the flag.
+# We make a gradient grid as well, which we will use to "illuminate" the flag.
 
 # gmt grdcut W020N90.DEM $Rflag -Gtopo.nc=ns
 gmt grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
