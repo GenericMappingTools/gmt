@@ -1479,6 +1479,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	
 #if DEBUG
 	bool dump = true;
+	FILE *fp = NULL;
 #endif
 	unsigned int i, j, ii, jj, na, try, n, matrix_dim = 3, nrots, fake = 0, axis[3];
 	bool done, got_it, bail;
@@ -1489,7 +1490,6 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	double axis_length[3], i_axis_length[3], r_t[3], delta, b1, b2, num, radix, c2, t1, t2, uvw[3], N[3], N_xyz[3];
 	double uvw_prime[3], r_tangent_path[3], s, c, omega, new_angle, r_center_unit[3], r_t_unit[3];
 	double phi[SPOTTER_N_FINE_STEPS+1], t[SPOTTER_N_FINE_STEPS+1], t_inner[SPOTTER_N_FINE_STEPS+1], *lon = NULL, *lat = NULL;
-	FILE *fp = NULL;
 
 	double nu = 3.0;	/* Three degrees of freedom for the rotation pole */
 
@@ -1672,13 +1672,11 @@ unsigned int spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struc
 	unsigned int i;
 #ifdef DEBUG
 	bool dump = true;
+	FILE *fp = NULL;
 #endif
 	double sa, ca, angle = 0.0, R[3][3], Rt[3][3], T[3][3], C[3][3];
 	double par[3], delta, mu, dx_local, dy_local, dr_local, azimuth, dr_dist, sin_phi, cos_phi;
 	double *lon = NULL, *lat = NULL;
-#ifdef DEBUG
-	FILE *fp = NULL;
-#endif
 
 	double nu = 3.0;	/* Three degrees of freedom for the rotation pole */
 	
@@ -1732,8 +1730,9 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	 */
 #ifdef DEBUG
 	bool override = false;
+	double tmp[3][3];
 #endif
-	double A, B, C, F, G, H, a2, b2, c2, r, tmp[3][3];
+	double A, B, C, F, G, H, a2, b2, c2, r;
 	
 #ifdef DEBUG
 	if (override) {
