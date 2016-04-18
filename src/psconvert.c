@@ -868,6 +868,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	buf[n] = '\0';
 	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: failed to close read end of pipe.\n");
+		gmt_M_free (API->GMT, PS);
 		return EXIT_FAILURE;
 	}
 
