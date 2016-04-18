@@ -67,14 +67,8 @@ GMT_LOCAL char **breakMe(struct GMT_CTRL *GMT, char *in) {
 // EXTERN_MSC int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts);
 GMT_LOCAL int grid_gdal_librarified (struct GMT_CTRL *GMT, char *gdal_filename, char *opts) {
 	char	*info = NULL, **args;
-	int error = 0;
 	GDALDatasetH	hDataset;
 	GDALInfoOptions *psOptions;
-
-	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: grid_gdal_librarified failed to extract a Sub-region\n");
-		return (-1);
-	}
 
 	/* Open gdal - */
 
