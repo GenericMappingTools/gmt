@@ -216,7 +216,7 @@ GMT_LOCAL void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned
 		n++;
 	}
 	/* Now do LS regression on the 'good' points */
-	regress_ls (xx, yy, n, stats, col);
+	if (n > 0) regress_ls (xx, yy, n, stats, col);
 	/*stats[MGD77_RLS_CORR] = gmt_corrcoeff (xx, yy, n, 0);*/
 	corr=stats[MGD77_RLS_CORR];
 	if (stats[MGD77_RLS_CORR] == 1.0) corr=stats[MGD77_RLS_CORR]-FLT_EPSILON;
