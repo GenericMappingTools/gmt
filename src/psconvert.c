@@ -893,7 +893,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		}
 	}
 	else
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have a %%BoundingBox\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have a %%BoundingBox\n");
 
 	sprintf (buf, "HiResBoundingBox: 0 0 %.4f %.4f", *w, *h);
 	if ((pch = strstr(PS->data, "HiResBoundingBox")) != NULL) {	/* Find where is the HiResBB */
@@ -901,7 +901,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 			pch[n] = buf[n];
 	}
 	else
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have a %%HiResBoundingBox\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have a %%HiResBoundingBox\n");
 
 	/* Find where is the setpagedevice line */
 	if ((pch = strstr(PS->data, "setpagedevice")) != NULL) {
@@ -920,7 +920,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 		}
 	}
 	else
-		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Somethinhg very odd the GMT PS does not have the stpagedice line\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Something very odd the GMT PS does not have the stpagedice line\n");
 
 	gmt_M_free (API->GMT, PS);
 
