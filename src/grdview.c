@@ -549,7 +549,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT
 						n_errors++;
 						break;
 				}
-				if (Ctrl->Q.monochrome)
+				if (c != NULL && Ctrl->Q.monochrome)
 					c[0] = '+';	/* Restore the chopped off +m */
 				else if (gmt_M_compat_check (GMT, 4) && opt->arg[strlen(opt->arg)-1] == 'g') {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Q<args>[g] is deprecated; use -Q<args>[+m] in the future.\n");
