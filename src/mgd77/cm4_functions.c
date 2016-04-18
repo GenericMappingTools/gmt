@@ -185,14 +185,18 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	f107x = calloc(1200U, sizeof(double));
 
 	if ((fp = fopen(Ctrl->CM4_M.path, "r")) == NULL) {
-		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_M.path);
-		clear_mem (mut, gpsq, gssq, gpmg, gsmg, hysq, epsq, essq, ecto, hyto, hq, ht, bkpo, ws, gamf, epmg,
-		           esmg, hymg, f107x, pleg, rcur, gcto_or, gcto_mg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "CM4: Could not open file %s\n", Ctrl->CM4_M.path);
+		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
 		return 1;
 	}
 
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
-	sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf);
+	if ((n = sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf)) != 3) {
+		GNT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to parse line in MGD77_cm4field\n");
+		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
+		fclose (fp);
+		return 1;
+	}
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	sscanf (line, "%d", &lum1);
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
