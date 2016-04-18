@@ -31,6 +31,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ **-r** ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -195,6 +196,9 @@ Optional Arguments
 .. include:: explain_-h.rst_
     
 .. include:: explain_-icols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: explain_nodereg.rst_
 
 .. include:: explain_colon.rst_
 
