@@ -7608,7 +7608,7 @@ int gmt_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 			error++;
 			break;
 	}
-	if (L->isolate) *p = '+';	/* Replace the + from earlier */
+	if (p && L->isolate) *p = '+';	/* Replace the + from earlier */
 
 	return (error);
 }
