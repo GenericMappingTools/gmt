@@ -23,7 +23,7 @@ REM gmt grdedit euflag.nc -fg %Rflag%
 
 REM Now get the topography for the same area from GTOPO30 and store it as topo.nc.
 REM The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
-REM We make an gradient grid as well, which we will use to "illuminate" the flag.
+REM We make a gradient grid as well, which we will use to "illuminate" the flag.
 
 REM gmt grdcut W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
 gmt grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
