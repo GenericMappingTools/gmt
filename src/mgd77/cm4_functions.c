@@ -192,7 +192,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 
 	c_unused = fgets(line, GMT_BUFSIZ, fp);
 	if ((n = sscanf (line, "%d %d %d", &lsmf, &lpos, &lcmf)) != 3) {
-		GNT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to parse line in MGD77_cm4field\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to parse line in MGD77_cm4field\n");
 		gmt_M_str_free (bkpo);	gmt_M_str_free (gamf);	gmt_M_str_free (f107x);
 		fclose (fp);
 		return 1;
