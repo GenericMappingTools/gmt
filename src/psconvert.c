@@ -813,7 +813,7 @@ GMT_LOCAL void possibly_fill_or_outline_BoundingBox (struct GMT_CTRL *GMT, struc
 /* ---------------------------------------------------------------------------------------------- */
 GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, char *gs_BB, double *w, double *h) {
 	/* Do what we do in the main code for the -A option but on a in-memory PS 'file' */
-	char      cmd[GMT_LEN128] = { "" }, buf[GMT_LEN128], t[32] = { "" }, *pch, c;
+	char      cmd[GMT_LEN256] = {""}, buf[GMT_LEN128], t[32] = {""}, *pch, c;
 	int       fd[2] = { 0, 0 }, n, r, c_begin = 0;
 	bool      landscape = false;
 	double    x0, y0, x1, y1, xt, yt;
@@ -844,7 +844,6 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	PS = gmt_M_memory (API->GMT, NULL, 1, struct GMT_PS);
 	PS->data = PSL_getplot (API->GMT->PSL);	/* Get pointer to the internal plot buffer */
 	PS->n = API->GMT->PSL->internal.n;	/* Length of plot buffer; note P->n_alloc = 0 since nothing was allocated here */
-	PS->data[PS->n] = '\0';			/* Safety precaution since MATLAB can screw us sometimes */
 
 	sprintf (cmd, "%s %s %s -", Ctrl->G.file, gs_BB, Ctrl->C.arg);	/* Set up gs command */
 
@@ -863,7 +862,7 @@ GMT_LOCAL int pipe_HR_BB(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, c
 	/* Now read the image from input pipe fd[0] */
 	while (read(fd[0], t, 1U) && t[0] != '\n'); 	/* Consume first line that has the BoundingBox */
 	n = 0;
-	while (read(fd[0], t, 1U) && t[0] != '\n')	/* Read secod line which has the HiResBoundingBox */
+	while (read(fd[0], t, 1U) && t[0] != '\n')		/* Read secod line which has the HiResBoundingBox */
 		buf[n++] = t[0];
 	buf[n] = '\0';
 	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
@@ -1039,9 +1038,8 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	}
 	gmt_M_free (API->GMT, tmp);
 
-	if (close (fd[0]) == -1) { 		/* Close read end of pipe */
+	if (close (fd[0]) == -1) 		/* Close read end of pipe */
 		GMT_Report (API, GMT_MSG_NORMAL, "Error: Failed to close read end of pipe.\n");
-	}
 
 	I->type = GMT_CHAR;
 	I->header->nx = (uint32_t)dim[GMT_X];	I->header->ny = (uint32_t)dim[GMT_Y];	I->header->n_bands = (uint32_t)dim[GMT_Z];
@@ -1250,7 +1248,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 			error++;
 		}
 		if (error) {	/* Return in error state */
-			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);		Return (EXIT_FAILURE);
+			gmt_M_str_free (ps_names[0]);		gmt_M_free (GMT, ps_names);
+			Return (EXIT_FAILURE);
 		}
 		if (pipe_HR_BB (API, Ctrl, gs_BB, &w, &h))		/* Apply the -A stuff to the in-memory PS */
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to fish the HiResBoundingBox from PS-in-memory .\n");
