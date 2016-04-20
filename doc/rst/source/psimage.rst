@@ -69,7 +69,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+e**\ *dpi*\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\ \|\ **j**\ \|\ **J**\ \|\ **n**\ \|\ **x**]\ *refpoint*\ **+r**\ *dpi*\ **+w**\ [**-**]\ *width*\ [/*height*]\ [**+j**\ *justify*]\ [**+n**\ *nx*\ [/*ny*] ]\ [**+o**\ *dx*\ [/*dy*]]
     Sets reference point on the map for the image using one of four coordinate systems:
     (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
     a 2-char justification code that refers to the (invisible) map domain rectangle,
@@ -82,7 +82,7 @@ Optional Arguments
     Add **+o** to offset the color scale by *dx*/*dy* away from the *refpoint* point in
     the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
     Specify image size in one of two ways:
-    Use **+e**\ *dpi* to set the dpi of the image in dots per inch, or use
+    Use **+r**\ *dpi* to set the dpi of the image in dots per inch, or use
     **+w**\ [**-**]\ *width*\ [/*height*] to
     set the width (and height) of the image in plot coordinates
     (inches, cm, etc.). If *height* is not given, the original aspect
