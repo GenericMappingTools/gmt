@@ -1099,7 +1099,12 @@ int gmt_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 
 	/* Store header information and array */
 
-	if (do_header) GMT_err_trap (customio_native_write_grd_header (fp, header));
+	if (do_header) {
+		if ((err = customio_native_write_grd_header (fp, header)) != 0) {
+			gmt_M_free (GMT, k);
+			return err;
+		}
+	}
 
 	/* Allocate memory for one row of data (for writing purposes) */
 
