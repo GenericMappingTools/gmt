@@ -23,7 +23,7 @@
  * Date: 	31 May 1990
  * Version:	5 API
  */
- 
+
 #define THIS_MODULE_NAME	"grdhisteq"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Perform histogram equalization for a grid"
@@ -71,9 +71,9 @@ struct	CELL {
 
 GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDHISTEQ_CTRL *C = NULL;
-	
+
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.value = 16;
 	return (C);
@@ -81,10 +81,10 @@ GMT_LOCAL void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	gmt_M_str_free (C->In.file);	
-	gmt_M_str_free (C->D.file);	
-	gmt_M_str_free (C->G.file);	
-	gmt_M_free (GMT, C);	
+	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->D.file);
+	gmt_M_str_free (C->G.file);
+	gmt_M_free (GMT, C);
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -92,9 +92,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
-	
+
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
-	
+
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set how many cells (divisions) of data range to make [16].\n");
@@ -104,7 +104,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
 	GMT_Option (API, "R,V,h,.");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -210,7 +210,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
-	
+
 	cell = gmt_M_memory (GMT, NULL, n_cells, struct CELL);
 
 	/* Sort the data and find the division points */
@@ -224,7 +224,7 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 		}
 	}
 	gmt_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT);
-	
+
 	nxy = Grid->header->nm;
 	while (nxy > 0 && gmt_M_is_fnan (Grid->data[nxy-1])) nxy--;	/* Only deal with real numbers */
 
@@ -258,9 +258,10 @@ GMT_LOCAL int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 		current_cell++;
 	}
 	if (dump_intervals && GMT_End_IO (GMT->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data ioutput */
+		gmt_M_free (GMT, cell);
 		return (GMT->parent->error);
 	}
-	
+
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (gmt_M_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		if (GMT_Destroy_Data (GMT->parent, &Orig) != GMT_OK) {
@@ -339,7 +340,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	double wesn[4];
-	
+
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct GRDHISTEQ_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
