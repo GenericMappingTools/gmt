@@ -485,8 +485,8 @@ EXTERN_MSC int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struc
 EXTERN_MSC int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms);
 EXTERN_MSC int gmt_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_INSERT *B);
 EXTERN_MSC int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_PANEL **P);
-EXTERN_MSC char * gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT F);
-EXTERN_MSC char * gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen);
+EXTERN_MSC char * gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F);
+EXTERN_MSC char * gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
 EXTERN_MSC int gmt_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode);
 EXTERN_MSC int gmt_just_decode (struct GMT_CTRL *GMT, char *key, int def);
 EXTERN_MSC unsigned int gmt_minmaxinc_verify (struct GMT_CTRL *GMT, double min, double max, double inc, double slop);

@@ -318,7 +318,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, int show_fonts) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a[<angle>] specifies the baseline angle for all text [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f[<fontinfo>] sets the size, font, and optionally the text color [%s].\n",
-		gmt_putfont (API->GMT, API->GMT->current.setting.font_annot[GMT_PRIMARY]));
+		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_PRIMARY]));
 	GMT_Message (API, GMT_TIME_NONE, "\t   +j[<justify>] sets text justification relative to given (x,y) coordinate.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Normaly the text is read from the data records.  Alternative ways to provide text:\n");
@@ -763,7 +763,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : gmt_just_decode (GMT, pjust_key, PSL_NONE);
 					sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by gmt_getfont */
 					T.font = Ctrl->F.font;
-					if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, T.font));
+					if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 					in_txt = NULL;
 					n_expected_cols = 9 + Ctrl->Z.active;
 				}
@@ -775,7 +775,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
-								if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, T.font));
+								if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 								break;
 							case 'a':
 								T.paragraph_angle = atof (text);
@@ -872,7 +872,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 				T.block_justify = gmt_just_decode (GMT, just_key, PSL_NO_DEF);
 				sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by gmt_getfont */
 				T.font = Ctrl->F.font;
-				if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, T.font));
+				if (gmt_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 				in_txt = text;
 				n_expected_cols = 7 + Ctrl->Z.active;
 			}
@@ -887,7 +887,7 @@ int GMT_pstext (void *V_API, int mode, void *args) {
 							break;
 						case 'f':
 							T.font = Ctrl->F.font;
-							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, T.font));
+							if (gmt_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, gmt_putfont (GMT, &T.font));
 							if (gmt_M_compat_check (GMT, 4)) {
 								if (Ctrl->S.active) {
 									T.font.form |= 2;

@@ -782,7 +782,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						row_height = Ctrl->D.spacing * ifont.size / PSL_POINTS_PER_INCH;
 						fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 						row_base_y -= row_height;
-						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y + d_off, gmt_putfont (GMT, ifont), text);
+						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y + d_off, gmt_putfont (GMT, &ifont), text);
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);
@@ -846,7 +846,7 @@ int GMT_pslegend (void *V_API, int mode, void *args) {
 						justify = gmt_just_decode (GMT, key, 0);
 						x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 						x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
-						sprintf (buffer, "%g %g %s B%s %s", x_off, row_base_y + d_off, gmt_putfont (GMT, ifont), key, text);
+						sprintf (buffer, "%g %g %s B%s %s", x_off, row_base_y + d_off, gmt_putfont (GMT, &ifont), key, text);
 						Ts[TXT] = T[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						Ts[TXT]->record[Ts[TXT]->n_rows++] = strdup (buffer);
 						GMT_Report (API, GMT_MSG_DEBUG, "TXT: %s\n", buffer);

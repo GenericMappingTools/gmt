@@ -154,7 +154,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t    (w) Rotational wedges: in X,Y,Spin,Spinsig.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,di,h,i,:,.");
 
 	return (EXIT_FAILURE);

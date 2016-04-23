@@ -3721,7 +3721,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 			}
 			got_EPS = true;
 		}
-		else 
+		else
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not find either custom symbol or EPS macro %s\n", name);
 	}
 	else {
@@ -3968,7 +3968,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 						switch (p[0]) {
 							case 'f':	/* Change font [Note: font size is ignore as the size argument take precedent] */
 								if (gmt_getfont (GMT, &p[1], &s->font))
-									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Macro code l contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, s->font));
+									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Macro code l contains bad +<font> modifier (set to %s)\n", gmt_putfont (GMT, &s->font));
 								break;
 							case 'j':	s->justify = gmt_just_decode (GMT, &p[1], PSL_NO_DEF);	break;	/* text justification */
 							default:
@@ -3983,7 +3983,7 @@ GMT_LOCAL int support_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, s
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%%<font>] is deprecated syntax, use +f<font> instead\n");
 					*c = 0;		/* Replace % with the end of string NUL indicator */
 					c++;		/* Go to next character */
-					if (gmt_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", gmt_putfont (GMT, GMT->current.setting.font_annot[GMT_PRIMARY]));
+					if (gmt_getfont (GMT, c, &s->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad GMT4-style font information (set to %s)\n", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
 				}
 
 				break;
@@ -5295,15 +5295,15 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 }
 
 /*! . */
-char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT F) {
+char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	/* gmt_putfont creates a GMT textstring equivalent of the specified font */
 
 	static char text[GMT_BUFSIZ];
 
-	if (F.form & 2)
-		sprintf (text, "%gp,%s,%s=%s", F.size, GMT->session.font[F.id].name, gmt_putfill (GMT, &F.fill), gmt_putpen (GMT, F.pen));
+	if (F->form & 2)
+		sprintf (text, "%gp,%s,%s=%s", F->size, GMT->session.font[F->id].name, gmt_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
 	else
-		sprintf (text, "%gp,%s,%s", F.size, GMT->session.font[F.id].name, gmt_putfill (GMT, &F.fill));
+		sprintf (text, "%gp,%s,%s", F->size, GMT->session.font[F->id].name, gmt_putfill (GMT, &F->fill));
 	return (text);
 }
 
@@ -5483,25 +5483,25 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 }
 
 /*! . */
-char *gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen) {
+char *gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 	/* gmt_putpen creates a GMT textstring equivalent of the specified pen */
 
 	static char text[GMT_BUFSIZ];
 	int i, k;
 
-	k = support_pen2name (pen.width);
-	if (pen.style[0]) {
+	k = support_pen2name (P->width);
+	if (P->style[0]) {
 		if (k < 0)
-			sprintf (text, "%.5gp,%s,%s:%.5gp", pen.width, gmt_putcolor (GMT, pen.rgb), pen.style, pen.offset);
+			sprintf (text, "%.5gp,%s,%s:%.5gp", P->width, gmt_putcolor (GMT, P->rgb), P->style, P->offset);
 		else
-			sprintf (text, "%s,%s,%s:%.5gp", GMT_penname[k].name, gmt_putcolor (GMT, pen.rgb), pen.style, pen.offset);
+			sprintf (text, "%s,%s,%s:%.5gp", GMT_penname[k].name, gmt_putcolor (GMT, P->rgb), P->style, P->offset);
 		for (i = 0; text[i]; i++) if (text[i] == ' ') text[i] = '_';
 	}
 	else
 		if (k < 0)
-			sprintf (text, "%.5gp,%s", pen.width, gmt_putcolor (GMT, pen.rgb));
+			sprintf (text, "%.5gp,%s", P->width, gmt_putcolor (GMT, P->rgb));
 		else
-			sprintf (text, "%s,%s", GMT_penname[k].name, gmt_putcolor (GMT, pen.rgb));
+			sprintf (text, "%s,%s", GMT_penname[k].name, gmt_putcolor (GMT, P->rgb));
 
 	return (text);
 }

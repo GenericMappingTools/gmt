@@ -201,7 +201,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL 
 	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size,
 	             Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
 	GMT_Option (API, "U,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, Ctrl->W.pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", gmt_putpen (API->GMT, &Ctrl->W.pen));
 	GMT_Option (API, "X,c,p,t,.");
 	
 	return (EXIT_FAILURE);

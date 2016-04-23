@@ -439,9 +439,9 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The default settings are\n");
 	P = API->GMT->current.setting.map_default_pen;
-	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", gmt_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen: %s.\n", gmt_putpen (API->GMT, &P));
 	P.width *= 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, &P));
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to draw colored contours based on the CPT file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to color contours and annotations based on the CPT file.\n");
 	GMT_Option (API, "X,bi3,bo,c,d,h,i,p,s,t,:,.");

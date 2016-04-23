@@ -371,12 +371,12 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', "Set pen attributes for various features in form <type><pen>.", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = API->GMT->current.setting.map_default_pen;
-	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", gmt_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", gmt_putpen (API->GMT, &P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -Qm or -Qsm to take effect.\n");
 	P.width *= 3.0;
 	GMT_Message (API, GMT_TIME_NONE, "\t   c draw contours on top of surface or mesh [Default is no contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", gmt_putpen (API->GMT, P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", gmt_putpen (API->GMT, P));
+	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", gmt_putpen (API->GMT, &P));
+	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", gmt_putpen (API->GMT, &P));
 	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");
 	GMT_Option (API, "X,c,f,n,p,t,.");
 
