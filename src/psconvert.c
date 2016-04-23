@@ -695,21 +695,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp, char *notusedhere, uint64_t *notusedeither) {
+GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *fp, char *notused1, uint64_t *notused2) {
 	/* file_line_reader gets the next logical record from filepointer fp and passes it back via L.
 	 * We use this function since PS files may be shitty and contain a mixture of \r or \n
-	 * to indicate end of a logical record.  */
+	 * to indicate end of a logical record.
+	 * all_PS and pos are not used.
+	 * Empty lines are suppressed.
+	 * If the last end-of-line is missing, the last line is still produced with an end-of-line.
+	 */
 	int c;
 	int64_t out = 0;
 	char *line = *L;
-	if (notusedhere == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	if (notusedeither == NULL){};			/* 		""		*/
-	while ((c = fgetc (fp)) != EOF) {	/* Keep reading until End-Of-File */
+	if (notused1 == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
+	if (notused2 == NULL){};			/* 		""		*/
+	while ((c = fgetc (fp)) > 0) {	/* Keep reading until End-Of-File */
 		if (c == '\r' || c == '\n') {	/* Got logical end of record */
-			line[out] = '\0';
-			while (c == '\n' || c == '\r') c = fgetc (fp);	/* Skip past any repeating \r \n */
-			if (c != EOF) ungetc (c, fp);	/* Put back the next char for later unless we got to EOF */
-			return out;	/* How many characters we return via L */
+			if (!out) continue; /* Nothing in buffer ... skip */
+			line[out] = '\0';	/* Terminate output string */
+			return out;	/* Return number of characters in L */
 		}
 		/* Got a valid character in current record */
 		if ((size_t)out == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed to end a string */
@@ -718,26 +721,29 @@ GMT_LOCAL int64_t file_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size
 		}
 		line[out++] = (char)c;	/* Add this char to our buffer */
 	}
-	if (c == EOF) return EOF;	/* Oops, we are done */
-	if (out) line[out] = '\0';	/* If we got anything, terminate with NULL character */
-	return out;			/* Return number of characters in L */
+	if (!out) return EOF;	/* Nothing in buffer ... exit with EOF */
+	line[out] = '\0';	/* Terminate output string */
+	return out;			/* Return number of characters in L. The next call to the routine will return EOF. */
 }
 
 #if 0
-GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *notusedhere, char *all_PS, uint64_t *pos) {
+GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size, FILE *notused, char *all_PS, uint64_t *pos) {
 	/* mem_line_reader gets the next logical record from all_PS (starting at pos) and passes it back via L.
 	 * We use this function since PS files may be shitty and contain a mixture of \r or \n
-	 * to indicate end of a logical record.  fp is not used. */
+	 * to indicate end of a logical record.
+	 * fp is not used.
+	 * Empty lines are suppressed.
+	 * If the last end-of-line is missing, the last line is still produced with an end-of-line.
+	 */
 	int c;
-	int64_t out = 0, in = 0;
-	char *line = *L, *string = &all_PS[*pos];
-	if (notusedhere == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
-	while ((c = string[in++]) != EOF) {	/* Keep reading until End-Of-File */
+	int64_t out = 0;
+	char *line = *L;
+	if (notused == NULL){};			/* Just to shut up a compiler warning of "unreferenced formal parameter" */
+	while ((c = all_PS[(*pos)++]) > 0) {	/* Keep reading until End-Of-File */
 		if (c == '\r' || c == '\n') {	/* Got logical end of record */
-			line[out] = '\0';
-			while (c == '\n' || c == '\r') c = string[in++];	/* Skip past any repeating \r \n */
-			if (c != EOF) in--;	/* Step back to previous char for later unless we got to EOF */
-			return out;	/* How many characters we return via L */
+			if (!out) continue; /* Nothing in buffer ... skip */
+			line[out] = '\0';	/* Terminate output string */
+			return out;	/* Return number of characters in L */
 		}
 		/* Got a valid character in current record */
 		if ((size_t)out == (*size-1)) {	/* Need to extend our buffer; the -1 makes room for an \0 as needed to end a string */
@@ -746,9 +752,10 @@ GMT_LOCAL int64_t mem_line_reader (struct GMT_CTRL *GMT, char **L, size_t *size,
 		}
 		line[out++] = (char)c;	/* Add this char to our buffer */
 	}
-	if (c == EOF) return EOF;	/* Oops, we are done */
-	if (out) line[out] = '\0';	/* If we got anything, terminate with NULL character */
-	return out;			/* Return number of characters in L */
+	if (!out) return EOF;	/* Nothing in buffer ... exit with EOF */
+	(*pos)--;	/* Because we are at EOF we need to skip back one to produce another EOF at next entry of the routine */
+	line[out] = '\0';	/* Terminate output string */
+	return out;			/* Return number of characters in L. The next call to the routine will return EOF. */
 }
 #endif
 
@@ -998,7 +1005,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 		return EXIT_FAILURE;
 	}
 	gmt_M_free (API->GMT, PS);
-	
+
 	/* ----------- IF WE WROTE A FILE THAN WE ARE DONE AND WILL RETURN RIGHT NOW -------------- */
 	if (out_file[0] != '\0')
 		return GMT_OK;
@@ -1048,7 +1055,7 @@ GMT_LOCAL int pipe_ghost (struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *Ctrl, 
 	if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->F.file, I) != GMT_OK)
 		return EXIT_FAILURE;
 
-	return GMT_OK;	/* Done here */				
+	return GMT_OK;	/* Done here */
 }
 
 EXTERN_MSC int gmt_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
@@ -1112,7 +1119,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 	struct { int major, minor; } gsVersion = {0, 0};
 	struct GMT_PS *PS = NULL;
-	
+
 	int64_t (*read_source) (struct GMT_CTRL *, char **, size_t *, FILE *, char *, uint64_t *);	/* Pointer to source reader function */
 	void (*rewind_source) (FILE *, uint64_t *);	/* Pointer to source rewind function */
 	//unsigned char *(*gs_func)(char *, int , int *) = NULL;	/* Function pointer to gsrasterize_rip */
@@ -1256,7 +1263,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (Ctrl->T.active) {			/* Than write the converted file into a file instead of storing it into a Image struct */
 			char t[GMT_LEN256] = {""};
-			sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]); 
+			sprintf (t, " -sDEVICE=%s %s -sOutputFile=", device[Ctrl->T.device], device_options[Ctrl->T.device]);
 			strcat (out_file, t);
 			sprintf(t, "%s/psconvert_test", API->tmp_dir);
 			strcat (t, ext[Ctrl->T.device]);
@@ -1274,7 +1281,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* Standard file processing */
 	read_source = &file_line_reader;
 	rewind_source = &file_rewind;
-	
+
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
 	if (!Ctrl->I.active && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
 		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
@@ -1318,7 +1325,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 	PS = gmt_M_memory (GMT, NULL, 1, struct GMT_PS);	/* Only used if API passes = */
 
 	/* Loop over all input files */
-	
+
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = delete = false;
 		*out_file = '\0'; /* truncate string */
@@ -1700,7 +1707,7 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 						if (c == '%')
 							fseek (fp, -(off_t)(1U), SEEK_CUR);		/* Just receed the read character (file is unix terminate) */
 						else
-							fseek (fp, -(off_t)(3U), SEEK_CUR);		/* Receed the character and 2 more because file is Win terminated */ 
+							fseek (fp, -(off_t)(3U), SEEK_CUR);		/* Receed the character and 2 more because file is Win terminated */
 					}
 					else {
 						old_scale_x = atof (c2);		old_scale_y = atof (c3);
