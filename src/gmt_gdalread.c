@@ -661,6 +661,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	GDALDriverH	hDriver;
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
+	Ctrl->RasterCount = 0;	/* To avoid attempting to use Ctrl->band_field_names[i] */
 	gmt_M_memset (anSrcWin, 4, int);
 
 	if (prhs->B.active) {		/* We have a selected bands request */
