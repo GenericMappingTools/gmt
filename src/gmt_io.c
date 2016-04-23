@@ -6106,7 +6106,7 @@ void gmt_set_textset_minmax (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 }
 
 /*! . */
-int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G) {
+int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL *def_fill,  bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN *def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G) {
 	/* Scan header for occurrences of valid GMT options.
 	 * The possibilities are:
 	 * Fill: -G<fill>	Use the new fill and turn filling ON
@@ -6190,15 +6190,15 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (!header || !header[0]) return (0);
 
 	if (gmt_parse_segment_item (GMT, header, "-G", line)) {	/* Found a potential -G option */
-		test_fill = def_fill;
+		test_fill = *def_fill;
 		if (line[0] == '-') {	/* Turn fill OFF */
 			fill->rgb[0] = fill->rgb[1] = fill->rgb[2] = -1.0, fill->use_pattern = false;
 			*use_fill = false;
 			processed++;	/* Processed one option */
 		}
 		else if (!line[0] || line[0] == '+') {	/* Revert to default fill */
-			*fill = def_fill;
-			*use_fill = (def_fill.use_pattern || def_fill.rgb[0] != -1.0);
+			*fill = *def_fill;
+			*use_fill = (def_fill->use_pattern || def_fill->rgb[0] != -1.0);
 			if (*use_fill) change = 1;
 			processed++;	/* Processed one option */
 		}
@@ -6229,13 +6229,13 @@ int gmt_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (processed == 2) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: segment header has both -G and -Z options\n");	/* Giving both -G and -Z is a problem */
 
 	if (gmt_parse_segment_item (GMT, header, "-W", line)) {	/* Found a potential -W option */
-		test_pen = def_pen;	/* Set test pen to the default, may be overruled later */
+		test_pen = *def_pen;	/* Set test pen to the default, may be overruled later */
 		if (line[0] == '-') {	/* Turn outline OFF */
-			*pen = def_pen;	/* Set pen to default */
+			*pen = *def_pen;	/* Set pen to default */
 			*use_pen = false;
 		}
 		else if (!line[0] || line[0] == '+') {	/* Revert to default pen/outline */
-			*pen = def_pen;	/* Set pen to default */
+			*pen = *def_pen;	/* Set pen to default */
 			*use_pen = def_outline;
 			if (def_outline) change |= 4;
 		}
