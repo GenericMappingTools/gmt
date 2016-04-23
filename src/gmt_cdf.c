@@ -244,8 +244,14 @@ int gmt_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 
 	/* Open the NetCDF file */
 
-	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
-	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
+	if (!strcmp (header->name,"=")) {
+		gmt_M_free (GMT, actual_col);
+		return (GMT_GRDIO_NC_NO_PIPE);
+	}
+	if ((err = nc_open (header->name, NC_NOWRITE, &ncid)) != 0) {
+		gmt_M_free (GMT, actual_col);
+		return err;
+	}
 	check = !isnan (header->nan_value);
 
 	/* Load data row by row. The data in the file is stored in the same
