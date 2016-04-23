@@ -1742,8 +1742,6 @@ GMT_LOCAL int api_add_data_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_O
 	/* Find the first entry in the API->object array which is unoccupied, and if
 	 * they are all occupied then reallocate the array to make more space.
 	 * We thus find and return the lowest available ID. */
-	int object_ID;
-
 	API->n_objects++;		/* Add one more entry to the tally */
 	if (API->n_objects == API->n_objects_alloc) {	/* Must allocate more space for more data descriptors */
 		size_t old_n_alloc = API->n_objects_alloc;
@@ -1755,10 +1753,10 @@ GMT_LOCAL int api_add_data_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_O
 			return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);
 		}
 	}
-	object_ID = object->ID = API->unique_ID++;	/* Assign a unique object ID */
+	object->ID = API->unique_ID++;	/* Assign a unique object ID */
 	API->object[API->n_objects-1] = object;		/* Hook the current object onto the end of the list */
 
-	return (object_ID);
+	return (object->ID);
 }
 
 /*! Sanity check that geometry and family are compatible; note they may be GMT_NOTSET hence the use of signed ints */
@@ -2242,11 +2240,11 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 		if (API->module_input && !S_obj->module_input) continue;	/* Do not mix module-inputs and option inputs if knowable */
 		if (S_obj->status != GMT_IS_UNUSED) { 	/* Already read this resource before; are we allowed to re-read? */
 			if (S_obj->method == GMT_IS_STREAM || S_obj->method == GMT_IS_FDESC) {
-				gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj); 
+				gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj);
 				return_null (API, GMT_READ_ONCE);	/* Not allowed to re-read streams */
 			}
 			if (!(mode & GMT_IO_RESET)) {
-				gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj); 
+				gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj);
 				return_null (API, GMT_READ_ONCE);	/* Not authorized to re-read */
 			}
 		}
@@ -2260,7 +2258,7 @@ GMT_LOCAL struct GMT_DATASET *api_import_dataset (struct GMTAPI_CTRL *API, int o
 #endif
 				/* gmt_read_table will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 				if (GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0) {	/* Only single tables if GMT/OGR */
-					gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj); 
+					gmt_M_free (GMT, D_obj->table);		gmt_M_free (GMT, D_obj);
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
 				}
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE,
@@ -6338,26 +6336,25 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * that for VECTOR|MATRIX we dont allocate space to hold data as it is the users
 	 * responsibility to hook their data pointers in.  The VECTOR allocates the array
 	 * of column vector type and data pointers.
-	 * geometry should reflect the resource, e.g. GMT_IS_SURFACE for grid, etc.
+	 * Geometry should reflect the resource, e.g. GMT_IS_SURFACE for grid, etc.
 	 * There are two ways to define the dimensions needed to actually allocate memory:
 	 * (A) Via uint64_t dim[]:
-	 *   The dim array contains up to 4 dimensions for:
-	 *	0: dim[GMT_TBL] = number of tables,
-	 *	1: dim[GMT_SEG] = number of segments per table
-	 *	2: dim[GMT_ROW] = number of rows per segment.
-	 *	3: dim[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
-	 * The dim array is ignored for CPTs.
-	 *   For GMT_IS_IMAGE & GMT_IS_MATRIX, par[GMT_Z] = GMT[2] holds the number of bands or layers (dim == NULL means just 1).
-	 *   For GMT_IS_GRID, GMT_IS_IMAGE, & GMT_IS_MATRIX:
-	 *     par[0] holds the number of columns and par[1] holds the number of rows.  This implies that
-	 *     wesn = 0-<dim-1>, inc = 1, and registration is pixel-registration.
-	 *   For GMT_IS_VECTOR, par[0] holds the number of columns, optionally par[1] holds number of rows, if known
+	 *     The dim array contains up to 4 dimensions for:
+	 *	   0: dim[GMT_TBL] = number of tables,
+	 *	   1: dim[GMT_SEG] = number of segments per table
+	 *	   2: dim[GMT_ROW] = number of rows per segment.
+	 *	   3: dim[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
+	 *     The dim array is ignored for CPTs.
+	 *     For GMT_IS_IMAGE & GMT_IS_MATRIX, par[GMT_Z] = GMT[2] holds the number of bands or layers (dim == NULL means just 1).
+	 *     For GMT_IS_GRID, GMT_IS_IMAGE, & GMT_IS_MATRIX: par[0] holds the number of columns and par[1] holds the number
+	 *         of rows; this implies that wesn = 0-<dim-1>, inc = 1, and registration is pixel-registration.
+	 *     For GMT_IS_VECTOR, par[0] holds the number of columns, optionally par[1] holds number of rows, if known
 	 * (B) Via range, inc, registration:
-	 *   Convert user domain range, increments, and registration into dimensions
-	 *   for the container.  For grids and images we fill out the GMT_GRID_HEADER;
-	 *   for vectors and matrices we fill out their internal parameters.
-	 *   For complex grids pass registration + GMT_GRID_IS_COMPLEX_{REAL|IMAG}
-	 *   For GMT_IS_MATRIX and GMT_IS_IMAGE, par[GMT_Z] = holds the number of layers or bands (dim == NULL means just 1).
+	 *     Convert user domain range, increments, and registration into dimensions
+	 *     for the container.  For grids and images we fill out the GMT_GRID_HEADER;
+	 *     for vectors and matrices we fill out their internal parameters.
+	 *     For complex grids pass registration + GMT_GRID_IS_COMPLEX_{REAL|IMAG}
+	 *     For GMT_IS_MATRIX and GMT_IS_IMAGE, par[GMT_Z] = holds the number of layers or bands (dim == NULL means just 1).
 	 * pad sets the padding for grids and images, ignored for other resources.
 	 * Some default actions for grids:
 	 * range = NULL: Select current -R setting if present.
@@ -6381,7 +6378,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * Return: Pointer to resource, or NULL if an error (set via API->error).
 	 */
 
-	int error = GMT_OK, object_ID = GMT_NOTSET;
+	int error = GMT_OK;
 	int def_direction = GMT_IN;	/* Default direction is GMT_IN  */
 	unsigned int module_input;
 	uint64_t n_layers = 0, zero_dim[4] = {0, 0, 0, 0}, *this_dim = dim;
@@ -6477,23 +6474,20 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	if (!already_registered) {	/* Register this object so it can be deleted by GMT_Destroy_Data or gmtapi_garbage_collection */
 		enum GMT_enum_method method = GMT_IS_REFERENCE;
 		enum GMT_enum_family actual_family = family;
-		int direction, item = GMT_NOTSET;
-		direction = (object_ID == GMT_NOTSET) ? def_direction : GMT_NOTSET;	/* Do not consider direction if pre-registered */
-		if (direction == GMT_OUT && family == GMT_IS_TEXTSET) method = GMT_IS_DUPLICATE;	/* PW: TEMPORARY WHILE TESTING */
-		if (object_ID == GMT_NOTSET) {	/* Must register this new object */
-			if (family == GMT_IS_MATRIX) {	/* Data sets passed via a matrix need to remember their initial family */
-				method = GMT_IS_REFERENCE_VIA_MATRIX;
-				if (geometry & GMT_IS_PLP) actual_family = GMT_IS_DATASET;
-				if (geometry & GMT_IS_SURFACE) actual_family = GMT_IS_GRID;
-				if (geometry & GMT_IS_NONE) actual_family = GMT_IS_TEXTSET;
-			}
-			else if (family == GMT_IS_VECTOR) {	/* Data sets passed via a vector need to remember their initial family */
-				method = GMT_IS_REFERENCE_VIA_VECTOR;
-				actual_family = GMT_IS_DATASET;
-			}
-			if ((object_ID = GMT_Register_IO (API, actual_family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
+		int item = GMT_NOTSET, object_ID = GMT_NOTSET;
+		if (def_direction == GMT_OUT && family == GMT_IS_TEXTSET) method = GMT_IS_DUPLICATE;	/* PW: TEMPORARY WHILE TESTING */
+		if (family == GMT_IS_MATRIX) {	/* Data sets passed via a matrix need to remember their initial family */
+			method = GMT_IS_REFERENCE_VIA_MATRIX;
+			if (geometry & GMT_IS_PLP) actual_family = GMT_IS_DATASET;
+			if (geometry & GMT_IS_SURFACE) actual_family = GMT_IS_GRID;
+			if (geometry & GMT_IS_NONE) actual_family = GMT_IS_TEXTSET;
 		}
-		if ((item = gmtapi_validate_id (API, actual_family, object_ID, direction, GMT_NOTSET)) == GMT_NOTSET) return_null (API, API->error);
+		else if (family == GMT_IS_VECTOR) {	/* Data sets passed via a vector need to remember their initial family */
+			method = GMT_IS_REFERENCE_VIA_VECTOR;
+			actual_family = GMT_IS_DATASET;
+		}
+		if ((object_ID = GMT_Register_IO (API, actual_family|module_input, method, geometry, def_direction, range, new_obj)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
+		if ((item = gmtapi_validate_id (API, actual_family, object_ID, def_direction, GMT_NOTSET)) == GMT_NOTSET) return_null (API, API->error);
 		API->object[item]->data = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
 		API->object[item]->actual_family = family;	/* So that if we got a matrix posing as dataset we can destroy the matrix later */
 		if (def_direction == GMT_OUT) API->object[item]->messenger = true;	/* We are passing a dummy container that should be destroyed before returning actual data */
@@ -6863,12 +6857,12 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 			return;
 		}
 	}
-	
+
 	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Demultiplexing complex grid before tapering can take place.\n");
 		gmt_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
-	
+
 	/* Note that if nx2 = nx+1 and ny2 = ny + 1, then this routine
 	 * will do nothing; thus a single row/column of zeros may be
 	 * added to the bottom/right of the input array and it cannot
@@ -6879,7 +6873,7 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	j_data_start = GMT->current.io.pad[YHI];
 	mx = h->mx;
 	one = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
-	
+
 	if (width_percent == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Tapering has been disabled via +t0\n");
 	}
@@ -6889,7 +6883,7 @@ GMT_LOCAL void fft_taper2d (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct 
 	}
 	else
 		width = F->taper_width / 100.0;	/* Was percent, now fraction */
-	
+
 	if (F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
 		i_width = irint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
 		j_width = irint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
@@ -7173,7 +7167,7 @@ GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, cha
 	static char file[GMT_BUFSIZ];
 	uint64_t i, j;
 	size_t len;
-	
+
 	if ((len = strlen (name)) == 0) {	/* Grids that are being created have no filename yet */
 		sprintf (file, "tmpgrid_%s.grd", suffix);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Created grid has no name to derive new names from; choose %s\n", file);
@@ -7212,7 +7206,7 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 	unsigned int pad[4];
 	struct GMT_GRID_HEADER save;
 	char *file = NULL;
-	
+
 	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before saving can take place.\n");
 		gmt_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
@@ -7231,12 +7225,12 @@ GMT_LOCAL void fft_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, 
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
 		return;
 	}
-	
+
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, file, Grid) != GMT_OK)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Intermediate detrended, extended, and tapered grid could not be written to %s\n", file);
 	else
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
-	
+
 	gmt_M_memcpy (Grid->header, &save, 1U, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
 	gmt_M_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT default pad */
 }
@@ -7255,7 +7249,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 	struct GMT_FFT_WAVENUMBER *K = F->K;
 
 	if (K == NULL) return;
-	
+
 	mode = (F->polar) ? 1 : 0;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffix %s and %s\n", suffix[mode][0], suffix[mode][1]);
@@ -7278,7 +7272,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", G->header->name);
 		return;
 	}
-			
+
 	strcpy (Out->header->x_units, "xunit^(-1)");	strcpy (Out->header->y_units, "yunit^(-1)");
 	strcpy (Out->header->z_units, G->header->z_units);
 	strcpy (Out->header->remark, "Applied fftshift: kx,ky = (0,0) now at (nx/2 + 1,ny/2");
@@ -7715,7 +7709,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required { becomes ( so we dont add it later */
 			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we dont add them later */
-			
+
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
