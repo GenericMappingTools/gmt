@@ -136,8 +136,10 @@ GMT_LOCAL int ReportCorner (struct GMT_CTRL *GMT, GDALDatasetH hDataset, double 
  *      Transform to latlong and report.
  * --------------------------------------------------------------------
  */
-	if (hTransform != NULL && OCTTransform(hTransform,1,&dfGeoX,&dfGeoY,NULL))
-		xy_geo[0] = dfGeoX;	xy_geo[1] = dfGeoY;
+	if (hTransform != NULL && OCTTransform(hTransform,1,&dfGeoX,&dfGeoY,NULL)) {
+		xy_geo[0] = dfGeoX;
+		xy_geo[1] = dfGeoY;
+	}
 
 	if (hTransform != NULL)
 		OCTDestroyCoordinateTransformation(hTransform);
@@ -290,9 +292,9 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	GDALColorEntry	sEntry;
 
 	int	i, j;
-	int	status, bSuccess;   /* success or failure */
+	int	status, bSuccess;	/* success or failure */
 	int	nBand, raster_count, pixel_reg = false;
-	int	bGotMin, bGotMax;   /* To know if driver transmited Min/Max */
+	int	bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
 	double  adfGeoTransform[6];	/* bounds on the dataset */
 	double  tmpdble;		/* temporary value */
 	double  xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
@@ -636,9 +638,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
 	int	n, m;
-	int	incStep = 1;    /* 1 for real only arrays and 2 for complex arrays (index step increment) */
+	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0;
-	bool   do_BIP;         /* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
+	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   metadata_only;
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool   fliplr, got_R = false, got_r = false;
@@ -646,7 +648,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	bool   just_copy = false, copy_flipud = false;
 	int	   *whichBands = NULL, *rowVec = NULL, *colVec = NULL;
 	int     off, pad = 0, i_x_nXYSize, startColPos = 0, startRow = 0, nXSize_withPad = 0;
-	int     pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;             /* Different pads for when sub-regioning near the edges */
+	int     pad_w = 0, pad_e = 0, pad_s = 0, pad_n = 0;		/* Different pads for when sub-regioning near the edges */
 	unsigned int nn, mm;
 	uint64_t ij;
 	size_t  n_alloc;
@@ -701,8 +703,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			leftright = false;
 		if (GMT->current.gdal_read_in.O.mem_layout[3] == 'S' || GMT->current.gdal_read_in.O.mem_layout[3] == 'L')
 			do_BIP = false;
-		if (topdown && rowmajor && leftright) just_copy = true;     /* Means we will send out the data as it came from gdal */
-		if (!topdown && rowmajor && leftright) copy_flipud = true;  /* Means we will send out the data as it came from gdal */
+		if (topdown && rowmajor && leftright) just_copy = true;		/* Means we will send out the data as it came from gdal */
+		if (!topdown && rowmajor && leftright) copy_flipud = true;	/* Means we will send out the data as it came from gdal */
 	}
 
 	if (prhs->p.active) pad = prhs->p.pad;
