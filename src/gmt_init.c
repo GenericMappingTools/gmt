@@ -3100,7 +3100,7 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	no = (GMT->current.map.frame.primary) ? 0 : 1;
 	if (GMT->common.B.string[no][0]) {	/* Append this option */
 		strcat (GMT->common.B.string[no], " ");
-		strcat (GMT->common.B.string[no], in);
+		strncat (GMT->common.B.string[no], in, GMT_LEN256-1);
 	}
 	else
 		strncpy (GMT->common.B.string[no], in, GMT_LEN256-1);	/* Keep a copy of the actual option(s) */
