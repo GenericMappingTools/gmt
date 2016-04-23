@@ -460,7 +460,7 @@ void gmt_prep_tmp_arrays (struct GMT_CTRL *GMT, size_t row, size_t n_cols) {
 	/* Check if we are exceeding our allocated count for this column.  If so allocate more rows */
 
 	if (row < GMT->hidden.mem_rows) return;	/* Nothing to do */
-	
+
 	/* Here we must allocate more rows, this is expected to happen rarely given the large initial allocation */
 
 	while (row >= GMT->hidden.mem_rows) GMT->hidden.mem_rows <<= 1;	/* Double up until enough */
@@ -587,15 +587,18 @@ void * gmt_M_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_a
 	/* gmt_M_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
 	 * A) Initial allocation of memory:
-	 *	Signaled by passing *n_alloc == 0 or n_alloc = NULL.  This will initialize the pointer to NULL first.
-	 *	Allocation size is controlled by GMT->session.min_meminc, unless n > 0 which then is used.
-	 *	If n_alloc == NULL then we also do not need to rreturn back the n_alloc value set herein.
+	 *	  Signaled by passing *n_alloc == 0 or n_alloc = NULL or ptr = NULL.
+	 *    This will initialize the pointer to NULL first.
+	 *	  Allocation size is controlled by GMT->session.min_meminc, unless n > 0 which then is used.
+	 *	  If n_alloc == NULL then we also do not need to rreturn back the n_alloc value set herein.
 	 * B) Incremental increase in memory:
-	 *	Signaled by passing n >= n_alloc.  The incremental memory is set to 50% of the
-	 *	previous size, but no more than GMT->session.max_meminc. Note, *ptr[n] is the location
-	 *	of where the next assignment will take place, hence n >= n_alloc is used.
+	 *	  Signaled by passing n >= n_alloc.
+	 *    The incremental memory is set to 50% of the
+	 *	  previous size, but no more than GMT->session.max_meminc. Note, *ptr[n] is the location
+	 *	  of where the next assignment will take place, hence n >= n_alloc is used.
 	 * C) Finalize memory:
-	 *	Signaled by passing n == 0 and n_alloc > 0.  Unused memory beyond n_alloc is freed up.
+	 *	  Signaled by passing n == 0 and n_alloc > 0.
+	 *    Unused memory beyond n_alloc is freed up.
 	 * You can use gmt_set_meminc to temporarily change GMT_min_mininc and gmt_reset_meminc will
 	 * reset this value to the compilation default.
 	 * For 32-bit systems there are safety-values to avoid 32-bit overflow.
@@ -605,7 +608,7 @@ void * gmt_M_malloc_func (struct GMT_CTRL *GMT, void *ptr, size_t n, size_t *n_a
 	 * Note: This memory, used for all kinds of things, is not requested to be aligned (align = false),
 	 */
 	size_t in_n_alloc = (n_alloc) ? *n_alloc : 0U;	/* If NULL it means init, i.e. 0, and we dont pass n_alloc back out */
-	if (in_n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
+	if (in_n_alloc == 0 || !ptr) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
 		in_n_alloc = (n == 0) ? GMT->session.min_meminc : n;
 		ptr = NULL;	/* Initialize a new pointer to NULL before calling gmt_M_memory with it */
 	}
