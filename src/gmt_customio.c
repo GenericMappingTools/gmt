@@ -1101,7 +1101,7 @@ int gmt_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 
 	if (do_header) {
 		if ((err = customio_native_write_grd_header (fp, header)) != 0) {
-			gmt_M_free (GMT, k);
+			gmt_M_free (GMT, k);	gmt_fclose (GMT, fp);
 			return err;
 		}
 	}
