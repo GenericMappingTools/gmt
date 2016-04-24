@@ -553,7 +553,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct G
 				n_errors += parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */
-				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
+				strcat (Ctrl->C.arg, " ");
+				strncat (Ctrl->C.arg, opt->arg, GMT_BUFSIZ-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
 				if ((Ctrl->D.active = gmt_check_filearg (GMT, 'D', opt->arg, GMT_OUT, GMT_IS_TEXTSET)) != 0) {
