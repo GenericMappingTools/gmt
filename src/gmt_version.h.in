@@ -40,7 +40,11 @@
 #ifdef __x86_64__
 #	define GMT_VER_64 " [64-bit]"
 #else
-#	define GMT_VER_64 ""
+#	if defined WIN32 && SIZEOF_VOID_P == 8
+#		define GMT_VER_64 " [64-bit]"
+#	else
+#		define GMT_VER_64 ""
+#	endif
 #endif
 
 #ifdef _OPENMP /* Open MP Parallelization is on */
