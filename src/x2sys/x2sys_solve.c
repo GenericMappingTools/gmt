@@ -772,6 +772,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args) {
 				for (i = 0; i < n_tracks; i++) {
 					if (cluster[i] || C[k*n_tracks+i] == 0) continue;	/* Skip tracks already dealt with or not crossing track k */
 					member[n_in_cluster++] = i;	/* Add track #i to p's growing cluster */
+					/* coverity[copy_paste_error] */		/* For Coverity analysis. Do not remove this comment */
 					cluster[i] = cluster[p];	/* And set it to same cluster as p */
 				}
 				g++;	/* Go to next cluster member */

@@ -1404,6 +1404,7 @@ int gmt_srf_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	else if ((fp = gmt_fopen (GMT, header->name, "rb+")) == NULL && (fp = gmt_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
+	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
 	strncpy (h.id, "DSBB", 4U);
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
 	if (header->registration == GMT_GRID_PIXEL_REG) {
@@ -1632,6 +1633,7 @@ int gmt_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	/* store header information and array */
 
+	/* coverity[buffer_size] */		/* For Coverity analysis. Do not remove this comment */
 	strncpy (h.id, "DSBB", 4U);
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
 	if (header->registration == GMT_GRID_PIXEL_REG) {
