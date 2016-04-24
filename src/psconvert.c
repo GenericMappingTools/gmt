@@ -1473,7 +1473,8 @@ int GMT_psconvert (void *V_API, int mode, void *args) {
 				strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			else
 				strcat (tmp_file, Ctrl->F.file);
-			strcat (tmp_file, ext[GS_DEV_EPS]);
+			if (strlen(tmp_file) < GMT_BUFSIZ-4)		/* To please Coverity */
+				strcat (tmp_file, ext[GS_DEV_EPS]);
 			if ((fpo = fopen (tmp_file, "w")) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", tmp_file);
 				continue;
