@@ -12,8 +12,7 @@
 #define squared(x) ((x) * (x))
 
 /************************************************************************/
-void meca_get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11, double *t12, double *t21, double *t22)
-{
+void meca_get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11, double *t12, double *t21, double *t22) {
 	/* determine local transformation between (lon,lat) and (x,y) */
 	/* return this in the 2 x 2 matrix t */
 	/* this is useful for drawing velocity vectors in X,Y coordinates */
@@ -68,8 +67,7 @@ void meca_get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11
 	*t22 = (dl == 0.0) ? 0.0 : dvdlat/dl;
 }
 
-static double null_axis_dip (double str1, double dip1, double str2, double dip2)
-{
+static double null_axis_dip (double str1, double dip1, double str2, double dip2) {
 	/*
 	   compute null axis dip when strike and dip are given
 	   for each nodal plane.  Angles are in degrees.
@@ -84,8 +82,7 @@ static double null_axis_dip (double str1, double dip1, double str2, double dip2)
 	return (den);
 }
 
-static double null_axis_strike (double str1, double dip1, double str2, double dip2)
-{
+static double null_axis_strike (double str1, double dip1, double str2, double dip2) {
 	/*
 	   Compute null axis strike when strike and dip are given
 	   for each nodal plane.   Angles are in degrees.
@@ -111,8 +108,7 @@ static double null_axis_strike (double str1, double dip1, double str2, double di
 	return (phn);
 }
 
-static double proj_radius(double str1, double dip1, double str)
-{
+static double proj_radius(double str1, double dip1, double str) {
 	/*
 	   Compute the vector radius for a given strike,
 	   equal area projection, inferior sphere.
@@ -128,8 +124,8 @@ static double proj_radius(double str1, double dip1, double str)
 }
 
 /***********************************************************************************************************/
-double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, struct GMT_FILL *F, struct GMT_FILL *E, int outline)
-{	/* By Genevieve Patau */
+double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, struct GMT_FILL *F, struct GMT_FILL *E, int outline) {
+	/* By Genevieve Patau */
 
 	double x[1000], y[1000];
 	double pos_NP1_NP2 = sind (meca.NP1.str - meca.NP2.str);
@@ -327,8 +323,8 @@ double meca_ps_mechanism (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0,
 }
 
 /*********************************************************************/
-double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, int num_of_plane)
-{	/* By Genevieve Patau */
+double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, st_me meca, double size, int num_of_plane) {
+	/* By Genevieve Patau */
 
 	int i;
 
@@ -367,8 +363,8 @@ double meca_ps_plan (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, doub
 }
 
 /*********************************************************************/
-double meca_zero_360 (double str)
-{	/* By Genevieve Patau: put an angle between 0 and 360 degrees */
+double meca_zero_360 (double str) {
+	/* By Genevieve Patau: put an angle between 0 and 360 degrees */
 	if (str >= 360.0)
 		str -= 360.0;
 	else if (str < 0.0)
@@ -377,8 +373,7 @@ double meca_zero_360 (double str)
 }
 
 /**********************************************************************/
-double meca_computed_mw (struct MOMENT moment, double ms)
-{
+double meca_computed_mw (struct MOMENT moment, double ms) {
 	/* Compute mw-magnitude from seismic moment or MS magnitude. */
 
 	/* Genevieve Patau from
@@ -398,8 +393,7 @@ double meca_computed_mw (struct MOMENT moment, double ms)
 }
 
 /*********************************************************************/
-static double computed_strike1 (struct nodal_plane NP1)
-{
+static double computed_strike1 (struct nodal_plane NP1) {
 	/*
 	   Compute the strike of the decond nodal plane when are given
 	   strike, dip and rake for the first nodal plane with AKI & RICHARD's
@@ -436,8 +430,7 @@ static double computed_strike1 (struct nodal_plane NP1)
 }
 
 /*********************************************************************/
-static double computed_dip1 (struct nodal_plane NP1)
-{
+static double computed_dip1 (struct nodal_plane NP1) {
 	/*
 	   Compute second nodal plane dip when are given strike,
 	   dip and rake for the first nodal plane with AKI & RICHARD's
@@ -454,8 +447,7 @@ static double computed_dip1 (struct nodal_plane NP1)
 }
 
 /*********************************************************************/
-static double computed_rake1 (struct nodal_plane NP1)
-{
+static double computed_rake1 (struct nodal_plane NP1) {
 	/*
 	   Compute rake in the second nodal plane when strike ,dip
 	   and rake are given for the first nodal plane with AKI &
@@ -483,8 +475,7 @@ static double computed_rake1 (struct nodal_plane NP1)
 }
 
 /*********************************************************************/
-double meca_computed_dip2 (double str1, double dip1, double str2)
-{
+double meca_computed_dip2 (double str1, double dip1, double str2) {
 	/*
 	   Compute second nodal plane dip when are given
 	   strike and dip for the first plane and strike for
@@ -506,8 +497,7 @@ double meca_computed_dip2 (double str1, double dip1, double str2)
 }
 
 /*********************************************************************/
-double meca_computed_rake2 (double str1, double dip1, double str2, double dip2, double fault)
-{
+double meca_computed_rake2 (double str1, double dip1, double str2, double dip2, double fault) {
 	/*
 	   Compute rake in the second nodal plane when strike and dip
 	   for first and second nodal plane are given with a double
@@ -534,8 +524,7 @@ double meca_computed_rake2 (double str1, double dip1, double str2, double dip2, 
 }
 
 /*********************************************************************/
-void meca_define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2)
-{
+void meca_define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2) {
 	/*
 	    Compute strike, dip, slip for the second nodal plane
 	    when are given strike, dip and rake for the first one.
@@ -548,8 +537,7 @@ void meca_define_second_plane (struct nodal_plane NP1, struct nodal_plane *NP2)
 }
 
 /***************************************************************************************/
-void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struct AXIS *N, struct AXIS *P)
-{
+void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
 	/* This version uses gmt_jacobi and does not suffer from the convert_matrix bug */
 	unsigned int j, nrots, np = 3;
 	double *a, *d, *b, *z, *v;
@@ -592,8 +580,7 @@ void meca_moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, 
 }
 
 /***************************************************************************************/
-double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno)
-{
+double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double size, struct AXIS T, struct AXIS N, struct AXIS P, struct GMT_FILL *C, struct GMT_FILL *E, int outline, int plot_zerotrace, int recno) {
 	int d, b = 1, m, i, ii, n = 0, j = 1, j2 = 0, j3 = 0;
 	int big_iso = 0;
 	int djp, mjp, jp_flag;
@@ -744,8 +731,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 			else {
 				if (fabs(fabs(az - azp) - M_PI) < D2R * 10.) {
 					azi[n][1] = azp;
-					assert (n < 3);	/* Since Coverity flagged previous line as exceeding limit */
-					azi[++n][0] = az;
+					azi[n++][0] = az;
 				}
 				if (fabs(fabs(az -azp) - M_PI * 2.) < D2R * 2.) {
 					if (azp < az) azi[n][0] += M_PI * 2.;
@@ -953,8 +939,7 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 	return (size);
 }
 
-void meca_axe2dc (struct AXIS T, struct AXIS P, struct nodal_plane *NP1, struct nodal_plane *NP2)
-{
+void meca_axe2dc (struct AXIS T, struct AXIS P, struct nodal_plane *NP1, struct nodal_plane *NP2) {
 	/*
 	  Calculate double couple from principal axes.
 	  Angles are in degrees.
@@ -1001,8 +986,7 @@ void meca_axe2dc (struct AXIS T, struct AXIS P, struct nodal_plane *NP1, struct 
 	NP2->rake = meca_computed_rake2 (NP1->str, NP1->dip, NP2->str, NP2->dip, im);
 }
 
-void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P)
-{
+void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P) {
 	/*
 	From FORTRAN routines of Anne Deschamps :
 	compute azimuth and plungement of P-T axis
@@ -1057,8 +1041,7 @@ void meca_dc2axe (st_me meca, struct AXIS *T, struct AXIS *N, struct AXIS *P)
 	N->dip = null_axis_dip (T->str, T->dip, P->str, P->dip);
 }
 
-void meca_axis2xy (double x0, double y0, double size, double pp, double dp, double pt, double dt, double *xp,double *yp, double *xt, double *yt)
-{
+void meca_axis2xy (double x0, double y0, double size, double pp, double dp, double pt, double dt, double *xp,double *yp, double *xt, double *yt) {
 	/* angles are in degrees */
 	double radius, spp, cpp, spt, cpt;
 
@@ -1076,8 +1059,7 @@ void meca_axis2xy (double x0, double y0, double size, double pp, double dp, doub
 	*yt = radius * cpt * size + y0;
 }
 
-static void transform_local (double x0, double y0, double dxp, double dyp, double scale, double t11, double t12, double t21, double t22, double *x1, double *y1)
-{
+static void transform_local (double x0, double y0, double dxp, double dyp, double scale, double t11, double t12, double t21, double t22, double *x1, double *y1) {
 	/* perform local transformation on offsets (dxp,dyp) from */
 	/* "origin point" x0,y0 given transformation matrix T */
 
@@ -1106,8 +1088,7 @@ static void transform_local (double x0, double y0, double dxp, double dyp, doubl
 
 }
 
-void meca_trace_arrow (struct GMT_CTRL *GMT, double slon, double slat, double dxp, double dyp, double scale, double *x1, double *y1, double *x2, double *y2)
-{
+void meca_trace_arrow (struct GMT_CTRL *GMT, double slon, double slat, double dxp, double dyp, double scale, double *x1, double *y1, double *x2, double *y2) {
 	/* convert a vector arrow (delx,dely) arrow from (lat,lon) */
 
 	/* Kurt Feigl, from code by T. Herring */
@@ -1142,7 +1123,7 @@ void meca_trace_arrow (struct GMT_CTRL *GMT, double slon, double slat, double dx
 	*y1 = yt;
 }
 
-static void trace_ellipse (double angle, double major, double minor, int npoints, double *x, double *y)
+static void trace_ellipse (double angle, double major, double minor, int npoints, double *x, double *y) {
 {	/* Given specs for an ellipse, return it in x,y */
 	double phi = 0.0, sd, cd, s, c;
 	int i;
@@ -1157,8 +1138,7 @@ static void trace_ellipse (double angle, double major, double minor, int npoints
 	}
 }
 
-void meca_ellipse_convert (double sigx, double sigy, double rho, double conrad, double *eigen1, double *eigen2, double *ang)
-{
+void meca_ellipse_convert (double sigx, double sigy, double rho, double conrad, double *eigen1, double *eigen2, double *ang) {
 	/* convert from one parameterization of an ellipse to another
 
 	 * Kurt Feigl, from code by T. Herring
@@ -1205,8 +1185,8 @@ void meca_ellipse_convert (double sigx, double sigy, double rho, double conrad, 
 	/*    that is all */
 }
 
-void meca_paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angle, double major, double minor, double scale, double t11, double t12, double t21, double t22, int polygon, struct GMT_FILL *fill, int outline)
-{	/* Make an ellipse at center x0,y0  */
+void meca_paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angle, double major, double minor, double scale, double t11, double t12, double t21, double t22, int polygon, struct GMT_FILL *fill, int outline) {
+	/* Make an ellipse at center x0,y0  */
 #define NPOINTS_ELLIPSE 362
 
 	int npoints = NPOINTS_ELLIPSE, i;
@@ -1227,8 +1207,7 @@ void meca_paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angl
 }
 
 /************************************************************************/
-int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, double eps2, double theta, double sscale, double v_width, double h_length, double h_width, double vector_shape, int outline, struct GMT_PEN *pen)
-{
+int meca_trace_cross (struct GMT_CTRL *GMT, double slon, double slat, double eps1, double eps2, double theta, double sscale, double v_width, double h_length, double h_width, double vector_shape, int outline, struct GMT_PEN *pen) {
 	/* make a Strain rate cross at(slat,slon) */
 
 	/* Kurt Feigl, from code by D. Dong */
@@ -1423,8 +1402,7 @@ static int trace_wedge (double spin, double sscale, double wedge_amp, int lines,
 	return nump;
 }
 
-static int trace_sigwedge (double spin, double spinsig, double sscale, double wedge_amp, double *x, double *y)
-{
+static int trace_sigwedge (double spin, double spinsig, double sscale, double wedge_amp, double *x, double *y) {
 	/* make a rotation rate uncertainty wedge and return in x,y */
 
 	/* Kurt Feigl, from code by D. Dong */
@@ -1471,8 +1449,7 @@ static int trace_sigwedge (double spin, double spinsig, double sscale, double we
 	return nump;
 }
 
-void meca_paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, double spinsig, double sscale, double wedge_amp, double t11, double t12, double t21, double t22, int polygon, double *rgb, int epolygon, double *ergb, int outline)
-{
+void meca_paint_wedge (struct PSL_CTRL *PSL, double x0, double y0, double spin, double spinsig, double sscale, double wedge_amp, double t11, double t12, double t21, double t22, int polygon, double *rgb, int epolygon, double *ergb, int outline) {
 
 	/* Make a wedge at center x0,y0  */
 
