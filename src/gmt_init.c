@@ -2805,10 +2805,10 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (GMT->current.map.frame.axis[i].prefix[0]) {	/* Deal with space/no space before prefix */
 			char workspace[GMT_LEN64] = {""};
 			if (GMT->current.map.frame.axis[i].prefix[0] == '-') /* Dont want a space */
-				strcpy (workspace, &GMT->current.map.frame.axis[i].prefix[1]);
+				strncpy (workspace, &GMT->current.map.frame.axis[i].prefix[1], GMT_LEN64-1);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
-				strncpy (&workspace[1], GMT->current.map.frame.axis[i].prefix, GMT_LEN64-2);
+				strncpy (&workspace[1], GMT->current.map.frame.axis[i].prefix, GMT_LEN64-1);
 			}
 			gmt_M_memcpy (GMT->current.map.frame.axis[i].prefix, workspace, GMT_LEN64, char);
 		}
