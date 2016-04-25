@@ -32,6 +32,7 @@ psmeca [ *table* ] |-J|\ *parameters* |SYN_OPT-R|
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -374,7 +375,9 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 .. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_-t.rst_
 .. include:: ../../explain_colon.rst_
+
 .. include:: ../../explain_help.rst_
 
 Examples

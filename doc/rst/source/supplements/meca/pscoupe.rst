@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
@@ -394,6 +395,9 @@ Optional Arguments
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
+
+.. include:: ../../explain_-t.rst_
+
 .. include:: ../../explain_colon.rst_
 
 .. include:: ../../explain_help.rst_
