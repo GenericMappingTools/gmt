@@ -262,12 +262,14 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	if (sscanf (record, "%*s %d", &header->nx) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding ncols record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %d", &header->ny) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nrows record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmt_fgets (GMT, record, GMT_BUFSIZ, fp);
@@ -282,6 +284,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding yll record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	gmtlib_str_tolower (record);
@@ -290,6 +293,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
 		if (fpBAK) gmt_fclose (GMT, fp2);
+		gmt_fclose (GMT, fp);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	/* Handle the optional nodata_value record */
@@ -300,6 +304,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 			if (fpBAK) gmt_fclose (GMT, fp2);
+			gmt_fclose (GMT, fp);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 	}
@@ -326,6 +331,7 @@ GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HE
 		gmt_fclose (GMT, fp2);
 	}
 
+	gmt_fclose (GMT, fp);
 	return (GMT_NOERROR);
 }
 
