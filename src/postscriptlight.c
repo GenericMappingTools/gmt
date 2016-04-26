@@ -624,7 +624,7 @@ static void psl_cmyk_to_rgb (double rgb[], double cmyk[]) {
 
 	for (i = 0; i < 3; i++) rgb[i] = 1.0 - cmyk[i] - cmyk[3];
 }
-#endif 
+#endif
 static void psl_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]) {
 	/* Plain conversion; no undercolor removal or blackgeneration */
 	/* RGB is in 0-255, CMYK will be in 0-255 range */
@@ -2790,7 +2790,11 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 	   always follows the BoundingBox line. */
 
 	while (fgets(buf, PSL_BUFSIZ, fp) != NULL) {
-		if (!nested) {
+		if (!strncmp(buf, "%%Begin", 7U))
+			++nested;
+		else if (nested && !strncmp(buf, "%%End", 5U))
+			--nested;
+		else if (!nested) {
 			if  (!strncmp(buf, "%%BoundingBox:", 14U) && !strstr(buf, "(atend)")) {
 				if (sscanf(strchr(buf, ':') + 1, "%d %d %d %d", llx, lly, trx, try) < 4) return 1;
 				*hires_llx = *llx;
@@ -2804,12 +2808,6 @@ static int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *l
 				}
 				return 0;
 			}
-		}
-		else if (!strncmp(buf, "%%Begin", 7U)) {
-			++nested;
-		}
-		else if (nested && !strncmp(buf, "%%End", 5U)) {
-			--nested;
 		}
 	}
 
@@ -3985,7 +3983,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	PSL->internal.memory = (orientation & PSL_MEMORY);	/* true if we wish to write PS to memory instead of to file */
 	if (PSL->internal.memory) orientation -= PSL_MEMORY;
-	
+
 	/* Save original initialization settings */
 
 	PSL->internal.call_level++;	/* Becomes 1 for first module calling it, 2 if that module calls for plotting, etc */
@@ -4032,7 +4030,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 
 	if (!overlay) {	/* Must issue PSL header - this is the start of a new plot */
 		char PSL_encoding[64] = {""};
-		
+
 		if (PSL->internal.memory) {	/* Will be writing to memory so need to set that up */
 			psl_freeplot (PSL);	/* Free any previous plot laying around */
 			PSL->internal.buffer  = PSL_memory (PSL, NULL, PSL_MEM_ALLOC, char);
@@ -4040,7 +4038,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 			PSL->internal.n	      = 0;
 			PSL->internal.pmode   = 1;	/*	Header of plot will be written below */
 		}
-			
+
 		PSL_command (PSL, "%%!PS-Adobe-3.0\n");
 
 		/* Write definitions of macros to plotfile */
@@ -4222,7 +4220,7 @@ int PSL_setfont (struct PSL_CTRL *PSL, int font_no) {
 	PSL->current.fontsize = 0.0;	/* Forces "%d F%d" to be written on next call to psl_putfont */
 	/* Encoding will be done by subsequent calls inside the text-producing routines through calls to psl_encodefont [PS: testing line below] */
 	psl_encodefont (PSL, PSL->current.font_no);
-	
+
 	return (PSL_NO_ERROR);
 }
 
