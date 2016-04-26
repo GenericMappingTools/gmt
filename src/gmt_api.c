@@ -7698,11 +7698,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	/* Note: All implicit options must be given after all implicit matrices have been listed */
 	for (opt = *head, implicit_pos = n_explicit; opt; opt = opt->next) {	/* Process options */
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
-		family = geometry = GMT_NOTSET;	/* Not set yet */
+		family = GMT_NOTSET;	/* Not set yet */
+		geometry = GMT_NOTSET;	/* Not set yet */
 		if (k >= 0)	/* Got a key, so split out family and geometry flags */
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
 		if (api_found_marker (opt->arg, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
-			if (k == GMT_NOTSET) {	/* FOund marker but no corresponding key found? */
+			if (k == GMT_NOTSET) {	/* Found marker but no corresponding key found? */
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
@@ -7719,7 +7720,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			n_items++;
 			if (direction == GMT_IN) n_in_added++;
 		}
-		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_IS_NONE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
+		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
 			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well */
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
