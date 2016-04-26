@@ -1124,7 +1124,7 @@ void meca_trace_arrow (struct GMT_CTRL *GMT, double slon, double slat, double dx
 }
 
 static void trace_ellipse (double angle, double major, double minor, int npoints, double *x, double *y) {
-{	/* Given specs for an ellipse, return it in x,y */
+	/* Given specs for an ellipse, return it in x,y */
 	double phi = 0.0, sd, cd, s, c;
 	int i;
 
