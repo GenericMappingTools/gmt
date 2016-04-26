@@ -4214,7 +4214,7 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	 * module_input = GMTAPI_OPTION_INPUT [0]:	Only validate resources with module_input = false.
 	 * module_input = GMTAPI_MODULE_INPUT [1]:	Only validate resources with module_input = true. */
 	unsigned int i;
-	int item, s_value;
+	int item;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
 	 /* Search for the object in the active list.  However, if object_ID == GMT_NOTSET we pick the first in that direction */
@@ -4224,11 +4224,11 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 		if (!S_obj) continue;									/* Empty object */
 		//if (direction != GMT_NOTSET && S_obj->status != GMT_IS_UNUSED) continue;		/* Already used this object */
 		if (direction == GMT_IN && S_obj->status != GMT_IS_UNUSED) continue;			/* Already used this input object */
-		if (!(family == GMT_NOTSET || (s_value = S_obj->family) == family)) continue;		/* Not the required data type */
-		if (object_ID == GMT_NOTSET && (s_value = S_obj->direction) == direction) item = i;	/* Pick the first object with the specified direction */
+		if (!(family == GMT_NOTSET || S_obj->family == family)) continue;		/* Not the required data type */
+		if (object_ID == GMT_NOTSET && S_obj->direction == direction) item = i;	/* Pick the first object with the specified direction */
 		if (object_ID == GMT_NOTSET && !(S_obj->family == GMT_IS_DATASET || S_obj->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
-		else if (direction == GMT_NOTSET && (s_value = S_obj->ID) == object_ID) item = i;	/* Pick the requested object regardless of direction */
-		else if ((s_value = S_obj->ID) == object_ID) item = i;					/* Pick the requested object */
+		else if (direction == GMT_NOTSET && S_obj->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
+		else if (S_obj->ID == object_ID) item = i;					/* Pick the requested object */
 		if (item != GMT_NOTSET && direction == GMT_IN && module_input != GMT_NOTSET) {		/* Must check that object's module_input status matches */
 			bool status = (module_input == GMTAPI_MODULE_INPUT) ? true : false;
 			if (status != S_obj->module_input) item = GMT_NOTSET;	/* Not the right type of input resouce */
@@ -4237,7 +4237,7 @@ int gmtapi_validate_id (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }		/* No such object found */
 
 	/* OK, we found the object; is it the right kind (input or output)? */
-	if (direction != GMT_NOTSET && (s_value = API->object[item]->direction) != direction) {
+	if (direction != GMT_NOTSET && API->object[item]->direction != direction) {
 		/* Passing an input object but it is listed as output, or vice versa */
 		if (direction == GMT_IN)  { API->error = GMT_NOT_INPUT_OBJECT;  return (GMT_NOTSET); }
 		if (direction == GMT_OUT) { API->error = GMT_NOT_OUTPUT_OBJECT; return (GMT_NOTSET); }
