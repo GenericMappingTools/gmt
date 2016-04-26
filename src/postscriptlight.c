@@ -3145,12 +3145,6 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session) {
 
 int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir, char *userdir) {
 	/* Allocate a new common control structure and initialize PSL session
-	 * err:		Stream pointer to send error messages to (usually stderr = NULL).
-	 * unit:	The unit used for lengths (0 = cm, 1 = inch, 2 = m, 3 = points).
-	 * verbose:	The PS verbosity level (0 = silence, 1 = fatal errors, 2 = warnings and progress, 3 = extensive progress reports, 4 = debugging)
-	 * comments:	Whether PS comments should be written (1) or not (0).
-	 * compression:	Compression level (0 = none, 1 = RLE, 2 = LZW, 3 = DEFLATE)
-	 * encoding:	The character encoding used
 	 * If sharedir, userdir are NULL and search == 1 then we look for environmental parameters
 	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
 	 */
@@ -3171,23 +3165,25 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 
 	/* Determine SHAREDIR (directory containing the postscriptlight subdirectory)
 	 * but only if not passed via argument list */
-	if ((this_c = sharedir) == NULL) {
-		if (search && (this_c = getenv ("PSL_SHAREDIR")) == NULL) {
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not locate PSL_SHAREDIR.\n");
+
+	if ((this_c = sharedir) == NULL && search) this_c = getenv ("PSL_SHAREDIR");
+	if (this_c) {	/* Did find a sharedir */
+		PSL->internal.SHAREDIR = strdup (this_c);
+		gmt_dos_path_fix (PSL->internal.SHAREDIR);
+		if (access(PSL->internal.SHAREDIR, R_OK)) {
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
-	PSL->internal.SHAREDIR = strdup (this_c);
-	gmt_dos_path_fix (PSL->internal.SHAREDIR);
-	if (PSL->internal.SHAREDIR == NULL || access(PSL->internal.SHAREDIR, R_OK)) {
-		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
+	else {	/* No sharedir found */
+		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not locate PSL_SHAREDIR.\n");
 		PSL_exit (EXIT_FAILURE);
 	}
 
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
 	if ((this_c = userdir) == NULL && search) this_c = getenv ("PSL_USERDIR");
-	if (this_c) {	/* Did find a user dir */
+	if (this_c) {	/* Did find a userdir */
 		PSL->internal.USERDIR = strdup (this_c);
 		gmt_dos_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
