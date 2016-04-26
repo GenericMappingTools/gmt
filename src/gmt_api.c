@@ -7699,17 +7699,17 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	for (opt = *head, implicit_pos = n_explicit; opt; opt = opt->next) {	/* Process options */
 		k = api_get_key (API, opt->option, key, n_keys);	/* If k >= 0 then this option is among those listed in the keys array */
 		family = geometry = GMT_NOTSET;	/* Not set yet */
-		if (k >= 0)
+		if (k >= 0)	/* Got a key, so split out family and geometry flags */
 			direction = api_key_to_family (API, key[k], &family, &geometry);	/* Get dir, datatype, and geometry */
-		if (api_found_marker (opt->arg, marker)) {	/* Found an explicit dollar sign within the option, e.g., -G$, -R$ or -<$ */
-			if (k == GMT_NOTSET) {
+		if (api_found_marker (opt->arg, marker)) {	/* Found an explicit marker (e.g., dollar sign for MATLAB) within the option, e.g., -G$, -R$ or -<$ */
+			if (k == GMT_NOTSET) {	/* FOund marker but no corresponding key found? */
 				GMT_Report (API, GMT_MSG_NORMAL, "GMT_Encode_Options: Error: Got a -<option>$ argument but not listed in keys\n");
 				direction = GMT_IN;	/* Have to assume it is an input file if not specified */
 			}
 			/* Note sure about the OPT_INFILE test - should apply to all, no? But perhaps only the infile option will have upper case ... */
 			//if (k >= 0 && key[k][K_OPT] == GMT_OPT_INFILE) key[k][K_DIR] = tolower (key[k][K_DIR]);	/* Make sure required { becomes ( so we dont add it later */
 			if (k >= 0 && key[k][K_DIR] != '-') key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Make sure required { becomes ( and } becomes ) so we dont add them later */
-
+			/* Add this item to our list */
 			info[n_items].option    = opt;
 			info[n_items].family    = family;
 			info[n_items].geometry  = geometry;
@@ -7720,7 +7720,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			if (direction == GMT_IN) n_in_added++;
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_IS_NONE && (len = strlen (opt->arg)) < 2) {	/* Got some option like -G or -Lu with further args */
-			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well*/
+			/* We check if, in cases like -Lu, that "u" is not a file or that -C5 is a number and not a CPT file.  Also check for -Rd|g and let -R pass as well */
 			bool skip = false, number = false;
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c being checked if implicit [len = %d]\n", opt->option, (int)len);
 			if (key[k][K_DIR] == '-')	/* This is to let -R pass since we want gmt.history to kick in here, not $ */
@@ -7745,15 +7745,14 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				else	/* Nothing special about this option */
 					satisfy = special_text[2];
 			}
-			else {
-				/* This is an implicit reference and we must explicity add the missing item by adding the marker */
+			else {	/* This is an implicit reference and we must explicity add the missing item by adding the marker */
 				info[n_items].option    = opt;
 				info[n_items].family    = family;
 				info[n_items].geometry  = geometry;
 				info[n_items].direction = direction;
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
-				/* Excplicitly add the missing marker ($) to the option argument */
+				/* Excplicitly add the missing marker (e.g., $) to the option argument */
 				sprintf (txt, "%s%c", opt->arg, marker);
 				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (txt);
@@ -7786,8 +7785,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (api_is_required_IO (key[ku][K_DIR])) {	/* Required input|output that was not specified explicitly above */
 			char str[2] = {0,0};
 			str[0] = marker;
-			direction = api_key_to_family (API, key[ku], &family, &geometry);
-			n_to_add = (direction == GMT_OUT || n_in == GMT_NOTSET) ? 1 : n_in - n_in_added;
+			direction = api_key_to_family (API, key[ku], &family, &geometry);	/* Extract family and geometry */
+			n_to_add = (direction == GMT_OUT || n_in == GMT_NOTSET) ? 1 : n_in - n_in_added;	/* How many items? */
 			for (e = 0; e < n_to_add; e++) {
 				new_ptr = GMT_Make_Option (API, key[ku][K_OPT], str);	/* Create new option(s) with filename "$" */
 				/* Append the new option to the list */
@@ -7814,17 +7813,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", implicit_pos, output_pos);
 	/* Just checking that the options were properly processed */
-#ifdef NO_MEX
-	text = GMT_Create_Cmd (API, *head);
-	sprintf (revised_cmd, "\'%s %s\'", module_name, text);
-	GMT_Destroy_Cmd (API, &text);	/* Only needed it for the NO_MEX testing */
-#else
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		text = GMT_Create_Cmd (API, *head);
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
 		GMT_Destroy_Cmd (API, &text);
 	}
-#endif
 
 	/* Pass back the info array and the number of items */
 	*n = (n_items == 0) ? UINT_MAX : n_items;	/* n_keys = 0 for gmtset, gmtdefaults, gmtlogo */
