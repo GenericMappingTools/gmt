@@ -486,7 +486,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	 * at the resolution we are using (0.01 DPI units), hence a new n (possibly shorter) is returned. */
 	int i, j, k, p, ii, kk, this_i, this_j, last_i, last_j, i_offset = 0, k_offset = 0, n_skipped, ntot = 0, new_tot = 0, *new_n = NULL;
 	char *use = NULL;
-	if (x == NULL && y == NULL) return;	/* No path */
+	if (x == NULL || y == NULL) return;	/* No path */
 	for (p = 0; p < npath; p++) ntot += n[p];	/* Determine total number of points */
 	/* Since we need dx/dy from these we preprocess to avoid any nasty surprises with repeat points */
 	use = PSL_memory (PSL, NULL, ntot, char);
@@ -549,7 +549,7 @@ static void psl_set_path_arrays (struct PSL_CTRL *PSL, const char *prefix, doubl
 	int i, ntot = 0;
 	char txt[64] = {""};
 
-	if (x == NULL && y == NULL) return;		/* No path */
+	if (x == NULL || y == NULL) return;		/* No path */
 	for (i = 0; i < npath; i++) ntot += n[i];	/* Determine total number of points */
 
 	PSL_comment (PSL, "Set coordinate arrays for text label placements:\n");
