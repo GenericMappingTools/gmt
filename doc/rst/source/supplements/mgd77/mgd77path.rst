@@ -50,7 +50,7 @@ Optional Arguments
 
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
-    **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain
+    **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77 t ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
 
