@@ -120,7 +120,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k = 0;
+	unsigned int n_errors = 0, k = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -128,8 +128,12 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 		switch (opt->option) {
 			/* Common parameters */
 
-			case '<':	/* Skip input files */
-				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_TEXTSET)) n_errors++;
+			case '<':	/* Does not take input! */
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: No input files expected\n");
+				n_errors++;
+				break;
+			case '>':	/* Got named output file */
+				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -171,6 +175,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct G
 		}
 	}
 
+	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: More than one output file given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);

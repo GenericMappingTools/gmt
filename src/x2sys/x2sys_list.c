@@ -170,7 +170,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, i, n_files = 0;
+	unsigned int n_errors = 0, i, n_files[2] = {0, 0};
 	bool mixed = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -181,7 +181,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 			/* Common parameters */
 
 			case '<':	/* Skip input files */
-				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
+				if (!gmt_check_filearg (GMT, '<', opt->arg, GMT_IN, GMT_IS_DATASET)) n_errors++;
+				else if (n_files[GMT_IN]++ == 0) Ctrl->In.file = strdup (opt->arg);
+				break;
+			case '>':	/* Got named output file */
+				n_files[GMT_OUT]++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -253,7 +257,8 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct 
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Syntax error: Only one COEdatabase can be given (or stdin)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Syntax error: Only one COEdatabase can be given (or stdin)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: More than one output file given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "Syntax error option -A: Asymmetry must be in the range 0-1\n");
