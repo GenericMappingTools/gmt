@@ -1060,6 +1060,7 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, stru
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading MGD77T record\n");
 		GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 	}
+	gmt_chop (MGD77_header);	/* Get rid of CR or LF */
 
 	for (i = 0; i < 2; i++) H->mgd77[i] = gmt_M_memory (GMT, NULL, 1, struct MGD77_HEADER_PARAMS);	/* Allocate parameter header */
 
