@@ -3302,6 +3302,9 @@ GMT_LOCAL void plot_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0,
 	double x, y;
 	gmt_M_memset (C, 1, struct GMT_CIRCLE);	/* Set all to zero */
 
+	if (S->v.status & GMT_VEC_JUST_S) { /* Was given coordinates of A and B */
+		justify = 3;
+	}
 	switch (justify) {	/* A and B depends on chosen justification */
 		case 0: /* Was given coordinates of A; determine B */
 			C->lon[0] = lon0;	C->lat[0] = lat0;

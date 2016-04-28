@@ -362,7 +362,9 @@
         geovector. Azimuth (in degrees east from north) and length (in km)
         must be found in columns 4 and 5. The *size* is the length of the
         vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
-        for specifying attributes.
+        for specifying attributes.  Note: Geovector stems are drawn as thin
+	filled polygons and hence pen attributes like dashed and dotted are
+	not available.
 
     **-S~**
         decorated line, i.e., lines with symbols along them. Append

@@ -6704,6 +6704,45 @@ double gmt_mindist_to_point (struct GMT_CTRL *GMT, double lon, double lat, struc
 	return (d_min);
 }
 
+int gmtlib_small_circle_intersection (struct GMT_CTRL *GMT, double Ax, double Ay, double Ar, double Bx, double By, double Br, double Xx[2], double Yy[2]) {
+	/* Let (Ax,Ay) and (Bx,By) be the poles of two small circles, each with radius Ar and Br, respectively, in degrees.
+	 * Pass out the 0-2 intersections via Xx, Yx and return the nubmer of intersections 0-2.
+	 * Modified from http://gis.stackexchange.com/questions/48937/how-to-calculate-the-intersection-of-2-circles
+	 */
+	unsigned int k;
+	double A[3], B[3], X[3], N[3], P[3], t, a, b, L_X2, L_N2, cos_AB, AB, cos_Ar, cos_Br, cos_AB2;
+
+	gmt_geo_to_cart (GMT, Ay, Ax, A, true);	/* Get pole vector A */
+	gmt_geo_to_cart (GMT, By, Bx, B, true);	/* Get pole vector B */
+	cos_AB = gmt_dot3v (GMT, A, B);		/* Cos of spherical distance between A and B */
+	AB = d_acosd (cos_AB);			/* Distance between the two poles in degrees */
+	if ((Ar + Br) < AB) return 0;		/* No intersection possible */
+	if (doubleAlmostEqual (Ar + Br, AB)) {	/* Tangent point lines along great circle form A to B */
+		t = Ar / AB;	/* Fractional distance of X from A */
+		for (k = 0; k < 3; k++) X[k] = A[k] * (1.0 - t) + B[k] * t;
+		gmt_normalize3v (GMT, X);	/* Make sure X has unit length */
+		gmt_cart_to_geo (GMT, &Yy[0], &Xx[0], X, true);	/* Recover lon,lat of tangent point */
+		return 1;
+	}
+	/* Here we have two intersections */
+	cos_AB2 = cos_AB * cos_AB;
+	cos_Ar = cosd (Ar);	cos_Br = cosd (Br);
+	a = (cos_Ar - cos_Br * cos_AB) / (1.0 - cos_AB2);
+	b = (cos_Br - cos_Ar * cos_AB) / (1.0 - cos_AB2);
+	for (k = 0; k < 3; k++) X[k] = a * A[k] + b * B[k];
+	L_X2 = gmt_dot3v (GMT, X, X);	/* Length^2 of X */
+	gmt_cross3v (GMT, A, B, N);	/* Get pole position of plane through A and B (and origin O) */
+	L_N2 = gmt_dot3v (GMT, N, N);	/* Length^2 of N */
+	t = sqrt ((1.0 - L_X2) / L_N2);
+	for (k = 0; k < 3; k++) P[k] = X[k] + t * N[k];
+	gmt_normalize3v (GMT, P);	/* Make sure P has unit length */
+	gmt_cart_to_geo (GMT, &Yy[0], &Xx[0], P, true);		/* Recover lon,lat of 1st intersection point */
+	for (k = 0; k < 3; k++) P[k] = X[k] - t * N[k];
+	gmt_normalize3v (GMT, P);	/* Make sure P has unit length */
+	gmt_cart_to_geo (GMT, &Yy[1], &Xx[1], P, true);		/* Recover lon,lat of 2nd intersection point */
+	return 2;
+}
+
 /*! . */
 int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B[], double C[], double X[], double *CX_dist) {
 	/* A, B, C are 3-D Cartesian unit vectors, i.e., points on the sphere.
