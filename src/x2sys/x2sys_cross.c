@@ -293,15 +293,15 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	unsigned int *ok = NULL;
 
 	bool xover_locations_only = false;	/* true if only x,y (and possible indices) to be output */
-	bool internal = true;		/* false if only external xovers are needed */
-	bool external = true;		/* false if only internal xovers are needed */
+	bool internal = true;			/* false if only external xovers are needed */
+	bool external = true;			/* false if only internal xovers are needed */
 	bool do_project = false;		/* true if we must mapproject first */
-	bool got_time = false;		/* true if there is a time column */
+	bool got_time = false;			/* true if there is a time column */
 	bool first_header = true;		/* true for very first crossover */
-	bool first_crossover;		/* true for first crossover between two data sets */
-	bool same = false;			/* true when the two cruises we compare have the same name */
-	bool has_time[2];			/* true for each cruises that actually has a time column */
-	bool *duplicate = NULL;		/* Array, true for any cruise that is already listed */
+	bool first_crossover;			/* true for first crossover between two data sets */
+	bool same = false;			/* true when the two tracks we compare have the same name */
+	bool has_time[2];			/* true for each tracks that actually has a time column */
+	bool *duplicate = NULL;			/* Array, true for any track that is already listed */
 	bool cmdline_files = false;		/* true if files where given directly on the command line */
 	bool wrap = false;			/* true if data wraps so -Rg was given */
 	

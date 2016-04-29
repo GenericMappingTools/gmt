@@ -96,15 +96,15 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Report center of each tile with tracks instead [Default is track files].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D only reports the track names and not the report on each field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column names that must ALL be present [Default is any field].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Report center of each tile with tracks instead of track listing [Default is track files].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Only report the track names and skip the report for each field.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column field names that must ALL be present [Default is any field].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Report global flags per track [Default reports for segments inside region].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Setup mode: Return all pairs of cruises that might intersect given\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the bin distribution.  Optionally, give file with a list of cruises.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Then, only pairs with at least one cruise from the list is output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Setup mode: Return all pairs of tracks that might intersect given\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the bin distribution.  Optionally, give file with a list of tracks.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Then, only pairs with at least one track from the list is output.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -L+ to include internal pairs in the list [external only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Comma-separated list of column names that ALL must be missing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Comma-separated list of column field names that ALL must be missing.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
 	GMT_Option (API, "V,.");
@@ -313,10 +313,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 			if (B.base[ij].n_tracks == 0) continue;
 
 			for (jj = kk = 0, track = B.base[ij].first_track->next_track, first = true; first && jj < B.base[ij].n_tracks; jj++, track = track->next_track) {
-				in_bin_flag[track->track_id] |= track->track_flag;	/* Build the total bit flag for this cruise INSIDE the region only */
+				in_bin_flag[track->track_id] |= track->track_flag;	/* Build the total bit flag for this track INSIDE the region only */
 				if (Ctrl->L.active) {	/* Just build integer list of track ids for this bin */
-					y_ok = (Ctrl->F.flags) ? ((track->track_flag & combo) == combo) : true;		/* Each cruise must have the requested fields if -F is set */
-					n_ok = (Ctrl->N.flags) ? ((track->track_flag & missing) == missing) : true;	/* Each cruise must have the missing fields */
+					y_ok = (Ctrl->F.flags) ? ((track->track_flag & combo) == combo) : true;		/* Each track must have the requested fields if -F is set */
+					n_ok = (Ctrl->N.flags) ? ((track->track_flag & missing) == missing) : true;	/* Each track must have the missing fields */
 					if (y_ok && n_ok) ids_in_bin[kk++] = track->track_id;
 				}
 				else {
@@ -412,9 +412,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args) {
 
 			for (kk = 0; kk < n_tracks; kk++) {
 				if (y_match[kk] == 0 || n_match[kk] == 1) continue;
-				sprintf (line, "%s.%s%s", B.head[kk].trackname, s->suffix, GMT->current.setting.io_col_separator);
+				sprintf (line, "%s.%s", B.head[kk].trackname, s->suffix);
 				if (!Ctrl->D.active) {
 					for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
+						strcat (line, GMT->current.setting.io_col_separator);
 						(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? strcat (line, "Y") : strcat (line, "N");
 					}
 				}

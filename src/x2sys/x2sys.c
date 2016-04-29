@@ -1314,7 +1314,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	if (mode == 1)
 		B->head = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 	else
-		B->head = this_info = x2sys_bix_make_entry (GMT, "-", 0, 0);	/* The head cruise is not real and has name "-"; it is our list anchor */
+		B->head = this_info = x2sys_bix_make_entry (GMT, "-", 0, 0);	/* The head track is not real and has name "-"; it is our list anchor */
 
 	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Read error in header record\n");

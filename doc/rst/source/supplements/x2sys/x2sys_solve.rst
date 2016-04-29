@@ -60,27 +60,27 @@ Required Arguments
     squares approach:
 
     **c** will fit f(*p*) = *a* (a constant offset);
-    records must contain cruise ID1, ID2, COE.
+    records must contain track ID1, ID2, COE.
 
     **d** will fit f(*p*) = *a* + *b* \* *d* (linear
-    drift; *d* is distance; records must contain cruise ID1, ID2, d1,
+    drift; *d* is distance; records must contain track ID1, ID2, d1,
     d2, COE.
 
     **g** will fit f(*p*) = *a* + *b* sin(y)^2
-    (1980-1930 gravity correction); records must contain cruise ID1,
+    (1980-1930 gravity correction); records must contain track ID1,
     ID2, latitude y, COE.
 
     **h** will fit f(*p*) = *a* + *b* cos(H) + *c*
     cos(2H) + *d* sin(H) + *e* sin(2H)
-    (magnetic heading correction); records must contain cruise ID1, ID2,
+    (magnetic heading correction); records must contain track ID1, ID2,
     heading H, COE.
 
     **s** will fit f(*p*) = *a* \* z (a unit scale
-    correction); records must contain cruise ID1, ID2, z1, z2.
+    correction); records must contain track ID1, ID2, z1, z2.
 
     **t** will fit f(*p*) = *a* + *b* \* (*t - t0*)
     (linear drift; *t0* is the start time of the track); records must
-    contain cruise ID1, ID2, t1-t0, t2-t0, COE.
+    contain track ID1, ID2, t1-t0, t2-t0, COE.
 
 Optional Arguments
 ------------------
