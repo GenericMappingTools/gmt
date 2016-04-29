@@ -462,9 +462,11 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_
 
 	/* Check that the options selected are mutually consistent */
 
-	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI || Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
+	no_size_needed = (Ctrl->S.readmode == READ_CMT || Ctrl->S.readmode == READ_PLANES || Ctrl->S.readmode == READ_AKI ||
+	                  Ctrl->S.readmode == READ_TENSOR || Ctrl->S.readmode == READ_AXIS);
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += gmt_M_check_condition (GMT, !no_size_needed && (Ctrl->S.active && Ctrl->S.scale <= 0.0), "Syntax error: -S must specify scale\n");
+	n_errors += gmt_M_check_condition (GMT, !no_size_needed && (Ctrl->S.active && Ctrl->S.scale <= 0.0),
+	                                   "Syntax error: -S must specify scale\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->O2.active, "Syntax error: -Z cannot be combined with -Fo\n");
 
 	/* Set to default pen where needed */
@@ -605,7 +607,8 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		/* Immediately skip locations outside of the map area */
 
-		if ((gmt_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (gmt_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
+		if ((gmt_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) ||
+		                (gmt_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 		}
@@ -632,35 +635,43 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.readmode == READ_CMT) {
 			meca.NP1.str = atof (col[2+new_fmt]);
-			if (meca.NP1.str > 180.0) meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
+			if (meca.NP1.str > 180.0)
+				meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = atof (col[3+new_fmt]);
 			meca.NP1.rake = atof (col[4+new_fmt]);
-			if (meca.NP1.rake > 180.0) meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
+			if (meca.NP1.rake > 180.0)
+				meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.NP2.str = atof (col[5+new_fmt]);
-			if (meca.NP2.str > 180.0) meca.NP2.str -= 360.0; else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
+			if (meca.NP2.str > 180.0)
+				meca.NP2.str -= 360.0; else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP2.dip = atof (col[6+new_fmt]);
 			meca.NP2.rake = atof (col[7+new_fmt]);
-			if (meca.NP2.rake > 180.0) meca.NP2.rake -= 360.0; else if (meca.NP2.rake < -180.0) meca.NP2.rake += 360.0;	/* Rake must be in -180/+180 range*/
+			if (meca.NP2.rake > 180.0)
+				meca.NP2.rake -= 360.0; else if (meca.NP2.rake < -180.0) meca.NP2.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.moment.mant = atof (col[8+new_fmt]);
 			meca.moment.exponent = atoi(col[9+new_fmt]);
 			if (meca.moment.exponent == 0) meca.magms = atof (col[8+new_fmt]);
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
 			meca.NP1.str = atof (col[2+new_fmt]);
-			if (meca.NP1.str > 180.0) meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
+			if (meca.NP1.str > 180.0)
+				meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = atof (col[3+new_fmt]);
 			meca.NP1.rake = atof (col[4+new_fmt]);
-			if (meca.NP1.rake > 180.0) meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
+			if (meca.NP1.rake > 180.0)
+				meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
 			meca.magms = atof (col[5+new_fmt]);
 			meca.moment.exponent = 0;
 			meca_define_second_plane (meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
 			meca.NP1.str = atof (col[2+new_fmt]);
-			if (meca.NP1.str > 180.0) meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
+			if (meca.NP1.str > 180.0)
+				meca.NP1.str -= 360.0; else if (meca.NP1.str < -180.0) meca.NP1.str += 360.0;		/* Strike must be in -180/+180 range*/
 			meca.NP1.dip = atof (col[3+new_fmt]);
 			meca.NP2.str = atof (col[4+new_fmt]);
-			if (meca.NP2.str > 180.0) meca.NP2.str -= 360.0; else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
+			if (meca.NP2.str > 180.0)
+				meca.NP2.str -= 360.0; else if (meca.NP2.str < -180.0) meca.NP2.str += 360.0;		/* Strike must be in -180/+180 range*/
 			fault = atof (col[5+new_fmt]);
 			meca.magms = atof (col[6+new_fmt]);
 			meca.moment.exponent = 0;
@@ -715,7 +726,8 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
 			Definition of scalar moment.
 			*/
-			meca.moment.mant = sqrt(squared(mt.f[0]) + squared(mt.f[1]) + squared(mt.f[2]) + 2.*(squared(mt.f[3]) + squared(mt.f[4]) + squared(mt.f[5]))) / M_SQRT2;
+			meca.moment.mant = sqrt(squared(mt.f[0]) + squared(mt.f[1]) + squared(mt.f[2]) +
+			                        2.*(squared(mt.f[3]) + squared(mt.f[4]) + squared(mt.f[5]))) / M_SQRT2;
 			meca.moment.exponent = mt.expo;
 			meca.magms = 0.;
 
@@ -726,6 +738,11 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
+
+		/* The following is a hacky way of fixing the issue http://gmt.soest.hawaii.edu/issues/894 
+		   where a rake of exactly zero would revert the polarities. A proper fix would require finding
+		   where it happens and why, but that would be too time consuming and this should be good enough. */
+		if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;
 
 		/* Common to all input types ... */
 
