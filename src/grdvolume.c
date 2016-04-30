@@ -474,6 +474,20 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
+	if (Ctrl->S.active && !gmt_M_is_geographic (GMT, GMT_IN)) {	/* Not known to be geographic */
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: -S requires a geographic grid.\n");
+		if ((Grid->header->wesn[YLO] >= -90.0 && Grid->header->wesn[YHI] <= 90.0) && 
+			(Grid->header->wesn[XLO] >= -360.0 && Grid->header->wesn[XHI] <= 720.0) && 
+			(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]) <= 360.0) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "However, your grid domain is compatible with geographical grid domains.\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "To make sure the grid is recognized as geographical, use the -fg option.\n");
+		}
+		else
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Yours grid is recognized as Cartesian.\n");
+		
+		Return (EXIT_FAILURE);
+	}
+	
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Selected base value exceeds the minimum grid z value - aborting\n");
 		Return (EXIT_FAILURE);
