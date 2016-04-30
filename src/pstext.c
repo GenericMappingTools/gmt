@@ -176,12 +176,14 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
 		int mode = 0;
-		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));			/* Change current pen */
-		if (T->boxflag & 2) gmt_setfill (GMT, &(T->boxfill), T->boxflag & 1);	/* Change curent fill */
-		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;	/* Set the correct box shape */
-		if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
-		if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
-		if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
+		struct GMT_FILL *fill = NULL;		
+		if (T->boxflag & 1) gmt_setpen (GMT, &(T->boxpen));		/* Change current pen */
+		if (T->boxflag & 2) fill = &(T->boxfill);			/* Determine if fill or not */
+		if (T->boxflag & 3) gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline */
+		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;			/* Set correct box shape */
+		else if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
+		else if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
+		else if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */
