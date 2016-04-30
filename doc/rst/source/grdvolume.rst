@@ -13,10 +13,10 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* ]
+**grdvolume** *grdfile* [ |-C|\ *cval* or |-C|\ *low/high/delta* or |-C|\ **r**\ *low/high* or |-C|\ **r**\ *cval*]
 [ |-L|\ *base* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [*unit*\ ] ] [ |-T|\ [**c**\ \|\ **h**] ]
+[ |-S|\ [*unit*] ] [ |-T|\ [**c**\ \|\ **h**] ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
@@ -28,14 +28,11 @@ Synopsis
 Description
 -----------
 
-**grdvolume** reads a 2-D binary grid file and calculates the volume
-contained between the surface and the plane specified by the given
-contour (or zero if not given) and reports the area, volume, and maximum
-mean height (volume/area). Alternatively, specify a range of contours to
-be tried and **grdvolume** will determine the volume and area inside the
-contour for all contour values. Using **-T**, the contour that produced
-the maximum mean height (or maximum curvature of heights vs contour
-value) is reported as well. This feature may be used with **grdfilter**
+**grdvolume** reads a 2-D grid file and calculates the volume contained between the surface and the plane specified
+by the given contour (or zero if not given) and reports the area, volume, and maximum mean height (volume/area).
+Alternatively, specify a range of contours to be tried and **grdvolume** will determine the volume and area inside
+the contour for all contour values. Using **-T**, the contour that produced the maximum mean height (or maximum
+curvature of heights vs contour value) is reported as well. This feature may be used with **grdfilter**
 in designing an Optimal Robust Separator [*Wessel*, 1998]. 
 
 Required Arguments
@@ -49,26 +46,23 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* 
-    find area, volume and mean height (volume/area) inside the *cval*
-    contour. Alternatively, search using all contours from *low* to
-    *high* in steps of *delta*. [Default returns area, volume and mean
-    height of the entire grid]. The area is measured in the plane of the contour.
-    The **Cr** form on the other hand computes volume between the grid
-    surface and the plans defined by *low* and *high*. Note that this is an
-    *outside* volume whilst the other forms compute an *inside* (below the surface)
-    area volume. Use this form to compute for example the volume of water
-    between two contours.
+**-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* or **-Cr**\ *cval*
+    find area, volume and mean height (volume/area) inside the *cval* contour. Alternatively, search using
+    all contours from *low* to *high* in steps of *delta*. [Default returns area, volume and mean height
+    of the entire grid]. The area is measured in the plane of the contour. The **Cr** form on the other
+    hand computes the volume between the grid surface and the plans defined by *low* and *high*,
+    or below *cval* and grid's minimum. Note that this is an *outside* volume whilst the other forms
+    compute an *inside* (below the surface) area volume. Use this form to compute for example the volume
+    of water between two contours.
 
 .. _-L:
 
 **-L**\ *base*
-    Also add in the volume from the level of the contour down to *base*
-    [Default base is contour].
+    Also add in the volume from the level of the contour down to *base* [Default base is contour].
 
 .. _-S:
 
-**-S**\ [*unit*\ ]
+**-S**\ [*unit*]
     Convert degrees to Flat Earth distances, append a unit from
     **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**
     [Default is Cartesian].
