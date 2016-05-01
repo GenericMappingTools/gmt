@@ -743,6 +743,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 		   where a rake of exactly zero would revert the polarities. A proper fix would require finding
 		   where it happens and why, but that would be too time consuming and this should be good enough. */
 		if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;
+		if (gmt_M_is_zero (meca.NP2.rake)) meca.NP2.rake = 0.00001;
 
 		/* Common to all input types ... */
 

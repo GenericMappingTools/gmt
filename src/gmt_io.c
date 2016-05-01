@@ -6702,7 +6702,7 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 
 	bool ASCII, close_file = false, header = true, no_segments, first_seg = true, poly, this_is_poly = false, pol_check, check_geometry;
 	int status;
-	uint64_t n_expected_fields;
+	uint64_t n_expected_fields, n_returned = 0;
 	uint64_t n_read = 0, row = 0, seg = 0, col, n_poly_seg = 0;
 	size_t n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_LEN64] = {""};
@@ -6712,7 +6712,12 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	void * (*psave) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;	/* Pointer to function reading tables */
 
 	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ASCII/binary, else it defaults to ASCII */
-		n_expected_fields = GMT->common.b.active[GMT_IN] ? GMT->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
+		if (GMT->common.b.active[GMT_IN]) {	/* May return fewer than # of binary columns if -i was set */
+			n_returned = (GMT->common.i.active) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
+			n_expected_fields = GMT->common.b.ncol[GMT_IN];
+		}
+		else
+			n_expected_fields = GMT_MAX_COLUMNS;
 		strcpy (open_mode, GMT->current.io.r_mode);
 		ASCII = !GMT->common.b.active[GMT_IN];
 	}
@@ -6832,7 +6837,8 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 			if (!no_segments) {	/* Read data if we read a segment header up front, but guard against headers which sets in = NULL */
 				while (!gmt_M_rec_is_eof (GMT) && (in = GMT->current.io.input (GMT, fp, &n_expected_fields, &status)) == NULL) n_read++;
 			}
-			T->segment[seg]->n_columns = n_expected_fields;	/* This is where number of columns are determined */
+			//T->segment[seg]->n_columns = n_expected_fields;	/* This is where number of columns are determined */
+			T->segment[seg]->n_columns = (n_returned) ? n_returned : n_expected_fields;	/* This is where number of columns are determined */
 			no_segments = false;	/* This has now served its purpose */
 		}
 		if (gmt_M_rec_is_eof (GMT)) continue;	/* At EOF; get out of this loop */

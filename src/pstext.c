@@ -181,9 +181,9 @@ GMT_LOCAL void output_words (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 		if (T->boxflag & 2) fill = &(T->boxfill);			/* Determine if fill or not */
 		if (T->boxflag & 3) gmt_setfill (GMT, fill, T->boxflag & 1);	/* Change current fill and/or outline */
 		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;			/* Set correct box shape */
-		else if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
-		else if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
-		else if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
+		if (T->boxflag & 4) mode = PSL_RECT_ROUNDED;
+		if (T->boxflag & 8) mode = PSL_RECT_CONCAVE;
+		if (T->boxflag & 16) mode = PSL_RECT_CONVEX;
 		/* Compute text box, draw/fill it, and in the process store the text in the PS file for next command */
 		PSL_plotparagraphbox (PSL, x, y, T->font.size, text, T->paragraph_angle, T->block_justify, offset, mode);
 		/* Passing NULL means we typeset using the last stored paragraph info */

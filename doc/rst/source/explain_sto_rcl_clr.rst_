@@ -1,5 +1,5 @@
-`STORE, RECALL and CLEAR`
--------------------------
+STORE, RECALL and CLEAR
+-----------------------
 
 You may store intermediate calculations to a named variable that you may
 recall and place on the stack at a later time. This is useful if you

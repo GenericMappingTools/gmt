@@ -618,6 +618,16 @@ a timestamp belongs to:
 
 **GPSWEEK** = 1980-01-06T00:00:00 SUB 86400 DIV 7 DIV FLOOR : GPS week without rollover
 
+Active Column Selection
+-----------------------
+
+When **-C**\ *cols* is set then any operation, including loading of data from files, will
+restrict which columns are affected.
+To avoid unexpected results, note that if you issue a **-C**\ *cols* option before you load
+in the data then only those columns will be updated, hence the unspecified columns will be zero.
+On the other hand, if you load the file first and then issue **-C**\ *cols* then the unspecified
+columns will have been loaded but are then ignored until you undo the effect of **-C**.
+
 Examples
 --------
 
