@@ -1464,15 +1464,15 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						else	/* Probably just junk -S in header */
 							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segment header contained -S%s - ignored\n", s_args);
 					}
-					if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
-						s_args[0] = '\0';	/* Recycle this string for this purpose */
-						strcat (s_args, " -G");
-						if (S.D.fill[0]) strcat (s_args, S.D.fill);	/* Set specific fill */
-						strcat (s_args, " -W"); 
-						if (S.D.pen[0])  strcat (s_args, S.D.pen);	/* Set specific outline */
-						Decorate->table[0]->segment[seg_out]->header = strdup (s_args);
-						if (change & 1) change -= 1;	/* Don't want polygon to be true if -G was found */
-					}
+				}
+				if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {
+					s_args[0] = '\0';	/* Recycle this string for this purpose */
+					strcat (s_args, " -G");
+					if (S.D.fill[0]) strcat (s_args, S.D.fill);	/* Set specific fill */
+					strcat (s_args, " -W"); 
+					if (S.D.pen[0])  strcat (s_args, S.D.pen);	/* Set specific outline */
+					Decorate->table[0]->segment[seg_out]->header = strdup (s_args);
+					if (change & 1) change -= 1;	/* Don't want polygon to be true if -G was found */
 				}
 
 				if (S.fq_parse) { /* Did not supply -Sf or -Sq in the segment header */
