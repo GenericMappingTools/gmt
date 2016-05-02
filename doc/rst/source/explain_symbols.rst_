@@ -421,6 +421,10 @@
                 Draws the outline of symbols [Default is no outline];
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
+
+            **+s**\ <symbol><size>
+                Specifies the code and size of the decorative symbol.
+
             **+w**
                 Specifies how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
