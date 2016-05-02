@@ -884,11 +884,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 				pos = record[0] = 0;	/* Start with blank record */
 				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
 				gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
-				gmt_add_to_record (GMT, record, out[x], GMT_X, 2);	/* Format our output x value */
-				gmt_add_to_record (GMT, record, out[y], GMT_Y, 2);	/* Format our output y value */
+				gmt_add_to_record (GMT, record, out[x], GMT_X, GMT_OUT, 2);	/* Format our output x value */
+				gmt_add_to_record (GMT, record, out[y], GMT_Y, GMT_OUT, 2);	/* Format our output y value */
 				if (Ctrl->E.active) {
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignore) and update pos */
-					gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
+					gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
 				}
 				if (line[pos]) strcat (record, &line[pos]);	/* Append the remainder of the user text */
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
@@ -1016,16 +1016,16 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					pos = record[0] = 0;	/* Start with blank record */
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring (ignored) and update pos */
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring (ignored) and update pos */
-					gmt_add_to_record (GMT, record, in[x], GMT_X, 2);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, in[y], GMT_Y, 2);	/* Format our output y value */
+					gmt_add_to_record (GMT, record, in[x], GMT_X, GMT_OUT, 2);	/* Format our output x value */
+					gmt_add_to_record (GMT, record, in[y], GMT_Y, GMT_OUT, 2);	/* Format our output y value */
 					if (line[pos]) {	/* Append user text */
 						strcat (record, &line[pos]);
 						strcat (record, GMT->current.setting.io_col_separator);
 					}
-					gmt_add_to_record (GMT, record, d, GMT_Z, 0);	/* Format our output z value */
+					gmt_add_to_record (GMT, record, d, GMT_Z, GMT_OUT, 0);	/* Format our output z value */
 					if (Ctrl->L.active) {
-						gmt_add_to_record (GMT, record, xnear, fmt[0], 1);
-						gmt_add_to_record (GMT, record, ynear, fmt[1], 1);
+						gmt_add_to_record (GMT, record, xnear, fmt[0], GMT_OUT, 1);
+						gmt_add_to_record (GMT, record, ynear, fmt[1], GMT_OUT, 1);
 					}
 					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 				}
@@ -1063,11 +1063,11 @@ int GMT_mapproject (void *V_API, int mode, void *args) {
 					pos = record[0] = 0;	/* Start with blank record */
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns xstring and update pos */
 					gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);	/* Returns ystring and update pos */
-					gmt_add_to_record (GMT, record, out[x], o_type[GMT_X], 2);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, out[y], o_type[GMT_Y], 2);	/* Format our output y value */
+					gmt_add_to_record (GMT, record, out[x], o_type[GMT_X], GMT_OUT, 2);	/* Format our output x value */
+					gmt_add_to_record (GMT, record, out[y], o_type[GMT_Y], GMT_OUT, 2);	/* Format our output y value */
 					if (Ctrl->E.active || (Ctrl->T.active && GMT->current.proj.datum.h_given)) {
 						gmt_strtok (line, GMT_TOKEN_SEPARATORS, &pos, p);		/* Returns zstring (ignored) and update pos */
-						gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, 2);	/* Format our output z value */
+						gmt_add_to_record (GMT, record, out[GMT_Z], GMT_Z, GMT_OUT, 2);	/* Format our output z value */
 					}
 					strcat (record, &line[pos]);
 					GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */

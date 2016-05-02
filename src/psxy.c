@@ -274,7 +274,8 @@ GMT_LOCAL void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 }
 
 GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
-	/* Accept the textset D with records of {lon, lat, size, angle, symbol} and plot rotated symbols at those locations */
+	/* Accept the textset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
+	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
 	int object_ID;
 	size_t len;
 	char string[GMT_LEN16] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[GMT_LEN64] = {""};
@@ -303,7 +304,8 @@ GMT_LOCAL int plot_decorations (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D) {
 	len = strlen (tmp_file) - 4;	/* Position of the '.' */
 	tmp_file[len] = '\0';	/* Temporarily hide the ".def" extension */
 	/* Use -SK since our kustom symbol has a variable standard symbol ? that we must get from each data records */
-	sprintf (buffer, "-R -J -O -K -SK%s %s", tmp_file, string);
+	sprintf (buffer, "-R%g/%g/%g/%g -Jx1i -O -K -SK%s %s", GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI],
+		GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], tmp_file, string);
 	if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK)	/* Plot all the symbols */
 		return (GMT->parent->error);
 	tmp_file[len] = '.';	/* Restore the ".def" extension so we can delete the file (unless -Vd) */

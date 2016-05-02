@@ -2405,12 +2405,11 @@ GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGM
 		L->x += sign * (G->nudge[GMT_X] * c - G->nudge[GMT_Y] * s);
 		L->y += sign * (G->nudge[GMT_X] * s + G->nudge[GMT_Y] * c);
 	}
-	gmt_xy_to_geo (GMT, &x, &y, L->x, L->y);
-	/* Build record with "lon lat angle symbol" */
-	gmt_add_to_record (GMT, record, x, GMT_X, 2);
-	gmt_add_to_record (GMT, record, y, GMT_Y, 2);
+	/* Build record with Cartesian (hence col = GMT_Z) "x y angle symbol" since we are using -Jx1i */
+	gmt_add_to_record (GMT, record, L->x, GMT_Z, GMT_IN, 2);
+	gmt_add_to_record (GMT, record, L->y, GMT_Z, GMT_IN, 2);
 	strcat (record, G->size);
-	gmt_add_to_record (GMT, record, L->angle, 3, 3);
+	gmt_add_to_record (GMT, record, L->angle, GMT_Z, GMT_IN, 3);
 	strcat (record, G->symbol_code);
 	S->record[S->n_rows++] = strdup (record);
 }

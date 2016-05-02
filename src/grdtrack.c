@@ -1142,16 +1142,16 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (k = 0; GMT->current.io.current_record[k]; k++) if (GMT->current.io.current_record[k] == ',') GMT->current.io.current_record[k] = ' ';
 				record[0] = 0;
 				sscanf (GMT->current.io.current_record, "%*s %*s %[^\n]", line);
-				gmt_add_to_record (GMT, record, in[ix], ix, 2);	/* Format our output x value */
-				gmt_add_to_record (GMT, record, in[iy], iy, 2);	/* Format our output y value */
+				gmt_add_to_record (GMT, record, in[ix], ix, GMT_OUT, 2);	/* Format our output x value */
+				gmt_add_to_record (GMT, record, in[iy], iy, GMT_OUT, 2);	/* Format our output y value */
 				strcat (record, line);
 				for (g = 0; g < Ctrl->G.n_grids; g++) {
-					gmt_add_to_record (GMT, record, value[g], GMT_Z+g, 1);	/* Format our output y value */
+					gmt_add_to_record (GMT, record, value[g], GMT_Z+g, GMT_OUT, 1);	/* Format our output y value */
 				}
 				if (Ctrl->T.mode == 2) {	/* Add extra columns */
-					gmt_add_to_record (GMT, record, Ctrl->T.S->x[Ctrl->T.S->col], GMT_X, 1);	/* Format our output x value */
-					gmt_add_to_record (GMT, record, Ctrl->T.S->y[Ctrl->T.S->row], GMT_Y, 1);	/* Format our output y value */
-					gmt_add_to_record (GMT, record, Ctrl->T.S->radius, GMT_Z, 1);			/* Format our radius */
+					gmt_add_to_record (GMT, record, Ctrl->T.S->x[Ctrl->T.S->col], GMT_X, GMT_OUT, 1);	/* Format our output x value */
+					gmt_add_to_record (GMT, record, Ctrl->T.S->y[Ctrl->T.S->row], GMT_Y, GMT_OUT, 1);	/* Format our output y value */
+					gmt_add_to_record (GMT, record, Ctrl->T.S->radius, GMT_Z, GMT_OUT, 1);			/* Format our radius */
 				}
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 			}

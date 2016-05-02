@@ -4865,15 +4865,15 @@ bool gmtlib_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  i
 }
 
 /*! . */
-void gmt_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t col, unsigned int sep) {
-	/* formats and appends val to the record texts string.
+void gmt_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t col, unsigned int way, unsigned int sep) {
+	/* formats and appends val to the record texts string; way is GMT_IN|GMT_OUT
 	 * If sep is 1 we prepend col separator.
 	 * If sep is 2 we append col separator
 	 * If sep is 1|2 do both [0 means no separator].
 	 * if sep > 10 we init record then remove 10 from sep.
 	 */
 	char word[GMT_LEN64] = {""};
-	gmt_ascii_format_col (GMT, word, val, GMT_OUT, col);
+	gmt_ascii_format_col (GMT, word, val, way, col);
 	if (sep >= 10) {	/* Initialize new record */
 		record[0] = '\0';
 		sep -= 10;

@@ -475,7 +475,7 @@ int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (GMT->common.b.active[GMT_IN]) {	/* Make ASCII record */
 					gmt_M_memset (chosen, GMT_BUFSIZ, char);
 					for (col = 0; col < ncol; col++) {	/* Report min/max for each column in the format controlled by -C */
-						gmt_add_to_record (GMT, chosen, dchosen[col], col, sep);
+						gmt_add_to_record (GMT, chosen, dchosen[col], col, GMT_OUT, sep);
 						sep = 1;
 					}
 				}
