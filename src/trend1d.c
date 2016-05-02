@@ -827,9 +827,8 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 		if (!Ctrl->model_parameters) {	/* Only give verbose feedback on coefficients if not requested as output */
 			if (Ctrl->N.M.type & 1) {	/* Has polynomial component */
 				if (Ctrl->N.M.chebyshev)
-					sprintf (format, "Model Coefficients  (Chebyshev");
-				else
-					sprintf (format, "Model Coefficients  (Polynomial");
+					cheb_to_pol (GMT, c_model, Ctrl->N.M.n_poly, xmin, xmax, 1);
+				sprintf (format, "Model Coefficients  (Polynomial");
 			}
 			if (Ctrl->N.M.type & 2)	/* Has Fourier components */
 				strcat (format, " and Fourier");
