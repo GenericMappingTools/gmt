@@ -140,7 +140,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
+	if (!API->GMT->common.synopsis.extended) GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Will center the sectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
@@ -500,9 +500,9 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		for (i = 0; i < n; i++) {
 			if (Ctrl->D.active) {	/* Center bin by removing half bin width here */
 				this_az = azimuth[i] - half_bin_width;
-				if (!half_only && this_az < 0.0)   this_az += 360.0;
+				if (!half_only && this_az < 0.0) this_az += 360.0;
 				if (half_only == 1 && this_az < -90.0) this_az += 180.0;
-				if (half_only == 2 && this_az < 0.0) this_az += 180.0;
+				if (half_only == 2 && this_az <   0.0) this_az += 180.0;
 			}
 			else
 				this_az = azimuth[i];
@@ -514,7 +514,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			}
 			assert (bin < n_bins);
 			sum[bin] += length[i];
-			if (Ctrl->T.active) {	/* Also count its other end */
+			if (Ctrl->T.active) {	/* Also count the other end of the orientation */
 				this_az += 180.0;	if (this_az >= 360.0) this_az -= 360.0;
 				bin = irint (floor ((this_az + az_offset) / Ctrl->A.inc));
 				sum[bin] += length[i];
@@ -533,13 +533,10 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 		if (Ctrl->S.normalize) for (bin = 0; bin < n_bins; bin++) sum[bin] /= max;
 		if (Ctrl->N.active) for (bin = 0; bin < n_bins; bin++) sum[bin] = sqrt (sum[bin]);
 	}
-	else {
+	else {	/* Find max length of individual vectors */
 		for (i = 0; i < n; i++) if (length[i] > max) max = length[i];
-		if (Ctrl->S.normalize) {
-			max = 1.0 / max;
-			for (i = 0; i < n; i++) length[i] *= max;
-			max = 1.0 / max;
-		}
+		if (Ctrl->S.normalize)
+			for (i = 0; i < n; i++) length[i] /= max;
 	}
 
 	if (Ctrl->I.active || gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -548,7 +545,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, kind[Ctrl->A.active],
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_NORMAL, format, n, mean_theta, mean_vector, mean_resultant, max, mean_radius, total);
-		if (Ctrl->I.active) {
+		if (Ctrl->I.active) {	/* That was all we needed to do, wrap up */
 			gmt_M_free (GMT, sum);
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
@@ -600,7 +597,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	if (do_fill) {	/* Until psrose uses a polar projection we must bypass the basemap fill and do it ourself here */
 		double dim = 2.0 * Ctrl->S.scale;
 		GMT->current.map.frame.paint = true;	/* Restore original setting */
-		if (half_only) {	/* Clip the circle */
+		if (half_only) {	/* Clip the bottom half of the circle */
 			double xc[4], yc[4];
 			xc[0] = xc[3] = -Ctrl->S.scale;	xc[1] = xc[2] = Ctrl->S.scale;
 			yc[0] = yc[1] = 0.0;	yc[2] = yc[3] = Ctrl->S.scale;
@@ -625,7 +622,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	}
 
 	gmt_setpen (GMT, &Ctrl->W.pen[0]);
-	if (windrose) {
+	if (windrose) {	/* Here we draw individual vectors */
 		for (i = 0; i < n; i++) {
 			sincosd (start_angle - azimuth[i], &s, &c);
 			radius = length[i] * Ctrl->S.scale;
@@ -651,8 +648,8 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 	else if (Ctrl->A.rose) {	/* Draw rose diagram */
 
 		for (i = bin = 0; bin < n_bins; bin++, i++) {
-			az = (bin + 0.5) * Ctrl->A.inc - az_offset - half_bin_width;
-			sincosd (start_angle - az, &s, &c);
+			az = (bin - 0.5) * Ctrl->A.inc - az_offset + half_bin_width;
+			sincosd (start_angle - az - Ctrl->A.inc, &s, &c);
 			xx[i] = Ctrl->S.scale * sum[bin] * c;
 			yy[i] = Ctrl->S.scale * sum[bin] * s;
 		}
