@@ -150,7 +150,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is West/East/South/North (depending on GMT_LANGUAGE)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W/90E/-/0 for half-circle].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes (requires -C).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes.  If -C is used then the attributes apply to the -C vector(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Otherwise, if windrose mode is selected we apply vector attributes to individual directions.\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [false].\n");
@@ -257,7 +258,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_
 					}
 				}
 				else {
-					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
+					if (opt->arg[0] == '+' || opt->arg[0] == '\0') {	/* No size argument (use default), just attributes */
 						n_errors += gmt_parse_vector (GMT, 'v', opt->arg, &Ctrl->M.S);
 					}
 					else {	/* Size, plus possible attributes */
@@ -346,7 +347,7 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	char text[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
 
-	double max = 0.0, radius, az, x_origin, y_origin, tmp, one_or_two = 1.0, s, c;
+	double max = 0.0, radius, az, x_origin, y_origin, tmp, one_or_two = 1.0, s, c, f;
 	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0;
 	double x1, x2, y1, y2, total = 0.0, total_arc, off, max_radius, az_offset, start_angle;
 	double asize, lsize, this_az, half_bin_width, diameter, wesn[4], mean_vector, mean_resultant;
@@ -623,14 +624,35 @@ int GMT_psrose (void *V_API, int mode, void *args) {
 
 	gmt_setpen (GMT, &Ctrl->W.pen[0]);
 	if (windrose) {	/* Here we draw individual vectors */
+		if (Ctrl->M.active) { /* Initialize vector head settings */
+			gmt_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
+			Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+			dim[5] = GMT->current.setting.map_vector_shape;
+			dim[6] = (double)Ctrl->M.S.v.status;
+			dim[7] = (double)Ctrl->M.S.v.v_kind[0];	dim[8] = (double)Ctrl->M.S.v.v_kind[1];
+			if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &Ctrl->W.pen[1]);
+			if (Ctrl->M.S.v.status & GMT_VEC_FILL2) gmt_setfill (GMT, &Ctrl->M.S.v.fill, true);       /* Use fill structure */
+		}
 		for (i = 0; i < n; i++) {
 			sincosd (start_angle - azimuth[i], &s, &c);
 			radius = length[i] * Ctrl->S.scale;
-			if (Ctrl->T.active)
-				PSL_plotsegment (PSL, -radius * c, -radius * s, radius * c, radius * s);
-			else
-				PSL_plotsegment (PSL, 0.0, 0.0, radius * c, radius * s);
-
+			if (Ctrl->M.active) {	/* Set end point of vector */
+				dim[0] = radius * c, dim[1] = radius * s;
+				f = (radius < Ctrl->M.S.v.v_norm) ? radius / Ctrl->M.S.v.v_norm : 1.0;
+				dim[2] = f * Ctrl->M.S.v.v_width, dim[3] = f * Ctrl->M.S.v.h_length, dim[4] = f * Ctrl->M.S.v.h_width;
+			}
+			if (Ctrl->T.active) {
+				if (Ctrl->M.active)	/* Draw two-headed vectors */
+					PSL_plotsymbol (PSL,  -radius * c, -radius * s, dim, PSL_VECTOR);
+				else
+					PSL_plotsegment (PSL, -radius * c, -radius * s, radius * c, radius * s);
+			}
+			else {
+				if (Ctrl->M.active) /* Draw one-headed vectors */
+					PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
+				else
+					PSL_plotsegment (PSL, 0.0, 0.0, radius * c, radius * s);
+			}
 		}
 	}
 

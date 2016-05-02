@@ -125,7 +125,10 @@ Optional Arguments
 **-M**\ *parameters*
     Used with **-C** to modify vector parameters. For vector heads,
     append vector head *size* [Default is 0, i.e., a line]. See VECTOR
-    ATTRIBUTES for specifying additional attributes. 
+    ATTRIBUTES for specifying additional attributes.  If **-C** is not
+    given and the current plot mode is to draw a windrose diagram then
+    using **-M** will add vector heads to all individual directions
+    using the supplied attributes.
 
 .. _-O:
 
@@ -233,6 +236,13 @@ orientation with UNIX timestamp and command line plotted, use:
    ::
 
     gmt psrose lines.az_r -R0/500/0/360 -S5c -Bxg100 -Byg45 -B+t"Windrose diagram" -W0.5p -Uc | lpr
+
+Redo the same plot but this time add orange vector heads to each direction (with nominal head size
+0.5 cm but this will be reduced linearly for lengths less than 1 cm) and save the plot, use:
+
+   ::
+
+    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -Uc > rose.ps
 
 Bugs
 ----
