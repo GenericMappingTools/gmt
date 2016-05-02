@@ -304,6 +304,12 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
 		GMT_Report (API, GMT_MSG_VERBOSE, "[%s]\n", s->path);
 		
+		if (p.n_rows == 0) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "No data records found - skipping %s\n", trk_name[trk]);
+			x2sys_free_data (GMT, data, s->n_fields, &p);
+			continue;
+		}
+		
 		if (Ctrl->E.active) {	/* Project coordinates */
 			for (row = 0; row < p.n_rows; row++) gmt_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
 		}
