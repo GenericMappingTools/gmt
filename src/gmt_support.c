@@ -2390,7 +2390,6 @@ GMT_LOCAL void support_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, dou
 /*! . */
 GMT_LOCAL void support_add_decoration (struct GMT_CTRL *GMT, struct GMT_TEXTSEGMENT *S, struct GMT_LABEL *L, struct GMT_DECORATE *G) {
 	/* Add a symbol location to the growing segment */
-	double x, y;
 	char record[GMT_BUFSIZ] = {""};
 	if (S->n_rows == S->n_alloc) {	/* Need more memory for the segment */
 		S->n_alloc += GMT_SMALL_CHUNK;
