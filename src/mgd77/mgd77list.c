@@ -971,6 +971,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		}
 		MGD77_Parse_Corrtable (GMT, Ctrl->L.file, list, n_paths, M.n_out_columns, M.desired_column, 2, &CORR);
 	}
+	if (n_paths > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);
 
 	for (argno = 0; argno < n_paths; argno++) {		/* Process each ID */
 	
