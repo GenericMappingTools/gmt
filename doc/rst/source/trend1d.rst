@@ -13,7 +13,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**trend1d** [ *table* ] |-F|\ **xymrw\|p**
+**trend1d** [ *table* ] |-F|\ **xymrw\|p\|P\|c**
 |-N|\ [**p**\ \|\ **P**\ \|\ **f**\ \|\ **F**\ \|\ **c**\ \|\ **C**\ \|\ **s**\ \|\ **S**\ \|\ **x**\ ]\ *n*\ [,...][**+l**\ *length*][**+o**\ *origin*][**+r**]
 [ *xy[w]file* ]
 [ |-C|\ *condition\_number* ]
@@ -44,12 +44,14 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **xymrw\|p**
+**-F**\ **xymrw\|p\|P\|c**
     Specify up to five letters from the set {**x y m r w**\ } in any
     order to create columns of ASCII [or binary] output. **x** = x,
     **y** = y, **m** = model f(x), **r** = residual y - **m**, **w** =
-    weight used in fitting. Alternatively choose **-F**\ **p** (i.e., no
-    other of the 5 letters) to output only the model coefficients.
+    weight used in fitting. Alternatively, choose just the single
+    selection **p** to output a record with the polynomial model coefficients,
+    **P** for the normalized polynomial model coefficients, or **c**
+    for the normalized Chebyshev model coefficients.
 
 .. _-N:
 
