@@ -92,6 +92,7 @@ struct GMT_MODEL {	/* A model consists of n_terms */
 	unsigned int dim;	/* 1 or 2 */
 	unsigned int type;	/* 1 = poly, 2 = Fourier, 3 = both */
 	unsigned int n_terms;	/* Terms in model */
+	unsigned int n_poly;	/* The first n_poly terms contain the Polynomial/Chebyshev portion (if any) */
 	double origin[2];	/* x (or t) and y origins */
 	double period[2];	/* x (or t) and y periods */
 	struct GMT_MODEL_TERM term[GMT_N_MAX_MODEL];

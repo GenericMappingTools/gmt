@@ -88,10 +88,17 @@
 
 #define TREND1D_N_OUTPUT_CHOICES 5
 
+enum trend1d_enums {
+	TREND1D_NO_MODEL 	= 0,
+	TREND1D_POL_MODEL	= 1,
+	TREND1D_POL_MODEL_NORM	= 2,
+	TREND1D_CHEB_MODEL_NORM	= 3
+	};
+
 struct TREND1D_CTRL {
 	unsigned int n_outputs;
 	bool weighted_output;
-	bool model_parameters;
+	unsigned int model_parameters;	/* 0 = no output, 1 = polynomial output (users), 2 = polynomial outout (normalized), 3 = Chebyshev (normalized) */
 	struct C {	/* -C<condition_#> */
 		bool active;
 		double value;
@@ -361,8 +368,7 @@ GMT_LOCAL void calc_m_and_r_1d (struct TREND1D_DATA *data, uint64_t n_data, doub
 }
 
 GMT_LOCAL void move_model_a_to_b_1d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b) {
-	unsigned int i;
-	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
+	gmt_M_memcpy (model_b, model_a, n_model, double);
 	*chisq_b = *chisq_a;
 }
 
@@ -428,13 +434,29 @@ GMT_LOCAL void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, 
 	}
 }
 
-GMT_LOCAL void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b) {
+GMT_LOCAL void unscale_polynomial (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b) {
+	/* n are the first n terms that are polynomial - there may be Fourier terms beyond this set */
+	unsigned int j, k;
+	double cnst, fac;
+
+	cnst = fac = 2.0 / (b - a);
+	for (j = 1; j < n; j++) {
+		c[j] *= fac;
+		fac *= cnst;
+	}
+	cnst = 0.5 * (a + b);
+	for (j = 0; j <= n - 2; j++) {
+		for (k = n - 1; k > j; k--) c[k-1] -= cnst * c[k];
+	}
+}
+
+GMT_LOCAL void cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n, double a, double b, unsigned int denorm) {
 	/* Convert from Chebyshev coefficients used on a t =  [-1,+1] interval
 	 * to polynomial coefficients on the original x = [a b] interval.
 	 * Modified from Numerical Miracles, ...eh Recipes */
 
 	 unsigned int j, k;
-	 double sv, cnst, fac, *d, *dd;
+	 double sv, *d, *dd;
 
 	 d  = gmt_M_memory (GMT, NULL, n, double);
 	 dd = gmt_M_memory (GMT, NULL, n, double);
@@ -456,15 +478,10 @@ GMT_LOCAL void GMT_cheb_to_pol (struct GMT_CTRL *GMT, double c[], unsigned int n
 	/* d[0] = -dd[0] + 0.5 * c[0]; */	/* This is what Num. Rec. says, but we do not do the approx with 0.5 * c[0] */
 	d[0] = -dd[0] + c[0];
 
-	/* Next step is to undo the scaling so we can use coefficients with x */
+	/* Next step is to undo the scaling so we can use coefficients with the user's x */
 
-	cnst = fac = 2.0 / (b - a);
-	for (j = 1; j < n; j++) {
-		d[j] *= fac;
-		fac *= cnst;
-	}
-	cnst = 0.5 * (a + b);
-	for (j = 0; j <= n - 2; j++) for (k = n - 1; k > j; k--) d[k-1] -= cnst * d[k];
+	if (denorm)
+		unscale_polynomial (GMT, d, n, a, b);
 
 	/* Return the new coefficients via c */
 
@@ -590,14 +607,18 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.M.n_terms <= 0, "Syntax error -N option: A positive number of terms must be specified\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
-		if (!strchr ("xymrwp", Ctrl->F.col[j])) {
+		if (!strchr ("xymrwpPc", Ctrl->F.col[j])) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
 			Ctrl->weighted_output = true;
 		else if (Ctrl->F.col[j] == 'p')
-			Ctrl->model_parameters = true;
+			Ctrl->model_parameters = TREND1D_POL_MODEL;
+		else if (Ctrl->F.col[j] == 'P')
+			Ctrl->model_parameters = TREND1D_POL_MODEL_NORM;
+		else if (Ctrl->F.col[j] == 'c')
+			Ctrl->model_parameters = TREND1D_CHEB_MODEL_NORM;
 		Ctrl->n_outputs++;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output columns \n");
@@ -784,27 +805,40 @@ int GMT_trend1d (void *V_API, int mode, void *args) {
 
 	/* Before output, convert back to polynomial coefficients, if desired */
 
-	if (!Ctrl->N.M.chebyshev) {
-		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert from Chebyshev to polynomial coefficients\n");
-		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
+	if (Ctrl->model_parameters && Ctrl->N.M.n_poly) {
+		if (Ctrl->N.M.chebyshev) {	/* Solved using Chebyshev, perhaps convert to polynomial coefficients */
+			if (Ctrl->model_parameters != TREND1D_CHEB_MODEL_NORM) {
+				char *kind[2] = {"user-domain", "normalized"};
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert from normalized Chebyshev to %s polynomial coefficients\n", kind[Ctrl->model_parameters-1]);
+				cheb_to_pol (GMT, c_model, Ctrl->N.M.n_poly, xmin, xmax, Ctrl->model_parameters == TREND1D_POL_MODEL);
+			}
+			else
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Report normalized Chebyshev coefficients\n");
+		}
+		else if (Ctrl->model_parameters != TREND1D_POL_MODEL_NORM) {
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Convert from normalized polynomial to user-domain polynomial coefficients\n");
+			unscale_polynomial (GMT, c_model, Ctrl->N.M.n_poly, xmin, xmax);
+		}
 	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq);
-		if (Ctrl->N.M.type & 1) {	/* Has polynomial component */
-			if (Ctrl->N.M.chebyshev)
-				sprintf (format, "Model Coefficients  (Chebyshev");
-			else
-				sprintf (format, "Model Coefficients  (Polynomial");
+		if (!Ctrl->model_parameters) {	/* Only give verbose feedback on coefficients if not requested as output */
+			if (Ctrl->N.M.type & 1) {	/* Has polynomial component */
+				if (Ctrl->N.M.chebyshev)
+					sprintf (format, "Model Coefficients  (Chebyshev");
+				else
+					sprintf (format, "Model Coefficients  (Polynomial");
+			}
+			if (Ctrl->N.M.type & 2)	/* Has Fourier components */
+				strcat (format, " and Fourier");
+			strcat (format, "): ");
+			GMT_Report (API, GMT_MSG_VERBOSE, format);
+			sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+			for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
+			GMT_Message (API, GMT_TIME_NONE, "\n");
 		}
-		if (Ctrl->N.M.type & 2)	/* Has Fourier components */
-			strcat (format, " and Fourier");
-		strcat (format, "): ");
-		GMT_Report (API, GMT_MSG_VERBOSE, format);
-		sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
-		for (i = 0; i < n_model; i++) GMT_Message (API, GMT_TIME_NONE, format, c_model[i]);
-		GMT_Message (API, GMT_TIME_NONE, "\n");
 	}
 
 	untransform_x_1d (data, n_data, &(Ctrl->N.M), xmin, xmax);

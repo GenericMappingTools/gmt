@@ -975,9 +975,20 @@ GMT_LOCAL char *gmtinit_old_trendsyntax (struct GMT_CTRL *GMT, char option, char
 	}
 	return arg;
 }
+
+GMT_LOCAL int compare_terms (const void *term_1v, const void *term_2v) {
+	const struct GMT_MODEL_TERM *term_1 = term_1v, *term_2 = term_2v;
+	/* Ensure polynomial terms are listed before Fourier terms */
+	if (term_1->kind  < term_2->kind)  return (-1);
+	if (term_1->kind  > term_2->kind)  return (+1);
+	if (term_1->order < term_2->order) return (-1);
+	if (term_1->order > term_2->order) return (+1);
+	return (0);
+}
+
 /*! . */
 GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in_arg, struct GMT_MODEL *M) {
-	/* Parsing for -N in trend1d
+	/* Parsing for -N arguments in trend1d
 	 * Parse -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r].
 	 * p means polynomial model.
 	 * c means cosine series.
@@ -1046,7 +1057,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 				M->term[n_model].order[GMT_X] = (unsigned int)order;
 				got_pol = M->intercept = true;
 				n_model++;
-				n_P++;
+				//n_P++;
 				M->type |= 1;	/* Polynomial */
 				continue;
 			}
@@ -1094,9 +1105,14 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 	}
 	gmt_M_str_free (arg);
 
+	/* Sort so Trig/Fourier terms are last in the list */
+	
+	qsort (M->term, n_model, sizeof (struct GMT_MODEL), compare_terms);
+	
 	/* Make sure there are no duplicates */
 
 	for (k = 0; k < n_model; k++) {
+		if (M->term[k].kind <= GMT_CHEBYSHEV) M->n_poly++;	/* Set how many poly terms there are in model */
 		for (j = k+1; j < n_model; j++) {
 			if (M->term[k].kind == M->term[j].kind && M->term[k].order[GMT_X] == M->term[j].order[GMT_X] && M->term[k].order[GMT_Y] == M->term[j].order[GMT_Y] && M->term[k].type == M->term[j].type) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Basis %c%u occurs more than once!\n", option, name[M->term[k].kind], M->term[k].order[GMT_X]);
