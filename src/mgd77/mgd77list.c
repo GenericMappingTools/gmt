@@ -1062,7 +1062,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args) {
 		first_cruise = false;
 
 		if (n_paths > 1) {	/* Write segment header between each cruise */
-			sprintf (GMT->current.io.segment_header, "%s\n", list[argno]);
+			sprintf (GMT->current.io.segment_header, "%s", list[argno]);
 			gmt_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
 		}
 		aux_dvalue[MGD77_AUX_DS] = cumulative_dist = ds = 0.0;
