@@ -3220,16 +3220,16 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			GMT_exit (GMT, EXIT_FAILURE); return EXIT_FAILURE;
 			break;
 	}
+	was = GMT->current.io.multi_segments[GMT_OUT];
 	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (ASCII && GMT->current.setting.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) gmt_write_tableheader (GMT, fp, table->header[k]);	/* Write any existing header comments */
 			gmt_write_newheaders (GMT, fp, table->n_columns);	/* Write general header block */
 		}
 		if (table->ogr) gmt_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
+		GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || (table->n_segments == 1 && table->segment[0]->header));
 	}
 
-	was = GMT->current.io.multi_segments[GMT_OUT];
-	GMT->current.io.multi_segments[GMT_OUT] = (table->n_segments > 1 || (table->n_segments == 1 && table->segment[0]->header));
 	out = gmt_M_memory (GMT, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
