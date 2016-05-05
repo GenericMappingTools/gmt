@@ -78,9 +78,10 @@ struct GRDTRACK_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a] */
-		bool active, alternate;
-		int mode;	/* May be negative */
+	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a][+v] */
+		bool active;
+		unsigned int mode;
+		int dist_mode;	/* May be negative */
 		char unit;
 		double ds, spacing, length;
 	} C;
@@ -156,7 +157,7 @@ GMT_LOCAL void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* De
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a]] [-D<dfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a][+v]] [-D<dfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<line1>[,<line2>,...][+a<az>][+d][+i<step>[u]][+l<length>[u]][+n<np][+o<az>][+r<radius>[u]]]\n\t[-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>[unit]>[+e|p]] [%s]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -183,6 +184,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. <dz>: The sampling interval along the cross-profiles, in units of u.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a to alternate direction of cross-profiles [Default orients all the same way].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to adjust direction of cross-profiles for E-W or S-N viewing [Default orients all the same way].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Output columns are x, y, dist, az, z1, z2, ...zn (n is number of grids).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default samples the grid(s) at the input data points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
@@ -297,20 +299,24 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GM
 			case 'C':	/* Create cross profiles */
 				Ctrl->C.active = true;
 				if ((c = strstr (opt->arg, "+a"))) {	/* Gave modifiers */
-					Ctrl->C.alternate = true;	/* Select alternating direction of cross-profiles */
+					Ctrl->C.mode = GMT_ALTERNATE;	/* Select alternating direction of cross-profiles */
+					*c = 0;	/* Truncate option at start of modifiers */
+				}
+				else if ((c = strstr (opt->arg, "+v"))) {	/* Gave modifiers */
+					Ctrl->C.mode = GMT_EW_SN;	/* Select preferred E-W, S-N direction of cross-profiles */
 					*c = 0;	/* Truncate option at start of modifiers */
 				}
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
-				Ctrl->C.mode = gmt_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
+				Ctrl->C.dist_mode = gmt_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
 				mode = gmt_get_distance (GMT, tb, &(Ctrl->C.ds), &X);
 				if (X != 'X' && X != Ctrl->C.unit) n_units++;
-				if (mode != 0 && mode != Ctrl->C.mode) n_modes++;
+				if (mode != 0 && mode != Ctrl->C.dist_mode) n_modes++;
 				if (j == 3) {
 					mode = gmt_get_distance (GMT, tc, &(Ctrl->C.spacing), &X);
 					if (X != 'X' && X != Ctrl->C.unit) n_units++;
-					if (mode != 0 && mode != Ctrl->C.mode) n_modes++;
+					if (mode != 0 && mode != Ctrl->C.dist_mode) n_modes++;
 				}
-				if (Ctrl->C.alternate) *c = '+';	/* Undo truncation */
+				if (Ctrl->C.mode) *c = '+';	/* Undo truncation */
 				if (n_units) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
 					n_errors++;
@@ -840,15 +846,15 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
-			if (Ctrl->C.mode == GMT_GEODESIC) {
+			if (Ctrl->C.dist_mode == GMT_GEODESIC) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
-				Ctrl->C.mode = GMT_GREATCIRCLE;
+				Ctrl->C.dist_mode = GMT_GREATCIRCLE;
 			}
-			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
-			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
+			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.dist_mode = 1 + GMT_LOXODROME;
+			gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST);
 		}
 
-		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
+		/* Expand with dist,az columns (mode = 2) (and possibly make space for more) and optionally resample */
 		if ((Dtmp = gmt_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
 		if (GMT_Destroy_Data (API, &Din) != GMT_OK) {
 			Return (API->error);
@@ -877,7 +883,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_DEV]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked deviations(s) in each profile */
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
-		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.alternate)) == NULL) Return (API->error);
+		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode)) == NULL) Return (API->error);
 #if 0
 		if (Ctrl->D.active) {
 			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {

@@ -151,6 +151,12 @@ enum GMT_swap_direction {
 #define GMT_PAIR_DIM_DUP	2	/* Tell gmt_get_pair to get both x and y as dimensions, and if only x then set y = x */
 #define GMT_PAIR_DIM_NODUP	3	/* Tell gmt_get_pair to get both x and y as dimensions, and if only x then leave y alone */
 
+/*! Codes for grdtrack */
+enum GMT_enum_tracklayout {
+	GMT_LEFT_RIGHT = 0,
+	GMT_EW_SN,
+	GMT_ALTERNATE};
+
 /*! Return codes from gmt_inonout */
 enum GMT_enum_inside {
 	GMT_OUTSIDE = 0,

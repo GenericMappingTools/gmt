@@ -15,7 +15,7 @@ Synopsis
 
 **grdtrack** [ *xyfile* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
-[ |-C|\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**] ] [|-D|\ *dfile* ]
+[ |-C|\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**][**+v**] ] [|-D|\ *dfile* ]
 [ |-E|\ *line*\ [,\ *line*,...][**+a**\ *az*][**+d**][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+o**\ *az*][**+r**\ *radius*\ [**u**] ]
 [ |-N| ] 
 [ |SYN_OPT-R| ]
@@ -96,7 +96,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**]
+**-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**][**+v**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -105,8 +105,10 @@ Optional Arguments
     the sampling spacing along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
     [Default erects cross-profiles at the input coordinates]. By
-    default, all cross-profiles have the same direction. Append **+a**
-    to alternate the direction of cross-profiles. Append suitable units
+    default, all cross-profiles have the same direction (left to right
+    as we look in the direction of the input line segment). Append **+a**
+    to alternate the direction of cross-profiles, or **v** to enforce
+    either a "west-to-east" or "south-to_north" view. Append suitable units
     to *length*; it sets the unit used for *ds* [and *spacing*] (See
     UNITS below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
