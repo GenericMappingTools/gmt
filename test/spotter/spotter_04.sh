@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-ps=spotter_4.ps
+ps=spotter_04.ps
 
 # Build a grid
 gmt grdmath -R0/30/0/30 -I0.25 X Y MUL = t.nc

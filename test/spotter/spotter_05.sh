@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-ps=spotter_5.ps
+ps=spotter_05.ps
 
 POLES=${src}/../../src/spotter/WK97.txt
 

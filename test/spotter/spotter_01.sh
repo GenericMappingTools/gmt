@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-ps=spotter_1.ps
+ps=spotter_01.ps
 
 # Example 1 - Using gmt backtracker
 #

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Test multiple outputs from grdrotator
-ps=spotter_8.ps
+ps=spotter_08.ps
 # Just a small test grid to rotate
 gmt grdmath -R-5/5/-5/5 -I0.1 -fg X Y HYPOT = in.nc
 cat << EOF > r.txt

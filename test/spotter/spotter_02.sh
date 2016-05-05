@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-ps=spotter_2.ps
+ps=spotter_02.ps
 
 # Example 2 - Using gmt hotspotter
 #

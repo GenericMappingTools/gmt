@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-ps=spotter_7.ps
+ps=spotter_07.ps
 
 # coarser (5m vs 2m) reproduction of Fig 3 in Wessel, P. (2008),
 # Hotspotting: Principles and properties of a plate tectonic Hough

@@ -2,7 +2,7 @@
 #
 #       $Id$
 
-ps=spotter_3.ps
+ps=spotter_03.ps
 
 # Example 3 - Using gmt originator
 #
