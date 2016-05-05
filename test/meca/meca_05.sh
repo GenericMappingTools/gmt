@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 
-ps=meca_3.ps
+ps=meca_05.ps
 
 gmt gmtset PROJ_LENGTH_UNIT inch MAP_TICK_LENGTH_PRIMARY 0.075i MAP_FRAME_WIDTH 0.1i MAP_ORIGIN_X 2.5c MAP_ORIGIN_Y 1.3i
 
@@ -17,26 +17,17 @@ gmt pstext -R -J -N -F+f14p,Helvetica-Bold+j -K -O << EOF >> $ps
 130 11 MR P2
 EOF
 
-# Represent cross-sections between points P1(128E11N) and P2(130E/11N)
-# on a plane the dip of which varies
-# from quasi horizontal to vertical.
-# y dimension is counted along steepest descent on the plane
-# so the values of depth are only in the vertical cross-section.
-
-# Variation of dip for cross-section plane 
-# (WE azimuth, between points (128E,11N) and (130E,11N))) 
-
 plots () {
 y_offset=-2.5i
-for d in $1 $2 $3 ; do
-    gmt pscoupe -R0/200/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
-        -Q -L -Sc0.4 -Aa128/11/130/11/$d/60/0/100f -Ggrey -Fa0.1i/cc $4 $5 \
+for a in $1 $2 $3 ; do
+    gmt pscoupe -R0/250/0/100 -JX1.5i -Bxa100f10 -Bya50f10 -BWesN \
+        -Q -L -Sc0.4 -Ab$4/$5/$a/250/90/$6/0/100f -Ggrey -Fa0.1i/cc $7 $8 \
         -Y$y_offset -X$x_offset -O -K << EOF
 # lon   lat  dep str dip rake str dip rake m ex nx ny 
 129.5 10.5  10  0   90   0  90   90 180  1 24  0  0 10km
 128.5 10.5  40  0   45  90 180   45  90  1 24  0  0 40km
 EOF
-    gmt pstext -R -J -F+f18p,Helvetica-Bold+jBL -O -K <<< "10 15 $d"
+    gmt pstext -R -J -F+f18p,Courier-Bold+jBR -O -K <<< "240 85 $a"
     y_offset=0i
     x_offset=2.5i
 done
@@ -45,12 +36,11 @@ x_offset=-5i
 
 x_offset=0i
 
-plots 10 20 30 >> $ps
-plots 40 50 60 >> $ps
-plots 70 80 90 -N >> $ps
+plots   0  40  80 128 10.0 200    >> $ps
+plots 120 160 200 128 11.0 400 -N >> $ps
+plots 240 280 320 130 10.5 200 -N >> $ps
 
 gmt pstext -X-5i -R0/10/0/15 -Jx1i -F+jBL+fHelvetica-Bold+f -O << EOF >> $ps
-3 8.5 24 Variation of dip
-3 8.0 20 W-E cross-section
+3 8.5 24 Variation of azimuth
+3 8.0 20 vertical cross-section
 EOF
-
