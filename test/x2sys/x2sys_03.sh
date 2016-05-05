@@ -6,7 +6,7 @@
 # Computers & Geosciences, 36, 348-354.
 # Here used as a test for the x2sys suite.
 
-ps=x2sys_3.ps
+ps=x2sys_03.ps
 
 R=181/185/0/3
 gmt makecpt -Crainbow -T-80/80/10 -Z > faa.cpt

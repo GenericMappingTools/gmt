@@ -6,7 +6,7 @@
 # Computers & Geosciences, 36, 348-354.
 # Here used as a test for the x2sys suite.
 
-ps=x2sys_4.ps
+ps=x2sys_04.ps
 
 OLDX=$X2SYS_HOME
 export X2SYS_HOME=.
