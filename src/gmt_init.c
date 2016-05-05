@@ -10863,10 +10863,34 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 	else {	/* Everything else */
 		char s_upper;
+		size_t len;
 		n = sscanf (text, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 		s_upper = (char)toupper ((int)symbol_type);
 		if (strchr ("FVQM~", s_upper))	/* "Symbols" that do not take a normal symbol size */
 			p->size_y = p->given_size_y = 0.0;
+		else if (s_upper == 'W' && n == 2) {
+			char *c = NULL;
+			if ((c = strstr (txt_a, "+a"))) {
+				c[0] = '\0';	/* Chop it off */
+				p->w_type = 1;	/* Arc only */
+			}
+			else if ((c = strstr (txt_a, "+r"))) {
+				c[0] = '\0';	/* Chop it off */
+				p->w_type = 2;	/* Radial lines */
+			}
+			else
+				p->w_type = 3;	/* Wedge */
+			len = strlen (txt_a);
+			if (strchr (GMT_LEN_UNITS, txt_a[len-1])) {
+				/* Geo-wedge with radius given in a distance unit */
+				p->w_mode = gmt_get_distance (GMT, txt_a, &(p->w_radius), &(p->w_unit));
+				p->size_y = p->given_size_y = 0.0;
+				check = false;
+				p->w_active = true;
+			}
+			else
+				p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
+		}
 		else {
 			p->size_x = p->given_size_x = gmt_M_to_inch (GMT, txt_a);
 			if (n == 3)
@@ -11261,6 +11285,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->n_required = 2;
 			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
+			if (p->w_active) p->convert_angles = 0;	/* Expect azimuths directly */
 			break;
 		case '+':
 			p->symbol = GMT_SYMBOL_PLUS;

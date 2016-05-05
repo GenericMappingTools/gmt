@@ -204,6 +204,13 @@ struct GMT_SYMBOL {
 	bool user_unit[2];	/* If true then we must project the base via R -J to get base values, otherwise they are in c|i|p units */
 	unsigned int base_set;	/* 1 if user provided a custom base, 2 if we should read it from last column [otherwise 0: default to bottom axis] */
 
+	/* These apply to geo-wedges */
+	char w_unit;		/* Radius unit */
+	double w_radius;	/* In spherical degrees */
+	unsigned int w_mode;	/* Distance mode */
+	unsigned int w_type;	/* Wedge type */
+	bool w_active;
+	
 	/* These apply to vectors */
 
 	struct GMT_VECT_ATTR v;	/* All attributes for vector shapes etc. [see struct above] */

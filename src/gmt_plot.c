@@ -3495,9 +3495,9 @@ GMT_LOCAL void plot_plot_vector_head (struct GMT_CTRL *GMT, double *xp, double *
 }
 
 GMT_LOCAL unsigned int plot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *ppen, struct GMT_SYMBOL *S) {
-	/* Draws a small-circle vector with our without heads etc. There are some complications to consider:
-	 * When there are no heads it is simple.  If +n is on we may shrink the line thickness.
-	 * With heads tehre are these cases:
+	/* Draws a small-circle vector with or without heads, etc. There are some complications to consider:
+	 * When there are no heads it is simple.  If +n is active we may shrink the line thickness.
+	 * With heads there are these cases:
 	 * Head length is longer than 90% of the vector length.  We then skip the head and return 1
 	 * +n<norm> is in effect.  We shrink vector pen and head length.  Still, the shrunk head
 	 * may be longer than 90% of the vector length.  We then shrink head (not pen) further and return 2
@@ -5798,6 +5798,74 @@ void gmt_geo_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double major
 
 	/* Explicitly close the polygon */
 	px[N] = px[0], py[N] = py[0];
+	gmt_geo_polygons (GMT, S);
+
+	gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);
+}
+
+void gmt_geo_wedge (struct GMT_CTRL *GMT, double xlon, double xlat, double radius, char unit, double az_start, double az_stop, unsigned int mode) {
+	/* gmt_geo_wedge takes the location, radius (in unit), and start/stop azimuths of an geo-wedge
+	   and draws an approximate circluar wedge using N-sided polygon.
+	   mode = 3: Draw the entire closed wedge.
+	   mode = 1: Just draw arc [no fill possible]
+	   mode = 2: Just draw jaw [no fill possible]
+ 	*/
+
+	int N, k, kk, n_path;
+	double d_az, px, py, qx, qy, L, plat, plon, qlon, qlat, az, rot_start, E[3], P[3], Q[3], R[3][3];
+	struct GMT_DATASEGMENT *S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+
+	radius = gmt_conv_distance (GMT, radius, unit, 'd');	/* Convert to degrees */
+
+	/* Get a point P that is radius degrees away along the meridian through our point X */
+	plat = xlat + radius;
+	plon = xlon;
+	if (plat > 90.0) {	/* Over the pole */
+		plon += 180.0;
+		plat = 180 - plat;
+	}
+	gmt_geo_to_cart (GMT, xlat, xlon, E, true);	/* Euler rotation pole */
+	gmt_geo_to_cart (GMT, plat, plon, P, true);	/* Vector <radius> degrees away from E along meridian */
+	if (mode == 2) {	/* No arc */
+		d_az = az_stop - az_start;
+		N = n_path = 2;
+	}
+	else {	/* Compute distance between P and Q and compare to map_line_step to determine azimuthal sampling */
+		gmt_make_rot_matrix2 (GMT, E, 1.0, R);		/* Test point 1 degree away */
+		gmt_matrix_vect_mult (GMT, 3U, R, P, Q);	/* Get Q = R * P */
+		gmt_cart_to_geo (GMT, &qlat, &qlon, Q, true);	/* Coordinates of rotated point */
+		gmt_geo_to_xy (GMT, plon, plat, &px, &py);	/* P projected on map */
+		gmt_geo_to_xy (GMT, qlon, qlat, &qx, &qy);	/* Q projected on map */
+		L = hypot (px - qx, py - qy);	/* Distance in inches for 1 degree of azimuth change */
+		N = MAX (2, irint (fabs (az_stop - az_start) * L / (radius * GMT->current.setting.map_line_step)));
+		N = n_path = irint (fabs (az_stop - az_start));	/* Debugging */
+		d_az = (az_stop - az_start) / (N-1);	/* Azimuthal sampling rate */
+	}
+	if (mode & 2) n_path++;		/* Add apex */
+	if (mode == 3) n_path++;	/* Closed polygon */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Wedge will be approximated by %d-sided polygon\n", n_path);
+	gmt_alloc_segment (GMT, S, n_path, 2, true);	/* Add space for apex and explicitly close it */
+	rot_start = -az_start;	/* Since we have a right-handed rotation but gave azimuths */
+	d_az = -d_az;		/* Same reason */
+	for (k = kk = 0; k < N; k++, kk++) {
+		az = rot_start + k * d_az;
+		gmt_make_rot_matrix2 (GMT, E, az, R);	
+		gmt_matrix_vect_mult (GMT, 3U, R, P, Q);
+		gmt_cart_to_geo (GMT, &S->coord[GMT_Y][kk], &S->coord[GMT_X][kk], Q, true);	/* rotated point */
+		if (mode == 2 && k == 0) {	/* Add in the apex now */
+			S->coord[GMT_X][++kk] = xlon;			S->coord[GMT_Y][kk] = xlat;
+		}
+	}
+	if (mode == 3) {
+		/* Add apex of wedge */
+		S->coord[GMT_X][kk] = xlon;			S->coord[GMT_Y][kk++] = xlat;
+		/* Close polygon */
+		S->coord[GMT_X][kk] = S->coord[GMT_X][0];	S->coord[GMT_Y][kk] = S->coord[GMT_Y][0];
+	}
+	S->n_rows = gmt_fix_up_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, 0.0, 0);
+	gmt_set_seg_minmax (GMT, S);	/* Set min/max */
+	if (mode == 3) gmt_set_seg_polar (GMT, S);
+
 	gmt_geo_polygons (GMT, S);
 
 	gmt_free_segment (GMT, &S, GMT_ALLOC_INTERNALLY);

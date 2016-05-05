@@ -484,6 +484,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_vector_syntax (API->GMT, 19);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For geo-wedges, specify <size><unit> with units from %s.\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
 	gmt_vector_syntax (API->GMT, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
@@ -723,7 +725,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 
 	struct GMT_PEN current_pen, default_pen;
-	struct GMT_FILL current_fill, default_fill, black;
+	struct GMT_FILL current_fill, default_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_TEXTSET *Decorate = NULL;
@@ -756,6 +758,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	gmt_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
+	gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
@@ -1081,10 +1084,10 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->W.mode & 1) gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 
-			if (geovector) {
+			if (geovector) {	/* Vectors do it separately */
 				if (get_rgb) S.v.fill = current_fill;
 			}
-			else if (!may_intrude_inside) {	/* Vectors do it separately */
+			else if (!may_intrude_inside) {
 				gmt_setfill (GMT, &current_fill, outline_active);
 				gmt_setpen (GMT, &current_pen);
 			}
@@ -1367,8 +1370,16 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 						dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size]);
 						dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex2+S.read_size]);
 					}
-					dim[0] *= 0.5;
-					PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+					if (S.w_active) {	/* Geo-wedge */
+						if (Ctrl->G.active && S.w_type < 3) gmt_setfill (GMT, &no_fill, outline_active);	/* Cannot fill */
+						gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius, S.w_unit, dim[1], dim[2], S.w_type);
+						if (Ctrl->G.active) gmt_setfill (GMT, &current_fill, outline_active);
+					}
+					else {
+						dim[0] *= 0.5;
+						dim[3] = S.w_type;
+						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */

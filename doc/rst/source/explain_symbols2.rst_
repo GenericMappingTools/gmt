@@ -344,13 +344,16 @@
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
         counter-clockwise from horizontal) for pie slice must be found in
-        columns 4 and 5.
+        columns 4 and 5.  Append **+a** to just draw the arc line or **+r**
+        to just draw the radial lines.
 
     **-SW**
         Same as **-Sw**, except azimuths (in degrees east of north) should
         be given instead of the two directions. The azimuths will be mapped
         into angles based on the chosen map projection (**-Sw** leaves the
-        directions unchanged.)
+        directions unchanged.)  For geo-wedges, specify *size* as a radial
+        distance and append a length *unit* from **d**\ \|\ **m**\ \|\ **s**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**.
+        Append **+a** to just draw the arc or **+r** to just draw the radial lines.
 
     **-Sx**
         cross (x). *size* is diameter of circumscribing circle.

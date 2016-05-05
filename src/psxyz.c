@@ -241,6 +241,8 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_vector_syntax (API->GMT, 19);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     For geo-wedges, specify <size><unit> with units from %s.\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a to just draw arc or +r to just draw radial lines [wedge].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
 	gmt_vector_syntax (API->GMT, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
@@ -487,7 +489,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, length;
 
 	struct GMT_PEN default_pen, current_pen;
-	struct GMT_FILL default_fill, current_fill, black;
+	struct GMT_FILL default_fill, current_fill, black, no_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
@@ -535,6 +537,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.polygon) && !Ctrl->L.anchor);
 	gmt_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
+	gmt_init_fill (GMT, &no_fill, -1.0, -1.0, -1.0);
 
 	default_pen = current_pen = Ctrl->W.pen;
 	current_fill = default_fill = (S.symbol == GMT_SYMBOL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
@@ -997,6 +1000,7 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex1+S.read_size]);
 						data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, in[ex2+S.read_size]);
 					}
+					data[n].dim[3] = S.w_type;
 					break;
 				case GMT_SYMBOL_CUSTOM:
 					data[n].custom = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
@@ -1165,9 +1169,18 @@ int GMT_psxyz (void *V_API, int mode, void *args) {
 						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_MARC);
 						break;
 					case GMT_SYMBOL_WEDGE:
-						data[i].dim[0] *= 0.5;
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
-						PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);
+						if (S.w_active)	{	/* Geo-wedge */
+							unsigned int status = lrint (data[i].dim[3]);
+							if (Ctrl->G.active && status < 3) gmt_setfill (GMT, &no_fill, data[i].outline);	/* Cannot fill */
+							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
+							gmt_geo_wedge (GMT, dx, dy, S.w_radius, S.w_unit, data[i].dim[1], data[i].dim[2], status);
+							gmt_setfill (GMT, &data[i].f, data[i].outline);
+						}
+						else {
+							data[i].dim[0] *= 0.5;
+							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);
+						}
 						break;
 					case GMT_SYMBOL_ZDASH:
 						gmt_xyz_to_xy (GMT, xpos[item], data[i].y, data[i].z, &x_1, &y_1);

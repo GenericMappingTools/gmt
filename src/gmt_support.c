@@ -5644,6 +5644,31 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 	return (i);	/* Returns the number of increments found */
 }
 
+double gmt_conv_distance (struct GMT_CTRL *GMT, double value, char in_unit, char out_unit)
+{
+	/* Given the length in value and the unit of measure, convert from in_unit to out_unit.
+	 * When conversions between arc lengths and linear distances are used we assume a spherical Earth. */
+		unsigned int k;
+	char units[2];
+	double scale[2] = {1.0, 1.0};
+	units[GMT_IN] = in_unit;	units[GMT_OUT] = out_unit;
+	for (k = GMT_IN; k <= GMT_OUT; k++) {	/* Set in/out scales */
+		switch (units[k]) {
+			case 'd': scale[k] = GMT->current.proj.DIST_M_PR_DEG; break;			/* arc degree */
+			case 'm': scale[k] = GMT->current.proj.DIST_M_PR_DEG * GMT_MIN2DEG; break;	/* arc minutes */
+			case 's': scale[k] = GMT->current.proj.DIST_M_PR_DEG * GMT_SEC2DEG; break;	/* arc seconds */
+			case 'e': scale[k] = 1.0; break;						/* meters */
+			case 'f': scale[k] = METERS_IN_A_FOOT; break;					/* feet */
+			case 'k': scale[k] = METERS_IN_A_KM; break;					/* km */
+			case 'M': scale[k] = METERS_IN_A_MILE; break;					/* miles */
+			case 'n': scale[k] = METERS_IN_A_NAUTICAL_MILE; break;				/* nautical miles */
+			case 'u': scale[k] = METERS_IN_A_SURVEY_FOOT; break;				/* survey feet */
+			default:  break;								/* No units */
+		}	
+	}
+	return (value * scale[GMT_IN] / scale[GMT_OUT]);	/* Do the conversion */
+}
+
 /*! . */
 int gmt_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit) {
 	/* Accepts a distance length with optional unit character.  The
