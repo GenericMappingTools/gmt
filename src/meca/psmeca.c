@@ -660,7 +660,7 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 			meca.NP1.rake = atof (col[4+new_fmt]);
 			if (meca.NP1.rake > 180.0)
 				meca.NP1.rake -= 360.0; else if (meca.NP1.rake < -180.0) meca.NP1.rake += 360.0;	/* Rake must be in -180/+180 range*/
-			if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;	/* fixing the issue http://gmt.soest.hawaii.edu/issues/894 */
+			if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;	/* Fixing the issue http://gmt.soest.hawaii.edu/issues/894 */
 			meca.magms = atof (col[5+new_fmt]);
 			meca.moment.exponent = 0;
 			meca_define_second_plane (meca.NP1, &meca.NP2);
@@ -739,12 +739,6 @@ int GMT_psmeca (void *V_API, int mode, void *args) {
 
 			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) meca_axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
-
-		/* The following is a hacky way of fixing the issue http://gmt.soest.hawaii.edu/issues/894 
-		   where a rake of exactly zero would revert the polarities. A proper fix would require finding
-		   where it happens and why, but that would be too time consuming and this should be good enough. */
-		//if (gmt_M_is_zero (meca.NP1.rake)) meca.NP1.rake = 0.00001;
-		//if (gmt_M_is_zero (meca.NP2.rake)) meca.NP2.rake = 0.00001;
 
 		/* Common to all input types ... */
 
