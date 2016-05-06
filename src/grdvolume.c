@@ -549,7 +549,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	for (c = 0; Ctrl->C.active && c < n_contours; c++) {	/* Trace contour, only count volumes inside contours */
 
 		cval = Ctrl->C.low + c * Ctrl->C.inc;
-		take_out = (c == 0) ? cval : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
+		take_out = (c == 0) ? cval + small : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
 		
@@ -679,6 +679,12 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
+	if (GMT->common.h.add_colnames) {
+		char header[GMT_LEN64] = {""};
+		sprintf (header, "#contour\tarea\tvolume\theight");
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL))
+			Return (API->error);
+	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
@@ -692,7 +698,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	}
 	else {			/* Return information for all contours (possibly one if -C<val> was used) */
 		if (Ctrl->C.reverse) {
-			out[0] = 0;	out[1] = area[0] - area[1];	out[2] = vol[0] - vol[1];
+			out[0] = 0;	out[1] = area[0] - area[1];	out[2] = vol[0] - vol[1];	out[3] = out[2] / out[1];
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		else {
