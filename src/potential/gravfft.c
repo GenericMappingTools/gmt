@@ -797,7 +797,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			break;
 	}
 
-	sprintf (Grid[0]->header->remark, "Parker expansion of order %d", Ctrl->E.n_terms);
+	snprintf (Grid[0]->header->remark, GMT_GRID_REMARK_LEN160, "Parker expansion of order %d", Ctrl->E.n_terms);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write Output...\n");
 

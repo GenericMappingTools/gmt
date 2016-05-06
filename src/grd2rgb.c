@@ -442,7 +442,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 				
 			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);
-			sprintf (Out->header->remark, "Grid of %s components in the 0-255 range", comp[channel]);
+			snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "Grid of %s components in the 0-255 range", comp[channel]);
 			gmt_M_grd_loop (GMT, Grid, row, col, ij) {
 				(void)gmt_get_rgb_from_z (GMT, P, Grid->data[ij], f_rgb);
 				Out->data[ij] = (float)gmt_M_s255 (f_rgb[channel]);
@@ -532,7 +532,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing the %s components\n", comp[channel]);
 			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);
-			sprintf (Grid->header->remark, "Grid of %s components in the 0-255 range", comp[channel]);
+			snprintf (Grid->header->remark, GMT_GRID_REMARK_LEN160, "Grid of %s components in the 0-255 range", comp[channel]);
 			k3 = channel;
 			k = 0;
 			gmt_M_grd_loop (GMT, Grid, row, col, ij) {

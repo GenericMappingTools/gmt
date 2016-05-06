@@ -645,9 +645,9 @@ int GMT_grdrotater (void *V_API, int mode, void *args) {
 		gmt_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 		if (Ctrl->E.rot.single)
-			sprintf (G_rot->header->remark, "Grid reconstructed using R[lon lat omega] = %g %g %g", plon, plat, pw);
+			snprintf (G_rot->header->remark, GMT_GRID_REMARK_LEN160, "Grid reconstructed using R[lon lat omega] = %g %g %g", plon, plat, pw);
 		else
-			sprintf (G_rot->header->remark, "Grid reconstructed using R[lon lat omega] = %g %g %g for time %g", plon, plat, pw, Ctrl->T.value[t]);
+			snprintf (G_rot->header->remark, GMT_GRID_REMARK_LEN160, "Grid reconstructed using R[lon lat omega] = %g %g %g for time %g", plon, plat, pw, Ctrl->T.value[t]);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_rot)) Return (API->error);
 		if (Ctrl->T.n_times > 1)	/* Use template to create name */
 			sprintf (gfile, Ctrl->G.file, Ctrl->T.value[t]);

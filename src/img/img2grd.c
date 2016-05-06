@@ -608,9 +608,9 @@ int GMT_img2grd (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->M.active) {
-		sprintf (Merc->header->x_units, "Spherical Mercator projected Longitude, -Jm1, length from %.12g", left);
-		sprintf (Merc->header->y_units, "Spherical Mercator projected Latitude, -Jm1, length from %.12g", bottom);
-		sprintf (Merc->header->remark, "Spherical Mercator Projected with -Jm1 -R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], south2, north2);
+		snprintf (Merc->header->x_units, GMT_GRID_UNIT_LEN80, "Spherical Mercator projected Longitude, -Jm1, length from %.12g", left);
+		snprintf (Merc->header->y_units, GMT_GRID_UNIT_LEN80, "Spherical Mercator projected Latitude, -Jm1, length from %.12g", bottom);
+		snprintf (Merc->header->remark, GMT_GRID_REMARK_LEN160, "Spherical Mercator Projected with -Jm1 -R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], south2, north2);
 	}
 	else {
 		sprintf (Merc->header->x_units, "longitude [degrees_east]");

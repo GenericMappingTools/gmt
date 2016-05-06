@@ -897,7 +897,7 @@ int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		gmt_M_free (GMT, yp);
 		for (k = 0; k < 2; k++) {	/* Write the two grids with u(x,y) and v(xy) */
 			gmt_grd_init (GMT, Out[k]->header, options, true);
-			sprintf (Out[k]->header->remark, "Strain component %s", comp[k]);
+			snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
 			sprintf (file, Ctrl->G.file, tag[k]);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, Out[k]) != GMT_OK) {
