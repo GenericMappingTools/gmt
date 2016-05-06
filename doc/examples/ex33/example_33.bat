@@ -22,7 +22,7 @@ gmt psxy -Rspac.nc -J -O -K -W2p,blue ridge.txt >> %ps%
 gmt psxy -R -J -O -K -Sc0.1i -Gblue ridge.txt >> %ps%
 REM Generate cross-profiles 400 km long, spaced 10 km, samped every 2km
 REM and stack these using the median, write stacked profile
-gmt grdtrack ridge.txt -Gspac.nc -C400k/2k/10k -Sm+sstack.txt > table.txt
+gmt grdtrack ridge.txt -Gspac.nc -C400k/2k/10k+v -Sm+sstack.txt > table.txt
 gmt psxy -R -J -O -K -W0.5p table.txt >> %ps%
 REM Show upper/lower values encountered as an envelope
 gmt gmtconvert stack.txt -o0,5 > env.txt
