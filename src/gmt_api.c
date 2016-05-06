@@ -7241,6 +7241,7 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 	 * value in the center of the grid. */
 	uint64_t i_ij, o_ij,  offset;
 	int row_in, col_in, row_out, col_out, nx_2, ny_2;
+	size_t len;
 	unsigned int k, pad[4], mode, wmode[2] = {GMT_GRID_IS_COMPLEX_REAL, GMT_GRID_IS_COMPLEX_IMAG};
 	double wesn[4], inc[2];
 	float re, im, i_scale;
@@ -7302,7 +7303,8 @@ GMT_LOCAL void fft_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struc
 			return;
 		}
 		Out->header->complex_mode = wmode[k];
-		sprintf (Out->header->title, "The %s part of FFT transformed input grid %s", suffix[mode][k], G->header->name);
+		for (len = strlen (G->header->name); len > 0 && G->header->name[len-1] != '/'; len--);	/* Find start of file name minus any leading directories */
+		snprintf (Out->header->title, GMT_GRID_TITLE_LEN80, "The %s part of FFT transformed grid %s", suffix[mode][k], &G->header->name[len]);
 		if (k == 1 && mode) strcpy (Out->header->z_units, "radians");
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | wmode[k], NULL, file, Out) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s could not be written\n", file);
