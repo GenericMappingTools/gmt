@@ -665,7 +665,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
 		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
-			sprintf (text, " -> %" PRIu64, segment[id2].orig_id);
+			snprintf (text, GMT_LEN64, " -> %" PRIu64, segment[id2].orig_id);
 			strcat (buffer, text);
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 				done = closed = true;
@@ -688,7 +688,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args) {
 			end_order = 1;	/* Now start at the end point of segment */
 			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
-				sprintf (text, "%" PRIu64 " <- ", segment[id2].orig_id);
+				snprintf (text, GMT_LEN64, "%" PRIu64 " <- ", segment[id2].orig_id);
 				strcat (text, buffer);	/* Prepend to message */
 				strcpy (buffer, text);
 				if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */

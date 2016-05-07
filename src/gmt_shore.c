@@ -367,7 +367,7 @@ GMT_LOCAL void shore_check (struct GMT_CTRL *GMT, bool ok[5]) {
 		ok[i] = false;
 		for (j = n_found = 0; j < 3; j++) {
 			/* For each data type... */
-			sprintf (stem, "binned_%s_%c", kind[j], res[i]);
+			snprintf (stem, GMT_LEN64, "binned_%s_%c", kind[j], res[i]);
 			if (!shore_getpathname (GMT, stem, path))
 				/* Failed to find file */
 				continue;
@@ -506,7 +506,7 @@ int gmt_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	size_t start[1], count[1];
 	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
 
-	sprintf (stem, "binned_GSHHS_%c", res);
+	snprintf (stem, GMT_LEN64, "binned_GSHHS_%c", res);
 
 	if (!shore_getpathname (GMT, stem, path))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
@@ -895,9 +895,9 @@ int gmt_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	gmt_M_memset (c, 1, struct GMT_BR);
 
 	if (which == 'r')
-		sprintf (stem, "binned_river_%c", res);
+		snprintf (stem, GMT_LEN64, "binned_river_%c", res);
 	else
-		sprintf (stem, "binned_border_%c", res);
+		snprintf (stem, GMT_LEN64, "binned_border_%c", res);
 
 	if (!shore_getpathname (GMT, stem, path))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */

@@ -1777,7 +1777,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	struct GMT_GDALREAD_OUT_CTRL *from_gdalread = NULL;
 	int nBand, subset;
 	uint64_t i, j, row, col;
-	char strR[128];
+	char strR[GMT_LEN128] = {""};
 
 	/* Allocate new control structures */
 	to_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
@@ -1791,7 +1791,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	subset = gmt_M_is_subset (GMT, header, wesn);	/* We have a Sub-region demand */
 	if (subset) {	/* We have a Sub-region demand */
 		to_gdalread->R.active = true;
-		sprintf(strR, "%.10f/%.10f/%.10f/%.10f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		to_gdalread->R.region = strR;
 		to_gdalread->registration.val = header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
 		to_gdalread->registration.x_inc = header->inc[GMT_X];

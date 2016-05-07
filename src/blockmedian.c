@@ -246,7 +246,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 
-	char format[GMT_BUFSIZ] = {""}, *old_format = NULL;
+	char format[GMT_LEN256] = {""}, *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
@@ -306,7 +306,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args) {
 	if (!(Ctrl->E.mode & BLK_DO_EXTEND4)) quantile[0] = Ctrl->T.quantile;	/* Just get the single quantile [median] */
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 

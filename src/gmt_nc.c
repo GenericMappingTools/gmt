@@ -264,9 +264,9 @@ GMT_LOCAL void gmtnc_get_units (struct GMT_CTRL *GMT, int ncid, int varid, char 
 	if (gmtlib_nc_get_att_text (GMT, ncid, varid, "long_name", name, GMT_GRID_UNIT_LEN80))
 		nc_inq_varname (ncid, varid, name);
 	if (!gmtlib_nc_get_att_text (GMT, ncid, varid, "units", units, GMT_GRID_UNIT_LEN80) && units[0])
-		sprintf (name_units, "%s [%s]", name, units);
+		snprintf (name_units, GMT_GRID_UNIT_LEN80, "%s [%s]", name, units);
 	else
-		strcpy (name_units, name);
+		strncpy (name_units, name, GMT_GRID_UNIT_LEN80-1);
 }
 
 GMT_LOCAL void gmtnc_put_units (int ncid, int varid, char *name_units) {
@@ -279,7 +279,7 @@ GMT_LOCAL void gmtnc_put_units (int ncid, int varid, char *name_units) {
 	int i = 0, j = 0;
 	char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
 
-	strncpy (name, name_units, GMT_GRID_UNIT_LEN80);
+	strncpy (name, name_units, GMT_GRID_UNIT_LEN80-1);
 	units[0] = '\0';
 	for (i = 0; i < GMT_GRID_UNIT_LEN80 && units[i]; i++) {
 		if (name[i] == ']') copy = false, units[j] = '\0';

@@ -46,7 +46,7 @@ void *dlsym (void *handle, const char *name) {
 char *dlerror (void) {
 	/* Reports last error occured */
 	int len, error_code;
-	static char errstr[128];
+	static char errstr[GMT_LEN128];
         
 	if ((error_code = GetLastError ()) == 0)
 		return NULL;
@@ -56,7 +56,7 @@ char *dlerror (void) {
 	SetLastError (0); 
 
 	/* Format the error string */
-	len = sprintf (errstr, "Error <%d>: ", error_code);
+	len = snprintf (errstr, GMT_LEN128, "Error <%d>: ", error_code);
 	len += FormatMessage ( 
 		FORMAT_MESSAGE_FROM_SYSTEM,
 		NULL,

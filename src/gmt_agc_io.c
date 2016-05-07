@@ -106,7 +106,7 @@ GMT_LOCAL void agc_save_header (char *remark, float *agchead) {
 
 	strcpy (remark, AGCHEADINDICATOR);
 	for (i = 0; i < BUFFHEADSIZE; i++) {
-		sprintf (floatvalue, "%f", agchead[i]);
+		snprintf (floatvalue, PARAMSIZE, "%f", agchead[i]);
 		for (j = strlen (floatvalue); j < PARAMSIZE; j++) strcat (floatvalue, " ");
 		strcat (remark, floatvalue);
 	}

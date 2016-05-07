@@ -776,7 +776,7 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 
 		pos = 0;
 		while ((gmt_strtok (P->style, " ", &pos, ptr))) {
-			sprintf (tmp, "%g ", (atof (ptr) * GMT->session.u2u[unit][GMT_PT]));
+			snprintf (tmp, GMT_PEN_LEN, "%g ", (atof (ptr) * GMT->session.u2u[unit][GMT_PT]));
 			strcat (string, tmp);
 			n_dash++;
 		}
@@ -793,12 +793,12 @@ GMT_LOCAL int support_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_
 		P->offset = 0.0;
 		for (i = 0; line[i]; i++) {
 			if (line[i] == '-') { /* Dash */
-				sprintf (tmp, "%g %g ", 8.0 * width, 4.0 * width);
+				snprintf (tmp, GMT_PEN_LEN, "%g %g ", 8.0 * width, 4.0 * width);
 				strcat (P->style, tmp);
 				n_dash += 2;
 			}
 			else if (line[i] == '.') { /* Dot */
-				sprintf (tmp, "%g %g ", width, 4.0 * width);
+				snprintf (tmp, GMT_PEN_LEN, "%g %g ", width, 4.0 * width);
 				strcat (P->style, tmp);
 				n_dash += 2;
 			}
@@ -3233,9 +3233,9 @@ GMT_LOCAL int support_getscale_old (struct GMT_CTRL *GMT, char option, char *tex
 	ms->length = atof (txt_len);
 
 	if (gave_xy)	/* Set up ancher in plot units */
-		sprintf (string, "x%s/%s", txt_a, txt_b);
+		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
-		sprintf (string, "g%s/%s", txt_a, txt_b);
+		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
 	if ((ms->refpoint = gmt_get_refpoint (GMT, string)) == NULL) return (1);	/* Failed basic parsing */
 
 	error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_sy, GMT_IS_LAT, &ms->origin[GMT_Y]), txt_sy);
@@ -3441,9 +3441,9 @@ GMT_LOCAL int support_getrose_old (struct GMT_CTRL *GMT, char option, char *text
 	if (colon > 0) text[colon-1] = ':';	/* Put it back */
 	if (plus > 0) text[plus-1] = '+';	/* Put it back */
 	if (gave_xy)	/* Set up ancher in plot units */
-		sprintf (string, "x%s/%s", txt_a, txt_b);
+		snprintf (string, GMT_LEN256, "x%s/%s", txt_a, txt_b);
 	else	/* Set up ancher in geographical coordinates */
-		sprintf (string, "g%s/%s", txt_a, txt_b);
+		snprintf (string, GMT_LEN256, "g%s/%s", txt_a, txt_b);
 	if ((ms->refpoint = gmt_get_refpoint (GMT, string)) == NULL) return (1);	/* Failed basic parsing */
 	ms->justify = PSL_MC;	/* Center it is */
 	ms->size = gmt_M_to_inch (GMT, txt_c);
@@ -5178,9 +5178,9 @@ void gmtlib_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: failed to convert %s to r/g/b\n", &text[i]);
 				text[n] = ';';	/* Undo damage */
 				if (rgb[3] > 0.0)
-					sprintf (color, "%f/%f/%f=%ld", gmt_M_t255(rgb), lrint (100.0 * rgb[3]));	/* Format triplet w/ transparency */
+					snprintf (color, GMT_LEN256, "%f/%f/%f=%ld", gmt_M_t255(rgb), lrint (100.0 * rgb[3]));	/* Format triplet w/ transparency */
 				else
-					sprintf (color, "%f/%f/%f", gmt_M_t255(rgb));	/* Format triplet only */
+					snprintf (color, GMT_LEN256, "%f/%f/%f", gmt_M_t255(rgb));	/* Format triplet only */
 				for (j = 0; color[j]; j++, k++) buffer[k] = color[j];	/* Copy over triplet and update buffer pointer k */
 			}
 			else	/* Already in r/g/b format, just copy */
@@ -6146,13 +6146,13 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 			}
 			else {	/* Shades, RGB, HSV, or CMYK */
 				if (nread == 1)	/* Gray shade */
-					sprintf (clo, "%s", T1);
+					snprintf (clo, GMT_LEN64, "%s", T1);
 				else if (X->model & GMT_CMYK)
-					sprintf (clo, "%s/%s/%s/%s", T1, T2, T3, T4);
+					snprintf (clo, GMT_LEN64, "%s/%s/%s/%s", T1, T2, T3, T4);
 				else if (X->model & GMT_HSV)
-					sprintf (clo, "%s-%s-%s", T1, T2, T3);
+					snprintf (clo, GMT_LEN64, "%s-%s-%s", T1, T2, T3);
 				else
-					sprintf (clo, "%s/%s/%s", T1, T2, T3);
+					snprintf (clo, GMT_LEN64, "%s/%s/%s", T1, T2, T3);
 				if (X->model & GMT_HSV) {
 					if (support_gethsv (GMT, clo, X->patch[id].hsv)) error++;
 					support_hsv_to_rgb (X->patch[id].rgb, X->patch[id].hsv);
@@ -6241,30 +6241,30 @@ struct GMT_PALETTE * gmt_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 		else {						/* Shades, RGB, HSV, or CMYK */
 			if (nread == 2) {	/* Categorical cpt records with key fill [;label] */
 				X->range[n].z_high = X->range[n].z_low;
-				sprintf (clo, "%s", T1);
+				snprintf (clo, GMT_LEN64, "%s", T1);
 				sprintf (chi, "-");
 				n_cat_records++;
 				X->categorical = true;
 			}
 			else if (nread == 4) {	/* gray shades or color names */
 				gmt_scanf_arg (GMT, T2, GMT_IS_UNKNOWN, &X->range[n].z_high);
-				sprintf (clo, "%s", T1);
-				sprintf (chi, "%s", T3);
+				snprintf (clo, GMT_LEN64, "%s", T1);
+				snprintf (chi, GMT_LEN64, "%s", T3);
 			}
 			else if (X->model & GMT_CMYK) {
 				gmt_scanf_arg (GMT, T5, GMT_IS_UNKNOWN, &X->range[n].z_high);
-				sprintf (clo, "%s/%s/%s/%s", T1, T2, T3, T4);
-				sprintf (chi, "%s/%s/%s/%s", T6, T7, T8, T9);
+				snprintf (clo, GMT_LEN64, "%s/%s/%s/%s", T1, T2, T3, T4);
+				snprintf (chi, GMT_LEN64, "%s/%s/%s/%s", T6, T7, T8, T9);
 			}
 			else if (X->model & GMT_HSV) {
 				gmt_scanf_arg (GMT, T4, GMT_IS_UNKNOWN, &X->range[n].z_high);
-				sprintf (clo, "%s-%s-%s", T1, T2, T3);
-				sprintf (chi, "%s-%s-%s", T5, T6, T7);
+				snprintf (clo, GMT_LEN64, "%s-%s-%s", T1, T2, T3);
+				snprintf (chi, GMT_LEN64, "%s-%s-%s", T5, T6, T7);
 			}
 			else {			/* RGB */
 				gmt_scanf_arg (GMT, T4, GMT_IS_UNKNOWN, &X->range[n].z_high);
-				sprintf (clo, "%s/%s/%s", T1, T2, T3);
-				sprintf (chi, "%s/%s/%s", T5, T6, T7);
+				snprintf (clo, GMT_LEN64, "%s/%s/%s", T1, T2, T3);
+				snprintf (chi, GMT_LEN64, "%s/%s/%s", T5, T6, T7);
 			}
 			if (X->model & GMT_HSV) {
 				if (support_gethsv (GMT, clo, X->range[n].hsv_low)) error++;
@@ -13190,6 +13190,6 @@ char * gmt_memory_use (size_t bytes) {
 	char *unit = "kMGT";	/* kilo-, Mega-, Giga-, Tera- */
 	mem = bytes / 1024.0;	/* Report kbytes unless it is too much */
 	while (mem > 1024.0 && kind < 3) { mem /= 1024.0; kind++; }	/* Goto next higher unit */
-	sprintf (mem_report, "%.1f %cb", mem, unit[kind]);
+	snprintf (mem_report, GMT_LEN32, "%.1f %cb", mem, unit[kind]);
 	return mem_report;
 }

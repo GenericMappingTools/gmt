@@ -407,7 +407,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	double out[7], wesn[4], i_n_in_cell, d_intval, weight, half_dx, *in = NULL, *z_tmp = NULL;
 
-	char format[GMT_BUFSIZ] = {""}, *old_format = NULL;
+	char format[GMT_LEN256] = {""}, *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
@@ -449,7 +449,7 @@ int GMT_blockmode (void *V_API, int mode, void *args) {
 	mode_xy = !Ctrl->C.active;
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		snprintf (format, GMT_LEN256, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 

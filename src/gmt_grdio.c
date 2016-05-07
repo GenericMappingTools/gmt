@@ -1836,7 +1836,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			sprintf (format, "Warning: w reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			snprintf (format, GMT_LEN64, "Warning: w reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[XLO], val);
 			wesn[XLO] = val;
 		}
@@ -1846,7 +1846,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-			sprintf (format, "Warning: e reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			snprintf (format, GMT_LEN64, "Warning: e reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[XHI], val);
 			wesn[XHI] = val;
 		}
@@ -1858,7 +1858,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-		sprintf (format, "Warning: s reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		snprintf (format, GMT_LEN64, "Warning: s reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[YLO], val);
 		wesn[YLO] = val;
 	}
@@ -1866,7 +1866,7 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
-		sprintf (format, "Warning: n reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		snprintf (format, GMT_LEN64, "Warning: n reset from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, format, wesn[YHI], val);
 		wesn[YHI] = val;
 	}
@@ -2659,8 +2659,8 @@ int gmt_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, doubl
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active) {
-		char strR [128];
-		sprintf (strR, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
+		char strR[GMT_LEN128];
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
 							  GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		to_gdalread->R.region = strR;
 		/*to_gdalread->R.active = true;*/	/* Wait untill we really know how to use it */

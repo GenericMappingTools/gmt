@@ -1889,8 +1889,8 @@ GMT_LOCAL int clip_dump = 0, clip_id = 0;
 GMT_LOCAL void map_dumppol (uint64_t n, double *x, double *y, int *id) {
 	uint64_t i;
 	FILE *fp = NULL;
-	char line[64];
-	sprintf (line, "dump_%d.d", *id);
+	char line[GMT_LEN64];
+	snprintf (line, GMT_LEN64, "dump_%d.d", *id);
 	fp = fopen (line, "w");
 	for (i = 0; i < n; i++) fprintf (fp, "%g\t%g\n", x[i], y[i]);
 	fclose (fp);
@@ -3451,7 +3451,7 @@ GMT_LOCAL void map_set_utmzone (struct GMT_CTRL *GMT) {
 			if (clon >= 3.0 && clon < 12.0)
 				kx = 32;
 		}
-		sprintf (zone, "%d%c", kx, GMT->current.proj.utm_zoney);
+		snprintf (zone, 4, "%d%c", kx, GMT->current.proj.utm_zoney);
 	}
 	GMT->current.proj.pars[0] = (double)kx;
 	GMT->current.proj.lat0 = 0.0;
@@ -6092,7 +6092,7 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	int side, j, np, cross = 0;
 	uint64_t row, m;
 	size_t n_alloc = 0;
-	char label[GMT_BUFSIZ] = {""}, *part = "EW";
+	char label[GMT_LEN256] = {""}, *part = "EW";
 	double xx[2], yy[2];
 	struct GMT_DATASEGMENT **L = NULL;
 	bool (*inside[2]) (double, double);
@@ -6128,7 +6128,7 @@ unsigned int gmt_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 		if (m != n_alloc) gmt_alloc_segment (GMT, L[side], m, S->n_columns, false);
 		L[side]->n_rows = m;
 		if (S->label) {
-			sprintf (label, "%s part %c", S->label, part[side]);
+			snprintf (label, GMT_LEN256, "%s part %c", S->label, part[side]);
 			L[side]->label = strdup (label);
 		}
 		if (S->header) L[side]->header = strdup (S->header);

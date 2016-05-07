@@ -196,7 +196,7 @@ GMT_LOCAL void ogr_to_text (struct GMT_CTRL *GMT, struct GMT_OGR *G, char *out) 
 			case GMT_UINT:
 			case GMT_LONG:
 			case GMT_ULONG:
-				sprintf (text, "%ld", lrint (G->dvalue[k]));
+				snprintf (text, GMT_LEN64, "%ld", lrint (G->dvalue[k]));
 				break;
 			case GMT_DATETIME:
 				gmt_format_abstime_output (GMT, G->dvalue[k], text);

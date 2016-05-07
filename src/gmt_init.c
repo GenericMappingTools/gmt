@@ -354,7 +354,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
-	char buffer[GMT_BUFSIZ] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
+	char buffer[GMT_LEN256] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Call gmtinit_rectR_to_geoR to convert projected -R to geo -R\n");
@@ -429,7 +429,7 @@ GMT_LOCAL int gmtinit_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rec
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No map projection specified to auto-determine geographic region\n");
 			break;
 	}
-	sprintf (buffer, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s",
+	snprintf (buffer, GMT_LEN256, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s",
 	         wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtaining geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_Call_Module (GMT->parent, "mapproject", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
@@ -484,7 +484,7 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	/* -a<col>=<name>[:<type>][,<col>...][+g|G<geometry>] */
 	unsigned int pos = 0;
 	int col, a_col = GMT_Z;
-	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[64] = {""}, *s = NULL, *c = NULL;
+	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[GMT_LEN64] = {""}, *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
 		GMT->common.a.geometry = gmtlib_ogr_get_geometry (s+2);
@@ -515,7 +515,7 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 			if (sscanf (p, "%[^=]=%s", A, name) != 2) return (GMT_PARSE_ERROR);	/* Did not get two items */
 		}
 		else {	/* Auto-fill col as the next col starting at GMT_Z */
-			sprintf (A, "%d", a_col++);
+			snprintf (A, GMT_LEN64, "%d", a_col++);
 			strcpy (name, p);
 		}
 		switch (A[0]) {	/* Watch for different multisegment header cases */
@@ -840,7 +840,7 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 
 	/* print version and exit */
 	if (strcmp (text, "version") == 0) {
-		sprintf (message, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+		snprintf (message, GMT_LEN128, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 		GMT->parent->print_func (stdout, message);
 		/* cannot call gmt_M_free_options() from here, so we are leaking on exit.
 		 * struct GMTAPI_CTRL *G = GMT->parent;
@@ -851,7 +851,7 @@ GMT_LOCAL int gmtinit_parse_dash_option (struct GMT_CTRL *GMT, char *text) {
 
 	/* print GMT folders and exit */
 	if (strcmp (text, "show-datadir") == 0) {
-		sprintf (message, "%s\n", GMT->session.SHAREDIR);
+		snprintf (message, GMT_LEN128, "%s\n", GMT->session.SHAREDIR);
 		GMT->parent->print_func (stdout, message);
 		/* leaking on exit same as above. */
 		exit (EXIT_SUCCESS);
@@ -954,14 +954,14 @@ GMT_LOCAL char *gmtinit_old_trendsyntax (struct GMT_CTRL *GMT, char option, char
 				arg[end] = '\0';	/* Chop off the r */
 				order = atoi (arg);
 				if (new[0] == 'p') order--;
-				sprintf (term, "%d", order);
+				snprintf (term, GMT_LEN16, "%d", order);
 				strcat (new, term);
 				strcat (new, "+r");	/* Add robust flag */
 			}
 			else {
 				order = atoi (arg);
 				if (new[0] == 'p') order--;
-				sprintf (term, "%d", order);
+				snprintf (term, GMT_LEN16, "%d", order);
 				strcat (new, term);
 			}
 			gmt_M_str_free (arg);	/* Wipe old setting */
@@ -1948,7 +1948,7 @@ GMT_LOCAL int gmtinit_savedefaults (struct GMT_CTRL *GMT, char *file) {
 GMT_LOCAL void gmtinit_append_trans (char *text, double transparency) {
 	char trans[GMT_LEN64] = {""};
 	if (!gmt_M_is_zero (transparency) && text[0] != '-') {	/* Append nonzero transparency */
-		sprintf (trans, "@%ld", lrint (100.0 * transparency));
+		snprintf (trans, GMT_LEN64, "@%ld", lrint (100.0 * transparency));
 		strcat (text, trans);
 	}
 }
@@ -4281,7 +4281,7 @@ GMT_LOCAL int gmtinit_load_encoding (struct GMT_CTRL *GMT) {
 	FILE *in = NULL;
 	struct GMT_ENCODING *enc = &GMT->current.setting.ps_encoding;
 
-	sprintf (symbol, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
+	snprintf (symbol, GMT_LEN256, "PSL_%s", enc->name);	/* Prepend the PSL_ prefix */
 	gmt_getsharepath (GMT, "postscriptlight", symbol, ".ps", line, R_OK);
 	if ((in = fopen (line, "r")) == NULL) {
 		perror (line);
@@ -8963,7 +8963,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_ANNOT_FONT_SIZE_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_WARN;
-				sprintf (value, "%g", GMT->current.setting.font_annot[GMT_PRIMARY].size);
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.font_annot[GMT_PRIMARY].size);
 			}
 			else
 				error = gmtinit_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -8971,7 +8971,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_ANNOT_FONT_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_WARN;
-				sprintf (value, "%g", GMT->current.setting.font_annot[GMT_SECONDARY].size);
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.font_annot[GMT_SECONDARY].size);
 			}
 			else
 				error = gmtinit_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -8979,7 +8979,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_HEADER_FONT_SIZE:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_WARN;
-				sprintf (value, "%g", GMT->current.setting.font_title.size);
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.font_title.size);
 			}
 			else
 				error = gmtinit_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -8987,7 +8987,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_LABEL_FONT_SIZE:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
 				GMT_COMPAT_WARN;
-				sprintf (value, "%g", GMT->current.setting.font_label.size);
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.font_label.size);
 			}
 			else
 				error = gmtinit_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -9000,35 +9000,35 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_annot_offset[GMT_PRIMARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_offset[GMT_PRIMARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_PRIMARY));
 			break;
 		case GMTCASE_ANNOT_OFFSET_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OFFSET_SECONDARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_annot_offset[GMT_SECONDARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_offset[GMT_SECONDARY] GMT_def(GMTCASE_MAP_ANNOT_OFFSET_SECONDARY));
 			break;
 		case GMTCASE_OBLIQUE_ANNOTATION:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
-			sprintf (value, "%d", GMT->current.setting.map_annot_oblique);
+			snprintf (value, GMT_LEN256, "%d", GMT->current.setting.map_annot_oblique);
 			break;
 		case GMTCASE_ANNOT_MIN_ANGLE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_MIN_ANGLE:
-			sprintf (value, "%g", GMT->current.setting.map_annot_min_angle);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_annot_min_angle);
 			break;
 		case GMTCASE_ANNOT_MIN_SPACING:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_MIN_SPACING:
-			sprintf (value, "%g%c", GMT->current.setting.map_annot_min_spacing GMT_def(GMTCASE_MAP_ANNOT_MIN_SPACING));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_annot_min_spacing GMT_def(GMTCASE_MAP_ANNOT_MIN_SPACING));
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9062,14 +9062,14 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_DEFAULT_PEN:
-			sprintf (value, "%s", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 			break;
 		case GMTCASE_FRAME_PEN:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_FRAME_PEN:
-			sprintf (value, "%s", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
+			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
 			break;
 		case GMTCASE_BASEMAP_TYPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9094,63 +9094,63 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_FRAME_WIDTH:
-			sprintf (value, "%g%c", GMT->current.setting.map_frame_width GMT_def(GMTCASE_MAP_FRAME_WIDTH));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_frame_width GMT_def(GMTCASE_MAP_FRAME_WIDTH));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
-			sprintf (value, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] GMT_def(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
-			sprintf (value, "%s", gmt_putpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]));
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
-			sprintf (value, "%s", gmt_putpen (GMT, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]));
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LABEL_OFFSET:
-			sprintf (value, "%g%c", GMT->current.setting.map_label_offset GMT_def(GMTCASE_MAP_LABEL_OFFSET));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_label_offset GMT_def(GMTCASE_MAP_LABEL_OFFSET));
 			break;
 		case GMTCASE_LINE_STEP:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LINE_STEP:
-			sprintf (value, "%g%c", GMT->current.setting.map_line_step GMT_def(GMTCASE_MAP_LINE_STEP));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_line_step GMT_def(GMTCASE_MAP_LINE_STEP));
 			break;
 		case GMTCASE_UNIX_TIME:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LOGO:
-			sprintf (value, "%s", ft[GMT->current.setting.map_logo]);
+			snprintf (value, GMT_LEN256, "%s", ft[GMT->current.setting.map_logo]);
 			break;
 		case GMTCASE_UNIX_TIME_POS:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_LOGO_POS:
-			sprintf (value, "%s/%g%c/%g%c", GMT_just_string[GMT->current.setting.map_logo_justify],
+			snprintf (value, GMT_LEN256, "%s/%g%c/%g%c", GMT_just_string[GMT->current.setting.map_logo_justify],
 			GMT->current.setting.map_logo_pos[GMT_X] GMT_def(GMTCASE_MAP_LOGO_POS),
 			GMT->current.setting.map_logo_pos[GMT_Y] GMT_def(GMTCASE_MAP_LOGO_POS));
 			break;
@@ -9159,14 +9159,14 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ORIGIN_X:
-			sprintf (value, "%g%c", GMT->current.setting.map_origin[GMT_X] GMT_def(GMTCASE_MAP_ORIGIN_X));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_X] GMT_def(GMTCASE_MAP_ORIGIN_X));
 			break;
 		case GMTCASE_Y_ORIGIN:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ORIGIN_Y:
-			sprintf (value, "%g%c", GMT->current.setting.map_origin[GMT_Y] GMT_def(GMTCASE_MAP_ORIGIN_Y));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_Y] GMT_def(GMTCASE_MAP_ORIGIN_Y));
 			break;
 		case GMTCASE_POLAR_CAP:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9174,12 +9174,12 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_POLAR_CAP:
 			if (doubleAlmostEqual (GMT->current.setting.map_polar_cap[0], 90.0))
-				sprintf (value, "none");
+				snprintf (value, GMT_LEN256, "none");
 			else
-				sprintf (value, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
+				snprintf (value, GMT_LEN256, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
-			sprintf (value, "%g%c", GMT->current.setting.map_scale_height GMT_def(GMTCASE_MAP_SCALE_HEIGHT));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height GMT_def(GMTCASE_MAP_SCALE_HEIGHT));
 			break;
 		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH:
@@ -9187,12 +9187,12 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_TICK_LENGTH_PRIMARY:
-			sprintf (value, "%g%c/%g%c",
+			snprintf (value, GMT_LEN256, "%g%c/%g%c",
 			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] GMT_def(GMTCASE_MAP_TICK_LENGTH_PRIMARY),
 			GMT->current.setting.map_tick_length[GMT_TICK_UPPER] GMT_def(GMTCASE_MAP_TICK_LENGTH_PRIMARY));
 			break;
 		case GMTCASE_MAP_TICK_LENGTH_SECONDARY:
-			sprintf (value, "%g%c/%g%c",
+			snprintf (value, GMT_LEN256, "%g%c/%g%c",
 			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] GMT_def(GMTCASE_MAP_TICK_LENGTH_SECONDARY),
 			GMT->current.setting.map_tick_length[GMT_TICK_LOWER] GMT_def(GMTCASE_MAP_TICK_LENGTH_SECONDARY));
 			break;
@@ -9202,33 +9202,33 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
-			sprintf (value, "%s", gmt_putpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]));
 			break;
 		case GMTCASE_MAP_TICK_PEN_SECONDARY:
-			sprintf (value, "%s", gmt_putpen (GMT, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putpen (GMT, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]));
 			break;
 		case GMTCASE_HEADER_OFFSET:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_TITLE_OFFSET:
-			sprintf (value, "%g%c", GMT->current.setting.map_title_offset GMT_def(GMTCASE_MAP_TITLE_OFFSET));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_title_offset GMT_def(GMTCASE_MAP_TITLE_OFFSET));
 			break;
 		case GMTCASE_VECTOR_SHAPE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_VECTOR_SHAPE:
-			sprintf (value, "%g", GMT->current.setting.map_vector_shape);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.map_vector_shape);
 			break;
 
 		/* COLOR GROUP */
 
 		case GMTCASE_COLOR_BACKGROUND:
-			sprintf (value, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_BGD]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_BGD]));
 			break;
 		case GMTCASE_COLOR_FOREGROUND:
-			sprintf (value, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_FGD]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_FGD]));
 			break;
 		case GMTCASE_COLOR_MODEL:
 			if (GMT->current.setting.color_model == GMT_RGB)
@@ -9243,35 +9243,35 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "undefined");
 			break;
 		case GMTCASE_COLOR_NAN:
-			sprintf (value, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_NAN]));
+			snprintf (value, GMT_LEN256, "%s", gmt_putcolor (GMT, GMT->current.setting.color_patch[GMT_NAN]));
 			break;
 		case GMTCASE_HSV_MIN_SATURATION:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_COLOR_HSV_MIN_S:
-			sprintf (value, "%g", GMT->current.setting.color_hsv_min_s);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.color_hsv_min_s);
 			break;
 		case GMTCASE_HSV_MAX_SATURATION:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_COLOR_HSV_MAX_S:
-			sprintf (value, "%g", GMT->current.setting.color_hsv_max_s);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.color_hsv_max_s);
 			break;
 		case GMTCASE_HSV_MIN_VALUE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_COLOR_HSV_MIN_V:
-			sprintf (value, "%g", GMT->current.setting.color_hsv_min_v);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.color_hsv_min_v);
 			break;
 		case GMTCASE_HSV_MAX_VALUE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_COLOR_HSV_MAX_V:
-			sprintf (value, "%g", GMT->current.setting.color_hsv_max_v);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.color_hsv_max_v);
 			break;
 
 		/* PS GROUP */
@@ -9303,7 +9303,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_PS_COPIES:
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_COMPAT_WARN;
-				sprintf (value, "%d", GMT->current.setting.ps_copies);
+				snprintf (value, GMT_LEN256, "%d", GMT->current.setting.ps_copies);
 			}
 			else
 				error = gmtinit_badvalreport (GMT, keyword);	/* Not recognized so give error message */
@@ -9325,7 +9325,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				strcpy (value, "lzw");
 			else if (GMT->PSL->internal.compress == PSL_DEFLATE) {
 				if (GMT->PSL->internal.deflate_level != 0)
-					sprintf (value, "deflate,%u", GMT->PSL->internal.deflate_level);
+					snprintf (value, GMT_LEN256, "deflate,%u", GMT->PSL->internal.deflate_level);
 				else
 					strcpy (value, "deflate");
 			}
@@ -9356,14 +9356,14 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_PS_MITER_LIMIT:
 			if (!GMT->PSL) return (NULL);	/* Not using PSL in this session */
-			sprintf (value, "%d", GMT->PSL->internal.miter_limit);
+			snprintf (value, GMT_LEN256, "%d", GMT->PSL->internal.miter_limit);
 			break;
 		case GMTCASE_PAGE_COLOR:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_PAGE_COLOR:
-			sprintf (value, "%s", gmt_putcolor (GMT, GMT->current.setting.ps_page_rgb));
+			snprintf (value, GMT_LEN256, "%s", gmt_putcolor (GMT, GMT->current.setting.ps_page_rgb));
 			break;
 		case GMTCASE_PAGE_ORIENTATION:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9383,11 +9383,11 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_MEDIA:
 			if (GMT->current.setting.ps_media == -USER_MEDIA_OFFSET)
-				sprintf (value, "%gx%g", fabs (GMT->current.setting.ps_page_size[0]), fabs (GMT->current.setting.ps_page_size[1]));
+				snprintf (value, GMT_LEN256, "%gx%g", fabs (GMT->current.setting.ps_page_size[0]), fabs (GMT->current.setting.ps_page_size[1]));
 			else if (GMT->current.setting.ps_media >= USER_MEDIA_OFFSET)
-				sprintf (value, "%s", GMT->session.user_media_name[GMT->current.setting.ps_media-USER_MEDIA_OFFSET]);
+				snprintf (value, GMT_LEN256, "%s", GMT->session.user_media_name[GMT->current.setting.ps_media-USER_MEDIA_OFFSET]);
 			else if (GMT->current.setting.ps_media < GMT_N_MEDIA)
-				sprintf (value, "%s", GMT_media_name[GMT->current.setting.ps_media]);
+				snprintf (value, GMT_LEN256, "%s", GMT_media_name[GMT->current.setting.ps_media]);
 			if (GMT->current.setting.ps_page_size[0] < 0.0)
 				strcat (value, "-");
 			else if (GMT->current.setting.ps_page_size[1] < 0.0)
@@ -9398,14 +9398,14 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_SCALE_X:
-			sprintf (value, "%g", GMT->current.setting.ps_magnify[GMT_X]);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.ps_magnify[GMT_X]);
 			break;
 		case GMTCASE_GLOBAL_Y_SCALE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_SCALE_Y:
-			sprintf (value, "%g", GMT->current.setting.ps_magnify[GMT_Y]);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.ps_magnify[GMT_Y]);
 			break;
 		case GMTCASE_TRANSPARENCY:
 			if (gmt_M_compat_check (GMT, 4))
@@ -9422,7 +9422,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_COMMENTS:
 			if (!GMT->PSL) return (NULL);	/* Not using PSL in this session */
-			sprintf (value, "%s", ft[GMT->PSL->internal.comments]);
+			snprintf (value, GMT_LEN256, "%s", ft[GMT->PSL->internal.comments]);
 			break;
 
 		/* IO GROUP */
@@ -9455,17 +9455,17 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_IO_GRIDFILE_SHORTHAND:
-			sprintf (value, "%s", ft[GMT->current.setting.io_gridfile_shorthand]);
+			snprintf (value, GMT_LEN256, "%s", ft[GMT->current.setting.io_gridfile_shorthand]);
 			break;
 		case GMTCASE_IO_HEADER:
-			sprintf (value, "%s", ft[GMT->current.setting.io_header[GMT_IN]]);
+			snprintf (value, GMT_LEN256, "%s", ft[GMT->current.setting.io_header[GMT_IN]]);
 			break;
 		case GMTCASE_N_HEADER_RECS:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_IO_N_HEADER_RECS:
-			sprintf (value, "%d", GMT->current.setting.io_n_header_items);
+			snprintf (value, GMT_LEN256, "%d", GMT->current.setting.io_n_header_items);
 			break;
 		case GMTCASE_NAN_RECORDS:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9483,12 +9483,12 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else if (GMT->current.setting.io_nc4_chunksize[0] == k_netcdf_io_classic)
 				strcpy (value, "classic");
 			else
-				sprintf (value, "%" PRIuS ",%" PRIuS, /* chunk size: lat,lon */
+				snprintf (value, GMT_LEN256, "%" PRIuS ",%" PRIuS, /* chunk size: lat,lon */
 						 GMT->current.setting.io_nc4_chunksize[0],
 						 GMT->current.setting.io_nc4_chunksize[1]);
 			break;
 		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
-			sprintf (value, "%u", GMT->current.setting.io_nc4_deflation_level);
+			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.io_nc4_deflation_level);
 			break;
 		case GMTCASE_XY_TOGGLE:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9509,20 +9509,20 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			if (GMT->current.setting.n_bin_header_cols == 0)
 				strcpy (value, "off");
 			else
-				sprintf (value, "%" PRIu64, GMT->current.setting.n_bin_header_cols);
+				snprintf (value, GMT_LEN256, "%" PRIu64, GMT->current.setting.n_bin_header_cols);
 			break;
 
 		case GMTCASE_IO_SEGMENT_MARKER:
 			value[0] = '\0';
 			if (GMT->current.setting.io_seg_marker[GMT_OUT] != GMT->current.setting.io_seg_marker[GMT_IN]) {
 				if ((GMT->current.setting.io_seg_marker[GMT_IN] == 'N' && !GMT->current.setting.io_nanline[GMT_IN]) || (GMT->current.setting.io_seg_marker[GMT_IN] == 'B' && !GMT->current.setting.io_blankline[GMT_IN])) value[0] = '\\';
-				sprintf (txt, "%c,", GMT->current.setting.io_seg_marker[GMT_IN]);	strcat (value, txt);
+				snprintf (txt, 8U, "%c,", GMT->current.setting.io_seg_marker[GMT_IN]);	strcat (value, txt);
 				if ((GMT->current.setting.io_seg_marker[GMT_IN] == 'N' && !GMT->current.setting.io_nanline[GMT_IN]) || (GMT->current.setting.io_seg_marker[GMT_IN] == 'B' && !GMT->current.setting.io_blankline[GMT_IN])) strcat (value, "\\");
-				sprintf (txt, "%c", GMT->current.setting.io_seg_marker[GMT_OUT]);	strcat (value, txt);
+				snprintf (txt, 8U, "%c", GMT->current.setting.io_seg_marker[GMT_OUT]);	strcat (value, txt);
 			}
 			else {
 				if ((GMT->current.setting.io_seg_marker[GMT_IN] == 'N' && !GMT->current.setting.io_nanline[GMT_IN]) || (GMT->current.setting.io_seg_marker[GMT_IN] == 'B' && !GMT->current.setting.io_blankline[GMT_IN])) value[0] = '\\';
-				sprintf (txt, "%c", GMT->current.setting.io_seg_marker[GMT_IN]);	strcat (value, txt);
+				snprintf (txt, 8U, "%c", GMT->current.setting.io_seg_marker[GMT_IN]);	strcat (value, txt);
 			}
 			break;
 
@@ -9559,11 +9559,11 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PROJ_ELLIPSOID:
 			if (GMT->current.setting.proj_ellipsoid < GMT_N_ELLIPSOIDS - 1)	/* Custom ellipse */
-				sprintf (value, "%s", GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name);
+				snprintf (value, GMT_LEN256, "%s", GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name);
 			else if (gmt_M_is_spherical (GMT))
-				sprintf (value, "%f", GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius);
+				snprintf (value, GMT_LEN256, "%f", GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius);
 			else
-				sprintf (value, "%f,%f", GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius,
+				snprintf (value, GMT_LEN256, "%f,%f", GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius,
 					1.0/GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening);
 			break;
 		case GMTCASE_PROJ_DATUM:	/* Not implemented yet */
@@ -9589,7 +9589,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PROJ_LENGTH_UNIT:
-			sprintf (value, "%s", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			snprintf (value, GMT_LEN256, "%s", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 		case GMTCASE_PROJ_MEAN_RADIUS:
 			switch (GMT->current.setting.proj_mean_radius) {
@@ -9620,13 +9620,13 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			if (doubleAlmostEqual (GMT->current.setting.proj_scale_factor, -1.0)) /* Default scale for chosen projection */
 				strcpy (value, "default"); /* Default scale for chosen projection */
 			else
-				sprintf (value, "%g", GMT->current.setting.proj_scale_factor);
+				snprintf (value, GMT_LEN256, "%g", GMT->current.setting.proj_scale_factor);
 			break;
 
 		/* GMT GROUP */
 
 		case GMTCASE_GMT_COMPATIBILITY:
-			sprintf (value, "%u", GMT->current.setting.compatibility);
+			snprintf (value, GMT_LEN256, "%u", GMT->current.setting.compatibility);
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
@@ -9662,7 +9662,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_SPLINE)
 				strcpy (value, "extrap");
 			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT)
-				sprintf (value, "extrapval,%g", GMT->current.setting.extrapolate_val[1]);
+				snprintf (value, GMT_LEN256, "extrapval,%g", GMT->current.setting.extrapolate_val[1]);
 			break;
 		case GMTCASE_GMT_FFT:
 			switch (GMT->current.setting.fft) {
@@ -9706,11 +9706,11 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_GMT_HISTORY:
 			if (GMT->current.setting.history & k_history_write)
-				sprintf (value, "true");
+				snprintf (value, GMT_LEN256, "true");
 			else if (GMT->current.setting.history & k_history_read)
-				sprintf (value, "readonly");
+				snprintf (value, GMT_LEN256, "readonly");
 			else
-				sprintf (value, "false");
+				snprintf (value, GMT_LEN256, "false");
 			break;
 		case GMTCASE_INTERPOLANT:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -9774,12 +9774,12 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (GMT->current.setting.time_is_interval)
-				sprintf (value, "%c%d%c", pm[GMT->current.time.truncate.direction], GMT->current.time.truncate.T.step, GMT->current.time.truncate.T.unit);
+				snprintf (value, GMT_LEN256, "%c%d%c", pm[GMT->current.time.truncate.direction], GMT->current.time.truncate.T.step, GMT->current.time.truncate.T.unit);
 			else
-				sprintf (value, "off");
+				snprintf (value, GMT_LEN256, "off");
 			break;
 		case GMTCASE_TIME_INTERVAL_FRACTION:
-			sprintf (value, "%g", GMT->current.setting.time_interval_fraction);
+			snprintf (value, GMT_LEN256, "%g", GMT->current.setting.time_interval_fraction);
 			break;
 		case GMTCASE_GMT_LANGUAGE:
 		case GMTCASE_TIME_LANGUAGE:
@@ -9790,7 +9790,7 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_TIME_LEAP_SECONDS:
-			sprintf (value, "%s", ft[GMT->current.setting.time_leap_seconds]);
+			snprintf (value, GMT_LEN256, "%s", ft[GMT->current.setting.time_leap_seconds]);
 			break;
 		case GMTCASE_TIME_REPORT:
 			if (GMT->current.setting.timer_mode == GMT_NO_TIMER)
@@ -9804,14 +9804,14 @@ char *gmt_putparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			value[0] = GMT->current.setting.time_system.unit;
 			break;
 		case GMTCASE_TIME_WEEK_START:
-			sprintf (value, "%s", GMT_weekdays[GMT->current.setting.time_week_start]);
+			snprintf (value, GMT_LEN256, "%s", GMT_weekdays[GMT->current.setting.time_week_start]);
 			break;
 		case GMTCASE_Y2K_OFFSET_YEAR:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_TIME_Y2K_OFFSET_YEAR:
-			sprintf (value, "%d", GMT->current.setting.time_Y2K_offset_year);
+			snprintf (value, GMT_LEN256, "%d", GMT->current.setting.time_Y2K_offset_year);
 			break;
 
 		default:
@@ -9897,18 +9897,18 @@ char *gmt_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F) {
 
 	if (F->use_pattern) {
 		if (F->pattern_no)
-			sprintf (text, "p%d/%d", F->dpi, F->pattern_no);
+			snprintf (text, GMT_LEN256, "p%d/%d", F->dpi, F->pattern_no);
 		else
-			sprintf (text, "p%d/%s", F->dpi, F->pattern);
+			snprintf (text, GMT_LEN256, "p%d/%s", F->dpi, F->pattern);
 	}
 	else if (F->rgb[0] < -0.5)
 		sprintf (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, F->rgb)) >= 0)
-		sprintf (text, "%s", gmt_M_color_name[i]);
+		snprintf (text, GMT_LEN256, "%s", gmt_M_color_name[i]);
 	else if (gmt_M_is_gray (F->rgb))
-		sprintf (text, "%.5g", gmt_M_q(gmt_M_s255(F->rgb[0])));
+		snprintf (text, GMT_LEN256, "%.5g", gmt_M_q(gmt_M_s255(F->rgb[0])));
 	else
-		sprintf (text, "%.5g/%.5g/%.5g", gmt_M_t255(F->rgb));
+		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(F->rgb));
 	gmtinit_append_trans (text, F->rgb[3]);
 	return (text);
 }
@@ -9924,11 +9924,11 @@ char *gmt_putcolor (struct GMT_CTRL *GMT, double *rgb) {
 	if (rgb[0] < -0.5)
 		sprintf (text, "-");
 	else if ((i = gmtlib_getrgb_index (GMT, rgb)) >= 0)
-		sprintf (text, "%s", gmt_M_color_name[i]);
+		snprintf (text, GMT_LEN256, "%s", gmt_M_color_name[i]);
 	else if (gmt_M_is_gray(rgb))
-		sprintf (text, "%.5g", gmt_M_q(gmt_M_s255(rgb[0])));
+		snprintf (text, GMT_LEN256, "%.5g", gmt_M_q(gmt_M_s255(rgb[0])));
 	else
-		sprintf (text, "%.5g/%.5g/%.5g", gmt_M_t255(rgb));
+		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(rgb));
 	gmtinit_append_trans (text, rgb[3]);
 	return (text);
 }
@@ -9942,7 +9942,7 @@ char *gmt_putrgb (struct GMT_CTRL *GMT, double *rgb) {
 	if (rgb[0] < -0.5)
 		sprintf (text, "-");
 	else
-		sprintf (text, "%.5g/%.5g/%.5g", gmt_M_t255(rgb));
+		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g", gmt_M_t255(rgb));
 	gmtinit_append_trans (text, rgb[3]);
 	return (text);
 }
@@ -9956,7 +9956,7 @@ char *gmt_putcmyk (struct GMT_CTRL *GMT, double *cmyk) {
 	if (cmyk[0] < -0.5)
 		sprintf (text, "-");
 	else
-		sprintf (text, "%.5g/%.5g/%.5g/%.5g", gmt_M_q(cmyk[0]), gmt_M_q(cmyk[1]), gmt_M_q(cmyk[2]), gmt_M_q(cmyk[3]));
+		snprintf (text, GMT_LEN256, "%.5g/%.5g/%.5g/%.5g", gmt_M_q(cmyk[0]), gmt_M_q(cmyk[1]), gmt_M_q(cmyk[2]), gmt_M_q(cmyk[3]));
 	gmtinit_append_trans (text, cmyk[4]);
 	return (text);
 }
@@ -9970,7 +9970,7 @@ char *gmt_puthsv (struct GMT_CTRL *GMT, double *hsv) {
 	if (hsv[0] < -0.5)
 		sprintf (text, "-");
 	else
-		sprintf (text, "%.5g-%.5g-%.5g", gmt_M_q(hsv[0]), gmt_M_q(hsv[1]), gmt_M_q(hsv[2]));
+		snprintf (text, GMT_LEN256, "%.5g-%.5g-%.5g", gmt_M_q(hsv[0]), gmt_M_q(hsv[1]), gmt_M_q(hsv[2]));
 	gmtinit_append_trans (text, hsv[3]);
 	return (text);
 }
@@ -12042,7 +12042,7 @@ bool gmt_check_filearg (struct GMT_CTRL *GMT, char option, char *file, unsigned 
 	else if (option == GMT_OPT_OUTFILE)
 		sprintf (message, "for output file");
 	else
-		sprintf (message, "option -%c", option);
+		snprintf (message, GMT_LEN16, "option -%c", option);
 
 	if (!file || file[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error %s: No filename provided\n", message);

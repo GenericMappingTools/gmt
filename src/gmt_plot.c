@@ -381,7 +381,7 @@ GMT_LOCAL void plot_map_latline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	nn = gmtlib_latpath (GMT, lat, west, east, &llon, &llat);
 #ifdef DEBUG
 	if (GMT->hidden.gridline_debug) {
-		sprintf (name, "gridline_y_%g_ll.txt", lat);
+		snprintf (name, GMT_LEN64, "gridline_y_%g_ll.txt", lat);
 		fp = fopen (name, "w");
 		for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
 		fclose (fp);
@@ -390,7 +390,7 @@ GMT_LOCAL void plot_map_latline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	GMT->current.plot.n = gmt_geo_to_xy_line (GMT, llon, llat, nn);
 #ifdef DEBUG
 	if (GMT->hidden.gridline_debug) {
-		sprintf (name, "gridline_y_%g_xy.txt", lat);
+		snprintf (name, GMT_LEN64, "gridline_y_%g_xy.txt", lat);
 		fp = fopen (name, "w");
 		for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
 		fclose (fp);
@@ -423,7 +423,7 @@ GMT_LOCAL void plot_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	nn = gmtlib_lonpath (GMT, lon, south, north, &llon, &llat);
 #ifdef DEBUG
 	if (GMT->hidden.gridline_debug) {
-		sprintf (name, "gridline_x_%g_ll.txt", lon);
+		snprintf (name, GMT_LEN64, "gridline_x_%g_ll.txt", lon);
 		fp = fopen (name, "w");
 		for (k = 0; k < nn; k++) fprintf (fp, "%g\t%g\n", llon[k], llat[k]);
 		fclose (fp);
@@ -432,7 +432,7 @@ GMT_LOCAL void plot_map_lonline (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 	GMT->current.plot.n = gmt_geo_to_xy_line (GMT, llon, llat, nn);
 #ifdef DEBUG
 	if (GMT->hidden.gridline_debug) {
-		sprintf (name, "gridline_x_%g_xy.txt", lon);
+		snprintf (name, GMT_LEN64, "gridline_x_%g_xy.txt", lon);
 		fp = fopen (name, "w");
 		for (k = 0; k < GMT->current.plot.n; k++) fprintf (fp, "%g\t%g\t%d\n", GMT->current.plot.x[k], GMT->current.plot.y[k], GMT->current.plot.pen[k]);
 		fclose (fp);
@@ -2123,7 +2123,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 
 	right_now = time ((time_t *)0);
 	strftime (text, sizeof(text), GMT->current.setting.format_time_stamp, localtime (&right_now));
-	sprintf (label, "  %s  ", text);
+	snprintf (label, GMT_LEN256, "  %s  ", text);
 
 	PSL_command (PSL, "%% Begin GMT time-stamp\nV\n");
 	PSL_setorigin (PSL, x, y, 0.0, PSL_FWD);
@@ -2161,7 +2161,7 @@ GMT_LOCAL void plot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, doubl
 	/* Optionally, add additional label to the right of the box */
 
 	if (U_label && U_label[0]) {
-		sprintf (label, "   %s", U_label);
+		snprintf (label, GMT_LEN256, "   %s", U_label);
 		PSL_plottext (PSL, 0.0, 0.0, -7.0, label, 0.0, PSL_BL, 0);
 	}
 
@@ -2263,7 +2263,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 	unsigned int i, k, level, just, ljust[4] = {PSL_TC, PSL_ML, PSL_BC, PSL_MR}, n_tick, form;
 	double ew_angle, angle, R[2], tlen[3], L, s, c, lon, lat, x[5], y[5], xp[5], yp[5];
 	double offset, t_angle, scale[2], base, v_angle, *val = NULL, dim[PSL_MAX_DIMS];
-	char label[16], *type[2] = {"inner", "outer"};
+	char label[GMT_LEN16], *type[2] = {"inner", "outer"};
 	struct GMT_FILL f;
 
 	gmt_xy_to_geo (GMT, &lon, &lat, mr->refpoint->x, mr->refpoint->y);
@@ -2312,9 +2312,9 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 			sincosd (ew_angle + angle, &s, &c);
 			x[0] = mr->refpoint->x + (R[level] + GMT->current.setting.map_annot_offset[level]) * c, y[0] = mr->refpoint->y + (R[level] + GMT->current.setting.map_annot_offset[level]) * s;
 			if (GMT->current.setting.map_degree_symbol == gmt_none)
-				sprintf (label, "%ld", lrint (val[i]));
+				snprintf (label, GMT_LEN16, "%ld", lrint (val[i]));
 			else
-				sprintf (label, "%ld%c", lrint (val[i]), (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
+				snprintf (label, GMT_LEN16, "%ld%c", lrint (val[i]), (int)GMT->current.setting.ps_encoding.code[GMT->current.setting.map_degree_symbol]);
 			t_angle = fmod ((double)(ew_angle - val[i] - offset) + 360.0, 360.0);	/* Now in 0-360 range */
 			if (t_angle > 180.0) t_angle -= 180.0;	/* Now in -180/180 range */
 			if (t_angle > 90.0 || t_angle < -90.0) t_angle -= copysign (180.0, t_angle);
@@ -2377,7 +2377,7 @@ GMT_LOCAL void plot_draw_mag_rose (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		if (strcmp (mr->dlabel, "-")) {	/* Want declination labeling unless when giving "-" */
 			if (mr->dlabel[0] == 0) {	/* Want default label */
 				gmtlib_get_annot_label (GMT, mr->declination, tmpstring, true, false, true, 0, GMT->current.map.is_world);
-				sprintf (mr->dlabel, "@~d@~ = %s", tmpstring);
+				snprintf (mr->dlabel, GMT_LEN256, "@~d@~ = %s", tmpstring);
 			}
 			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 			PSL_plottext (PSL, x[0], y[0], GMT->current.setting.font_label.size, mr->dlabel, t_angle, PSL_BC, form);
@@ -2624,7 +2624,7 @@ GMT_LOCAL void plot_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTO
 							n_skip += 2;
 						}
 						else
-							sprintf (tmp, GMT->current.setting.format_float_out, size[n]);
+							snprintf (tmp, GMT_LEN64, GMT->current.setting.format_float_out, size[n]);
 						strcat (text, tmp);
 						in += n_skip;	/* Skip past the $n[+X|Y|T] */
 						out += (unsigned int)strlen (tmp);
@@ -4694,9 +4694,9 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		for (j = 0; j <= n_a_ticks[i]; j++) {
 			gmt_sprintf_float (format, GMT->current.setting.format_float_map, j * d_base);
 			if (ms->unit) /* Must append unit */
-				sprintf (txt, "%s %s", format, units[unit]);
+				snprintf (txt, GMT_LEN256, "%s %s", format, units[unit]);
 			else
-				sprintf (txt, "%s", format);
+				snprintf (txt, GMT_LEN256, "%s", format);
 			tx = x_left + j * dx_a;	/* center x-coordinate for this annotation */
 			PSL_plotsegment (PSL, tx, ms->refpoint->y - scale_height, tx, ms->refpoint->y);	/* Draw the tick mark */
 			PSL_plottext (PSL, tx, ty, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_TC, form);	/* Place annotation */
@@ -4754,7 +4754,7 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		PSL_plotline (PSL, xp, yp, 4, PSL_MOVE + PSL_STROKE);
 		/* Make a basic label using the length and chosen unit and place below the scale */
 		gmt_sprintf_float (format, GMT->current.setting.format_float_map, ms->length);
-		sprintf (txt, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
+		snprintf (txt, GMT_LEN256, "%s %s", format, (ms->unit) ? units[unit] : label[unit]);
 		form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 		PSL_plottext (PSL, ms->refpoint->x, ms->refpoint->y - dist_to_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_TC, form);
 	}
@@ -5234,7 +5234,7 @@ void gmt_contlabel_plot (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G) {
 
 char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	char *pStrOut = NULL;
-	char szProj4[512], proj4_ename[16];
+	char szProj4[GMT_LEN512], proj4_ename[GMT_LEN16];
 	double scale_factor, false_easting = 0.0, false_northing = 0.0, a, b, f;
 
 	scale_factor = GMT->current.setting.proj_scale_factor;
@@ -5244,38 +5244,38 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	switch (GMT->current.proj.projection) {
 	/* Cylindrical projections */
 	case GMT_UTM:
-		sprintf (szProj4, "+proj=utm +zone=%d", (int)GMT->current.proj.pars[0]);
+		snprintf (szProj4, GMT_LEN512, "+proj=utm +zone=%d", (int)GMT->current.proj.pars[0]);
 		if (GMT->current.proj.utm_hemisphere < 0) strcat (szProj4, " +south");
 		break;
 	case GMT_MERCATOR:
-		sprintf (szProj4, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=merc +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[0] >= -360 ? GMT->current.proj.pars[0] : 0, scale_factor, false_easting, false_northing);
 		break;
 	case GMT_CYL_EQ:
-		sprintf (szProj4, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=cea +lon_0=%.16g +lat_ts=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_CYL_EQDIST:
-		sprintf (szProj4, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eqc +lat_ts=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], 0.0, GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_CYL_STEREO:
 		break;
 	case GMT_MILLER:
-		sprintf (szProj4, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+		snprintf (szProj4, GMT_LEN512, "+proj=mill +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_TM:
-		sprintf (szProj4, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=tmerc +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
 		break;
 	case GMT_CASSINI:
-		sprintf (szProj4, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=cass +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_OBLIQUE_MERC:
-		sprintf (szProj4, "+unavailable");
-		/*sprintf (szProj4, "+proj=omerc +lat_0=%.16g +lonc=%.16g +alpha=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+unavailable");
+		/*snprintf (szProj4, GMT_LEN512, "+proj=omerc +lat_0=%.16g +lonc=%.16g +alpha=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
 		0.0,0.0,0.0,0.0,0.0,0.0 );*/
 		break;
 	case GMT_OBLIQUE_MERC_POLE:
@@ -5284,40 +5284,40 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 
 	/* Conic projections */
 	case GMT_ALBERS:
-		sprintf (szProj4, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=aea +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECONIC:
-		sprintf (szProj4, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eqdc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_LAMBERT:
-		sprintf (szProj4, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=lcc +lat_1=%.16g +lat_2=%.16g +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[2], GMT->current.proj.pars[3], GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_POLYCONIC:
-		sprintf (szProj4, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=poly +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 
 	/* Azimuthal projections */
 	case GMT_STEREO:
-		sprintf (szProj4, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=stere +lat_0=%.16g +lon_0=%.16g +k=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], scale_factor, false_easting, false_northing);
 		break;
 	case GMT_LAMB_AZ_EQ:
-		sprintf (szProj4, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=laea +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ORTHO:
 		sprintf (szProj4, "+unavailable");
 		break;
 	case GMT_AZ_EQDIST:
-		sprintf (szProj4, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=aeqd +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_GNOMONIC:
-		sprintf (szProj4, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=gnom +lat_0=%.16g +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[1], GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_GENPER:
@@ -5329,30 +5329,30 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 
 	/* Misc projections */
 	case GMT_MOLLWEIDE:
-		sprintf (szProj4, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=moll +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_HAMMER:
 		sprintf (szProj4, "+unavailable");
 		break;
 	case GMT_SINUSOIDAL:
-		sprintf (szProj4, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=sinu +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_VANGRINTEN:
-		sprintf (szProj4, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
+		snprintf (szProj4, GMT_LEN512, "+proj=vandg +lon_0=%.16g +x_0=%.16g +y_0=%.16g +R_A",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ROBINSON:
-		sprintf (szProj4, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=robin +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECKERT4:
-		sprintf (szProj4, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eck4 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_ECKERT6:
-		sprintf (szProj4, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
+		snprintf (szProj4, GMT_LEN512, "+proj=eck6 +lon_0=%.16g +x_0=%.16g +y_0=%.16g",
 			GMT->current.proj.pars[0], false_easting, false_northing);
 		break;
 	case GMT_WINKEL:
@@ -5369,7 +5369,7 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 		a = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;
 		f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
 		b = a * (1 - f);
-		sprintf(szProj4+strlen(szProj4), " +a=%.3f +b=%.6f", a, b);
+		snprintf (szProj4+strlen(szProj4), GMT_LEN512, " +a=%.3f +b=%.6f", a, b);
 		if (fabs(a - b) > 1) {		/* WGS84 is not spherical */
 			plot_ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
 			sprintf(szProj4+strlen(szProj4), " +ellps=%s", proj4_ename);
@@ -5712,10 +5712,10 @@ void gmt_geo_polygons (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 
 	/* Here we must lay down the perimeter and then the holes.  */
 
-	if (PSL->internal.comments) sprintf (comment, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
+	if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "%s polygon for %s\n", type[add_pole], use[PSL->current.outline]);
 	used = plot_geo_polygon_segment (GMT, S, add_pole, true, comment);	/* First lay down perimeter */
 	for (S2 = S->next; S2; S2 = S2->next) {	/* Process all holes [none processed if there aren't any holes] */
-		if (PSL->internal.comments) sprintf (comment, "Hole polygon for %s\n", use[PSL->current.outline]);
+		if (PSL->internal.comments) snprintf (comment, GMT_LEN64, "Hole polygon for %s\n", use[PSL->current.outline]);
 		used += plot_geo_polygon_segment (GMT, S2, false, false, comment);	/* Add this hole to the path */
 	}
 	if (used) {

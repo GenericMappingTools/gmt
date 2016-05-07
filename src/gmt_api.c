@@ -454,14 +454,14 @@ typedef size_t (*p_func_size_t) (uint64_t row, uint64_t col, size_t dim);
 GMT_LOCAL void api_list_objects (struct GMTAPI_CTRL *API, char *txt) {
 	unsigned int item, ext;
 	struct GMTAPI_DATA_OBJECT *S;
-	char message[GMT_BUFSIZ], O, M;
+	char message[GMT_LEN256] = {""}, O, M;
 	//if (API->deep_debug == false) return;
 	if (!gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) return;
-	sprintf (message, "==> %d API Objects at end of %s\n", API->n_objects, txt);
+	snprintf (message, GMT_LEN256, "==> %d API Objects at end of %s\n", API->n_objects, txt);
 	GMT_Message (API, GMT_TIME_NONE, message);
 	if (API->n_objects == 0) return;
 	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
-	sprintf (message, "K.. ID RESOURCE.... DATA........ FAMILY.... DIR... S O M L\n");
+	snprintf (message, GMT_LEN256, "K.. ID RESOURCE.... DATA........ FAMILY.... DIR... S O M L\n");
 	GMT_Message (API, GMT_TIME_NONE, message);
 	GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 	for (item = 0; item < API->n_objects; item++) {
@@ -469,7 +469,7 @@ GMT_LOCAL void api_list_objects (struct GMTAPI_CTRL *API, char *txt) {
 		O = (S->no_longer_owner) ? 'N' : 'Y';
 		M = (S->messenger) ? 'Y' : 'N';
 		ext = (S->alloc_mode == GMT_ALLOC_EXTERNALLY) ? '*' : ' ';
-		sprintf (message, "%c%2d %2d %12" PRIxS " %12" PRIxS " %10s %6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
+		snprintf (message, GMT_LEN256, "%c%2d %2d %12" PRIxS " %12" PRIxS " %10s %6s %d %c %c %d\n", ext, item, S->ID, (size_t)S->resource, (size_t)S->data,
 			GMT_family[S->family], GMT_direction[S->direction], S->status, O, M, S->alloc_level);
 		GMT_Message (API, GMT_TIME_NONE, message);
 	}
@@ -516,7 +516,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	 * We can now determine how many shared libraries and plugins to consider, and open the core lib */
 	struct GMT_CTRL *GMT = API->GMT;
 	unsigned int n_custom_libs = 0, k, n_alloc = GMT_TINY_CHUNK;
-	char text[GMT_LEN256] = {""}, plugindir[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
+	char text[GMT_LEN256] = {""}, plugindir[GMT_LEN256] = {""}, path[GMT_LEN256] = {""};
 	char *libname = NULL, **list = NULL;
 #ifdef WIN32
 	char *extension = ".dll";
@@ -558,7 +558,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 		if ( running_in_bindir_src && access (GMT_BINARY_DIR_SRC_DEBUG "/plugins", R_OK|X_OK) == 0 ) {
 			/* Running in build dir: search plugins in build-dir/src/plugins */
-			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_BUFSIZ-1);
+			strncat (plugindir, GMT_BINARY_DIR_SRC_DEBUG "/plugins", GMT_LEN256-1);
 #ifdef XCODER
 			strcat (plugindir, "/Debug");	/* The Xcode plugin path for Debug */
 #endif
@@ -567,9 +567,9 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 #endif
 		{
 #ifdef WIN32
-			sprintf (plugindir, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
+			snprintf (plugindir, GMT_LEN256, "%s/gmt_plugins", GMT->init.runtime_libdir);	/* Generate the Win standard plugins path */
 #else
-			sprintf (plugindir, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
+			snprintf (plugindir, GMT_LEN256, "%s/gmt" GMT_INSTALL_NAME_SUFFIX "/plugins", GMT->init.runtime_libdir);	/* Generate the *nix standard plugins path */
 #endif
 		}
 		if (!GMT->init.runtime_plugindir) GMT->init.runtime_plugindir = strdup (plugindir);
@@ -577,7 +577,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 		if ((list = gmt_get_dir_list (GMT, plugindir, extension))) {	/* Add these files to the libs */
 			k = 0;
 			while (list[k]) {
-				sprintf (path, "%s/%s", plugindir, list[k]);
+				snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
 				if (access (path, R_OK)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
 				}
@@ -609,7 +609,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 			if ((list = gmt_get_dir_list (GMT, plugindir, extension))) {	/* Add these to the libs */
 				k = 0;
 				while (list[k]) {
-					sprintf (path, "%s/%s", plugindir, list[k]);
+					snprintf (path, GMT_LEN256, "%s/%s", plugindir, list[k]);
 					if (access (path, R_OK)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Shared Library %s cannot be found or read!\n", path);
 					}
@@ -866,7 +866,7 @@ GMT_LOCAL char * api_tictoc_string (struct GMTAPI_CTRL *API, unsigned int mode) 
 			S = urint (floor (T));
 			T -= S;
 			milli = urint (T*1000.0);	/* Residual milli-seconds */
-			sprintf (stamp, "Elapsed time %2.2u:%2.2u:%2.2u.%3.3u", H, M, S, milli);
+			snprintf (stamp, GMT_LEN256, "Elapsed time %2.2u:%2.2u:%2.2u.%3.3u", H, M, S, milli);
 			break;
 		default: break;
 	}
@@ -1634,7 +1634,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 				gmt_setmode (GMT, (int)direction);	/* Windows may need to have its read mode changed from text to binary */
 #endif
 			kind = (S_obj->fp == GMT->session.std[direction]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
-			sprintf (GMT->current.io.current_filename[direction], "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
+			snprintf (GMT->current.io.current_filename[direction], GMT_BUFSIZ, "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s %s stream\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (GMT, direction)) {
@@ -1651,7 +1651,7 @@ GMT_LOCAL int api_next_io_source (struct GMTAPI_CTRL *API, unsigned int directio
 				return (GMT_ERROR_ON_FDOPEN);
 			}
 			kind = (S_obj->fp == GMT->session.std[direction]) ? 0 : 1;	/* 0 if stdin/out, 1 otherwise for user pointer */
-			sprintf (GMT->current.io.current_filename[direction], "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
+			snprintf (GMT->current.io.current_filename[direction], GMT_BUFSIZ, "<%s %s>", GMT_stream[kind], GMT_direction[direction]);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s %s stream via supplied file descriptor\n",
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (GMT, direction)) {
@@ -1930,7 +1930,7 @@ GMT_LOCAL struct GMT_PALETTE * api_import_cpt (struct GMTAPI_CTRL *API, int obje
 			/* gmt_read_cpt will report where it is reading from if level is GMT_MSG_LONG_VERBOSE */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading CPT table from %s %s\n", GMT_method[S_obj->method], S_obj->filename);
 			if ((P_obj = gmt_read_cpt (GMT, S_obj->filename, S_obj->method, mode)) == NULL) return_null (API, GMT_CPT_READ_ERROR);
-			sprintf (tmp_cptfile, "api_colors2cpt_%d.cpt", (int)getpid());
+			snprintf (tmp_cptfile, GMT_LEN64, "api_colors2cpt_%d.cpt", (int)getpid());
 			if (!strcmp (tmp_cptfile, S_obj->filename)) {	/* This file was created when we gave "name" as red,blue instead */
 				GMT_Report (API, GMT_MSG_DEBUG, "Remove temporary CPT table %s\n", S_obj->filename);
 				remove (tmp_cptfile);
@@ -4021,7 +4021,7 @@ GMT_LOCAL int api_colors2cpt (struct GMTAPI_CTRL *API, char **str) {
 
 	if (!(pch = strchr (*str, ','))) return (0);	/* Presumably gave a regular CPT file name */
 
-	sprintf (tmp_file, "api_colors2cpt_%d.cpt", (int)getpid());
+	snprintf (tmp_file, GMT_LEN256, "api_colors2cpt_%d.cpt", (int)getpid());
 	if ((fp = fopen (tmp_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s file for writing\n", tmp_file);
 		return (GMT_NOTSET);
@@ -4185,14 +4185,14 @@ int gmtapi_report_error (void *V_API, int error) {
  	 * All functions can call this, even if API has not been initialized. */
 	FILE *fp = NULL;
 	bool report;
-	char message[GMT_BUFSIZ];
+	char message[GMT_LEN256];
 	struct GMTAPI_CTRL *API = api_get_api_ptr (V_API);
 
 	report = (API) ? API->error != API->last_error : true;
 	if (report && error != GMT_OK) {	/* Report error */
 		if (!API || !API->GMT || (fp = API->GMT->session.std[GMT_ERR]) == NULL) fp = stderr;
 		if (API && API->session_tag) {
-			sprintf (message, "[Session %s (%d)]: Error returned from GMT API: %s (%d)\n",
+			snprintf (message, GMT_LEN256, "[Session %s (%d)]: Error returned from GMT API: %s (%d)\n",
 				API->session_tag, API->session_ID, gmt_api_error_string[error], error);
 			GMT_Message (API, GMT_TIME_NONE, message);
 		}
@@ -4582,7 +4582,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	int item, object_ID;
 	unsigned int via = 0, module_input, mode = method & GMT_IO_RESET;	/* In case we wish to reuse this resource */
 	enum GMT_enum_method m;
-	char message[GMT_BUFSIZ];
+	char message[GMT_LEN256];
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -4650,7 +4650,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			if (strlen (resource)) S_obj->filename = strdup (resource);
-			sprintf (message, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_STREAM:	/* Methods that indirectly involve a file */
@@ -4662,7 +4662,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			S_obj->fp = resource;	/* Pass the stream of fdesc onward */
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 
 		case GMT_IS_DUPLICATE:
@@ -4678,7 +4678,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if ((S_obj = api_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 
 		 case GMT_IS_DUPLICATE_VIA_MATRIX:	/* Here, a data grid is passed via a GMT_MATRIX structure */
@@ -4696,7 +4696,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			GMT->common.b.active[direction] = true;
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 		 case GMT_IS_DUPLICATE_VIA_VECTOR:	/* Here, some data vectors are passed via a GMT_VECTOR structure */
 		 case GMT_IS_REFERENCE_VIA_VECTOR:
@@ -4713,13 +4713,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
 			GMT->common.b.active[direction] = true;
-			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s [n_objects = %%d]\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[api_gmtry(geometry)]);
 			break;
 		case GMT_IS_COORD:	/* Internal registration of coordinate arrays so that GMT_Destroy_Data can free them */
 			if ((S_obj = api_make_dataobject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
 			}
-			sprintf (message, "Object ID %%d : Registered double array %" PRIxS " as an %s resource [n_objects = %%d]\n", (size_t)resource, GMT_direction[direction]);
+			snprintf (message, GMT_LEN256, "Object ID %%d : Registered double array %" PRIxS " as an %s resource [n_objects = %%d]\n", (size_t)resource, GMT_direction[direction]);
 			break;
 		default:
 			GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Unrecognized method %d\n", GMT_direction[direction], method);
@@ -6688,7 +6688,7 @@ GMT_LOCAL void fft_Singleton_list (struct GMTAPI_CTRL *API) {
 	char message[GMT_LEN16] = {""};
 	GMT_Message (API, GMT_TIME_NONE, "\t\"Good\" numbers for FFT dimensions [Singleton, 1967]:\n");
 	for (k = 0; k < N_SINGLETON_LIST; k++) {
-		sprintf (message, "\t%d", Singleton_list[k]);
+		snprintf (message, GMT_LEN16, "\t%d", Singleton_list[k]);
 		if ((k+1) % 10 == 0 || k == (N_SINGLETON_LIST-1)) strcat (message, "\n");
 		GMT_Message (API, GMT_TIME_NONE, message);
 	}
@@ -7164,12 +7164,12 @@ GMT_LOCAL int api_fft_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int di
 }
 
 GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix) {
-	static char file[GMT_BUFSIZ];
+	static char file[GMT_LEN256];
 	uint64_t i, j;
 	size_t len;
 
 	if ((len = strlen (name)) == 0) {	/* Grids that are being created have no filename yet */
-		sprintf (file, "tmpgrid_%s.grd", suffix);
+		snprintf (file, GMT_LEN256, "tmpgrid_%s.grd", suffix);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Created grid has no name to derive new names from; choose %s\n", file);
 		return (file);
 	}
@@ -7177,7 +7177,7 @@ GMT_LOCAL char *fft_file_name_with_suffix (struct GMT_CTRL *GMT, char *name, cha
 	if (i) i++;	/* Move to 1st char after / */
 	for (j = len; j > 0 && name[j] != '.'; j--);	/* j points to period before extension, or it is 0 if no extension */
 	len = strlen (&name[i]);
-	strncpy (file, &name[i], GMT_BUFSIZ-1);		/* Make a full copy of filename without leading directories */
+	strncpy (file, &name[i], GMT_LEN256-1);		/* Make a full copy of filename without leading directories */
 	for (i = len; i > 0 && file[i] != '.'; i--);	/* i now points to period before extension in file, or it is 0 if no extension */
 	if (i) file[i] = '\0';	/* Truncate at the extension */
 	/* Determine length of new filename and make sure it fits */
@@ -7387,7 +7387,7 @@ void gmt_show_name_and_purpose (void *API, const char *component, const char *na
 	assert (name != NULL);
 	assert (purpose != NULL);
 	lib = (component) ? component : core;
-	sprintf (message, "%s(%s) %s - %s\n\n", name, lib, GMT_version(), purpose);
+	snprintf (message, GMT_LEN256, "%s(%s) %s - %s\n\n", name, lib, GMT_version(), purpose);
 	GMT_Message (API, GMT_TIME_NONE, message);
 }
 
@@ -7451,7 +7451,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 
 		/* Here we list purpose of all the available modules in each shared library */
 		for (lib = 0; lib < API->n_shared_libs; lib++) {
-			sprintf (gmt_module, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
+			snprintf (gmt_module, GMT_LEN32, "gmt_%s_module_%s_all", API->lib[lib].name, listfunc);
 			*(void **) (&l_func) = api_get_module_func (API, gmt_module, lib);
 			if (l_func == NULL) continue;	/* Not found in this shared library */
 			(*l_func) (V_API);	/* Run this function */
@@ -7495,7 +7495,7 @@ const char * gmt_get_shared_module_info (struct GMTAPI_CTRL *API, char *module, 
 		API->lib[lib_no].skip = true;	/* Not bother the next time... */
 		return (NULL);			/* ...and obviously no keys would be found */
 	}
-	sprintf (function, "gmt_%s_module_info", API->lib[lib_no].name);
+	snprintf (function, GMT_LEN64, "gmt_%s_module_info", API->lib[lib_no].name);
 	/* Here the library handle is available; try to get pointer to specified module */
 	*(void **) (&func) = dlsym (API->lib[lib_no].handle, function);
 	if (func) keys = (*func) (API, module);
@@ -7626,7 +7626,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
-	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[16] = {""}, type = 0;
+	char *text = NULL, *LR[2] = {"rhs", "lhs"}, *S[2] = {" IN", "OUT"}, txt[GMT_LEN16] = {""}, type = 0;
 	char *module = NULL;
 	char *special_text[3] = {" [satisfies required input]", " [satisfies required output]", ""}, *satisfy = NULL;
 	struct GMT_OPTION *opt = NULL, *new_ptr = NULL;	/* Pointer to a GMT option structure */
@@ -7756,7 +7756,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 				key[k][K_DIR] = api_not_required_io (key[k][K_DIR]);	/* Change to ( or ) since option was provided, albeit implicitly */
 				info[n_items].pos = pos = (direction == GMT_IN) ? implicit_pos++ : output_pos++;
 				/* Excplicitly add the missing marker (e.g., $) to the option argument */
-				sprintf (txt, "%s%c", opt->arg, marker);
+				snprintf (txt, GMT_LEN16, "%s%c", opt->arg, marker);
 				gmt_M_str_free (opt->arg);
 				opt->arg = strdup (txt);
 				n_implicit++;

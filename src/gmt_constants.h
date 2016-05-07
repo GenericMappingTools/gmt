@@ -84,6 +84,7 @@ enum GMT_enum_length {
 	GMT_LEN64  = 64U,          /* Intermediate length of texts */
 	GMT_LEN128 = 128U,         /* Double of 64 */
 	GMT_LEN256 = 256U,         /* Max size of some text items */
+	GMT_LEN512 = 512U,         /* Max size of other text items */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
 	GMT_MIN_MEMINC  = 1U,        /* E.g., 16 kb of 8-byte doubles */

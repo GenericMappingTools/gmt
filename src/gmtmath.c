@@ -378,7 +378,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 		for (k = 0; k < n; k++) D->table[0]->segment[0]->coord[GMT_X][k] = x[k];
 		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
 		if (GMT->common.h.add_colnames) {
-			char header[GMT_BUFSIZ] = {""};
+			char header[GMT_LEN16] = {""};
 			sprintf (header, "#coefficients");
 			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 		}
@@ -414,7 +414,7 @@ GMT_LOCAL int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			}
 		}
 		if (GMT->common.h.add_colnames) {
-			char header[GMT_BUFSIZ] = {""};
+			char header[GMT_LEN128] = {""};
 			sprintf (header, "#t[0]\tobserved(t)[1]\tpredict(t)[2]\tresidual(t)[3]");
 			if (info->w_mode == GMTMATH_WEIGHTS) strcat (header, "\tweight(t)[4]");
 			else if (info->w_mode == GMTMATH_SIGMAS) strcat (header, "\tsigma(t)[4]");

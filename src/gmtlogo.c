@@ -245,7 +245,7 @@ int GMT_gmtlogo (void *V_API, int mode, void *args) {
 
 	/* Plot the globe via GMT_psclip & GMT_pscoast */
 
-	sprintf (pars, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s", c_grid, scale * 0.3, c_grid);
+	snprintf (pars, GMT_LEN128, "--MAP_GRID_PEN=faint,%s --MAP_FRAME_PEN=%gp,%s", c_grid, scale * 0.3, c_grid);
 	sprintf (cmd, "-T -Rd -JI0/%gi -N -O -K -X%gi -Y%gi %s", scale * 1.55, scale * 0.225, scale * 0.220, pars);
 	GMT_Call_Module (API, "psclip", GMT_MODULE_CMD, cmd);
 	sprintf (cmd, "-Rd -JI0/%gi -S%s -G%s -A35000+l -Dc -O -K %s", scale * 1.55, c_water, c_land, pars);

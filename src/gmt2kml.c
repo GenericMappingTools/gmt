@@ -261,7 +261,7 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0, pos = 0, k, n_files = 0;
 	size_t n_alloc = 0;
-	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, T[4][GMT_LEN64], *c = NULL;
+	char buffer[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, T[4][GMT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -377,9 +377,9 @@ GMT_LOCAL int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT
 	 			Ctrl->I.active = true;
 				gmt_M_str_free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
-					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
+					snprintf (buffer, GMT_LEN256, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
 				else if (opt->arg[0])
-					strncpy (buffer, opt->arg, GMT_BUFSIZ-1);
+					strncpy (buffer, opt->arg, GMT_LEN256-1);
 				Ctrl->I.file = strdup (buffer);
 				break;
 			case 'L':	/* Extended data */

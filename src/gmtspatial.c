@@ -1117,7 +1117,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 7)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
-				char header[GMT_BUFSIZ] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
+				char header[GMT_LEN256] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (gmt_M_is_geographic (GMT, GMT_IN)) ? 1 : 0;
 				sprintf (header, "#%s[0]\t%s[1]\tz[2]\tweight[3]\tNN_dist[4]\tID[5]\tNN_ID[6]", name[k][GMT_X], name[k][GMT_Y]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
@@ -1127,7 +1127,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are not writing coordinates */
 			if ((error = gmt_set_cols (GMT, GMT_OUT, 3)) != 0) Return (error);
 			if (GMT->common.h.add_colnames) {
-				char header[GMT_BUFSIZ];
+				char header[GMT_LEN64];
 				sprintf (header, "#NN_dist[0]\tID[1]\tNN_ID[2]");
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
 			}
@@ -1237,7 +1237,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		unsigned int handedness = 0;
 		int qmode, poly, geo;
 
-		char line[GMT_BUFSIZ];
+		char line[GMT_LEN128];
 		
 		if (!gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
 			gmt_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
@@ -1284,16 +1284,16 @@ int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				if (Ctrl->Q.header) {
 					if (S->header) {
 						if (poly)
-							sprintf (line, "%s -A%.12g -C%.12g/%.12g %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							snprintf (line, GMT_LEN128, "%s -A%.12g -C%.12g/%.12g %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							sprintf (line, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							snprintf (line, GMT_LEN128, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
 						gmt_M_str_free (S->header);
 					}
 					else {
 						if (poly)
-							sprintf (line, "-A%.12g -C%.12g/%.12g %s", out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							snprintf (line, GMT_LEN128, "-A%.12g -C%.12g/%.12g %s", out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							sprintf (line, "-D%.12g -M%.12g/%.12g", out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							snprintf (line, GMT_LEN128, "-D%.12g -M%.12g/%.12g", out[GMT_Z], out[GMT_X], out[GMT_Y]);
 					}
 					S->header = strdup (line);
 				}

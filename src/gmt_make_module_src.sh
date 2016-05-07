@@ -238,7 +238,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Pretty print all GMT ${L_TAG} module names and their purposes for gmt --help */
 void gmt_${L_TAG}_module_show_all (void *V_API) {
 	unsigned int module_id = 0;
-	char message[256];
+	char message[GMT_LEN256];
 EOF
 if [ "$U_TAG" = "CORE" ]; then
 	cat << EOF >> ${FILE_GMT_MODULE_C}
@@ -250,7 +250,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 	while (g_${L_TAG}_module[module_id].name != NULL) {
 		if (module_id == 0 || strcmp (g_${L_TAG}_module[module_id-1].component, g_${L_TAG}_module[module_id].component)) {
 			/* Start of new supplemental group */
-			sprintf (message, "\nModule name:     Purpose of %s module:\n", g_${L_TAG}_module[module_id].component);
+			snprintf (message, GMT_LEN256, "\nModule name:     Purpose of %s module:\n", g_${L_TAG}_module[module_id].component);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 			GMT_Message (V_API, GMT_TIME_NONE, "----------------------------------------------------------------\n");
 		}
@@ -258,14 +258,14 @@ EOF
 if [ "$U_TAG" = "CORE" ]; then
 		cat << EOF >> ${FILE_GMT_MODULE_C}
 		if (API->mode || (strcmp (g_${L_TAG}_module[module_id].name, "gmtread") && strcmp (g_${L_TAG}_module[module_id].name, "gmtwrite"))) {
-			sprintf (message, "%-16s %s\n",
+			snprintf (message, GMT_LEN256, "%-16s %s\n",
 				g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
 				GMT_Message (V_API, GMT_TIME_NONE, message);
 		}
 EOF
 else
 		cat << EOF >> ${FILE_GMT_MODULE_C}
-		sprintf (message, "%-16s %s\n",
+		snprintf (message, GMT_LEN256, "%-16s %s\n",
 			g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].purpose);
 			GMT_Message (V_API, GMT_TIME_NONE, message);
 EOF
