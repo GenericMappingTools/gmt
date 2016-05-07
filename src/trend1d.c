@@ -438,6 +438,7 @@ GMT_LOCAL void unscale_polynomial (struct GMT_CTRL *GMT, double c[], unsigned in
 	/* n are the first n terms that are polynomial - there may be Fourier terms beyond this set */
 	unsigned int j, k;
 	double cnst, fac;
+	gmt_M_unused(GMT);
 
 	cnst = fac = 2.0 / (b - a);
 	for (j = 1; j < n; j++) {
