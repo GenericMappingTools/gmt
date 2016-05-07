@@ -239,11 +239,13 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					for (nn = 0; nn < nx*ny; nn++) {
 						outByte[nn] = tmpByte[nn*n_bands + i];
 					}
-					GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0);
+					if (GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, outByte, nx, ny, typeCLASS, 0, 0) == CE_None)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d\n", i);
 				}
 				else
 					/* Here 'data' was converted to uchar in gmt_customio.c/gmt_gdal_write_grd */
-					GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0);
+					if (GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0) == CE_None)
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d\n", i);
 				break;
 			case GDT_UInt16:
 			case GDT_Int16:
@@ -252,12 +254,14 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 				if (rint(prhs->nan_value) == prhs->nan_value)
 					/* Only set NoData if nan_value contains an integer value */
 					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0);
+				if (GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0) == CE_None)
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d\n", i);
 				break;
 			case GDT_Float32:
 				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
-				GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 
-				              prhs->nXSizeFull * n_byteOffset);
+				if (GDALRasterIO(hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 
+				                 prhs->nXSizeFull * n_byteOffset) == CE_None)
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to write band %d\n", i);
 				break;
 		}
 

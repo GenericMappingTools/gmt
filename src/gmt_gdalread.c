@@ -985,8 +985,11 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				pixel_reg = true;
 		}
 
-		GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize, tmp,
-		             nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0);
+		if (GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize, tmp,
+		                 nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0) == CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d\n", i);
+			continue;
+		}
 
 		/* If we didn't computed it yet, its time to do it now */
 		if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize, nYSize, z_min, z_max);
