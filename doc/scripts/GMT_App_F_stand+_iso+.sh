@@ -9,7 +9,8 @@
 # This script assumes GMT_App_F_stand+.sh and GMT_App_F_iso+.sh have
 # both been run previously.
 
-gmt psconvert -Tg -E600 -P -A -D. "${src:-.}"/GMT_App_F_stand+.ps
-gmt psconvert -Tg -E600 -P -A -D. "${src:-.}"/GMT_App_F_iso+.ps
-gmt psimage GMT_App_F_stand+.png -Dx0/0+r600 -P -K > GMT_App_F_stand+_iso+.ps
-gmt psimage GMT_App_F_iso+.png -Dx0/0+r600 -O -X3.2i >> GMT_App_F_stand+_iso+.ps
+bash "${src:-.}"/func_F_stand+.sh > stand+.ps
+bash "${src:-.}"/func_F_iso+.sh > iso+.ps
+gmt psconvert -Tg -E600 -P -Z -A -D. stand+.ps iso+.ps
+gmt psimage stand+.png -Dx0/0+r600 -P -K > GMT_App_F_stand+_iso+.ps
+gmt psimage iso+.png -Dx0/0+r600 -O -X3.2i >> GMT_App_F_stand+_iso+.ps

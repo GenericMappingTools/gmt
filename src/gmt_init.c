@@ -486,6 +486,8 @@ GMT_LOCAL int gmtinit_parse_a_option (struct GMT_CTRL *GMT, char *arg) {
 	int col, a_col = GMT_Z;
 	char p[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, A[GMT_LEN64] = {""}, *s = NULL, *c = NULL;
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -a requires an argument */
+	strncpy (GMT->common.a.string, arg, GMT_LEN256-1);	/* Verbatim copy */
+
 	if ((s = strstr (arg, "+g")) || (s = strstr (arg, "+G"))) {	/* Also got +g|G<geometry> */
 		GMT->common.a.geometry = gmtlib_ogr_get_geometry (s+2);
 		if (s[1] == 'G') GMT->common.a.clip = true;	/* Clip features at Dateline */

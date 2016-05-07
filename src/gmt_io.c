@@ -2406,15 +2406,15 @@ GMT_LOCAL void gmtio_write_ogr_segheader (struct GMT_CTRL *GMT, FILE *fp, struct
 }
 
 /*! . */
-GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
+GMT_LOCAL void gmtio_build_text_from_ogr (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *seg, char *buffer) {
 	/* Build segment-level OGR/GMT header metadata */
 	unsigned int col, virt_col, n;
 	bool space = false;
 	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"};
-	char buffer[GMT_BUFSIZ];
+	char **T = NULL;
 
-	if (GMT->common.a.output) return;		/* Input was not OGR (but output will be) */
-	n = (S->ogr && S->ogr->n_aspatial) ? S->ogr->n_aspatial : GMT->common.a.n_aspatial;
+	T = (seg) ? seg->ogr->tvalue     : GMT->current.io.OGR->tvalue;	/* Input means system OGR, output from segment ogr struct */
+	n = (seg) ? seg->ogr->n_aspatial : GMT->common.a.n_aspatial;
 	if (n == 0) return;	/* Either input was not OGR or there are no aspatial fields */
 	buffer[0] = 0;
 	for (col = 0; col < n; col++) {
@@ -2428,17 +2428,25 @@ GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_
 				virt_col = abs (GMT->common.a.col[col]) - 1;	/* So -3 becomes 2 etc */
 				if (space) strcat (buffer, " ");
 				strncat (buffer, sflag[virt_col], GMT_BUFSIZ-1);
-				if (S->ogr) strncat (buffer, S->ogr->tvalue[GMT->common.a.ogr[col]], GMT_BUFSIZ-1);
+				strncat (buffer, T[GMT->common.a.ogr[col]], GMT_BUFSIZ-1);
 				space = true;
 				break;
 			default:	/* Regular column cases are skipped */
 				break;
 		}
 	}
-	if (gmt_M_polygon_is_hole (S)) {		/* Indicate this is a polygon hole [Default is perimeter] */
-		if (space) strcat (buffer, " ");
-		strcat (buffer, "-Ph");
-	}
+}
+
+/*! . */
+GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_DATASEGMENT *S) {
+	/* Build segment-level OGR/GMT header metadata */
+	char buffer[GMT_BUFSIZ] = {""};
+
+	if (direction == GMT_IN && GMT->common.a.output) return;	/* Input was not OGR (but output will be) */
+	gmtio_build_text_from_ogr (GMT, S, buffer);	/* Fill in the buffer for -D, -G, Z etc */
+	
+	if (gmt_M_polygon_is_hole (S))		/* Indicate this is a polygon hole [Default is perimeter] */
+		strcat (buffer, " -Ph");
 	if (S->header) {strcat (buffer, " "); strncat (buffer, S->header, GMT_BUFSIZ-1);}	/* Append rest of previous header */
 	gmt_M_str_free (S->header);
 	S->header = strdup (buffer);
@@ -3055,8 +3063,15 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			GMT->current.io.seg_no++;
 			GMT->current.io.segment_header[0] = '\0';
 			if (kind == 1) {
+				/* If OGR input the also read next 1-2 records to pick up metadata */
+				if (GMT->current.io.ogr == GMT_OGR_TRUE) {
+					p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
+					gmtio_ogr_parser (GMT, line);	/* Parsed a GMT/OGR record */
+					gmtio_build_text_from_ogr (GMT, NULL, GMT->current.io.segment_header);	/* Fill in the buffer for -D, -G, Z etc */
+				}
+				else
+					strncpy (GMT->current.io.segment_header, gmt_trim_segheader (GMT, line), GMT_BUFSIZ-1);
 				/* Just save the header content, not the marker and leading whitespace */
-				strncpy (GMT->current.io.segment_header, gmt_trim_segheader (GMT, line), GMT_BUFSIZ-1);
 			}
 			/* else we got a segment break instead - and header was set to NULL */
 			*status = 0;
@@ -3253,7 +3268,7 @@ GMT_LOCAL int gmtio_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int 
 			}
 		}
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg]->ogr) gmtio_build_segheader_from_ogr (GMT, table->segment[seg]);	/* We have access to OGR metadata */
+			if (table->segment[seg]->ogr) gmtio_build_segheader_from_ogr (GMT, GMT_OUT, table->segment[seg]);	/* We have access to OGR metadata */
 			if (table->segment[seg]->header)
 				strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ-1);
 			else

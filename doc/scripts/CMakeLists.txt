@@ -19,7 +19,7 @@
 # Scripts which have to be converted to verbatim (with comments)
 set (_scr_nostrip GMT_App_M_2.sh GMT_App_P_1.sh GMT_App_P_2.sh)
 
-# Scripts which have to be cobnverted to verbatim (without comments)
+# Scripts which have to be converted to verbatim (without comments)
 set (_scr_strip GMT_-B_custom.sh GMT_-B_time1.sh GMT_-B_time2.sh
 	GMT_-B_time3.sh GMT_-B_time4.sh GMT_-B_time5.sh GMT_-B_time6.sh
 	GMT_-B_time7.sh GMT_albers.sh GMT_App_K_1.sh GMT_App_K_2.sh GMT_App_K_3.sh
@@ -56,7 +56,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 
 # Scripts that are only used for testing, figures are not in the documentation
 set (_scr_test GMT_RGBchart.sh)
-# This is no test: GMT_encoding.sh
+# This is no test: GMT_encoding.sh func_F_iso+.sh func_F_stand+.sh
 
 set (_scripts_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 

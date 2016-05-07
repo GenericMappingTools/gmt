@@ -2,6 +2,13 @@
 # Test that @D records after a new segment header are properly
 #   processed so metadata is used to set color, etc.  Based on
 # example in issue # 539.  Original plot faked with direct psxy plot.
+#
+# Update 5/6/2016 PW: Fixed this by improving the text parsing:
+# When we find a segment header in a OGR file we read the next
+# line, parse it, and then build a segment header with any non-
+# column items like -G, -Z, etc.  Thus in this case, the colors
+# are written as "> -G<r/g/b" segment headers and thus psxy can
+# parse that to get the polygon colors.
 
 ps=lookup.ps
 

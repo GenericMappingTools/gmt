@@ -1438,6 +1438,8 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			dim[GMT_SEG] = D->n_segments;	/* Make one segment for each input segment so segment headers can be preserved */
 			if ((Decorate = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		}
+		if (GMT->current.io.OGR && (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON)) polygon = true;
+
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			if (D->table[tbl]->n_headers && S.G.label_type == GMT_LABEL_IS_HEADER)	/* Get potential label from first header */
 				gmt_extract_label (GMT, D->table[tbl]->header[0], S.G.label, NULL);
@@ -1445,6 +1447,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++, seg_out++) {	/* For each segment in the table */
 
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
+				
 				if (polygon && gmt_M_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
 				if (!polygon && gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
