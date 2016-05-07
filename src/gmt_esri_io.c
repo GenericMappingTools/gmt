@@ -36,6 +36,7 @@ EXTERN_MSC void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER 
 /* Private function visible only in this file */
 
 GMT_LOCAL int esri_write_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
+	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
 	char record[GMT_BUFSIZ] = {""}, item[GMT_LEN64] = {""};
 
 	sprintf (record, "ncols %d\nnrows %d\n", header->nx, header->ny);
@@ -169,6 +170,7 @@ GMT_LOCAL int esri_read_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *
 }
 
 GMT_LOCAL int esri_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header) {
+	/* Note: fp is an open file pointer passed in; it will be closed upstream and not here */
 	int c;
 	char record[GMT_BUFSIZ];
 	FILE *fp2 = NULL, *fpBAK = NULL;
