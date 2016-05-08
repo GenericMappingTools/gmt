@@ -639,7 +639,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
 	int	n, m;
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
-	int error = 0;
+	int error = 0, gdal_code = 0;
 	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   metadata_only;
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
@@ -985,9 +985,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				pixel_reg = true;
 		}
 
-		if (GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize, tmp,
-		                 nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0) == CE_None) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d\n", i);
+		if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin, yOrigin, nXSize, nYSize, tmp,
+		                 nBufXSize, nBufYSize, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
 			continue;
 		}
 
