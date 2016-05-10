@@ -8,7 +8,7 @@ is used to fit a multitude of different linear regression models to
 a data set with extreme outliers that can also act as leverage points.
 The data forms the basis for the main sequence
 in a Hertzsprung-Russell diagram of the star cluster CYG OB1, which includes
-four giant that are outlying with respect to the main trend.
+four red giants that are outlying with respect to the main trend.
 
 .. literalinclude:: /_verbatim/example_47.txt
    :language: bash

@@ -338,7 +338,7 @@ only.
                                                0 means write everything to one destination [Default],
                                                1 means use table->file[GMT_OUT] to write separate table,
                                                2 means use segment->file[GMT_OUT] to write separate segments.
-                                               3 is same as 2 but with no filenames we create filenames */
+                                               3 is same as 2 but with no filenames we create filenames
                                                  from tbl and seg numbers */
        enum GMT_enum_alloc    alloc_mode;   /* Allocation mode [GMT_ALLOCATED_BY_GMT] */
        char                  *file[2];      /* Name of file or source [0 = in, 1 = out] */
