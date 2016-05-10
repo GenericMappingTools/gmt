@@ -3065,9 +3065,17 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			if (kind == 1) {
 				/* If OGR input the also read next 1-2 records to pick up metadata */
 				if (GMT->current.io.ogr == GMT_OGR_TRUE) {
+					int c;
 					p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 					gmtio_ogr_parser (GMT, line);	/* Parsed a GMT/OGR record */
 					gmtio_build_text_from_ogr (GMT, NULL, GMT->current.io.segment_header);	/* Fill in the buffer for -D, -G, Z etc */
+					/* May have a second comment record with @P or @ H so check */
+					if ((c = fgetc (fp)) == '#') {
+						p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
+						if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");
+					}
+					else	/* Put that character back and move on */
+						ungetc (c, fp);
 				}
 				else
 					strncpy (GMT->current.io.segment_header, gmt_trim_segheader (GMT, line), GMT_BUFSIZ-1);
