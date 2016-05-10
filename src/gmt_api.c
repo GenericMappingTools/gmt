@@ -525,7 +525,7 @@ GMT_LOCAL int api_init_sharedlibs (struct GMTAPI_CTRL *API) {
 	char *extension[2] = {".so", ".dylib"};
 	unsigned int n_extensions = 2;
 #else	/* Linux, etc */
-	char *extension[1] = ".so";
+	char *extension[1] = {".so"};
 	unsigned int n_extensions = 1;
 #endif
 
