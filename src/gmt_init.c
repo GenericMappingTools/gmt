@@ -7335,7 +7335,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *
 	unsigned int pos;
 	size_t len;
 	int i, ival, case_val, manual;
-	bool error = false, tf_answer;
+	bool error = false, tf_answer = false;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
 
 	double dval;

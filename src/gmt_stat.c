@@ -1351,7 +1351,7 @@ double gmt_f_cdf (struct GMT_CTRL *GMT, double F, uint64_t nu1, uint64_t nu2) {
 
 double gmt_t_pdf (struct GMT_CTRL *GMT, double t, uint64_t nu) {
 	/* Probability density distribution for Student t */
-	double y, n = nu + 1.0, g1, g2;
+	double y, n = nu + 1.0, g1 = 0.0, g2 = 0.0;
 	
 	gmtstat_ln_gamma_r (GMT, 0.5*n, &g1);
 	gmtstat_ln_gamma_r (GMT, 0.5*nu, &g2);

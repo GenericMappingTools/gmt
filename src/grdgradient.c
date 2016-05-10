@@ -336,11 +336,11 @@ int GMT_grdgradient (void *V_API, int mode, void *args) {
 	
 	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
 	
-	double dx_grid, dy_grid, x_factor, x_factor_set, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
+	double dx_grid, dy_grid, x_factor = 0.0, x_factor_set, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output, one;
 	double x_factor2 = 0.0, x_factor2_set = 0.0, y_factor2 = 0.0, dzdx2 = 0.0, dzdy2 = 0.0, dzds1, dzds2;
 	double p0 = 0.0, q0 = 0.0, p0q0_cte = 1.0, norm_z, mag, s[3], lim_x, lim_y, lim_z;
-	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2];
+	double k_ads = 0.0, diffuse, spec, r_min = DBL_MAX, r_max = -DBL_MAX, scale, sin_Az[2] = {0.0, 0.0};
 	
 	struct GMT_GRID *Surf = NULL, *Slope = NULL, *Out = NULL;
 	struct GRDGRADIENT_CTRL *Ctrl = NULL;
