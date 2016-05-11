@@ -5366,17 +5366,21 @@ char *gmt_export2proj4 (struct GMT_CTRL *GMT) {
 	}
 
 	if (strcmp(szProj4, "+xy")) {
+		size_t len = strlen (szProj4);
 		a = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius;
 		f = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening;
 		b = a * (1 - f);
-		snprintf (szProj4+strlen(szProj4), GMT_LEN512, " +a=%.3f +b=%.6f", a, b);
+		snprintf (szProj4+len, GMT_LEN512-len, " +a=%.3f +b=%.6f", a, b);
+		len = strlen (szProj4);
 		if (fabs(a - b) > 1) {		/* WGS84 is not spherical */
 			plot_ellipsoid_name_convert(GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].name, proj4_ename);
-			sprintf(szProj4+strlen(szProj4), " +ellps=%s", proj4_ename);
+			snprintf(szProj4+len, GMT_LEN512-len, " +ellps=%s", proj4_ename);
+			len = strlen (szProj4);
 			if (!strcmp(proj4_ename, "WGS84"))
-				sprintf(szProj4+strlen(szProj4), " +datum=WGS84");
+				snprintf(szProj4+strlen(szProj4), GMT_LEN512-len, " +datum=WGS84");
 		}
-		sprintf(szProj4+strlen(szProj4), " +units=m +no_defs");
+		len = strlen (szProj4);
+		snprintf(szProj4+len, GMT_LEN512-len, " +units=m +no_defs");
 	}
 
 	pStrOut = strdup(szProj4);

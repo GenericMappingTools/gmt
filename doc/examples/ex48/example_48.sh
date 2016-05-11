@@ -1,6 +1,13 @@
 #!/bin/bash
-ps=global.ps
-pdf=global.pdf
+#               GMT EXAMPLE 48
+#               $Id $
+#
+# Purpose:      Illustrate use of trimmed lines with vectors, networks, and local spidergrids
+# GMT progs:    pscoast, psxy, sphtriangulate, grdgradient, grdimate, gmtmath, pstext
+#
+
+ps=example_48.ps
+
 cat << EOF > spots.txt
 157.8583W	21.3069N	61	300	HNL	BC	0.6i
 149.5585W	17.5516S	-120	120	PPT	TC	0.6i
@@ -33,10 +40,6 @@ done < spots.txt
 gmt psxy spots.txt -R -J -O -K -Fn -W1.5p+o250k+v0.2i+gred --MAP_VECTOR_SHAPE=0.5 >> $ps
 gmt psxy spots.txt -R -J -O -K -SE-500 -Gorange -W0.25p >> $ps
 # Make an arc or radius 4.5 inches from 45 to 135 degrees and use it to place text
-gmtmath -T45/135/1 T -C0 COSD -C1 SIND -Ca 4.5 MUL = path.txt
+gmt math -T45/135/1 T -C0 COSD -C1 SIND -Ca 4.5 MUL = path.txt
 gmt psxy -R-3.5/3.5/0/6 -Jx1i -O -Y3.5i path.txt -Sqn1:+l"IMPORTANT PACIFIC AIRPORTS"+v+f32p -Wfaint,white -N >> $ps
-#gmt psxy -R -J -O -T >> $ps
-gmt psconvert -Tf -P $ps
-open $pdf
-gmt set PS_COMMENTS false
 rm -f spots.txt g.cpt t.cpt int.nc patches.txt path.txt tmp

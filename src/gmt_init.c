@@ -1109,7 +1109,7 @@ GMT_LOCAL int gmtinit_parse_model1d (struct GMT_CTRL *GMT, char option, char *in
 
 	/* Sort so Trig/Fourier terms are last in the list */
 	
-	qsort (M->term, n_model, sizeof (struct GMT_MODEL), compare_terms);
+	qsort (M->term, n_model, sizeof (struct GMT_MODEL_TERM), compare_terms);
 	
 	/* Make sure there are no duplicates */
 
