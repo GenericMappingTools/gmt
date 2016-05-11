@@ -2782,7 +2782,7 @@ GMT_LOCAL int gmtinit_parse4_B_option (struct GMT_CTRL *GMT, char *in) {
 			in[o] = '\0';	/* Chop off +o for now */
 		}
 		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
-			strcpy (out1, &in[i+2]);	/* Make a copy of the fill argument */
+			strncpy (out1, &in[i+2], GMT_BUFSIZ-1);	/* Make a copy of the fill argument */
 #ifdef _WIN32
 			gmtinit_handle_dosfile (GMT, out1, 1);	/* Undo any DOS files like X;/ back to X:/ */
 #endif
