@@ -674,18 +674,23 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 	/* Print out final estimates */
 
 	if ((error = gmt_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (error);
 	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
 	if (GMT->common.h.add_colnames) {
 		char header[GMT_LEN64] = {""};
 		sprintf (header, "#contour\tarea\tvolume\theight");
-		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL))
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL)) {
+			gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 			Return (API->error);
+		}
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
 
@@ -709,6 +714,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args) {
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		gmt_M_free (GMT, area);		gmt_M_free (GMT, vol);		gmt_M_free (GMT, height);
 		Return (API->error);
 	}
 
