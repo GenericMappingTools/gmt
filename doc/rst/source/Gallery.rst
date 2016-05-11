@@ -3,7 +3,7 @@
 The GMT historical collection
 =============================
 
-The 47 Examples
+The 48 Examples
 ----------------
 
 In this section we will be giving numerous examples of typical usage of
@@ -74,9 +74,9 @@ complex illustration.
 |                  |                    |                     |
 | |ex43|           | |ex44|             | |ex45|              |
 +------------------+--------------------+---------------------+
-|:ref:`example_46` | :ref:`example_47`  |                     |
+|:ref:`example_46` | :ref:`example_47`  | :ref:`example_48`   |
 |                  |                    |                     |
-| |ex46|           | |ex47|             |                     |
+| |ex46|           | |ex47|             | |ex48|              |
 +------------------+--------------------+---------------------+
 
 .. |ex01| image:: /_images/example_01.*
@@ -220,6 +220,9 @@ complex illustration.
 .. |ex47| image:: /_images/example_47.*
    :width: 150 px
 
+.. |ex48| image:: /_images/example_48.*
+   :width: 150 px
+
 .. toctree::
    :hidden:
 
@@ -270,6 +273,7 @@ complex illustration.
    gallery/ex45.rst
    gallery/ex46.rst
    gallery/ex47.rst
+   gallery/ex48.rst
 
 
 Animations

@@ -1,0 +1,21 @@
+.. _example_48:
+
+(48) Line networks, map embellishments, and curved titles
+-----------------------------------------------------
+
+In this example we show how the module :doc:`psxy </psxy>`
+is used to create a network of lines based on a file with
+the nodes (the 6 airports).  We also demonstrate how the
+lines can be shortened by (a) a given measure (here 250 km)
+and then (b) the length of the added vector heads.  Finally,
+we add six local spiderweb azimuth/distance gridlines and
+set a curved plot title.
+
+.. literalinclude:: /_verbatim/example_48.txt
+   :language: bash
+
+.. figure:: /_images/example_48.*
+   :width: 500 px
+   :align: center
+
+   Line networks, map embellishments, and curved titles.
