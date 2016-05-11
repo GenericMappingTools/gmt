@@ -1,7 +1,7 @@
 .. _example_48:
 
 (48) Line networks, map embellishments, and curved titles
------------------------------------------------------
+---------------------------------------------------------
 
 In this example we show how the module :doc:`psxy </psxy>`
 is used to create a network of lines based on a file with
