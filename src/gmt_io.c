@@ -3069,9 +3069,11 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 					p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
 					gmtio_ogr_parser (GMT, line);	/* Parsed a GMT/OGR record */
 					gmtio_build_text_from_ogr (GMT, NULL, GMT->current.io.segment_header);	/* Fill in the buffer for -D, -G, Z etc */
-					/* May have a second comment record with @P or @ H so check */
+					if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");	/* Sometimes a @P or @H record instead */
+					/* May also have a second comment record with @P or @ H so check */
 					if ((c = fgetc (fp)) == '#') {
 						p = gmt_fgets (GMT, line, GMT_BUFSIZ, fp);
+						gmtio_ogr_parser (GMT, line);	/* Parsed a GMT/OGR record */
 						if (strstr (line, "@H")) strcat (GMT->current.io.segment_header, " -Ph");
 					}
 					else	/* Put that character back and move on */
@@ -6810,6 +6812,11 @@ struct GMT_DATATABLE * gmt_read_table (struct GMT_CTRL *GMT, void *source, unsig
 		if (!use_GMT_io) GMT->current.io.input = psave;	/* Restore previous setting */
 		return (NULL);
 	}
+	if (GMT->current.io.ogr == GMT_OGR_TRUE) {	/* Reading an OGR file so we can set the geometry, and possibly poly */
+		poly = (GMT->current.io.OGR->geometry == GMT_IS_POLYGON || GMT->current.io.OGR->geometry == GMT_IS_MULTIPOLYGON);
+		*geometry = GMT->current.io.OGR->geometry;
+	}
+
 	/* Allocate the Table structure with GMT_CHUNK segments, but none has any rows or columns */
 
 	T = gmt_create_table (GMT, GMT_CHUNK, 0U, 0U, false);
