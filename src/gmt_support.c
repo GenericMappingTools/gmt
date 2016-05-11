@@ -13120,6 +13120,12 @@ void gmt_adjust_refpoint (struct GMT_CTRL *GMT, struct GMT_REFPOINT *ref, double
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Reference x = %g y = %g\n", ref->x, ref->y);
 }
 
+bool gmt_trim_requested (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
+	if (P == NULL) return false;	/* No settings given */
+	if (gmt_M_is_zero (P->end[BEG].offset) && gmt_M_is_zero (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL) return false;	/* No trims given */
+	return true;
+}
+
 unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, struct GMT_PEN *P) {
 	/* Recompute start and end points of line if offset trims are set */
 	uint64_t last, next, current = 0, inc, n, new_n, start[2] = {0,0}, orig_start[2] = {0,0}, stop[2] = {0,0}, new[2] = {0,0};
@@ -13127,8 +13133,7 @@ unsigned int gmt_trim_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint
 	unsigned int k, proj_type, effect;
 	double *x = NULL, *y = NULL, dist, ds = 0.0, f1, f2, x0, x1 = 0, y0, y1 = 0, offset;
 
-	if (P == NULL) return 0;	/* No settings given */
-	if (gmt_M_is_zero (P->end[BEG].offset) && gmt_M_is_zero (P->end[END].offset) && P->end[BEG].V == NULL && P->end[END].V == NULL) return 0;	/* No trims given */
+	if (!gmt_trim_requested (GMT, P)) return 0;	/* No trimming requested */
 
 	/* Here we must do some trimming */
 	x = *xx;	y = *yy;	n = *nn;	/* Input arrays and length */

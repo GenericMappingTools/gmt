@@ -129,11 +129,11 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 				}
 				area_triangle = gmt_stripack_areas (V[0], V[1], V[2]);
 				area_sphere += area_triangle;
-				sprintf (segment_header, "Triangle: %" PRIu64 " %" PRIu64 "-%" PRIu64 "-%" PRIu64 " Area: %g",
-				         k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2);
+				sprintf (segment_header, "Triangle: %" PRIu64 " %" PRIu64 "-%" PRIu64 "-%" PRIu64 " Area: %g -Z%" PRIu64,
+				         k, D->tri[ij], D->tri[ij+1], D->tri[ij+2], area_triangle * R2, k);
 			}
 			else	/* Just a plain header with triangle number */
-				sprintf (segment_header, "Triangle: %" PRIu64, k);
+				sprintf (segment_header, "Triangle: %" PRIu64 " -Z%" PRIu64, k, k);
 			if (nodes) {	/* Output Voronoi node and area information via S[1] */
 				S[1]->coord[GMT_X][k] = (double)D->tri[ij];
 				S[1]->coord[GMT_Y][k] = (double)D->tri[ij+1];
@@ -188,10 +188,10 @@ GMT_LOCAL int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, doubl
 			S[0]->coord[GMT_X][1] = lon[arc[i].end];	S[0]->coord[GMT_Y][1] = lat[arc[i].end];
 			if (get_area) {	/* Compute arc lengths */
 				dist = gmt_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g -Z%" PRIu64, arc[i].begin, arc[i].end, dist, i);
 			}
 			else	/* Plain header */
-				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64, arc[i].begin, arc[i].end);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " -Z%" PRIu64, arc[i].begin, arc[i].end, i);
 			S[0]->header = strdup (segment_header);
 		}
 		Dout[0]->table[0]->n_records = Dout[0]->n_records = 2 * n_arcs;
@@ -304,10 +304,10 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			S[0] = Dout[0]->table[0]->segment[node];	/* Local shorthand to current output segment */
 			if (get_area) {
 				area_km2 = area_polygon * R2;	/* Get correct area units */
-				sprintf (segment_header, "Pol: %" PRIu64 " %g %g Area: %g", node, lon[node], lat[node], area_km2);
+				sprintf (segment_header, "Pol: %" PRIu64 " %g %g Area: %g -Z%" PRIu64, node, lon[node], lat[node], area_km2, node);
 			}
 			else
-				sprintf (segment_header, "Pol: %" PRIu64 " %g %g", node, lon[node], lat[node]);
+				sprintf (segment_header, "Pol: %" PRIu64 " %g %g -Z%" PRIu64, node, lon[node], lat[node], node);
 
 			if (nodes) {	/* Also output node info via S[1] */
 				S[1]->coord[GMT_X][node] = lon[node];
@@ -352,10 +352,10 @@ GMT_LOCAL int stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double 
 			S[0]->coord[GMT_X][1] = V->lon[arc[i].begin];	S[0]->coord[GMT_Y][1] = V->lat[arc[i].begin];
 			if (get_area) {
 				dist = gmt_distance (GMT, S[0]->coord[GMT_X][0], S[0]->coord[GMT_Y][0], S[0]->coord[GMT_X][1], S[0]->coord[GMT_Y][1]);
-				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g", arc[i].begin, arc[i].end, dist);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " Length: %g -Z%" PRIu64, arc[i].begin, arc[i].end, dist, i);
 			}
 			else
-				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64, arc[i].begin, arc[i].end);
+				sprintf (segment_header, "Arc: %" PRIu64 "-%" PRIu64 " -Z%" PRIu64, arc[i].begin, arc[i].end, i);
 			S[0]->header = strdup (segment_header);
 		}
 		gmt_M_free (GMT, arc);

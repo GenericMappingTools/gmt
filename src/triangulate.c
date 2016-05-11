@@ -529,7 +529,7 @@ int GMT_triangulate (void *V_API, int mode, void *args) {
 		else if (Ctrl->S.active)  {	/* Write triangle polygons */
 			gmt_set_segmentheader (GMT, GMT_OUT, true);
 			for (i = ij = 0; i < np; i++, ij += 3) {
-				sprintf (record, "Polygon %d-%d-%d", link[ij], link[ij+1], link[ij+2]);
+				sprintf (record, "Polygon %d-%d-%d -Z%" PRIu64, link[ij], link[ij+1], link[ij+2], i);
 				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 				for (k = 0; k < 3; k++) {	/* Three vertices */
 					out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];

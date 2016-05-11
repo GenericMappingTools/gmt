@@ -337,11 +337,16 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 	/* Maybe add vector heads.  Here, x,y are in inches on the plot */
 	unsigned int k, current[2] = {0,0}, next[2] = {1,0};
 	double dim[PSL_MAX_DIMS], angle, s, c, L;
+	char *end[2] = {"start", "end"};
 	if (n < 2) return;
 	current[1] = (unsigned int)n-1;	next[1] = (unsigned int)n-2;
+	if (P->end[0].V == NULL && P->end[0].V == NULL) return;
+	PSL_command (GMT->PSL, "V\n");
+	GMT->PSL->current.linewidth = -1.0;				/* Will be changed by next PSL_setlinewidth */
 	for (k = 0; k < 2; k++) {
 		if (P->end[k].V == NULL) continue;
 		/* Add vector heads to this end */
+		PSL_comment (GMT->PSL, "Add vector head to %s of line\n", end[k]);
 		angle = d_atan2d (y[current[k]] - y[next[k]], x[current[k]] - x[next[k]]);
 		sincosd (angle, &s, &c); 
 		L = (P->end[k].V->v.v_kind[1] == GMT_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
@@ -356,6 +361,8 @@ GMT_LOCAL void plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y, uin
 		if (P->end[k].V->v.status & GMT_VEC_OUTLINE2) gmt_setpen (GMT, &P->end[k].V->v.pen);
 		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
 	}
+	GMT->PSL->current.linewidth = -1.0;				/* Will be changed by next PSL_setlinewidth */
+	PSL_command (GMT->PSL, "U\n");
 }
 
 GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
@@ -1401,7 +1408,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 	else {	/* Line/polygon part */
 		uint64_t seg, seg_out = 0;
-		bool duplicate;
+		bool duplicate, resampled;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -1449,8 +1456,14 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				
 				if (polygon && gmt_M_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
-
-				if (!polygon && gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
+				resampled = false;
+				if (!polygon && gmt_trim_requested (GMT, &current_pen)) {	/* Needs a haircut */
+					if (L->n_rows == 2) {	/* Given endpoints we need to resample in order to trim */
+						L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
+						resampled = true;	/* To avoid doing it twice */
+					}
+					if (gmt_trim_line (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], &L->n_rows, &current_pen)) continue;	/* Trimmed away completely */
+				}
 				
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Plotting table %" PRIu64 " segment %" PRIu64 "\n", tbl, seg);
 
@@ -1458,7 +1471,6 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 				 * but reallocating x below lead to disasters.  */
 
 				change = gmt_parse_segment_header (GMT, L->header, P, &fill_active, &current_fill, &default_fill, &outline_active, &current_pen, &default_pen, default_outline, L->ogr);
-
 
 				if (P && P->skip) continue;	/* Chosen CPT file indicates skip for this z */
 
@@ -1523,7 +1535,7 @@ int GMT_psxy (void *V_API, int mode, void *args) {
 					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
 				}
 
-				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH)	/* Resample if spacing is too coarse */
+				if (GMT->current.map.path_mode == GMT_RESAMPLE_PATH && !resampled)	/* Resample if spacing is too coarse */
 					L->n_rows = gmt_fix_up_path (GMT, &L->coord[GMT_X], &L->coord[GMT_Y], L->n_rows, Ctrl->A.step, Ctrl->A.mode);
 
 				if (polygon) {	/* Want a closed polygon (with or without fill and with or without outline) */
