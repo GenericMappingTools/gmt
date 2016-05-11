@@ -23,7 +23,7 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${
 
 # first generate a gmt grdimage
 
-GRDFILE=etopo10.nc
+GRDFILE=${GMT_SOURCE_DIR}/doc/examples/ex48/etopo10m.nc
 
 gmt grdimage ${GMT_VERBOSE} ${GRDFILE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
 gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B10g10 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
