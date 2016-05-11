@@ -647,6 +647,7 @@ static int MGD77_Decode_Header_m77t (struct GMT_CTRL *GMT, struct MGD77_HEADER_P
 	stringp = buffer;
 	while (k < MGD77T_N_HEADER_ITEMS && (word = strsep (&stringp, "\t")) != NULL ) {
 		switch (k) {
+			/* coverity[BUFFER_SIZE_WARNING] */	/* Do not remove this comment */
 			case  0:	strncpy (P->Survey_Identifier, word, 9U);			break;
 			case  1:	strncpy (P->Format_Acronym, word, 6U);				break;
 			case  2:	strncpy (P->Data_Center_File_Number, word, 9U);		break;
@@ -1282,6 +1283,7 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 		if (p == NULL)
 			break;
 		switch (k) {	/* The cases are 1-26 as per MGD77T docs */
+			/* coverity[BUFFER_SIZE_WARNING] */	/* Do not remove this comment */
 			case  1: strncpy (MGD77Record->word[0], p, 10U);	set_present (p, MGD77_ID);	break;
 			case  2: set_a_val (p, MGD77_TZ);		break;
 			case  3: strncpy (r_date, p, 9U);			break;
@@ -1347,6 +1349,7 @@ static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	for (i = pos = k = nwords = 0; i < MGD77_N_DATA_FIELDS; i++) {
 		if (!gmt_strtok (line, "\t", &pos, p)) return (MGD77_ERROR_READ_ASC_DATA);	/* Premature record end */
 		if (i >= MGD77_ID && i <= MGD77_SSPN) {
+			/* coverity[BUFFER_SIZE_WARNING] */	/* Do not remove this comment */
 			strncpy (MGD77Record->word[nwords++], p, 10U);		/* Just copy text without changing it at all */
 			for (j = n9 = 0; p[j]; j++) if (p[j] == '9') n9++;
 			if (n9 < j) MGD77Record->bit_pattern |= MGD77_this_bit[i];
@@ -2991,7 +2994,9 @@ int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, stru
 		case MGD77_FORMAT_TBL:		/* Will write a single ASCII table record; first fill out MGD77_RECORD structure */
 			MGD77Record.time = dvals[0];
 			for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) MGD77Record.number[MGD77_pos[i]] = dvals[i];
-			for (k = 0; k < MGD77_N_STRING_FIELDS; k++) strncpy (MGD77Record.word[k], tvals[k], 10U);
+			for (k = 0; k < MGD77_N_STRING_FIELDS; k++)
+				/* coverity[BUFFER_SIZE_WARNING] */	/* Do not remove this comment */
+				strncpy (MGD77Record.word[k], tvals[k], 10U);
 			error = MGD77_Write_Data_Record_txt (GMT, F, &MGD77Record);
 			break;
 		default:
@@ -3333,6 +3338,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		else {
 			rfStart = mgd77rf[ref_field_code].start;
 			rfEnd = mgd77rf[ref_field_code].end;
+			/* coverity[BUFFER_SIZE_WARNING] */	/* Do not remove this comment */
 			strncpy (m_model, mgd77rf[ref_field_code].model, 16U);	/* Use name corresponding to given code */
 		}
 		(yr1 == yr2) ? sprintf (text, "%d", yr1) : sprintf (text, "%d-%d", yr1, yr2);
