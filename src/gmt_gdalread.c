@@ -232,8 +232,40 @@ GMT_LOCAL void ComputeRasterMinMax(struct GMT_CTRL *GMT, unsigned char *tmp, GDA
 	adfMinMax[1] = z_max;
 }
 
+int get_attrib_from_string(struct GMT_GDALREAD_OUT_CTRL *Ctrl, GDALRasterBandH hBand, int nBand, double  *dfNoDataValue) {
+	/* Since several methods to get band's attributes for HDF5 Datasets are not yet implemented in GDAL2.1.0
+	   namely GDALGetRasterScale() and friends, the temporary work-around is to fish them from the Metadata
+	   strings that we can access via GDALGetMetadata().
+	*/
+	char *pch, *pch2, **papszMetadataBand = NULL;
+	int i, nCounterBand;
+
+	papszMetadataBand = GDALGetMetadata(hBand, NULL);
+	nCounterBand = CSLCount(papszMetadataBand);
+
+	for (i = 0; i < nCounterBand; i++) {
+		if ((pch = strstr(papszMetadataBand[i], "add_offset")) != NULL) {
+			/* Fish the value from a string of the type "geophysical_data_sst_add_offset=0" */
+			if ((pch2 = strstr(pch, "=")) != NULL)
+				Ctrl->band_field_names[nBand].ScaleOffset[1] = atof(&pch2[1]);
+		}
+		else if ((pch = strstr(papszMetadataBand[i], "scale_factor")) != NULL) {
+			if ((pch2 = strstr(pch, "=")) != NULL)
+				Ctrl->band_field_names[nBand].ScaleOffset[0] = atof(&pch2[1]);
+		}
+		else if ((pch = strstr(papszMetadataBand[i], "_FillValue")) != NULL) {
+			if ((pch2 = strstr(pch, "=")) != NULL) {
+				*dfNoDataValue = atof(&pch2[1]);
+				Ctrl->band_field_names[nBand].nodata = *dfNoDataValue;
+			}
+		}
+	}
+
+	return (GMT_NOERROR);
+}
+
 GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize,
-                       int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
+                                 int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
 /* =============================================================================================== */
 /*
  * This routine queries the GDAL raster file for some metadata
@@ -291,15 +323,16 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	GDALColorTableH	hTable;
 	GDALColorEntry	sEntry;
 
-	int	i, j;
-	int	status, bSuccess;	/* success or failure */
-	int	nBand, raster_count, pixel_reg = false;
-	int	bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
+	int     i, j;
+	int     status, bSuccess;	/* success or failure */
+	int     nBand, raster_count;
+	int     bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
+	bool    got_noDataValue = false, pixel_reg = false;
 	double  adfGeoTransform[6];	/* bounds on the dataset */
 	double  tmpdble;		/* temporary value */
 	double  xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
 	double  adfMinMax[2];	/* Dataset Min Max */
-	double  dfNoDataValue;
+	double  dfNoDataValue = 0;
 
 	/* ------------------------------------------------------------------------- */
 	/* Open the file (if we can). */
@@ -394,10 +427,10 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
 
 		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
-			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
-			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
+		    || anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
+		    || anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
-							GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
+			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Quiting with error\n");
 			return(-1);
 		}
@@ -468,6 +501,12 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		   any use for it, we won't check if individual bands have different colormaps.
 		   Note, however, that first band colormap is captured anyway (if exists, off course) */
 
+		if (bSuccess == 0 && strstr(Ctrl->DriverShortName, "HDF5") != NULL) {	/* several methods for HDF5 driver are not implemented */
+			GMT_Report(GMT->parent, GMT_MSG_VERBOSE, "An HDF5 file. Trying to get scale_offset from string metadata.\n");
+			dfNoDataValue = GMT->session.d_NaN;
+			get_attrib_from_string(Ctrl, hBand, nBand, &dfNoDataValue);			/* Go get them from the metadata in strings. */
+			if (!isnan(dfNoDataValue)) got_noDataValue = true;
+		}
 	}
 
 	/* ------------------------------------------------------------------------- */
@@ -482,11 +521,13 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Get the first band NoData Value */
 	/* ------------------------------------------------------------------------- */
-	dfNoDataValue = GDALGetRasterNoDataValue(hBand, &status);
-	if (status)
-		Ctrl->nodata = dfNoDataValue;
-	else
-		Ctrl->nodata = GMT->session.d_NaN;
+	if (!got_noDataValue) {		/* May have been found if get_attrib_from_string() was acalled above */
+		dfNoDataValue = GDALGetRasterNoDataValue(hBand, &status);
+		if (status)
+			Ctrl->nodata = dfNoDataValue;
+		else
+			Ctrl->nodata = GMT->session.d_NaN;
+	}
 
 	/* ------------------------------------------------------------------------- */
 	/* Get the Color Map of first band (if any) */
