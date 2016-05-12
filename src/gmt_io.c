@@ -7548,8 +7548,8 @@ char **gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 
 	if (access (path, F_OK)) return NULL;	/* Quietly skip non-existent directories */
 	sprintf (text, "%s/*", path);
-	left = GMT_LEN256 - strlen (path) - 2;
-	left -= ((ext) ? strlen (ext) : 2);
+	left = GMT_LEN256 - (int)strlen (path) - 2;
+	left -= ((ext) ? (int)strlen (ext) : 2);
 	if (ext)
 		strncat (text, ext, left);	/* Look for files with given ending in this dir */
 	else
