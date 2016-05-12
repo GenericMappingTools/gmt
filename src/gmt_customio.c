@@ -1734,10 +1734,10 @@ int gmt_gdal_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	header->inc[GMT_Y] = from_gdalread->hdr[8];
 	header->z_min = from_gdalread->hdr[4];
 	header->z_max = from_gdalread->hdr[5];
-	header->nan_value = from_gdalread->band_field_names[0].nodata;
 	if (from_gdalread->band_field_names) {
 		header->z_scale_factor = from_gdalread->band_field_names[0].ScaleOffset[0];
 		header->z_add_offset   = from_gdalread->band_field_names[0].ScaleOffset[1];
+		header->nan_value      = from_gdalread->band_field_names[0].nodata;
 	}
 	else {
 		header->z_scale_factor = 1.0;
